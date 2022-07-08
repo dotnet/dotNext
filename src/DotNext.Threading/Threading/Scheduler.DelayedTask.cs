@@ -16,6 +16,7 @@ public static partial class Scheduler
     {
         private protected readonly CancellationToken token; // cached token to avoid ObjectDisposedException
         private volatile CancellationTokenSource? tokenSource;
+        private protected uint state;
 
         private protected DelayedTask(CancellationToken token)
             => this.token = (tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token)).Token;
@@ -70,7 +71,6 @@ public static partial class Scheduler
         private AsyncTaskMethodBuilder builder;
         private ConfiguredTaskAwaitable.ConfiguredTaskAwaiter delayAwaiter;
         private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter callbackAwaiter;
-        private byte state;
 
         private DelayedTaskStateMachine(Func<TArgs, CancellationToken, ValueTask> callback, TArgs args, TimeSpan delay, CancellationToken token)
             : base(token)
@@ -98,14 +98,14 @@ public static partial class Scheduler
             {
                 switch (machine.state)
                 {
-                    case 0:
+                    case 0U:
                         machine.delayAwaiter = Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.delayAwaiter.IsCompleted)
                             goto case 1;
                         machine.state = 1;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
-                    case 1:
+                    case 1U:
                         GetResultAndClear(ref machine.delayAwaiter);
                         machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.callbackAwaiter.IsCompleted)
@@ -173,7 +173,6 @@ public static partial class Scheduler
         private AsyncTaskMethodBuilder<TResult> builder;
         private ConfiguredTaskAwaitable.ConfiguredTaskAwaiter delayAwaiter;
         private ConfiguredValueTaskAwaitable<TResult>.ConfiguredValueTaskAwaiter callbackAwaiter;
-        private byte state;
 
         private DelayedTaskStateMachine(Func<TArgs, CancellationToken, ValueTask<TResult>> callback, TArgs args, TimeSpan delay, CancellationToken token)
             : base(token)
@@ -201,14 +200,14 @@ public static partial class Scheduler
             {
                 switch (machine.state)
                 {
-                    case 0:
+                    case 0U:
                         machine.delayAwaiter = System.Threading.Tasks.Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.delayAwaiter.IsCompleted)
                             goto case 1;
                         machine.state = 1;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
-                    case 1:
+                    case 1U:
                         GetResultAndClear(ref machine.delayAwaiter);
                         machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.callbackAwaiter.IsCompleted)
