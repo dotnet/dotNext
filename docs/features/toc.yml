@@ -25,7 +25,7 @@
       href: core/intrinsics.md
     - name: Path MTU Discovery
       href: core/mtu.md
-    - name: Base64 Decoding
+    - name: Base64 Encoding/Decoding
       href: core/base64.md
     - name: Value Type Enhancements
       href: core/valuetype.md
