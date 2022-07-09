@@ -61,23 +61,21 @@ Release Date: 07-04-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.6.1">DotNext.Threading 4.6.1</a>
-* Fixed task pooling of some asynchronous methods
+* Reduced memory allocation caused by extension methods declared in [Scheduler](https://dotnet.github.io/dotNext/api/DotNext.Threading.Scheduler.html) class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.6.1">DotNext.IO 4.6.1</a>
-* Fixed task pooling of some asynchronous methods
+* Removed defensive copies of structs
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.6.1">DotNext.Net.Cluster 4.6.1</a>
-* Fixed task pooling of some asynchronous methods
+* Removed defensive copies of structs
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.1">DotNext.AspNetCore.Cluster 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.0">DotNext.AspNetCore.Cluster 4.7.0</a>
+* Removed defensive copies of structs
+* Introduced `RaftClusterHttpHost` that provides a way to host multiple Raft clusters in the same process. This feature can be used for implementation of sharding
 * Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.1.0">DotNext.MaintenanceServices</a>
-* First version of library providing Application Maintenance Inteface via Unix Domain Socket and command-line shell for app administrators
-* Added support for [probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) when running app in Kubernetes
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
