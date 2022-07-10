@@ -16,9 +16,10 @@ using Timestamp = Diagnostics.Timestamp;
 
 internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, ISubscriber
 {
+    internal const string DefaultProtocolPath = "/cluster-consensus/raft";
     private const string UserAgent = "Raft.NET";
 
-    private readonly Uri resourcePath;
+    private readonly Uri? resourcePath;
     private readonly IHostingContext context;
     internal readonly ClusterMemberId Id;
     internal readonly UriEndPoint EndPoint;
@@ -35,16 +36,10 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
         EndPoint = remoteMember;
         Id = id;
-        resourcePath = new Uri(GetProtocolPath(remoteMember.Uri), UriKind.Relative);
+        resourcePath = remoteMember.Uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped) is { Length: > 0 }
+            ? null
+            : new(DefaultProtocolPath, UriKind.Relative);
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
-    }
-
-    internal static string GetProtocolPath(Uri uri)
-    {
-        const string defaultProtocolPath = "/cluster-consensus/raft";
-        return uri.GetComponents(UriComponents.Path, UriFormat.Unescaped) is { Length: > 0 } protocolPath
-                ? string.Concat("/", protocolPath)
-                : defaultProtocolPath;
     }
 
     event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
