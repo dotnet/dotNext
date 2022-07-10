@@ -68,13 +68,15 @@ Release Date: 07-04-2022
 * Removed defensive copies of structs
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.6.1">DotNext.Net.Cluster 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.0">DotNext.Net.Cluster 4.7.0</a>
 * Removed defensive copies of structs
+* Adaptation of [Microsoft.AspNetCore.Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) library allows to completely split network transport implementation details from Raft-specific stuff. Now you can implement custom network transport and other network-related concerns much more easier
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.0">DotNext.AspNetCore.Cluster 4.7.0</a>
 * Removed defensive copies of structs
 * Introduced `RaftClusterHttpHost` that provides a way to host multiple Raft clusters in the same process. This feature can be used for implementation of sharding
+* Cluster node identification now relies on [UriEndPoint](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections.uriendpoint) class instead of [HttpEndPoint](https://dotnet.github.io/dotNext/api/DotNext.Net.Http.HttpEndPoint.html). This allows to use more flexible traffic routing strategies between cluster nodes
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
