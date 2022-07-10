@@ -71,7 +71,6 @@ The application may request the following services from ASP.NET Core DI containe
 The application should be configured properly to serve HyParView messages. The following JSON represents the example of configuration:
 ```json
 {
-    "resourcePath" : "/membership/hyparview",
     "protocolVersion" : "http2",
     "protocolVersionPolicy" : "RequestVersionOrLower",
     "requestTimeout" : "00:01:00",
@@ -93,7 +92,6 @@ The application should be configured properly to serve HyParView messages. The f
 
 | Configuration parameter | Required | Default Value | Description |
 | ---- | ---- | ---- | ---- |
-| resourcePath | No | /membership/hyparview | The relative path to the endpoint responsible for handling internal HyParView messages |
 | protocolVersion | No | auto | HTTP protocol version to be used for the communication between members. Possible values are `auto`, `http1`, `http2`, `http3` |
 | protocolVersionPolicy | No | RequestVersionOrLower | Specifies behaviors for selecting and negotiating the HTTP version for a request. Possible values are `RequestVersionExact`, `RequestVersionOrHigher`, `RequestVersionOrLower`
 | requestTimeout | No | 00:30:00 | Request timeout used to access peers across the network using HTTP client |

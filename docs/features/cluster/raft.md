@@ -199,7 +199,6 @@ The application should be configured properly to work as a cluster node. The fol
 		"expiration": "00:00:10",
 		"pollingInterval" : "00:01:00"
 	},
-	"resourcePath" : "/cluster-consensus/raft",
     "clientHandlerName" : "raftClient",
 	"port" : 3262,
 	"heartbeatThreshold" : 0.5,
@@ -223,7 +222,6 @@ The application should be configured properly to work as a cluster node. The fol
 | metadata | No | empty dictionary | A set of key/value pairs to be associated with cluster node. The metadata is queriable through `IClusterMember` interface |
 | openConnectionForEachRequest | No | false | `true` to create TCP connection every time for each outbound request. `false` to use HTTP KeepAlive |
 | clientHandlerName | No | raftClient | The name to be passed into [IHttpMessageHandlerFactory](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory) to create [HttpMessageInvoker](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessageinvoker) used by Raft client code |
-| resourcePath | No | /cluster-consensus/raft | The relative path to the endpoint responsible for handling internal Raft messages |
 | requestJournal:memoryLimit | No | 10 | The maximum amount of memory (in MB) utilized by internal buffer used to track duplicate messages |
 | requestJournal:expiration | No | 00:00:10 | The eviction time of the record containing unique request identifier |
 | requestJournal:pollingInterval | No | 00:01:00 | Gets the maximum time after which the buffer updates its memory statistics |
