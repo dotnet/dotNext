@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.Connections;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView
 {
-    using HttpEndPoint = Net.Http.HttpEndPoint;
     using HttpPeerConfiguration = Http.HttpPeerConfiguration;
 
     [ExcludeFromCodeCoverage]
@@ -11,13 +11,13 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
     {
         private abstract class TestPeerControllerBase : PeerController
         {
-            internal readonly EndPoint Address;
+            internal readonly UriEndPoint Address;
 
             protected TestPeerControllerBase(HttpPeerConfiguration configuration)
-                : base(configuration)
-                => Address = configuration.LocalNode;
+                : base(configuration, EndPointFormatter.UriEndPointComparer)
+                => Address = new(configuration.LocalNode);
 
-            protected sealed override bool IsLocalNode(EndPoint peer) => Address.Equals(peer);
+            protected sealed override bool IsLocalNode(EndPoint peer) => PeerComparer.Equals(peer, Address);
 
             internal new ValueTask EnqueueJoinAsync(EndPoint joinedPeer, CancellationToken token)
                 => base.EnqueueJoinAsync(joinedPeer, token);
@@ -40,19 +40,22 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
 
         private sealed class TransportLayer : Dictionary<EndPoint, TestPeerControllerBase>
         {
-
+            internal TransportLayer()
+                : base(EndPointFormatter.UriEndPointComparer)
+            {
+            }
         }
 
         private sealed class TestPeerController : TestPeerControllerBase
         {
-            private readonly EndPoint contactNode;
+            private readonly UriEndPoint contactNode;
             private readonly TransportLayer transport;
 
             internal TestPeerController(HttpPeerConfiguration configuration, TransportLayer transport)
                 : base(configuration)
             {
                 this.transport = transport;
-                contactNode = configuration.ContactNode;
+                contactNode = configuration.ContactNode is not null ? new(configuration.ContactNode) : null;
             }
 
             public Task StartAsync(CancellationToken token = default)
@@ -86,12 +89,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 => transport[receiver].EnqueueShuffleReplyAsync(peers, token).AsTask();
         }
 
-        private static async Task WaitForPeer(PeerController controller, EndPoint peer)
+        private static async Task WaitForPeer(PeerController controller, UriEndPoint peer)
         {
             var listener = new TaskCompletionSource();
             Action<PeerController, PeerEventArgs> handler = (c, a) =>
             {
-                if (object.Equals(peer, a.PeerAddress))
+                if (EndPointFormatter.UriEndPointComparer.Equals(peer, a.PeerAddress))
                     listener.SetResult();
             };
             controller.PeerDiscovered += handler;
@@ -109,7 +112,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 PassiveViewCapacity = 6,
                 LowerShufflePeriod = 10,
                 UpperShufflePeriod = 5,
-                LocalNode = new HttpEndPoint("localhost", 3262, false)
+                LocalNode = new("http://localhost:3262", UriKind.Absolute)
             },
             transport);
 
@@ -121,12 +124,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 PassiveViewCapacity = 6,
                 LowerShufflePeriod = 10,
                 UpperShufflePeriod = 5,
-                ContactNode = new HttpEndPoint("localhost", 3262, false),
-                LocalNode = new HttpEndPoint("localhost", 3263, false)
+                ContactNode = new("http://localhost:3262"),
+                LocalNode = new("http://localhost:3263")
             },
             transport);
 
-            var task = WaitForPeer(peer2, new HttpEndPoint("localhost", 3262, false));
+            var task = WaitForPeer(peer2, new UriEndPoint(new("http://localhost:3262")));
             await peer2.StartAsync();
             await task.WaitAsync(DefaultTimeout);
 
@@ -136,12 +139,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 PassiveViewCapacity = 6,
                 LowerShufflePeriod = 10,
                 UpperShufflePeriod = 5,
-                ContactNode = new HttpEndPoint("localhost", 3262, false),
-                LocalNode = new HttpEndPoint("localhost", 3264, false)
+                ContactNode = new("http://localhost:3262"),
+                LocalNode = new("http://localhost:3264")
             },
             transport);
 
-            task = WaitForPeer(peer3, new HttpEndPoint("localhost", 3262, false));
+            task = WaitForPeer(peer3, new UriEndPoint(new("http://localhost:3262")));
             await peer3.StartAsync();
             await task.WaitAsync(DefaultTimeout);
 
@@ -151,12 +154,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 PassiveViewCapacity = 6,
                 LowerShufflePeriod = 10,
                 UpperShufflePeriod = 5,
-                ContactNode = new HttpEndPoint("localhost", 3262, false),
-                LocalNode = new HttpEndPoint("localhost", 3265, false)
+                ContactNode = new("http://localhost:3262"),
+                LocalNode = new("http://localhost:3265")
             },
             transport);
 
-            task = WaitForPeer(peer4, new HttpEndPoint("localhost", 3262, false));
+            task = WaitForPeer(peer4, new UriEndPoint(new("http://localhost:3262")));
             await peer4.StartAsync();
             await task.WaitAsync(DefaultTimeout);
 
@@ -166,12 +169,12 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
                 PassiveViewCapacity = 6,
                 LowerShufflePeriod = 10,
                 UpperShufflePeriod = 5,
-                ContactNode = new HttpEndPoint("localhost", 3262, false),
-                LocalNode = new HttpEndPoint("localhost", 3266, false)
+                ContactNode = new("http://localhost:3262"),
+                LocalNode = new("http://localhost:3266")
             },
             transport);
 
-            task = WaitForPeer(peer5, new HttpEndPoint("localhost", 3262, false));
+            task = WaitForPeer(peer5, new UriEndPoint(new("http://localhost:3262")));
             await peer5.StartAsync();
             await task.WaitAsync(DefaultTimeout);
 

@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
@@ -25,11 +26,11 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
     private readonly HttpProtocolVersion protocolVersion;
     private readonly HttpVersionPolicy protocolVersionPolicy;
     private readonly ConcurrentDictionary<EndPoint, HttpPeerClient> clientCache;
-    private readonly Uri resourcePath;
+    private readonly Uri? resourcePath;
     private readonly IServer server;
 
-    private readonly HttpEndPoint localNode;
-    private HttpEndPoint? contactNode;
+    private readonly UriEndPoint localNode;
+    private UriEndPoint? contactNode;
 
     public HttpPeerController(
         IOptions<HttpPeerConfiguration> configuration,
@@ -38,17 +39,27 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         IHttpMessageHandlerFactory? handlerFactory = null,
         IPeerLifetime? lifetimeService = null,
         MemoryAllocator<byte>? allocator = null)
-        : base(configuration.Value)
+        : base(configuration.Value, EndPointFormatter.UriEndPointComparer)
     {
+        const string defaultResourcePath = "/membership/hyparview";
+
         // configuration
         clientHandlerName = configuration.Value.ClientHandlerName;
         requestTimeout = configuration.Value.RequestTimeout;
         this.allocator = configuration.Value.Allocator ?? allocator;
         protocolVersion = configuration.Value.ProtocolVersion;
         protocolVersionPolicy = configuration.Value.ProtocolVersionPolicy;
-        contactNode = configuration.Value.ContactNode;
-        localNode = configuration.Value.LocalNode ?? throw new HyParViewProtocolException(ExceptionMessages.UnknownLocalNodeAddress);
-        resourcePath = new(configuration.Value.ResourcePath.Value is { Length: > 0 } path ? path : HttpPeerConfiguration.DefaultResourcePath, UriKind.Relative);
+        contactNode = configuration.Value.ContactNode is { IsAbsoluteUri: true } uri ? new(uri) : null;
+        localNode = new(configuration.Value.LocalNode ?? throw new HyParViewProtocolException(ExceptionMessages.UnknownLocalNodeAddress));
+        if (localNode.Uri.GetComponents(UriComponents.Path, UriFormat.Unescaped) is { Length: > 0 } rp)
+        {
+            ResourcePath = new(rp);
+        }
+        else
+        {
+            resourcePath = new(defaultResourcePath, UriKind.Relative);
+            ResourcePath = new(defaultResourcePath);
+        }
 
         // resolve dependencies
         this.handlerFactory = handlerFactory;
@@ -57,24 +68,23 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         this.server = server;
 
         // various init
-        clientCache = new();
+        clientCache = new(EndPointFormatter.UriEndPointComparer);
     }
 
-    protected override bool IsLocalNode(EndPoint peer) => localNode.Equals(peer);
+    protected override bool IsLocalNode(EndPoint peer) => PeerComparer.Equals(localNode, peer);
 
     /// <summary>
     /// Gets the logger associated with this controller.
     /// </summary>
     protected override ILogger Logger { get; }
 
-    internal PathString ResourcePath => resourcePath.OriginalString;
+    internal PathString ResourcePath { get; }
 
-    private HttpPeerClient CreateClient(HttpEndPoint endPoint, bool openConnectionForEachRequest)
+    private HttpPeerClient CreateClient(UriEndPoint endPoint, bool openConnectionForEachRequest)
     {
-        var baseUri = endPoint.CreateUriBuilder().Uri;
         var client = handlerFactory is null
-            ? new HttpPeerClient(baseUri, new SocketsHttpHandler { ConnectTimeout = requestTimeout }, true)
-            : new HttpPeerClient(baseUri, handlerFactory.CreateHandler(clientHandlerName), false);
+            ? new HttpPeerClient(endPoint.Uri, new SocketsHttpHandler { ConnectTimeout = requestTimeout }, true)
+            : new HttpPeerClient(endPoint.Uri, handlerFactory.CreateHandler(clientHandlerName), false);
 
         client.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
         client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
@@ -84,7 +94,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         return client;
     }
 
-    private HttpPeerClient GetOrCreatePeer(HttpEndPoint peer)
+    private HttpPeerClient GetOrCreatePeer(UriEndPoint peer)
     {
         if (!clientCache.TryGetValue(peer, out var client))
         {

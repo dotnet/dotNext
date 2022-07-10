@@ -13,12 +13,22 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration, IClust
 
     private string? handlerName;
     private TimeSpan? requestTimeout;
+    private Uri? publicEndPoint;
 
     /// <summary>
     /// Gets or sets the address of the local node visible to the entire cluster.
     /// </summary>
-    [CLSCompliant(false)]
-    public Uri? PublicEndPoint { get; set; }
+    public Uri? PublicEndPoint
+    {
+        get => publicEndPoint;
+        set
+        {
+            if (value is { IsAbsoluteUri: false })
+                throw new ArgumentException(ExceptionMessages.AbsoluteUriExpected(value), nameof(value));
+
+            publicEndPoint = value;
+        }
+    }
 
     /// <summary>
     /// Gets configuration of request journal.

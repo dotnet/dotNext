@@ -1,9 +1,8 @@
 using System.Net;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
-
-using HttpEndPoint = Net.Http.HttpEndPoint;
 
 internal partial class HttpPeerController
 {
@@ -60,7 +59,7 @@ internal partial class HttpPeerController
     private async Task PostAsync<TRequest>(EndPoint peer, string messageType, TRequest content, CancellationToken token)
         where TRequest : notnull, ISupplier<ReadOnlyMemory<byte>>
     {
-        var client = GetOrCreatePeer((HttpEndPoint)peer);
+        var client = GetOrCreatePeer((UriEndPoint)peer);
 
         using var request = new HttpRequestMessage
         {

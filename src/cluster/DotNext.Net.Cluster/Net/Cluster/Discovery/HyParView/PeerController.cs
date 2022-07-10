@@ -67,6 +67,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         shufflePeriod = configuration.ShufflePeriod;
         random = new();
         queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(configuration.QueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
+        PeerComparer = peerComparer ?? EqualityComparer<EndPoint>.Default;
         activeView = ImmutableHashSet.Create(peerComparer);
         passiveView = ImmutableHashSet.Create(peerComparer);
         lifecycleTokenSource = new();
@@ -74,6 +75,11 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         shuffleTask = Task.CompletedTask;
         queueLoopTask = Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Gets peer address comparer.
+    /// </summary>
+    protected IEqualityComparer<EndPoint> PeerComparer { get; }
 
     /// <summary>
     /// Gets the logger associated with this controller.
