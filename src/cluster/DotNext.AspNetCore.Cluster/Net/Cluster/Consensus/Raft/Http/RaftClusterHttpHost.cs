@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,7 +10,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Membership;
 using Messaging;
-using HttpEndPoint = Net.Http.HttpEndPoint;
 
 /// <summary>
 /// Represents a host of local Raft cluster node.
@@ -50,7 +50,7 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     /// <description>Provides instance lifetime hooks.</description>
     /// </item>
     /// <item>
-    /// <term><see cref="IClusterConfigurationStorage{TAddress}"/> of type <see cref="HttpEndPoint"/></term>
+    /// <term><see cref="IClusterConfigurationStorage{TAddress}"/> of type <see cref="UriEndPoint"/></term>
     /// <description>Provides cluster configuration storage.</description>
     /// </item>
     /// <item>
@@ -67,7 +67,7 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     /// <description>Allows to capture runtime metrics associated with the local node.</description>
     /// </item>
     /// <item>
-    /// <term><see cref="ClusterMemberAnnouncer{TAddress}"/> of type <see cref="HttpEndPoint"/></term>
+    /// <term><see cref="ClusterMemberAnnouncer{TAddress}"/> of type <see cref="UriEndPoint"/></term>
     /// <description>Allows to announce a new node the cluster leader.</description>
     /// </item>
     /// </list>
@@ -83,10 +83,10 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
             messageHandlers: activationContext.GetServices<IInputChannel>(),
             logger: activationContext.GetRequiredService<ILoggerFactory>().CreateLogger(loggingCategory),
             configurator: activationContext.GetService<IClusterMemberLifetime>(),
-            configStorage: activationContext.GetService<IClusterConfigurationStorage<HttpEndPoint>>(),
+            configStorage: activationContext.GetService<IClusterConfigurationStorage<UriEndPoint>>(),
             httpHandlerFactory: activationContext.GetService<IHttpMessageHandlerFactory>(),
             metrics: activationContext.GetService<MetricsCollector>(),
-            announcer: activationContext.GetService<ClusterMemberAnnouncer<HttpEndPoint>>());
+            announcer: activationContext.GetService<ClusterMemberAnnouncer<UriEndPoint>>());
     }
 
     /// <summary>

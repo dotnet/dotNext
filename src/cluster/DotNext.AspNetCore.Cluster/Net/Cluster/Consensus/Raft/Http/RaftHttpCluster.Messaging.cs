@@ -128,7 +128,7 @@ internal partial class RaftHttpCluster : IOutputChannel
             {
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable)
+            catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.ServiceUnavailable)
             {
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);

@@ -11,12 +11,16 @@ using HttpEndPoint = Net.Http.HttpEndPoint;
 internal sealed class HttpEndPointConverter : TypeConverter
 {
     internal static void Register()
-        => TypeDescriptor.AddAttributes(typeof(DnsEndPoint), new TypeConverterAttribute(typeof(HttpEndPointConverter)));
+    {
+        var converter = new TypeConverterAttribute(typeof(HttpEndPointConverter));
+        TypeDescriptor.AddAttributes(typeof(DnsEndPoint), converter);
+        TypeDescriptor.AddAttributes(typeof(HttpEndPoint), converter);
+    }
 
     public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         => sourceType.IsOneOf(typeof(string));
 
-    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
+    public override HttpEndPoint? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
         => value is string str && HttpEndPoint.TryParse(str, out var result) ? result : throw new NotSupportedException();
 
     public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)

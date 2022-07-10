@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Connections;
 using static System.Buffers.Binary.BinaryPrimitives;
+using AddressFamily = System.Net.Sockets.AddressFamily;
 
 namespace DotNext.Net.Cluster;
 
@@ -58,6 +60,24 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         length = endPoint.Host.Length;
         port = endPoint.Port;
         family = (int)endPoint.AddressFamily;
+    }
+
+    private ClusterMemberId(Uri uri)
+    {
+        Span<byte> bytes = stackalloc byte[16];
+        WriteInt32LittleEndian(bytes, Span.BitwiseHashCode(uri.Scheme.AsSpan(), false));
+        WriteInt32LittleEndian(bytes.Slice(sizeof(int)), Span.BitwiseHashCode(uri.Host.AsSpan(), false));
+        WriteInt64LittleEndian(bytes.Slice(sizeof(long)), Span.BitwiseHashCode64(uri.PathAndQuery.AsSpan(), false));
+        address = new(bytes);
+
+        length = uri.AbsoluteUri.Length;
+        port = uri.Port;
+        family = uri.HostNameType switch
+        {
+            UriHostNameType.IPv4 => (int)AddressFamily.InterNetwork,
+            UriHostNameType.IPv6 => (int)AddressFamily.InterNetworkV6,
+            _ => (int)AddressFamily.Unspecified,
+        };
     }
 
     private ClusterMemberId(SocketAddress address)
@@ -146,6 +166,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         IPEndPoint ip => new(ip),
         HttpEndPoint http => new(http),
         DnsEndPoint dns => new(dns),
+        UriEndPoint uri => new(uri.Uri),
         _ => new(ep.Serialize())
     };
 

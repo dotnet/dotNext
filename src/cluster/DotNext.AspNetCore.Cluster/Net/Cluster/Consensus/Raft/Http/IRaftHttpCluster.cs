@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Connections;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Messaging;
-using HttpEndPoint = Net.Http.HttpEndPoint;
 
 /// <summary>
 /// Represents local view of Raft cluster built on top of ASP.NET Core infrastructure.
@@ -19,7 +20,7 @@ public interface IRaftHttpCluster : IRaftCluster, IMessageBus
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
-    Task<bool> AddMemberAsync(ClusterMemberId id, HttpEndPoint address, CancellationToken token = default);
+    Task<bool> AddMemberAsync(ClusterMemberId id, Uri address, CancellationToken token = default);
 
     /// <summary>
     /// Removes the member from the cluster.
@@ -41,7 +42,7 @@ public interface IRaftHttpCluster : IRaftCluster, IMessageBus
     /// <see langword="true"/> if the node has been removed from the cluster successfully;
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
-    Task<bool> RemoveMemberAsync(HttpEndPoint address, CancellationToken token = default);
+    Task<bool> RemoveMemberAsync(Uri address, CancellationToken token = default);
 
     /// <summary>
     /// Gets the identifier of the local member.
@@ -51,5 +52,5 @@ public interface IRaftHttpCluster : IRaftCluster, IMessageBus
     /// <summary>
     /// Gets the address of the local member.
     /// </summary>
-    HttpEndPoint LocalMemberAddress { get; }
+    Uri LocalMemberAddress { get; }
 }

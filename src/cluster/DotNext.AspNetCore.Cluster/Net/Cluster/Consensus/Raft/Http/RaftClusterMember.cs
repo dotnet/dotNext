@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.Versioning;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -20,22 +21,30 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private readonly Uri resourcePath;
     private readonly IHostingContext context;
     internal readonly ClusterMemberId Id;
-    internal readonly HttpEndPoint EndPoint;
+    internal readonly UriEndPoint EndPoint;
     private AtomicEnum<ClusterMemberStatus> status;
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private long nextIndex, fingerprint;
     internal IClientMetricsCollector? Metrics;
 
-    internal RaftClusterMember(IHostingContext context, HttpEndPoint remoteMember, Uri resourcePath, ClusterMemberId id)
-        : base(remoteMember.CreateUriBuilder().Uri, context.CreateHttpHandler(), true)
+    internal RaftClusterMember(IHostingContext context, UriEndPoint remoteMember, ClusterMemberId id)
+        : base(remoteMember.Uri, context.CreateHttpHandler(), true)
     {
-        this.resourcePath = resourcePath;
         this.context = context;
         status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
         EndPoint = remoteMember;
         Id = id;
+        resourcePath = new Uri(GetProtocolPath(remoteMember.Uri), UriKind.Relative);
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
+    }
+
+    internal static string GetProtocolPath(Uri uri)
+    {
+        const string defaultProtocolPath = "/cluster-consensus/raft";
+        return uri.GetComponents(UriComponents.Path, UriFormat.Unescaped) is { Length: > 0 } protocolPath
+                ? string.Concat("/", protocolPath)
+                : defaultProtocolPath;
     }
 
     event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
