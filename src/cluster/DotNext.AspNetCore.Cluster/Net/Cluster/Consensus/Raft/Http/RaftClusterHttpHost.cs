@@ -18,7 +18,6 @@ using Messaging;
 /// This class is useful when you want to host multiple Raft clusters inside of the same application.
 /// For instance, if you want to implement sharding.
 /// </remarks>
-[CLSCompliant(false)]
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
 {
@@ -90,6 +89,12 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     }
 
     /// <summary>
+    /// Gets relative URL path of Raft protocol handler.
+    /// </summary>
+    [CLSCompliant(false)]
+    public PathString Path => cluster.ProtocolPath;
+
+    /// <summary>
     /// Gets a local view of Raft cluster.
     /// </summary>
     public IRaftHttpCluster Cluster => cluster;
@@ -103,6 +108,7 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     /// </remarks>
     /// <param name="context">HTTP request context.</param>
     /// <returns>The task representing asynchronous dispatch.</returns>
+    [CLSCompliant(false)]
     public Task DispatchAsync(HttpContext context) => cluster.ProcessRequest(context);
 
     /// <summary>
