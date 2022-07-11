@@ -61,11 +61,7 @@ internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
     }
 
     public override int Read(Span<byte> buffer)
-    {
-        RemainingSequence.CopyTo(buffer, out var writtenCount);
-        position = sequence.GetPosition(writtenCount, position);
-        return writtenCount;
-    }
+        => RemainingSequence.CopyTo(buffer, out position);
 
     public override long Seek(long offset, SeekOrigin origin)
     {
