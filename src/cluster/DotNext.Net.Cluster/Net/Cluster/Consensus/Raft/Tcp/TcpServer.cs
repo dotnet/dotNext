@@ -86,7 +86,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
     {
         var clientAddress = remoteClient.RemoteEndPoint;
         var transport = new TcpStream(remoteClient, owns: true);
-        ProtocolStream protocol;
+        TcpProtocolStream protocol;
         CancellationTokenSource timeoutSource;
 
         // TLS handshake

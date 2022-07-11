@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -9,14 +8,12 @@ using Buffers;
 /// Provides encoding/decoding routines for transmitting Raft-specific
 /// RPC calls over stream-oriented network transports.
 /// </summary>
-internal sealed partial class ProtocolStream : Stream
+internal abstract partial class ProtocolStream : Stream
 {
     private const int FrameHeadersSize = sizeof(int) + sizeof(byte);
 
     private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long) + sizeof(long);
 
-    [SuppressMessage("Usage", "CA2213", Justification = "The objec doesn't own the stream")]
-    internal readonly Stream BaseStream;
     private readonly MemoryAllocator<byte> allocator;
     private MemoryOwner<byte> buffer;
 
@@ -24,37 +21,61 @@ internal sealed partial class ProtocolStream : Stream
     // for writer, bufferStart is a beginning of the frame
     private int bufferStart, bufferEnd;
 
-    internal ProtocolStream(Stream transport, MemoryAllocator<byte> allocator, int transmissionBlockSize)
+    internal ProtocolStream(MemoryAllocator<byte> allocator, int transmissionBlockSize)
     {
         Debug.Assert(transmissionBlockSize > 0);
-        Debug.Assert(transport is not null);
 
         buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
         this.allocator = allocator;
-        BaseStream = transport;
+    }
+
+    private protected abstract ValueTask WriteToTransportAsync(ReadOnlyMemory<byte> buffer, CancellationToken token);
+
+    private protected virtual void WriteToTransport(ReadOnlySpan<byte> buffer)
+    {
+        using var localBuffer = buffer.Copy(allocator);
+        using var timeoutTracker = new CancellationTokenSource(WriteTimeout);
+        using (var task = WriteToTransportAsync(localBuffer.Memory, timeoutTracker.Token).AsTask())
+        {
+            task.Wait();
+        }
+    }
+
+    private protected abstract ValueTask<int> ReadFromTransportAsync(Memory<byte> buffer, CancellationToken token);
+
+    private protected virtual int ReadFromTransport(Span<byte> buffer)
+    {
+        int result;
+        using var localBuffer = allocator.Invoke(buffer.Length, exactSize: true);
+        using (var timeoutTracker = new CancellationTokenSource(ReadTimeout))
+        using (var task = ReadFromTransportAsync(localBuffer.Memory, timeoutTracker.Token).AsTask())
+        {
+            task.Wait();
+            result = task.Result;
+        }
+
+        localBuffer.Span.CopyTo(buffer);
+        return result;
+    }
+
+    private protected abstract ValueTask<int> ReadFromTransportAsync(int minimumSize, Memory<byte> buffer, CancellationToken token);
+
+    private protected virtual int ReadFromTransport(int minimumSize, Span<byte> buffer)
+    {
+        int result;
+        using var localBuffer = allocator.Invoke(buffer.Length, exactSize: true);
+        using (var timeoutTracker = new CancellationTokenSource(ReadTimeout))
+        using (var task = ReadFromTransportAsync(minimumSize, localBuffer.Memory, timeoutTracker.Token).AsTask())
+        {
+            task.Wait();
+            result = task.Result;
+        }
+
+        localBuffer.Span.CopyTo(buffer);
+        return result;
     }
 
     private int BufferLength => buffer.Length;
-
-    public override bool CanRead => BaseStream.CanRead;
-
-    public override bool CanWrite => BaseStream.CanWrite;
-
-    public override bool CanSeek => BaseStream.CanSeek;
-
-    public override bool CanTimeout => BaseStream.CanTimeout;
-
-    public override long Position
-    {
-        get => BaseStream.Position;
-        set => BaseStream.Position = value;
-    }
-
-    public override void SetLength(long value) => BaseStream.SetLength(value);
-
-    public override long Seek(long offset, SeekOrigin origin) => BaseStream.Seek(offset, origin);
-
-    public override long Length => BaseStream.Length;
 
     internal void Reset()
     {
