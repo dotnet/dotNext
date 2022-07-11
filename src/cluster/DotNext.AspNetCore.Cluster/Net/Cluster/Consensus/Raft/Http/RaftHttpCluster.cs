@@ -103,7 +103,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
         result.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
         result.DefaultVersionPolicy = protocolVersionPolicy;
-        result.IsRemote = !Equals(result.BaseAddress, localNode);
+        result.IsRemote = EndPointComparer.Equals(result.EndPoint, localNode) is false;
         result.SetProtocolVersion(protocolVersion);
         return result;
     }
@@ -180,7 +180,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     {
         foreach (var member in Members)
         {
-            if (Equals(member.EndPoint, peer))
+            if (EndPointComparer.Equals(member.EndPoint, peer))
                 return member;
         }
 
