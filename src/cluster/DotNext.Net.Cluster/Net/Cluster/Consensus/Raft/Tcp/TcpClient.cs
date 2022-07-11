@@ -16,7 +16,6 @@ using IClusterConfiguration = Membership.IClusterConfiguration;
 internal sealed class TcpClient : RaftClusterMember, ITcpTransport
 {
     private readonly AsyncExclusiveLock accessLock;
-    private readonly IPEndPoint address;
     private readonly MemoryAllocator<byte> allocator;
     private readonly int transmissionBlockSize;
     private readonly byte ttl;
@@ -26,7 +25,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
     private ProtocolStream? protocol;
     private MemoryOwner<byte> buffer;
 
-    internal TcpClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, MemoryAllocator<byte> allocator)
+    internal TcpClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, MemoryAllocator<byte> allocator)
         : base(localMember, endPoint, id)
     {
         accessLock = new();
@@ -34,7 +33,6 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
         ttl = ITcpTransport.DefaultTtl;
         linger = ITcpTransport.CreateDefaultLingerOption();
-        address = endPoint;
         connectTimeout = TimeSpan.FromSeconds(1);
     }
 
@@ -68,14 +66,14 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         init => linger = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    IPEndPoint INetworkTransport.Address => address;
+    EndPoint INetworkTransport.Address => EndPoint;
 
     private async Task ConnectAsync(CancellationToken token)
     {
         var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
         try
         {
-            await socket.ConnectAsync(address, token).ConfigureAwait(false);
+            await socket.ConnectAsync(EndPoint, token).ConfigureAwait(false);
         }
         catch
         {
@@ -170,7 +168,7 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         }
         catch (Exception e)
         {
-            Logger.MemberUnavailable(address, e);
+            Logger.MemberUnavailable(EndPoint, e);
             ChangeStatus(ClusterMemberStatus.Unavailable);
 
             // detect broken socket

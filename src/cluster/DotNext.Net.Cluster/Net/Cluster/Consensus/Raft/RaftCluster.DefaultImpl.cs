@@ -61,10 +61,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     private readonly ImmutableDictionary<string, string> metadata;
-    private readonly Func<ILocalMember, IPEndPoint, ClusterMemberId, IClientMetricsCollector?, RaftClusterMember> clientFactory;
+    private readonly Func<ILocalMember, EndPoint, ClusterMemberId, IClientMetricsCollector?, RaftClusterMember> clientFactory;
     private readonly Func<ILocalMember, IServer> serverFactory;
     private readonly MemoryAllocator<byte>? allocator;
-    private readonly ClusterMemberAnnouncer<IPEndPoint>? announcer;
+    private readonly ClusterMemberAnnouncer<EndPoint>? announcer;
     private readonly int warmupRounds;
     private readonly bool coldStart;
     private readonly ClusterConfiguration cachedConfig;
@@ -95,10 +95,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <summary>
     /// Gets the address of the local member.
     /// </summary>
-    public IPEndPoint LocalMemberAddress { get; }
+    public EndPoint LocalMemberAddress { get; }
 
     /// <inheritdoc />
-    protected sealed override IClusterConfigurationStorage<IPEndPoint> ConfigurationStorage { get; }
+    protected sealed override IClusterConfigurationStorage<EndPoint> ConfigurationStorage { get; }
 
     /// <summary>
     /// Starts serving local member.
@@ -150,7 +150,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         return base.StopAsync(token);
     }
 
-    private RaftClusterMember CreateMember(ClusterMemberId id, IPEndPoint address)
+    private RaftClusterMember CreateMember(ClusterMemberId id, EndPoint address)
         => clientFactory.Invoke(this, address, id, Metrics as IClientMetricsCollector);
 
     /// <summary>
@@ -164,7 +164,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
-    public async Task<bool> AddMemberAsync(ClusterMemberId id, IPEndPoint address, CancellationToken token = default)
+    public async Task<bool> AddMemberAsync(ClusterMemberId id, EndPoint address, CancellationToken token = default)
     {
         using var member = CreateMember(id, address);
         member.IsRemote = EndPointComparer.Equals(LocalMemberAddress, address) is false;
@@ -180,7 +180,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <see langword="true"/> if the node has been removed from the cluster successfully;
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
-    public Task<bool> RemoveMemberAsync(IPEndPoint address, CancellationToken token = default)
+    public Task<bool> RemoveMemberAsync(EndPoint address, CancellationToken token = default)
     {
         foreach (var member in Members)
         {

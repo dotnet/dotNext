@@ -198,7 +198,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected static MemoryAllocator<byte> DefaultAllocator => ArrayPool<byte>.Shared.ToAllocator();
 
-        private protected delegate IServer ServerFactory(ILocalMember localMember, IPEndPoint address, TimeSpan timeout);
+        private protected delegate IServer ServerFactory(ILocalMember localMember, EndPoint address, TimeSpan timeout);
         private protected delegate RaftClusterMember ClientFactory(IPEndPoint address, ILocalMember localMember, TimeSpan timeout);
 
         private protected async Task RequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory)

@@ -45,7 +45,7 @@ internal sealed class UdpServer : UdpSocket, IServer
     private readonly Action<object?, CancellationToken> cancellationHandler;
     private readonly TimeSpan receiveTimeout;
 
-    internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
+    internal UdpServer(EndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
         : base(address, backlog, allocator, loggerFactory)
     {
         channels = new(backlog);

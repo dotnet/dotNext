@@ -44,10 +44,10 @@ internal sealed class UdpClient : UdpSocket, IClient
     // I/O management
     private readonly long applicationId;
     private readonly ChannelPool<Channel> channels;
-    private readonly IPEndPoint localEndPoint;
+    private readonly EndPoint localEndPoint;
     private long streamNumber;
 
-    internal UdpClient(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
+    internal UdpClient(EndPoint localEndPoint, EndPoint remoteEndPoint, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
         : base(remoteEndPoint, backlog, allocator, loggerFactory)
     {
         channels = new(backlog);

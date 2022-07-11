@@ -13,7 +13,7 @@ using TransportServices.ConnectionOriented;
 internal sealed class TcpServer : Disposable, IServer, ITcpTransport
 {
     private readonly Socket socket;
-    private readonly IPEndPoint address;
+    private readonly EndPoint address;
     private readonly int backlog, transmissionBlockSize;
     private readonly byte ttl;
     private readonly CancellationTokenSource transmissionState;
@@ -26,7 +26,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
     private readonly int gracefulShutdownTimeout;
     private volatile int connections;
 
-    internal TcpServer(IPEndPoint address, int backlog, ILocalMember localMember, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
+    internal TcpServer(EndPoint address, int backlog, ILocalMember localMember, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
     {
         socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         this.backlog = backlog;
@@ -305,7 +305,7 @@ internal sealed class TcpServer : Disposable, IServer, ITcpTransport
 
     private bool NoMoreConnections() => connections <= 0;
 
-    IPEndPoint INetworkTransport.Address => address;
+    EndPoint INetworkTransport.Address => address;
 
     protected override void Dispose(bool disposing)
     {

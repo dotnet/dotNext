@@ -17,7 +17,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     private static readonly IPEndPoint AnyRemoteEndpoint = new(IPAddress.Any, 0);
 
     private protected readonly MemoryAllocator<byte> allocator;
-    internal readonly IPEndPoint Address;
+    internal readonly EndPoint Address;
     private protected readonly ILogger logger;
     private readonly CancellationTokenSource lifecycleControl;
     private readonly int listeners;
@@ -25,7 +25,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     // I/O management
     private readonly int datagramSize;
 
-    private protected UdpSocket(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
+    private protected UdpSocket(EndPoint address, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
         : base(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
     {
         ExclusiveAddressUse = true;
@@ -41,7 +41,7 @@ internal abstract class UdpSocket : Socket, INetworkTransport
 
     private protected CancellationToken LifecycleToken { get; } // cached to avoid ObjectDisposedException
 
-    IPEndPoint INetworkTransport.Address => Address;
+    EndPoint INetworkTransport.Address => Address;
 
     internal static int ValidateDatagramSize(int value)
         => value.IsBetween(MinDatagramSize, MaxDatagramSize, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
