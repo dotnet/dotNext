@@ -20,6 +20,7 @@ internal sealed class GenericServer : Server
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private volatile CancellationTokenSource? transmissionState;
+    private volatile Task? listenerTask;
 
     internal GenericServer(EndPoint address, IConnectionListenerFactory listenerFactory, ILocalMember localMember, MemoryAllocator<byte> defaultAllocator, ILoggerFactory loggerFactory)
         : base(address, localMember, loggerFactory)
@@ -105,7 +106,7 @@ internal sealed class GenericServer : Server
         }
     }
 
-    private async void Listen(IConnectionListener listener)
+    private async Task Listen(IConnectionListener listener)
     {
         await using (listener.ConfigureAwait(false))
         {
@@ -135,23 +136,27 @@ internal sealed class GenericServer : Server
     }
 
     public override async ValueTask StartAsync(CancellationToken token)
-        => Listen(await factory.BindAsync(Address, token).ConfigureAwait(false));
+        => listenerTask = Listen(await factory.BindAsync(Address, token).ConfigureAwait(false));
+
+    private void Cleanup()
+    {
+        using var tokenSource = Interlocked.Exchange(ref transmissionState, null);
+        tokenSource?.Cancel(false);
+    }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            var tokenSource = Interlocked.Exchange(ref transmissionState, null);
-            try
-            {
-                tokenSource?.Cancel(false);
-            }
-            finally
-            {
-                tokenSource?.Dispose();
-            }
+            Cleanup();
         }
 
         base.Dispose(disposing);
+    }
+
+    protected override ValueTask DisposeAsyncCore()
+    {
+        Cleanup();
+        return new(listenerTask ?? Task.CompletedTask);
     }
 }

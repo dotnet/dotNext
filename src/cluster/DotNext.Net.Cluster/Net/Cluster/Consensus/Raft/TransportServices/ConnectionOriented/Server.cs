@@ -124,4 +124,6 @@ internal abstract class Server : Disposable, IServer
         protocol.Reset();
         await protocol.WriteResponseAsync(in response, token).ConfigureAwait(false);
     }
+
+    public new ValueTask DisposeAsync() => base.DisposeAsync();
 }

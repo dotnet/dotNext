@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Logging;
@@ -19,11 +20,13 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     private protected readonly MemoryAllocator<byte> allocator;
     internal readonly EndPoint Address;
     private protected readonly ILogger logger;
-    private readonly CancellationTokenSource lifecycleControl;
     private readonly int listeners;
 
     // I/O management
     private readonly int datagramSize;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
+    private volatile CancellationTokenSource? lifecycleControl;
 
     private protected UdpSocket(EndPoint address, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
         : base(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
@@ -206,10 +209,15 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     {
         if (disposing)
         {
-            if (!lifecycleControl.IsCancellationRequested)
-                lifecycleControl.Cancel();
-
-            lifecycleControl.Dispose();
+            var tokenSource = Interlocked.Exchange(ref lifecycleControl, null);
+            try
+            {
+                tokenSource?.Cancel(false);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+            }
         }
 
         base.Dispose(disposing);

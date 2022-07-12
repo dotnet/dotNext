@@ -207,7 +207,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             var member = new LocalMember();
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
 
             //prepare client
@@ -239,7 +239,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             var member = new LocalMember();
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
             //prepare client
             using var client = clientFactory(serverAddr, member, timeout);
@@ -265,7 +265,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //prepare server
             var member = new LocalMember(smallAmountOfMetadata);
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
 
             //prepare client
@@ -290,7 +290,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
 
             //prepare client
@@ -342,7 +342,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
 
             //prepare client
@@ -365,7 +365,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
 
             //prepare client
@@ -428,7 +428,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
 
             //prepare client
@@ -447,7 +447,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(member, serverAddr, timeout);
+            await using var server = serverFactory(member, serverAddr, timeout);
             await server.StartAsync(CancellationToken.None);
 
             //prepare client

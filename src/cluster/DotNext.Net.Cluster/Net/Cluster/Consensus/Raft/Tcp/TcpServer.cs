@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 using Buffers;
 using TransportServices;
 using TransportServices.ConnectionOriented;
+using static Reflection.TaskType;
 
 internal sealed class TcpServer : Server, ITcpTransport
 {
@@ -20,6 +21,7 @@ internal sealed class TcpServer : Server, ITcpTransport
     private readonly LingerOption linger;
     private readonly MemoryAllocator<byte> allocator;
     private readonly int gracefulShutdownTimeout;
+    private readonly TaskCompletionSource noPendingConnectionsEvent;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private volatile CancellationTokenSource? transmissionState;
@@ -37,6 +39,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         gracefulShutdownTimeout = 1000;
         ttl = ITcpTransport.DefaultTtl;
         transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
+        noPendingConnectionsEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     public override TimeSpan ReceiveTimeout
@@ -155,7 +158,8 @@ internal sealed class TcpServer : Server, ITcpTransport
             (protocol.BaseStream as SslStream)?.Dispose();
             timeoutSource.Dispose();
             transport.Close(GracefulShutdownTimeout);
-            Interlocked.Decrement(ref connections);
+            if (Interlocked.Decrement(ref connections) <= 0 && IsDisposingOrDisposed)
+                noPendingConnectionsEvent.TrySetResult();
         }
     }
 
@@ -221,27 +225,42 @@ internal sealed class TcpServer : Server, ITcpTransport
         return result;
     }
 
-    private bool NoMoreConnections() => connections <= 0;
+    private void Cleanup()
+    {
+        var tokenSource = Interlocked.Exchange(ref transmissionState, null);
+        try
+        {
+            tokenSource?.Cancel(false);
+        }
+        finally
+        {
+            socket.Dispose();
+            tokenSource?.Dispose();
+        }
+    }
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            var tokenSource = Interlocked.Exchange(ref transmissionState, null);
-            try
-            {
-                tokenSource?.Cancel(false);
-            }
-            finally
-            {
-                socket.Dispose();
-                tokenSource?.Dispose();
-            }
-
-            if (!SpinWait.SpinUntil(NoMoreConnections, GracefulShutdownTimeout))
+            Cleanup();
+            if (!SpinWait.SpinUntil(noPendingConnectionsEvent.Task.GetIsCompletedGetter(), GracefulShutdownTimeout))
                 logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
         }
 
         base.Dispose(disposing);
+    }
+
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        Cleanup();
+        try
+        {
+            await noPendingConnectionsEvent.Task.WaitAsync(TimeSpan.FromMilliseconds(GracefulShutdownTimeout)).ConfigureAwait(false);
+        }
+        catch (TimeoutException)
+        {
+            logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
+        }
     }
 }

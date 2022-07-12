@@ -143,11 +143,11 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// </summary>
     /// <param name="token">The token that can be used to cancel shutdown process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public override Task StopAsync(CancellationToken token = default)
+    public override async Task StopAsync(CancellationToken token = default)
     {
-        server?.Dispose();
+        await (server?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
         server = null;
-        return base.StopAsync(token);
+        await base.StopAsync(token).ConfigureAwait(false);
     }
 
     private RaftClusterMember CreateMember(ClusterMemberId id, EndPoint address)
@@ -301,14 +301,6 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     Task<long?> ILocalMember.SynchronizeAsync(long commitIndex, CancellationToken token)
         => SynchronizeAsync(commitIndex, token);
 
-    private void Cleanup()
-    {
-        server?.Dispose();
-        server = null;
-
-        cachedConfig.Dispose();
-    }
-
     /// <summary>
     /// Releases managed and unmanaged resources associated with this object.
     /// </summary>
@@ -316,7 +308,11 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     protected override void Dispose(bool disposing)
     {
         if (disposing)
-            Cleanup();
+        {
+            server?.Dispose();
+            server = null;
+            cachedConfig.Dispose();
+        }
 
         base.Dispose(disposing);
     }
@@ -325,6 +321,6 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     protected override async ValueTask DisposeAsyncCore()
     {
         await base.DisposeAsyncCore().ConfigureAwait(false);
-        Cleanup();
+        cachedConfig.Dispose();
     }
 }

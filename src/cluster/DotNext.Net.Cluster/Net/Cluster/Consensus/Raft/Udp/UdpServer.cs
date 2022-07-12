@@ -120,8 +120,9 @@ internal sealed class UdpServer : UdpSocket, IServer
         return result;
     }
 
-    private void Cleanup(bool disposing)
+    protected override void Dispose(bool disposing)
     {
+        base.Dispose(disposing);
         if (disposing)
         {
             channels.ClearAndDestroyChannels(LifecycleToken);
@@ -129,15 +130,18 @@ internal sealed class UdpServer : UdpSocket, IServer
         }
     }
 
-    protected override void Dispose(bool disposing)
+    public ValueTask DisposeAsync()
     {
+        var result = ValueTask.CompletedTask;
         try
         {
-            base.Dispose(disposing);
+            Dispose();
         }
-        finally
+        catch (Exception e)
         {
-            Cleanup(disposing);
+            result = ValueTask.FromException(e);
         }
+
+        return result;
     }
 }
