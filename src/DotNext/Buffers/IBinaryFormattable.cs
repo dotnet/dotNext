@@ -117,7 +117,7 @@ public interface IBinaryFormattable<TSelf>
         static TSelf ParseSlow(in ReadOnlySequence<byte> input)
         {
             using var buffer = (uint)TSelf.Size <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[TSelf.Size] : new MemoryRental<byte>(TSelf.Size);
-            input.CopyTo(buffer.Span, out int writtenCount);
+            input.CopyTo(buffer.Span, out var writtenCount);
             return Parse(buffer.Span.Slice(0, writtenCount));
         }
     }

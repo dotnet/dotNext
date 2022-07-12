@@ -129,11 +129,11 @@ public struct SequenceReader : IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
     public void Read(Span<byte> output)
     {
-        SequencePosition newPosition;
-        if (RemainingSequence.CopyTo(output, out newPosition) != output.Length)
+        RemainingSequence.CopyTo(output, out var writtenCount);
+        if (writtenCount != output.Length)
             throw new EndOfStreamException();
 
-        position = newPosition;
+        position = sequence.GetPosition(writtenCount, position);
     }
 
     /// <summary>

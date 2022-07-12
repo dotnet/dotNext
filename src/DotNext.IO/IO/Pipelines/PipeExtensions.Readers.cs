@@ -380,7 +380,9 @@ public static partial class PipeExtensions
         static unsafe T Read(ReadOnlySequence<byte> sequence, out SequencePosition consumed)
         {
             Unsafe.SkipInit(out T result);
-            return sequence.CopyTo(Span.AsBytes(ref result), out consumed) == sizeof(T) ? result : throw new EndOfStreamException();
+            sequence.CopyTo(Span.AsBytes(ref result), out var count);
+            consumed = sequence.GetPosition(count);
+            return count == sizeof(T) ? result : throw new EndOfStreamException();
         }
     }
 
