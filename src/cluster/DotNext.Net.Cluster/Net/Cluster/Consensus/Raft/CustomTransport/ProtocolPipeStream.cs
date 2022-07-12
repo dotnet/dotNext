@@ -55,8 +55,8 @@ internal sealed class ProtocolPipeStream : ProtocolStream
     private static async ValueTask<int> ReadAsync(PipeReader reader, Memory<byte> destination, CancellationToken token)
     {
         var result = await reader.ReadAsync(token).ConfigureAwait(false);
-        var readCount = result.Buffer.CopyTo(destination.Span, out SequencePosition position);
-        reader.AdvanceTo(position);
+        result.Buffer.CopyTo(destination.Span, out var readCount);
+        reader.AdvanceTo(result.Buffer.GetPosition(readCount));
         if (result.IsCanceled)
             throw new OperationCanceledException(token.IsCancellationRequested ? token : new(true));
 
@@ -74,9 +74,11 @@ internal sealed class ProtocolPipeStream : ProtocolStream
         var position = result.Buffer.Start;
         try
         {
-            readCount = result.Buffer.CopyTo(destination.Span, out position);
+            result.Buffer.CopyTo(destination.Span, out readCount);
             if (minimumSize > readCount)
                 throw new EndOfStreamException();
+
+            position = result.Buffer.GetPosition(readCount, position);
         }
         finally
         {
