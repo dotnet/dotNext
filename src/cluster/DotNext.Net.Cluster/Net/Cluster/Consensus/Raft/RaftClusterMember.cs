@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -25,6 +26,9 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 
     private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id)
     {
+        Debug.Assert(localMember is not null);
+        Debug.Assert(endPoint is not null);
+
         this.localMember = localMember;
         EndPoint = endPoint;
         status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);

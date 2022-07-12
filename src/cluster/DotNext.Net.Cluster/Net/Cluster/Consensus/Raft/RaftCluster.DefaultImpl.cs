@@ -131,7 +131,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         pollingLoopTask = ConfigurationPollingLoop();
         await base.StartAsync(token).ConfigureAwait(false);
         server = serverFactory(this);
-        server.Start();
+        await server.StartAsync(token).ConfigureAwait(false);
         StartFollowing();
 
         if (!coldStart && announcer is not null)

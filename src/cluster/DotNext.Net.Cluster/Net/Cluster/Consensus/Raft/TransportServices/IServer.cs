@@ -7,5 +7,5 @@ internal interface IServer : INetworkTransport
 {
     TimeSpan ReceiveTimeout { get; init; }
 
-    void Start();
+    ValueTask StartAsync(CancellationToken token);
 }

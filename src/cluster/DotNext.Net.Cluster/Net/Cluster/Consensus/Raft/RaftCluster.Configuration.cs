@@ -10,6 +10,7 @@ using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFa
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
+using CustomTransport;
 using Membership;
 using Net.Security;
 using Tcp;
@@ -221,8 +222,8 @@ public partial class RaftCluster
         /// Initializes a new custom transport settings.
         /// </summary>
         /// <param name="localNodeHostAddress">The address used to listen requests to the local node.</param>
-        /// <param name="serverConnFactory"></param>
-        /// <param name="clientConnFactory"></param>
+        /// <param name="serverConnFactory">The connection factory that is used to listen incoming connections.</param>
+        /// <param name="clientConnFactory">The connection factory that is used to produce outbound connections.</param>
         /// <exception cref="ArgumentNullException"><paramref name="localNodeHostAddress"/> or <paramref name="serverConnFactory"/> or <paramref name="clientConnFactory"/> is <see langword="null"/>.</exception>
         public CustomTransportConfiguration(EndPoint localNodeHostAddress, IConnectionListenerFactory serverConnFactory, IConnectionFactory clientConnFactory)
         {
@@ -251,10 +252,11 @@ public partial class RaftCluster
         /// <inheritdoc />
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
-        internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
-            => null;
+        internal override GenericClient CreateMemberClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+            => new(localMember, endPoint, id, clientFactory, MemoryAllocator);
 
-        internal override IServer CreateServer(ILocalMember localMember) => null;
+        internal override GenericServer CreateServer(ILocalMember localMember)
+            => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory);
     }
 
     /// <summary>

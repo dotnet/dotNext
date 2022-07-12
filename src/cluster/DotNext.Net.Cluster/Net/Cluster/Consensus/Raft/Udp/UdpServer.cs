@@ -96,10 +96,28 @@ internal sealed class UdpServer : UdpSocket, IServer
         }
     }
 
-    public new void Start()
+    public ValueTask StartAsync(CancellationToken token)
     {
-        Bind(Address);
-        base.Start();
+        ValueTask result;
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            result = ValueTask.CompletedTask;
+            try
+            {
+                Bind(Address);
+                Start();
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
+        }
+
+        return result;
     }
 
     private void Cleanup(bool disposing)
