@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -44,6 +45,10 @@ public static partial class ConfigurationExtensions
                 case DnsEndPoint dns:
                     targetHost = dns.Host;
                     port = dns.Port;
+                    break;
+                case UriEndPoint uri:
+                    targetHost = uri.Uri.Host;
+                    port = uri.Uri.Port;
                     break;
                 default:
                     // endpoint type is unknown so respond to the client without redirection
