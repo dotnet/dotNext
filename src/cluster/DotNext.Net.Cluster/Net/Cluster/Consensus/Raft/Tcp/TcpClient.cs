@@ -74,7 +74,6 @@ internal sealed class TcpClient : Client, ITcpTransport
     private readonly int transmissionBlockSize;
     private readonly byte ttl;
     private readonly LingerOption linger;
-    private readonly TimeSpan connectTimeout;
 
     internal TcpClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, MemoryAllocator<byte> allocator)
         : base(localMember, endPoint, id)
@@ -85,13 +84,6 @@ internal sealed class TcpClient : Client, ITcpTransport
         transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
         ttl = ITcpTransport.DefaultTtl;
         linger = ITcpTransport.CreateDefaultLingerOption();
-        connectTimeout = TimeSpan.FromSeconds(1);
-    }
-
-    internal TimeSpan ConnectTimeout
-    {
-        get => connectTimeout;
-        init => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     public SslClientAuthenticationOptions? SslOptions

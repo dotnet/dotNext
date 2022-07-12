@@ -120,11 +120,7 @@ internal abstract partial class ProtocolStream : Stream
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            buffer.Dispose();
-        }
-
+        buffer.Dispose();
         base.Dispose(disposing);
     }
 }

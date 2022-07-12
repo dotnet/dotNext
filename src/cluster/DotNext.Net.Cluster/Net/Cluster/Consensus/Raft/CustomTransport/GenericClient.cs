@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Connections.Features;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.CustomTransport;
@@ -22,7 +23,9 @@ internal sealed class GenericClient : Client
             Debug.Assert(context is not null);
 
             var bufferSize = context.Transport.Output.GetSpan().Length;
-            var allocator = context.Features.Get<MemoryAllocator<byte>>() ?? defaultAllocator;
+            var allocator = context.Features.Get<MemoryAllocator<byte>>()
+                ?? context.Features.Get<IMemoryPoolFeature>()?.MemoryPool?.ToAllocator()
+                ?? defaultAllocator;
             buffer = allocator(bufferSize);
             transport = context;
             protocol = new ProtocolPipeStream(context.Transport, allocator, bufferSize);
@@ -76,5 +79,9 @@ internal sealed class GenericClient : Client
     }
 
     private protected override async ValueTask<IConnectionContext> ConnectAsync(CancellationToken token)
-        => new GenericConnectionContext(await factory.ConnectAsync(EndPoint, token).ConfigureAwait(false), defaultAllocator);
+    {
+        // connection has separated timeout
+        using var connectDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
+        return new GenericConnectionContext(await factory.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false), defaultAllocator);
+    }
 }

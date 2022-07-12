@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.Extensions.Logging;
 using Debug = System.Diagnostics.Debug;
 
@@ -44,7 +45,10 @@ internal sealed class GenericServer : Server
 
         // determine transmission size
         var transmissionSize = connection.Transport.Output.GetSpan().Length;
-        var protocol = new ProtocolPipeStream(connection.Transport, connection.Features.Get<MemoryAllocator<byte>>() ?? defaultAllocator, transmissionSize)
+        var allocator = connection.Features.Get<MemoryAllocator<byte>>()
+            ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool?.ToAllocator()
+            ?? defaultAllocator;
+        var protocol = new ProtocolPipeStream(connection.Transport, allocator, transmissionSize)
         {
             WriteTimeout = (int)ReceiveTimeout.TotalMilliseconds,
             ReadTimeout = (int)ReceiveTimeout.TotalMilliseconds,

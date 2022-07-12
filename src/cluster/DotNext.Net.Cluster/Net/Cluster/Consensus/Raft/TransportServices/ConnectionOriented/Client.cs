@@ -17,12 +17,20 @@ internal abstract class Client : RaftClusterMember
     }
 
     private readonly AsyncExclusiveLock accessLock;
+    private readonly TimeSpan connectTimeout;
     private IConnectionContext? context;
 
     private protected Client(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id)
         : base(localMember, endPoint, id)
     {
         accessLock = new();
+        connectTimeout = TimeSpan.FromSeconds(1);
+    }
+
+    internal TimeSpan ConnectTimeout
+    {
+        get => connectTimeout;
+        init => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     private protected abstract ValueTask<IConnectionContext> ConnectAsync(CancellationToken token);

@@ -208,15 +208,21 @@ public partial class RaftCluster
         internal abstract IServer CreateServer(ILocalMember localMember);
     }
 
+    private interface IConnectionOrientedTransportConfiguration : IClusterMemberConfiguration
+    {
+        TimeSpan ConnectTimeout { get; set; }
+    }
+
     /// <summary>
     /// Provides configuration of cluster node whose communication is based on custom network transport.
     /// </summary>
     [CLSCompliant(false)]
-    public sealed class CustomTransportConfiguration : NodeConfiguration, IClusterMemberConfiguration
+    public sealed class CustomTransportConfiguration : NodeConfiguration, IConnectionOrientedTransportConfiguration
     {
         private readonly IConnectionListenerFactory serverFactory;
         private readonly IConnectionFactory clientFactory;
         private readonly IEqualityComparer<EndPoint>? endPointComparer;
+        private TimeSpan? connectTimeout;
 
         /// <summary>
         /// Initializes a new custom transport settings.
@@ -236,6 +242,15 @@ public partial class RaftCluster
             HostEndPoint = localNodeHostAddress;
         }
 
+        /// <summary>
+        /// Gets or sets TCP connection timeout, in milliseconds.
+        /// </summary>
+        public TimeSpan ConnectTimeout
+        {
+            get => connectTimeout ?? RequestTimeout;
+            set => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
         /// <inheritdoc />
         public override EndPoint HostEndPoint { get; }
 
@@ -253,10 +268,10 @@ public partial class RaftCluster
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
         internal override GenericClient CreateMemberClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
-            => new(localMember, endPoint, id, clientFactory, MemoryAllocator);
+            => new(localMember, endPoint, id, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
 
         internal override GenericServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory);
+            => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory) { ReceiveTimeout = RequestTimeout };
     }
 
     /// <summary>
@@ -438,7 +453,7 @@ public partial class RaftCluster
     /// <summary>
     /// Represents configuration of the local cluster node that relies on TCP transport.
     /// </summary>
-    public sealed class TcpConfiguration : BuiltInTransportConfiguration
+    public sealed class TcpConfiguration : BuiltInTransportConfiguration, IConnectionOrientedTransportConfiguration
     {
         private int transmissionBlockSize;
         private TimeSpan? gracefulShutdown, connectTimeout;

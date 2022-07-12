@@ -199,7 +199,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private protected static MemoryAllocator<byte> DefaultAllocator => ArrayPool<byte>.Shared.ToAllocator();
 
         private protected delegate IServer ServerFactory(ILocalMember localMember, EndPoint address, TimeSpan timeout);
-        private protected delegate RaftClusterMember ClientFactory(IPEndPoint address, ILocalMember localMember, TimeSpan timeout);
+        private protected delegate RaftClusterMember ClientFactory(EndPoint address, ILocalMember localMember, TimeSpan timeout);
 
         private protected async Task RequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory)
         {
@@ -233,7 +233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             Equal(43L, result.Term);
         }
 
-        private protected async Task StressTestTest(ServerFactory serverFactory, ClientFactory clientFactory)
+        private protected async Task StressTestCore(ServerFactory serverFactory, ClientFactory clientFactory)
         {
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
@@ -453,6 +453,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //prepare client
             using var client = clientFactory(serverAddr, member, timeout);
             Equal(42L, await client.As<IRaftClusterMember>().SynchronizeAsync(long.MaxValue, CancellationToken.None));
+        }
+
+        private protected async Task LeadershipCore(Func<int, bool, RaftCluster> clusterFactory)
+        {
+            // first node - cold start
+            await using var host1 = clusterFactory(3267, true);
+            var listener1 = new LeaderChangedEvent();
+            host1.LeaderChanged += listener1.OnLeaderChanged;
+            await host1.StartAsync();
+            True(host1.Readiness.IsCompletedSuccessfully);
+
+            // two nodes in frozen state
+            await using var host2 = clusterFactory(3268, false);
+            await host2.StartAsync();
+
+            await using var host3 = clusterFactory(3269, false);
+            await host3.StartAsync();
+
+            await listener1.Result.WaitAsync(DefaultTimeout);
+            Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
+
+            NotNull(host1.Leader);
+
+            // force replication to renew the lease
+            await host1.ForceReplicationAsync();
+            NotNull(host1.Lease);
+            False(host1.Lease.Token.IsCancellationRequested);
+            False(host1.LeadershipToken.IsCancellationRequested);
+
+            // add two nodes to the cluster
+            True(await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress));
+            await host2.Readiness.WaitAsync(DefaultTimeout);
+
+            True(await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress));
+            await host3.Readiness.WaitAsync(DefaultTimeout);
+
+            Equal(host1.Leader.EndPoint, host2.Leader.EndPoint);
+            Equal(host1.Leader.EndPoint, host3.Leader.EndPoint);
+
+            await host3.StopAsync();
+            await host2.StopAsync();
+            await host1.StopAsync();
         }
     }
 }

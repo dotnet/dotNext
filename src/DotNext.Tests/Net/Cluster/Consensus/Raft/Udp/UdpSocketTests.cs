@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DontFragment = false
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return RequestResponseTest(CreateServer, CreateClient);
@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
-            return StressTestTest(CreateServer, CreateClient);
+            return StressTestCore(CreateServer, CreateClient);
         }
 
         [Theory]
