@@ -576,6 +576,8 @@ public class QueuedSynchronizer : Disposable
         {
             DrainWaitQueue(first, &TrySetException, e);
         }
+
+        first = last = null;
     }
 
     private void Dispose(bool disposing, Exception? reason)

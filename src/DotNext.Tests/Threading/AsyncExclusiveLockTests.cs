@@ -128,15 +128,16 @@ namespace DotNext.Threading
         [Fact]
         public static async Task StealLock()
         {
+            const string reason = "Hello, world!";
             using var l = new AsyncExclusiveLock();
             True(await l.TryAcquireAsync(DefaultTimeout));
 
             var task1 = l.TryAcquireAsync(DefaultTimeout).AsTask();
             var task2 = l.AcquireAsync().AsTask();
-            var task3 = l.TryStealAsync(null, DefaultTimeout).AsTask();
+            var task3 = l.TryStealAsync(reason, DefaultTimeout).AsTask();
 
-            await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1));
-            await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2));
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
 
             l.Release();
             True(await task3);
