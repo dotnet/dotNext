@@ -5,7 +5,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.CustomTransport;
 
-using System.Threading;
 using Buffers;
 using TransportServices;
 using TransportServices.ConnectionOriented;
