@@ -46,9 +46,9 @@ public static partial class ConfigurationExtensions
                     targetHost = dns.Host;
                     port = dns.Port;
                     break;
-                case UriEndPoint uri:
-                    targetHost = uri.Uri.Host;
-                    port = uri.Uri.Port;
+                case UriEndPoint { Uri: { IsAbsoluteUri: true } uri }:
+                    targetHost = uri.Host;
+                    port = uri.Port;
                     break;
                 default:
                     // endpoint type is unknown so respond to the client without redirection
