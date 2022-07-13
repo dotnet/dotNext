@@ -142,5 +142,23 @@ namespace DotNext.Threading
             l.Release();
             True(await task3);
         }
+
+        [Fact]
+        public static async Task StealLock2()
+        {
+            const string reason = "Hello, world!";
+            using var l = new AsyncExclusiveLock();
+            True(await l.TryAcquireAsync(DefaultTimeout));
+
+            var task1 = l.TryAcquireAsync(DefaultTimeout).AsTask();
+            var task2 = l.AcquireAsync().AsTask();
+            var task3 = l.StealAsync(reason, DefaultTimeout).AsTask();
+
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+
+            l.Release();
+            await task3;
+        }
     }
 }
