@@ -39,9 +39,16 @@ public static partial class AsyncBridge
 
         // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
+        {
+            if (completeAsCanceled)
+                return new(Task.Delay(InfiniteTimeSpan, token));
+
             result = new(resetAction);
+        }
         else if (!TokenPool.TryTake(out result))
+        {
             result = new(CancellationTokenValueTaskCompletionCallback);
+        }
 
         result.CompleteAsCanceled = completeAsCanceled;
         result.Reset();
