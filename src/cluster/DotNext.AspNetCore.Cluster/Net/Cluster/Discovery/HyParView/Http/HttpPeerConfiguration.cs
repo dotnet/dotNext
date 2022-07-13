@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
 using Buffers;
@@ -60,6 +62,7 @@ public class HttpPeerConfiguration : PeerConfiguration
     /// <summary>
     /// Gets or sets the address of the local node.
     /// </summary>
+    [DisallowNull]
     public Uri? LocalNode
     {
         get => localNode;

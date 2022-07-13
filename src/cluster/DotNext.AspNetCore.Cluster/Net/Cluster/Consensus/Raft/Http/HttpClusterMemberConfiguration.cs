@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -18,6 +19,7 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration, IClust
     /// <summary>
     /// Gets or sets the address of the local node visible to the entire cluster.
     /// </summary>
+    [DisallowNull]
     public Uri? PublicEndPoint
     {
         get => publicEndPoint;
