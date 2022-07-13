@@ -126,7 +126,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static async Task StealLock()
+        public static async Task LockStealing()
         {
             const string reason = "Hello, world!";
             using var l = new AsyncExclusiveLock();
@@ -144,7 +144,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static async Task StealLock2()
+        public static async Task LockStealing2()
         {
             const string reason = "Hello, world!";
             using var l = new AsyncExclusiveLock();

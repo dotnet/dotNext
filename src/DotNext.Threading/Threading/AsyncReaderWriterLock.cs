@@ -308,6 +308,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
@@ -328,6 +329,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
@@ -346,6 +348,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
@@ -398,6 +401,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
@@ -416,6 +420,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
@@ -436,6 +441,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
@@ -469,6 +475,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
@@ -487,6 +494,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
@@ -507,10 +515,83 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
         return AcquireAsync(ref manager, timeout, token).Create(timeout, token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory TryStealAsync(ref WriteLockManager manager, object? reason, TimeSpan timeout, CancellationToken token)
+    {
+        Interrupt(reason);
+        return WaitNoTimeout(ref manager, ref pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Interrupts all pending callers in the queue and acquires write lock.
+    /// </summary>
+    /// <param name="reason">The reason for lock steal.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns><see langword="true"/> if the caller entered write mode; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <seealso cref="PendingTaskInterruptedException"/>
+    public ValueTask<bool> TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new WriteLockManager(state);
+        return TryStealAsync(ref manager, reason, timeout, token).Create(timeout, token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory StealAsync(ref WriteLockManager manager, object? reason, TimeSpan timeout, CancellationToken token)
+    {
+        Interrupt(reason);
+        return WaitWithTimeout(ref manager, ref pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Interrupts all pending callers in the queue and acquires write lock.
+    /// </summary>
+    /// <param name="reason">The reason for lock steal.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <seealso cref="PendingTaskInterruptedException"/>
+    public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
+    {
+        var manager = new WriteLockManager(state);
+        return StealAsync(ref manager, reason, timeout, token).Create(timeout, token);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory StealAsync(ref WriteLockManager manager, object? reason, CancellationToken token)
+    {
+        Interrupt(reason);
+        return WaitNoTimeout(ref manager, ref pool, token);
+    }
+
+    /// <summary>
+    /// Interrupts all pending callers in the queue and acquires write lock.
+    /// </summary>
+    /// <param name="reason">The reason for lock steal.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <seealso cref="PendingTaskInterruptedException"/>
+    public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
+    {
+        var manager = new WriteLockManager(state);
+        return StealAsync(ref manager, reason, token).Create(token);
     }
 
     private void DrainWaitQueue()
