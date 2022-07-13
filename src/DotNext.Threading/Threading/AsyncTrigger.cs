@@ -115,10 +115,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Signal() => Signal();
 
-    private static void AlwaysFalse(ref ValueTuple timeout, ref bool flag)
-    {
-    }
-
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
         => WaitNoTimeout(ref manager, ref pool, timeout, token);
