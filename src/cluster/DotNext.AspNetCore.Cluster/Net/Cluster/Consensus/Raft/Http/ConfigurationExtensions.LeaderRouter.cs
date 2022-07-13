@@ -46,7 +46,7 @@ public static partial class ConfigurationExtensions
                     targetHost = dns.Host;
                     port = dns.Port;
                     break;
-                case UriEndPoint { Uri: { IsAbsoluteUri: true } uri }:
+                case UriEndPoint { Uri: { IsAbsoluteUri: true } uri } _:
                     targetHost = uri.Host;
                     port = uri.Port;
                     break;
@@ -64,19 +64,17 @@ public static partial class ConfigurationExtensions
 
         internal Task Redirect(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments(pathMatch, StringComparison.OrdinalIgnoreCase))
+            // URL path is case-sensitive
+            if (context.Request.Path.StartsWithSegments(pathMatch, StringComparison.Ordinal))
             {
-                var cluster = context.RequestServices.GetService<IRaftCluster>();
-                var leader = cluster?.Leader;
-
-                if (leader is null)
+                switch (context.RequestServices.GetService<IRaftCluster>()?.Leader)
                 {
-                    context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                    return Task.CompletedTask;
+                    case null:
+                        context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                        return Task.CompletedTask;
+                    case { IsRemote: true } leader:
+                        return Redirect(context, leader.EndPoint);
                 }
-
-                if (leader.IsRemote)
-                    return Redirect(context, leader.EndPoint);
             }
 
             return next(context);
