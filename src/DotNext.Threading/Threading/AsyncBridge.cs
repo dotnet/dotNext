@@ -2,13 +2,23 @@
 
 namespace DotNext.Threading;
 
+using ManualResetCompletionSource = Tasks.ManualResetCompletionSource;
+
 /// <summary>
 /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
 /// </summary>
 public static partial class AsyncBridge
 {
+    private static readonly Action<ManualResetCompletionSource> resetAction;
     private static volatile int instantiatedTasks;
     private static int maxPoolSize = Environment.ProcessorCount * 2;
+
+    static AsyncBridge()
+    {
+        resetAction = Reset;
+
+        static void Reset(ManualResetCompletionSource source) => source.Reset();
+    }
 
     /// <summary>
     /// Obtains a task that can be used to await token cancellation.
@@ -29,7 +39,7 @@ public static partial class AsyncBridge
 
         // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
-            result = new(static t => t.Reset());
+            result = new(resetAction);
         else if (!TokenPool.TryTake(out result))
             result = new(CancellationTokenValueTaskCompletionCallback);
 
@@ -56,7 +66,7 @@ public static partial class AsyncBridge
 
         // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
-            result = new(static t => t.Reset());
+            result = new(resetAction);
         else if (!HandlePool.TryTake(out result))
             result = new(WaitHandleTaskCompletionCallback);
 
