@@ -6,3 +6,4 @@ TerminatedExchange=The exchange has been terminated
 EmptyWaitQueue=The trigger doesn't have suspended callers
 InvalidSourceState=The object is in invalid state
 InvalidSourceToken=The token of the task is invalid
+AsyncTaskInterrupted=Asynchronous task has been interrupted

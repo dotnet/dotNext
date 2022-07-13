@@ -174,8 +174,7 @@ internal abstract class Client : RaftClusterMember
 
     public sealed override async ValueTask CancelPendingRequestsAsync()
     {
-        accessLock.CancelSuspendedCallers(new(canceled: true));
-        await accessLock.AcquireAsync().ConfigureAwait(false);
+        await accessLock.StealAsync().ConfigureAwait(false);
         try
         {
             await (context?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);

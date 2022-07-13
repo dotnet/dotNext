@@ -95,12 +95,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
         => WaitNoTimeout(timeout, token).Create(timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitWithTimeout(TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitWithTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -112,6 +113,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
         => WaitWithTimeout(timeout, token).Create(timeout, token);
 
@@ -127,8 +129,87 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
         => WaitNoTimeout(token).Create(token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private BooleanValueTaskFactory StealNoTimeout(object? reason, TimeSpan timeout, CancellationToken token)
+    {
+        Interrupt(reason);
+        return WaitNoTimeout(ref manager, ref pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Interrupts all pending callers in the queue and acquires the lock.
+    /// </summary>
+    /// <remarks>
+    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
+    /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
+    /// </remarks>
+    /// <param name="reason">The reason for lock steal.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <seealso cref="PendingTaskInterruptedException"/>
+    public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
+        => StealNoTimeout(reason, timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory StealWithTimeout(object? reason, TimeSpan timeout, CancellationToken token)
+    {
+        Interrupt(reason);
+        return WaitWithTimeout(ref manager, ref pool, timeout, token);
+    }
+
+    /// <summary>
+    /// Interrupts all pending callers in the queue and acquires the lock.
+    /// </summary>
+    /// <remarks>
+    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
+    /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
+    /// </remarks>
+    /// <param name="reason">The reason for lock steal.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <seealso cref="PendingTaskInterruptedException"/>
+    public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
+        => StealWithTimeout(reason, timeout, token).Create(timeout, token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory StealNoTimeout(object? reason, CancellationToken token)
+    {
+        Interrupt(reason);
+        return WaitNoTimeout(ref manager, ref pool, token);
+    }
+
+    /// <summary>
+    /// Interrupts all pending callers in the queue and acquires the lock.
+    /// </summary>
+    /// <remarks>
+    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
+    /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
+    /// </remarks>
+    /// <param name="reason">The reason for lock steal.</param>
+    /// <param name="token">The token that can be used to abort lock acquisition.</param>
+    /// <returns>The task representing lock acquisition operation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <seealso cref="PendingTaskInterruptedException"/>
+    public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
+        => StealNoTimeout(reason, token).Create(token);
 
     private void DrainWaitQueue()
     {

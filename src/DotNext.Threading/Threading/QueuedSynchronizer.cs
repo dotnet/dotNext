@@ -385,7 +385,7 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private protected ValueTaskFactory WaitWithTimeoutAsync<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+    private protected ValueTaskFactory WaitWithTimeout<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -545,10 +545,10 @@ public class QueuedSynchronizer : Disposable
         }
 
         first = last = null;
-
-        static bool TrySetException(LinkedValueTaskCompletionSource<bool> source, Exception reason)
-            => source.TrySetException(Sentinel.Instance, reason);
     }
+
+    private static bool TrySetException(LinkedValueTaskCompletionSource<bool> source, Exception reason)
+        => source.TrySetException(Sentinel.Instance, reason);
 
     private static unsafe long DrainWaitQueue<T>(LinkedValueTaskCompletionSource<bool>? first, delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
     {
@@ -565,6 +565,17 @@ public class QueuedSynchronizer : Disposable
         }
 
         return count;
+    }
+
+    private protected void Interrupt(object? reason)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        var e = new PendingTaskInterruptedException { Reason = reason };
+        unsafe
+        {
+            DrainWaitQueue(first, &TrySetException, e);
+        }
     }
 
     private void Dispose(bool disposing, Exception? reason)

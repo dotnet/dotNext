@@ -207,11 +207,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref StrongLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitWithTimeout(ref manager, ref pool, timeout, token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref WeakLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitWithTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Entres the lock asynchronously.

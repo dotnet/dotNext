@@ -316,7 +316,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token = default)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitWithTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -424,7 +424,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitWithTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -495,7 +495,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory AcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
+        => WaitWithTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
