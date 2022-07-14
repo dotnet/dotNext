@@ -191,7 +191,7 @@ internal struct PoolingAsyncStateMachine<TState> : IAsyncStateMachine<TState>
     public static ValueTask Start(Transition<TState, PoolingAsyncStateMachine<TState>> transition, TState initialState = default)
         => new PoolingAsyncStateMachine<TState>(transition, initialState).Start();
 
-    readonly void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
+    void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
 }
 
 /// <summary>
@@ -391,5 +391,5 @@ internal struct PoolingAsyncStateMachine<TState, TResult> : IAsyncStateMachine<T
         }
     }
 
-    readonly void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
+    void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
 }
