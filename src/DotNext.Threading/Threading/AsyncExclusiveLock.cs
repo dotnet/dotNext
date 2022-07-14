@@ -26,7 +26,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
         internal void ExitLock() => state = false;
 
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
             // nothing to do here
         }
