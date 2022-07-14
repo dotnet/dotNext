@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Connections;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Messaging;
