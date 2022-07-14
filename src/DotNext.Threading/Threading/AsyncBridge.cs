@@ -9,13 +9,13 @@ using ManualResetCompletionSource = Tasks.ManualResetCompletionSource;
 /// </summary>
 public static partial class AsyncBridge
 {
-    private static readonly Action<ManualResetCompletionSource> resetAction;
+    private static readonly Action<ManualResetCompletionSource> ResetAction;
     private static volatile int instantiatedTasks;
     private static int maxPoolSize = Environment.ProcessorCount * 2;
 
     static AsyncBridge()
     {
-        resetAction = Reset;
+        ResetAction = Reset;
 
         static void Reset(ManualResetCompletionSource source) => source.Reset();
     }
@@ -43,7 +43,7 @@ public static partial class AsyncBridge
             if (completeAsCanceled)
                 return new(Task.Delay(InfiniteTimeSpan, token));
 
-            result = new(resetAction);
+            result = new(ResetAction);
         }
         else if (!TokenPool.TryTake(out result))
         {
@@ -73,7 +73,7 @@ public static partial class AsyncBridge
 
         // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
-            result = new(resetAction);
+            result = new(ResetAction);
         else if (!HandlePool.TryTake(out result))
             result = new(WaitHandleTaskCompletionCallback);
 
