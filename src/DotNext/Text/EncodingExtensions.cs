@@ -17,7 +17,7 @@ public static class EncodingExtensions
     /// <param name="encoding">The source encoding.</param>
     /// <returns>The source encoding without BOM.</returns>
     public static Encoding WithoutPreamble(this Encoding encoding)
-        => encoding is UTF8Encoding ? Utf8WithoutPreamble : EncodingWithoutPreamble.Create(encoding);
+        => encoding is UTF8Encoding ? Utf8WithoutPreamble : new EncodingWithoutPreamble(encoding);
 
     /// <summary>
     /// Encodes a set of characters from the specified read-only span.
