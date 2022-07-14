@@ -30,7 +30,7 @@ public static partial class AsyncBridge
     public static ValueTask WaitAsync(this CancellationToken token, bool completeAsCanceled = false)
     {
         if (!token.CanBeCanceled)
-            throw new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token));
+            return ValueTask.FromException(new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token)));
 
         if (token.IsCancellationRequested)
             return completeAsCanceled ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
