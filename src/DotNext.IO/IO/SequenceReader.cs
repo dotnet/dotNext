@@ -23,7 +23,11 @@ public struct SequenceReader : IAsyncBinaryReader
     private readonly ReadOnlySequence<byte> sequence;
     private SequencePosition position;
 
-    internal SequenceReader(ReadOnlySequence<byte> sequence)
+    /// <summary>
+    /// Initializes a new sequence reader.
+    /// </summary>
+    /// <param name="sequence">A sequence of elements.</param>
+    public SequenceReader(ReadOnlySequence<byte> sequence)
     {
         this.sequence = sequence;
         position = sequence.Start;
