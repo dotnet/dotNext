@@ -15,7 +15,7 @@ using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 /// </summary>
 /// <remarks>
 /// List of supported endpoint types: <see cref="IPEndPoint"/>, <see cref="DnsEndPoint"/>,
-/// <see cref="HttpEndPoint"/>, <see cref="UnixDomainSocketEndPoint"/>.
+/// <see cref="HttpEndPoint"/>, <see cref="UnixDomainSocketEndPoint"/>, <see cref="UriEndPoint"/>.
 /// </remarks>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public static class EndPointFormatter
