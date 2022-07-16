@@ -48,6 +48,15 @@ public static partial class AsyncBridge
         }
     }
 
-    private static readonly WaitHandleValueTaskPool HandlePool = new();
-    private static readonly Action<WaitHandleValueTask> WaitHandleTaskCompletionCallback = HandlePool.Return;
+    private static readonly Action<WaitHandleValueTask> WaitHandleTaskCompletionCallback = new WaitHandleValueTaskPool().Return;
+
+    private static WaitHandleValueTaskPool HandlePool
+    {
+        get
+        {
+            Debug.Assert(WaitHandleTaskCompletionCallback.Target is WaitHandleValueTaskPool);
+
+            return Unsafe.As<WaitHandleValueTaskPool>(WaitHandleTaskCompletionCallback.Target);
+        }
+    }
 }
