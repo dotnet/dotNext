@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView
             internal readonly UriEndPoint Address;
 
             protected TestPeerControllerBase(HttpPeerConfiguration configuration)
-                : base(configuration, EndPointFormatter.UriEndPointComparer)
+                : base(configuration)
                 => Address = new(configuration.LocalNode);
 
             protected sealed override bool IsLocalNode(EndPoint peer) => PeerComparer.Equals(peer, Address);

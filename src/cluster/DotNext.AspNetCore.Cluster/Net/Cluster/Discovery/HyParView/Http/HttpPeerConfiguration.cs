@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
@@ -8,7 +9,7 @@ using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 /// <summary>
 /// Represents configuration of HyParView-over-HTTP implementation.
 /// </summary>
-public class HttpPeerConfiguration : PeerConfiguration
+public class HttpPeerConfiguration : PeerConfiguration, IPeerConfiguration
 {
     private const string DefaultClientHandlerName = "HyParViewClient";
 
@@ -74,4 +75,7 @@ public class HttpPeerConfiguration : PeerConfiguration
             localNode = value;
         }
     }
+
+    /// <inheritdoc />
+    IEqualityComparer<EndPoint> IPeerConfiguration.EndPointComparer => EndPointFormatter.UriEndPointComparer;
 }

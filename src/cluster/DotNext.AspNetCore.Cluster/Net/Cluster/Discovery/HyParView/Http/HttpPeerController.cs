@@ -39,7 +39,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         IHttpMessageHandlerFactory? handlerFactory = null,
         IPeerLifetime? lifetimeService = null,
         MemoryAllocator<byte>? allocator = null)
-        : base(configuration.Value, EndPointFormatter.UriEndPointComparer)
+        : base(configuration.Value)
     {
         const string defaultResourcePath = "/membership/hyparview";
 

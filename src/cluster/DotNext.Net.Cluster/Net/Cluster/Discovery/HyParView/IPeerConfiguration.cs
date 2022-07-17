@@ -1,3 +1,5 @@
+using System.Net;
+
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
 /// <summary>
@@ -53,4 +55,9 @@ public interface IPeerConfiguration
     /// Gets the capacity of internal queue used to process messages.
     /// </summary>
     int QueueCapacity => ActiveViewCapacity + PassiveViewCapacity;
+
+    /// <summary>
+    /// Gets comparer for endpoint address.
+    /// </summary>
+    IEqualityComparer<EndPoint> EndPointComparer => EqualityComparer<EndPoint>.Default;
 }
