@@ -95,8 +95,6 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 
 :x: - unsupported, :white_check_mark: - bug and security fixes only, :heavy_check_mark: - active development
 
-_Maintenance_ support level means that new releases will contain bug fixes only.
-
 # Development Process
 Philosophy of development process:
 1. All libraries in .NEXT family are available for the wide range of .NET runtimes: Mono, .NET, Blazor
