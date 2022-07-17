@@ -41,7 +41,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # Quick Links
 
 * [Features](https://dotnet.github.io/dotNext/features/core/index.html)
-* [API documentation](https://dotnet.github.io/dotNext/api.html)
+* [API documentation](https://dotnet.github.io/dotNext/api/DotNext.html)
 * [Benchmarks](https://dotnet.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
