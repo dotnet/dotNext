@@ -27,7 +27,7 @@ This library is the core of .NEXT which extends .NET standard library with
   * Fast HEX conversion
   * Fast Base64 encoding/decoding for streaming scenarios
   * [Optional](features/core/optional.md) and [Result](features/core/result.md) monads
-  * [Soft Reference](features/core/softref.md)
+  * [Soft Reference](features/core/softref.md) and [async GC notifications](features/core/gcnotif.md)
   * [LRU/LFU cache](features/core/cache.md)
 
 # DotNext.Reflection
