@@ -22,7 +22,7 @@ using System.IO;
 
 //read
 using var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
-var str = await fs.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
+string str = await fs.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
 ```
 
 String encoding and decoding methods support various length encoding styles using [LengthFormat](xref:DotNext.IO.LengthFormat) enum type. As a result, you can prefix string with its length automatically.
@@ -84,7 +84,7 @@ using System.IO.Pipelines;
 const string value = "Hello, world!";
 var pipe = new Pipe();
 await pipe.Writer.WriteStringAsync(value.AsMemory(), Encoding.UTF8, 0, LengthFormat.Plain);
-var result = await pipe.Reader.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
+string result = await pipe.Reader.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
 ```
 
 In advance to strings, the library supports decoding and encoding values of arbitrary blittable value types.
@@ -94,7 +94,7 @@ using System.IO.Pipelines;
 
 var pipe = new Pipe();
 await pipe.Writer.WriteAsync(Guid.NewGuid());
-var result = await pipe.Reader.ReadAsync<Guid>();
+Guid result = await pipe.Reader.ReadAsync<Guid>();
 ```
 
 Starting with version _2.6.0_, there is [BufferWriter](xref:DotNext.Buffers.BufferWriter) class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:
@@ -129,7 +129,7 @@ using System.Buffers;
 using System.Text;
 
 ReadOnlySequence<byte> sequence = ...;
-SequenceReader reader = IAsyncBinaryReader.Create(sequence);
+SequenceReader reader = new(sequence);
 int i = reader.ReadInt32(BitConverter.IsLittleEndian);
 string str = reader.ReadString(LengthFormat.Plain, Encoding.UTF8);
 ```
