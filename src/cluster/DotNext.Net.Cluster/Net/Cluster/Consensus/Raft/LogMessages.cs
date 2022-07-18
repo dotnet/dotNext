@@ -93,7 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [LoggerMessage(
             EventIdOffset + 10,
-            LogLevel.Debug,
+            LogLevel.Warning,
             "Cluster member {Member} is unavailable",
             EventName = EventIdPrefix + "." + nameof(MemberUnavailable)
         )]
@@ -133,7 +133,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [LoggerMessage(
             EventIdOffset + 15,
-            LogLevel.Debug,
+            LogLevel.Warning,
             "Replication of {Member} is failed. Retry replication from entry {EntryIndex}",
             EventName = EventIdPrefix + "." + nameof(ReplicationFailed)
         )]
@@ -157,7 +157,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [LoggerMessage(
             EventIdOffset + 18,
-            LogLevel.Debug,
+            LogLevel.Information,
             "Installing snapshot with {EntryIndex} index of the last included log entry",
             EventName = EventIdPrefix + "." + nameof(InstallingSnapshot)
         )]
