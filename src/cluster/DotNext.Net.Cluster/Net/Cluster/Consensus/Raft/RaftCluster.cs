@@ -419,7 +419,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask StepDown()
     {
-        Logger.DowngradingToFollowerState();
+        Logger.DowngradingToFollowerState(Term);
         switch (state)
         {
             case FollowerState followerState:
@@ -433,7 +433,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                 break;
         }
 
-        Logger.DowngradedToFollowerState();
+        Logger.DowngradedToFollowerState(Term);
     }
 
     /// <summary>
@@ -857,7 +857,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder && state is FollowerState { IsExpired: true } followerState && ReferenceEquals(followerState, callerState.Target))
             {
-                Logger.TransitionToCandidateStateStarted();
+                Logger.TransitionToCandidateStateStarted(Term);
 
                 // if term changed after lock then assumes that leader will be updated soon
                 if (currentTerm == auditTrail.Term)
@@ -874,13 +874,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                     // vote for self
                     newState.StartVoting(electionTimeout, auditTrail);
                     Metrics?.MovedToCandidateState();
-                    Logger.TransitionToCandidateStateCompleted();
+                    Logger.TransitionToCandidateStateCompleted(Term);
                 }
                 else
                 {
                     // resume follower state
                     followerState.StartServing(ElectionTimeout, LifecycleToken);
-                    Logger.DowngradedToFollowerState();
+                    Logger.DowngradedToFollowerState(Term);
                 }
             }
         }
@@ -902,7 +902,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
 
         try
         {
-            Logger.TransitionToLeaderStateStarted();
+            Logger.TransitionToLeaderStateStarted(Term);
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             long currentTerm;
             if (lockHolder && state is CandidateState candidateState && ReferenceEquals(callerState.Target, candidateState) && candidateState.Term == (currentTerm = auditTrail.Term))
@@ -916,7 +916,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                 newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
 
                 Metrics?.MovedToLeaderState();
-                Logger.TransitionToLeaderStateCompleted();
+                Logger.TransitionToLeaderStateCompleted(Term);
             }
         }
         catch (Exception e)

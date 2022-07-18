@@ -105,7 +105,7 @@ internal sealed class CandidateState : RaftState
                 localMember = state.Voter;
         }
 
-        Logger.VotingCompleted(votes);
+        Logger.VotingCompleted(votes, Term);
         if (votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null)
             MoveToFollowerState(randomizeTimeout: true); // no clear consensus
         else
@@ -119,7 +119,7 @@ internal sealed class CandidateState : RaftState
     /// <param name="auditTrail">The local transaction log.</param>
     internal void StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
-        Logger.VotingStarted(timeout);
+        Logger.VotingStarted(timeout, Term);
         var members = Members;
         var voters = new List<VotingState>(members.Count);
 
