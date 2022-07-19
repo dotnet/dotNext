@@ -80,7 +80,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
         Metrics = configuration.Metrics;
         metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
-        clientFactory = configuration.CreateMemberClient;
+        clientFactory = configuration.CreateClient;
         serverFactory = configuration.CreateServer;
         LocalMemberAddress = configuration.PublicEndPoint;
         allocator = configuration.MemoryAllocator;

@@ -203,7 +203,7 @@ public partial class RaftCluster
         /// </summary>
         public bool AggressiveLeaderStickiness { get; set; }
 
-        internal abstract RaftClusterMember CreateMemberClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
+        internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
 
         internal abstract IServer CreateServer(ILocalMember localMember);
     }
@@ -267,7 +267,7 @@ public partial class RaftCluster
         /// <inheritdoc />
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
-        internal override GenericClient CreateMemberClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
 
         internal override GenericServer CreateServer(ILocalMember localMember)
@@ -432,7 +432,7 @@ public partial class RaftCluster
             }
         }
 
-        internal override ExchangePeer CreateMemberClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+        internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, CreateClient)
             {
                 RequestTimeout = RequestTimeout,
@@ -523,7 +523,7 @@ public partial class RaftCluster
             set => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
-        internal override TcpClient CreateMemberClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+        internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, MemoryAllocator)
             {
                 TransmissionBlockSize = TransmissionBlockSize,
