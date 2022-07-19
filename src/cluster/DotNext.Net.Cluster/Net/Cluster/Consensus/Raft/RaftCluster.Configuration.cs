@@ -108,7 +108,7 @@ public partial class RaftCluster
         public double HeartbeatThreshold
         {
             get => heartbeatThreshold;
-            set => heartbeatThreshold = value.IsBetween(double.Epsilon, 1D, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            set => heartbeatThreshold = value.IsBetween(0D, 1D) ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
