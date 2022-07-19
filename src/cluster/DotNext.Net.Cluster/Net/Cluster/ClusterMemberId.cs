@@ -72,12 +72,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
 
         length = uri.AbsoluteUri.Length;
         port = uri.Port;
-        family = uri.HostNameType switch
-        {
-            UriHostNameType.IPv4 => (int)AddressFamily.InterNetwork,
-            UriHostNameType.IPv6 => (int)AddressFamily.InterNetworkV6,
-            _ => (int)AddressFamily.Unspecified,
-        };
+        family = (int)uri.HostNameType;
     }
 
     private ClusterMemberId(SocketAddress address)
