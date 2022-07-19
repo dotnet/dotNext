@@ -21,21 +21,15 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
         private readonly PipeReader reader;
         private bool touched;
 
-        internal ReceivedSnapshot(PipeReader content, long term, DateTimeOffset timestamp, long? length)
-        {
-            Term = term;
-            Timestamp = timestamp;
-            Length = length;
-            reader = content;
-        }
+        internal ReceivedSnapshot(PipeReader content) => reader = content;
 
-        public long Term { get; }
+        public long Term { get; init; }
 
         bool IO.Log.ILogEntry.IsSnapshot => true;
 
-        public DateTimeOffset Timestamp { get; }
+        public DateTimeOffset Timestamp { get; init; }
 
-        public long? Length { get; }
+        public long? Length { get; init; }
 
         bool IDataTransferObject.IsReusable => false;
 
@@ -89,7 +83,12 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
         : base(headers)
     {
         Index = ParseHeader(SnapshotIndexHeader, headers, Int64Parser);
-        Snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser), length);
+        Snapshot = new ReceivedSnapshot(body)
+        {
+            Term = ParseHeader(SnapshotTermHeader, headers, Int64Parser),
+            Timestamp = ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser),
+            Length = length,
+        };
     }
 
     internal InstallSnapshotMessage(HttpRequest request)
