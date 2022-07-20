@@ -202,7 +202,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             factory = TryAcquireAsync(ref manager, timeout, token);
         }
 
-        return factory.Create(timeout, token);
+        return factory.Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -238,7 +238,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             factory = AcquireAsync(ref manager, timeout, token);
         }
 
-        return factory.Create(timeout, token);
+        return factory.Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -271,7 +271,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             factory = AcquireAsync(ref manager, token);
         }
 
-        return factory.Create(token);
+        return factory.Create();
     }
 
     private void DrainWaitQueue()

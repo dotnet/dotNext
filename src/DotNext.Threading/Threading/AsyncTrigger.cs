@@ -132,7 +132,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal(bool)"/>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeout(timeout, token).Create(timeout, token);
+        => WaitNoTimeout(timeout, token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(CancellationToken token)
@@ -150,7 +150,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal(bool)"/>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitNoTimeout(token).Create(token);
+        => WaitNoTimeout(token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory WaitNoTimeout(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token)
@@ -179,7 +179,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask<bool> SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeout(resumeAll, throwOnEmptyQueue, timeout, token).Create(timeout, token);
+        => WaitNoTimeout(resumeAll, throwOnEmptyQueue, timeout, token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token)
@@ -207,7 +207,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token = default)
-        => WaitNoTimeout(resumeAll, throwOnEmptyQueue, token).Create(token);
+        => WaitNoTimeout(resumeAll, throwOnEmptyQueue, token).Create();
 }
 
 /// <summary>
@@ -415,7 +415,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     {
         ArgumentNullException.ThrowIfNull(transition);
         var manager = new LockManager(State, transition);
-        return WaitNoTimeout(ref manager, timeout, token).Create(timeout, token);
+        return WaitNoTimeout(ref manager, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -436,7 +436,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     {
         ArgumentNullException.ThrowIfNull(transition);
         var manager = new LockManager(State, transition);
-        return WaitNoTimeout(ref manager, token).Create(token);
+        return WaitNoTimeout(ref manager, token).Create();
     }
 
     private protected sealed override bool IsReadyToDispose => first is null;

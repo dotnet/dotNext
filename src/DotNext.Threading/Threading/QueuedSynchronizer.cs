@@ -116,38 +116,41 @@ public class QueuedSynchronizer : Disposable
     {
         // null - successfully completed task
         // Task - completed task
-        // ValueTaskCompletionSource<bool> - completion source
+        // WaitNode - completion source
         private readonly object? result;
+        private readonly CancellationToken token;
+        private readonly TimeSpan timeout;
 
         private ValueTaskFactory(Task task)
         {
             Debug.Assert(task is { IsCompleted: true });
 
             result = task;
+            token = default;
+            timeout = default;
         }
 
-        private ValueTaskFactory(ValueTaskCompletionSource<bool> source)
+        private ValueTaskFactory(WaitNode source, TimeSpan timeout, CancellationToken token)
         {
             Debug.Assert(source is not null);
 
             result = source;
+            this.token = token;
+            this.timeout = timeout;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask Create(TimeSpan timeout, CancellationToken token)
+        internal ValueTask Create()
         {
-            Debug.Assert(result is null or Task or ValueTaskCompletionSource<bool>);
+            Debug.Assert(result is null or Task or WaitNode);
 
             return result switch
             {
                 null => ValueTask.CompletedTask,
-                Task t => new(t),
-                object source => Unsafe.As<ValueTaskCompletionSource<bool>>(source).CreateVoidTask(timeout, token)
+                WaitNode node => node.CreateVoidTask(timeout, token),
+                object task => new(Unsafe.As<Task>(task)),
             };
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask Create(CancellationToken token) => Create(InfiniteTimeSpan, token);
 
         internal static ValueTaskFactory FromCanceled(CancellationToken token)
             => new(Task.FromCanceled(token));
@@ -160,8 +163,8 @@ public class QueuedSynchronizer : Disposable
 
         internal static ValueTaskFactory Completed => default;
 
-        internal static ValueTaskFactory FromSource(ValueTaskCompletionSource<bool> source)
-            => new(source);
+        internal static ValueTaskFactory FromSource(WaitNode source, TimeSpan timeout, CancellationToken token)
+            => new(source, timeout, token);
     }
 
     // This type allows to create the task out of the lock to reduce lock contention
@@ -173,25 +176,36 @@ public class QueuedSynchronizer : Disposable
         // Task<bool> - completed task
         // ValueTaskCompletionSource<bool> - completion source
         private readonly object? result;
+        private readonly CancellationToken token;
+        private readonly TimeSpan timeout;
 
-        public BooleanValueTaskFactory() => result = Sentinel.Instance;
+        public BooleanValueTaskFactory()
+        {
+            result = Sentinel.Instance;
+            token = default;
+            timeout = default;
+        }
 
         private BooleanValueTaskFactory(Task<bool> task)
         {
             Debug.Assert(task is { IsCompleted: true });
 
             result = task;
+            token = default;
+            timeout = default;
         }
 
-        private BooleanValueTaskFactory(ValueTaskCompletionSource<bool> source)
+        private BooleanValueTaskFactory(ValueTaskCompletionSource<bool> source, TimeSpan timeout, CancellationToken token)
         {
             Debug.Assert(source is not null);
 
             result = source;
+            this.token = token;
+            this.timeout = timeout;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask<bool> Create(TimeSpan timeout, CancellationToken token)
+        internal ValueTask<bool> Create()
         {
             Debug.Assert(result is null or Task<bool> or ValueTaskCompletionSource<bool> || ReferenceEquals(result, Sentinel.Instance));
 
@@ -199,13 +213,10 @@ public class QueuedSynchronizer : Disposable
             {
                 null => new(false),
                 object sentinel when ReferenceEquals(sentinel, Sentinel.Instance) => new(true),
-                Task<bool> t => new(t),
-                object source => Unsafe.As<ValueTaskCompletionSource<bool>>(source).CreateTask(timeout, token)
+                ValueTaskCompletionSource<bool> node => node.CreateTask(timeout, token),
+                object task => new(Unsafe.As<Task<bool>>(task)),
             };
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask<bool> Create(CancellationToken token) => Create(InfiniteTimeSpan, token);
 
         internal static BooleanValueTaskFactory FromCanceled(CancellationToken token)
             => new(Task.FromCanceled<bool>(token));
@@ -213,8 +224,8 @@ public class QueuedSynchronizer : Disposable
         internal static BooleanValueTaskFactory FromException(Exception e)
             => new(Task.FromException<bool>(e));
 
-        internal static BooleanValueTaskFactory FromSource(ValueTaskCompletionSource<bool> source)
-            => new(source);
+        internal static BooleanValueTaskFactory FromSource(ValueTaskCompletionSource<bool> source, TimeSpan timeout, CancellationToken token)
+            => new(source, timeout, token);
 
         internal static BooleanValueTaskFactory True => new();
 
@@ -416,7 +427,7 @@ public class QueuedSynchronizer : Disposable
         }
         else
         {
-            result = ValueTaskFactory.FromSource(EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo));
+            result = ValueTaskFactory.FromSource(EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo), timeout, token);
         }
 
         return result;
@@ -446,7 +457,7 @@ public class QueuedSynchronizer : Disposable
         }
         else
         {
-            result = ValueTaskFactory.FromSource(EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo));
+            result = ValueTaskFactory.FromSource(EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo), InfiniteTimeSpan, token);
         }
 
         return result;
@@ -483,7 +494,7 @@ public class QueuedSynchronizer : Disposable
         }
         else
         {
-            result = BooleanValueTaskFactory.FromSource(EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo));
+            result = BooleanValueTaskFactory.FromSource(EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo), timeout, token);
         }
 
         return result;

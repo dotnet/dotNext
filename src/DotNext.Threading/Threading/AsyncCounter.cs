@@ -200,7 +200,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeout(timeout, token).Create(timeout, token);
+        => WaitNoTimeout(timeout, token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(CancellationToken token)
@@ -215,7 +215,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitNoTimeout(token).Create(token);
+        => WaitNoTimeout(token).Create();
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

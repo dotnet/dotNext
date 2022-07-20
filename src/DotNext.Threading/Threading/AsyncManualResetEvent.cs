@@ -151,7 +151,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeout(timeout, token).Create(timeout, token);
+        => WaitNoTimeout(timeout, token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(CancellationToken token)
@@ -165,7 +165,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitNoTimeout(token).Create(token);
+        => WaitNoTimeout(token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory WaitNoTimeout<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token)
@@ -190,7 +190,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public ValueTask<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(condition);
-        return WaitNoTimeout(condition, arg, timeout, token).Create(timeout, token);
+        return WaitNoTimeout(condition, arg, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -214,7 +214,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public ValueTask WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(condition);
-        return WaitNoTimeout(condition, arg, token).Create(token);
+        return WaitNoTimeout(condition, arg, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -242,7 +242,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public ValueTask<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(condition);
-        return WaitNoTimeout(condition, arg1, arg2, timeout, token).Create(timeout, token);
+        return WaitNoTimeout(condition, arg1, arg2, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -268,6 +268,6 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public ValueTask WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(condition);
-        return WaitNoTimeout(condition, arg1, arg2, token).Create(token);
+        return WaitNoTimeout(condition, arg1, arg2, token).Create();
     }
 }

@@ -245,7 +245,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(out completedSynchronously, timeout, token).Create(timeout, token);
+        => WaitNoTimeout(out completedSynchronously, timeout, token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(out bool completedSynchronously, CancellationToken token)
@@ -260,7 +260,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
-        => WaitNoTimeout(out completedSynchronously, token).Create(token);
+        => WaitNoTimeout(out completedSynchronously, token).Create();
 
     /// <summary>
     /// Registers multiple signals with this object, decrementing the value of <see cref="CurrentCount"/> by the specified amount.
@@ -300,7 +300,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeout(timeout, token).Create(timeout, token);
+        => WaitNoTimeout(timeout, token).Create();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(CancellationToken token)
@@ -314,5 +314,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitNoTimeout(token).Create(token);
+        => WaitNoTimeout(token).Create();
 }

@@ -312,7 +312,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
-        return TryAcquireAsync(ref manager, timeout, token).Create(timeout, token);
+        return TryAcquireAsync(ref manager, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -333,7 +333,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
-        return AcquireAsync(ref manager, timeout, token).Create(timeout, token);
+        return AcquireAsync(ref manager, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -352,7 +352,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
     {
         var manager = new ReadLockManager(state);
-        return AcquireAsync(ref manager, token).Create(token);
+        return AcquireAsync(ref manager, token).Create();
     }
 
     /// <summary>
@@ -405,7 +405,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return TryAcquireAsync(ref manager, timeout, token).Create(timeout, token);
+        return TryAcquireAsync(ref manager, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -424,7 +424,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return AcquireAsync(ref manager, token).Create(token);
+        return AcquireAsync(ref manager, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -445,7 +445,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return AcquireAsync(ref manager, timeout, token).Create(timeout, token);
+        return AcquireAsync(ref manager, timeout, token).Create();
     }
 
     /// <summary>
@@ -479,7 +479,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
-        return TryAcquireAsync(ref manager, timeout, token).Create(timeout, token);
+        return TryAcquireAsync(ref manager, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -498,7 +498,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
-        return AcquireAsync(ref manager, token).Create(token);
+        return AcquireAsync(ref manager, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -519,7 +519,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new UpgradeManager(state);
-        return AcquireAsync(ref manager, timeout, token).Create(timeout, token);
+        return AcquireAsync(ref manager, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -543,7 +543,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return TryStealAsync(ref manager, reason, timeout, token).Create(timeout, token);
+        return TryStealAsync(ref manager, reason, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -568,7 +568,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return StealAsync(ref manager, reason, timeout, token).Create(timeout, token);
+        return StealAsync(ref manager, reason, timeout, token).Create();
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -591,7 +591,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
     {
         var manager = new WriteLockManager(state);
-        return StealAsync(ref manager, reason, token).Create(token);
+        return StealAsync(ref manager, reason, token).Create();
     }
 
     private void DrainWaitQueue()

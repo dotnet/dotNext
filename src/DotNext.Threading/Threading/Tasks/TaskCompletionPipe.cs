@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
@@ -129,7 +130,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private QueuedSynchronizer.BooleanValueTaskFactory TryDequeue(out T? task)
+    private QueuedSynchronizer.BooleanValueTaskFactory TryDequeue(CancellationToken token, out T? task)
     {
         QueuedSynchronizer.BooleanValueTaskFactory result;
 
@@ -146,7 +147,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         }
         else
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode());
+            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode(), InfiniteTimeSpan, token);
         }
 
         return result;
@@ -172,7 +173,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private QueuedSynchronizer.BooleanValueTaskFactory WaitToReadAsync()
+    private QueuedSynchronizer.BooleanValueTaskFactory WaitToReadCoreAsync(TimeSpan timeout, CancellationToken token)
     {
         QueuedSynchronizer.BooleanValueTaskFactory result;
 
@@ -186,7 +187,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         }
         else
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode());
+            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode(), timeout, token);
         }
 
         return result;
@@ -200,7 +201,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     public ValueTask<bool> WaitToReadAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitToReadAsync().Create(timeout, token);
+        => WaitToReadCoreAsync(timeout, token).Create();
 
     /// <summary>
     /// Waits for the first completed task.
@@ -208,7 +209,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
     public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
-        => WaitToReadAsync().Create(token);
+        => WaitToReadCoreAsync(InfiniteTimeSpan, token).Create();
 
     /// <summary>
     /// Gets the enumerator to get the completed tasks.
@@ -217,7 +218,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <returns>The enumerator over completed tasks.</returns>
     public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
     {
-        while (await TryDequeue(out var task).Create(token).ConfigureAwait(false))
+        while (await TryDequeue(token, out var task).Create().ConfigureAwait(false))
         {
             if (task is not null)
             {
