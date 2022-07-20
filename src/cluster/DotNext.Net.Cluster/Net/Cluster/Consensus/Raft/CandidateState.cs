@@ -144,7 +144,7 @@ internal sealed class CandidateState : RaftState
         }
         finally
         {
-            Dispose(true);
+            votingCancellation.Dispose();
         }
     }
 

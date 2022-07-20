@@ -198,6 +198,22 @@ internal sealed partial class LeaderState : RaftState
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
     }
 
+    private void Cleanup()
+    {
+        timerCancellation.Dispose();
+        heartbeatTask = null;
+
+        lease = null;
+        leaseTimer.Dispose();
+        leaseTokenSource.Dispose();
+
+        // cancel replication queue
+        replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+        replicationEvent.Dispose();
+
+        Metrics = null;
+    }
+
     protected override async ValueTask DisposeAsyncCore()
     {
         try
@@ -213,7 +229,7 @@ internal sealed partial class LeaderState : RaftState
         }
         finally
         {
-            Dispose(true);
+            Cleanup();
         }
     }
 
@@ -221,18 +237,7 @@ internal sealed partial class LeaderState : RaftState
     {
         if (disposing)
         {
-            timerCancellation.Dispose();
-            heartbeatTask = null;
-
-            lease = null;
-            leaseTimer.Dispose();
-            leaseTokenSource.Dispose();
-
-            // cancel replication queue
-            replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
-            replicationEvent.Dispose();
-
-            Metrics = null;
+            Cleanup();
         }
 
         base.Dispose(disposing);
