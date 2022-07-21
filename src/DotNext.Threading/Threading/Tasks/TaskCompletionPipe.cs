@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
