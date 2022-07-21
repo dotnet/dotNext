@@ -401,7 +401,7 @@ public class QueuedSynchronizer : Disposable
         }
         else if (zeroTimeout)
         {
-            result = throwOnTimeout ? new(false) : new(new TimeoutException());
+            result = throwOnTimeout ? new(new TimeoutException()) : new(false);
         }
         else
         {
