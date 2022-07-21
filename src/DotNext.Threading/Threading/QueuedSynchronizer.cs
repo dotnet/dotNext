@@ -405,7 +405,7 @@ public class QueuedSynchronizer : Disposable
         }
         else
         {
-            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo));
+            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout, callerInfo));
         }
 
         return result;
