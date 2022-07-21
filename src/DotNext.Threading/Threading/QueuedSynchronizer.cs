@@ -60,6 +60,7 @@ public class QueuedSynchronizer : Disposable
             status = ActivationStrategy.Error;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token) => status switch
         {
             ActivationStrategy.Completed => ValueTask.CompletedTask,
@@ -69,8 +70,10 @@ public class QueuedSynchronizer : Disposable
             _ => ValueTask.FromException(new SwitchExpressionException()),
         };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask CreateVoidTask(CancellationToken token) => CreateVoidTask(InfiniteTimeSpan, token);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask<bool> CreateTask(TimeSpan timeout, CancellationToken token) => status switch
         {
             ActivationStrategy.Completed => new(result is not null),
@@ -80,6 +83,7 @@ public class QueuedSynchronizer : Disposable
             _ => ValueTask.FromException<bool>(new SwitchExpressionException()),
         };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal ValueTask<bool> CreateTask(CancellationToken token) => CreateTask(InfiniteTimeSpan, token);
     }
 
@@ -338,7 +342,6 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected static bool ValidateTimeoutAndToken(TimeSpan timeout, CancellationToken token, out ValueTask result)
     {
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
@@ -358,7 +361,6 @@ public class QueuedSynchronizer : Disposable
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ValidateTimeoutAndToken(TimeSpan timeout, CancellationToken token, out ValueTask<bool> result)
     {
         if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
@@ -378,6 +380,7 @@ public class QueuedSynchronizer : Disposable
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected ValueTaskFactory Wait<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, bool throwOnTimeout, bool zeroTimeout)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
