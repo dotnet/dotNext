@@ -83,8 +83,8 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+    private ValueTaskFactory Acquire(bool throwOnTimeout, bool zeroTimeout)
+        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -97,11 +97,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeout(timeout, token).Create();
+    {
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
+            task = Acquire(throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory WaitWithTimeout(TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeout(ref manager, ref pool, timeout, token);
+        return task;
+    }
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -115,11 +116,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitWithTimeout(timeout, token).Create();
+    {
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
+            task = Acquire(throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, token);
+        return task;
+    }
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -131,13 +133,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => WaitNoTimeout(token).Create();
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire(throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory StealNoTimeout(object? reason, TimeSpan timeout, CancellationToken token)
+    private ValueTaskFactory Steal(object? reason, bool throwOnTimeout, bool zeroTimeout)
     {
         Interrupt(reason);
-        return WaitNoTimeout(ref manager, ref pool, timeout, token);
+        return Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
     }
 
     /// <summary>
@@ -157,13 +159,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => StealNoTimeout(reason, timeout, token).Create();
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory StealWithTimeout(object? reason, TimeSpan timeout, CancellationToken token)
     {
-        Interrupt(reason);
-        return WaitWithTimeout(ref manager, ref pool, timeout, token);
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> result))
+            result = Steal(reason, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+
+        return result;
     }
 
     /// <summary>
@@ -184,13 +184,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => StealWithTimeout(reason, timeout, token).Create();
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory StealNoTimeout(object? reason, CancellationToken token)
     {
-        Interrupt(reason);
-        return WaitNoTimeout(ref manager, ref pool, token);
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
+            task = Steal(reason, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
+
+        return task;
     }
 
     /// <summary>
@@ -209,7 +207,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
-        => StealNoTimeout(reason, token).Create();
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Steal(reason, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
 
     private void DrainWaitQueue()
     {

@@ -296,8 +296,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory TryAcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+    private ValueTaskFactory Acquire<TManager>(ref TManager manager, bool throwOnTimeout, bool zeroTimeout)
+        where TManager : struct, ILockManager<WaitNode>
+        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -311,13 +312,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new ReadLockManager(state);
-        return TryAcquireAsync(ref manager, timeout, token).Create();
-    }
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
+        {
+            var manager = new ReadLockManager(state);
+            task = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref ReadLockManager manager, TimeSpan timeout, CancellationToken token = default)
-        => WaitWithTimeout(ref manager, ref pool, timeout, token);
+        return task;
+    }
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -332,13 +334,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new ReadLockManager(state);
-        return AcquireAsync(ref manager, timeout, token).Create();
-    }
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
+        {
+            var manager = new ReadLockManager(state);
+            task = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
+        }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref ReadLockManager manager, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, token);
+        return task;
+    }
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -351,8 +354,18 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
     {
-        var manager = new ReadLockManager(state);
-        return AcquireAsync(ref manager, token).Create();
+        ValueTask task;
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            var manager = new ReadLockManager(state);
+            task = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
+        }
+
+        return task;
     }
 
     /// <summary>
@@ -388,10 +401,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         return TryAcquire(ref manager);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory TryAcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, timeout, token);
-
     /// <summary>
     /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
     /// </summary>
@@ -404,13 +413,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new WriteLockManager(state);
-        return TryAcquireAsync(ref manager, timeout, token).Create();
-    }
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
+        {
+            var manager = new WriteLockManager(state);
+            task = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref WriteLockManager manager, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, token);
+        return task;
+    }
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -423,13 +433,20 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
     {
-        var manager = new WriteLockManager(state);
-        return AcquireAsync(ref manager, token).Create();
-    }
+        ValueTask task;
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref WriteLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeout(ref manager, ref pool, timeout, token);
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            var manager = new WriteLockManager(state);
+            task = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
+        }
+
+        return task;
+    }
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -444,8 +461,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new WriteLockManager(state);
-        return AcquireAsync(ref manager, timeout, token).Create();
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
+        {
+            var manager = new WriteLockManager(state);
+            task = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
+        }
+
+        return task;
     }
 
     /// <summary>
@@ -463,8 +485,8 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory TryAcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+    private ValueTaskFactory Acquire(ref UpgradeManager manager, bool throwOnTimeout, bool zeroTimeout)
+        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Tries to upgrade the read lock to the write lock asynchronously.
@@ -478,13 +500,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new UpgradeManager(state);
-        return TryAcquireAsync(ref manager, timeout, token).Create();
-    }
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
+        {
+            var manager = new UpgradeManager(state);
+            task = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref UpgradeManager manager, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, token);
+        return task;
+    }
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -497,13 +520,20 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
     {
-        var manager = new UpgradeManager(state);
-        return AcquireAsync(ref manager, token).Create();
-    }
+        ValueTask task;
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref UpgradeManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeout(ref manager, ref pool, timeout, token);
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            var manager = new UpgradeManager(state);
+            task = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
+        }
+
+        return task;
+    }
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -518,15 +548,20 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new UpgradeManager(state);
-        return AcquireAsync(ref manager, timeout, token).Create();
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
+        {
+            var manager = new UpgradeManager(state);
+            task = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
+        }
+
+        return task;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory TryStealAsync(ref WriteLockManager manager, object? reason, TimeSpan timeout, CancellationToken token)
+    private ValueTaskFactory Steal(ref WriteLockManager manager, object? reason, bool throwOnTimeout, bool zeroTimeout)
     {
         Interrupt(reason);
-        return WaitNoTimeout(ref manager, ref pool, timeout, token);
+        return Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
     }
 
     /// <summary>
@@ -542,15 +577,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new WriteLockManager(state);
-        return TryStealAsync(ref manager, reason, timeout, token).Create();
-    }
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
+        {
+            var manager = new WriteLockManager(state);
+            task = Steal(ref manager, reason, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory StealAsync(ref WriteLockManager manager, object? reason, TimeSpan timeout, CancellationToken token)
-    {
-        Interrupt(reason);
-        return WaitWithTimeout(ref manager, ref pool, timeout, token);
+        return task;
     }
 
     /// <summary>
@@ -567,15 +600,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
-        var manager = new WriteLockManager(state);
-        return StealAsync(ref manager, reason, timeout, token).Create();
-    }
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
+        {
+            var manager = new WriteLockManager(state);
+            task = Steal(ref manager, reason, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
+        }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory StealAsync(ref WriteLockManager manager, object? reason, CancellationToken token)
-    {
-        Interrupt(reason);
-        return WaitNoTimeout(ref manager, ref pool, token);
+        return task;
     }
 
     /// <summary>
@@ -590,8 +621,19 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
     {
-        var manager = new WriteLockManager(state);
-        return StealAsync(ref manager, reason, token).Create();
+        ValueTask task;
+
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            var manager = new WriteLockManager(state);
+            task = Steal(ref manager, reason, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
+        }
+
+        return task;
     }
 
     private void DrainWaitQueue()

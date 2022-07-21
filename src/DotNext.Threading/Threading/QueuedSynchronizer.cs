@@ -16,13 +16,71 @@ using Timestamp = Diagnostics.Timestamp;
 /// </summary>
 public class QueuedSynchronizer : Disposable
 {
-    private enum ValueTaskType : byte
+    private enum ActivationStrategy : byte
     {
         Completed = 0,
         Lazy,
-        Canceled,
         Error,
         Task,
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    internal readonly ref struct ValueTaskFactory
+    {
+        private readonly ActivationStrategy status;
+        private readonly object? result;
+
+        internal ValueTaskFactory(Task task)
+        {
+            Debug.Assert(task is not null);
+
+            result = task;
+            status = ActivationStrategy.Task;
+        }
+
+        internal ValueTaskFactory(LinkedValueTaskCompletionSource<bool> source)
+        {
+            Debug.Assert(source is not null);
+
+            result = source;
+            status = ActivationStrategy.Lazy;
+        }
+
+        internal ValueTaskFactory(bool result)
+        {
+            this.result = result ? Sentinel.Instance : null;
+            status = ActivationStrategy.Completed;
+        }
+
+        internal ValueTaskFactory(Exception e)
+        {
+            Debug.Assert(e is not null);
+
+            result = e;
+            status = ActivationStrategy.Error;
+        }
+
+        internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token) => status switch
+        {
+            ActivationStrategy.Completed => ValueTask.CompletedTask,
+            ActivationStrategy.Task => new(Unsafe.As<Task>(result!)),
+            ActivationStrategy.Lazy => Unsafe.As<LinkedValueTaskCompletionSource<bool>>(result!).CreateVoidTask(timeout, token),
+            ActivationStrategy.Error => ValueTask.FromException(Unsafe.As<Exception>(result!)),
+            _ => ValueTask.FromException(new SwitchExpressionException()),
+        };
+
+        internal ValueTask CreateVoidTask(CancellationToken token) => CreateVoidTask(InfiniteTimeSpan, token);
+
+        internal ValueTask<bool> CreateTask(TimeSpan timeout, CancellationToken token) => status switch
+        {
+            ActivationStrategy.Completed => new(result is not null),
+            ActivationStrategy.Task => new(Unsafe.As<Task<bool>>(result!)),
+            ActivationStrategy.Lazy => Unsafe.As<LinkedValueTaskCompletionSource<bool>>(result!).CreateTask(timeout, token),
+            ActivationStrategy.Error => ValueTask.FromException<bool>(Unsafe.As<Exception>(result!)),
+            _ => ValueTask.FromException<bool>(new SwitchExpressionException()),
+        };
+
+        internal ValueTask<bool> CreateTask(CancellationToken token) => CreateTask(InfiniteTimeSpan, token);
     }
 
     private sealed class CallerInformationStorage : ThreadLocal<object?>
@@ -117,146 +175,6 @@ public class QueuedSynchronizer : Disposable
         where TNode : WaitNode
     {
         void InitializeNode(TNode node);
-    }
-
-    // This type allows to create the task out of the lock to reduce lock contention
-    [StructLayout(LayoutKind.Auto)]
-    private protected readonly ref struct ValueTaskFactory
-    {
-        private readonly object? result;
-        private readonly CancellationToken token;
-        private readonly TimeSpan timeout;
-        private readonly ValueTaskType type;
-
-        internal ValueTaskFactory(CancellationToken token)
-        {
-            Debug.Assert(token.IsCancellationRequested);
-
-            result = null;
-            this.token = token;
-            timeout = default;
-            type = ValueTaskType.Canceled;
-        }
-
-        internal ValueTaskFactory(Exception e)
-        {
-            Debug.Assert(e is not null);
-
-            result = e;
-            token = default;
-            timeout = default;
-            type = ValueTaskType.Error;
-        }
-
-        internal ValueTaskFactory(LinkedValueTaskCompletionSource<bool> source, TimeSpan timeout, CancellationToken token)
-        {
-            Debug.Assert(source is not null);
-
-            result = source;
-            this.token = token;
-            this.timeout = timeout;
-            type = ValueTaskType.Lazy;
-        }
-
-        internal ValueTaskFactory(Task task)
-        {
-            Debug.Assert(task is not null);
-
-            result = task;
-            token = default;
-            timeout = default;
-            type = ValueTaskType.Task;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask Create()
-        {
-            Debug.Assert(result is null or Exception or LinkedValueTaskCompletionSource<bool> or Task);
-
-            return type switch
-            {
-                ValueTaskType.Completed => ValueTask.CompletedTask,
-                ValueTaskType.Canceled => ValueTask.FromCanceled(token),
-                ValueTaskType.Lazy => Unsafe.As<LinkedValueTaskCompletionSource<bool>>(result!).CreateVoidTask(timeout, token),
-                ValueTaskType.Error => ValueTask.FromException(Unsafe.As<Exception>(result!)),
-                ValueTaskType.Task => new(Unsafe.As<Task>(result!)),
-                _ => ValueTask.FromException(new SwitchExpressionException()),  // will never happen
-            };
-        }
-    }
-
-    // This type allows to create the task out of the lock to reduce lock contention
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct BooleanValueTaskFactory
-    {
-        private readonly object? result;
-        private readonly CancellationToken token;
-        private readonly TimeSpan timeout;
-        private readonly ValueTaskType type;
-
-        internal BooleanValueTaskFactory(bool result)
-        {
-            type = ValueTaskType.Completed;
-            token = default;
-            timeout = default;
-            this.result = result ? Sentinel.Instance : null;
-        }
-
-        internal BooleanValueTaskFactory(CancellationToken token)
-        {
-            Debug.Assert(token.IsCancellationRequested);
-
-            this.token = token;
-            timeout = default;
-            result = null;
-            type = ValueTaskType.Canceled;
-        }
-
-        internal BooleanValueTaskFactory(Task<bool> task)
-        {
-            Debug.Assert(task is not null);
-
-            result = task;
-            token = default;
-            timeout = default;
-            type = ValueTaskType.Task;
-        }
-
-        internal BooleanValueTaskFactory(ValueTaskCompletionSource<bool> source, TimeSpan timeout, CancellationToken token)
-        {
-            Debug.Assert(source is not null);
-
-            result = source;
-            this.token = token;
-            this.timeout = timeout;
-            type = ValueTaskType.Lazy;
-        }
-
-        internal BooleanValueTaskFactory(Exception e)
-        {
-            Debug.Assert(e is not null);
-
-            result = e;
-            token = default;
-            timeout = default;
-            type = ValueTaskType.Error;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask<bool> Create()
-        {
-            Debug.Assert(result is null or Task<bool> or ValueTaskCompletionSource<bool> or Exception);
-
-            return type switch
-            {
-                ValueTaskType.Completed => new(result is not null),
-                ValueTaskType.Canceled => ValueTask.FromCanceled<bool>(token),
-                ValueTaskType.Error => ValueTask.FromException<bool>(Unsafe.As<Exception>(result!)),
-                ValueTaskType.Task => new(Unsafe.As<Task<bool>>(result!)),
-                ValueTaskType.Lazy => Unsafe.As<LinkedValueTaskCompletionSource<bool>>(result!).CreateTask(timeout, token),
-                _ => ValueTask.FromException<bool>(new SwitchExpressionException()),    // will never happen
-            };
-        }
     }
 
     private readonly Action<double>? contentionCounter, lockDurationCounter;
@@ -420,105 +338,71 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private protected ValueTaskFactory WaitWithTimeout<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected static bool ValidateTimeoutAndToken(TimeSpan timeout, CancellationToken token, out ValueTask result)
+    {
+        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+        {
+            result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
+        }
+        else if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            Unsafe.SkipInit(out result);
+            return true;
+        }
+
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool ValidateTimeoutAndToken(TimeSpan timeout, CancellationToken token, out ValueTask<bool> result)
+    {
+        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+        {
+            result = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+        }
+        else if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<bool>(token);
+        }
+        else
+        {
+            Unsafe.SkipInit(out result);
+            return true;
+        }
+
+        return false;
+    }
+
+    private protected ValueTaskFactory Wait<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, bool throwOnTimeout, bool zeroTimeout)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        ValueTaskFactory result;
         var callerInfo = this.callerInfo?.Capture();
-
-        if (IsDisposingOrDisposed)
-        {
-            result = new(DisposedTask);
-        }
-        else if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-        {
-            result = new(new ArgumentOutOfRangeException(nameof(timeout)));
-        }
-        else if (token.IsCancellationRequested)
-        {
-            result = new(token);
-        }
-        else if (TryAcquire(ref manager))
-        {
-            result = default;
-        }
-        else if (timeout == TimeSpan.Zero)
-        {
-            result = new(new TimeoutException());
-        }
-        else
-        {
-            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo), timeout, token);
-        }
-
-        return result;
-    }
-
-    // optimized version without timeout support
-    private protected ValueTaskFactory WaitNoTimeout<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, CancellationToken token)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
-    {
-        Debug.Assert(Monitor.IsEntered(this));
 
         ValueTaskFactory result;
-        var callerInfo = this.callerInfo?.Capture();
 
         if (IsDisposingOrDisposed)
         {
-            result = new(DisposedTask);
-        }
-        else if (token.IsCancellationRequested)
-        {
-            result = new(token);
-        }
-        else if (TryAcquire(ref manager))
-        {
-            result = default;
-        }
-        else
-        {
-            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo), InfiniteTimeSpan, token);
-        }
-
-        return result;
-    }
-
-    private protected BooleanValueTaskFactory WaitNoTimeout<TNode, TManager>(ref TManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TimeSpan timeout, CancellationToken token)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TManager : struct, ILockManager<TNode>
-    {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        BooleanValueTaskFactory result;
-        var callerInfo = this.callerInfo?.Capture();
-
-        if (IsDisposingOrDisposed)
-        {
-            result = new(GetDisposedTask<bool>());
-        }
-        else if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-        {
-            result = new(new ArgumentOutOfRangeException(nameof(timeout)));
-        }
-        else if (token.IsCancellationRequested)
-        {
-            result = new(token);
+            result = throwOnTimeout ? new(DisposedTask) : new(GetDisposedTask<bool>());
         }
         else if (TryAcquire(ref manager))
         {
             result = new(true);
         }
-        else if (timeout == TimeSpan.Zero)
+        else if (zeroTimeout)
         {
-            result = new(false);    // if timeout is zero fail fast
+            result = throwOnTimeout ? new(false) : new(new TimeoutException());
         }
         else
         {
-            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout: false, callerInfo), timeout, token);
+            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout: true, callerInfo));
         }
 
         return result;
