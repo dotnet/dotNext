@@ -169,7 +169,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory WaitNoTimeout<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token)
-        => manager.Value || condition(arg) ? BooleanValueTaskFactory.True : WaitNoTimeout(ref manager, ref pool, timeout, token);
+        => manager.Value || condition(arg) ? new(true) : WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -195,7 +195,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout<T>(Predicate<T> condition, T arg, CancellationToken token)
-        => manager.Value || condition(arg) ? ValueTaskFactory.Completed : WaitNoTimeout(ref manager, ref pool, token);
+        => manager.Value || condition(arg) ? default : WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -219,7 +219,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory WaitNoTimeout<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token)
-        => manager.Value || condition(arg1, arg2) ? BooleanValueTaskFactory.True : WaitNoTimeout(ref manager, ref pool, timeout, token);
+        => manager.Value || condition(arg1, arg2) ? new(true) : WaitNoTimeout(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -247,7 +247,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token)
-        => manager.Value || condition(arg1, arg2) ? ValueTaskFactory.Completed : WaitNoTimeout(ref manager, ref pool, token);
+        => manager.Value || condition(arg1, arg2) ? default : WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Suspends the caller until this event is set.

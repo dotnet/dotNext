@@ -233,15 +233,23 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private BooleanValueTaskFactory WaitNoTimeout(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
     {
+        BooleanValueTaskFactory result;
+
         if (IsDisposingOrDisposed)
         {
             completedSynchronously = true;
-            return BooleanValueTaskFactory.FromTask(GetDisposedTask<bool>());
+            result = new(GetDisposedTask<bool>());
+        }
+        else if (completedSynchronously = SignalAndResetCore(1L))
+        {
+            result = new(true);
+        }
+        else
+        {
+            result = WaitNoTimeout(ref manager, ref pool, timeout, token);
         }
 
-        return (completedSynchronously = SignalAndResetCore(1L))
-            ? BooleanValueTaskFactory.True
-            : WaitNoTimeout(ref manager, ref pool, timeout, token);
+        return result;
     }
 
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
@@ -250,13 +258,23 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory WaitNoTimeout(out bool completedSynchronously, CancellationToken token)
     {
+        ValueTaskFactory result;
+
         if (IsDisposingOrDisposed)
         {
             completedSynchronously = true;
-            return ValueTaskFactory.FromTask(DisposedTask);
+            result = new(DisposedTask);
+        }
+        else if(completedSynchronously = SignalAndResetCore(1L))
+        {
+            result = default;
+        }
+        else
+        {
+            result = WaitNoTimeout(ref manager, ref pool, token);
         }
 
-        return (completedSynchronously = SignalAndResetCore(1L)) ? ValueTaskFactory.Completed : WaitNoTimeout(ref manager, ref pool, token);
+        return result;
     }
 
     internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)

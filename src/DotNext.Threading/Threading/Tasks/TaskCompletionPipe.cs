@@ -139,15 +139,15 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
             Debug.Assert(scheduledTasksCount > 0U);
 
             scheduledTasksCount--;
-            result = QueuedSynchronizer.BooleanValueTaskFactory.True;
+            result = new(true);
         }
         else if (IsCompleted)
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.False;
+            result = new(false);
         }
         else
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode(), InfiniteTimeSpan, token);
+            result = new(EnqueueNode(), InfiniteTimeSpan, token);
         }
 
         return result;
@@ -179,15 +179,15 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         if (!completedTasks.IsEmpty)
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.True;
+            result = new(true);
         }
         else if (IsCompleted)
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.False;
+            result = new(false);
         }
         else
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode(), timeout, token);
+            result = new(EnqueueNode(), timeout, token);
         }
 
         return result;

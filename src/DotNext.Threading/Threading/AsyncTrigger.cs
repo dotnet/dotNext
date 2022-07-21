@@ -157,7 +157,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ThrowIfDisposed();
         return !SignalCore(resumeAll) && throwOnEmptyQueue
-            ? BooleanValueTaskFactory.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+            ? new(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
             : WaitNoTimeout(ref manager, ref pool, timeout, token);
     }
 
@@ -186,7 +186,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ThrowIfDisposed();
         return !SignalCore(resumeAll) && throwOnEmptyQueue
-            ? ValueTaskFactory.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+            ? new(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
             : WaitNoTimeout(ref manager, ref pool, token);
     }
 
