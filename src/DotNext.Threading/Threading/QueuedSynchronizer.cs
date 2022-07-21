@@ -380,7 +380,6 @@ public class QueuedSynchronizer : Disposable
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected ValueTaskFactory Wait<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, bool throwOnTimeout, bool zeroTimeout)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
