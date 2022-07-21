@@ -63,6 +63,8 @@ Release Date: 07-04-2022
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.7.0">DotNext.Threading 4.7.0</a>
 * Reduced memory allocation caused by extension methods declared in [Scheduler](https://dotnet.github.io/dotNext/api/DotNext.Threading.Scheduler.html) class
+* Reduced monitor lock contention in async locks
+* Added lock stealing methods to some synchronization primitives: `AsyncExclusiveLock`, `AsyncReaderWriterLock`
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.7.0">DotNext.IO 4.7.0</a>
