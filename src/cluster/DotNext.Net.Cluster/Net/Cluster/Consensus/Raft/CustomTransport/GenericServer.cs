@@ -40,6 +40,9 @@ internal sealed class GenericServer : Server
         init;
     }
 
+    private protected override MemoryOwner<byte> AllocateBuffer(int bufferSize)
+        => defaultAllocator(bufferSize);
+
     private async void HandleConnection(ConnectionContext connection)
     {
         var clientAddress = connection.RemoteEndPoint;

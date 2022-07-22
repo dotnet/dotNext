@@ -5,6 +5,8 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using Buffers;
+
 internal abstract class Server : Disposable, IServer
 {
     private readonly ILocalMember localMember;
@@ -28,6 +30,8 @@ internal abstract class Server : Disposable, IServer
     }
 
     public EndPoint Address { get; }
+
+    private protected abstract MemoryOwner<byte> AllocateBuffer(int bufferSize);
 
     public abstract ValueTask StartAsync(CancellationToken token);
 
@@ -74,7 +78,7 @@ internal abstract class Server : Disposable, IServer
     private async ValueTask GetMetadataAsync(ProtocolStream protocol, CancellationToken token)
     {
         protocol.Reset();
-        using var buffer = protocol.AllocateBuffer();
+        using var buffer = AllocateBuffer(bufferSize: 512);
         await protocol.WriteMetadataResponseAsync(localMember.Metadata, buffer.Memory, token).ConfigureAwait(false);
     }
 

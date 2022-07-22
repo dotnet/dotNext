@@ -58,6 +58,8 @@ internal sealed class TcpServer : Server, ITcpTransport
         init;
     }
 
+    private protected override MemoryOwner<byte> AllocateBuffer(int bufferSize) => allocator(bufferSize);
+
     public int TransmissionBlockSize
     {
         get => transmissionBlockSize;

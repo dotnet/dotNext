@@ -29,8 +29,6 @@ internal abstract partial class ProtocolStream : Stream
         this.allocator = allocator;
     }
 
-    internal MemoryOwner<byte> AllocateBuffer() => allocator(buffer.Length);
-
     private protected abstract ValueTask WriteToTransportAsync(ReadOnlyMemory<byte> buffer, CancellationToken token);
 
     private protected virtual void WriteToTransport(ReadOnlySpan<byte> buffer)
