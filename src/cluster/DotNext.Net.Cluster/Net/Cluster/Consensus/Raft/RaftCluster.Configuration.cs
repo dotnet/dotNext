@@ -336,6 +336,22 @@ public partial class RaftCluster
     {
         private static readonly IPEndPoint DefaultLocalEndPoint = new(IPAddress.Any, 0);
 
+        private sealed class ExchangePoolFactory : Tuple<ILocalMember, PipeOptions>
+        {
+            internal ExchangePoolFactory(ILocalMember member, PipeOptions options)
+                : base(member, options)
+            {
+            }
+
+            internal ExchangePool Create(int count)
+            {
+                var result = new ExchangePool();
+                while (--count >= 0)
+                    result.Add(new ServerExchange(Item1, Item2));
+                return result;
+            }
+        }
+
         private int clientChannels;
         private int datagramSize;
         private bool dontFragment;
@@ -419,19 +435,6 @@ public partial class RaftCluster
                 Ttl = TimeToLive,
             };
 
-        private Func<int, ExchangePool> ExchangePoolFactory(ILocalMember localMember)
-        {
-            return CreateExchangePool;
-
-            ExchangePool CreateExchangePool(int count)
-            {
-                var result = new ExchangePool();
-                while (--count >= 0)
-                    result.Add(new ServerExchange(localMember, PipeConfig));
-                return result;
-            }
-        }
-
         internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, CreateClient)
             {
@@ -441,7 +444,7 @@ public partial class RaftCluster
             };
 
         internal override UdpServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory)
+            => new(HostEndPoint, ServerBacklog, MemoryAllocator, new ExchangePoolFactory(localMember, PipeConfig).Create, LoggerFactory)
             {
                 DatagramSize = datagramSize,
                 DontFragment = DontFragment,
