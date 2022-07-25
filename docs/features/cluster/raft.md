@@ -75,11 +75,12 @@ When a new node is added, it passes through warmup procedure. The leader node at
 * HTTP 1.1, HTTP 2.0 and HTTP 3.0
 * TCP transport
 * UDP transport
+* Generic transport on top of [ASP.NET Core Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) abstractions. See [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.CustomTransportConfiguration) class for more information.
 
 TCP and UDP network transports shipped with `DotNext.Net.Cluster` library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized [application protocol](https://en.wikipedia.org/wiki/Application_layer) on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming are limited:
 * General-purpose messaging between nodes is not supported via [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface
 
-Cluster programming model using TCP and UDP transports is unified and exposed via [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class. The following example demonstrates usage of this class:
+Cluster programming model using TCP, UDP, and generic transports is unified and exposed via [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class. The following example demonstrates usage of this class:
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
 
@@ -104,10 +105,8 @@ The configuration of the local node depends on chosen network transport. [NodeCo
 | LowerElectionTimeout, UpperElectionTimeout | No | 150 | Defines range for election timeout (in milliseconds) which is picked randomly inside of it for each cluster member. If cluster node doesn't receive heartbeat from leader node during this timeout then it becomes a candidate and start a election. The recommended value for  _upperElectionTimeout_ is `2  X lowerElectionTimeout` |
 | MemoryAllocator | No | Memory pool from _PipeConfig_ property | Memory allocator used to allocate memory for network packets |
 | Metadata | No | Empty dictionary | A set of metadata properties associated with the local node |
-| TimeToLive | No | 64 |  Time To Live (TTL) value of Internet Protocol (IP) packets |
 | RequestTimeout | No | _UpperElectionTimeout_ | Defines request timeout for accessing cluster members across the network |
 | LoggerFactory | No | [NullLoggerFactory.Instance](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.abstractions.nullloggerfactory.instance) | The logger factory |
-| BufferingOptions | No | **null** | Enables buffering of log entries when transferring over the wire. If defined, receiver creates a buffered copy of the log entries and the snapshot before appending them to the log. It increases response time during replication but reduces the potential lock contention in WAL between replication process and other writers |
 | Standby | No | **false** | **true** to prevent election of the cluster member as a leader. It's useful to configure the nodes available for read-only operations only |
 | ConfigurationStorage | Yes | N/A | Represents a storage for the list of cluster members. You can use `UseInMemoryConfigurationStorage` method for testing purposes |
 | Announcer | No | **null** | A delegate of type [ClusterMemberAnnouncer&lt;TAddress&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterMemberAnnouncer`1) that can be used to announce a new node on leader |
@@ -433,6 +432,7 @@ The following table describes configuration properties applicable to TCP transpo
 | RequestTimeout | No | _LowerElectionTimeout / 2_ | A timeout used for Raft RPC call. Must be less than or equal to _LowerElectionTimeout_ |
 | ConnectTimeout | No | _LowerElectionTimeout / 2_ | TCP connection timeout. Must be less than or equal to _RequestTimeout_ |
 | SslOptions | No | _N/A_ | Allows to enable and configure transport-level encryption using SSL and X.509 certificates |
+| TimeToLive | No | 64 |  Time To Live (TTL) value of Internet Protocol (IP) packets |
 
 TCP transport is WAN friendly and support transport-level encryption. However, the underlying application-level protocol is binary and can be a problem for corporate firewalls.
 
@@ -455,6 +455,7 @@ This transport can be configured using [UdpConfiguration](xref:DotNext.Net.Clust
 | DatagramSize | No | 300 bytes | Represents UDP datagram size. For maximum performance, this property must be set to the maximum allowed transmission unit size by your network |
 | LocalEndPoint | No | 0.0.0.0 with random port | Used for receiving responses from other cluster nodes |
 | PipeConfig | No | [PipeOptions.Default](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipeoptions.default) | The configuration of I/O pipeline used for passing bytes between application and network transport |
+| TimeToLive | No | 64 |  Time To Live (TTL) value of Internet Protocol (IP) packets |
 
 The following example demonstrates configuration of UDP transport:
 ```csharp
@@ -538,7 +539,10 @@ The same pattern is applicable to [disk-based state machine](xref:DotNext.Net.Cl
 Designing binary format for custom log entries and interpreter for them may be hard. Examine [this](./wal.md) article to learn how to use Interpreter Framework shipped with the library.
 
 # Guide: Custom Transport
-Transport-agnostic implementation of Raft is represented by [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1) class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.
+Transport- and serialization-agnostic implementation of Raft is represented by [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1) class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.
+
+> [!NOTE]
+> The easiest way to support new network protocol (e.g. Bluetooth) is to use [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.CustomTransportConfiguration) class. However, it doesn't provide control over the serialization format of Raft messages. If you're looking for a way to provide custom application-level protocol for Raft, follow this guide.
 
 ## Existing Implementations
 .NEXT library ships multiple network transports: 
