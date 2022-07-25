@@ -137,8 +137,8 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory WaitNoTimeout(TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+    private ValueTaskFactory Wait(bool zeroTimeout)
+        => Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -150,11 +150,12 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitNoTimeout(timeout, token).Create(timeout, token);
+    {
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
+            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory WaitNoTimeout(CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, token);
+        return task;
+    }
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -164,5 +165,5 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => WaitNoTimeout(token).Create(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait(zeroTimeout: false).CreateVoidTask(token);
 }

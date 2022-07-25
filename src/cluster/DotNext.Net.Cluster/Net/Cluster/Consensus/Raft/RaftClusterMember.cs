@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -23,8 +24,11 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
     private long nextIndex, fingerprint;
 
-    private protected RaftClusterMember(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id)
+    private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id)
     {
+        Debug.Assert(localMember is not null);
+        Debug.Assert(endPoint is not null);
+
         this.localMember = localMember;
         EndPoint = endPoint;
         status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
@@ -52,10 +56,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     /// <summary>
     /// Gets the address of this cluster member.
     /// </summary>
-    public IPEndPoint EndPoint { get; }
-
-    /// <inheritdoc />
-    EndPoint IPeer.EndPoint => EndPoint;
+    public EndPoint EndPoint { get; }
 
     /// <summary>
     /// Determines whether this member is a leader.

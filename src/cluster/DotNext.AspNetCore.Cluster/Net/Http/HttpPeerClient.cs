@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Http;
 
@@ -9,10 +10,8 @@ public class HttpPeerClient : HttpClient, IPeer
 {
     internal HttpPeerClient(Uri address, HttpMessageHandler handler, bool disposeHandler)
         : base(handler, disposeHandler)
-    {
-        BaseAddress = address;
-    }
+        => BaseAddress = address;
 
     /// <inheritdoc />
-    EndPoint IPeer.EndPoint => new HttpEndPoint(BaseAddress!);
+    EndPoint IPeer.EndPoint => new UriEndPoint(BaseAddress!);
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Cluster
 {
@@ -47,28 +48,19 @@ namespace DotNext.Net.Cluster
             False(ClusterMemberId.TryParse(invalidHex.AsSpan(), out _));
         }
 
-        [Fact]
-        public static void FromIP()
+        public static IEnumerable<object[]> GetEndPoints()
         {
-            var endpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3262);
-            var id = ClusterMemberId.FromEndPoint(endpoint).ToString();
-            True(ClusterMemberId.TryParse(id, out var actual));
-            Equal(ClusterMemberId.FromEndPoint(endpoint), actual);
+            yield return new object[] { new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3262) };
+            yield return new object[] { new DnsEndPoint("localhost", 3262) };
+            yield return new object[] { new UnixDomainSocketEndPoint("/path") };
+            yield return new object[] { new UriEndPoint(new Uri("https://localhost:3232/path", UriKind.Absolute)) };
+            yield return new object[] { new UriEndPoint(new Uri("http://localhost", UriKind.Absolute)) };
         }
 
-        [Fact]
-        public static void FromDNS()
+        [Theory]
+        [MemberData(nameof(GetEndPoints))]
+        public static void CreateFromEndPoint(EndPoint endpoint)
         {
-            var endpoint = new DnsEndPoint("localhost", 3262);
-            var id = ClusterMemberId.FromEndPoint(endpoint).ToString();
-            True(ClusterMemberId.TryParse(id, out var actual));
-            Equal(ClusterMemberId.FromEndPoint(endpoint), actual);
-        }
-
-        [Fact]
-        public static void FromUDS()
-        {
-            var endpoint = new UnixDomainSocketEndPoint("/path");
             var id = ClusterMemberId.FromEndPoint(endpoint).ToString();
             True(ClusterMemberId.TryParse(id, out var actual));
             Equal(ClusterMemberId.FromEndPoint(endpoint), actual);

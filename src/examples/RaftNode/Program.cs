@@ -82,7 +82,7 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     await cluster.StopAsync(CancellationToken.None);
 
     // NOTE: this way of adding members to the cluster is not recommended in production code
-    static void AddMembersToCluster(InMemoryClusterConfigurationStorage<IPEndPoint> storage)
+    static void AddMembersToCluster(InMemoryClusterConfigurationStorage<EndPoint> storage)
     {
         var builder = storage.CreateActiveConfigurationBuilder();
 

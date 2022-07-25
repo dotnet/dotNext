@@ -129,24 +129,24 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private QueuedSynchronizer.BooleanValueTaskFactory TryDequeue(out T? task)
+    private QueuedSynchronizer.ValueTaskFactory TryDequeue(out T? task)
     {
-        QueuedSynchronizer.BooleanValueTaskFactory result;
+        QueuedSynchronizer.ValueTaskFactory result;
 
         if (completedTasks.TryDequeue(out task))
         {
             Debug.Assert(scheduledTasksCount > 0U);
 
             scheduledTasksCount--;
-            result = QueuedSynchronizer.BooleanValueTaskFactory.True;
+            result = new(true);
         }
         else if (IsCompleted)
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.False;
+            result = new(false);
         }
         else
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode());
+            result = new(EnqueueNode());
         }
 
         return result;
@@ -172,21 +172,21 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private QueuedSynchronizer.BooleanValueTaskFactory WaitToReadAsync()
+    private QueuedSynchronizer.ValueTaskFactory Wait(bool zeroTimeout)
     {
-        QueuedSynchronizer.BooleanValueTaskFactory result;
+        QueuedSynchronizer.ValueTaskFactory result;
 
         if (!completedTasks.IsEmpty)
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.True;
+            result = new(true);
         }
-        else if (IsCompleted)
+        else if (IsCompleted || zeroTimeout)
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.False;
+            result = new(false);
         }
         else
         {
-            result = QueuedSynchronizer.BooleanValueTaskFactory.FromSource(EnqueueNode());
+            result = new(EnqueueNode());
         }
 
         return result;
@@ -200,7 +200,12 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     public ValueTask<bool> WaitToReadAsync(TimeSpan timeout, CancellationToken token = default)
-        => WaitToReadAsync().Create(timeout, token);
+    {
+        if (QueuedSynchronizer.ValidateTimeoutAndToken(timeout, token, out var task))
+            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
+
+        return task;
+    }
 
     /// <summary>
     /// Waits for the first completed task.
@@ -208,7 +213,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
     public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
-        => WaitToReadAsync().Create(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait(zeroTimeout: false).CreateTask(token);
 
     /// <summary>
     /// Gets the enumerator to get the completed tasks.
@@ -217,7 +222,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <returns>The enumerator over completed tasks.</returns>
     public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
     {
-        while (await TryDequeue(out var task).Create(token).ConfigureAwait(false))
+        while (await TryDequeue(out var task).CreateTask(token).ConfigureAwait(false))
         {
             if (task is not null)
             {

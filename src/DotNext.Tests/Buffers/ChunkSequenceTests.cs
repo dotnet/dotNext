@@ -76,7 +76,7 @@ namespace DotNext.Buffers
         {
             var sequence = new ReadOnlySequence<byte>(new byte[] { 1, 2, 3 }.AsMemory());
             Span<byte> dest = new byte[3];
-            sequence.CopyTo(dest, out var writtenCount);
+            sequence.CopyTo(dest, out int writtenCount);
             Equal(3, writtenCount);
             Equal(sequence.ToArray(), dest.ToArray());
 

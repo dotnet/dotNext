@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Logging;
 using LingerOption = System.Net.Sockets.LingerOption;
 using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
@@ -9,6 +10,7 @@ using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFa
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
+using CustomTransport;
 using Membership;
 using Net.Security;
 using Tcp;
@@ -26,21 +28,17 @@ public partial class RaftCluster
     {
         private double heartbeatThreshold;
         private ElectionTimeout electionTimeout;
-        private IPEndPoint? publicAddress;
-        private PipeOptions? pipeConfig;
         private MemoryAllocator<byte>? allocator;
-        private int serverChannels = 10;
         private ILoggerFactory? loggerFactory;
         private TimeSpan? requestTimeout;
         private int warmupRounds;
+        private EndPoint? publicAddress;
 
-        private protected NodeConfiguration(IPEndPoint hostAddress)
+        private protected NodeConfiguration()
         {
             electionTimeout = Raft.ElectionTimeout.Recommended;
             heartbeatThreshold = 0.5D;
             Metadata = new Dictionary<string, string>();
-            HostEndPoint = hostAddress;
-            TimeToLive = 64;
             warmupRounds = 10;
         }
 
@@ -56,18 +54,13 @@ public partial class RaftCluster
         /// <summary>
         /// Gets the address used for hosting local member.
         /// </summary>
-        public IPEndPoint HostEndPoint { get; }
+        public abstract EndPoint HostEndPoint { get; }
 
         /// <summary>
         /// Gets the address of the local member visible to other members.
         /// </summary>
-        /// <remarks>
-        /// This property is useful when local member hosted in a container (Windows, LXC or Docker)
-        /// because <see cref="HostEndPoint"/> may return <see cref="IPAddress.Any"/> or
-        /// <see cref="IPAddress.IPv6Any"/>.
-        /// </remarks>
         [AllowNull]
-        public IPEndPoint PublicEndPoint
+        public EndPoint PublicEndPoint
         {
             get => publicAddress ?? HostEndPoint;
             set => publicAddress = value;
@@ -79,7 +72,7 @@ public partial class RaftCluster
         /// <remarks>
         /// If not set then use in-memory storage by default.
         /// </remarks>
-        public IClusterConfigurationStorage<IPEndPoint>? ConfigurationStorage { get; set; }
+        public IClusterConfigurationStorage<EndPoint>? ConfigurationStorage { get; set; }
 
         /// <summary>
         /// Sets <see cref="ConfigurationStorage"/> to in-memory configuration storage.
@@ -88,7 +81,7 @@ public partial class RaftCluster
         /// This storage is not recommended for production use.
         /// </remarks>
         /// <returns>The constructed storage.</returns>
-        public InMemoryClusterConfigurationStorage<IPEndPoint> UseInMemoryConfigurationStorage()
+        public InMemoryClusterConfigurationStorage<EndPoint> UseInMemoryConfigurationStorage()
         {
             var storage = new InMemoryClusterConfigurationStorage(MemoryAllocator);
             ConfigurationStorage = storage;
@@ -115,7 +108,7 @@ public partial class RaftCluster
         public double HeartbeatThreshold
         {
             get => heartbeatThreshold;
-            set => heartbeatThreshold = value.IsBetween(double.Epsilon, 1D, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            set => heartbeatThreshold = value.IsBetween(0D, 1D) ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
@@ -133,7 +126,7 @@ public partial class RaftCluster
         [AllowNull]
         public MemoryAllocator<byte> MemoryAllocator
         {
-            get => allocator ??= pipeConfig?.Pool.ToAllocator() ?? ArrayPool<byte>.Shared.ToAllocator();
+            get => allocator ??= ArrayPool<byte>.Shared.ToAllocator();
             set => allocator = value;
         }
 
@@ -141,7 +134,7 @@ public partial class RaftCluster
         /// Gets or sets the delegate that can be used to announce the node to the cluster
         /// if <see cref="ColdStart"/> is <see langword="false"/>.
         /// </summary>
-        public ClusterMemberAnnouncer<IPEndPoint>? Announcer
+        public ClusterMemberAnnouncer<EndPoint>? Announcer
         {
             get;
             set;
@@ -180,39 +173,6 @@ public partial class RaftCluster
         }
 
         /// <summary>
-        /// Gets or sets configuration of the <see cref="Pipe"/> used for internal pipelined I/O.
-        /// </summary>
-        [AllowNull]
-        [Obsolete("I/O pipe configuration is application to UDP transport only. Use UdpConfiguration.PipeConfig instead", true)]
-        public PipeOptions PipeConfig
-        {
-            get => pipeConfig ?? PipeOptions.Default;
-            set => pipeConfig = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum number of parallel requests that can be handled simultaneously.
-        /// </summary>
-        /// <remarks>
-        /// By default, the value based on the number of cluster members.
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException">Supplied value is equal to or less than zero.</exception>
-        public int ServerBacklog
-        {
-            get => serverChannels;
-            set => serverChannels = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
-        /// <summary>
-        /// Gets or sets a value that specifies the Time To Live (TTL) value of Internet Protocol (IP) packets.
-        /// </summary>
-        public byte TimeToLive
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Gets or sets logger factory using for internal logging.
         /// </summary>
         [AllowNull]
@@ -243,17 +203,154 @@ public partial class RaftCluster
         /// </summary>
         public bool AggressiveLeaderStickiness { get; set; }
 
-        internal abstract RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
+        internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
 
         internal abstract IServer CreateServer(ILocalMember localMember);
+    }
+
+    private interface IConnectionOrientedTransportConfiguration : IClusterMemberConfiguration
+    {
+        TimeSpan ConnectTimeout { get; set; }
+    }
+
+    /// <summary>
+    /// Provides configuration of cluster node whose communication is based on custom network transport.
+    /// </summary>
+    [CLSCompliant(false)]
+    public sealed class CustomTransportConfiguration : NodeConfiguration, IConnectionOrientedTransportConfiguration
+    {
+        private readonly IConnectionListenerFactory serverFactory;
+        private readonly IConnectionFactory clientFactory;
+        private readonly IEqualityComparer<EndPoint>? endPointComparer;
+        private TimeSpan? connectTimeout;
+
+        /// <summary>
+        /// Initializes a new custom transport settings.
+        /// </summary>
+        /// <param name="localNodeHostAddress">The address used to listen requests to the local node.</param>
+        /// <param name="serverConnFactory">The connection factory that is used to listen incoming connections.</param>
+        /// <param name="clientConnFactory">The connection factory that is used to produce outbound connections.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="localNodeHostAddress"/> or <paramref name="serverConnFactory"/> or <paramref name="clientConnFactory"/> is <see langword="null"/>.</exception>
+        public CustomTransportConfiguration(EndPoint localNodeHostAddress, IConnectionListenerFactory serverConnFactory, IConnectionFactory clientConnFactory)
+        {
+            ArgumentNullException.ThrowIfNull(localNodeHostAddress);
+            ArgumentNullException.ThrowIfNull(serverConnFactory);
+            ArgumentNullException.ThrowIfNull(clientConnFactory);
+
+            serverFactory = serverConnFactory;
+            clientFactory = clientConnFactory;
+            HostEndPoint = localNodeHostAddress;
+        }
+
+        /// <summary>
+        /// Gets or sets TCP connection timeout, in milliseconds.
+        /// </summary>
+        public TimeSpan ConnectTimeout
+        {
+            get => connectTimeout ?? RequestTimeout;
+            set => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        /// <inheritdoc />
+        public override EndPoint HostEndPoint { get; }
+
+        /// <summary>
+        /// Gets or sets a comparer for <see cref="EndPoint"/> data type.
+        /// </summary>
+        [AllowNull]
+        public IEqualityComparer<EndPoint> EndPointComparer
+        {
+            get => endPointComparer ?? EqualityComparer<EndPoint>.Default;
+            init => endPointComparer = value;
+        }
+
+        /// <inheritdoc />
+        IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
+
+        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+            => new(localMember, endPoint, id, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
+
+        internal override GenericServer CreateServer(ILocalMember localMember)
+            => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory) { ReceiveTimeout = RequestTimeout };
+    }
+
+    /// <summary>
+    /// Provides configuration of cluster node whose communication is based on network
+    /// transport implemented by .NEXT library.
+    /// </summary>
+    public abstract class BuiltInTransportConfiguration : NodeConfiguration
+    {
+        private int serverChannels = 10;
+
+        private protected BuiltInTransportConfiguration(IPEndPoint hostAddress)
+        {
+            HostEndPoint = hostAddress ?? throw new ArgumentNullException(nameof(hostAddress));
+            TimeToLive = 64;
+        }
+
+        /// <inheritdoc />
+        public sealed override IPEndPoint HostEndPoint { get; }
+
+        /// <summary>
+        /// Gets the address of the local member visible to other members.
+        /// </summary>
+        /// <remarks>
+        /// This property is useful when local member hosted in a container (Windows, LXC or Docker)
+        /// because <see cref="HostEndPoint"/> may return <see cref="IPAddress.Any"/> or
+        /// <see cref="IPAddress.IPv6Any"/>.
+        /// </remarks>
+        [AllowNull]
+        public new IPEndPoint PublicEndPoint
+        {
+            get => base.PublicEndPoint as IPEndPoint ?? HostEndPoint;
+            set => base.PublicEndPoint = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum number of parallel requests that can be handled simultaneously.
+        /// </summary>
+        /// <remarks>
+        /// By default, the value based on the number of cluster members.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Supplied value is equal to or less than zero.</exception>
+        public int ServerBacklog
+        {
+            get => serverChannels;
+            set => serverChannels = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        /// <summary>
+        /// Gets or sets a value that specifies the Time To Live (TTL) value of Internet Protocol (IP) packets.
+        /// </summary>
+        public byte TimeToLive
+        {
+            get;
+            set;
+        }
     }
 
     /// <summary>
     /// Represents configuration of the local cluster node that relies on UDP transport.
     /// </summary>
-    public sealed class UdpConfiguration : NodeConfiguration
+    public sealed class UdpConfiguration : BuiltInTransportConfiguration
     {
         private static readonly IPEndPoint DefaultLocalEndPoint = new(IPAddress.Any, 0);
+
+        private sealed class ExchangePoolFactory : Tuple<ILocalMember, PipeOptions>
+        {
+            internal ExchangePoolFactory(ILocalMember member, PipeOptions options)
+                : base(member, options)
+            {
+            }
+
+            internal ExchangePool Create(int count)
+            {
+                var result = new ExchangePool();
+                while (--count >= 0)
+                    result.Add(new ServerExchange(Item1, Item2));
+                return result;
+            }
+        }
 
         private int clientChannels;
         private int datagramSize;
@@ -324,13 +421,13 @@ public partial class RaftCluster
         /// Gets or sets configuration of the <see cref="Pipe"/> used for internal pipelined I/O.
         /// </summary>
         [AllowNull]
-        public new PipeOptions PipeConfig
+        public PipeOptions PipeConfig
         {
             get => pipeConfig ?? PipeOptions.Default;
             set => pipeConfig = value;
         }
 
-        private UdpClient CreateClient(IPEndPoint address)
+        private UdpClient CreateClient(EndPoint address)
             => new(LocalEndPoint, address, ClientBacklog, MemoryAllocator, LoggerFactory)
             {
                 DatagramSize = datagramSize,
@@ -338,20 +435,7 @@ public partial class RaftCluster
                 Ttl = TimeToLive,
             };
 
-        private Func<int, ExchangePool> ExchangePoolFactory(ILocalMember localMember)
-        {
-            return CreateExchangePool;
-
-            ExchangePool CreateExchangePool(int count)
-            {
-                var result = new ExchangePool();
-                while (--count >= 0)
-                    result.Add(new ServerExchange(localMember, PipeConfig));
-                return result;
-            }
-        }
-
-        internal override ExchangePeer CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+        internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, CreateClient)
             {
                 RequestTimeout = RequestTimeout,
@@ -360,7 +444,7 @@ public partial class RaftCluster
             };
 
         internal override UdpServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory)
+            => new(HostEndPoint, ServerBacklog, MemoryAllocator, new ExchangePoolFactory(localMember, PipeConfig).Create, LoggerFactory)
             {
                 DatagramSize = datagramSize,
                 DontFragment = DontFragment,
@@ -372,7 +456,7 @@ public partial class RaftCluster
     /// <summary>
     /// Represents configuration of the local cluster node that relies on TCP transport.
     /// </summary>
-    public sealed class TcpConfiguration : NodeConfiguration
+    public sealed class TcpConfiguration : BuiltInTransportConfiguration, IConnectionOrientedTransportConfiguration
     {
         private int transmissionBlockSize;
         private TimeSpan? gracefulShutdown, connectTimeout;
@@ -442,7 +526,7 @@ public partial class RaftCluster
             set => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
-        internal override TcpClient CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
+        internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, MemoryAllocator)
             {
                 TransmissionBlockSize = TransmissionBlockSize,

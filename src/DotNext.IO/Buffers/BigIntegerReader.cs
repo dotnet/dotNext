@@ -23,9 +23,9 @@ internal struct BigIntegerReader<TBuffer> : IBufferReader<BigInteger>
 
     public readonly int RemainingBytes => length;
 
-    readonly BigInteger IBufferReader<BigInteger>.Complete() => new(Complete(), isBigEndian: !littleEndian);
+    BigInteger IBufferReader<BigInteger>.Complete() => new(Complete(), isBigEndian: !littleEndian);
 
-    internal readonly Span<byte> Complete() => result.Span.Slice(0, resultOffset);
+    internal Span<byte> Complete() => result.Span.Slice(0, resultOffset);
 
     public void Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
     {

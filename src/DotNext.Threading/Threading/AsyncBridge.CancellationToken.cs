@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using Debug = System.Diagnostics.Debug;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
@@ -37,6 +39,15 @@ public static partial class AsyncBridge
         }
     }
 
-    private static readonly CancellationTokenValueTaskPool TokenPool = new();
-    private static readonly Action<CancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback = TokenPool.Return;
+    private static readonly Action<CancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback = new CancellationTokenValueTaskPool().Return;
+
+    private static CancellationTokenValueTaskPool TokenPool
+    {
+        get
+        {
+            Debug.Assert(CancellationTokenValueTaskCompletionCallback.Target is CancellationTokenValueTaskPool);
+
+            return Unsafe.As<CancellationTokenValueTaskPool>(CancellationTokenValueTaskCompletionCallback.Target);
+        }
+    }
 }

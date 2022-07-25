@@ -74,7 +74,8 @@ internal partial class ProtocolStream
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         async ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         {
-            using var buffer = stream.allocator.Invoke(stream.BufferLength, exactSize: false);
+            // we don't need large buffer. It is used for encoding some special data types, such as strings
+            using var buffer = stream.allocator.Invoke(length: 512, exactSize: false);
             var result = await IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, buffer.Memory, token).ConfigureAwait(false);
             consumed = true;
             return result;

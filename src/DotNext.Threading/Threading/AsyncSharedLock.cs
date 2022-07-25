@@ -171,12 +171,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory TryAcquireAsync(ref StrongLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, timeout, token);
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private BooleanValueTaskFactory TryAcquireAsync(ref WeakLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, timeout, token);
+    private ValueTaskFactory Acquire<TManager>(ref TManager manager, bool throwOnTimeout, bool zeroTimeout)
+        where TManager : struct, ILockManager<WaitNode>
+        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -190,28 +187,26 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        BooleanValueTaskFactory factory;
-        if (strongLock)
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
         {
-            var manager = new StrongLockManager(state);
-            factory = TryAcquireAsync(ref manager, timeout, token);
-        }
-        else
-        {
-            var manager = new WeakLockManager(state);
-            factory = TryAcquireAsync(ref manager, timeout, token);
+            ValueTaskFactory factory;
+
+            if (strongLock)
+            {
+                var manager = new StrongLockManager(state);
+                factory = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero);
+            }
+            else
+            {
+                var manager = new WeakLockManager(state);
+                factory = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero);
+            }
+
+            task = factory.CreateTask(timeout, token);
         }
 
-        return factory.Create(timeout, token);
+        return task;
     }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref StrongLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref WeakLockManager manager, TimeSpan timeout, CancellationToken token)
-        => WaitWithTimeoutAsync(ref manager, ref pool, timeout, token);
 
     /// <summary>
     /// Entres the lock asynchronously.
@@ -226,28 +221,25 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTaskFactory factory;
-        if (strongLock)
+        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
         {
-            var manager = new StrongLockManager(state);
-            factory = AcquireAsync(ref manager, timeout, token);
-        }
-        else
-        {
-            var manager = new WeakLockManager(state);
-            factory = AcquireAsync(ref manager, timeout, token);
+            ValueTaskFactory factory;
+            if (strongLock)
+            {
+                var manager = new StrongLockManager(state);
+                factory = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero);
+            }
+            else
+            {
+                var manager = new WeakLockManager(state);
+                factory = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero);
+            }
+
+            task = factory.CreateVoidTask(timeout, token);
         }
 
-        return factory.Create(timeout, token);
+        return task;
     }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref StrongLockManager manager, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, token);
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireAsync(ref WeakLockManager manager, CancellationToken token)
-        => WaitNoTimeout(ref manager, ref pool, token);
 
     /// <summary>
     /// Entres the lock asynchronously.
@@ -259,19 +251,30 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
     {
-        ValueTaskFactory factory;
-        if (strongLock)
+        ValueTask task;
+
+        if (token.IsCancellationRequested)
         {
-            var manager = new StrongLockManager(state);
-            factory = AcquireAsync(ref manager, token);
+            task = ValueTask.FromCanceled(token);
         }
         else
         {
-            var manager = new WeakLockManager(state);
-            factory = AcquireAsync(ref manager, token);
+            ValueTaskFactory factory;
+            if (strongLock)
+            {
+                var manager = new StrongLockManager(state);
+                factory = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false);
+            }
+            else
+            {
+                var manager = new WeakLockManager(state);
+                factory = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false);
+            }
+
+            task = factory.CreateVoidTask(token);
         }
 
-        return factory.Create(token);
+        return task;
     }
 
     private void DrainWaitQueue()

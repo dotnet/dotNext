@@ -16,20 +16,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [Fact]
         public Task RequestResponse()
         {
-            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 2, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static UdpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 2, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
 
-            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 2, DefaultAllocator, NullLoggerFactory.Instance)
+            UdpClient CreateUdpClient(EndPoint address) => new(LocalHostRandomPort, address, 2, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return RequestResponseTest(CreateServer, CreateClient);
@@ -38,23 +38,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [Fact]
         public Task StressTest()
         {
-            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static UdpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
 
-            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
+            UdpClient CreateUdpClient(EndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
-            return StressTestTest(CreateServer, CreateClient);
+            return StressTestCore(CreateServer, CreateClient);
         }
 
         [Theory]
@@ -62,20 +62,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(false)]
         public Task MetadataRequestResponse(bool smallAmountOfMetadata)
         {
-            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static UdpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
 
-            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
+            UdpClient CreateUdpClient(EndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return MetadataRequestResponseTest(CreateServer, CreateClient, smallAmountOfMetadata);
@@ -108,20 +108,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(50, ReceiveEntriesBehavior.DropFirst, true)]
         public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
         {
-            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static UdpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
 
-            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
+            UdpClient CreateUdpClient(EndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior, useEmptyEntry);
@@ -132,20 +132,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(50)]
         public Task SendingSnapshot(int payloadSize)
         {
-            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static UdpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
 
-            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
+            UdpClient CreateUdpClient(EndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
@@ -156,20 +156,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(50)]
         public Task SendingConfiguration(int payloadSize)
         {
-            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static UdpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
 
-            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
+            UdpClient CreateUdpClient(EndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
@@ -178,20 +178,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [Fact]
         public Task RequestSynchronization()
         {
-            static UdpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static UdpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, DefaultAllocator, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
 
-            UdpClient CreateUdpClient(IPEndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
+            UdpClient CreateUdpClient(EndPoint address) => new(LocalHostRandomPort, address, 100, DefaultAllocator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
 
-            ExchangePeer CreateClient(IPEndPoint address, ILocalMember member, TimeSpan requestTimeout)
+            ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
                 => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout, IsRemote = true };
 
             return SendingSynchronizationRequestTest(CreateServer, CreateClient);

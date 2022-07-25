@@ -90,7 +90,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
 
         if (reader.TryGetSequence(out var sequence))
         {
-            result = IAsyncBinaryReader.Create(sequence);
+            result = new(sequence);
             return true;
         }
 

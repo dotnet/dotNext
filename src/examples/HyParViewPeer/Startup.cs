@@ -7,8 +7,8 @@ using DotNext.Net.Http;
 using DotNext.Net.Cluster.Discovery.HyParView;
 using DotNext.Net.Cluster.Discovery.HyParView.Http;
 using DotNext.Net.Cluster.Messaging.Gossip;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Options;
-using static System.Globalization.CultureInfo;
 
 namespace HyParViewPeer;
 
@@ -24,10 +24,10 @@ internal sealed class Startup
     private sealed class RumorSender : Disposable, IRumorSender
     {
         private readonly IPeerMesh<HttpPeerClient> mesh;
-        private readonly EndPoint senderAddress;
+        private readonly Uri senderAddress;
         private readonly RumorTimestamp senderId;
 
-        internal RumorSender(IPeerMesh<HttpPeerClient> mesh, EndPoint sender, RumorTimestamp id)
+        internal RumorSender(IPeerMesh<HttpPeerClient> mesh, Uri sender, RumorTimestamp id)
         {
             this.mesh = mesh;
             this.senderAddress = sender;
@@ -46,18 +46,18 @@ internal sealed class Startup
         Task IRumorSender.SendAsync(EndPoint peer, CancellationToken token)
         {
             var client = mesh.TryGetPeer(peer);
-            return client is not null && !senderAddress.Equals(peer)
+            return client is not null && !EndPointFormatter.UriEndPointComparer.Equals(new UriEndPoint(senderAddress), peer)
                 ? SendAsync(client, token)
                 : Task.CompletedTask;
         }
 
         public new ValueTask DisposeAsync() => base.DisposeAsync();
 
-        private static void AddSenderAddress(HttpRequestHeaders headers, EndPoint address)
+        private static void AddSenderAddress(HttpRequestHeaders headers, Uri address)
             => headers.Add(SenderAddressHeader, address.ToString());
 
-        internal static HttpEndPoint ParseSenderAddress(HttpRequest request)
-            => HttpEndPoint.TryParse(request.Headers[SenderAddressHeader], out var result) ? result : throw new FormatException("Incorrect sender address");
+        internal static Uri ParseSenderAddress(HttpRequest request)
+            => new(request.Headers[SenderAddressHeader], UriKind.Absolute);
 
         private static void AddRumorId(HttpRequestHeaders headers, in RumorTimestamp id)
             => headers.Add(SenderIdHeader, id.ToString());
@@ -76,7 +76,7 @@ internal sealed class Startup
         });
     }
 
-    private static (EndPoint, RumorTimestamp) PrepareMessageId(IServiceProvider sp)
+    private static (Uri, RumorTimestamp) PrepareMessageId(IServiceProvider sp)
     {
         var config = sp.GetRequiredService<IOptions<HttpPeerConfiguration>>().Value;
         var manager = sp.GetRequiredService<RumorSpreadingManager>();
@@ -89,7 +89,7 @@ internal sealed class Startup
         var senderId = RumorSender.ParseRumorId(context.Request);
 
         var spreadingManager = context.RequestServices.GetRequiredService<RumorSpreadingManager>();
-        if (!spreadingManager.CheckOrder(senderAddress, senderId))
+        if (!spreadingManager.CheckOrder(new UriEndPoint(senderAddress), senderId))
             return Task.CompletedTask;
 
         Console.WriteLine($"Spreading rumor from {senderAddress} with sequence number = {senderId}");
@@ -123,7 +123,7 @@ internal sealed class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<RumorSpreadingManager>(static sp => new RumorSpreadingManager())
+        services.AddSingleton<RumorSpreadingManager>(static sp => new RumorSpreadingManager(EndPointFormatter.UriEndPointComparer))
             .AddSingleton<IPeerLifetime, HyParViewPeerLifetime>()
             .AddSingleton<IHttpMessageHandlerFactory, HyParViewClientHandlerFactory>()
             .AddOptions()

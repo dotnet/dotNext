@@ -8,13 +8,14 @@ namespace DotNext.Net;
 using Buffers;
 using IO;
 using HttpEndPoint = Net.Http.HttpEndPoint;
+using UriEndPoint = Microsoft.AspNetCore.Connections.UriEndPoint;
 
 /// <summary>
 /// Provides methods for serialization/deserialization of <see cref="EndPoint"/> derived types.
 /// </summary>
 /// <remarks>
 /// List of supported endpoint types: <see cref="IPEndPoint"/>, <see cref="DnsEndPoint"/>,
-/// <see cref="HttpEndPoint"/>, <see cref="UnixDomainSocketEndPoint"/>.
+/// <see cref="HttpEndPoint"/>, <see cref="UnixDomainSocketEndPoint"/>, <see cref="UriEndPoint"/>.
 /// </remarks>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public static class EndPointFormatter
@@ -25,8 +26,15 @@ public static class EndPointFormatter
     private const byte DnsEndPointPrefix = 2;
     private const byte HttpEndPointPrefix = 3;
     private const byte DomainSocketEndPointPrefix = 4;
+    private const byte UriEndPointPrefix = 5;
 
     private static Encoding HostNameEncoding => Encoding.UTF8;
+
+    /// <summary>
+    /// Gets comparer for <see cref="UriEndPoint"/>.
+    /// </summary>
+    [CLSCompliant(false)]
+    public static IEqualityComparer<EndPoint> UriEndPointComparer { get; } = new UriEndPointComparer();
 
     /// <summary>
     /// Serializes endpoint address to the buffer.
@@ -108,6 +116,14 @@ public static class EndPointFormatter
                 writer.Add(DomainSocketEndPointPrefix);
                 Serialize(domainSocket.ToString(), ref writer);
                 break;
+            case UriEndPoint uri:
+                // the format is:
+                // URI endpoint type = 1 byte
+                // URI length, N = 4 bytes
+                // URI = N bytes
+                writer.Add(UriEndPointPrefix);
+                Serialize(uri.ToString(), ref writer);
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(endPoint));
         }
@@ -145,6 +161,7 @@ public static class EndPointFormatter
         DnsEndPointPrefix => DeserializeHost(ref reader),
         HttpEndPointPrefix => DeserializeHttp(ref reader),
         DomainSocketEndPointPrefix => DeserializeDomainSocket(ref reader),
+        UriEndPointPrefix => DeserializeUri(ref reader),
         _ => throw new NotSupportedException(),
     };
 
@@ -155,6 +172,15 @@ public static class EndPointFormatter
         using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true);
         reader.Read(pathBuffer.Span);
         return new(HostNameEncoding.GetString(pathBuffer.Span));
+    }
+
+    private static UriEndPoint DeserializeUri(ref SequenceReader reader)
+    {
+        var length = reader.ReadInt32(true);
+
+        using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true);
+        reader.Read(pathBuffer.Span);
+        return new(new Uri(HostNameEncoding.GetString(pathBuffer.Span), UriKind.Absolute));
     }
 
     private static IPEndPoint DeserializeIP(ref SequenceReader reader)

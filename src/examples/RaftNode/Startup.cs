@@ -2,7 +2,7 @@
 using DotNext.Net.Cluster;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
-using DotNext.Net.Http;
+using Microsoft.AspNetCore.Connections;
 using static System.Globalization.CultureInfo;
 
 namespace RaftNode;
@@ -61,15 +61,15 @@ internal sealed class Startup
     }
 
     // NOTE: this way of adding members to the cluster is not recommended in production code
-    private static void AddClusterMembers(IDictionary<ClusterMemberId, HttpEndPoint> members)
+    private static void AddClusterMembers(IDictionary<ClusterMemberId, UriEndPoint> members)
     {
-        var address = new HttpEndPoint("localhost", 3262, true);
+        var address = new UriEndPoint(new("https://localhost:3262", UriKind.Absolute));
         members.Add(ClusterMemberId.FromEndPoint(address), address);
 
-        address = new("localhost", 3263, true);
+        address = new UriEndPoint(new("https://localhost:3263", UriKind.Absolute));
         members.Add(ClusterMemberId.FromEndPoint(address), address);
 
-        address = new("localhost", 3264, true);
+        address = new UriEndPoint(new("https://localhost:3264", UriKind.Absolute));
         members.Add(ClusterMemberId.FromEndPoint(address), address);
     }
 }

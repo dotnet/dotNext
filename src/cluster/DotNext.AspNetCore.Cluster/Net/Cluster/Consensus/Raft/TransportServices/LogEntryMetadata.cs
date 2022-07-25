@@ -5,6 +5,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using SequenceReader = IO.SequenceReader;
 
 /// <summary>
 /// Represents serializable log entry metadata that
@@ -43,12 +44,12 @@ internal readonly struct LogEntryMetadata
     {
         Debug.Assert(input.Length >= Size);
 
-        var reader = new SequenceReader<byte>(input);
-        reader.TryReadLittleEndian(out term);
-        reader.TryReadLittleEndian(out timestamp);
-        reader.TryRead(out flags);
-        reader.TryReadLittleEndian(out identifier);
-        reader.TryReadLittleEndian(out length);
+        var reader = new SequenceReader(input);
+        term = reader.ReadInt64(littleEndian: true);
+        timestamp = reader.ReadInt64(littleEndian: true);
+        flags = reader.Read<byte>();
+        identifier = reader.ReadInt32(littleEndian: true);
+        length = reader.ReadInt64(littleEndian: true);
 
         position = reader.Position;
     }

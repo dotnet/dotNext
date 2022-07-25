@@ -1,33 +1,20 @@
-using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http;
 
 using Buffers;
-using ComponentModel;
-using HttpEndPoint = Net.Http.HttpEndPoint;
 using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
 /// <summary>
 /// Represents configuration of HyParView-over-HTTP implementation.
 /// </summary>
-public class HttpPeerConfiguration : PeerConfiguration
+public class HttpPeerConfiguration : PeerConfiguration, IPeerConfiguration
 {
-    internal const string DefaultResourcePath = "/membership/hyparview";
     private const string DefaultClientHandlerName = "HyParViewClient";
 
-    static HttpPeerConfiguration()
-    {
-        PathStringConverter.Register();
-        HttpEndPointConverter.Register();
-    }
-
     private string? handlerName;
-
-    /// <summary>
-    /// Gets or sets resource path of HyParView protocol handler.
-    /// </summary>
-    [CLSCompliant(false)]
-    public PathString ResourcePath { get; set; } = new(DefaultResourcePath);
+    private Uri? contactNode, localNode;
 
     /// <summary>
     /// Gets or sets HTTP version supported by HyParView implementation.
@@ -61,10 +48,34 @@ public class HttpPeerConfiguration : PeerConfiguration
     /// <summary>
     /// Gets or sets the address of the contact node.
     /// </summary>
-    public HttpEndPoint? ContactNode { get; set; }
+    public Uri? ContactNode
+    {
+        get => contactNode;
+        set
+        {
+            if (value is { IsAbsoluteUri: false })
+                throw new ArgumentException(ExceptionMessages.AbsoluteUriExpected(value), nameof(value));
+
+            contactNode = value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the address of the local node.
     /// </summary>
-    public HttpEndPoint? LocalNode { get; set; }
+    [DisallowNull]
+    public Uri? LocalNode
+    {
+        get => localNode;
+        set
+        {
+            if (value is { IsAbsoluteUri: false })
+                throw new ArgumentException(ExceptionMessages.AbsoluteUriExpected(value), nameof(value));
+
+            localNode = value;
+        }
+    }
+
+    /// <inheritdoc />
+    IEqualityComparer<EndPoint> IPeerConfiguration.EndPointComparer => EndPointFormatter.UriEndPointComparer;
 }

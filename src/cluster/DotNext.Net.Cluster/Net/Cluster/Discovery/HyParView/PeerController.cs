@@ -37,7 +37,6 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     /// Initializes a new HyParView protocol controller.
     /// </summary>
     /// <param name="configuration">The configuration of the algorithm.</param>
-    /// <param name="peerComparer">The peer comparison algorithm.</param>
     /// <exception cref="ArgumentOutOfRangeException">
     /// <see name="IPeerConfiguration.ActiveViewCapacity"/> is less than or equal to 1;
     /// or <see name="IPeerConfiguration.PassiveViewCapacity"/> is less than <see name="IPeerConfiguration.ActiveViewCapacity"/>;
@@ -45,7 +44,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     /// or <see name="IPeerConfiguration.PassiveRandomWalkLength"/> is greater than <see name="IPeerConfiguration.ActiveRandomWalkLength"/>;
     /// or <see name="IPeerConfiguration.PassiveRandomWalkLength"/> is less than or equal to zero.
     /// </exception>
-    protected PeerController(IPeerConfiguration configuration, IEqualityComparer<EndPoint>? peerComparer = null)
+    protected PeerController(IPeerConfiguration configuration)
     {
         if (configuration.ActiveViewCapacity <= 1)
             throw new ArgumentOutOfRangeException(nameof(configuration));
@@ -67,13 +66,19 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         shufflePeriod = configuration.ShufflePeriod;
         random = new();
         queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(configuration.QueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
-        activeView = ImmutableHashSet.Create(peerComparer);
-        passiveView = ImmutableHashSet.Create(peerComparer);
+        PeerComparer = configuration.EndPointComparer ?? EqualityComparer<EndPoint>.Default;
+        activeView = ImmutableHashSet.Create(PeerComparer);
+        passiveView = ImmutableHashSet.Create(PeerComparer);
         lifecycleTokenSource = new();
         LifecycleToken = lifecycleTokenSource.Token;
         shuffleTask = Task.CompletedTask;
         queueLoopTask = Task.CompletedTask;
     }
+
+    /// <summary>
+    /// Gets peer address comparer.
+    /// </summary>
+    protected IEqualityComparer<EndPoint> PeerComparer { get; }
 
     /// <summary>
     /// Gets the logger associated with this controller.

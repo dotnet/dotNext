@@ -14,66 +14,66 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [LoggerMessage(
             EventIdOffset,
             LogLevel.Debug,
-            "Member is downgrading to follower state",
+            "Member is downgrading to follower state with term {Term}",
             EventName = EventIdPrefix + "." + nameof(DowngradingToFollowerState)
         )]
-        public static partial void DowngradingToFollowerState(this ILogger logger);
+        public static partial void DowngradingToFollowerState(this ILogger logger, long term);
 
         [LoggerMessage(
             EventIdOffset + 1,
             LogLevel.Debug,
-            "Member is downgraded to follower state",
+            "Member is downgraded to follower state with term {Term}",
             EventName = EventIdPrefix + "." + nameof(DowngradedToFollowerState)
         )]
-        public static partial void DowngradedToFollowerState(this ILogger logger);
+        public static partial void DowngradedToFollowerState(this ILogger logger, long term);
 
         [LoggerMessage(
             EventIdOffset + 2,
             LogLevel.Information,
-            "Transition to Candidate state started",
+            "Transition to Candidate state has started with term {Term}",
             EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateStarted)
         )]
-        public static partial void TransitionToCandidateStateStarted(this ILogger logger);
+        public static partial void TransitionToCandidateStateStarted(this ILogger logger, long term);
 
         [LoggerMessage(
             EventIdOffset + 3,
             LogLevel.Information,
-            "Transition to Candidate state completed",
+            "Transition to Candidate state has completed with term {Term}",
             EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateCompleted)
         )]
-        public static partial void TransitionToCandidateStateCompleted(this ILogger logger);
+        public static partial void TransitionToCandidateStateCompleted(this ILogger logger, long term);
 
         [LoggerMessage(
             EventIdOffset + 4,
             LogLevel.Information,
-            "Transition to Leader state started",
+            "Transition to Leader state has started with term {Term}",
             EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateStarted)
         )]
-        public static partial void TransitionToLeaderStateStarted(this ILogger logger);
+        public static partial void TransitionToLeaderStateStarted(this ILogger logger, long term);
 
         [LoggerMessage(
             EventIdOffset + 5,
             LogLevel.Information,
-            "Transition to Leader state completed",
+            "Transition to Leader state has completed with term {Term}",
             EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateCompleted)
         )]
-        public static partial void TransitionToLeaderStateCompleted(this ILogger logger);
+        public static partial void TransitionToLeaderStateCompleted(this ILogger logger, long term);
 
         [LoggerMessage(
             EventIdOffset + 6,
             LogLevel.Debug,
-            "Voting is started with timeout {ElectionTimeout}",
+            "Voting is started with timeout {ElectionTimeout} and term {Term}",
             EventName = EventIdPrefix + "." + nameof(VotingStarted)
         )]
-        public static partial void VotingStarted(this ILogger logger, int electionTimeout);
+        public static partial void VotingStarted(this ILogger logger, int electionTimeout, long term);
 
         [LoggerMessage(
             EventIdOffset + 7,
             LogLevel.Debug,
-            "Voting is completed. Total vote weight is {Quorum}",
+            "Voting is completed with term {Term}. Total vote weight is {Quorum}",
             EventName = EventIdPrefix + "." + nameof(VotingCompleted)
         )]
-        public static partial void VotingCompleted(this ILogger logger, int quorum);
+        public static partial void VotingCompleted(this ILogger logger, int quorum, long term);
 
         [LoggerMessage(
             EventIdOffset + 8,
@@ -93,7 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [LoggerMessage(
             EventIdOffset + 10,
-            LogLevel.Debug,
+            LogLevel.Warning,
             "Cluster member {Member} is unavailable",
             EventName = EventIdPrefix + "." + nameof(MemberUnavailable)
         )]
@@ -133,7 +133,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [LoggerMessage(
             EventIdOffset + 15,
-            LogLevel.Debug,
+            LogLevel.Warning,
             "Replication of {Member} is failed. Retry replication from entry {EntryIndex}",
             EventName = EventIdPrefix + "." + nameof(ReplicationFailed)
         )]
@@ -157,7 +157,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         [LoggerMessage(
             EventIdOffset + 18,
-            LogLevel.Debug,
+            LogLevel.Information,
             "Installing snapshot with {EntryIndex} index of the last included log entry",
             EventName = EventIdPrefix + "." + nameof(InstallingSnapshot)
         )]

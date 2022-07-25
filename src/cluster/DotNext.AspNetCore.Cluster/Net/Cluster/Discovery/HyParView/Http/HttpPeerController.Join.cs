@@ -42,7 +42,7 @@ internal partial class HttpPeerController
 
     private static EndPoint DeserializeJoinRequest(ReadOnlySequence<byte> buffer, out SequencePosition position)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         var result = reader.ReadEndPoint();
         position = reader.Position;
         return result;

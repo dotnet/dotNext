@@ -14,7 +14,7 @@ internal sealed class MemberMetadata : Dictionary<string, string>
 
         var info = new JsonCollectionInfoValues<MemberMetadata>
         {
-            ObjectCreator = Activator.CreateInstance<MemberMetadata>,
+            ObjectCreator = CreateMemberMetadata,
             KeyInfo = stringTypeInfo,
             ElementInfo = stringTypeInfo,
             NumberHandling = default,
@@ -22,6 +22,8 @@ internal sealed class MemberMetadata : Dictionary<string, string>
         };
 
         TypeInfo = JsonMetadataServices.CreateIDictionaryInfo<MemberMetadata, string, string>(options, info);
+
+        static MemberMetadata CreateMemberMetadata() => new();
     }
 
     internal MemberMetadata(IDictionary<string, string> properties)
@@ -29,7 +31,7 @@ internal sealed class MemberMetadata : Dictionary<string, string>
     {
     }
 
-    public MemberMetadata()
+    internal MemberMetadata()
         : base(StringComparer.Ordinal)
     {
     }
