@@ -129,7 +129,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private QueuedSynchronizer.ValueTaskFactory TryDequeue(out T? task)
+    internal QueuedSynchronizer.ValueTaskFactory TryDequeue(out T? task)
     {
         QueuedSynchronizer.ValueTaskFactory result;
 

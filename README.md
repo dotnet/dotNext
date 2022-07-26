@@ -65,6 +65,7 @@ Release Date: 07-04-2022
 * Reduced memory allocation caused by extension methods declared in [Scheduler](https://dotnet.github.io/dotNext/api/DotNext.Threading.Scheduler.html) class
 * Reduced monitor lock contention in async locks
 * Added lock stealing methods to some synchronization primitives: `AsyncExclusiveLock`, `AsyncReaderWriterLock`
+* Introduced `GetConsumer` extension method for `TaskCompletionPipe<Task<T>>` class that allows to consume task results asynchronously
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.7.0">DotNext.IO 4.7.0</a>

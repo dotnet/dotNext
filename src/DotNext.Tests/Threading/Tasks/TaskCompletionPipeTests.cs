@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Threading.Tasks
 {
+    using static Collections.Generic.Sequence;
+
     [ExcludeFromCodeCoverage]
     public class TaskCompletionPipeTests : Test
     {
@@ -97,6 +99,21 @@ namespace DotNext.Threading.Tasks
             pipe.Complete();
             source.SetResult();
             False(await pipe.WaitToReadAsync());
+        }
+
+        [Fact]
+        public static async Task ConsumePipe()
+        {
+            var pipe = new TaskCompletionPipe<Task<int>>(capacity: 3);
+            pipe.Add(Task.Run(Func.Constant(42)));
+            pipe.Add(Task.Run(Func.Constant(43)));
+            pipe.Add(Task.Run(Func.Constant(44)));
+            pipe.Complete();
+
+            var array = await pipe.GetConsumer().ToArrayAsync(initialCapacity: 3);
+            Contains(42, array);
+            Contains(43, array);
+            Contains(44, array);
         }
     }
 }
