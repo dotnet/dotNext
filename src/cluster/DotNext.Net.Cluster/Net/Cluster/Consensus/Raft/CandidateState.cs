@@ -30,7 +30,7 @@ internal sealed class CandidateState : RaftState
         var localMember = default(IRaftClusterMember);
         await foreach (var (member, term, result) in voters.ConfigureAwait(false))
         {
-            if (IsDisposed)
+            if (IsDisposingOrDisposed)
                 return;
 
             // current node is outdated
