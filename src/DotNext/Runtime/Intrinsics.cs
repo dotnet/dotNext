@@ -132,7 +132,7 @@ public static class Intrinsics
     public static bool IsDefault<T>(in T value) => Unsafe.SizeOf<T>() switch
     {
         0 => true,
-        sizeof(byte) => InToRef<T, byte>(value) == 0,
+        sizeof(byte) => InToRef<T, byte>(value) is 0,
         sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(value)) is 0,
         sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(value)) is 0U,
         sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(value)) is 0UL,
@@ -162,10 +162,10 @@ public static class Intrinsics
         where T : struct, Enum => Unsafe.SizeOf<T>() switch
         {
             0 => true,
-            sizeof(byte) => (ReinterpretCast<T, byte>(value) & ReinterpretCast<T, byte>(flag)) != 0,
-            sizeof(ushort) => (ReinterpretCast<T, ushort>(value) & ReinterpretCast<T, ushort>(flag)) != 0,
-            sizeof(uint) => (ReinterpretCast<T, uint>(value) & ReinterpretCast<T, uint>(flag)) != 0,
-            sizeof(long) => (ReinterpretCast<T, ulong>(value) & ReinterpretCast<T, ulong>(flag)) != 0UL,
+            sizeof(byte) => (ReinterpretCast<T, byte>(value) & ReinterpretCast<T, byte>(flag)) is not 0,
+            sizeof(ushort) => (ReinterpretCast<T, ushort>(value) & ReinterpretCast<T, ushort>(flag)) is not 0,
+            sizeof(uint) => (ReinterpretCast<T, uint>(value) & ReinterpretCast<T, uint>(flag)) is not 0U,
+            sizeof(ulong) => (ReinterpretCast<T, ulong>(value) & ReinterpretCast<T, ulong>(flag)) is not 0UL,
             _ => value.HasFlag(flag),
         };
 
@@ -183,18 +183,27 @@ public static class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Cast<T>(object? obj)
         where T : notnull
-        => obj is null ? throw new InvalidCastException() : (T)obj;
+    {
+        if (obj is null)
+            ThrowInvalidCastException();
+
+        return (T)obj;
+    }
 
     internal static T? NullAwareCast<T>(object? obj)
     {
         if (IsNullable<T>())
             goto success;
         if (obj is not T)
-            throw new InvalidCastException();
+            ThrowInvalidCastException();
 
         success:
         return (T?)obj;
     }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowInvalidCastException() => throw new InvalidCastException();
 
     /// <summary>
     /// Computes transient hash code of the specified pointer.
