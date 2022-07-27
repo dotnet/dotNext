@@ -14,8 +14,8 @@ namespace DotNext.Buffers;
 /// If stack allocation threshold is reached (e.g. <see cref="StackallocThreshold"/>) then it's possible to use pooled memory from
 /// arbitrary <see cref="MemoryPool{T}"/> or <see cref="ArrayPool{T}.Shared"/>. Custom
 /// <see cref="ArrayPool{T}"/> is not supported because default <see cref="ArrayPool{T}.Shared"/>
-/// is optimized for per-CPU core allocation which is perfectly for situation when the same
-/// thread is responsible for renting and releasing of an array.
+/// is optimized for per-CPU core allocation which is perfect when the same
+/// thread is responsible for renting and releasing the array.
 /// </remarks>
 /// <example>
 /// <code>
