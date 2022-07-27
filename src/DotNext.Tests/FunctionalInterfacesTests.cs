@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -53,6 +54,29 @@ namespace DotNext
         }
 
         [Fact]
+        public static void ConsumerWithContext()
+        {
+            ConsumerClosure<StrongBox<int>, int> consumer = default;
+            True(consumer.IsEmpty);
+            var box = new StrongBox<int> { Value = 11 };
+
+            unsafe
+            {
+                consumer = new(&Sum, box);
+            }
+
+            False(consumer.IsEmpty);
+
+            consumer.As<IConsumer<int>>().Invoke(30);
+            Equal(41, box.Value);
+
+            consumer.As<IFunctional<Action<int>>>().ToDelegate().Invoke(10);
+            Equal(51, box.Value);
+
+            static void Sum(in StrongBox<int> box, int arg) => box.Value += arg;
+        }
+
+        [Fact]
         public static void ValueAsProducer()
         {
             ValueSupplier<int> supplier = 42;
@@ -70,6 +94,25 @@ namespace DotNext
 
             NotNull(activator.As<ISupplier<object>>().Invoke());
             NotNull(activator.As<IFunctional<Func<object>>>().ToDelegate().Invoke());
+        }
+
+        [Fact]
+        public static void IdentityProducer()
+        {
+            SupplierClosure<int, int> supplier = default;
+            True(supplier.IsEmpty);
+
+            unsafe
+            {
+                supplier = new(&Id, 20);
+            }
+
+            False(supplier.IsEmpty);
+
+            Equal(20, supplier.As<ISupplier<int>>().Invoke());
+            Equal(20, supplier.As<IFunctional<Func<int>>>().ToDelegate().Invoke());
+
+            static int Id(in int value) => value;
         }
     }
 }
