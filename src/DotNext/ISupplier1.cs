@@ -4,7 +4,7 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext;
 
-using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfaceAttribute;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents functional interface returning arbitrary value and
@@ -19,8 +19,7 @@ using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfac
 /// </remarks>
 /// <typeparam name="T">The type of the argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
-[FunctionalInterface]
-public interface ISupplier<in T, out TResult>
+public interface ISupplier<in T, out TResult> : IFunctional<Func<T, TResult>>
 {
     /// <summary>
     /// Invokes the supplier.
@@ -28,6 +27,9 @@ public interface ISupplier<in T, out TResult>
     /// <param name="arg">The first argument.</param>
     /// <returns>The value returned by this supplier.</returns>
     TResult Invoke(T arg);
+
+    /// <inheritdoc />
+    Func<T, TResult> IFunctional<Func<T, TResult>>.ToDelegate() => Invoke;
 }
 
 /// <summary>
@@ -147,6 +149,9 @@ public readonly struct DelegatingSupplier<T, TResult> : ISupplier<T, TResult>, I
     /// <inheritdoc />
     TResult ISupplier<T, TResult>.Invoke(T arg) => func(arg);
 
+    /// <inheritdoc />
+    Func<T, TResult> IFunctional<Func<T, TResult>>.ToDelegate() => func;
+
     /// <summary>
     /// Determines whether this object contains the same delegate instance as the specified object.
     /// </summary>
@@ -197,7 +202,7 @@ public readonly struct DelegatingSupplier<T, TResult> : ISupplier<T, TResult>, I
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingPredicate<T> : ISupplier<T, bool>
+internal readonly struct DelegatingPredicate<T> : ISupplier<T, bool>, IFunctional<Predicate<T>>
 {
     private readonly Predicate<T> predicate;
 
@@ -207,12 +212,18 @@ internal readonly struct DelegatingPredicate<T> : ISupplier<T, bool>
     /// <inheritdoc />
     bool ISupplier<T, bool>.Invoke(T arg) => predicate(arg);
 
+    /// <inheritdoc />
+    Func<T, bool> IFunctional<Func<T, bool>>.ToDelegate() => predicate.ChangeType<Func<T, bool>>();
+
+    /// <inheritdoc />
+    Predicate<T> IFunctional<Predicate<T>>.ToDelegate() => predicate;
+
     public static implicit operator DelegatingPredicate<T>(Predicate<T> predicate)
         => new(predicate);
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingConverter<TInput, TOutput> : ISupplier<TInput, TOutput>
+internal readonly struct DelegatingConverter<TInput, TOutput> : ISupplier<TInput, TOutput>, IFunctional<Converter<TInput, TOutput>>
 {
     private readonly Converter<TInput, TOutput> converter;
 
@@ -221,6 +232,12 @@ internal readonly struct DelegatingConverter<TInput, TOutput> : ISupplier<TInput
 
     /// <inheritdoc />
     TOutput ISupplier<TInput, TOutput>.Invoke(TInput arg) => converter(arg);
+
+    /// <inheritdoc />
+    Func<TInput, TOutput> IFunctional<Func<TInput, TOutput>>.ToDelegate() => converter.ChangeType<Func<TInput, TOutput>>();
+
+    /// <inheritdoc />
+    Converter<TInput, TOutput> IFunctional<Converter<TInput, TOutput>>.ToDelegate() => converter;
 
     public static implicit operator DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter)
         => new(converter);

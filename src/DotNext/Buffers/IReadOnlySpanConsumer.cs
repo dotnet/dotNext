@@ -5,7 +5,7 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.Buffers;
 
-using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfaceAttribute;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents functional interface returning no value
@@ -19,7 +19,6 @@ using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfac
 /// as closure which is not allocated on the heap.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the span.</typeparam>
-[FunctionalInterface]
 public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>
 {
     /// <summary>
