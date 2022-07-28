@@ -51,6 +51,7 @@ Release Date: 07-04-2022
 <a href="https://www.nuget.org/packages/dotnext/4.7.0">DotNext 4.7.0</a>
 * Fixed memory alignment issues
 * Added `TaskType.GetIsCompletedGetter` method that allows to obtain [Task.IsCompleted](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task.iscompleted) property in the form of closed delegate
+* Introduced `NextChars` extension methods that allows to fill buffer with random characters
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.0">DotNext.Metaprogramming 4.7.0</a>
 * Updated dependencies
