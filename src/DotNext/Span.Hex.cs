@@ -34,7 +34,7 @@ public static partial class Span
     {
         if (bytes.IsEmpty || output.IsEmpty)
             return 0;
-        var bytesCount = Math.Min(bytes.Length, output.Length / 2);
+        var bytesCount = Math.Min(bytes.Length, output.Length >> 1);
         ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
         ref char charPtr = ref MemoryMarshal.GetReference(output);
         ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NimbleToCharLookupTable);
@@ -48,7 +48,7 @@ public static partial class Span
             charPtr = Add(ref hexTable, value & NimbleMaxValue);
         }
 
-        return bytesCount * 2;
+        return bytesCount << 1;
     }
 
     /// <summary>
@@ -60,13 +60,18 @@ public static partial class Span
     [SkipLocalsInit]
     public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
     {
-        var count = bytes.Length * 2;
-        if (count == 0)
-            return string.Empty;
+        if (lowercased)
+        {
+            var count = bytes.Length << 1;
+            if (count is 0)
+                return string.Empty;
 
-        using MemoryRental<char> buffer = (uint)count <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
-        count = ToHex(bytes, buffer.Span, lowercased);
-        return new string(buffer.Span.Slice(0, count));
+            using MemoryRental<char> buffer = (uint)count <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
+            count = ToHex(bytes, buffer.Span, lowercased);
+            return new string(buffer.Span.Slice(0, count));
+        }
+
+        return Convert.ToHexString(bytes);
     }
 
     /// <summary>
@@ -80,8 +85,8 @@ public static partial class Span
     {
         if (chars.IsEmpty || output.IsEmpty)
             return 0;
-        var charCount = Math.Min(chars.Length, output.Length * 2);
-        charCount -= charCount % 2;
+        var charCount = Math.Min(chars.Length, output.Length << 1);
+        charCount &= -2; // convert even to odd integer
         ref byte bytePtr = ref MemoryMarshal.GetReference(output);
         for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1))
         {
