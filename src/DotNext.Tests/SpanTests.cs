@@ -143,6 +143,7 @@ namespace DotNext
         [InlineData(0, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
+        [Obsolete]
         public static void FromHexConversion(int arraySize, bool lowercased)
         {
             var data = RandomBytes(arraySize);

@@ -110,15 +110,6 @@ public static partial class Span
     /// <param name="chars">The characters containing hexadecimal representation of bytes.</param>
     /// <returns>The decoded array of bytes.</returns>
     /// <exception cref="FormatException"><paramref name="chars"/> contain invalid hexadecimal symbol.</exception>
-    [SkipLocalsInit]
-    public static byte[] FromHex(this ReadOnlySpan<char> chars)
-    {
-        var count = chars.Length / 2;
-        if (count == 0)
-            return Array.Empty<byte>();
-
-        using MemoryRental<byte> buffer = count <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[count] : new MemoryRental<byte>(count);
-        count = FromHex(chars, buffer.Span);
-        return buffer.Span.Slice(0, count).ToArray();
-    }
+    [Obsolete("Use Convert.FromHexString() method instead")]
+    public static byte[] FromHex(this ReadOnlySpan<char> chars) => Convert.FromHexString(chars);
 }
