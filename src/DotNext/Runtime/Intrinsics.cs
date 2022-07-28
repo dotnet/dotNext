@@ -188,22 +188,11 @@ public static class Intrinsics
             ThrowInvalidCastException();
 
         return (T)obj;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidCastException() => throw new InvalidCastException();
     }
-
-    internal static T? NullAwareCast<T>(object? obj)
-    {
-        if (IsNullable<T>())
-            goto success;
-        if (obj is not T)
-            ThrowInvalidCastException();
-
-        success:
-        return (T?)obj;
-    }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowInvalidCastException() => throw new InvalidCastException();
 
     /// <summary>
     /// Computes transient hash code of the specified pointer.
