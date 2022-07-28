@@ -59,21 +59,21 @@ public static partial class Span
     /// <param name="bytes">The bytes to convert.</param>
     /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
     /// <returns>The hexadecimal representation of bytes.</returns>
-    [SkipLocalsInit]
     public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
     {
-        if (lowercased)
+        return lowercased ? ToHexLowerCase(bytes) : Convert.ToHexString(bytes);
+
+        [SkipLocalsInit]
+        static string ToHexLowerCase(ReadOnlySpan<byte> bytes)
         {
             var count = bytes.Length << 1;
             if (count is 0)
                 return string.Empty;
 
             using MemoryRental<char> buffer = (uint)count <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
-            count = ToHex(bytes, buffer.Span, lowercased);
+            count = ToHex(bytes, buffer.Span, lowercased: true);
             return new string(buffer.Span.Slice(0, count));
         }
-
-        return Convert.ToHexString(bytes);
     }
 
     /// <summary>
