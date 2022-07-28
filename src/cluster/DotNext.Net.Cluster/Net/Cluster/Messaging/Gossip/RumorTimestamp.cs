@@ -116,7 +116,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         Format(ref writer);
-        return Span.ToHex(writer.WrittenSpan);
+        return Convert.ToHexString(writer.WrittenSpan);
     }
 
     /// <summary>

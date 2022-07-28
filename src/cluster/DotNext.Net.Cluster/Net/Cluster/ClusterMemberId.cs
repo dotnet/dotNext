@@ -197,7 +197,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         Format(ref writer);
-        return Span.ToHex(writer.WrittenSpan);
+        return Convert.ToHexString(writer.WrittenSpan);
     }
 
     /// <summary>
