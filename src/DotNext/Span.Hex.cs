@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -96,17 +98,22 @@ public static partial class Span
             bytePtr = (byte)(ToNimble(low) | (ToNimble(high) << 4));
         }
 
-        return charCount / 2;
+        return charCount >> 1;
 
         static byte ToNimble(int ch)
         {
             var table = CharToNimbleLookupTable;
 
             byte result;
-            return (uint)ch < (uint)table.Length && ((result = table[ch]) <= NimbleMaxValue)
-                ? result
-                : throw new FormatException(ExceptionMessages.InvalidHexInput((char)ch));
+            if ((uint)ch >= (uint)table.Length || ((result = table[ch]) > NimbleMaxValue))
+                ThrowFormatException(ch);
+
+            return result;
         }
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowFormatException(int ch) => throw new FormatException(ExceptionMessages.InvalidHexInput((char)ch));
     }
 
     /// <summary>
