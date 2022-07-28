@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext;
 
@@ -17,17 +18,25 @@ public static class RandomExtensions
     /// </summary>
     internal static readonly int BitwiseHashSalt = Random.Shared.Next();
 
-    private static void NextString(Random rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
+    private static void NextCharsCore(Random rng, ReadOnlySpan<char> allowedChars, Span<char> buffer)
     {
+        Debug.Assert(rng is not null);
+        Debug.Assert(!buffer.IsEmpty);
+        Debug.Assert(!allowedChars.IsEmpty);
+
         ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
         foreach (ref var element in buffer)
             element = Unsafe.Add(ref firstChar, rng.Next(0, allowedChars.Length));
     }
 
     [SkipLocalsInit]
-    private static void NextString(RandomNumberGenerator rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
+    private static void NextCharsCore(RandomNumberGenerator rng, ReadOnlySpan<char> allowedChars, Span<char> buffer)
     {
-        var offset = buffer.Length * sizeof(int);
+        Debug.Assert(rng is not null);
+        Debug.Assert(!buffer.IsEmpty);
+        Debug.Assert(!allowedChars.IsEmpty);
+
+        var offset = buffer.Length << 2;
         using ByteBuffer bytes = (uint)offset <= (uint)ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
         rng.GetBytes(bytes.Span);
         offset = 0;
@@ -41,18 +50,14 @@ public static class RandomExtensions
     }
 
     [SkipLocalsInit]
-    private static unsafe string NextString<TGenerator>(TGenerator generator, delegate*<TGenerator, Span<char>, ReadOnlySpan<char>, void> impl, ReadOnlySpan<char> allowedChars, int length)
+    private static unsafe string NextString<TGenerator>(TGenerator generator, delegate*<TGenerator, ReadOnlySpan<char>, Span<char>, void> impl, ReadOnlySpan<char> allowedChars, int length)
         where TGenerator : class
     {
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
-
-        if (length == 0 || allowedChars.IsEmpty)
-            return string.Empty;
+        Debug.Assert(generator is not null);
 
         // use stack allocation for small strings, which is 99% of all use cases
         using CharBuffer result = length <= CharBuffer.StackallocThreshold ? stackalloc char[length] : new CharBuffer(length);
-        impl(generator, result.Span, allowedChars);
+        impl(generator, allowedChars, result.Span);
         return new string(result.Span);
     }
 
@@ -64,8 +69,21 @@ public static class RandomExtensions
     /// <param name="length">The length of the random string.</param>
     /// <returns>Randomly generated string.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
-    public static unsafe string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
-        => NextString(random, &NextString, allowedChars, length);
+    public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        if (length is 0 || allowedChars.IsEmpty)
+            return string.Empty;
+
+        unsafe
+        {
+            return NextString(random, &NextCharsCore, allowedChars, length);
+        }
+    }
 
     /// <summary>
     /// Generates random string of the given length.
@@ -79,6 +97,20 @@ public static class RandomExtensions
         => NextString(random, allowedChars.AsSpan(), length);
 
     /// <summary>
+    /// Generates random set of characters.
+    /// </summary>
+    /// <param name="random">The source of random numbers.</param>
+    /// <param name="allowedChars">The allowed characters for the random string.</param>
+    /// <param name="buffer">The array to be filled with random characters.</param>
+    public static void NextChars(this Random random, ReadOnlySpan<char> allowedChars, Span<char> buffer)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+
+        if (!allowedChars.IsEmpty && !buffer.IsEmpty)
+            NextCharsCore(random, allowedChars, buffer);
+    }
+
+    /// <summary>
     /// Generates random string of the given length.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
@@ -86,8 +118,21 @@ public static class RandomExtensions
     /// <param name="length">The length of the random string.</param>
     /// <returns>Randomly generated string.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
-    public static unsafe string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
-        => NextString(random, &NextString, allowedChars, length);
+    public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        if (length is 0 || allowedChars.IsEmpty)
+            return string.Empty;
+
+        unsafe
+        {
+            return NextString(random, &NextCharsCore, allowedChars, length);
+        }
+    }
 
     /// <summary>
     /// Generates random string of the given length.
@@ -99,6 +144,20 @@ public static class RandomExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     public static string NextString(this RandomNumberGenerator random, string allowedChars, int length)
         => NextString(random, allowedChars.AsSpan(), length);
+
+    /// <summary>
+    /// Generates random set of characters.
+    /// </summary>
+    /// <param name="random">The source of random numbers.</param>
+    /// <param name="allowedChars">The allowed characters for the random string.</param>
+    /// <param name="buffer">The array to be filled with random characters.</param>
+    public static void NextChars(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, Span<char> buffer)
+    {
+        ArgumentNullException.ThrowIfNull(random);
+
+        if (!allowedChars.IsEmpty && !buffer.IsEmpty)
+            NextCharsCore(random, allowedChars, buffer);
+    }
 
     /// <summary>
     /// Generates random boolean value.

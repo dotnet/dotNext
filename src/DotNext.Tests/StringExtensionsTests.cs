@@ -20,13 +20,39 @@ namespace DotNext
         public static void RandomStringTest()
         {
             const string AllowedChars = "abcd123456789";
+
             var str = Random.Shared.NextString(AllowedChars, 6);
             Equal(6, str.Length);
+            foreach (var ch in str)
+                True(AllowedChars.Contains(ch));
+
             using (var generator = RandomNumberGenerator.Create())
             {
                 str = generator.NextString(AllowedChars, 7);
+                Equal(7, str.Length);
+                foreach (var ch in str)
+                    AllowedChars.Contains(ch);
             }
-            Equal(7, str.Length);
+        }
+
+        [Fact]
+        public static void RandomChars()
+        {
+            const string AllowedChars = "abcd123456789";
+            var str = new char[6];
+
+            Random.Shared.NextChars(AllowedChars, str);
+            foreach (var ch in str)
+                True(AllowedChars.Contains(ch));
+
+            using (var generator = RandomNumberGenerator.Create())
+            {
+                Array.Clear(str);
+                generator.NextChars(AllowedChars, str);
+
+                foreach (var ch in str)
+                    True(AllowedChars.Contains(ch));
+            }
         }
 
         [Fact]
