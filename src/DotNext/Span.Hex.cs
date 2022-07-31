@@ -39,9 +39,8 @@ public static partial class Span
         if (bytes.IsEmpty || output.IsEmpty)
             return 0;
 
-        int offset;
-        var bytesCount = Math.Min(bytes.Length, output.Length >> 1);
-        ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
+        int bytesCount = Math.Min(bytes.Length, output.Length >> 1), offset;
+        ref byte bytePtr = ref MemoryMarshal.GetReference(bytes);
         ref char charPtr = ref MemoryMarshal.GetReference(output);
 
         // use hardware intrinsics when possible
@@ -100,10 +99,10 @@ public static partial class Span
                     ? Vector256.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f', (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f')
                     : Vector256.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F', (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F');
 
-                for (Vector256<short> input; offset >= Vector256<short>.Count; offset -= Vector256<short>.Count, firstByte = ref Add(ref firstByte, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
+                for (Vector256<short> input; offset >= Vector256<short>.Count; offset -= Vector256<short>.Count, bytePtr = ref Add(ref bytePtr, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
                 {
-                    var lowQword = ReadUnaligned<ulong>(ref firstByte);
-                    var hiQword = ReadUnaligned<ulong>(ref Add(ref firstByte, sizeof(ulong)));
+                    var lowQword = ReadUnaligned<ulong>(ref bytePtr);
+                    var hiQword = ReadUnaligned<ulong>(ref Add(ref bytePtr, sizeof(ulong)));
                     input = Avx2.Shuffle(Vector256.Create(lowQword, hiQword, lowQword, hiQword).AsByte(), insertionMask).AsInt16();
 
                     // apply x & 0B1111 for each vector component to get the lower nibbles;
@@ -150,9 +149,9 @@ public static partial class Span
                     ? Vector128.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f')
                     : Vector128.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F');
 
-                for (Vector128<short> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, firstByte = ref Add(ref firstByte, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
+                for (Vector128<short> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, bytePtr = ref Add(ref bytePtr, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
                 {
-                    input = Ssse3.Shuffle(Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref firstByte)).AsByte(), insertionMask).AsInt16();
+                    input = Ssse3.Shuffle(Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref bytePtr)).AsByte(), insertionMask).AsInt16();
 
                     // apply x & 0B1111 for each vector component to get the lower nibbles;
                     // then do table lookup
@@ -191,9 +190,9 @@ public static partial class Span
         if (!lowercased)
             hexTable = ref Unsafe.Add(ref hexTable, 16);
 
-        for (; offset < bytesCount; offset++, charPtr = ref Add(ref charPtr, 1), firstByte = ref Add(ref firstByte, 1))
+        for (; offset < bytesCount; offset++, charPtr = ref Add(ref charPtr, 1), bytePtr = ref Add(ref bytePtr, 1))
         {
-            var value = firstByte;
+            var value = bytePtr;
             charPtr = Add(ref hexTable, value >> 4);
             charPtr = ref Add(ref charPtr, 1);
             charPtr = Add(ref hexTable, value & NimbleMaxValue);
