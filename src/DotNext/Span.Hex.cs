@@ -45,13 +45,13 @@ public static partial class Span
         ref char charPtr = ref MemoryMarshal.GetReference(output);
 
         // use hardware intrinsics when possible
-        if (Avx2.IsSupported)
+        if (Ssse3.IsSupported)
         {
             const short highBits = NimbleMaxValue << 4;
             offset = bytesCount;
 
             // encode 16 bytes at a time using 256-bit vector
-            if (offset >= Vector256<short>.Count)
+            if (Avx2.IsSupported && offset >= Vector256<short>.Count)
             {
                 const int bytesCountPerIteration = 16;
                 const int charsCountPerIteration = bytesCountPerIteration * 2;
@@ -132,7 +132,7 @@ public static partial class Span
                 }
             }
 
-            // encode 8 bytes at a time using 128-bit vector
+            // encode 8 bytes at a time using 128-bit vector (SSSE3 only intructions)
             if (offset >= Vector128<short>.Count)
             {
                 const int bytesCountPerIteration = sizeof(long);
@@ -152,30 +152,30 @@ public static partial class Span
 
                 for (Vector128<short> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, firstByte = ref Add(ref firstByte, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
                 {
-                    input = Avx2.Shuffle(Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref firstByte)).AsByte(), insertionMask).AsInt16();
+                    input = Ssse3.Shuffle(Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref firstByte)).AsByte(), insertionMask).AsInt16();
 
                     // apply x & 0B1111 for each vector component to get the lower nibbles;
                     // then do table lookup
-                    var lowNibbles = Avx2.Shuffle(asciiTable, Avx2.And(input, lowBitsMask).AsByte());
+                    var lowNibbles = Ssse3.Shuffle(asciiTable, Ssse3.And(input, lowBitsMask).AsByte());
 
                     // reset to zero all unused components
-                    lowNibbles = Avx2.And(lowNibbles, nibblesMask);
+                    lowNibbles = Ssse3.And(lowNibbles, nibblesMask);
 
                     // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
                     // then do table lookup
-                    var highNibbles = Avx2.Shuffle(asciiTable, Avx2.ShiftRightLogical(Avx2.And(input, highBitsMask), 4).AsByte());
+                    var highNibbles = Ssse3.Shuffle(asciiTable, Ssse3.ShiftRightLogical(Ssse3.And(input, highBitsMask), 4).AsByte());
 
                     // reset to zero all unused components
-                    highNibbles = Avx2.And(highNibbles, nibblesMask);
+                    highNibbles = Ssse3.And(highNibbles, nibblesMask);
 
                     // encode to hex
-                    var portion1 = Avx2.UnpackLow(highNibbles.AsInt16(), lowNibbles.AsInt16());
-                    var portion2 = Avx2.UnpackHigh(highNibbles.AsInt16(), lowNibbles.AsInt16());
+                    var portion1 = Ssse3.UnpackLow(highNibbles.AsInt16(), lowNibbles.AsInt16());
+                    var portion2 = Ssse3.UnpackHigh(highNibbles.AsInt16(), lowNibbles.AsInt16());
 
                     fixed (char* ptr = &charPtr)
                     {
-                        Avx2.Store((short*)ptr, portion1);
-                        Avx2.Store((short*)(ptr + bytesCountPerIteration), portion2);
+                        Ssse3.Store((short*)ptr, portion1);
+                        Ssse3.Store((short*)(ptr + bytesCountPerIteration), portion2);
                     }
                 }
             }
