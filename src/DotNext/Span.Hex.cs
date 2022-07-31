@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
@@ -32,19 +34,166 @@ public static partial class Span
     /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
     /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
     /// <returns>The actual number of characters in <paramref name="output"/> written by the method.</returns>
-    public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output, bool lowercased = false)
+    public static unsafe int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output, bool lowercased = false)
     {
         if (bytes.IsEmpty || output.IsEmpty)
             return 0;
+
+        int offset;
         var bytesCount = Math.Min(bytes.Length, output.Length >> 1);
         ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
         ref char charPtr = ref MemoryMarshal.GetReference(output);
+
+        // use hardware intrinsics when possible
+        if (Avx2.IsSupported)
+        {
+            const short highBits = NimbleMaxValue << 4;
+            offset = bytesCount;
+
+            // encode 16 bytes at a time using 256-bit vector
+            if (offset >= Vector256<short>.Count)
+            {
+                const int bytesCountPerIteration = 16;
+                const int charsCountPerIteration = bytesCountPerIteration * 2;
+                var nibblesMask = Vector256.Create(byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0);
+
+                // byte insertion mask allows to prepare input vector of bytes for logical right shift operator
+                // to do this, we need to convert vector of bytes to vector of shorts
+                var insertionMask = Vector256.Create(
+                0,
+                byte.MaxValue,
+                1,
+                byte.MaxValue,
+                2,
+                byte.MaxValue,
+                3,
+                byte.MaxValue,
+                8,
+                byte.MaxValue,
+                9,
+                byte.MaxValue,
+                10,
+                byte.MaxValue,
+                11,
+                byte.MaxValue,
+                4,
+                byte.MaxValue,
+                5,
+                byte.MaxValue,
+                6,
+                byte.MaxValue,
+                7,
+                byte.MaxValue,
+                12,
+                byte.MaxValue,
+                13,
+                byte.MaxValue,
+                14,
+                byte.MaxValue,
+                15,
+                byte.MaxValue
+                );
+
+                var lowBitsMask = Vector256.Create(NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue);
+                var highBitsMask = Vector256.Create(highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits);
+                var asciiTable = lowercased
+                    ? Vector256.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f', (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f')
+                    : Vector256.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F', (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F');
+
+                for (Vector256<short> input; offset >= Vector256<short>.Count; offset -= Vector256<short>.Count, firstByte = ref Add(ref firstByte, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
+                {
+                    var lowQword = ReadUnaligned<ulong>(ref firstByte);
+                    var hiQword = ReadUnaligned<ulong>(ref Add(ref firstByte, sizeof(ulong)));
+                    input = Avx2.Shuffle(Vector256.Create(lowQword, hiQword, lowQword, hiQword).AsByte(), insertionMask).AsInt16();
+
+                    // apply x & 0B1111 for each vector component to get the lower nibbles;
+                    // then do table lookup
+                    var lowNibbles = Avx2.Shuffle(asciiTable, Avx2.And(input, lowBitsMask).AsByte());
+
+                    // reset to zero all unused components
+                    lowNibbles = Avx2.And(lowNibbles, nibblesMask);
+
+                    // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
+                    // then do table lookup
+                    var highNibbles = Avx2.Shuffle(asciiTable, Avx2.ShiftRightLogical(Avx2.And(input, highBitsMask), 4).AsByte());
+
+                    // reset to zero all unused components
+                    highNibbles = Avx2.And(highNibbles, nibblesMask);
+
+                    // encode to hex
+                    var portion1 = Avx2.UnpackLow(highNibbles.AsInt16(), lowNibbles.AsInt16());
+                    var portion2 = Avx2.UnpackHigh(highNibbles.AsInt16(), lowNibbles.AsInt16());
+
+                    fixed (char* ptr = &charPtr)
+                    {
+                        Avx2.Store((short*)ptr, portion1);
+                        Avx2.Store((short*)(ptr + bytesCountPerIteration), portion2);
+                    }
+                }
+            }
+
+            // encode 8 bytes at a time using 128-bit vector
+            if (offset >= Vector128<short>.Count)
+            {
+                const int bytesCountPerIteration = sizeof(long);
+                const int charsCountPerIteration = bytesCountPerIteration * 2;
+
+                var nibblesMask = Vector128.Create(byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0, byte.MaxValue, 0);
+
+                // byte insertion mask allows to prepare input vector of bytes for logical right shift operator
+                // to do this, we need to convert vector of bytes to vector of shorts a follows:
+                // 1, 2, 3, 4, 5, 6, 7, 8 => 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0
+                var insertionMask = Vector128.Create(0, byte.MaxValue, 1, byte.MaxValue, 2, byte.MaxValue, 3, byte.MaxValue, 4, byte.MaxValue, 5, byte.MaxValue, 6, byte.MaxValue, 7, byte.MaxValue);
+                var lowBitsMask = Vector128.Create(NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue);
+                var highBitsMask = Vector128.Create(highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits);
+                var asciiTable = lowercased
+                    ? Vector128.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f')
+                    : Vector128.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F');
+
+                for (Vector128<short> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, firstByte = ref Add(ref firstByte, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
+                {
+                    input = Avx2.Shuffle(Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref firstByte)).AsByte(), insertionMask).AsInt16();
+
+                    // apply x & 0B1111 for each vector component to get the lower nibbles;
+                    // then do table lookup
+                    var lowNibbles = Avx2.Shuffle(asciiTable, Avx2.And(input, lowBitsMask).AsByte());
+
+                    // reset to zero all unused components
+                    lowNibbles = Avx2.And(lowNibbles, nibblesMask);
+
+                    // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
+                    // then do table lookup
+                    var highNibbles = Avx2.Shuffle(asciiTable, Avx2.ShiftRightLogical(Avx2.And(input, highBitsMask), 4).AsByte());
+
+                    // reset to zero all unused components
+                    highNibbles = Avx2.And(highNibbles, nibblesMask);
+
+                    // encode to hex
+                    var portion1 = Avx2.UnpackLow(highNibbles.AsInt16(), lowNibbles.AsInt16());
+                    var portion2 = Avx2.UnpackHigh(highNibbles.AsInt16(), lowNibbles.AsInt16());
+
+                    fixed (char* ptr = &charPtr)
+                    {
+                        Avx2.Store((short*)ptr, portion1);
+                        Avx2.Store((short*)(ptr + bytesCountPerIteration), portion2);
+                    }
+                }
+            }
+
+            offset = bytesCount - offset;
+        }
+        else
+        {
+            offset = 0;
+        }
+
         ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NimbleToCharLookupTable);
         if (!lowercased)
             hexTable = ref Unsafe.Add(ref hexTable, 16);
-        for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
+
+        for (; offset < bytesCount; offset++, charPtr = ref Add(ref charPtr, 1), firstByte = ref Add(ref firstByte, 1))
         {
-            var value = Add(ref firstByte, i);
+            var value = firstByte;
             charPtr = Add(ref hexTable, value >> 4);
             charPtr = ref Add(ref charPtr, 1);
             charPtr = Add(ref hexTable, value & NimbleMaxValue);

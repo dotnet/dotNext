@@ -93,9 +93,13 @@ namespace DotNext
 
         [Theory]
         [InlineData(0, true)]
+        [InlineData(7, true)]
+        [InlineData(10, true)]
         [InlineData(128, true)]
         [InlineData(2048, true)]
         [InlineData(0, false)]
+        [InlineData(7, false)]
+        [InlineData(10, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
         public static void ToHexConversion(int arraySize, bool lowercased)

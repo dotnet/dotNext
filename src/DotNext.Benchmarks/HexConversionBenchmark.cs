@@ -43,11 +43,15 @@ public class HexConversionBenchmark
             yield return new ByteArrayParam(bytes);
             Random.Shared.NextBytes(bytes = new byte[256]);
             yield return new ByteArrayParam(bytes);
+            Random.Shared.NextBytes(bytes = new byte[512]);
+            yield return new ByteArrayParam(bytes);
+            Random.Shared.NextBytes(bytes = new byte[1024]);
+            yield return new ByteArrayParam(bytes);
         }
     }
 
-    [Benchmark(Description = "BitConverter.ToString")]
-    public string ToHexUsingBitConverter() => BitConverter.ToString(Bytes.Value);
+    [Benchmark(Description = "Convert.ToHexString", Baseline = true)]
+    public string ToHexUsingBitConverter() => Convert.ToHexString(Bytes.Value);
 
     [Benchmark(Description = "Span.ToHex")]
     public string ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
