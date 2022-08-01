@@ -86,13 +86,16 @@ public static partial class Hex
                     highNibbles = Ssse3.And(highNibbles, nibblesMask);
 
                     // encode to hex
-                    var portion1 = Ssse3.UnpackLow(highNibbles.AsInt16(), lowNibbles.AsInt16());
-                    var portion2 = Ssse3.UnpackHigh(highNibbles.AsInt16(), lowNibbles.AsInt16());
-
+                    var result = Ssse3.UnpackLow(highNibbles.AsInt16(), lowNibbles.AsInt16());
                     fixed (char* ptr = &charPtr)
                     {
-                        Ssse3.Store((short*)ptr, portion1);
-                        Ssse3.Store((short*)(ptr + bytesCountPerIteration), portion2);
+                        Ssse3.Store((short*)ptr, result);
+                    }
+
+                    result = Ssse3.UnpackHigh(highNibbles.AsInt16(), lowNibbles.AsInt16());
+                    fixed (char* ptr = &charPtr)
+                    {
+                        Ssse3.Store((short*)(ptr + bytesCountPerIteration), result);
                     }
                 }
             }
