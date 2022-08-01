@@ -102,6 +102,7 @@ namespace DotNext
         [InlineData(10, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
+        [Obsolete]
         public static void ToHexConversion(int arraySize, bool lowercased)
         {
             var data = RandomBytes(arraySize);
@@ -109,6 +110,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete]
         public static void ToHexConversionVarLength()
         {
             ReadOnlySpan<byte> data = new byte[] { 1, 2 };
@@ -121,6 +123,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete]
         public static void FromHexConversionVarLength()
         {
             ReadOnlySpan<char> data = new char[] { 'F', 'F', 'A' };

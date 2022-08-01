@@ -5,6 +5,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Net.Cluster.Messaging.Gossip;
 
 using Buffers;
+using Hex = Buffers.Text.Hex;
 
 /// <summary>
 /// Represents Lamport timestamp of the rumor mixed with the timestamp returned
@@ -129,7 +130,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     {
         Span<byte> bytes = stackalloc byte[Size];
 
-        if (timestamp.FromHex(bytes) == bytes.Length)
+        if (Hex.DecodeFromUtf16(timestamp, bytes) == bytes.Length)
         {
             result = new(bytes);
             return true;

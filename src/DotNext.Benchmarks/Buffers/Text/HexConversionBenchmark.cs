@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using static System.Globalization.CultureInfo;
 
-namespace DotNext;
+namespace DotNext.Buffers.Text;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.Declared)]
@@ -54,5 +54,5 @@ public class HexConversionBenchmark
     public string ToHexUsingBitConverter() => Convert.ToHexString(Bytes.Value);
 
     [Benchmark(Description = "Span.ToHex")]
-    public string ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
+    public string ToHexUsingSpanConverter() => Hex.EncodeToUtf16(Bytes.Value);
 }

@@ -7,6 +7,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster;
 
 using Buffers;
+using Hex = Buffers.Text.Hex;
 using Intrinsics = Runtime.Intrinsics;
 using HttpEndPoint = Net.Http.HttpEndPoint;
 
@@ -209,7 +210,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public static bool TryParse(ReadOnlySpan<char> identifier, out ClusterMemberId value)
     {
         Span<byte> bytes = stackalloc byte[Size];
-        if (identifier.FromHex(bytes) == bytes.Length)
+        if (Hex.DecodeFromUtf16(identifier, bytes) == bytes.Length)
         {
             value = new(bytes);
             return true;
