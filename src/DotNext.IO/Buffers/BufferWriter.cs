@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DotNext.Buffers;
 
-using Text;
+using EncodingContext = DotNext.Text.EncodingContext;
 using LengthFormat = IO.LengthFormat;
 
 /// <summary>
