@@ -10,52 +10,6 @@ using Buffers;
 
 public static partial class Hex
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static Vector128<byte> NimbleToUtf8CharLookupTable(bool lowercased) => lowercased
-                    ? Vector128.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f')
-                    : Vector128.Create((byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6', (byte)'7', (byte)'8', (byte)'9', (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F');
-
-    // byte insertion mask allows to prepare input vector of bytes for logical right shift operator
-    // to do this, we need to convert (shuffle) vector of bytes to vector of shorts a follows:
-    // 1, 2, 3, 4, 5, 6, 7, 8 => 1, 0, 2, 0, 3, 0, 4, 0, 5, 0, 6, 0, 7, 0, 8, 0
-    private static Vector128<byte> SaturationMask => Vector128.Create(
-            0,
-            byte.MaxValue,
-            1,
-            byte.MaxValue,
-            2,
-            byte.MaxValue,
-            3,
-            byte.MaxValue,
-            4,
-            byte.MaxValue,
-            5,
-            byte.MaxValue,
-            6,
-            byte.MaxValue,
-            7,
-            byte.MaxValue);
-
-    private static Vector128<short> LowBitsMask => Vector128.Create(
-        NimbleMaxValue,
-        NimbleMaxValue,
-        NimbleMaxValue,
-        NimbleMaxValue,
-        NimbleMaxValue,
-        NimbleMaxValue,
-        NimbleMaxValue,
-        NimbleMaxValue);
-
-    private static Vector128<short> HighBitsMask => Vector128.Create(
-        NimbleMaxValue << 4,
-        NimbleMaxValue << 4,
-        NimbleMaxValue << 4,
-        NimbleMaxValue << 4,
-        NimbleMaxValue << 4,
-        NimbleMaxValue << 4,
-        NimbleMaxValue << 4,
-        NimbleMaxValue << 4);
-
     /// <summary>
     /// Converts set of bytes into hexadecimal representation.
     /// </summary>
@@ -103,20 +57,35 @@ public static partial class Hex
 
             var nimbles = NimbleToUtf8CharLookupTable(lowercased);
 
-            for (Vector128<short> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, bytePtr = ref Add(ref bytePtr, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
+            var lowBitsMask = Vector128.Create(
+                NimbleMaxValue,
+                NimbleMaxValue,
+                NimbleMaxValue,
+                NimbleMaxValue,
+                NimbleMaxValue,
+                NimbleMaxValue,
+                NimbleMaxValue,
+                NimbleMaxValue,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0);
+
+            for (Vector128<byte> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, bytePtr = ref Add(ref bytePtr, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
             {
-                input = Ssse3.Shuffle(Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref bytePtr)).AsByte(), SaturationMask).AsInt16();
+                input = Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref bytePtr)).AsByte();
 
                 // apply x & 0B1111 for each vector component to get the lower nibbles;
                 // then do table lookup
-                var lowNibbles = Ssse3.Shuffle(nimbles, Ssse3.And(input, LowBitsMask).AsByte());
-
-                // restore natural ordering
-                lowNibbles = Ssse3.Shuffle(lowNibbles, compressionMask);
+                var lowNibbles = Ssse3.Shuffle(nimbles, Ssse3.And(input, lowBitsMask).AsByte());
 
                 // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
                 // then do table lookup
-                var highNibbles = Ssse3.Shuffle(nimbles, Ssse3.ShiftRightLogical(Ssse3.And(input, HighBitsMask), 4).AsByte());
+                var highNibbles = Ssse3.Shuffle(nimbles, Ssse3.ShiftRightLogical(Ssse3.And(Ssse3.Shuffle(input, SaturationMask).AsInt16(), HighBitsMask), 4).AsByte());
 
                 // restore natural ordering
                 highNibbles = Ssse3.Shuffle(highNibbles, compressionMask);

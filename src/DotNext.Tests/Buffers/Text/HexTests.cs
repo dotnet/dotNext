@@ -87,9 +87,6 @@ namespace DotNext.Buffers.Text
         public static void ToUtf8(int arraySize, bool lowercased)
         {
             var data = RandomBytes(arraySize);
-            // for (var i = 0; i < data.Length; i++)
-            //     data[i] = (byte)(i + 1);
-
             Equal(ToHexSlow(data, lowercased), Encoding.UTF8.GetString(Hex.EncodeToUtf8(data, lowercased)));
         }
 

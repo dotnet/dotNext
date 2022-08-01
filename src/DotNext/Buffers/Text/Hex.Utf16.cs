@@ -10,8 +10,6 @@ using Buffers;
 
 public static partial class Hex
 {
-    private static readonly char[] NimbleToUtf16CharLookupTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-
     /// <summary>
     /// Converts set of bytes into hexadecimal representation.
     /// </summary>
@@ -57,6 +55,16 @@ public static partial class Hex
                     byte.MaxValue,
                     0);
 
+                var lowBitsMask = Vector128.Create(
+                    NimbleMaxValue,
+                    NimbleMaxValue,
+                    NimbleMaxValue,
+                    NimbleMaxValue,
+                    NimbleMaxValue,
+                    NimbleMaxValue,
+                    NimbleMaxValue,
+                    NimbleMaxValue);
+
                 var nimbles = NimbleToUtf8CharLookupTable(lowercased);
 
                 for (Vector128<short> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, bytePtr = ref Add(ref bytePtr, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
@@ -65,7 +73,7 @@ public static partial class Hex
 
                     // apply x & 0B1111 for each vector component to get the lower nibbles;
                     // then do table lookup
-                    var lowNibbles = Ssse3.Shuffle(nimbles, Ssse3.And(input, LowBitsMask).AsByte());
+                    var lowNibbles = Ssse3.Shuffle(nimbles, Ssse3.And(input, lowBitsMask).AsByte());
 
                     // reset to zero all unused components
                     lowNibbles = Ssse3.And(lowNibbles, nibblesMask);
