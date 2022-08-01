@@ -51,8 +51,11 @@ public class HexConversionBenchmark
     }
 
     [Benchmark(Description = "Convert.ToHexString", Baseline = true)]
-    public string ToHexUsingBitConverter() => Convert.ToHexString(Bytes.Value);
+    public string ToHexUsingDotNetConverter() => Convert.ToHexString(Bytes.Value);
 
-    [Benchmark(Description = "Span.ToHex")]
-    public string ToHexUsingSpanConverter() => Hex.EncodeToUtf16(Bytes.Value);
+    [Benchmark(Description = "Hex.EncodeToUtf16")]
+    public string ToUtf16HexUsingHexConverter() => Hex.EncodeToUtf16(Bytes.Value);
+
+    [Benchmark(Description = "Hex.EncodeToUtf8")]
+    public byte[] ToUtf8HexUsingHexConverter() => Hex.EncodeToUtf8(Bytes.Value);
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace DotNext.Buffers.Text
 {
@@ -16,14 +17,14 @@ namespace DotNext.Buffers.Text
         [InlineData(10, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
-        public static void ToHexConversion(int arraySize, bool lowercased)
+        public static void ToUtf16(int arraySize, bool lowercased)
         {
             var data = RandomBytes(arraySize);
             Equal(ToHexSlow(data, lowercased), Hex.EncodeToUtf16(data, lowercased));
         }
 
         [Fact]
-        public static void ToHexConversionVarLength()
+        public static void ToUtf16ConversionVarLength()
         {
             ReadOnlySpan<byte> data = new byte[] { 1, 2 };
             char[] encoded = new char[1];
@@ -35,7 +36,7 @@ namespace DotNext.Buffers.Text
         }
 
         [Fact]
-        public static void FromHexConversionVarLength()
+        public static void FromUtf16ConversionVarLength()
         {
             ReadOnlySpan<char> data = new char[] { 'F', 'F', 'A' };
             var decoded = new byte[1];
@@ -62,11 +63,52 @@ namespace DotNext.Buffers.Text
         [InlineData(128, false)]
         [InlineData(2048, false)]
         [Obsolete]
-        public static void FromHexConversion(int arraySize, bool lowercased)
+        public static void FromUtf16(int arraySize, bool lowercased)
+        {
+            var expected = RandomBytes(arraySize);
+            ReadOnlySpan<char> hex = ToHexSlow(expected, lowercased);
+
+            var actual = new byte[expected.Length];
+            Equal(actual.Length, Hex.DecodeFromUtf16(hex, actual));
+            Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(0, true)]
+        [InlineData(7, true)]
+        [InlineData(10, true)]
+        [InlineData(128, true)]
+        [InlineData(2048, true)]
+        [InlineData(0, false)]
+        [InlineData(7, false)]
+        [InlineData(10, false)]
+        [InlineData(128, false)]
+        [InlineData(2048, false)]
+        public static void ToUtf8(int arraySize, bool lowercased)
         {
             var data = RandomBytes(arraySize);
-            ReadOnlySpan<char> hex = ToHexSlow(data, lowercased);
-            Equal(data, hex.FromHex());
+            // for (var i = 0; i < data.Length; i++)
+            //     data[i] = (byte)(i + 1);
+
+            Equal(ToHexSlow(data, lowercased), Encoding.UTF8.GetString(Hex.EncodeToUtf8(data, lowercased)));
+        }
+
+        [Theory]
+        [InlineData(0, true)]
+        [InlineData(128, true)]
+        [InlineData(2048, true)]
+        [InlineData(0, false)]
+        [InlineData(128, false)]
+        [InlineData(2048, false)]
+        [Obsolete]
+        public static void FromUtf8(int arraySize, bool lowercased)
+        {
+            var expected = RandomBytes(arraySize);
+            ReadOnlySpan<byte> hex = Encoding.UTF8.GetBytes(ToHexSlow(expected, lowercased));
+
+            var actual = new byte[expected.Length];
+            Equal(actual.Length, Hex.DecodeFromUtf8(hex, actual));
+            Equal(expected, actual);
         }
 
         private static string ToHexSlow(byte[] data, bool lowercased)
