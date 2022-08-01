@@ -90,8 +90,7 @@ public static partial class Span
                 14,
                 byte.MaxValue,
                 15,
-                byte.MaxValue
-                );
+                byte.MaxValue);
 
                 var lowBitsMask = Vector256.Create(NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue, NimbleMaxValue);
                 var highBitsMask = Vector256.Create(highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits, highBits);
