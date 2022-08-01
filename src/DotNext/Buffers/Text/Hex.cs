@@ -17,7 +17,7 @@ public static class Hex
 {
     private const byte NimbleMaxValue = 0B1111;
 
-    private static readonly char[] NimbleToCharLookupTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    private static readonly char[] NimbleToUtf16CharLookupTable = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     private static ReadOnlySpan<byte> CharToNimbleLookupTable => new byte[]
         {
@@ -188,7 +188,7 @@ public static class Hex
             offset = 0;
         }
 
-        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NimbleToCharLookupTable);
+        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NimbleToUtf16CharLookupTable);
         if (!lowercased)
             hexTable = ref Unsafe.Add(ref hexTable, 16);
 
