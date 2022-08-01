@@ -600,7 +600,7 @@ public static class Intrinsics
     public static unsafe long GetHashCode64([In] void* source, nint length, long hash, Func<long, long, long> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<long, long>(hashFunction, hash);
-        GetHashCode64Unaligned(ref fn, ref ((byte*)source)[0], length);
+        GetHashCode64Unaligned(ref fn, ref *((byte*)source), length);
 
         if (salted)
             fn.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -625,7 +625,7 @@ public static class Intrinsics
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
     {
         var hash = new THashFunction();
-        GetHashCode64Unaligned(ref hash, ref ((byte*)source)[0], length);
+        GetHashCode64Unaligned(ref hash, ref *((byte*)source), length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -646,7 +646,7 @@ public static class Intrinsics
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
     public static unsafe long GetHashCode64([In] void* source, nint length, bool salted = true)
-        => GetHashCode64Unaligned(ref ((byte*)source)[0], length, salted);
+        => GetHashCode64Unaligned(ref *((byte*)source), length, salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory.
@@ -665,7 +665,7 @@ public static class Intrinsics
     public static unsafe int GetHashCode32([In] void* source, nint length, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
-        GetHashCode32Unaligned(ref fn, ref ((byte*)source)[0], length);
+        GetHashCode32Unaligned(ref fn, ref *((byte*)source), length);
 
         if (salted)
             fn.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -723,7 +723,7 @@ public static class Intrinsics
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
-        GetHashCode32Unaligned(ref hash, ref ((byte*)source)[0], length);
+        GetHashCode32Unaligned(ref hash, ref *((byte*)source), length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -744,7 +744,7 @@ public static class Intrinsics
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
     public static unsafe int GetHashCode32([In] void* source, nint length, bool salted = true)
-        => GetHashCode32Unaligned(ref ((byte*)source)[0], length, salted);
+        => GetHashCode32Unaligned(ref *((byte*)source), length, salted);
     #endregion
 
     /// <summary>
