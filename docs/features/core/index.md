@@ -227,18 +227,20 @@ dynamic result = await t.AsDynamic();
 ```
 
 # Hex Converter
-[BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support `Span<byte>` data type and therefore cannot be used in situations when bytes come from different source such as stack-allocated memory or segment of another array. Moreover, the method cannot place its result to variable of `Span<char>` type and allocates new string every time. It may be unacceptable in low-latency scenario when number of memory allocations should be reduced.
+[Convert.ToHexString](https://docs.microsoft.com/en-us/dotnet/api/system.convert.tohexstring) method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support `Span<char>` as a destination buffer. Moreover, the method produces UTF-16 encoded hex characters only.
 
-[Span](xref:DotNext.Span) static class exposes two static methods for fast hexadecimal conversion:
-* `ToHex` allows to convert `ReadOnlySpan<byte>` to hexadecimal representation and places result to `Span<char>`
-* `FromHex` allows to convert hexadecimal string in the from of `ReadOnlySpan<char>` to bytes and places result to `Span<byte>`
+[Hex](xref:DotNext.Buffers.Text.Hex) static class exposes static methods for fast hexadecimal conversion:
+* `EncodeToUtf16` allows to convert `ReadOnlySpan<byte>` to hexadecimal representation and places result to `Span<char>`
+* `EncodeToUtf8` allows to convert `ReadOnlySpan<byte>` to hexadecimal representation and places result to `Span<byte>`
+* `DecodeFromUtf16` allows to convert hexadecimal UTF-16 encoded string in the from of `ReadOnlySpan<char>` to bytes and places result to `Span<byte>`
+* `DecodeFromUtf8` allows to convert hexadecimal UTF-8 encoded string in the from of `ReadOnlySpan<byte>` to bytes and places result to `Span<byte>`
 
 ```csharp
-using DotNext;
+using DotNext.Buffers.Text;
 
 ReadOnlySpan<byte> bytes = stackalloc byte[] {8, 16, 24};
 Span<char> hex = stackalloc char[bytes.Length * 2];
-Span.ToHex(bytes, hex); //now hex == 081018
+Hex.EncodeToUtf16(bytes, hex); //now hex == 081018
 ```
 
 # Polling of Concurrent Collections
