@@ -13,7 +13,7 @@ using ExceptionAggregator = Runtime.ExceptionServices.ExceptionAggregator;
 /// This class provides alternative approach which allows to invoke delegate asynchronously
 /// with full support of async/await feature.
 /// </remarks>
-/// <seealso href="https://github.com/dotnet/corefx/issues/5940">BeginInvoke throws NotSupportedException</seealso>
+/// <seealso href="https://github.com/dotnet/runtime/issues/16312">BeginInvoke throws NotSupportedException</seealso>
 public static class AsyncDelegate
 {
     private sealed unsafe class InvocationWorkItem<TDelegate, TContext>
