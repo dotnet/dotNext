@@ -52,11 +52,11 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     void IGrowableBuffer<char>.CopyTo<TConsumer>(TConsumer consumer) => consumer.Invoke(WrittenMemory.Span);
 
     /// <inheritdoc />
-    ValueTask IGrowableBuffer<char>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+    readonly ValueTask IGrowableBuffer<char>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
         => consumer.Invoke(WrittenMemory, token);
 
     /// <inheritdoc />
-    int IGrowableBuffer<char>.CopyTo(Span<char> output)
+    readonly int IGrowableBuffer<char>.CopyTo(Span<char> output)
     {
         WrittenMemory.Span.CopyTo(output, out var writtenCount);
         return writtenCount;
@@ -70,7 +70,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     }
 
     /// <inheritdoc />
-    bool IGrowableBuffer<char>.TryGetWrittenContent(out ReadOnlyMemory<char> block)
+    readonly bool IGrowableBuffer<char>.TryGetWrittenContent(out ReadOnlyMemory<char> block)
     {
         block = WrittenMemory;
         return true;

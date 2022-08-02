@@ -230,5 +230,5 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// Renders interpolated string.
     /// </summary>
     /// <returns>The rendered string.</returns>
-    public override string ToString() => buffer.Value.ToString();
+    public readonly override string ToString() => buffer.Value.ToString();
 }
