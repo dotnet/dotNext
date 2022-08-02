@@ -102,7 +102,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     public abstract ValueTask CancelPendingRequestsAsync();
 
     private protected void ChangeStatus(ClusterMemberStatus newState)
-        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, ref statusChangedHandlers);
+        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, statusChangedHandlers);
 
     internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 
