@@ -8,6 +8,7 @@ namespace DotNext.Numerics;
 /// </summary>
 public static class BitVector
 {
+    // TODO: Rewrite using generic math
     private interface IBitVector<TValue>
         where TValue : unmanaged
     {
@@ -46,6 +47,25 @@ public static class BitVector
         }
 
         ulong IBitVector<ulong>.Value
+        {
+            readonly get => result;
+            set => result = value;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private struct UIntPtrVector : IBitVector<nuint>
+    {
+        private const nuint One = 1;
+        private nuint result;
+
+        bool IBitVector<nuint>.this[int position]
+        {
+            readonly get => ((result >> position) & 1UL) != 0UL;
+            set => result = (result & ~(One << position)) | ((nuint)value.ToInt32() << position);
+        }
+
+        nuint IBitVector<nuint>.Value
         {
             readonly get => result;
             set => result = value;
@@ -133,6 +153,23 @@ public static class BitVector
     public static ulong ToUInt64(ReadOnlySpan<bool> bits)
         => VectorToScalar<ulong, UInt64Vector>(bits.TrimLength(64));
 
+    /// <summary>
+    /// Converts bit vector to platform-dependent signed integer.
+    /// </summary>
+    /// <param name="bits">A sequence of bits.</param>
+    /// <returns>Platform-dependent signed integer reconstructed from the bits.</returns>
+    public static nint ToInt(ReadOnlySpan<bool> bits)
+        => (nint)VectorToScalar<nuint, UIntPtrVector>(bits.TrimLength(IntPtr.Size << 3));
+
+    /// <summary>
+    /// Converts bit vector to platform-dependent unsigned integer.
+    /// </summary>
+    /// <param name="bits">A sequence of bits.</param>
+    /// <returns>Platform-dependent unsigned integer reconstructed from the bits.</returns>
+    [CLSCompliant(false)]
+    public static nuint ToUInt(ReadOnlySpan<bool> bits)
+        => VectorToScalar<nuint, UIntPtrVector>(bits.TrimLength(UIntPtr.Size << 3));
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void GetBits<TValue, TVector>(TValue value, Span<bool> bits)
         where TValue : unmanaged
@@ -211,4 +248,21 @@ public static class BitVector
     [CLSCompliant(false)]
     public static void FromUInt64(ulong value, Span<bool> bits)
         => GetBits<ulong, UInt64Vector>(value, bits.TrimLength(64));
+
+    /// <summary>
+    /// Extracts bits from platform-dependent signed integer.
+    /// </summary>
+    /// <param name="value">The integer value.</param>
+    /// <param name="bits">The buffer for extracted bits.</param>
+    public static void FromInt(nint value, Span<bool> bits)
+        => GetBits<nuint, UIntPtrVector>((nuint)value, bits.TrimLength(IntPtr.Size << 3));
+
+    /// <summary>
+    /// Extracts bits from platform-dependent signed integer.
+    /// </summary>
+    /// <param name="value">The integer value.</param>
+    /// <param name="bits">The buffer for extracted bits.</param>
+    [CLSCompliant(false)]
+    public static void FromUInt(nuint value, Span<bool> bits)
+        => GetBits<nuint, UIntPtrVector>(value, bits.TrimLength(UIntPtr.Size << 3));
 }
