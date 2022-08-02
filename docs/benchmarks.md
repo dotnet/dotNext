@@ -6,7 +6,7 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Runtime | .NET 6.0.6 (6.0.622.26707), X64 RyuJIT |
+| Runtime | .NET 6.0.7 (6.0.722.32202), X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 20.04.4 |
@@ -36,20 +36,33 @@ dotnet run -c Bench
 Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 6 but still convenient in complex cases.
 
 # Bytes to Hex
-[This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/HexConversionBenchmark.cs) demonstrates performance of `DotNext.Span.ToHex` extension method that allows to convert arbitrary set of bytes into hexadecimal form. It is compatible with`Span<T>` data type in constrast to [BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method.
+[This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Buffers/Text/HexConversionBenchmark.cs) demonstrates performance of extension methods declared in `DotNext.Buffers.Text.Hex` class that allows to convert arbitrary set of bytes to hexadecimal form.
 
-|                Method |     Bytes |      Mean |    Error |   StdDev |
-|---------------------- |---------- |----------:|---------:|---------:|
-| BitConverter.ToString |  16 bytes |  62.34 ns | 0.236 ns | 0.221 ns |
-|            Span.ToHex |  16 bytes |  53.67 ns | 0.257 ns | 0.240 ns |
-| BitConverter.ToString |  64 bytes | 255.19 ns | 1.526 ns | 1.427 ns |
-|            Span.ToHex |  64 bytes | 129.40 ns | 0.477 ns | 0.423 ns |
-| BitConverter.ToString | 128 bytes | 383.26 ns | 1.951 ns | 1.825 ns |
-|            Span.ToHex | 128 bytes | 234.78 ns | 1.291 ns | 1.208 ns |
-| BitConverter.ToString | 256 bytes | 980.70 ns | 3.978 ns | 3.721 ns |
-|            Span.ToHex | 256 bytes | 453.96 ns | 2.070 ns | 1.936 ns |
-
-`Span.ToHex` demonstrates the best performance especially for large arrays.
+|              Method |      Bytes |      Mean |     Error |    StdDev |    Median | Ratio | RatioSD |
+|-------------------- |----------- |----------:|----------:|----------:|----------:|------:|--------:|
+| Convert.ToHexString | 1024 bytes | 565.78 ns | 11.318 ns | 24.364 ns | 553.50 ns |  1.00 |    0.00 |
+|   Hex.EncodeToUtf16 | 1024 bytes | 577.75 ns |  5.951 ns |  4.646 ns | 579.01 ns |  0.98 |    0.03 |
+|    Hex.EncodeToUtf8 | 1024 bytes | 591.75 ns | 13.561 ns | 39.771 ns | 603.47 ns |  1.03 |    0.12 |
+|                     |            |           |           |           |           |       |         |
+| Convert.ToHexString |  128 bytes |  89.91 ns |  1.791 ns |  2.132 ns |  89.65 ns |  1.00 |    0.00 |
+|   Hex.EncodeToUtf16 |  128 bytes |  86.58 ns |  0.766 ns |  0.679 ns |  86.61 ns |  0.96 |    0.03 |
+|    Hex.EncodeToUtf8 |  128 bytes |  52.27 ns |  0.932 ns |  0.872 ns |  52.55 ns |  0.58 |    0.01 |
+|                     |            |           |           |           |           |       |         |
+| Convert.ToHexString |   16 bytes |  30.75 ns |  0.149 ns |  0.116 ns |  30.77 ns |  1.00 |    0.00 |
+|   Hex.EncodeToUtf16 |   16 bytes |  28.59 ns |  0.644 ns |  0.767 ns |  28.15 ns |  0.94 |    0.03 |
+|    Hex.EncodeToUtf8 |   16 bytes |  18.28 ns |  0.456 ns |  0.654 ns |  18.33 ns |  0.58 |    0.01 |
+|                     |            |           |           |           |           |       |         |
+| Convert.ToHexString |  256 bytes | 155.92 ns |  3.102 ns |  3.186 ns | 154.74 ns |  1.00 |    0.00 |
+|   Hex.EncodeToUtf16 |  256 bytes | 150.43 ns |  2.071 ns |  1.937 ns | 149.92 ns |  0.96 |    0.02 |
+|    Hex.EncodeToUtf8 |  256 bytes |  93.88 ns |  1.935 ns |  1.716 ns |  94.00 ns |  0.60 |    0.02 |
+|                     |            |           |           |           |           |       |         |
+| Convert.ToHexString |  512 bytes | 288.26 ns |  5.525 ns |  5.427 ns | 285.64 ns |  1.00 |    0.00 |
+|   Hex.EncodeToUtf16 |  512 bytes | 307.45 ns |  5.862 ns |  6.515 ns | 306.20 ns |  1.07 |    0.03 |
+|    Hex.EncodeToUtf8 |  512 bytes | 176.36 ns |  1.580 ns |  1.478 ns | 176.54 ns |  0.61 |    0.01 |
+|                     |            |           |           |           |           |       |         |
+| Convert.ToHexString |   64 bytes |  51.33 ns |  0.416 ns |  0.369 ns |  51.42 ns |  1.00 |    0.00 |
+|   Hex.EncodeToUtf16 |   64 bytes |  49.65 ns |  0.435 ns |  0.385 ns |  49.58 ns |  0.97 |    0.01 |
+|    Hex.EncodeToUtf8 |   64 bytes |  34.14 ns |  0.305 ns |  0.255 ns |  34.12 ns |  0.67 |    0.01 |
 
 # Fast Reflection
 The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.
