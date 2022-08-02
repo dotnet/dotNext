@@ -64,21 +64,26 @@ public static partial class ServiceProviderFactory
     private sealed class CachedServiceProvider<T> : IServiceProvider
         where T : struct, ITuple
     {
-        private readonly Type[] serviceTypes;
+        private static readonly Type[] ServiceTypes;
+
+        static CachedServiceProvider()
+        {
+            var tupleType = typeof(T);
+            ServiceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : Type.EmptyTypes;
+        }
+
         private readonly IServiceProvider? fallback;
         private T tuple;    // is not read-only to avoid defensive copies
 
         internal CachedServiceProvider(T tuple, IServiceProvider? fallback)
         {
-            var tupleType = typeof(T);
-            serviceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : Type.EmptyTypes;
             this.tuple = tuple;
             this.fallback = fallback;
         }
 
         object? IServiceProvider.GetService(Type serviceType)
         {
-            var index = Array.IndexOf(serviceTypes, serviceType);
+            var index = Array.IndexOf(ServiceTypes, serviceType);
             return (uint)index < (uint)tuple.Length ? tuple[index] : fallback?.GetService(serviceType);
         }
     }
