@@ -5,8 +5,6 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.Buffers;
 
-using Runtime.CompilerServices;
-
 /// <summary>
 /// Represents functional interface returning no value
 /// and accepting the single argument of type <see cref="ReadOnlySpan{T}"/>.
