@@ -127,7 +127,7 @@ public static partial class Hex
     {
         return lowercased ? ToHexLowerCase(bytes) : Convert.ToHexString(bytes);
 
-        static unsafe string ToHexLowerCase(ReadOnlySpan<byte> bytes)
+        static string ToHexLowerCase(ReadOnlySpan<byte> bytes)
         {
             string result;
 
@@ -138,7 +138,7 @@ public static partial class Hex
             }
             else
             {
-                result = new string('\0', count);
+                result = new('\0', count);
                 EncodeToUtf16(bytes, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), count), lowercased: true);
             }
 

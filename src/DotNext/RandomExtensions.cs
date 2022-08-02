@@ -70,7 +70,7 @@ public static class RandomExtensions
         }
         else
         {
-            result = new string('\0', length);
+            result = new('\0', length);
             NextCharsCore(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
         }
 
@@ -124,7 +124,7 @@ public static class RandomExtensions
         }
         else
         {
-            result = new string('\0', length);
+            result = new('\0', length);
             NextCharsCore(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
         }
 
