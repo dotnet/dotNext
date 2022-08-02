@@ -129,16 +129,22 @@ public static partial class Hex
     {
         return lowercased ? ToHexLowerCase(bytes) : Convert.ToHexString(bytes);
 
-        [SkipLocalsInit]
-        static string ToHexLowerCase(ReadOnlySpan<byte> bytes)
+        static unsafe string ToHexLowerCase(ReadOnlySpan<byte> bytes)
         {
+            string result;
+
             var count = bytes.Length << 1;
             if (count is 0)
-                return string.Empty;
+            {
+                result = string.Empty;
+            }
+            else
+            {
+                result = new string('\0', count);
+                EncodeToUtf16(bytes, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), count), lowercased: true);
+            }
 
-            using MemoryRental<char> buffer = (uint)count <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[count] : new MemoryRental<char>(count);
-            count = EncodeToUtf16(bytes, buffer.Span, lowercased: true);
-            return new string(buffer.Span.Slice(0, count));
+            return result;
         }
     }
 
