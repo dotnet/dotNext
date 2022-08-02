@@ -19,6 +19,7 @@ public partial class ServiceProviderFactory
         /// <typeparam name="TService">The type of the service.</typeparam>
         /// <returns>This builder for subsequent calls.</returns>
         public Builder Add<TService>(TService service)
+            where TService : notnull
         {
             services.Add(typeof(TService), service);
             return this;

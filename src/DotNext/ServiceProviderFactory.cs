@@ -178,6 +178,7 @@ public static partial class ServiceProviderFactory
             new Func<object?[], IServiceProvider, IServiceProvider>(types.Create);
 
     private static IServiceProvider Create<T>(this Func<object?[], IServiceProvider> factory, T service)
+        where T : notnull
         => factory(new object?[] { service });
 
     /// <summary>
@@ -186,9 +187,11 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T">The type of the service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T, IServiceProvider> CreateFactory<T>()
+        where T : notnull
         => CreateFactory(typeof(T)).Create;
 
     private static IServiceProvider Create<T>(this Func<object?[], IServiceProvider, IServiceProvider> factory, T service, IServiceProvider fallback)
+        where T : notnull
         => factory(new object?[] { service }, fallback);
 
     /// <summary>
@@ -197,9 +200,12 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T">The type of the service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T, IServiceProvider, IServiceProvider> CreateDelegatingFactory<T>()
+        where T : notnull
         => CreateDelegatingFactory(typeof(T)).Create;
 
     private static IServiceProvider Create<T1, T2>(this Func<object?[], IServiceProvider> factory, T1 service1, T2 service2)
+        where T1 : notnull
+        where T2 : notnull
         => factory(new object?[] { service1, service2 });
 
     /// <summary>
@@ -209,9 +215,13 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T2">The type of the second service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, IServiceProvider> CreateFactory<T1, T2>()
+        where T1 : notnull
+        where T2 : notnull
         => CreateFactory(typeof(T1), typeof(T2)).Create;
 
     private static IServiceProvider Create<T1, T2>(this Func<object?[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, IServiceProvider fallback)
+        where T1 : notnull
+        where T2 : notnull
         => factory(new object?[] { service1, service2 }, fallback);
 
     /// <summary>
@@ -221,9 +231,14 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T2">The type of the second service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, IServiceProvider, IServiceProvider> CreateDelegatingFactory<T1, T2>()
+        where T1 : notnull
+        where T2 : notnull
         => CreateDelegatingFactory(typeof(T1), typeof(T2)).Create;
 
     private static IServiceProvider Create<T1, T2, T3>(this Func<object?[], IServiceProvider> factory, T1 service1, T2 service2, T3 service3)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
         => factory(new object?[] { service1, service2, service3 });
 
     /// <summary>
@@ -234,9 +249,15 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T3">The type of the third service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, T3, IServiceProvider> CreateFactory<T1, T2, T3>()
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
         => CreateFactory(typeof(T1), typeof(T2), typeof(T3)).Create;
 
     private static IServiceProvider Create<T1, T2, T3>(this Func<object?[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, T3 service3, IServiceProvider fallback)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
         => factory(new object?[] { service1, service2, service3 }, fallback);
 
     /// <summary>
@@ -247,9 +268,16 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T3">The type of the third service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, T3, IServiceProvider, IServiceProvider> CreateDelegatingFactory<T1, T2, T3>()
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
         => CreateDelegatingFactory(typeof(T1), typeof(T2), typeof(T3)).Create;
 
     private static IServiceProvider Create<T1, T2, T3, T4>(this Func<object?[], IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
         => factory(new object?[] { service1, service2, service3, service4 });
 
     /// <summary>
@@ -261,9 +289,17 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T4">The type of the fourth service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, T3, T4, IServiceProvider> CreateFactory<T1, T2, T3, T4>()
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
         => CreateFactory(typeof(T1), typeof(T2), typeof(T3), typeof(T4)).Create;
 
     private static IServiceProvider Create<T1, T2, T3, T4>(this Func<object?[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4, IServiceProvider fallback)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
         => factory(new object?[] { service1, service2, service3, service4 }, fallback);
 
     /// <summary>
@@ -275,9 +311,17 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T4">The type of the fourth service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, T3, T4, IServiceProvider, IServiceProvider> CreateDelegatingFactory<T1, T2, T3, T4>()
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
         => CreateDelegatingFactory(typeof(T1), typeof(T2), typeof(T3), typeof(T4)).Create;
 
     private static IServiceProvider Create<T1, T2, T3, T4, T5>(this Func<object?[], IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4, T5 service5)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
         => factory(new object?[] { service1, service2, service3, service4, service5 });
 
     /// <summary>
@@ -290,9 +334,19 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T5">The type of the fifth service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, T3, T4, T5, IServiceProvider> CreateFactory<T1, T2, T3, T4, T5>()
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
+        where T5 : notnull
         => CreateFactory(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)).Create;
 
     private static IServiceProvider Create<T1, T2, T3, T4, T5>(this Func<object?[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4, T5 service5, IServiceProvider fallback)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
+        where T5 : notnull
         => factory(new object?[] { service1, service2, service3, service4, service5 }, fallback);
 
     /// <summary>
@@ -305,6 +359,11 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T5">The type of the fifth service that can be returned by the provider.</typeparam>
     /// <returns>The factory that can be used to construct the service provider.</returns>
     public static Func<T1, T2, T3, T4, T5, IServiceProvider, IServiceProvider> CreateDelegatingFactory<T1, T2, T3, T4, T5>()
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
+        where T5 : notnull
         => CreateDelegatingFactory(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)).Create;
 
     /// <summary>
@@ -320,6 +379,7 @@ public static partial class ServiceProviderFactory
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static KeyValuePair<Type, object?> Registration<T>(T service)
+        where T : notnull
         => new(typeof(T), service);
 
     /// <summary>
@@ -330,6 +390,7 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T">The type of the service.</typeparam>
     /// <returns>The service provider.</returns>
     public static IServiceProvider Create<T>(T service, IServiceProvider? fallback = null)
+        where T : notnull
         => new CachedServiceProvider(fallback, Registration(service));
 
     /// <summary>
@@ -342,6 +403,8 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T2">The type of the second service.</typeparam>
     /// <returns>The service provider.</returns>
     public static IServiceProvider Create<T1, T2>(T1 service1, T2 service2, IServiceProvider? fallback = null)
+        where T1 : notnull
+        where T2 : notnull
         => new CachedServiceProvider(fallback, Registration(service1), Registration(service2));
 
     /// <summary>
@@ -356,6 +419,9 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T3">The type of the third service.</typeparam>
     /// <returns>The service provider.</returns>
     public static IServiceProvider Create<T1, T2, T3>(T1 service1, T2 service2, T3 service3, IServiceProvider? fallback = null)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
         => new CachedServiceProvider(fallback, Registration(service1), Registration(service2), Registration(service3));
 
     /// <summary>
@@ -372,6 +438,10 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T4">The type of the fourth service.</typeparam>
     /// <returns>The service provider.</returns>
     public static IServiceProvider Create<T1, T2, T3, T4>(T1 service1, T2 service2, T3 service3, T4 service4, IServiceProvider? fallback = null)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
         => new CachedServiceProvider(fallback, Registration(service1), Registration(service2), Registration(service3), Registration(service4));
 
     /// <summary>
@@ -390,5 +460,10 @@ public static partial class ServiceProviderFactory
     /// <typeparam name="T5">The type of the fifth service.</typeparam>
     /// <returns>The service provider.</returns>
     public static IServiceProvider Create<T1, T2, T3, T4, T5>(T1 service1, T2 service2, T3 service3, T4 service4, T5 service5, IServiceProvider? fallback = null)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
+        where T4 : notnull
+        where T5 : notnull
         => new CachedServiceProvider(fallback, Registration(service1), Registration(service2), Registration(service3), Registration(service4), Registration(service5));
 }
