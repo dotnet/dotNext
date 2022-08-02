@@ -129,13 +129,20 @@ public static partial class Hex
     /// <returns>The hexadecimal representation of bytes.</returns>
     public static byte[] EncodeToUtf8(ReadOnlySpan<byte> bytes, bool lowercased = false)
     {
+        byte[] result;
+
         var count = bytes.Length << 1;
         if (count is 0)
-            return Array.Empty<byte>();
+        {
+            result = Array.Empty<byte>();
+        }
+        else
+        {
+            result = GC.AllocateUninitializedArray<byte>(count);
+            count = EncodeToUtf8(bytes, result, lowercased);
+        }
 
-        using MemoryRental<byte> buffer = (uint)count <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[count] : new MemoryRental<byte>(count);
-        count = EncodeToUtf8(bytes, buffer.Span, lowercased);
-        return buffer.Span.Slice(0, count).ToArray();
+        return result;
     }
 
     /// <summary>
