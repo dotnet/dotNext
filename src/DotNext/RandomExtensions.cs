@@ -6,7 +6,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext;
 
 using ByteBuffer = Buffers.MemoryRental<byte>;
-using CharBuffer = Buffers.MemoryRental<char>;
 
 /// <summary>
 /// Provides random data generation.
@@ -49,18 +48,6 @@ public static class RandomExtensions
         }
     }
 
-    [SkipLocalsInit]
-    private static unsafe string NextString<TGenerator>(TGenerator generator, delegate*<TGenerator, ReadOnlySpan<char>, Span<char>, void> impl, ReadOnlySpan<char> allowedChars, int length)
-        where TGenerator : class
-    {
-        Debug.Assert(generator is not null);
-
-        // use stack allocation for small strings, which is 99% of all use cases
-        using CharBuffer result = length <= CharBuffer.StackallocThreshold ? stackalloc char[length] : new CharBuffer(length);
-        impl(generator, allowedChars, result.Span);
-        return new string(result.Span);
-    }
-
     /// <summary>
     /// Generates random string of the given length.
     /// </summary>
@@ -76,13 +63,18 @@ public static class RandomExtensions
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
+        string result;
         if (length is 0 || allowedChars.IsEmpty)
-            return string.Empty;
-
-        unsafe
         {
-            return NextString(random, &NextCharsCore, allowedChars, length);
+            result = string.Empty;
         }
+        else
+        {
+            result = new string('\0', length);
+            NextCharsCore(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -125,13 +117,18 @@ public static class RandomExtensions
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
+        string result;
         if (length is 0 || allowedChars.IsEmpty)
-            return string.Empty;
-
-        unsafe
         {
-            return NextString(random, &NextCharsCore, allowedChars, length);
+            result = string.Empty;
         }
+        else
+        {
+            result = new string('\0', length);
+            NextCharsCore(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
+        }
+
+        return result;
     }
 
     /// <summary>
