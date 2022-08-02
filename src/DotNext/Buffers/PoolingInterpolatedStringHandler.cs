@@ -126,7 +126,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
                 if (value is ISpanFormattable)
                 {
                     int charsWritten;
-                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                     {
                         var span = GetSpan(bufferSize);
 
@@ -222,7 +222,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
             case IFormattable:
                 if (value is ISpanFormattable)
                 {
-                    for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                    for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                     {
                         var span = GetSpan(bufferSize);
                         if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
