@@ -11,7 +11,7 @@ public partial struct Base64Decoder
 {
     private Span<char> ReservedChars => MemoryMarshal.CreateSpan(ref Unsafe.As<ulong, char>(ref reservedBuffer), sizeof(ulong) / sizeof(char));
 
-    private bool DecodeCore<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+    private bool DecodeFromUtf16Core<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var size = chars.Length & 3;
@@ -38,20 +38,20 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private bool CopyAndDecode<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+    private bool CopyAndDecodeFromUtf16<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var newSize = reservedBufferSize + chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
         ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
         chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-        return DecodeCore(tempBuffer.Span, ref writer);
+        return DecodeFromUtf16Core(tempBuffer.Span, ref writer);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool Decode<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+    private bool DecodeFromUtf16<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
-        => NeedMoreData ? CopyAndDecode(chars, ref writer) : DecodeCore(chars, ref writer);
+        => NeedMoreData ? CopyAndDecodeFromUtf16(chars, ref writer) : DecodeFromUtf16Core(chars, ref writer);
 
     /// <summary>
     /// Decodes base64 characters.
@@ -60,11 +60,11 @@ public partial struct Base64Decoder
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void Decode(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
+    public void DecodeFromUtf16(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
     {
         ArgumentNullException.ThrowIfNull(output);
 
-        if (!Decode(chars, ref output))
+        if (!DecodeFromUtf16(chars, ref output))
             throw new FormatException(ExceptionMessages.MalformedBase64);
     }
 
@@ -75,13 +75,13 @@ public partial struct Base64Decoder
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void Decode(in ReadOnlySequence<char> chars, IBufferWriter<byte> output)
+    public void DecodeFromUtf16(in ReadOnlySequence<char> chars, IBufferWriter<byte> output)
     {
         ArgumentNullException.ThrowIfNull(output);
 
         foreach (var chunk in chars)
         {
-            if (!Decode(chunk.Span, ref output))
+            if (!DecodeFromUtf16(chunk.Span, ref output))
                 throw new FormatException(ExceptionMessages.MalformedBase64);
         }
     }
@@ -93,11 +93,11 @@ public partial struct Base64Decoder
     /// <param name="allocator">The allocator of the result buffer.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     /// <returns>A buffer containing decoded bytes.</returns>
-    public MemoryOwner<byte> Decode(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
+    public MemoryOwner<byte> DecodeFromUtf16(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
     {
         var result = new MemoryOwnerWrapper<byte>(allocator);
 
-        if (chars.IsEmpty || Decode(chars, ref result))
+        if (chars.IsEmpty || DecodeFromUtf16(chars, ref result))
             return result.Buffer;
 
         result.Buffer.Dispose();
@@ -105,7 +105,7 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private void DecodeCore<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+    private void DecodeFromUtf16Core<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         const int maxInputBlockSize = (DecodingBufferSize / 3) * 4;
@@ -152,14 +152,14 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private void CopyAndDecode<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+    private void CopyAndDecodeFromUtf16<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         var newSize = reservedBufferSize + chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
         ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
         chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
-        DecodeCore(tempBuffer.Span, output);
+        DecodeFromUtf16Core(tempBuffer.Span, output);
     }
 
     /// <summary>
@@ -169,13 +169,13 @@ public partial struct Base64Decoder
     /// <param name="chars">The span containing base64-encoded bytes.</param>
     /// <param name="output">The consumer called for decoded portion of data.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void Decode<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+    public void DecodeFromUtf16<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         if (NeedMoreData)
-            CopyAndDecode(chars, output);
+            CopyAndDecodeFromUtf16(chars, output);
         else
-            DecodeCore(chars, output);
+            DecodeFromUtf16Core(chars, output);
     }
 
     /// <summary>
@@ -186,8 +186,8 @@ public partial struct Base64Decoder
     /// <param name="callback">The callback called for decoded portion of data.</param>
     /// <param name="arg">The argument to be passed to the callback.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void Decode<TArg>(ReadOnlySpan<char> chars, ReadOnlySpanAction<byte, TArg> callback, TArg arg)
-        => Decode(chars, new DelegatingReadOnlySpanConsumer<byte, TArg>(callback, arg));
+    public void DecodeFromUtf16<TArg>(ReadOnlySpan<char> chars, ReadOnlySpanAction<byte, TArg> callback, TArg arg)
+        => DecodeFromUtf16(chars, new DelegatingReadOnlySpanConsumer<byte, TArg>(callback, arg));
 
     /// <summary>
     /// Decodes base64-encoded bytes.
@@ -198,8 +198,8 @@ public partial struct Base64Decoder
     /// <param name="arg">The argument to be passed to the callback.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     [CLSCompliant(false)]
-    public unsafe void Decode<TArg>(ReadOnlySpan<char> chars, delegate*<ReadOnlySpan<byte>, TArg, void> callback, TArg arg)
-        => Decode(chars, new ReadOnlySpanConsumer<byte, TArg>(callback, arg));
+    public unsafe void DecodeFromUtf16<TArg>(ReadOnlySpan<char> chars, delegate*<ReadOnlySpan<byte>, TArg, void> callback, TArg arg)
+        => DecodeFromUtf16(chars, new ReadOnlySpanConsumer<byte, TArg>(callback, arg));
 
     /// <summary>
     /// Decodes a sequence of base64-encoded bytes.
@@ -210,14 +210,14 @@ public partial struct Base64Decoder
     /// <returns>A sequence of decoded bytes.</returns>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> DecodeAsync(IAsyncEnumerable<ReadOnlyMemory<char>> chars, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
+    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> DecodeFromUtf16Async(IAsyncEnumerable<ReadOnlyMemory<char>> chars, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         var decoder = new Base64Decoder();
         MemoryOwner<byte> buffer;
 
         await foreach (var chunk in chars.WithCancellation(token).ConfigureAwait(false))
         {
-            using (buffer = decoder.Decode(chunk.Span, allocator))
+            using (buffer = decoder.DecodeFromUtf16(chunk.Span, allocator))
                 yield return buffer.Memory;
         }
 

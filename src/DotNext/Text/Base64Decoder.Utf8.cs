@@ -18,7 +18,7 @@ public partial struct Base64Decoder
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
-        => decoder.Decode(utf8Chars, output);
+        => decoder.DecodeFromUtf8(utf8Chars, output);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string.
@@ -28,7 +28,7 @@ public partial struct Base64Decoder
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode(in ReadOnlySequence<byte> utf8Chars, IBufferWriter<byte> output)
-        => decoder.Decode(in utf8Chars, output);
+        => decoder.DecodeFromUtf8(in utf8Chars, output);
 
     /// <summary>
     /// Decoes UTF-8 encoded base64 string.
@@ -37,7 +37,7 @@ public partial struct Base64Decoder
     /// <param name="allocator">The allocator of the result buffer.</param>
     /// <returns>A buffer containing decoded bytes.</returns>
     public MemoryOwner<byte> Decode(ReadOnlySpan<byte> utf8Chars, MemoryAllocator<byte>? allocator = null)
-        => decoder.Decode(utf8Chars, allocator);
+        => decoder.DecodeFromUtf8(utf8Chars, allocator);
 
     /// <summary>
     /// Decodes base64-encoded bytes.
@@ -48,7 +48,7 @@ public partial struct Base64Decoder
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
-        => decoder.Decode(utf8Chars, output);
+        => decoder.DecodeFromUtf8(utf8Chars, output);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string.
@@ -59,7 +59,7 @@ public partial struct Base64Decoder
     /// <param name="arg">The argument to be passed to the callback.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode<TArg>(ReadOnlySpan<byte> utf8Chars, ReadOnlySpanAction<byte, TArg> output, TArg arg)
-        => decoder.Decode(utf8Chars, output, arg);
+        => decoder.DecodeFromUtf8(utf8Chars, output, arg);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string.
@@ -71,7 +71,7 @@ public partial struct Base64Decoder
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     [CLSCompliant(false)]
     public unsafe void Decode<TArg>(ReadOnlySpan<byte> utf8Chars, delegate*<ReadOnlySpan<byte>, TArg, void> output, TArg arg)
-        => decoder.Decode(utf8Chars, output, arg);
+        => decoder.DecodeFromUtf8(utf8Chars, output, arg);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string and writes result to the stream synchronously.
@@ -80,7 +80,7 @@ public partial struct Base64Decoder
     /// <param name="output">The stream used as destination for decoded bytes.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     public void Decode(ReadOnlySpan<byte> utf8Chars, Stream output)
-        => decoder.Decode(utf8Chars, output);
+        => decoder.DecodeFromUtf8(utf8Chars, output);
 
     /// <summary>
     /// Decodes a sequence of base64-encoded bytes.
@@ -92,5 +92,5 @@ public partial struct Base64Decoder
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<byte>> DecodeAsync(IAsyncEnumerable<ReadOnlyMemory<byte>> utf8Chars, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
-        => NewBase64Decoder.DecodeAsync(utf8Chars, allocator, token);
+        => NewBase64Decoder.DecodeFromUtf8Async(utf8Chars, allocator, token);
 }

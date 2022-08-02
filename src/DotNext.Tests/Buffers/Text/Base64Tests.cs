@@ -20,7 +20,7 @@ namespace DotNext.Buffers.Text
             var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
-            decoder.Decode(base64, actual);
+            decoder.DecodeFromUtf8(base64, actual);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
@@ -35,7 +35,7 @@ namespace DotNext.Buffers.Text
             var expected = RandomBytes(size);
             ReadOnlySpan<byte> base64 = Encoding.UTF8.GetBytes(Convert.ToBase64String(expected));
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(base64);
+            using var actual = decoder.DecodeFromUtf8(base64);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.Span.ToArray());
@@ -53,7 +53,7 @@ namespace DotNext.Buffers.Text
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
             foreach (var segment in base64)
-                decoder.Decode(segment.Span, static (input, output) => output.Write(input), actual);
+                decoder.DecodeFromUtf8(segment.Span, static (input, output) => output.Write(input), actual);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
@@ -71,7 +71,7 @@ namespace DotNext.Buffers.Text
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
             foreach (var segment in base64)
-                decoder.Decode(segment.Span, &Callback, actual);
+                decoder.DecodeFromUtf8(segment.Span, &Callback, actual);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
@@ -86,7 +86,7 @@ namespace DotNext.Buffers.Text
             var base64 = Encoding.UTF8.GetBytes("AB");
             var decoder = new Base64Decoder();
             using var writer = new PooledArrayBufferWriter<byte>();
-            decoder.Decode(base64, writer);
+            decoder.DecodeFromUtf8(base64, writer);
             True(decoder.NeedMoreData);
             Equal(0, writer.WrittenCount);
         }
@@ -102,7 +102,7 @@ namespace DotNext.Buffers.Text
             var base64 = ToReadOnlySequence<char>(Convert.ToBase64String(expected).AsMemory(), chunkSize);
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
-            decoder.Decode(base64, actual);
+            decoder.DecodeFromUtf16(base64, actual);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
@@ -117,7 +117,7 @@ namespace DotNext.Buffers.Text
             var expected = RandomBytes(size);
             ReadOnlySpan<char> base64 = Convert.ToBase64String(expected);
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(base64);
+            using var actual = decoder.DecodeFromUtf16(base64);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.Span.ToArray());
@@ -136,7 +136,7 @@ namespace DotNext.Buffers.Text
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
             foreach (var segment in base64)
-                decoder.Decode(segment.Span, static (input, output) => output.Write(input), actual);
+                decoder.DecodeFromUtf16(segment.Span, static (input, output) => output.Write(input), actual);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
@@ -155,7 +155,7 @@ namespace DotNext.Buffers.Text
             var actual = new ArrayBufferWriter<byte>();
             var decoder = new Base64Decoder();
             foreach (var segment in base64)
-                decoder.Decode(segment.Span, &Callback, actual);
+                decoder.DecodeFromUtf16(segment.Span, &Callback, actual);
             False(decoder.NeedMoreData);
 
             Equal(expected, actual.WrittenSpan.ToArray());
@@ -179,7 +179,7 @@ namespace DotNext.Buffers.Text
 
             using var ms = new MemoryStream(size);
             foreach (var segment in base64)
-                decoder.Decode(segment.Span, ms);
+                decoder.DecodeFromUtf8(segment.Span, ms);
 
             ms.Flush();
             Equal(expected, ms.ToArray());
@@ -204,7 +204,7 @@ namespace DotNext.Buffers.Text
             Equal(0, encoder.BufferedDataSize);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.WrittenSpan);
+            using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
 
             Equal(expected, actual.Span.ToArray());
         }
@@ -226,7 +226,7 @@ namespace DotNext.Buffers.Text
             encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), writer, flush: true);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.WrittenSpan);
+            using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
 
             Equal(expected, actual.Span.ToArray());
         }
@@ -245,7 +245,7 @@ namespace DotNext.Buffers.Text
             using var base64 = encoder.EncodeToUtf8(expected, flush: true);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(base64.Span);
+            using var actual = decoder.DecodeFromUtf8(base64.Span);
 
             Equal(expected, actual.Span.ToArray());
         }
@@ -264,7 +264,7 @@ namespace DotNext.Buffers.Text
             using var base64 = encoder.EncodeToChars(expected, flush: true);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(base64.Span);
+            using var actual = decoder.DecodeFromUtf16(base64.Span);
 
             Equal(expected, actual.Span.ToArray());
         }
@@ -317,7 +317,7 @@ namespace DotNext.Buffers.Text
             encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), writer, flush: true);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.ToString());
+            using var actual = decoder.DecodeFromUtf16(writer.ToString());
 
             Equal(expected, actual.Span.ToArray());
         }
@@ -339,7 +339,7 @@ namespace DotNext.Buffers.Text
             encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), writer, flush: true);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.ToString());
+            using var actual = decoder.DecodeFromUtf16(writer.ToString());
 
             Equal(expected, actual.Span.ToArray());
         }
@@ -363,7 +363,7 @@ namespace DotNext.Buffers.Text
             Equal(0, encoder.BufferedDataSize);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.WrittenSpan);
+            using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
 
             Equal(expected, actual.Span.ToArray());
 
@@ -390,7 +390,7 @@ namespace DotNext.Buffers.Text
             Equal(0, encoder.BufferedDataSize);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.WrittenSpan);
+            using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
 
             Equal(expected, actual.Span.ToArray());
 
@@ -417,7 +417,7 @@ namespace DotNext.Buffers.Text
             Equal(0, encoder.BufferedDataSize);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.WrittenSpan);
+            using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
 
             Equal(expected, actual.Span.ToArray());
 
@@ -444,7 +444,7 @@ namespace DotNext.Buffers.Text
             Equal(0, encoder.BufferedDataSize);
 
             var decoder = new Base64Decoder();
-            using var actual = decoder.Decode(writer.WrittenSpan);
+            using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
 
             Equal(expected, actual.Span.ToArray());
 
@@ -482,7 +482,7 @@ namespace DotNext.Buffers.Text
             {
                 using var destination = new MemoryStream(expected.Length);
 
-                await foreach (var chunk in Base64Decoder.DecodeAsync(source.ReadAllAsync(16)))
+                await foreach (var chunk in Base64Decoder.DecodeFromUtf16Async(source.ReadAllAsync(16)))
                 {
                     await destination.WriteAsync(chunk);
                 }
@@ -522,7 +522,7 @@ namespace DotNext.Buffers.Text
             {
                 using var destination = new MemoryStream(expected.Length);
 
-                await foreach (var chunk in Base64Decoder.DecodeAsync(source.ReadAllAsync(16)))
+                await foreach (var chunk in Base64Decoder.DecodeFromUtf8Async(source.ReadAllAsync(16)))
                 {
                     await destination.WriteAsync(chunk);
                 }
