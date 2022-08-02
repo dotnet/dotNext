@@ -49,7 +49,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     void IGrowableBuffer<char>.Write(char value) => AppendFormatted(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
 
     /// <inheritdoc />
-    void IGrowableBuffer<char>.CopyTo<TConsumer>(TConsumer consumer) => consumer.Invoke(WrittenMemory.Span);
+    readonly void IGrowableBuffer<char>.CopyTo<TConsumer>(TConsumer consumer) => consumer.Invoke(WrittenMemory.Span);
 
     /// <inheritdoc />
     readonly ValueTask IGrowableBuffer<char>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
