@@ -6,8 +6,6 @@ using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers.Text;
 
-using Buffers;
-
 public static partial class Hex
 {
     /// <summary>
