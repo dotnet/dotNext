@@ -34,8 +34,7 @@ public static partial class Hex
             const int charsCountPerIteration = bytesCountPerIteration * 2;
 
             var nimbles = NimbleToUtf8CharLookupTable(lowercased);
-
-            var lowBitsMask = Vector128.Create(
+            var lowNimblesMask = Vector128.Create(
                 NimbleMaxValue,
                 NimbleMaxValue,
                 NimbleMaxValue,
@@ -52,9 +51,7 @@ public static partial class Hex
                 0,
                 0,
                 0);
-
-            var highBitMask = Vector128.Create(
-                (byte)(NimbleMaxValue << 4),
+            var highNimblesMask = Vector128.Create(
                 NimbleMaxValue << 4,
                 NimbleMaxValue << 4,
                 NimbleMaxValue << 4,
@@ -62,7 +59,8 @@ public static partial class Hex
                 NimbleMaxValue << 4,
                 NimbleMaxValue << 4,
                 NimbleMaxValue << 4,
-                0,
+                NimbleMaxValue << 4,
+                (byte)0,
                 0,
                 0,
                 0,
@@ -77,17 +75,16 @@ public static partial class Hex
 
                 // apply x & 0B1111 for each vector component to get the lower nibbles;
                 // then do table lookup
-                var lowNibbles = Ssse3.And(input, lowBitsMask).AsByte();
-                lowNibbles = Ssse3.Shuffle(nimbles, lowNibbles);
+                var lowNimbles = Ssse3.And(input, lowNimblesMask).AsByte();
+                lowNimbles = Ssse3.Shuffle(nimbles, lowNimbles);
 
                 // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
                 // then do table lookup
-                var highNibbles = Sse3.ShiftRightLogical(Sse3.And(input, highBitMask).AsInt16(), 4).AsByte();
-                highNibbles = Ssse3.Shuffle(nimbles, highNibbles);
+                var highNimbles = Sse3.ShiftRightLogical(Sse3.And(input, highNimblesMask).AsInt16(), 4).AsByte();
+                highNimbles = Ssse3.Shuffle(nimbles, highNimbles);
 
-                // encode to hex
-                var result = Ssse3.UnpackLow(highNibbles, lowNibbles);
-
+                // combine high nimbles and low nimbles
+                var result = Ssse3.UnpackLow(highNimbles, lowNimbles);
                 fixed (byte* ptr = &charPtr)
                 {
                     Ssse3.Store(ptr, result);
