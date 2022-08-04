@@ -462,7 +462,7 @@ public partial class RaftCluster
                 Ttl = TimeToLive,
             };
 
-            if (!OperatingSystem.IsMacOS())
+            if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows() || OperatingSystem.IsFreeBSD())
                 server.DontFragment = DontFragment;
 
             return server;
