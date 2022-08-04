@@ -113,9 +113,9 @@ public static partial class Hex
         if (!lowercased)
             hexTable = ref Unsafe.Add(ref hexTable, 16);
 
-        for (; offset < bytesCount; offset++, charPtr = ref Add(ref charPtr, 1), bytePtr = ref Add(ref bytePtr, 1))
+        for (byte value; offset < bytesCount; offset++, charPtr = ref Add(ref charPtr, 1), bytePtr = ref Add(ref bytePtr, 1))
         {
-            var value = bytePtr;
+            value = bytePtr;
             charPtr = Add(ref hexTable, value >> 4);
             charPtr = ref Add(ref charPtr, 1);
             charPtr = Add(ref hexTable, value & NimbleMaxValue);
