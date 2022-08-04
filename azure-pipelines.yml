@@ -52,6 +52,27 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
+      - job: MacOS
+        pool:
+          vmImage: macOS-latest
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: Restore Packages
+            inputs:
+              command: restore
+              projects: '$(Solution)'
+              feedsToUse: 'config'
+              nugetConfigPath: 'NuGet.config'
+              arguments: --configuration Debug
+          - task: DotNetCoreCLI@2
+            displayName: Test Debug
+            inputs:
+              command: test
+              projects: $(TestProject)
+              arguments: --configuration Debug --collect "Code coverage"
+              nobuild: false
+              testRunTitle: 'Debug on MacOS'
+              publishTestResults: true
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:
