@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
+using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Logging;
 using LingerOption = System.Net.Sockets.LingerOption;
@@ -383,6 +384,9 @@ public partial class RaftCluster
         /// </summary>
         /// <remarks>Default value is <see langword="true"/>.</remarks>
         /// <seealso cref="DatagramSize"/>
+        [SupportedOSPlatform("linux")]
+        [SupportedOSPlatform("windows")]
+        [SupportedOSPlatform("freebsd")]
         public bool DontFragment
         {
             get => dontFragment || datagramSize == UdpSocket.MinDatagramSize;
@@ -428,12 +432,18 @@ public partial class RaftCluster
         }
 
         private UdpClient CreateClient(EndPoint address)
-            => new(LocalEndPoint, address, ClientBacklog, MemoryAllocator, LoggerFactory)
+        {
+            var client = new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, LoggerFactory)
             {
                 DatagramSize = datagramSize,
-                DontFragment = DontFragment,
                 Ttl = TimeToLive,
             };
+
+            if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows() || OperatingSystem.IsFreeBSD())
+                client.DontFragment = DontFragment;
+
+            return client;
+        }
 
         internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, CreateClient)
@@ -444,13 +454,19 @@ public partial class RaftCluster
             };
 
         internal override UdpServer CreateServer(ILocalMember localMember)
-            => new(HostEndPoint, ServerBacklog, MemoryAllocator, new ExchangePoolFactory(localMember, PipeConfig).Create, LoggerFactory)
+        {
+            var server = new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, new ExchangePoolFactory(localMember, PipeConfig).Create, LoggerFactory)
             {
                 DatagramSize = datagramSize,
-                DontFragment = DontFragment,
                 ReceiveTimeout = RequestTimeout,
                 Ttl = TimeToLive,
             };
+
+            if (!OperatingSystem.IsMacOS())
+                server.DontFragment = DontFragment;
+
+            return server;
+        }
     }
 
     /// <summary>
