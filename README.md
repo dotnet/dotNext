@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-02-2022
+Release Date: 08-07-2022
 
 Mac OS is added as a target OS for running tests to track compatibility with this operating system.
 
