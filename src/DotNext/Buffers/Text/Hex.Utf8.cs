@@ -24,14 +24,14 @@ public static partial class Hex
         ref byte bytePtr = ref MemoryMarshal.GetReference(bytes);
         ref byte charPtr = ref MemoryMarshal.GetReference(output);
 
+        const int bytesCountPerIteration = sizeof(long);
+        const int charsCountPerIteration = bytesCountPerIteration * 2;
+
         // use hardware intrinsics when possible
-        if (Ssse3.IsSupported && bytesCount >= Vector128<short>.Count)
+        // encode 8 bytes at a time using 128-bit vector (SSSE3 only intructions)
+        if (Ssse3.IsSupported && bytesCount >= bytesCountPerIteration)
         {
             offset = bytesCount;
-
-            // encode 8 bytes at a time using 128-bit vector (SSSE3 only intructions)
-            const int bytesCountPerIteration = sizeof(long);
-            const int charsCountPerIteration = bytesCountPerIteration * 2;
 
             var nimbles = NimbleToUtf8CharLookupTable(lowercased);
             var lowNimblesMask = Vector128.Create(
@@ -90,9 +90,9 @@ public static partial class Hex
 
                 bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
                 charPtr = ref Add(ref charPtr, charsCountPerIteration);
-                offset -= Vector128<short>.Count;
+                offset -= bytesCountPerIteration;
             }
-            while (offset >= Vector128<short>.Count);
+            while (offset >= bytesCountPerIteration);
 
             offset = bytesCount - offset;
         }
