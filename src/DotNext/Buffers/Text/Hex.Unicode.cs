@@ -132,25 +132,20 @@ public static partial class Hex
     /// <returns>The hexadecimal representation of bytes.</returns>
     public static string EncodeToUtf16(ReadOnlySpan<byte> bytes, bool lowercased = false)
     {
-        return lowercased ? ToHexLowerCase(bytes) : Convert.ToHexString(bytes);
+        string result;
 
-        static string ToHexLowerCase(ReadOnlySpan<byte> bytes)
+        var count = bytes.Length << 1;
+        if (count is 0)
         {
-            string result;
-
-            var count = bytes.Length << 1;
-            if (count is 0)
-            {
-                result = string.Empty;
-            }
-            else
-            {
-                result = new('\0', count);
-                EncodeToUtf16(bytes, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), count), lowercased: true);
-            }
-
-            return result;
+            result = string.Empty;
         }
+        else
+        {
+            result = new('\0', count);
+            EncodeToUtf16(bytes, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), count), lowercased);
+        }
+
+        return result;
     }
 
     /// <summary>
