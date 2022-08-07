@@ -24,38 +24,74 @@ public static partial class Hex
         ref byte bytePtr = ref MemoryMarshal.GetReference(bytes);
         ref byte charPtr = ref MemoryMarshal.GetReference(output);
 
-        const int bytesCountPerIteration = sizeof(long);
-        const int charsCountPerIteration = bytesCountPerIteration * 2;
-
         // use hardware intrinsics when possible
-        // encode 8 bytes at a time using 128-bit vector (SSSE3 only intructions)
-        if (Ssse3.IsSupported && bytesCount >= bytesCountPerIteration)
+        if (Ssse3.IsSupported)
         {
             offset = bytesCount;
 
             var nibbles = NibbleToUtf8CharLookupTable(lowercased);
-            var lowNibbleMask = Vector128.Create(NibbleMaxValue);
 
-            do
+            // encode 16 bytes at a time using 256-bit vector (AVX2 only intructions)
+            if (Avx2.IsSupported && offset >= 16)
             {
-                var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<ulong>(ref bytePtr)).AsByte();
-                var highNibbles = Sse2.ShiftRightLogical(lowNibbles.AsUInt64(), 4).AsByte();
+                const int bytesCountPerIteration = sizeof(ulong) * 2;
+                const int charsCountPerIteration = bytesCountPerIteration * 2;
+                var nibbles256 = Vector256.Create(nibbles, nibbles);
+                var lowNibbleMask = Vector256.Create(NibbleMaxValue);
 
-                // combine high nibbles and low nibbles, then do table lookup
-                var result = Sse2.UnpackLow(highNibbles, lowNibbles);
-                result = Sse2.And(result, lowNibbleMask);
-                result = Ssse3.Shuffle(nibbles, result);
-
-                fixed (byte* ptr = &charPtr)
+                do
                 {
-                    Sse2.Store(ptr, result);
-                }
+                    var lowNibbles = Vector256.Create(
+                        Vector128.CreateScalarUnsafe(ReadUnaligned<ulong>(ref bytePtr)),
+                        Vector128.CreateScalarUnsafe(ReadUnaligned<ulong>(ref Add(ref bytePtr, sizeof(ulong)))))
+                        .AsByte();
+                    var highNibbles = Avx2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
 
-                bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
-                charPtr = ref Add(ref charPtr, charsCountPerIteration);
-                offset -= bytesCountPerIteration;
+                    // combine high nibbles and low nibbles, then do table lookup
+                    var result = Avx2.UnpackLow(highNibbles, lowNibbles);
+                    result = Avx2.And(result, lowNibbleMask);
+                    result = Avx2.Shuffle(nibbles256, result);
+
+                    fixed (byte* ptr = &charPtr)
+                    {
+                        Avx2.Store(ptr, result);
+                    }
+
+                    bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
+                    charPtr = ref Add(ref charPtr, charsCountPerIteration);
+                    offset -= bytesCountPerIteration;
+                }
+                while (offset >= bytesCountPerIteration);
             }
-            while (offset >= bytesCountPerIteration);
+
+            // encode 8 bytes at a time using 128-bit vector (SSSE3 only intructions)
+            if (offset >= sizeof(ulong))
+            {
+                const int bytesCountPerIteration = sizeof(ulong);
+                const int charsCountPerIteration = bytesCountPerIteration * 2;
+                var lowNibbleMask = Vector128.Create(NibbleMaxValue);
+
+                do
+                {
+                    var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<ulong>(ref bytePtr)).AsByte();
+                    var highNibbles = Sse2.ShiftRightLogical(lowNibbles.AsUInt64(), 4).AsByte();
+
+                    // combine high nibbles and low nibbles, then do table lookup
+                    var result = Sse2.UnpackLow(highNibbles, lowNibbles);
+                    result = Sse2.And(result, lowNibbleMask);
+                    result = Ssse3.Shuffle(nibbles, result);
+
+                    fixed (byte* ptr = &charPtr)
+                    {
+                        Sse2.Store(ptr, result);
+                    }
+
+                    bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
+                    charPtr = ref Add(ref charPtr, charsCountPerIteration);
+                    offset -= bytesCountPerIteration;
+                }
+                while (offset >= bytesCountPerIteration);
+            }
 
             offset = bytesCount - offset;
         }

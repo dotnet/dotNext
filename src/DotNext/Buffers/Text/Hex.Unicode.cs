@@ -24,56 +24,129 @@ public static partial class Hex
         ref byte bytePtr = ref MemoryMarshal.GetReference(bytes);
         ref char charPtr = ref MemoryMarshal.GetReference(output);
 
-        // 4 bytes to 8 hex chars to 16 unicode symbols
-        const int bytesCountPerIteration = sizeof(uint);
-        const int charsCountPerIteration = bytesCountPerIteration * 2;
-
         // use hardware intrinsics when possible
-        if (Ssse3.IsSupported && bytesCount >= bytesCountPerIteration)
+        if (Ssse3.IsSupported)
         {
             offset = bytesCount;
-
             var nibbles = NibbleToUtf8CharLookupTable(lowercased);
-            var lowNibbleMask = Vector128.Create(NibbleMaxValue);
-            var utf16Mask = Vector128.Create(
-                (byte)0,
-                byte.MaxValue,
-                1,
-                byte.MaxValue,
-                2,
-                byte.MaxValue,
-                3,
-                byte.MaxValue,
-                4,
-                byte.MaxValue,
-                5,
-                byte.MaxValue,
-                6,
-                byte.MaxValue,
-                7,
-                byte.MaxValue);
 
-            do
+            // encode 8 bytes at a time using 256-bit vector (AVX2 only intructions)
+            if (Avx2.IsSupported && offset >= sizeof(ulong))
             {
-                var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<uint>(ref bytePtr)).AsByte();
-                var highNibbles = Sse2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
+                // 8 bytes to 16 hex chars to 32 unicode symbols
+                const int bytesCountPerIteration = sizeof(ulong);
+                const int charsCountPerIteration = bytesCountPerIteration * 2;
 
-                // combine high nibbles and low nibbles, then do table lookup
-                var result = Sse2.UnpackLow(highNibbles, lowNibbles);
-                result = Sse2.And(result, lowNibbleMask);
-                result = Ssse3.Shuffle(nibbles, result);
-                result = Ssse3.Shuffle(result, utf16Mask);
+                var nibbles256 = Vector256.Create(nibbles, nibbles);
+                var lowNibbleMask = Vector256.Create(NibbleMaxValue);
+                var utf16Mask = Vector256.Create(
+                    (byte)0,
+                    byte.MaxValue,
+                    1,
+                    byte.MaxValue,
+                    2,
+                    byte.MaxValue,
+                    3,
+                    byte.MaxValue,
+                    4,
+                    byte.MaxValue,
+                    5,
+                    byte.MaxValue,
+                    6,
+                    byte.MaxValue,
+                    7,
+                    byte.MaxValue,
+                    0,
+                    byte.MaxValue,
+                    1,
+                    byte.MaxValue,
+                    2,
+                    byte.MaxValue,
+                    3,
+                    byte.MaxValue,
+                    4,
+                    byte.MaxValue,
+                    5,
+                    byte.MaxValue,
+                    6,
+                    byte.MaxValue,
+                    7,
+                    byte.MaxValue);
 
-                fixed (char* ptr = &charPtr)
+                do
                 {
-                    Sse2.Store((byte*)ptr, result);
-                }
+                    var lowNibbles = Vector256.Create(
+                        Vector128.CreateScalarUnsafe(ReadUnaligned<uint>(ref bytePtr)),
+                        Vector128.CreateScalarUnsafe(ReadUnaligned<uint>(ref Add(ref bytePtr, sizeof(uint)))))
+                        .AsByte();
+                    var highNibbles = Avx2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
 
-                bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
-                charPtr = ref Add(ref charPtr, charsCountPerIteration);
-                offset -= bytesCountPerIteration;
+                    // combine high nibbles and low nibbles, then do table lookup
+                    var result = Avx2.UnpackLow(highNibbles, lowNibbles);
+                    result = Avx2.And(result, lowNibbleMask);
+                    result = Avx2.Shuffle(nibbles256, result);
+                    result = Avx2.Shuffle(result, utf16Mask);
+
+                    fixed (char* ptr = &charPtr)
+                    {
+                        Avx2.Store((byte*)ptr, result);
+                    }
+
+                    bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
+                    charPtr = ref Add(ref charPtr, charsCountPerIteration);
+                    offset -= bytesCountPerIteration;
+                }
+                while (offset >= bytesCountPerIteration);
             }
-            while (offset >= bytesCountPerIteration);
+
+            // encode 4 bytes at a time using 128-bit vector (SSSE3 only intructions)
+            if (offset >= sizeof(uint))
+            {
+                // 4 bytes to 8 hex chars to 16 unicode symbols
+                const int bytesCountPerIteration = sizeof(uint);
+                const int charsCountPerIteration = bytesCountPerIteration * 2;
+
+                var lowNibbleMask = Vector128.Create(NibbleMaxValue);
+                var utf16Mask = Vector128.Create(
+                    (byte)0,
+                    byte.MaxValue,
+                    1,
+                    byte.MaxValue,
+                    2,
+                    byte.MaxValue,
+                    3,
+                    byte.MaxValue,
+                    4,
+                    byte.MaxValue,
+                    5,
+                    byte.MaxValue,
+                    6,
+                    byte.MaxValue,
+                    7,
+                    byte.MaxValue);
+
+                do
+                {
+                    var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<uint>(ref bytePtr)).AsByte();
+                    var highNibbles = Sse2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
+
+                    // combine high nibbles and low nibbles, then do table lookup
+                    var result = Sse2.UnpackLow(highNibbles, lowNibbles);
+                    result = Sse2.And(result, lowNibbleMask);
+                    result = Ssse3.Shuffle(nibbles, result);
+                    result = Ssse3.Shuffle(result, utf16Mask);
+
+                    fixed (char* ptr = &charPtr)
+                    {
+                        Sse2.Store((byte*)ptr, result);
+                    }
+
+                    bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
+                    charPtr = ref Add(ref charPtr, charsCountPerIteration);
+                    offset -= bytesCountPerIteration;
+                }
+                while (offset >= bytesCountPerIteration);
+            }
 
             offset = bytesCount - offset;
         }
