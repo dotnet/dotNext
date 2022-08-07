@@ -74,20 +74,18 @@ public static partial class Hex
                 var input = Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref bytePtr)).AsByte();
 
                 // apply x & 0B1111 for each vector component to get the lower nibbles;
-                // then do table lookup
-                var lowNimbles = Ssse3.And(input, lowNimblesMask).AsByte();
-                lowNimbles = Ssse3.Shuffle(nimbles, lowNimbles);
+                var lowNimbles = Sse2.And(input, lowNimblesMask).AsByte();
 
                 // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
-                // then do table lookup
-                var highNimbles = Sse3.ShiftRightLogical(Sse3.And(input, highNimblesMask).AsInt16(), 4).AsByte();
-                highNimbles = Ssse3.Shuffle(nimbles, highNimbles);
+                var highNimbles = Sse2.ShiftRightLogical(Sse2.And(input, highNimblesMask).AsInt16(), 4).AsByte();
 
-                // combine high nimbles and low nimbles
-                var result = Ssse3.UnpackLow(highNimbles, lowNimbles);
+                // combine high nimbles and low nimbles, then do table lookup
+                var result = Sse2.UnpackLow(highNimbles, lowNimbles);
+                result = Ssse3.Shuffle(nimbles, result);
+
                 fixed (byte* ptr = &charPtr)
                 {
-                    Ssse3.Store(ptr, result);
+                    Sse2.Store(ptr, result);
                 }
 
                 bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
