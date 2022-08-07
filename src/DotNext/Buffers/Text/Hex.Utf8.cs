@@ -69,9 +69,9 @@ public static partial class Hex
                 0,
                 0);
 
-            for (Vector128<byte> input; offset >= Vector128<short>.Count; offset -= Vector128<short>.Count, bytePtr = ref Add(ref bytePtr, bytesCountPerIteration), charPtr = ref Add(ref charPtr, charsCountPerIteration))
+            do
             {
-                input = Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref bytePtr)).AsByte();
+                var input = Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref bytePtr)).AsByte();
 
                 // apply x & 0B1111 for each vector component to get the lower nibbles;
                 // then do table lookup
@@ -89,7 +89,12 @@ public static partial class Hex
                 {
                     Ssse3.Store(ptr, result);
                 }
+
+                bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
+                charPtr = ref Add(ref charPtr, charsCountPerIteration);
+                offset -= Vector128<short>.Count;
             }
+            while (offset >= Vector128<short>.Count);
 
             offset = bytesCount - offset;
         }
