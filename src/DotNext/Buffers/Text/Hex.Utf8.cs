@@ -33,55 +33,18 @@ public static partial class Hex
         {
             offset = bytesCount;
 
-            var nimbles = NimbleToUtf8CharLookupTable(lowercased);
-            var lowNimblesMask = Vector128.Create(
-                NimbleMaxValue,
-                NimbleMaxValue,
-                NimbleMaxValue,
-                NimbleMaxValue,
-                NimbleMaxValue,
-                NimbleMaxValue,
-                NimbleMaxValue,
-                NimbleMaxValue,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0);
-            var highNimblesMask = Vector128.Create(
-                NimbleMaxValue << 4,
-                NimbleMaxValue << 4,
-                NimbleMaxValue << 4,
-                NimbleMaxValue << 4,
-                NimbleMaxValue << 4,
-                NimbleMaxValue << 4,
-                NimbleMaxValue << 4,
-                NimbleMaxValue << 4,
-                (byte)0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0);
+            var nibbles = NibbleToUtf8CharLookupTable(lowercased);
+            var lowNibbleMask = Vector128.Create(NibbleMaxValue);
 
             do
             {
-                var input = Vector128.CreateScalarUnsafe(ReadUnaligned<long>(ref bytePtr)).AsByte();
+                var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<ulong>(ref bytePtr)).AsByte();
+                var highNibbles = Sse2.ShiftRightLogical(lowNibbles.AsUInt64(), 4).AsByte();
 
-                // apply x & 0B1111 for each vector component to get the lower nibbles;
-                var lowNimbles = Sse2.And(input, lowNimblesMask).AsByte();
-
-                // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
-                var highNimbles = Sse2.ShiftRightLogical(Sse2.And(input, highNimblesMask).AsInt16(), 4).AsByte();
-
-                // combine high nimbles and low nimbles, then do table lookup
-                var result = Sse2.UnpackLow(highNimbles, lowNimbles);
-                result = Ssse3.Shuffle(nimbles, result);
+                // combine high nibbles and low nibbles, then do table lookup
+                var result = Sse2.UnpackLow(highNibbles, lowNibbles);
+                result = Sse2.And(result, lowNibbleMask);
+                result = Ssse3.Shuffle(nibbles, result);
 
                 fixed (byte* ptr = &charPtr)
                 {
@@ -101,7 +64,7 @@ public static partial class Hex
             offset = 0;
         }
 
-        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NimbleToUtf16CharLookupTable);
+        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NibbleToUtf16CharLookupTable);
         if (!lowercased)
             hexTable = ref Unsafe.Add(ref hexTable, 16);
 
@@ -110,7 +73,7 @@ public static partial class Hex
             var value = bytePtr;
             charPtr = (byte)Add(ref hexTable, value >> 4);
             charPtr = ref Add(ref charPtr, 1);
-            charPtr = (byte)Add(ref hexTable, value & NimbleMaxValue);
+            charPtr = (byte)Add(ref hexTable, value & NibbleMaxValue);
         }
 
         return bytesCount << 1;
@@ -159,7 +122,7 @@ public static partial class Hex
             var high = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i);
             var low = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i + 1);
 
-            bytePtr = (byte)(ToNimble(low) | (ToNimble(high) << 4));
+            bytePtr = (byte)(ToNibble(low) | (ToNibble(high) << 4));
         }
 
         return charCount >> 1;

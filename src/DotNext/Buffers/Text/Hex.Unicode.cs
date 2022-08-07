@@ -24,204 +24,56 @@ public static partial class Hex
         ref byte bytePtr = ref MemoryMarshal.GetReference(bytes);
         ref char charPtr = ref MemoryMarshal.GetReference(output);
 
+        // 4 bytes to 8 hex chars to 16 unicode symbols
+        const int bytesCountPerIteration = sizeof(uint);
+        const int charsCountPerIteration = bytesCountPerIteration * 2;
+
         // use hardware intrinsics when possible
-        if (Ssse3.IsSupported)
+        if (Ssse3.IsSupported && bytesCount >= bytesCountPerIteration)
         {
             offset = bytesCount;
 
-            // encode 16 bytes at a time using 256-bit vector (AVX2 only instructions)
-            if (Avx2.IsSupported && offset >= Vector256<short>.Count)
+            var nibbles = NibbleToUtf8CharLookupTable(lowercased);
+            var lowNibbleMask = Vector128.Create(NibbleMaxValue);
+            var utf16Mask = Vector128.Create(
+                (byte)0,
+                byte.MaxValue,
+                1,
+                byte.MaxValue,
+                2,
+                byte.MaxValue,
+                3,
+                byte.MaxValue,
+                4,
+                byte.MaxValue,
+                5,
+                byte.MaxValue,
+                6,
+                byte.MaxValue,
+                7,
+                byte.MaxValue);
+
+            do
             {
-                const int bytesCountPerIteration = sizeof(long) * 2;
-                const int charsCountPerIteration = bytesCountPerIteration * 2;
+                var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<uint>(ref bytePtr)).AsByte();
+                var highNibbles = Sse2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
 
-                var nimbles = Vector256.Create(NimbleToUtf8CharLookupTable(lowercased), NimbleToUtf8CharLookupTable(lowercased));
-                var lowNimblesMask = Vector256.Create(
-                    (short)NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue);
+                // combine high nibbles and low nibbles, then do table lookup
+                var result = Sse2.UnpackLow(highNibbles, lowNibbles);
+                result = Sse2.And(result, lowNibbleMask);
+                result = Ssse3.Shuffle(nibbles, result);
+                result = Ssse3.Shuffle(result, utf16Mask);
 
-                var highNimblesMask = Vector256.Create(
-                    (short)(NimbleMaxValue << 4),
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4);
-
-                var utf16Mask = Vector256.Create(
-                    (short)byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue);
-
-                do
+                fixed (char* ptr = &charPtr)
                 {
-                    var input = Vector256.Create(
-                        (short)bytePtr,
-                        Add(ref bytePtr, 1),
-                        Add(ref bytePtr, 2),
-                        Add(ref bytePtr, 3),
-                        Add(ref bytePtr, 8),
-                        Add(ref bytePtr, 9),
-                        Add(ref bytePtr, 10),
-                        Add(ref bytePtr, 11),
-                        Add(ref bytePtr, 4),
-                        Add(ref bytePtr, 5),
-                        Add(ref bytePtr, 6),
-                        Add(ref bytePtr, 7),
-                        Add(ref bytePtr, 12),
-                        Add(ref bytePtr, 13),
-                        Add(ref bytePtr, 14),
-                        Add(ref bytePtr, 15));
-
-                    // apply x & 0B1111 for each vector component to get the lower nibbles;
-                    // then do table lookup
-                    var lowNimbles = Avx2.And(input, lowNimblesMask).AsByte();
-                    lowNimbles = Avx2.Shuffle(nimbles, lowNimbles);
-
-                    // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
-                    // then do table lookup
-                    var highNimbles = Avx2.ShiftRightLogical(Avx2.And(input, highNimblesMask).AsInt16(), 4).AsByte();
-                    highNimbles = Avx2.Shuffle(nimbles, highNimbles);
-
-                    // combine high nimbles and low nimbles
-                    var result = Avx2.UnpackLow(highNimbles.AsInt16(), lowNimbles.AsInt16());
-                    result = Avx2.And(result, utf16Mask); // mask allows to remove garbage from high 8-bit of 16-bit char
-                    fixed (char* ptr = &charPtr)
-                    {
-                        Avx2.Store((short*)ptr, result);
-                    }
-
-                    result = Avx2.UnpackHigh(highNimbles.AsInt16(), lowNimbles.AsInt16());
-                    result = Avx2.And(result, utf16Mask);
-                    fixed (char* ptr = &charPtr)
-                    {
-                        Avx2.Store((short*)(ptr + bytesCountPerIteration), result);
-                    }
-
-                    bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
-                    charPtr = ref Add(ref charPtr, charsCountPerIteration);
-                    offset -= Vector256<short>.Count;
+                    Sse2.Store((byte*)ptr, result);
                 }
-                while (offset >= Vector256<short>.Count);
+
+                bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
+                charPtr = ref Add(ref charPtr, charsCountPerIteration);
+                offset -= bytesCountPerIteration;
             }
-
-            // encode 8 bytes at a time using 128-bit vector (SSSE3 only intructions)
-            if (offset >= Vector128<short>.Count)
-            {
-                const int bytesCountPerIteration = sizeof(long);
-                const int charsCountPerIteration = bytesCountPerIteration * 2;
-
-                var nimbles = NimbleToUtf8CharLookupTable(lowercased);
-                var lowNimblesMask = Vector128.Create(
-                    (short)NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue,
-                    NimbleMaxValue);
-
-                var highNimblesMask = Vector128.Create(
-                    (short)(NimbleMaxValue << 4),
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4,
-                    NimbleMaxValue << 4);
-
-                var utf16Mask = Vector128.Create(
-                    (short)byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue,
-                    byte.MaxValue);
-
-                do
-                {
-                    var input = Vector128.Create(
-                        (short)bytePtr,
-                        Add(ref bytePtr, 1),
-                        Add(ref bytePtr, 2),
-                        Add(ref bytePtr, 3),
-                        Add(ref bytePtr, 4),
-                        Add(ref bytePtr, 5),
-                        Add(ref bytePtr, 6),
-                        Add(ref bytePtr, 7));
-
-                    // apply x & 0B1111 for each vector component to get the lower nibbles;
-                    // then do table lookup
-                    var lowNimbles = Ssse3.And(input, lowNimblesMask).AsByte();
-                    lowNimbles = Ssse3.Shuffle(nimbles, lowNimbles);
-
-                    // apply (x & 0B1111_0000) >> 4 for each vector component to get the higher nibbles
-                    // then do table lookup
-                    var highNimbles = Sse3.ShiftRightLogical(Sse3.And(input, highNimblesMask).AsInt16(), 4).AsByte();
-                    highNimbles = Ssse3.Shuffle(nimbles, highNimbles);
-
-                    // combine high nimbles and low nimbles
-                    var result = Ssse3.UnpackLow(highNimbles.AsInt16(), lowNimbles.AsInt16());
-                    result = Ssse3.And(result, utf16Mask); // mask allows to remove garbage from high 8-bit of 16-bit char
-                    fixed (char* ptr = &charPtr)
-                    {
-                        Ssse3.Store((short*)ptr, result);
-                    }
-
-                    result = Ssse3.UnpackHigh(highNimbles.AsInt16(), lowNimbles.AsInt16());
-                    result = Ssse3.And(result, utf16Mask);
-                    fixed (char* ptr = &charPtr)
-                    {
-                        Ssse3.Store((short*)(ptr + bytesCountPerIteration), result);
-                    }
-
-                    bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
-                    charPtr = ref Add(ref charPtr, charsCountPerIteration);
-                    offset -= Vector128<short>.Count;
-                }
-                while (offset >= Vector128<short>.Count);
-            }
+            while (offset >= bytesCountPerIteration);
 
             offset = bytesCount - offset;
         }
@@ -230,7 +82,7 @@ public static partial class Hex
             offset = 0;
         }
 
-        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NimbleToUtf16CharLookupTable);
+        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NibbleToUtf16CharLookupTable);
         if (!lowercased)
             hexTable = ref Unsafe.Add(ref hexTable, 16);
 
@@ -239,7 +91,7 @@ public static partial class Hex
             value = bytePtr;
             charPtr = Add(ref hexTable, value >> 4);
             charPtr = ref Add(ref charPtr, 1);
-            charPtr = Add(ref hexTable, value & NimbleMaxValue);
+            charPtr = Add(ref hexTable, value & NibbleMaxValue);
         }
 
         return bytesCount << 1;
@@ -288,7 +140,7 @@ public static partial class Hex
             var high = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i);
             var low = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i + 1);
 
-            bytePtr = (byte)(ToNimble(low) | (ToNimble(high) << 4));
+            bytePtr = (byte)(ToNibble(low) | (ToNibble(high) << 4));
         }
 
         return charCount >> 1;
