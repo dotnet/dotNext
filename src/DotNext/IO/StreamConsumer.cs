@@ -4,6 +4,7 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.IO;
 
+using Runtime.CompilerServices;
 using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
 
 /// <summary>
@@ -33,6 +34,10 @@ public readonly struct StreamConsumer : IReadOnlySpanConsumer, IEquatable<Stream
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
         => output.WriteAsync(input, token);
+
+    /// <inheritdoc />
+    Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask> IFunctional<Func<ReadOnlyMemory<byte>, CancellationToken, ValueTask>>.ToDelegate()
+        => output.WriteAsync;
 
     /// <inheritdoc />
     void IFlushable.Flush() => output.Flush();

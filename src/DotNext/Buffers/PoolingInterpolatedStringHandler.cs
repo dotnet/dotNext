@@ -49,14 +49,14 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     void IGrowableBuffer<char>.Write(char value) => AppendFormatted(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
 
     /// <inheritdoc />
-    void IGrowableBuffer<char>.CopyTo<TConsumer>(TConsumer consumer) => consumer.Invoke(WrittenMemory.Span);
+    readonly void IGrowableBuffer<char>.CopyTo<TConsumer>(TConsumer consumer) => consumer.Invoke(WrittenMemory.Span);
 
     /// <inheritdoc />
-    ValueTask IGrowableBuffer<char>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+    readonly ValueTask IGrowableBuffer<char>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
         => consumer.Invoke(WrittenMemory, token);
 
     /// <inheritdoc />
-    int IGrowableBuffer<char>.CopyTo(Span<char> output)
+    readonly int IGrowableBuffer<char>.CopyTo(Span<char> output)
     {
         WrittenMemory.Span.CopyTo(output, out var writtenCount);
         return writtenCount;
@@ -70,7 +70,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     }
 
     /// <inheritdoc />
-    bool IGrowableBuffer<char>.TryGetWrittenContent(out ReadOnlyMemory<char> block)
+    readonly bool IGrowableBuffer<char>.TryGetWrittenContent(out ReadOnlyMemory<char> block)
     {
         block = WrittenMemory;
         return true;
@@ -126,7 +126,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
                 if (value is ISpanFormattable)
                 {
                     int charsWritten;
-                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                     {
                         var span = GetSpan(bufferSize);
 
@@ -222,7 +222,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
             case IFormattable:
                 if (value is ISpanFormattable)
                 {
-                    for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                    for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                     {
                         var span = GetSpan(bufferSize);
                         if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))

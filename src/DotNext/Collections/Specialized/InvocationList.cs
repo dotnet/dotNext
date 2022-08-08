@@ -238,7 +238,7 @@ public static class InvocationList
     /// <typeparam name="T">The type of the action argument.</typeparam>
     /// <param name="actions">The list of actions.</param>
     /// <param name="arg">The argument of the action.</param>
-    public static void Invoke<T>(this ref InvocationList<Action<T>> actions, T arg)
+    public static void Invoke<T>(this InvocationList<Action<T>> actions, T arg)
     {
         foreach (var action in actions.Span)
             action(arg);
@@ -252,7 +252,7 @@ public static class InvocationList
     /// <param name="actions">The list of actions.</param>
     /// <param name="arg1">The first argument of the action.</param>
     /// <param name="arg2">The second argument of the action.</param>
-    public static void Invoke<T1, T2>(this ref InvocationList<Action<T1, T2>> actions, T1 arg1, T2 arg2)
+    public static void Invoke<T1, T2>(this InvocationList<Action<T1, T2>> actions, T1 arg1, T2 arg2)
     {
         foreach (var action in actions.Span)
             action(arg1, arg2);

@@ -132,7 +132,7 @@ public static class Intrinsics
     public static bool IsDefault<T>(in T value) => Unsafe.SizeOf<T>() switch
     {
         0 => true,
-        sizeof(byte) => InToRef<T, byte>(value) == 0,
+        sizeof(byte) => InToRef<T, byte>(value) is 0,
         sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(value)) is 0,
         sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(value)) is 0U,
         sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(value)) is 0UL,
@@ -162,10 +162,10 @@ public static class Intrinsics
         where T : struct, Enum => Unsafe.SizeOf<T>() switch
         {
             0 => true,
-            sizeof(byte) => (ReinterpretCast<T, byte>(value) & ReinterpretCast<T, byte>(flag)) != 0,
-            sizeof(ushort) => (ReinterpretCast<T, ushort>(value) & ReinterpretCast<T, ushort>(flag)) != 0,
-            sizeof(uint) => (ReinterpretCast<T, uint>(value) & ReinterpretCast<T, uint>(flag)) != 0,
-            sizeof(long) => (ReinterpretCast<T, ulong>(value) & ReinterpretCast<T, ulong>(flag)) != 0UL,
+            sizeof(byte) => (ReinterpretCast<T, byte>(value) & ReinterpretCast<T, byte>(flag)) is not 0,
+            sizeof(ushort) => (ReinterpretCast<T, ushort>(value) & ReinterpretCast<T, ushort>(flag)) is not 0,
+            sizeof(uint) => (ReinterpretCast<T, uint>(value) & ReinterpretCast<T, uint>(flag)) is not 0U,
+            sizeof(ulong) => (ReinterpretCast<T, ulong>(value) & ReinterpretCast<T, ulong>(flag)) is not 0UL,
             _ => value.HasFlag(flag),
         };
 
@@ -183,17 +183,15 @@ public static class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T Cast<T>(object? obj)
         where T : notnull
-        => obj is null ? throw new InvalidCastException() : (T)obj;
-
-    internal static T? NullAwareCast<T>(object? obj)
     {
-        if (IsNullable<T>())
-            goto success;
-        if (obj is not T)
-            throw new InvalidCastException();
+        if (obj is null)
+            ThrowInvalidCastException();
 
-        success:
-        return (T?)obj;
+        return (T)obj;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidCastException() => throw new InvalidCastException();
     }
 
     /// <summary>
@@ -369,7 +367,7 @@ public static class Intrinsics
         for (int count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
         {
             count = length > int.MaxValue ? int.MaxValue : (int)length;
-            Unsafe.CopyBlock(ref destination, ref source, (uint)count);
+            Unsafe.CopyBlockUnaligned(ref destination, ref source, (uint)count);
         }
     }
 
@@ -602,7 +600,7 @@ public static class Intrinsics
     public static unsafe long GetHashCode64([In] void* source, nint length, long hash, Func<long, long, long> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<long, long>(hashFunction, hash);
-        GetHashCode64Unaligned(ref fn, ref ((byte*)source)[0], length);
+        GetHashCode64Unaligned(ref fn, ref *((byte*)source), length);
 
         if (salted)
             fn.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -627,7 +625,7 @@ public static class Intrinsics
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
     {
         var hash = new THashFunction();
-        GetHashCode64Unaligned(ref hash, ref ((byte*)source)[0], length);
+        GetHashCode64Unaligned(ref hash, ref *((byte*)source), length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -648,7 +646,7 @@ public static class Intrinsics
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
     public static unsafe long GetHashCode64([In] void* source, nint length, bool salted = true)
-        => GetHashCode64Unaligned(ref ((byte*)source)[0], length, salted);
+        => GetHashCode64Unaligned(ref *((byte*)source), length, salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory.
@@ -667,7 +665,7 @@ public static class Intrinsics
     public static unsafe int GetHashCode32([In] void* source, nint length, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
-        GetHashCode32Unaligned(ref fn, ref ((byte*)source)[0], length);
+        GetHashCode32Unaligned(ref fn, ref *((byte*)source), length);
 
         if (salted)
             fn.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -725,7 +723,7 @@ public static class Intrinsics
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
-        GetHashCode32Unaligned(ref hash, ref ((byte*)source)[0], length);
+        GetHashCode32Unaligned(ref hash, ref *((byte*)source), length);
 
         if (salted)
             hash.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -746,7 +744,7 @@ public static class Intrinsics
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
     public static unsafe int GetHashCode32([In] void* source, nint length, bool salted = true)
-        => GetHashCode32Unaligned(ref ((byte*)source)[0], length, salted);
+        => GetHashCode32Unaligned(ref *((byte*)source), length, salted);
     #endregion
 
     /// <summary>

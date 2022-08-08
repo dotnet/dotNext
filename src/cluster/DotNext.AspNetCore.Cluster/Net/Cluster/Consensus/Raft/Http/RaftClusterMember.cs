@@ -49,7 +49,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     }
 
     private void ChangeStatus(ClusterMemberStatus newState)
-        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, ref memberStatusChanged);
+        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, memberStatusChanged);
 
     internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 

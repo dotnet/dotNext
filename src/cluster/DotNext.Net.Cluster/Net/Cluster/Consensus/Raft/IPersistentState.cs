@@ -51,13 +51,10 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
     /// will be committed.
     /// </summary>
-    /// <remarks>
-    /// This method can be used to guarantee linearizable read when processing read-only request
-    /// on leader node.
-    /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]
     ValueTask EnsureConsistencyAsync(CancellationToken token = default);
 
     internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId expected)

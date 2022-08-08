@@ -7,7 +7,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
 
-using Text;
+using EncodingContext = DotNext.Text.EncodingContext;
 
 public partial class BufferWriter
 {

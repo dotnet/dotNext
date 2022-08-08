@@ -46,11 +46,16 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-04-2022
+Release Date: 08-08-2022
+
+Mac OS is added as a target OS for running tests to track compatibility with this operating system.
 
 <a href="https://www.nuget.org/packages/dotnext/4.7.0">DotNext 4.7.0</a>
 * Fixed memory alignment issues
 * Added `TaskType.GetIsCompletedGetter` method that allows to obtain [Task.IsCompleted](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task.iscompleted) property in the form of closed delegate
+* Significantly improved performance of HEX conversion methods with SSSE3 hardware intrinsics
+* Introduced `DotNext.Buffers.Text.Hex` class with static methods for efficient conversion to/from hexadecimal representation of binary data with UTF-16 and UTF-8 support
+* Introduced `NextChars` extension methods that allows to fill buffer with random characters
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.0">DotNext.Metaprogramming 4.7.0</a>
 * Updated dependencies
@@ -65,6 +70,7 @@ Release Date: 07-04-2022
 * Reduced memory allocation caused by extension methods declared in [Scheduler](https://dotnet.github.io/dotNext/api/DotNext.Threading.Scheduler.html) class
 * Reduced monitor lock contention in async locks
 * Added lock stealing methods to some synchronization primitives: `AsyncExclusiveLock`, `AsyncReaderWriterLock`
+* Introduced `GetConsumer` extension method for `TaskCompletionPipe<Task<T>>` class that allows to consume task results asynchronously
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.7.0">DotNext.IO 4.7.0</a>

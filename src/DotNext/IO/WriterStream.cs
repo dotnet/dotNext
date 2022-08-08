@@ -68,12 +68,7 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
                 task = task.AttachState(state);
 
             if (callback is not null)
-            {
-                if (task.IsCompleted)
-                    callback(task);
-                else
-                    task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
-            }
+                task.OnCompleted(callback);
         }
         else
         {

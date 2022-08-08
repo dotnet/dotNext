@@ -7,7 +7,8 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers
 {
-    using Text;
+    using DecodingContext = DotNext.Text.DecodingContext;
+    using EncodingContext = DotNext.Text.EncodingContext;
     using IAsyncBinaryReader = IO.IAsyncBinaryReader;
     using LengthFormat = IO.LengthFormat;
 

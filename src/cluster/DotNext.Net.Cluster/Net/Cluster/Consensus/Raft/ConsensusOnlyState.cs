@@ -360,6 +360,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         => commitEvent.WaitForCommitAsync(static (state, index) => index <= state.commitIndex.VolatileRead(), this, index, token);
 
     /// <inheritdoc/>
+    [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]
     async ValueTask IPersistentState.EnsureConsistencyAsync(CancellationToken token)
     {
         while (term.VolatileRead() != lastTerm.VolatileRead())

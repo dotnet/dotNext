@@ -4,7 +4,7 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext;
 
-using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfaceAttribute;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents functional interface returning arbitrary value.
@@ -17,14 +17,16 @@ using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfac
 /// as closure which is not allocated on the heap.
 /// </remarks>
 /// <typeparam name="TResult">The type of the result.</typeparam>
-[FunctionalInterface]
-public interface ISupplier<out TResult>
+public interface ISupplier<out TResult> : IFunctional<Func<TResult>>
 {
     /// <summary>
     /// Invokes the supplier.
     /// </summary>
     /// <returns>The value returned by this supplier.</returns>
     TResult Invoke();
+
+    /// <inheritdoc />
+    Func<TResult> IFunctional<Func<TResult>>.ToDelegate() => Invoke;
 }
 
 /// <summary>
@@ -92,6 +94,9 @@ public readonly struct Activator<T> : ISupplier<T>
 {
     /// <inheritdoc />
     T ISupplier<T>.Invoke() => new();
+
+    /// <inheritdoc />
+    Func<T> IFunctional<Func<T>>.ToDelegate() => Activator.CreateInstance<T>;
 }
 
 /// <summary>
@@ -111,12 +116,18 @@ public readonly struct ValueSupplier<T> : ISupplier<T>
     /// <inheritdoc />
     T ISupplier<T>.Invoke() => value;
 
+    /// <inheritdoc />
+    Func<T> IFunctional<Func<T>>.ToDelegate() => Func.Constant(value);
+
     /// <summary>
     /// Creates constant value supplier.
     /// </summary>
     /// <param name="value">The value to wrap.</param>
     /// <returns>The wrapper over the value.</returns>
     public static implicit operator ValueSupplier<T>(T value) => new(value);
+
+    /// <inheritdoc />
+    public override string? ToString() => value?.ToString();
 }
 
 /// <summary>
@@ -178,6 +189,9 @@ public readonly struct DelegatingSupplier<TResult> : ISupplier<TResult>, IEquata
 
     /// <inheritdoc />
     TResult ISupplier<TResult>.Invoke() => func();
+
+    /// <inheritdoc />
+    Func<TResult> IFunctional<Func<TResult>>.ToDelegate() => func;
 
     /// <summary>
     /// Determines whether this object contains the same delegate instance as the specified object.

@@ -286,5 +286,74 @@ namespace DotNext.Numerics
             False(buffer[2]);
             True(buffer[3]);
         }
+
+        [Fact]
+        public static void BitsToNativeInt()
+        {
+            const nint minusOne = -1;
+            Equal((nint)0, BitVector.ToInt(ReadOnlySpan<bool>.Empty));
+            Equal((nint)3, BitVector.ToInt(stackalloc bool[] { true, true }));
+            Equal((nint)8, BitVector.ToInt(stackalloc bool[] { false, false, false, true }));
+            Equal(minusOne, BitVector.ToInt(CreateVector(IntPtr.Size * 8, true)));
+        }
+
+        [Fact]
+        public static void NativeIntToBits()
+        {
+            var value = nint.MaxValue;
+            var buffer = new bool[IntPtr.Size * 8];
+
+            BitVector.FromInt(value, buffer);
+            Array.TrueForAll(buffer, static bit => bit);
+
+            value = 3;
+            Array.Clear(buffer);
+            BitVector.FromInt(value, buffer);
+            True(buffer[0]);
+            True(buffer[1]);
+            False(buffer[2]);
+
+            value = 8;
+            Array.Clear(buffer);
+            BitVector.FromInt(value, buffer);
+            False(buffer[0]);
+            False(buffer[1]);
+            False(buffer[2]);
+            True(buffer[3]);
+        }
+
+        [Fact]
+        public static void BitsToNativeUInt()
+        {
+            Equal((nuint)0, BitVector.ToUInt(ReadOnlySpan<bool>.Empty));
+            Equal((nuint)3, BitVector.ToUInt(stackalloc bool[] { true, true }));
+            Equal((nuint)8, BitVector.ToUInt(stackalloc bool[] { false, false, false, true }));
+            Equal(nuint.MaxValue, BitVector.ToUInt(CreateVector(IntPtr.Size * 8, true)));
+        }
+
+        [Fact]
+        public static void NativeUIntToBits()
+        {
+            var value = nuint.MaxValue;
+            var buffer = new bool[IntPtr.Size * 8];
+
+            BitVector.FromUInt(value, buffer);
+            Array.TrueForAll(buffer, static bit => bit);
+
+            value = 3;
+            Array.Clear(buffer);
+            BitVector.FromUInt(value, buffer);
+            True(buffer[0]);
+            True(buffer[1]);
+            False(buffer[2]);
+
+            value = 8;
+            Array.Clear(buffer);
+            BitVector.FromUInt(value, buffer);
+            False(buffer[0]);
+            False(buffer[1]);
+            False(buffer[2]);
+            True(buffer[3]);
+        }
     }
 }

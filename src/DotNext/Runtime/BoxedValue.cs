@@ -21,10 +21,9 @@ namespace DotNext.Runtime;
 /// not for <see cref="BoxedValue{T}"/>.
 /// </remarks>
 /// <typeparam name="T">The value type.</typeparam>
-public sealed class BoxedValue<T>
+public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
-    // Note: do not override Equals/GetHashCode/ToString()
     [ExcludeFromCodeCoverage]
     private BoxedValue() => throw new NotImplementedException();
 
@@ -86,4 +85,13 @@ public sealed class BoxedValue<T>
     /// <returns>A boxed representation of the value.</returns>
     [return: NotNullIfNotNull("value")]
     public static explicit operator BoxedValue<T>?(in T? value) => TryBox(in value);
+
+    /// <inheritdoc />
+    public override abstract bool Equals(object? obj);  // abstract to avoid inlining by AOT/JIT
+
+    /// <inheritdoc />
+    public override abstract int GetHashCode(); // abstract to avoid inlining by AOT/JIT
+
+    /// <inheritdoc />
+    public override abstract string ToString(); // abstract to avoid inlining by AOT/JIT
 }

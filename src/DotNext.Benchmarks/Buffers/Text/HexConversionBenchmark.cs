@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using static System.Globalization.CultureInfo;
 
-namespace DotNext;
+namespace DotNext.Buffers.Text;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.Declared)]
@@ -43,12 +43,19 @@ public class HexConversionBenchmark
             yield return new ByteArrayParam(bytes);
             Random.Shared.NextBytes(bytes = new byte[256]);
             yield return new ByteArrayParam(bytes);
+            Random.Shared.NextBytes(bytes = new byte[512]);
+            yield return new ByteArrayParam(bytes);
+            Random.Shared.NextBytes(bytes = new byte[1024]);
+            yield return new ByteArrayParam(bytes);
         }
     }
 
-    [Benchmark(Description = "BitConverter.ToString")]
-    public string ToHexUsingBitConverter() => BitConverter.ToString(Bytes.Value);
+    [Benchmark(Description = "Convert.ToHexString", Baseline = true)]
+    public string ToHexUsingDotNetConverter() => Convert.ToHexString(Bytes.Value);
 
-    [Benchmark(Description = "Span.ToHex")]
-    public string ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
+    [Benchmark(Description = "Hex.EncodeToUtf16")]
+    public string ToUtf16HexUsingHexConverter() => Hex.EncodeToUtf16(Bytes.Value);
+
+    [Benchmark(Description = "Hex.EncodeToUtf8")]
+    public byte[] ToUtf8HexUsingHexConverter() => Hex.EncodeToUtf8(Bytes.Value);
 }

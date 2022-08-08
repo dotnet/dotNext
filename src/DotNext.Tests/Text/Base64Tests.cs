@@ -8,6 +8,7 @@ namespace DotNext.Text
     using IO;
 
     [ExcludeFromCodeCoverage]
+    [Obsolete]
     public sealed class Base64Tests : Test
     {
         [Theory]
