@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class TaskType
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -122,7 +122,7 @@ task types.</p>
   </span>
   <a id="DotNext_Reflection_TaskType_IsCompletedSuccessfullyGetter_" data-uid="DotNext.Reflection.TaskType.IsCompletedSuccessfullyGetter*"></a>
   <h4 id="DotNext_Reflection_TaskType_IsCompletedSuccessfullyGetter" data-uid="DotNext.Reflection.TaskType.IsCompletedSuccessfullyGetter">IsCompletedSuccessfullyGetter</h4>
-  <div class="markdown level1 summary"><p>Gets delegate representing getter of <see cref="!:Task.IsCompletedSuccessfully"></see> property.</p>
+  <div class="markdown level1 summary"><p>Gets a delegate representing getter method of <see cref="!:Task.IsCompletedSuccessfully"></see> property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -146,6 +146,57 @@ task types.</p>
   </table>
   <h3 id="methods">Methods
   </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TaskType_GetIsCompletedGetter_Task_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TaskType.GetIsCompletedGetter(Task)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Reflection/TaskType.cs/#L125">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_TaskType_GetIsCompletedGetter_" data-uid="DotNext.Reflection.TaskType.GetIsCompletedGetter*"></a>
+  <h4 id="DotNext_Reflection_TaskType_GetIsCompletedGetter_Task_" data-uid="DotNext.Reflection.TaskType.GetIsCompletedGetter(Task)">GetIsCompletedGetter(Task)</h4>
+  <div class="markdown level1 summary"><p>Gets a delegate that representing getter method of <see cref="!:Task.IsCompleted"></see> property
+captured for the specified task.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Func&lt;bool&gt; GetIsCompletedGetter(this Task task)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><span class="parametername">task</span></td>
+        <td><p>The task to reflect.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><p>The delegate representing <see cref="!:Task.IsCompleted"></see> property of <code data-dev-comment-type="paramref" class="paramref">task</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TaskType_GetResultGetter__1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TaskType.GetResultGetter%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>

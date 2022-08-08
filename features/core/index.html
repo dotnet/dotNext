@@ -8,7 +8,7 @@
     <title>Base Class Library Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Base Class Library Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -241,17 +241,19 @@ Result&lt;dynamic&gt; result = t.GetResult(CancellationToken.None);
 dynamic result = await t.AsDynamic();
 </code></pre>
 <h1 id="hex-converter">Hex Converter</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring">BitConverter.ToString</a> method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support <code>Span&lt;byte&gt;</code> data type and therefore cannot be used in situations when bytes come from different source such as stack-allocated memory or segment of another array. Moreover, the method cannot place its result to variable of <code>Span&lt;char&gt;</code> type and allocates new string every time. It may be unacceptable in low-latency scenario when number of memory allocations should be reduced.</p>
-<p><a class="xref" href="../../api/DotNext.Span.html">Span</a> static class exposes two static methods for fast hexadecimal conversion:</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.convert.tohexstring">Convert.ToHexString</a> method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support <code>Span&lt;char&gt;</code> as a destination buffer. Moreover, the method produces UTF-16 encoded hex characters only.</p>
+<p><a class="xref" href="../../api/DotNext.Buffers.Text.Hex.html">Hex</a> static class exposes static methods for fast hexadecimal conversion:</p>
 <ul>
-<li><code>ToHex</code> allows to convert <code>ReadOnlySpan&lt;byte&gt;</code> to hexadecimal representation and places result to <code>Span&lt;char&gt;</code></li>
-<li><code>FromHex</code> allows to convert hexadecimal string in the from of <code>ReadOnlySpan&lt;char&gt;</code> to bytes and places result to <code>Span&lt;byte&gt;</code></li>
+<li><code>EncodeToUtf16</code> allows to convert <code>ReadOnlySpan&lt;byte&gt;</code> to hexadecimal representation and places result to <code>Span&lt;char&gt;</code></li>
+<li><code>EncodeToUtf8</code> allows to convert <code>ReadOnlySpan&lt;byte&gt;</code> to hexadecimal representation and places result to <code>Span&lt;byte&gt;</code></li>
+<li><code>DecodeFromUtf16</code> allows to convert hexadecimal UTF-16 encoded string in the from of <code>ReadOnlySpan&lt;char&gt;</code> to bytes and places result to <code>Span&lt;byte&gt;</code></li>
+<li><code>DecodeFromUtf8</code> allows to convert hexadecimal UTF-8 encoded string in the from of <code>ReadOnlySpan&lt;byte&gt;</code> to bytes and places result to <code>Span&lt;byte&gt;</code></li>
 </ul>
-<pre><code class="lang-csharp">using DotNext;
+<pre><code class="lang-csharp">using DotNext.Buffers.Text;
 
 ReadOnlySpan&lt;byte&gt; bytes = stackalloc byte[] {8, 16, 24};
 Span&lt;char&gt; hex = stackalloc char[bytes.Length * 2];
-Span.ToHex(bytes, hex); //now hex == 081018
+Hex.EncodeToUtf16(bytes, hex); //now hex == 081018
 </code></pre>
 <h1 id="polling-of-concurrent-collections">Polling of Concurrent Collections</h1>
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection&lt;T&gt;</a> is a common interface for concurrent collections in .NET library. Consumer of such collection uses <code>TryTake</code> or more specialized method provided by subclasses to obtain elements from the collection. For convenience, <a class="xref" href="../../api/DotNext.Collections.Generic.Sequence.html">Sequence</a> static class offers <code>GetConsumer</code> extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic <strong>foreach</strong> loop:</p>

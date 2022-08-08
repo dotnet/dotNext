@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BoxedValue&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -83,13 +83,7 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a>
-    </div>
-    <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a>
     </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
@@ -100,15 +94,12 @@
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
-    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.html">DotNext.Runtime</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Runtime_BoxedValue_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class BoxedValue&lt;T&gt;
+    <pre><code class="lang-csharp hljs">public abstract class BoxedValue&lt;T&gt;
 
     where T : struct</code></pre>
   </div>
@@ -146,7 +137,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_Value_" data-uid="DotNext.Runtime.BoxedValue`1.Value*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_Value" data-uid="DotNext.Runtime.BoxedValue`1.Value">Value</h4>
@@ -179,7 +170,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_Box__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.Box(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L59">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_Box_" data-uid="DotNext.Runtime.BoxedValue`1.Box*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_Box__0_" data-uid="DotNext.Runtime.BoxedValue`1.Box(`0)">Box(T)</h4>
@@ -226,10 +217,91 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L90">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_BoxedValue_1_Equals_" data-uid="DotNext.Runtime.BoxedValue`1.Equals*"></a>
+  <h4 id="DotNext_Runtime_BoxedValue_1_Equals_System_Object_" data-uid="DotNext.Runtime.BoxedValue`1.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract override bool Equals(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L93">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_BoxedValue_1_GetHashCode_" data-uid="DotNext.Runtime.BoxedValue`1.GetHashCode*"></a>
+  <h4 id="DotNext_Runtime_BoxedValue_1_GetHashCode" data-uid="DotNext.Runtime.BoxedValue`1.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_GetTypedReference_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.GetTypedReference(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L46">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L45">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_GetTypedReference_" data-uid="DotNext.Runtime.BoxedValue`1.GetTypedReference*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_GetTypedReference_System_Object_" data-uid="DotNext.Runtime.BoxedValue`1.GetTypedReference(System.Object)">GetTypedReference(Object)</h4>
@@ -279,10 +351,42 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L96">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_BoxedValue_1_ToString_" data-uid="DotNext.Runtime.BoxedValue`1.ToString*"></a>
+  <h4 id="DotNext_Runtime_BoxedValue_1_ToString" data-uid="DotNext.Runtime.BoxedValue`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_TryBox_System_Nullable__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.TryBox(System.Nullable%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L66">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L65">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_TryBox_" data-uid="DotNext.Runtime.BoxedValue`1.TryBox*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_TryBox_System_Nullable__0___" data-uid="DotNext.Runtime.BoxedValue`1.TryBox(System.Nullable{`0}@)">TryBox(in Nullable&lt;T&gt;)</h4>
@@ -334,7 +438,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_op_Explicit__0__DotNext_Runtime_BoxedValue__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.op_Explicit(%600)~DotNext.Runtime.BoxedValue%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Explicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Explicit__0__DotNext_Runtime_BoxedValue__0_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit(`0)~DotNext.Runtime.BoxedValue{`0}">Explicit(T to BoxedValue&lt;T&gt;)</h4>
@@ -384,7 +488,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_op_Explicit_System_Nullable__0____DotNext_Runtime_BoxedValue__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.op_Explicit(System.Nullable%7B%600%7D%40)~DotNext.Runtime.BoxedValue%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L87">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Explicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Explicit_System_Nullable__0____DotNext_Runtime_BoxedValue__0_" data-uid="DotNext.Runtime.BoxedValue`1.op_Explicit(System.Nullable{`0}@)~DotNext.Runtime.BoxedValue{`0}">Explicit(in Nullable&lt;T&gt; to BoxedValue&lt;T&gt;)</h4>
@@ -434,7 +538,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_op_Implicit_DotNext_Runtime_BoxedValue__0____0.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.op_Implicit(DotNext.Runtime.BoxedValue%7B%600%7D)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L73">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_Runtime_BoxedValue_1_op_Implicit_" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_BoxedValue_1_op_Implicit_DotNext_Runtime_BoxedValue__0____0" data-uid="DotNext.Runtime.BoxedValue`1.op_Implicit(DotNext.Runtime.BoxedValue{`0})~`0">Implicit(BoxedValue&lt;T&gt; to T)</h4>

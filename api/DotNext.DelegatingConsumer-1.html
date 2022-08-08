@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct DelegatingConsumer&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,9 +76,10 @@
 invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.IConsumer-1.html">IConsumer</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">Action</span>&lt;T&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -99,7 +100,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_DelegatingConsumer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct DelegatingConsumer&lt;T&gt; : IConsumer&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct DelegatingConsumer&lt;T&gt; : IConsumer&lt;T&gt;, IFunctional&lt;Action&lt;T&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -124,7 +125,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1__ctor_Action__0__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.%23ctor(Action%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L134">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1__ctor_" data-uid="DotNext.DelegatingConsumer`1.#ctor*"></a>
   <h4 id="DotNext_DelegatingConsumer_1__ctor_Action__0__" data-uid="DotNext.DelegatingConsumer`1.#ctor(Action{`0})">DelegatingConsumer(Action&lt;T&gt;)</h4>
@@ -160,7 +161,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L140">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L142">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1_IsEmpty_" data-uid="DotNext.DelegatingConsumer`1.IsEmpty*"></a>
   <h4 id="DotNext_DelegatingConsumer_1_IsEmpty" data-uid="DotNext.DelegatingConsumer`1.IsEmpty">IsEmpty</h4>
@@ -193,7 +194,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_Equals_DotNext_DelegatingConsumer__0__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.Equals(DotNext.DelegatingConsumer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L150">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L155">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1_Equals_" data-uid="DotNext.DelegatingConsumer`1.Equals*"></a>
   <h4 id="DotNext_DelegatingConsumer_1_Equals_DotNext_DelegatingConsumer__0__" data-uid="DotNext.DelegatingConsumer`1.Equals(DotNext.DelegatingConsumer{`0})">Equals(DelegatingConsumer&lt;T&gt;)</h4>
@@ -243,7 +244,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L158">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L163">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1_Equals_" data-uid="DotNext.DelegatingConsumer`1.Equals*"></a>
   <h4 id="DotNext_DelegatingConsumer_1_Equals_System_Object_" data-uid="DotNext.DelegatingConsumer`1.Equals(System.Object)">Equals(Object)</h4>
@@ -295,7 +296,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L164">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L169">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1_GetHashCode_" data-uid="DotNext.DelegatingConsumer`1.GetHashCode*"></a>
   <h4 id="DotNext_DelegatingConsumer_1_GetHashCode" data-uid="DotNext.DelegatingConsumer`1.GetHashCode">GetHashCode()</h4>
@@ -331,7 +332,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_op_Equality_DotNext_DelegatingConsumer__0__DotNext_DelegatingConsumer__0__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.op_Equality(DotNext.DelegatingConsumer%7B%600%7D%2CDotNext.DelegatingConsumer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L172">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L177">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1_op_Equality_" data-uid="DotNext.DelegatingConsumer`1.op_Equality*"></a>
   <h4 id="DotNext_DelegatingConsumer_1_op_Equality_DotNext_DelegatingConsumer__0__DotNext_DelegatingConsumer__0__" data-uid="DotNext.DelegatingConsumer`1.op_Equality(DotNext.DelegatingConsumer{`0},DotNext.DelegatingConsumer{`0})">Equality(DelegatingConsumer&lt;T&gt;, DelegatingConsumer&lt;T&gt;)</h4>
@@ -384,10 +385,60 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_op_Implicit_Action__0___DotNext_DelegatingConsumer__0_.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.op_Implicit(Action%7B%600%7D)~DotNext.DelegatingConsumer%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L194">View Source</a>
+  </span>
+  <a id="DotNext_DelegatingConsumer_1_op_Implicit_" data-uid="DotNext.DelegatingConsumer`1.op_Implicit*"></a>
+  <h4 id="DotNext_DelegatingConsumer_1_op_Implicit_Action__0___DotNext_DelegatingConsumer__0_" data-uid="DotNext.DelegatingConsumer`1.op_Implicit(Action{`0})~DotNext.DelegatingConsumer{`0}">Implicit(Action&lt;T&gt; to DelegatingConsumer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Wraps the delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator DelegatingConsumer&lt;T&gt;(Action&lt;T&gt; action)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span>&lt;T&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The delegate to be wrapped.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.DelegatingConsumer-1.html">DelegatingConsumer</a>&lt;T&gt;</td>
+        <td><p>The consumer representing the delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_op_Inequality_DotNext_DelegatingConsumer__0__DotNext_DelegatingConsumer__0__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.op_Inequality(DotNext.DelegatingConsumer%7B%600%7D%2CDotNext.DelegatingConsumer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L181">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L186">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1_op_Inequality_" data-uid="DotNext.DelegatingConsumer`1.op_Inequality*"></a>
   <h4 id="DotNext_DelegatingConsumer_1_op_Inequality_DotNext_DelegatingConsumer__0__DotNext_DelegatingConsumer__0__" data-uid="DotNext.DelegatingConsumer`1.op_Inequality(DotNext.DelegatingConsumer{`0},DotNext.DelegatingConsumer{`0})">Inequality(DelegatingConsumer&lt;T&gt;, DelegatingConsumer&lt;T&gt;)</h4>
@@ -445,7 +496,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_DotNext_IConsumer_T__Invoke__0_.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.DotNext%23IConsumer%7BT%7D%23Invoke(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L143">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L145">View Source</a>
   </span>
   <a id="DotNext_DelegatingConsumer_1_DotNext_IConsumer_T__Invoke_" data-uid="DotNext.DelegatingConsumer`1.DotNext#IConsumer{T}#Invoke*"></a>
   <h4 id="DotNext_DelegatingConsumer_1_DotNext_IConsumer_T__Invoke__0_" data-uid="DotNext.DelegatingConsumer`1.DotNext#IConsumer{T}#Invoke(`0)">IConsumer&lt;T&gt;.Invoke(T)</h4>
@@ -472,9 +523,42 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1_DotNext_Runtime_CompilerServices_IFunctional_Action_T___ToDelegate.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601.DotNext%23Runtime%23CompilerServices%23IFunctional%7BAction%7BT%7D%7D%23ToDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L148">View Source</a>
+  </span>
+  <a id="DotNext_DelegatingConsumer_1_DotNext_Runtime_CompilerServices_IFunctional_Action_T___ToDelegate_" data-uid="DotNext.DelegatingConsumer`1.DotNext#Runtime#CompilerServices#IFunctional{Action{T}}#ToDelegate*"></a>
+  <h4 id="DotNext_DelegatingConsumer_1_DotNext_Runtime_CompilerServices_IFunctional_Action_T___ToDelegate" data-uid="DotNext.DelegatingConsumer`1.DotNext#Runtime#CompilerServices#IFunctional{Action{T}}#ToDelegate">IFunctional&lt;Action&lt;T&gt;&gt;.ToDelegate()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly Action&lt;T&gt; IFunctional&lt;Action&lt;T&gt;&gt;.ToDelegate()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Action</span>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -494,7 +578,7 @@ invocation to the delegate of type <see cref="!:Action&lt;T>"></see>.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingConsumer_1.md&amp;value=---%0Auid%3A%20DotNext.DelegatingConsumer%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L124" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L126" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct SupplierClosure&lt;TContext, T1, T2, TResult&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,9 +76,10 @@
 with the support of closure that is not allocated on the heap.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;T1, T2, TResult&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;T1, T2, TResult&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -105,7 +106,7 @@ with the support of closure that is not allocated on the heap.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_SupplierClosure_4_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct SupplierClosure&lt;TContext, T1, T2, TResult&gt; : ISupplier&lt;T1, T2, TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct SupplierClosure&lt;TContext, T1, T2, TResult&gt; : ISupplier&lt;T1, T2, TResult&gt;, IFunctional&lt;Func&lt;T1, T2, TResult&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -145,7 +146,7 @@ with the support of closure that is not allocated on the heap.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_SupplierClosure_4__ctor__0__.md&amp;value=---%0Auid%3A%20DotNext.SupplierClosure%604.%23ctor(%600%2C)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L114">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L116">View Source</a>
   </span>
   <a id="DotNext_SupplierClosure_4__ctor_" data-uid="DotNext.SupplierClosure`4.#ctor*"></a>
   <h4 id="DotNext_SupplierClosure_4__ctor__0__" data-uid="DotNext.SupplierClosure`4.#ctor(`0,)">SupplierClosure(TContext, delegate*&lt;in TContext, T1, T2, TResult&gt;)</h4>
@@ -187,7 +188,7 @@ with the support of closure that is not allocated on the heap.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_SupplierClosure_4_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.SupplierClosure%604.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L123">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L125">View Source</a>
   </span>
   <a id="DotNext_SupplierClosure_4_IsEmpty_" data-uid="DotNext.SupplierClosure`4.IsEmpty*"></a>
   <h4 id="DotNext_SupplierClosure_4_IsEmpty" data-uid="DotNext.SupplierClosure`4.IsEmpty">IsEmpty</h4>
@@ -220,7 +221,7 @@ with the support of closure that is not allocated on the heap.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_SupplierClosure_4_DotNext_ISupplier_T1_T2_TResult__Invoke__1__2_.md&amp;value=---%0Auid%3A%20DotNext.SupplierClosure%604.DotNext%23ISupplier%7BT1%2CT2%2CTResult%7D%23Invoke(%601%2C%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L126">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L128">View Source</a>
   </span>
   <a id="DotNext_SupplierClosure_4_DotNext_ISupplier_T1_T2_TResult__Invoke_" data-uid="DotNext.SupplierClosure`4.DotNext#ISupplier{T1,T2,TResult}#Invoke*"></a>
   <h4 id="DotNext_SupplierClosure_4_DotNext_ISupplier_T1_T2_TResult__Invoke__1__2_" data-uid="DotNext.SupplierClosure`4.DotNext#ISupplier{T1,T2,TResult}#Invoke(`1,`2)">ISupplier&lt;T1, T2, TResult&gt;.Invoke(T1, T2)</h4>
@@ -271,6 +272,9 @@ with the support of closure that is not allocated on the heap.</p>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
@@ -289,7 +293,7 @@ with the support of closure that is not allocated on the heap.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_SupplierClosure_4.md&amp;value=---%0Auid%3A%20DotNext.SupplierClosure%604%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L101" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L103" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

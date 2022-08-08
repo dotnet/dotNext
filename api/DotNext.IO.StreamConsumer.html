@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct StreamConsumer
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,10 +76,11 @@
 in the form of the writer to <see cref="!:Stream"></see>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
     <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.IO.StreamConsumer.html">StreamConsumer</a>&gt;</div>
     <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
   </div>
@@ -99,7 +100,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IO_StreamConsumer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct StreamConsumer : IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct StreamConsumer : IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;, IFlushable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -108,7 +109,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer__ctor_Stream_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.%23ctor(Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L24">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer__ctor_" data-uid="DotNext.IO.StreamConsumer.#ctor*"></a>
   <h4 id="DotNext_IO_StreamConsumer__ctor_Stream_" data-uid="DotNext.IO.StreamConsumer.#ctor(Stream)">StreamConsumer(Stream)</h4>
@@ -144,7 +145,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L28">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L29">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_IsEmpty_" data-uid="DotNext.IO.StreamConsumer.IsEmpty*"></a>
   <h4 id="DotNext_IO_StreamConsumer_IsEmpty" data-uid="DotNext.IO.StreamConsumer.IsEmpty">IsEmpty</h4>
@@ -177,7 +178,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_Equals_DotNext_IO_StreamConsumer_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.Equals(DotNext.IO.StreamConsumer)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L53">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_Equals_" data-uid="DotNext.IO.StreamConsumer.Equals*"></a>
   <h4 id="DotNext_IO_StreamConsumer_Equals_DotNext_IO_StreamConsumer_" data-uid="DotNext.IO.StreamConsumer.Equals(DotNext.IO.StreamConsumer)">Equals(StreamConsumer)</h4>
@@ -227,7 +228,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L60">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_Equals_" data-uid="DotNext.IO.StreamConsumer.Equals*"></a>
   <h4 id="DotNext_IO_StreamConsumer_Equals_System_Object_" data-uid="DotNext.IO.StreamConsumer.Equals(System.Object)">Equals(Object)</h4>
@@ -279,7 +280,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L61">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_GetHashCode_" data-uid="DotNext.IO.StreamConsumer.GetHashCode*"></a>
   <h4 id="DotNext_IO_StreamConsumer_GetHashCode" data-uid="DotNext.IO.StreamConsumer.GetHashCode">GetHashCode()</h4>
@@ -313,7 +314,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_ToString.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_ToString_" data-uid="DotNext.IO.StreamConsumer.ToString*"></a>
   <h4 id="DotNext_IO_StreamConsumer_ToString" data-uid="DotNext.IO.StreamConsumer.ToString">ToString()</h4>
@@ -349,7 +350,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_op_Equality_DotNext_IO_StreamConsumer_DotNext_IO_StreamConsumer_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.op_Equality(DotNext.IO.StreamConsumer%2CDotNext.IO.StreamConsumer)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L83">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L88">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_op_Equality_" data-uid="DotNext.IO.StreamConsumer.op_Equality*"></a>
   <h4 id="DotNext_IO_StreamConsumer_op_Equality_DotNext_IO_StreamConsumer_DotNext_IO_StreamConsumer_" data-uid="DotNext.IO.StreamConsumer.op_Equality(DotNext.IO.StreamConsumer,DotNext.IO.StreamConsumer)">Equality(StreamConsumer, StreamConsumer)</h4>
@@ -405,7 +406,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_op_Implicit_Stream__DotNext_IO_StreamConsumer.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.op_Implicit(Stream)~DotNext.IO.StreamConsumer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L75">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_op_Implicit_" data-uid="DotNext.IO.StreamConsumer.op_Implicit*"></a>
   <h4 id="DotNext_IO_StreamConsumer_op_Implicit_Stream__DotNext_IO_StreamConsumer" data-uid="DotNext.IO.StreamConsumer.op_Implicit(Stream)~DotNext.IO.StreamConsumer">Implicit(Stream to StreamConsumer)</h4>
@@ -455,7 +456,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_op_Inequality_DotNext_IO_StreamConsumer_DotNext_IO_StreamConsumer_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.op_Inequality(DotNext.IO.StreamConsumer%2CDotNext.IO.StreamConsumer)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L92">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_op_Inequality_" data-uid="DotNext.IO.StreamConsumer.op_Inequality*"></a>
   <h4 id="DotNext_IO_StreamConsumer_op_Inequality_DotNext_IO_StreamConsumer_DotNext_IO_StreamConsumer_" data-uid="DotNext.IO.StreamConsumer.op_Inequality(DotNext.IO.StreamConsumer,DotNext.IO.StreamConsumer)">Inequality(StreamConsumer, StreamConsumer)</h4>
@@ -513,7 +514,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_DotNext_Buffers_IReadOnlySpanConsumer_System_Byte__Invoke_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.DotNext%23Buffers%23IReadOnlySpanConsumer%7BSystem%23Byte%7D%23Invoke(ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L31">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L32">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_DotNext_Buffers_IReadOnlySpanConsumer_System_Byte__Invoke_" data-uid="DotNext.IO.StreamConsumer.DotNext#Buffers#IReadOnlySpanConsumer{System#Byte}#Invoke*"></a>
   <h4 id="DotNext_IO_StreamConsumer_DotNext_Buffers_IReadOnlySpanConsumer_System_Byte__Invoke_ReadOnlySpan_System_Byte__" data-uid="DotNext.IO.StreamConsumer.DotNext#Buffers#IReadOnlySpanConsumer{System#Byte}#Invoke(ReadOnlySpan{System.Byte})">IReadOnlySpanConsumer&lt;Byte&gt;.Invoke(ReadOnlySpan&lt;Byte&gt;)</h4>
@@ -545,7 +546,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_DotNext_IO_IFlushable_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.DotNext%23IO%23IFlushable%23Flush%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L38">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L43">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_DotNext_IO_IFlushable_Flush_" data-uid="DotNext.IO.StreamConsumer.DotNext#IO#IFlushable#Flush*"></a>
   <h4 id="DotNext_IO_StreamConsumer_DotNext_IO_IFlushable_Flush" data-uid="DotNext.IO.StreamConsumer.DotNext#IO#IFlushable#Flush">IFlushable.Flush()</h4>
@@ -560,7 +561,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_DotNext_IO_IFlushable_FlushAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.DotNext%23IO%23IFlushable%23FlushAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L41">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L46">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_DotNext_IO_IFlushable_FlushAsync_" data-uid="DotNext.IO.StreamConsumer.DotNext#IO#IFlushable#FlushAsync*"></a>
   <h4 id="DotNext_IO_StreamConsumer_DotNext_IO_IFlushable_FlushAsync_CancellationToken_" data-uid="DotNext.IO.StreamConsumer.DotNext#IO#IFlushable#FlushAsync(CancellationToken)">IFlushable.FlushAsync(CancellationToken)</h4>
@@ -607,7 +608,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_ReadOnlyMemory_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.DotNext%23ISupplier%7BReadOnlyMemory%7BSystem%23Byte%7D%2CCancellationToken%2CValueTask%7D%23Invoke(ReadOnlyMemory%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L35">View Source</a>
   </span>
   <a id="DotNext_IO_StreamConsumer_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_" data-uid="DotNext.IO.StreamConsumer.DotNext#ISupplier{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}#Invoke*"></a>
   <h4 id="DotNext_IO_StreamConsumer_DotNext_ISupplier_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask__Invoke_ReadOnlyMemory_System_Byte__CancellationToken_" data-uid="DotNext.IO.StreamConsumer.DotNext#ISupplier{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}#Invoke(ReadOnlyMemory{System.Byte},CancellationToken)">ISupplier&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;.Invoke(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</h4>
@@ -654,12 +655,45 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask___ToDelegate.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer.DotNext%23Runtime%23CompilerServices%23IFunctional%7BDotNext%23Func%7BReadOnlyMemory%7BSystem%23Byte%7D%2CCancellationToken%2CValueTask%7D%7D%23ToDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L39">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamConsumer_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask___ToDelegate_" data-uid="DotNext.IO.StreamConsumer.DotNext#Runtime#CompilerServices#IFunctional{DotNext#Func{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}}#ToDelegate*"></a>
+  <h4 id="DotNext_IO_StreamConsumer_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask___ToDelegate" data-uid="DotNext.IO.StreamConsumer.DotNext#Runtime#CompilerServices#IFunctional{DotNext#Func{ReadOnlyMemory{System#Byte},CancellationToken,ValueTask}}#ToDelegate">IFunctional&lt;Func&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;&gt;.ToDelegate()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt; IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;.ToDelegate()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <span class="xref">IEquatable&lt;&gt;</span>
@@ -685,7 +719,7 @@ in the form of the writer to <see cref="!:Stream"></see>.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamConsumer.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamConsumer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamConsumer.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

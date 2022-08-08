@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class RaftCluster.TcpConfiguration
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -79,22 +79,29 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html">RaftCluster.NodeConfiguration</a></div>
-    <div class="level2"><span class="xref">RaftCluster.TcpConfiguration</span></div>
+    <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html">RaftCluster.BuiltInTransportConfiguration</a></div>
+    <div class="level3"><span class="xref">RaftCluster.TcpConfiguration</span></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.html">IClusterMemberConfiguration</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_HostEndPoint">RaftCluster.BuiltInTransportConfiguration.HostEndPoint</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_PublicEndPoint">RaftCluster.BuiltInTransportConfiguration.PublicEndPoint</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_ServerBacklog">RaftCluster.BuiltInTransportConfiguration.ServerBacklog</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_TimeToLive">RaftCluster.BuiltInTransportConfiguration.TimeToLive</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_Metrics">RaftCluster.NodeConfiguration.Metrics</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_HostEndPoint">RaftCluster.NodeConfiguration.HostEndPoint</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_PublicEndPoint">RaftCluster.NodeConfiguration.PublicEndPoint</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_ConfigurationStorage">RaftCluster.NodeConfiguration.ConfigurationStorage</a>
@@ -128,15 +135,6 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_UpperElectionTimeout">RaftCluster.NodeConfiguration.UpperElectionTimeout</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_PipeConfig">RaftCluster.NodeConfiguration.PipeConfig</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_ServerBacklog">RaftCluster.NodeConfiguration.ServerBacklog</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_TimeToLive">RaftCluster.NodeConfiguration.TimeToLive</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_LoggerFactory">RaftCluster.NodeConfiguration.LoggerFactory</a>
@@ -179,7 +177,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class TcpConfiguration : RaftCluster.NodeConfiguration, IClusterMemberConfiguration</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class TcpConfiguration : RaftCluster.BuiltInTransportConfiguration, IClusterMemberConfiguration</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -188,7 +186,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration__ctor_System_Net_IPEndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.%23ctor(System.Net.IPEndPoint)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L384">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L484">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration__ctor_System_Net_IPEndPoint_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.#ctor(System.Net.IPEndPoint)">TcpConfiguration(IPEndPoint)</h4>
@@ -224,7 +222,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_ConnectTimeout.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.ConnectTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L439">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L539">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_ConnectTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.ConnectTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_ConnectTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.ConnectTimeout">ConnectTimeout</h4>
@@ -255,7 +253,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_GracefulShutdownTimeout.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.GracefulShutdownTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L403">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L503">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_GracefulShutdownTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.GracefulShutdownTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_GracefulShutdownTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.GracefulShutdownTimeout">GracefulShutdownTimeout</h4>
@@ -286,7 +284,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_LingerOption.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.LingerOption%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L395">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L495">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_LingerOption_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.LingerOption*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_LingerOption" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.LingerOption">LingerOption</h4>
@@ -318,7 +316,7 @@ delay its closing in an attempt to send all pending data.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_SslOptions.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.SslOptions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L430">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L530">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_SslOptions_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.SslOptions*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_SslOptions" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.SslOptions">SslOptions</h4>
@@ -350,7 +348,7 @@ delay its closing in an attempt to send all pending data.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_TransmissionBlockSize.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.TransmissionBlockSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L420">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L520">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_TransmissionBlockSize_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.TransmissionBlockSize*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration_TransmissionBlockSize" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.TransmissionBlockSize">TransmissionBlockSize</h4>
@@ -451,7 +449,7 @@ must be equal to average size of single log entry.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_TcpConfiguration.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L375" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L475" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

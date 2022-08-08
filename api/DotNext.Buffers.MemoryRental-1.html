@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct MemoryRental&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -121,8 +121,8 @@ on the stack or heap.</p>
 If stack allocation threshold is reached (e.g. <span class="xref">DotNext.Buffers.MemoryRental`1.StackallocThreshold</span>) then it's possible to use pooled memory from
 arbitrary <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a> or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>. Custom
 <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> is not supported because default <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>
-is optimized for per-CPU core allocation which is perfectly for situation when the same
-thread is responsible for renting and releasing of an array.</p>
+is optimized for per-CPU core allocation which is perfect when the same
+thread is responsible for renting and releasing the array.</p>
 </div>
   <h5 id="DotNext_Buffers_MemoryRental_1_examples"><strong>Examples</strong></h5>
   <pre><code>const int stackallocThreshold = 20;

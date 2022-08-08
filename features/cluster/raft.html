@@ -8,7 +8,7 @@
     <title>Raft | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Raft | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -137,12 +137,13 @@ of the latest committed write. For instance, if the client performs <em>Write</e
 <li>HTTP 1.1, HTTP 2.0 and HTTP 3.0</li>
 <li>TCP transport</li>
 <li>UDP transport</li>
+<li>Generic transport on top of <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections">ASP.NET Core Connections</a> abstractions. See <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.CustomTransportConfiguration.html">CustomTransportConfiguration</a> class for more information.</li>
 </ul>
 <p>TCP and UDP network transports shipped with <code>DotNext.Net.Cluster</code> library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized <a href="https://en.wikipedia.org/wiki/Application_layer">application protocol</a> on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming are limited:</p>
 <ul>
 <li>General-purpose messaging between nodes is not supported via <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> interface</li>
 </ul>
-<p>Cluster programming model using TCP and UDP transports is unified and exposed via <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class. The following example demonstrates usage of this class:</p>
+<p>Cluster programming model using TCP, UDP, and generic transports is unified and exposed via <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class. The following example demonstrates usage of this class:</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
 
 RaftCluster.NodeConfiguration config = ...;//configuration of the local node
@@ -209,12 +210,6 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>A set of metadata properties associated with the local node</td>
 </tr>
 <tr>
-<td>TimeToLive</td>
-<td>No</td>
-<td>64</td>
-<td>Time To Live (TTL) value of Internet Protocol (IP) packets</td>
-</tr>
-<tr>
 <td>RequestTimeout</td>
 <td>No</td>
 <td><em>UpperElectionTimeout</em></td>
@@ -225,12 +220,6 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>No</td>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.abstractions.nullloggerfactory.instance">NullLoggerFactory.Instance</a></td>
 <td>The logger factory</td>
-</tr>
-<tr>
-<td>BufferingOptions</td>
-<td>No</td>
-<td><strong>null</strong></td>
-<td>Enables buffering of log entries when transferring over the wire. If defined, receiver creates a buffered copy of the log entries and the snapshot before appending them to the log. It increases response time during replication but reduces the potential lock contention in WAL between replication process and other writers</td>
 </tr>
 <tr>
 <td>Standby</td>
@@ -341,7 +330,6 @@ IHost host = new HostBuilder()
 		&quot;expiration&quot;: &quot;00:00:10&quot;,
 		&quot;pollingInterval&quot; : &quot;00:01:00&quot;
 	},
-	&quot;resourcePath&quot; : &quot;/cluster-consensus/raft&quot;,
     &quot;clientHandlerName&quot; : &quot;raftClient&quot;,
 	&quot;port&quot; : 3262,
 	&quot;heartbeatThreshold&quot; : 0.5,
@@ -396,12 +384,6 @@ IHost host = new HostBuilder()
 <td>No</td>
 <td>raftClient</td>
 <td>The name to be passed into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory">IHttpMessageHandlerFactory</a> to create <a href="https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessageinvoker">HttpMessageInvoker</a> used by Raft client code</td>
-</tr>
-<tr>
-<td>resourcePath</td>
-<td>No</td>
-<td>/cluster-consensus/raft</td>
-<td>The relative path to the endpoint responsible for handling internal Raft messages</td>
 </tr>
 <tr>
 <td>requestJournal:memoryLimit</td>
@@ -682,6 +664,12 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td><em>N/A</em></td>
 <td>Allows to enable and configure transport-level encryption using SSL and X.509 certificates</td>
 </tr>
+<tr>
+<td>TimeToLive</td>
+<td>No</td>
+<td>64</td>
+<td>Time To Live (TTL) value of Internet Protocol (IP) packets</td>
+</tr>
 </tbody>
 </table>
 <p>TCP transport is WAN friendly and support transport-level encryption. However, the underlying application-level protocol is binary and can be a problem for corporate firewalls.</p>
@@ -736,6 +724,12 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>No</td>
 <td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipeoptions.default">PipeOptions.Default</a></td>
 <td>The configuration of I/O pipeline used for passing bytes between application and network transport</td>
+</tr>
+<tr>
+<td>TimeToLive</td>
+<td>No</td>
+<td>64</td>
+<td>Time To Live (TTL) value of Internet Protocol (IP) packets</td>
 </tr>
 </tbody>
 </table>
@@ -813,7 +807,11 @@ await cluster.ReplicateAsync(new MyLogEntry(term), Timeout.InfiniteTimeSpan, tok
 <p>The same pattern is applicable to <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.html">disk-based state machine</a> except snapshotting except snapshotting.</p>
 <p>Designing binary format for custom log entries and interpreter for them may be hard. Examine <a href="wal.html">this</a> article to learn how to use Interpreter Framework shipped with the library.</p>
 <h1 id="guide-custom-transport">Guide: Custom Transport</h1>
-<p>Transport-agnostic implementation of Raft is represented by <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a> class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.</p>
+<p>Transport- and serialization-agnostic implementation of Raft is represented by <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a> class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>The easiest way to support new network protocol (e.g. Bluetooth) is to use <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.CustomTransportConfiguration.html">CustomTransportConfiguration</a> class. However, it doesn't provide control over the serialization format of Raft messages. If you're looking for a way to provide custom application-level protocol for Raft, follow this guide.</p>
+</div>
 <h2 id="existing-implementations">Existing Implementations</h2>
 <p>.NEXT library ships multiple network transports:</p>
 <ul>

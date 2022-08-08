@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BinaryMessage&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,9 +81,10 @@
     <div class="level1"><a class="xref" href="DotNext.IO.BinaryTransferObject-1.html">BinaryTransferObject</a>&lt;T&gt;</div>
     <div class="level2"><span class="xref">BinaryMessage&lt;T&gt;</span></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;&gt;&gt;</div>
     <div><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></div>
     <div><a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a></div>
   </div>
@@ -136,7 +137,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Messaging_BinaryMessage_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class BinaryMessage&lt;T&gt; : BinaryTransferObject&lt;T&gt;, ISupplier&lt;T&gt;, IMessage, IDataTransferObject where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public class BinaryMessage&lt;T&gt; : BinaryTransferObject&lt;T&gt;, ISupplier&lt;T&gt;, IFunctional&lt;Func&lt;&gt;&gt;, IMessage, IDataTransferObject where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -295,6 +296,9 @@
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a>

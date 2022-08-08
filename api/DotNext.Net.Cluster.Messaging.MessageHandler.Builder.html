@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class MessageHandler.Builder
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,9 +80,10 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">MessageHandler.Builder</span></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Messaging.MessageHandler.html">MessageHandler</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -112,7 +113,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Messaging_MessageHandler_Builder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class Builder : ISupplier&lt;MessageHandler&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class Builder : ISupplier&lt;MessageHandler&gt;, IFunctional&lt;Func&lt;&gt;&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -877,6 +878,9 @@
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

@@ -8,7 +8,7 @@
     <title>Gossip-based Communication | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Gossip-based Communication | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -129,7 +129,6 @@ IHost host = new HostBuilder()
 <h3 id="configuration">Configuration</h3>
 <p>The application should be configured properly to serve HyParView messages. The following JSON represents the example of configuration:</p>
 <pre><code class="lang-json">{
-    &quot;resourcePath&quot; : &quot;/membership/hyparview&quot;,
     &quot;protocolVersion&quot; : &quot;http2&quot;,
     &quot;protocolVersionPolicy&quot; : &quot;RequestVersionOrLower&quot;,
     &quot;requestTimeout&quot; : &quot;00:01:00&quot;,
@@ -158,12 +157,6 @@ IHost host = new HostBuilder()
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>resourcePath</td>
-<td>No</td>
-<td>/membership/hyparview</td>
-<td>The relative path to the endpoint responsible for handling internal HyParView messages</td>
-</tr>
 <tr>
 <td>protocolVersion</td>
 <td>No</td>

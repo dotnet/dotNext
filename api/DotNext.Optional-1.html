@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct Optional&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -75,7 +75,7 @@
   <div class="markdown level0 summary"><p>A container object which may or may not contain a value.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;&gt;</div>
     <div><span class="xref">IEquatable</span>&lt;T&gt;</div>
@@ -83,6 +83,7 @@
     <div><a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad</a>&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -100,7 +101,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Optional_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct Optional&lt;T&gt; : IStructuralEquatable, IOptionMonad&lt;T, Optional&lt;T&gt;&gt;, IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct Optional&lt;T&gt; : IStructuralEquatable, IOptionMonad&lt;T, Optional&lt;T&gt;&gt;, IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt;, IFunctional&lt;Func&lt;object&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2039,6 +2040,9 @@ otherwise, <span class="xref">false</span>.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

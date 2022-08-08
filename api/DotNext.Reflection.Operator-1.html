@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Operator&lt;TSignature&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -82,13 +82,14 @@
       <div class="level2"><a class="xref" href="DotNext.Reflection.BinaryOperator-3.html">BinaryOperator&lt;TOperand1, TOperand2, TResult&gt;</a></div>
       <div class="level2"><a class="xref" href="DotNext.Reflection.UnaryOperator-2.html">UnaryOperator&lt;TOperand, TResult&gt;</a></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Reflection.IOperator-1.html">IOperator</a>&lt;TSignature&gt;</div>
     <div><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a>, TSignature&gt;</div>
     <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a>&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;TSignature&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -109,7 +110,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Operator_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class Operator&lt;TSignature&gt; : IOperator&lt;TSignature&gt;, IMember&lt;MemberInfo, TSignature&gt;, IMember&lt;MemberInfo&gt;, ICustomAttributeProvider, ISupplier&lt;TSignature&gt; where TSignature : Delegate</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class Operator&lt;TSignature&gt; : IOperator&lt;TSignature&gt;, IMember&lt;MemberInfo, TSignature&gt;, IMember&lt;MemberInfo&gt;, ICustomAttributeProvider, ISupplier&lt;TSignature&gt;, IFunctional&lt;Func&lt;TSignature&gt;&gt; where TSignature : Delegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -471,6 +472,9 @@
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

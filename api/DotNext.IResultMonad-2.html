@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IResultMonad&lt;T, TError&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -98,12 +98,18 @@
     <div>
       <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;Object&gt;.Invoke()</a>
     </div>
+    <div>
+      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_TResult___ToDelegate">ISupplier&lt;Object&gt;.IFunctional&lt;Func&lt;Object&gt;&gt;.ToDelegate()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;Object&gt;&gt;.ToDelegate()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IResultMonad_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IResultMonad&lt;T, TError&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IResultMonad&lt;T, TError&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt;, IFunctional&lt;Func&lt;object&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">

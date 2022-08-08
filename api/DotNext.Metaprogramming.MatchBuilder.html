@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class MatchBuilder
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,9 +81,10 @@
     <div class="level1"><a class="xref" href="DotNext.Metaprogramming.ExpressionBuilder-1.html">ExpressionBuilder</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.blockexpression">BlockExpression</a>&gt;</div>
     <div class="level2"><span class="xref">MatchBuilder</span></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.blockexpression">BlockExpression</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -125,7 +126,7 @@
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Metaprogramming_MatchBuilder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class MatchBuilder : ExpressionBuilder&lt;BlockExpression&gt;, ISupplier&lt;BlockExpression&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class MatchBuilder : ExpressionBuilder&lt;BlockExpression&gt;, ISupplier&lt;BlockExpression&gt;, IFunctional&lt;Func&lt;&gt;&gt;</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
@@ -868,6 +869,9 @@
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

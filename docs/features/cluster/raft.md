@@ -75,7 +75,7 @@ When a new node is added, it passes through warmup procedure. The leader node at
 * HTTP 1.1, HTTP 2.0 and HTTP 3.0
 * TCP transport
 * UDP transport
-* Generic transport on top of [ASP.NET Core Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) abstractions. See [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.CustomTransportConfiguration) class for more information.
+* Generic transport on top of [ASP.NET Core Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) abstractions. See [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.CustomTransportConfiguration) class for more information.
 
 TCP and UDP network transports shipped with `DotNext.Net.Cluster` library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized [application protocol](https://en.wikipedia.org/wiki/Application_layer) on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming are limited:
 * General-purpose messaging between nodes is not supported via [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface
@@ -542,7 +542,7 @@ Designing binary format for custom log entries and interpreter for them may be h
 Transport- and serialization-agnostic implementation of Raft is represented by [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1) class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.
 
 > [!NOTE]
-> The easiest way to support new network protocol (e.g. Bluetooth) is to use [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.CustomTransportConfiguration) class. However, it doesn't provide control over the serialization format of Raft messages. If you're looking for a way to provide custom application-level protocol for Raft, follow this guide.
+> The easiest way to support new network protocol (e.g. Bluetooth) is to use [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.CustomTransportConfiguration) class. However, it doesn't provide control over the serialization format of Raft messages. If you're looking for a way to provide custom application-level protocol for Raft, follow this guide.
 
 ## Existing Implementations
 .NEXT library ships multiple network transports: 

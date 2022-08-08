@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct TextConsumer
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,10 +76,11 @@
 in the form of the writer to <see cref="!:TextWriter"></see>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
     <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
   </div>
   <div class="inheritedMembers">
@@ -98,7 +99,7 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IO_TextConsumer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct TextConsumer : IReadOnlySpanConsumer&lt;char&gt;, ISupplier&lt;ReadOnlyMemory&lt;char&gt;, CancellationToken, ValueTask&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct TextConsumer : IReadOnlySpanConsumer&lt;char&gt;, ISupplier&lt;ReadOnlyMemory&lt;char&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;char&gt;, CancellationToken, ValueTask&gt;&gt;, IFlushable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -659,6 +660,9 @@ in the form of the writer to <see cref="!:TextWriter"></see>.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>

@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Base64 Decoding | .NEXT </title>
+    <title>Base64 Encoding/Decoding | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Base64 Decoding | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="title" content="Base64 Encoding/Decoding | .NEXT ">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -66,14 +66,14 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="base64-decoding">Base64 Decoding</h1>
+<h1 id="base64-encodingdecoding">Base64 Encoding/Decoding</h1>
 
-<p>Converting base64-encoded binary content in streaming scenarios may be difficult because .NET standard library provides only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.text.base64">low-level operations</a> for decoding. When the input stream has unpredictable size it's very hard to use such API and reduce memory allocations during decoding in the same time. Moreover, base64-encoded binary content can be represented in two forms:</p>
+<p>Converting base64-encoded binary content in streaming scenarios may be difficult because .NET standard library provides only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.text.base64">low-level operations</a> for encoding/decoding. When the input stream has unpredictable size it's very hard to use such API and reduce memory allocations during decoding in the same time. Moreover, base64-encoded binary content can be represented in two forms:</p>
 <ul>
 <li>As UTF-8 encoded characters in the form of the sequence of bytes</li>
 <li>As Unicode encoded characters in the form of the sequence of chars</li>
 </ul>
-<p><a class="xref" href="../../api/DotNext.Text.Base64Decoder.html">Base64Decoder</a> type is specially designed for decoding base64-encoded content in streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.</p>
+<p><a class="xref" href="../../api/DotNext.Text.Base64Decoder.html">Base64Decoder</a> type is a specially designed for decoding base64-encoded content for streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.</p>
 <p>The following example demonstrates how to decode base64-encoded content represented by UTF-8 encoded characters from the stream:</p>
 <pre><code class="lang-csharp">using DotNext;
 using DotNext.Text;
@@ -90,6 +90,20 @@ Span&lt;byte&gt; buffer = stackalloc byte[128];
 for (int count; (count = input.Read(buffer)) &gt; 0; )
 {
     decoder.Decode(buffer.Slice(0, count), &amp;WriteToStream, output);
+}
+</code></pre>
+<p><a class="xref" href="../../api/DotNext.Text.Base64Encoder.html">Base64Encoder</a> type provides encoding for streamin scenarios.</p>
+<pre><code class="lang-csharp">using System.Buffers;
+using DotNext.Text;
+
+var encoder = new Base64Encoder();
+var writer = new ArrayBufferWriter&lt;char&gt;();
+encoder.EncodeToChars(new byte[] { 10, 20, 30 }, writer);
+
+if (writer.HasBufferedData)
+{
+    var count = encoder.Flush(writer.GetSpan(Base64Encoder.MaxBufferedDataSize));
+    writer.Advance(count);
 }
 </code></pre>
 </article>

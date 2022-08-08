@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct DelegatingSupplier&lt;T1, T2, TResult&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,9 +76,10 @@
 invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;T1, T2, TResult&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;T1, T2, TResult&gt;&gt;</div>
     <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.DelegatingSupplier-3.html">DelegatingSupplier</a>&lt;T1, T2, TResult&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -100,7 +101,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_DelegatingSupplier_3_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct DelegatingSupplier&lt;T1, T2, TResult&gt; : ISupplier&lt;T1, T2, TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct DelegatingSupplier&lt;T1, T2, TResult&gt; : ISupplier&lt;T1, T2, TResult&gt;, IFunctional&lt;Func&lt;T1, T2, TResult&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -135,7 +136,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3__ctor_DotNext_Func__0__1__2__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.%23ctor(DotNext.Func%7B%600%2C%601%2C%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L146">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3__ctor_" data-uid="DotNext.DelegatingSupplier`3.#ctor*"></a>
   <h4 id="DotNext_DelegatingSupplier_3__ctor_DotNext_Func__0__1__2__" data-uid="DotNext.DelegatingSupplier`3.#ctor(DotNext.Func{`0,`1,`2})">DelegatingSupplier(Func&lt;T1, T2, TResult&gt;)</h4>
@@ -171,7 +172,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L152">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L154">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_IsEmpty_" data-uid="DotNext.DelegatingSupplier`3.IsEmpty*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_IsEmpty" data-uid="DotNext.DelegatingSupplier`3.IsEmpty">IsEmpty</h4>
@@ -204,7 +205,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_Equals_DotNext_DelegatingSupplier__0__1__2__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.Equals(DotNext.DelegatingSupplier%7B%600%2C%601%2C%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L162">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L167">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_Equals_" data-uid="DotNext.DelegatingSupplier`3.Equals*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_Equals_DotNext_DelegatingSupplier__0__1__2__" data-uid="DotNext.DelegatingSupplier`3.Equals(DotNext.DelegatingSupplier{`0,`1,`2})">Equals(DelegatingSupplier&lt;T1, T2, TResult&gt;)</h4>
@@ -254,7 +255,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L170">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L175">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_Equals_" data-uid="DotNext.DelegatingSupplier`3.Equals*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_Equals_System_Object_" data-uid="DotNext.DelegatingSupplier`3.Equals(System.Object)">Equals(Object)</h4>
@@ -306,7 +307,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L176">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L181">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_GetHashCode_" data-uid="DotNext.DelegatingSupplier`3.GetHashCode*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_GetHashCode" data-uid="DotNext.DelegatingSupplier`3.GetHashCode">GetHashCode()</h4>
@@ -342,7 +343,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_op_Equality_DotNext_DelegatingSupplier__0__1__2__DotNext_DelegatingSupplier__0__1__2__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.op_Equality(DotNext.DelegatingSupplier%7B%600%2C%601%2C%602%7D%2CDotNext.DelegatingSupplier%7B%600%2C%601%2C%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L192">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_op_Equality_" data-uid="DotNext.DelegatingSupplier`3.op_Equality*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_op_Equality_DotNext_DelegatingSupplier__0__1__2__DotNext_DelegatingSupplier__0__1__2__" data-uid="DotNext.DelegatingSupplier`3.op_Equality(DotNext.DelegatingSupplier{`0,`1,`2},DotNext.DelegatingSupplier{`0,`1,`2})">Equality(DelegatingSupplier&lt;T1, T2, TResult&gt;, DelegatingSupplier&lt;T1, T2, TResult&gt;)</h4>
@@ -398,7 +399,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_op_Implicit_DotNext_Func__0__1__2___DotNext_DelegatingSupplier__0__1__2_.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.op_Implicit(DotNext.Func%7B%600%2C%601%2C%602%7D)~DotNext.DelegatingSupplier%7B%600%2C%601%2C%602%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L184">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L189">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_op_Implicit_" data-uid="DotNext.DelegatingSupplier`3.op_Implicit*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_op_Implicit_DotNext_Func__0__1__2___DotNext_DelegatingSupplier__0__1__2_" data-uid="DotNext.DelegatingSupplier`3.op_Implicit(DotNext.Func{`0,`1,`2})~DotNext.DelegatingSupplier{`0,`1,`2}">Implicit(Func&lt;T1, T2, TResult&gt; to DelegatingSupplier&lt;T1, T2, TResult&gt;)</h4>
@@ -448,7 +449,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_op_Inequality_DotNext_DelegatingSupplier__0__1__2__DotNext_DelegatingSupplier__0__1__2__.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.op_Inequality(DotNext.DelegatingSupplier%7B%600%2C%601%2C%602%7D%2CDotNext.DelegatingSupplier%7B%600%2C%601%2C%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L201">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L206">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_op_Inequality_" data-uid="DotNext.DelegatingSupplier`3.op_Inequality*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_op_Inequality_DotNext_DelegatingSupplier__0__1__2__DotNext_DelegatingSupplier__0__1__2__" data-uid="DotNext.DelegatingSupplier`3.op_Inequality(DotNext.DelegatingSupplier{`0,`1,`2},DotNext.DelegatingSupplier{`0,`1,`2})">Inequality(DelegatingSupplier&lt;T1, T2, TResult&gt;, DelegatingSupplier&lt;T1, T2, TResult&gt;)</h4>
@@ -506,7 +507,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_DotNext_ISupplier_T1_T2_TResult__Invoke__0__1_.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.DotNext%23ISupplier%7BT1%2CT2%2CTResult%7D%23Invoke(%600%2C%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L155">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L157">View Source</a>
   </span>
   <a id="DotNext_DelegatingSupplier_3_DotNext_ISupplier_T1_T2_TResult__Invoke_" data-uid="DotNext.DelegatingSupplier`3.DotNext#ISupplier{T1,T2,TResult}#Invoke*"></a>
   <h4 id="DotNext_DelegatingSupplier_3_DotNext_ISupplier_T1_T2_TResult__Invoke__0__1_" data-uid="DotNext.DelegatingSupplier`3.DotNext#ISupplier{T1,T2,TResult}#Invoke(`0,`1)">ISupplier&lt;T1, T2, TResult&gt;.Invoke(T1, T2)</h4>
@@ -553,9 +554,42 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_T1_T2_TResult___ToDelegate.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603.DotNext%23Runtime%23CompilerServices%23IFunctional%7BDotNext%23Func%7BT1%2CT2%2CTResult%7D%7D%23ToDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L160">View Source</a>
+  </span>
+  <a id="DotNext_DelegatingSupplier_3_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_T1_T2_TResult___ToDelegate_" data-uid="DotNext.DelegatingSupplier`3.DotNext#Runtime#CompilerServices#IFunctional{DotNext#Func{T1,T2,TResult}}#ToDelegate*"></a>
+  <h4 id="DotNext_DelegatingSupplier_3_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_T1_T2_TResult___ToDelegate" data-uid="DotNext.DelegatingSupplier`3.DotNext#Runtime#CompilerServices#IFunctional{DotNext#Func{T1,T2,TResult}}#ToDelegate">IFunctional&lt;Func&lt;T1, T2, TResult&gt;&gt;.ToDelegate()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">readonly Func&lt;T1, T2, TResult&gt; IFunctional&lt;Func&lt;T1, T2, TResult&gt;&gt;.ToDelegate()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, TResult&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <span class="xref">IEquatable&lt;&gt;</span>
@@ -578,7 +612,7 @@ invocation to the delegate of type <see cref="!:Func&lt;T1, T2, TResult>"></see>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegatingSupplier_3.md&amp;value=---%0Auid%3A%20DotNext.DelegatingSupplier%603%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L136" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier2.cs/#L138" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ServiceProviderFactory.Builder
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,9 +80,10 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">ServiceProviderFactory.Builder</span></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<span class="xref">IServiceProvider</span>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">IServiceProvider</span>&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -112,7 +113,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_ServiceProviderFactory_Builder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class Builder : ISupplier&lt;IServiceProvider&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class Builder : ISupplier&lt;IServiceProvider&gt;, IFunctional&lt;Func&lt;IServiceProvider&gt;&gt;</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
@@ -190,7 +191,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ServiceProviderFactory_Builder_Build_System_Nullable_IServiceProvider__.md&amp;value=---%0Auid%3A%20DotNext.ServiceProviderFactory.Builder.Build(System.Nullable%7BIServiceProvider%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ServiceProviderFactory.Builder.cs/#L32">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ServiceProviderFactory.Builder.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_ServiceProviderFactory_Builder_Build_" data-uid="DotNext.ServiceProviderFactory.Builder.Build*"></a>
   <h4 id="DotNext_ServiceProviderFactory_Builder_Build_System_Nullable_IServiceProvider__" data-uid="DotNext.ServiceProviderFactory.Builder.Build(System.Nullable{IServiceProvider})">Build(Nullable&lt;IServiceProvider&gt;)</h4>
@@ -240,7 +241,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ServiceProviderFactory_Builder_Clear.md&amp;value=---%0Auid%3A%20DotNext.ServiceProviderFactory.Builder.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ServiceProviderFactory.Builder.cs/#L43">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ServiceProviderFactory.Builder.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_ServiceProviderFactory_Builder_Clear_" data-uid="DotNext.ServiceProviderFactory.Builder.Clear*"></a>
   <h4 id="DotNext_ServiceProviderFactory_Builder_Clear" data-uid="DotNext.ServiceProviderFactory.Builder.Clear">Clear()</h4>
@@ -258,7 +259,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ServiceProviderFactory_Builder_DotNext_ISupplier_IServiceProvider__Invoke.md&amp;value=---%0Auid%3A%20DotNext.ServiceProviderFactory.Builder.DotNext%23ISupplier%7BIServiceProvider%7D%23Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ServiceProviderFactory.Builder.cs/#L46">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ServiceProviderFactory.Builder.cs/#L47">View Source</a>
   </span>
   <a id="DotNext_ServiceProviderFactory_Builder_DotNext_ISupplier_IServiceProvider__Invoke_" data-uid="DotNext.ServiceProviderFactory.Builder.DotNext#ISupplier{IServiceProvider}#Invoke*"></a>
   <h4 id="DotNext_ServiceProviderFactory_Builder_DotNext_ISupplier_IServiceProvider__Invoke" data-uid="DotNext.ServiceProviderFactory.Builder.DotNext#ISupplier{IServiceProvider}#Invoke">ISupplier&lt;IServiceProvider&gt;.Invoke()</h4>
@@ -286,6 +287,9 @@
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

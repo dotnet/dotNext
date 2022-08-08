@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Constructor&lt;TSignature&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -83,7 +83,7 @@
     <div class="level3"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.constructorinfo">ConstructorInfo</a></div>
     <div class="level4"><span class="xref">Constructor&lt;TSignature&gt;</span></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Reflection.IConstructor-1.html">IConstructor</a>&lt;TSignature&gt;</div>
     <div><a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.constructorinfo">ConstructorInfo</a>, TSignature&gt;</div>
@@ -91,6 +91,7 @@
     <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.constructorinfo">ConstructorInfo</a>&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;TSignature&gt;&gt;</div>
     <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.constructorinfo">ConstructorInfo</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -187,7 +188,7 @@
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Constructor_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class Constructor&lt;TSignature&gt; : ConstructorInfo, IConstructor&lt;TSignature&gt;, IMethod&lt;ConstructorInfo, TSignature&gt;, IMember&lt;ConstructorInfo, TSignature&gt;, IMember&lt;ConstructorInfo&gt;, ICustomAttributeProvider, ISupplier&lt;TSignature&gt; where TSignature : MulticastDelegate</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class Constructor&lt;TSignature&gt; : ConstructorInfo, IConstructor&lt;TSignature&gt;, IMethod&lt;ConstructorInfo, TSignature&gt;, IMember&lt;ConstructorInfo, TSignature&gt;, IMember&lt;ConstructorInfo&gt;, ICustomAttributeProvider, ISupplier&lt;TSignature&gt;, IFunctional&lt;Func&lt;TSignature&gt;&gt; where TSignature : MulticastDelegate</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1554,6 +1555,9 @@ and therefore cannot perform critical operations.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <span class="xref">IEquatable&lt;&gt;</span>

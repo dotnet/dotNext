@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
 <tbody>
 <tr>
 <td>Runtime</td>
-<td>.NET 6.0.6 (6.0.622.26707), X64 RyuJIT</td>
+<td>.NET 6.0.7 (6.0.722.32202), X64 RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -153,7 +153,7 @@ dotnet run -c Bench
 </table>
 <p>Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 6 but still convenient in complex cases.</p>
 <h1 id="bytes-to-hex">Bytes to Hex</h1>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/HexConversionBenchmark.cs">This benchmark</a> demonstrates performance of <code>DotNext.Span.ToHex</code> extension method that allows to convert arbitrary set of bytes into hexadecimal form. It is compatible with<code>Span&lt;T&gt;</code> data type in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring">BitConverter.ToString</a> method.</p>
+<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Buffers/Text/HexConversionBenchmark.cs">This benchmark</a> demonstrates performance of extension methods declared in <code>DotNext.Buffers.Text.Hex</code> class that allows to convert arbitrary set of bytes to hexadecimal form.</p>
 <table>
 <thead>
 <tr>
@@ -162,68 +162,244 @@ dotnet run -c Bench
 <th style="text-align: right;">Mean</th>
 <th style="text-align: right;">Error</th>
 <th style="text-align: right;">StdDev</th>
+<th style="text-align: right;">Median</th>
+<th style="text-align: right;">Ratio</th>
+<th style="text-align: right;">RatioSD</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>BitConverter.ToString</td>
-<td>16 bytes</td>
-<td style="text-align: right;">62.34 ns</td>
-<td style="text-align: right;">0.236 ns</td>
-<td style="text-align: right;">0.221 ns</td>
+<td>Convert.ToHexString</td>
+<td>1024 bytes</td>
+<td style="text-align: right;">538.97 ns</td>
+<td style="text-align: right;">10.842 ns</td>
+<td style="text-align: right;">24.025 ns</td>
+<td style="text-align: right;">525.74 ns</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.00</td>
 </tr>
 <tr>
-<td>Span.ToHex</td>
-<td>16 bytes</td>
-<td style="text-align: right;">53.67 ns</td>
-<td style="text-align: right;">0.257 ns</td>
-<td style="text-align: right;">0.240 ns</td>
+<td>Hex.EncodeToUtf16</td>
+<td>1024 bytes</td>
+<td style="text-align: right;">440.52 ns</td>
+<td style="text-align: right;">8.712 ns</td>
+<td style="text-align: right;">16.575 ns</td>
+<td style="text-align: right;">436.12 ns</td>
+<td style="text-align: right;">0.81</td>
+<td style="text-align: right;">0.05</td>
 </tr>
 <tr>
-<td>BitConverter.ToString</td>
-<td>64 bytes</td>
-<td style="text-align: right;">255.19 ns</td>
-<td style="text-align: right;">1.526 ns</td>
-<td style="text-align: right;">1.427 ns</td>
+<td>Hex.EncodeToUtf8</td>
+<td>1024 bytes</td>
+<td style="text-align: right;">417.81 ns</td>
+<td style="text-align: right;">7.737 ns</td>
+<td style="text-align: right;">8.599 ns</td>
+<td style="text-align: right;">417.23 ns</td>
+<td style="text-align: right;">0.75</td>
+<td style="text-align: right;">0.03</td>
 </tr>
 <tr>
-<td>Span.ToHex</td>
-<td>64 bytes</td>
-<td style="text-align: right;">129.40 ns</td>
-<td style="text-align: right;">0.477 ns</td>
-<td style="text-align: right;">0.423 ns</td>
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
 </tr>
 <tr>
-<td>BitConverter.ToString</td>
+<td>Convert.ToHexString</td>
 <td>128 bytes</td>
-<td style="text-align: right;">383.26 ns</td>
-<td style="text-align: right;">1.951 ns</td>
-<td style="text-align: right;">1.825 ns</td>
+<td style="text-align: right;">81.04 ns</td>
+<td style="text-align: right;">1.485 ns</td>
+<td style="text-align: right;">3.442 ns</td>
+<td style="text-align: right;">79.49 ns</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.00</td>
 </tr>
 <tr>
-<td>Span.ToHex</td>
+<td>Hex.EncodeToUtf16</td>
 <td>128 bytes</td>
-<td style="text-align: right;">234.78 ns</td>
-<td style="text-align: right;">1.291 ns</td>
-<td style="text-align: right;">1.208 ns</td>
+<td style="text-align: right;">62.32 ns</td>
+<td style="text-align: right;">0.390 ns</td>
+<td style="text-align: right;">0.365 ns</td>
+<td style="text-align: right;">62.42 ns</td>
+<td style="text-align: right;">0.74</td>
+<td style="text-align: right;">0.05</td>
 </tr>
 <tr>
-<td>BitConverter.ToString</td>
-<td>256 bytes</td>
-<td style="text-align: right;">980.70 ns</td>
-<td style="text-align: right;">3.978 ns</td>
-<td style="text-align: right;">3.721 ns</td>
+<td>Hex.EncodeToUtf8</td>
+<td>128 bytes</td>
+<td style="text-align: right;">33.85 ns</td>
+<td style="text-align: right;">0.127 ns</td>
+<td style="text-align: right;">0.118 ns</td>
+<td style="text-align: right;">33.83 ns</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.02</td>
 </tr>
 <tr>
-<td>Span.ToHex</td>
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>Convert.ToHexString</td>
+<td>16 bytes</td>
+<td style="text-align: right;">27.71 ns</td>
+<td style="text-align: right;">0.121 ns</td>
+<td style="text-align: right;">0.107 ns</td>
+<td style="text-align: right;">27.71 ns</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf16</td>
+<td>16 bytes</td>
+<td style="text-align: right;">21.71 ns</td>
+<td style="text-align: right;">0.091 ns</td>
+<td style="text-align: right;">0.076 ns</td>
+<td style="text-align: right;">21.70 ns</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf8</td>
+<td>16 bytes</td>
+<td style="text-align: right;">15.44 ns</td>
+<td style="text-align: right;">0.056 ns</td>
+<td style="text-align: right;">0.050 ns</td>
+<td style="text-align: right;">15.47 ns</td>
+<td style="text-align: right;">0.56</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>Convert.ToHexString</td>
 <td>256 bytes</td>
-<td style="text-align: right;">453.96 ns</td>
-<td style="text-align: right;">2.070 ns</td>
-<td style="text-align: right;">1.936 ns</td>
+<td style="text-align: right;">141.18 ns</td>
+<td style="text-align: right;">0.486 ns</td>
+<td style="text-align: right;">0.431 ns</td>
+<td style="text-align: right;">141.32 ns</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf16</td>
+<td>256 bytes</td>
+<td style="text-align: right;">108.32 ns</td>
+<td style="text-align: right;">0.884 ns</td>
+<td style="text-align: right;">0.784 ns</td>
+<td style="text-align: right;">108.25 ns</td>
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf8</td>
+<td>256 bytes</td>
+<td style="text-align: right;">56.18 ns</td>
+<td style="text-align: right;">0.402 ns</td>
+<td style="text-align: right;">0.376 ns</td>
+<td style="text-align: right;">56.27 ns</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>Convert.ToHexString</td>
+<td>512 bytes</td>
+<td style="text-align: right;">283.63 ns</td>
+<td style="text-align: right;">3.316 ns</td>
+<td style="text-align: right;">3.102 ns</td>
+<td style="text-align: right;">284.13 ns</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf16</td>
+<td>512 bytes</td>
+<td style="text-align: right;">218.35 ns</td>
+<td style="text-align: right;">2.575 ns</td>
+<td style="text-align: right;">2.409 ns</td>
+<td style="text-align: right;">218.68 ns</td>
+<td style="text-align: right;">0.77</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf8</td>
+<td>512 bytes</td>
+<td style="text-align: right;">107.17 ns</td>
+<td style="text-align: right;">1.674 ns</td>
+<td style="text-align: right;">1.566 ns</td>
+<td style="text-align: right;">107.55 ns</td>
+<td style="text-align: right;">0.38</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>Convert.ToHexString</td>
+<td>64 bytes</td>
+<td style="text-align: right;">48.84 ns</td>
+<td style="text-align: right;">0.198 ns</td>
+<td style="text-align: right;">0.175 ns</td>
+<td style="text-align: right;">48.85 ns</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf16</td>
+<td>64 bytes</td>
+<td style="text-align: right;">38.68 ns</td>
+<td style="text-align: right;">0.227 ns</td>
+<td style="text-align: right;">0.212 ns</td>
+<td style="text-align: right;">38.59 ns</td>
+<td style="text-align: right;">0.79</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr>
+<td>Hex.EncodeToUtf8</td>
+<td>64 bytes</td>
+<td style="text-align: right;">22.88 ns</td>
+<td style="text-align: right;">0.109 ns</td>
+<td style="text-align: right;">0.096 ns</td>
+<td style="text-align: right;">22.87 ns</td>
+<td style="text-align: right;">0.47</td>
+<td style="text-align: right;">0.00</td>
 </tr>
 </tbody>
 </table>
-<p><code>Span.ToHex</code> demonstrates the best performance especially for large arrays.</p>
 <h1 id="fast-reflection">Fast Reflection</h1>
 <p>The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.</p>
 <h2 id="property-getter">Property Getter</h2>

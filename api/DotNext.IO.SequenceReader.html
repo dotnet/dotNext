@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct SequenceReader
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -75,7 +75,7 @@
   <div class="markdown level0 summary"><p>Represents binary reader for the sequence of bytes.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></div>
   </div>
@@ -103,6 +103,42 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public struct SequenceReader : IAsyncBinaryReader</code></pre>
   </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader__ctor_System_Buffers_ReadOnlySequence_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.%23ctor(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L30">View Source</a>
+  </span>
+  <a id="DotNext_IO_SequenceReader__ctor_" data-uid="DotNext.IO.SequenceReader.#ctor*"></a>
+  <h4 id="DotNext_IO_SequenceReader__ctor_System_Buffers_ReadOnlySequence_System_Byte__" data-uid="DotNext.IO.SequenceReader.#ctor(System.Buffers.ReadOnlySequence{System.Byte})">SequenceReader(ReadOnlySequence&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new sequence reader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public SequenceReader(ReadOnlySequence&lt;byte&gt; sequence)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">sequence</span></td>
+        <td><p>A sequence of elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -110,7 +146,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Position%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L50">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Position_" data-uid="DotNext.IO.SequenceReader.Position*"></a>
   <h4 id="DotNext_IO_SequenceReader_Position" data-uid="DotNext.IO.SequenceReader.Position">Position</h4>
@@ -141,7 +177,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_RemainingSequence.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.RemainingSequence%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L45">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_RemainingSequence_" data-uid="DotNext.IO.SequenceReader.RemainingSequence*"></a>
   <h4 id="DotNext_IO_SequenceReader_RemainingSequence" data-uid="DotNext.IO.SequenceReader.RemainingSequence">RemainingSequence</h4>
@@ -174,7 +210,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Parse__1.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Parse%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Parse_" data-uid="DotNext.IO.SequenceReader.Parse*"></a>
   <h4 id="DotNext_IO_SequenceReader_Parse__1" data-uid="DotNext.IO.SequenceReader.Parse``1">Parse&lt;T&gt;()</h4>
@@ -224,7 +260,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Parse__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Nullable_IFormatProvider__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Parse%60%601(DotNext.Parser%7B%60%600%7D%2CDotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%40%2CSystem.Nullable%7BIFormatProvider%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L79">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Parse_" data-uid="DotNext.IO.SequenceReader.Parse*"></a>
   <h4 id="DotNext_IO_SequenceReader_Parse__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Nullable_IFormatProvider__" data-uid="DotNext.IO.SequenceReader.Parse``1(DotNext.Parser{``0},DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@,System.Nullable{IFormatProvider})">Parse&lt;T&gt;(Parser&lt;T&gt;, LengthFormat, in DecodingContext, Nullable&lt;IFormatProvider&gt;)</h4>
@@ -308,7 +344,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Read_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Read(DotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L167">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L171">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
   <h4 id="DotNext_IO_SequenceReader_Read_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.SequenceReader.Read(DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Byte})">Read(LengthFormat, MemoryAllocator&lt;Byte&gt;)</h4>
@@ -364,7 +400,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Read_DotNext_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Read(DotNext.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L130">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L134">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
   <h4 id="DotNext_IO_SequenceReader_Read_DotNext_Span_System_Byte__" data-uid="DotNext.IO.SequenceReader.Read(DotNext.Span{System.Byte})">Read(Span&lt;Byte&gt;)</h4>
@@ -398,7 +434,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Read__1.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Read%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L116">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L120">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
   <h4 id="DotNext_IO_SequenceReader_Read__1" data-uid="DotNext.IO.SequenceReader.Read``1">Read&lt;T&gt;()</h4>
@@ -448,7 +484,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadBigInteger_DotNext_IO_LengthFormat_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadBigInteger(DotNext.IO.LengthFormat%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L302">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L306">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadBigInteger_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadBigInteger_DotNext_IO_LengthFormat_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger(DotNext.IO.LengthFormat,System.Boolean)">ReadBigInteger(LengthFormat, Boolean)</h4>
@@ -504,7 +540,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadBigInteger_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadBigInteger(System.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L272">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L276">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadBigInteger_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadBigInteger_System_Int32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger(System.Int32,System.Boolean)">ReadBigInteger(Int32, Boolean)</h4>
@@ -560,7 +596,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadInt16(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L244">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L248">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadInt16_" data-uid="DotNext.IO.SequenceReader.ReadInt16*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadInt16_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt16(System.Boolean)">ReadInt16(Boolean)</h4>
@@ -610,7 +646,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadInt32(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L217">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L221">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadInt32_" data-uid="DotNext.IO.SequenceReader.ReadInt32*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadInt32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt32(System.Boolean)">ReadInt32(Boolean)</h4>
@@ -660,7 +696,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadInt64(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L190">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L194">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadInt64_" data-uid="DotNext.IO.SequenceReader.ReadInt64*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadInt64_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt64(System.Boolean)">ReadInt64(Boolean)</h4>
@@ -710,7 +746,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L394">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L398">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@)">ReadString(LengthFormat, in DecodingContext)</h4>
@@ -766,7 +802,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%40%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L405">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L409">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@,DotNext.Buffers.MemoryAllocator{System.Char})">ReadString(LengthFormat, in DecodingContext, MemoryAllocator&lt;Char&gt;)</h4>
@@ -828,7 +864,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(System.Int32%2CDotNext.Text.DecodingContext%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L312">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceReader.ReadString(System.Int32,DotNext.Text.DecodingContext@)">ReadString(Int32, in DecodingContext)</h4>
@@ -884,7 +920,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(System.Int32%2CDotNext.Text.DecodingContext%40%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L343">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L347">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.IO.SequenceReader.ReadString(System.Int32,DotNext.Text.DecodingContext@,DotNext.Buffers.MemoryAllocator{System.Char})">ReadString(Int32, in DecodingContext, MemoryAllocator&lt;Char&gt;)</h4>
@@ -946,7 +982,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadUInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadUInt16(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L257">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L261">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadUInt16_" data-uid="DotNext.IO.SequenceReader.ReadUInt16*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadUInt16_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt16(System.Boolean)">ReadUInt16(Boolean)</h4>
@@ -996,7 +1032,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadUInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadUInt32(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L230">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L234">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadUInt32_" data-uid="DotNext.IO.SequenceReader.ReadUInt32*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadUInt32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt32(System.Boolean)">ReadUInt32(Boolean)</h4>
@@ -1046,7 +1082,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ReadUInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadUInt64(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L203">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L207">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ReadUInt64_" data-uid="DotNext.IO.SequenceReader.ReadUInt64*"></a>
   <h4 id="DotNext_IO_SequenceReader_ReadUInt64_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt64(System.Boolean)">ReadUInt64(Boolean)</h4>
@@ -1096,7 +1132,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Reset.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L40">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Reset_" data-uid="DotNext.IO.SequenceReader.Reset*"></a>
   <h4 id="DotNext_IO_SequenceReader_Reset" data-uid="DotNext.IO.SequenceReader.Reset">Reset()</h4>
@@ -1112,7 +1148,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_Skip_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Skip(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L145">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L149">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_Skip_" data-uid="DotNext.IO.SequenceReader.Skip*"></a>
   <h4 id="DotNext_IO_SequenceReader_Skip_System_Int32_" data-uid="DotNext.IO.SequenceReader.Skip(System.Int32)">Skip(Int32)</h4>
@@ -1146,7 +1182,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_ToString.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L849">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L853">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_ToString_" data-uid="DotNext.IO.SequenceReader.ToString*"></a>
   <h4 id="DotNext_IO_SequenceReader_ToString" data-uid="DotNext.IO.SequenceReader.ToString">ToString()</h4>
@@ -1180,7 +1216,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_Stream_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(Stream%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L761">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L765">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_Stream_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(Stream,CancellationToken)">IAsyncBinaryReader.CopyToAsync(Stream, CancellationToken)</h4>
@@ -1232,7 +1268,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L769">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L773">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.Buffers.IBufferWriter{System.Byte},CancellationToken)">IAsyncBinaryReader.CopyToAsync(IBufferWriter&lt;Byte&gt;, CancellationToken)</h4>
@@ -1284,7 +1320,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync(System.IO.Pipelines.PipeWriter%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L765">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L769">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_System_IO_Pipelines_PipeWriter_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync(System.IO.Pipelines.PipeWriter,CancellationToken)">IAsyncBinaryReader.CopyToAsync(PipeWriter, CancellationToken)</h4>
@@ -1336,7 +1372,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L828">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L832">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1___0_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync``1(``0,CancellationToken)">IAsyncBinaryReader.CopyToAsync&lt;TConsumer&gt;(TConsumer, CancellationToken)</h4>
@@ -1405,7 +1441,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_DotNext_Func___0_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask____0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync%60%601(DotNext.Func%7B%60%600%2CReadOnlyMemory%7BSystem.Byte%7D%2CCancellationToken%2CValueTask%7D%2C%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L821">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L825">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_DotNext_Func___0_ReadOnlyMemory_System_Byte__CancellationToken_ValueTask____0_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync``1(DotNext.Func{``0,ReadOnlyMemory{System.Byte},CancellationToken,ValueTask},``0,CancellationToken)">IAsyncBinaryReader.CopyToAsync&lt;TArg&gt;(Func&lt;TArg, ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;, TArg, CancellationToken)</h4>
@@ -1477,7 +1513,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23CopyToAsync%60%601(System.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L793">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L797">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#CopyToAsync``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,CancellationToken)">IAsyncBinaryReader.CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg, CancellationToken)</h4>
@@ -1549,7 +1585,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ParseAsync__1_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ParseAsync%60%601(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L599">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L603">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ParseAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ParseAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ParseAsync__1_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ParseAsync``1(CancellationToken)">IAsyncBinaryReader.ParseAsync&lt;T&gt;(CancellationToken)</h4>
@@ -1613,7 +1649,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ParseAsync__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Nullable_IFormatProvider__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ParseAsync%60%601(DotNext.Parser%7B%60%600%7D%2CDotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%2CSystem.Nullable%7BIFormatProvider%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L576">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L580">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ParseAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ParseAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ParseAsync__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Nullable_IFormatProvider__CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ParseAsync``1(DotNext.Parser{``0},DotNext.IO.LengthFormat,DotNext.Text.DecodingContext,System.Nullable{IFormatProvider},CancellationToken)">IAsyncBinaryReader.ParseAsync&lt;T&gt;(Parser&lt;T&gt;, LengthFormat, DecodingContext, Nullable&lt;IFormatProvider&gt;, CancellationToken)</h4>
@@ -1695,7 +1731,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadAsync(DotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L483">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L487">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadAsync(DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Byte},CancellationToken)">IAsyncBinaryReader.ReadAsync(LengthFormat, MemoryAllocator&lt;Byte&gt;, CancellationToken)</h4>
@@ -1752,7 +1788,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_Memory_System_Byte__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadAsync(Memory%7BSystem.Byte%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L433">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L437">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_Memory_System_Byte__CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadAsync(Memory{System.Byte},CancellationToken)">IAsyncBinaryReader.ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</h4>
@@ -1804,7 +1840,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync__1_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadAsync%60%601(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L409">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L413">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadAsync__1_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadAsync``1(CancellationToken)">IAsyncBinaryReader.ReadAsync&lt;T&gt;(CancellationToken)</h4>
@@ -1868,7 +1904,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_DotNext_IO_LengthFormat_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadBigIntegerAsync(DotNext.IO.LengthFormat%2CSystem.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L738">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L742">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadBigIntegerAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_DotNext_IO_LengthFormat_System_Boolean_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadBigIntegerAsync(DotNext.IO.LengthFormat,System.Boolean,CancellationToken)">IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat, Boolean, CancellationToken)</h4>
@@ -1925,7 +1961,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_System_Int32_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadBigIntegerAsync(System.Int32%2CSystem.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L715">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L719">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadBigIntegerAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadBigIntegerAsync_System_Int32_System_Boolean_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadBigIntegerAsync(System.Int32,System.Boolean,CancellationToken)">IAsyncBinaryReader.ReadBigIntegerAsync(Int32, Boolean, CancellationToken)</h4>
@@ -1982,7 +2018,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadInt16Async(System.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L553">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L557">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt16Async_System_Boolean_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadInt16Async(System.Boolean,CancellationToken)">IAsyncBinaryReader.ReadInt16Async(Boolean, CancellationToken)</h4>
@@ -2034,7 +2070,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadInt32Async(System.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L530">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L534">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt32Async_System_Boolean_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadInt32Async(System.Boolean,CancellationToken)">IAsyncBinaryReader.ReadInt32Async(Boolean, CancellationToken)</h4>
@@ -2086,7 +2122,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadInt64Async(System.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L507">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L511">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadInt64Async_System_Boolean_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadInt64Async(System.Boolean,CancellationToken)">IAsyncBinaryReader.ReadInt64Async(Boolean, CancellationToken)</h4>
@@ -2138,7 +2174,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadStringAsync(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L669">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L673">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext,CancellationToken)">IAsyncBinaryReader.ReadStringAsync(LengthFormat, DecodingContext, CancellationToken)</h4>
@@ -2195,7 +2231,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_DotNext_Buffers_MemoryAllocator_System_Char__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadStringAsync(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L692">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L696">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_DotNext_Buffers_MemoryAllocator_System_Char__CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext,DotNext.Buffers.MemoryAllocator{System.Char},CancellationToken)">IAsyncBinaryReader.ReadStringAsync(LengthFormat, DecodingContext, MemoryAllocator&lt;Char&gt;, CancellationToken)</h4>
@@ -2257,7 +2293,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadStringAsync(System.Int32%2CDotNext.Text.DecodingContext%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L623">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L627">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,CancellationToken)">IAsyncBinaryReader.ReadStringAsync(Int32, DecodingContext, CancellationToken)</h4>
@@ -2314,7 +2350,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_DotNext_Buffers_MemoryAllocator_System_Char__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23ReadStringAsync(System.Int32%2CDotNext.Text.DecodingContext%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L646">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L650">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_DotNext_Buffers_MemoryAllocator_System_Char__CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,DotNext.Buffers.MemoryAllocator{System.Char},CancellationToken)">IAsyncBinaryReader.ReadStringAsync(Int32, DecodingContext, MemoryAllocator&lt;Char&gt;, CancellationToken)</h4>
@@ -2376,7 +2412,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_SkipAsync_System_Int32_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23SkipAsync(System.Int32%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L458">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L462">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_SkipAsync_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#SkipAsync*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_SkipAsync_System_Int32_CancellationToken_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#SkipAsync(System.Int32,CancellationToken)">IAsyncBinaryReader.SkipAsync(Int32, CancellationToken)</h4>
@@ -2428,7 +2464,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_TryGetRemainingBytesCount_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23TryGetRemainingBytesCount(System.Int64%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L842">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L846">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_TryGetRemainingBytesCount_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#TryGetRemainingBytesCount*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_TryGetRemainingBytesCount_System_Int64__" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#TryGetRemainingBytesCount(System.Int64@)">IAsyncBinaryReader.TryGetRemainingBytesCount(out Int64)</h4>
@@ -2475,7 +2511,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_TryGetSequence_System_Buffers_ReadOnlySequence_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.DotNext%23IO%23IAsyncBinaryReader%23TryGetSequence(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L835">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L839">View Source</a>
   </span>
   <a id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_TryGetSequence_" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#TryGetSequence*"></a>
   <h4 id="DotNext_IO_SequenceReader_DotNext_IO_IAsyncBinaryReader_TryGetSequence_System_Buffers_ReadOnlySequence_System_Byte___" data-uid="DotNext.IO.SequenceReader.DotNext#IO#IAsyncBinaryReader#TryGetSequence(System.Buffers.ReadOnlySequence{System.Byte}@)">IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence&lt;Byte&gt;)</h4>

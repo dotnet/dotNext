@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IAsyncBinaryWriter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,12 +80,18 @@
     <div>
       <a class="xref" href="DotNext.ISupplier-3.html#DotNext_ISupplier_3_Invoke__0__1_">ISupplier&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;.Invoke(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</a>
     </div>
+    <div>
+      <a class="xref" href="DotNext.ISupplier-3.html#DotNext_ISupplier_3_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_T1_T2_TResult___ToDelegate">ISupplier&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;.IFunctional&lt;Func&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;&gt;.ToDelegate()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;ReadOnlyMemory&lt;Byte&gt;, CancellationToken, ValueTask&gt;&gt;.ToDelegate()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.html">DotNext.IO</a></h6>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_IAsyncBinaryWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IAsyncBinaryWriter : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IAsyncBinaryWriter : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>

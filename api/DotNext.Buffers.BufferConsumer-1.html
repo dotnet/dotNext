@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct BufferConsumer&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,10 +76,11 @@
 in the form of the writer to <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
     <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.Buffers.BufferConsumer-1.html">BufferConsumer</a>&lt;T&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -98,7 +99,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_BufferConsumer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct BufferConsumer&lt;T&gt; : IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct BufferConsumer&lt;T&gt; : IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -123,7 +124,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1__ctor_System_Buffers_IBufferWriter__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.%23ctor(System.Buffers.IBufferWriter%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L164">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L161">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1__ctor_" data-uid="DotNext.Buffers.BufferConsumer`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1__ctor_System_Buffers_IBufferWriter__0__" data-uid="DotNext.Buffers.BufferConsumer`1.#ctor(System.Buffers.IBufferWriter{`0})">BufferConsumer(IBufferWriter&lt;T&gt;)</h4>
@@ -159,7 +160,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L169">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L166">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_IsEmpty_" data-uid="DotNext.Buffers.BufferConsumer`1.IsEmpty*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_IsEmpty" data-uid="DotNext.Buffers.BufferConsumer`1.IsEmpty">IsEmpty</h4>
@@ -192,7 +193,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_Equals_DotNext_Buffers_BufferConsumer__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.Equals(DotNext.Buffers.BufferConsumer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L203">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L200">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_Equals_" data-uid="DotNext.Buffers.BufferConsumer`1.Equals*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_Equals_DotNext_Buffers_BufferConsumer__0__" data-uid="DotNext.Buffers.BufferConsumer`1.Equals(DotNext.Buffers.BufferConsumer{`0})">Equals(BufferConsumer&lt;T&gt;)</h4>
@@ -242,7 +243,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L210">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L207">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_Equals_" data-uid="DotNext.Buffers.BufferConsumer`1.Equals*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_Equals_System_Object_" data-uid="DotNext.Buffers.BufferConsumer`1.Equals(System.Object)">Equals(Object)</h4>
@@ -294,7 +295,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L216">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L213">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_GetHashCode_" data-uid="DotNext.Buffers.BufferConsumer`1.GetHashCode*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_GetHashCode" data-uid="DotNext.Buffers.BufferConsumer`1.GetHashCode">GetHashCode()</h4>
@@ -328,7 +329,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L222">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_ToString_" data-uid="DotNext.Buffers.BufferConsumer`1.ToString*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_ToString" data-uid="DotNext.Buffers.BufferConsumer`1.ToString">ToString()</h4>
@@ -364,7 +365,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_op_Equality_DotNext_Buffers_BufferConsumer__0__DotNext_Buffers_BufferConsumer__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.op_Equality(DotNext.Buffers.BufferConsumer%7B%600%7D%2CDotNext.Buffers.BufferConsumer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L230">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L227">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_op_Equality_" data-uid="DotNext.Buffers.BufferConsumer`1.op_Equality*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_op_Equality_DotNext_Buffers_BufferConsumer__0__DotNext_Buffers_BufferConsumer__0__" data-uid="DotNext.Buffers.BufferConsumer`1.op_Equality(DotNext.Buffers.BufferConsumer{`0},DotNext.Buffers.BufferConsumer{`0})">Equality(BufferConsumer&lt;T&gt;, BufferConsumer&lt;T&gt;)</h4>
@@ -420,7 +421,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_op_Inequality_DotNext_Buffers_BufferConsumer__0__DotNext_Buffers_BufferConsumer__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.op_Inequality(DotNext.Buffers.BufferConsumer%7B%600%7D%2CDotNext.Buffers.BufferConsumer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L239">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L236">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_op_Inequality_" data-uid="DotNext.Buffers.BufferConsumer`1.op_Inequality*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_op_Inequality_DotNext_Buffers_BufferConsumer__0__DotNext_Buffers_BufferConsumer__0__" data-uid="DotNext.Buffers.BufferConsumer`1.op_Inequality(DotNext.Buffers.BufferConsumer{`0},DotNext.Buffers.BufferConsumer{`0})">Inequality(BufferConsumer&lt;T&gt;, BufferConsumer&lt;T&gt;)</h4>
@@ -478,7 +479,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_DotNext_Buffers_IReadOnlySpanConsumer_T__Invoke_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.DotNext%23Buffers%23IReadOnlySpanConsumer%7BT%7D%23Invoke(ReadOnlySpan%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L172">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L169">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_DotNext_Buffers_IReadOnlySpanConsumer_T__Invoke_" data-uid="DotNext.Buffers.BufferConsumer`1.DotNext#Buffers#IReadOnlySpanConsumer{T}#Invoke*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_DotNext_Buffers_IReadOnlySpanConsumer_T__Invoke_ReadOnlySpan__0__" data-uid="DotNext.Buffers.BufferConsumer`1.DotNext#Buffers#IReadOnlySpanConsumer{T}#Invoke(ReadOnlySpan{`0})">IReadOnlySpanConsumer&lt;T&gt;.Invoke(ReadOnlySpan&lt;T&gt;)</h4>
@@ -510,7 +511,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1_DotNext_ISupplier_ReadOnlyMemory_T__CancellationToken_ValueTask__Invoke_ReadOnlyMemory__0__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601.DotNext%23ISupplier%7BReadOnlyMemory%7BT%7D%2CCancellationToken%2CValueTask%7D%23Invoke(ReadOnlyMemory%7B%600%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L175">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L172">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferConsumer_1_DotNext_ISupplier_ReadOnlyMemory_T__CancellationToken_ValueTask__Invoke_" data-uid="DotNext.Buffers.BufferConsumer`1.DotNext#ISupplier{ReadOnlyMemory{T},CancellationToken,ValueTask}#Invoke*"></a>
   <h4 id="DotNext_Buffers_BufferConsumer_1_DotNext_ISupplier_ReadOnlyMemory_T__CancellationToken_ValueTask__Invoke_ReadOnlyMemory__0__CancellationToken_" data-uid="DotNext.Buffers.BufferConsumer`1.DotNext#ISupplier{ReadOnlyMemory{T},CancellationToken,ValueTask}#Invoke(ReadOnlyMemory{`0},CancellationToken)">ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;.Invoke(ReadOnlyMemory&lt;T&gt;, CancellationToken)</h4>
@@ -565,6 +566,9 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+  </div>
+  <div>
       <span class="xref">IEquatable&lt;&gt;</span>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
@@ -585,7 +589,7 @@ in the form of the writer to <a class="xref" href="https://docs.microsoft.com/do
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferConsumer_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferConsumer%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L154" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IReadOnlySpanConsumer.cs/#L151" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

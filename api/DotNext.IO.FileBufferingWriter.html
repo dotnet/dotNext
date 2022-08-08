@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class FileBufferingWriter
    | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,12 +81,13 @@ switch to file as its backing store.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">FileBufferingWriter</span></div>
   </div>
-  <div classs="implements">
+  <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
     <div><span class="xref">IDisposable</span></div>
     <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
   </div>
@@ -94,7 +95,7 @@ switch to file as its backing store.</p>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_FileBufferingWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class FileBufferingWriter : Stream, IBufferWriter&lt;byte&gt;, IGrowableBuffer&lt;byte&gt;, IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class FileBufferingWriter : Stream, IBufferWriter&lt;byte&gt;, IGrowableBuffer&lt;byte&gt;, IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;, IFlushable</code></pre>
   </div>
   <h5 id="DotNext_IO_FileBufferingWriter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class can be used to write buffered content to a target <see cref="!:Stream"></see>
@@ -2594,6 +2595,9 @@ This method is useful only if the file was not created as temporary file.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <span class="xref">IDisposable</span>

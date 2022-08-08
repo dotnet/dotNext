@@ -8,7 +8,7 @@
     <title>I/O Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="I/O Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.59.2.0">
+    <meta name="generator" content="docfx 2.59.3.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -90,7 +90,7 @@ using System.IO;
 
 //read
 using var fs = new FileStream(&quot;content.bin&quot;, FileMode.Open, FileAccess.Read, FileShare.Read);
-var str = await fs.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
+string str = await fs.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
 </code></pre>
 <p>String encoding and decoding methods support various length encoding styles using <a class="xref" href="../../api/DotNext.IO.LengthFormat.html">LengthFormat</a> enum type. As a result, you can prefix string with its length automatically.</p>
 <p><code>ReadAllAsync</code> extension method allows to enumerate over the contents of a stream in a convenient way without extra ceremony with buffers:</p>
@@ -140,7 +140,7 @@ using System.IO.Pipelines;
 const string value = &quot;Hello, world!&quot;;
 var pipe = new Pipe();
 await pipe.Writer.WriteStringAsync(value.AsMemory(), Encoding.UTF8, 0, LengthFormat.Plain);
-var result = await pipe.Reader.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
+string result = await pipe.Reader.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
 </code></pre>
 <p>In advance to strings, the library supports decoding and encoding values of arbitrary blittable value types.</p>
 <pre><code class="lang-csharp">using DotNext.IO.Pipelines;
@@ -148,7 +148,7 @@ using System.IO.Pipelines;
 
 var pipe = new Pipe();
 await pipe.Writer.WriteAsync(Guid.NewGuid());
-var result = await pipe.Reader.ReadAsync&lt;Guid&gt;();
+Guid result = await pipe.Reader.ReadAsync&lt;Guid&gt;();
 </code></pre>
 <p>Starting with version <em>2.6.0</em>, there is <a class="xref" href="../../api/DotNext.Buffers.BufferWriter.html">BufferWriter</a> class with extension methods for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;byte&gt;</a> interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:</p>
 <pre><code class="lang-csharp">using DotNext.IO;
@@ -177,7 +177,7 @@ using System.Buffers;
 using System.Text;
 
 ReadOnlySequence&lt;byte&gt; sequence = ...;
-SequenceReader reader = IAsyncBinaryReader.Create(sequence);
+SequenceReader reader = new(sequence);
 int i = reader.ReadInt32(BitConverter.IsLittleEndian);
 string str = reader.ReadString(LengthFormat.Plain, Encoding.UTF8);
 </code></pre>
