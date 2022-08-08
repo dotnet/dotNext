@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -89,6 +90,7 @@ public partial class FileReader : Disposable
     /// </summary>
     public ReadOnlyMemory<byte> Buffer => buffer.Memory.Slice(bufferStart, BufferLength);
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private ReadOnlySpan<byte> BufferSpan => buffer.Span.Slice(bufferStart, BufferLength);
 
     /// <summary>

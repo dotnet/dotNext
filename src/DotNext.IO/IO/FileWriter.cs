@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -65,6 +66,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// </remarks>
     public Memory<byte> Buffer => buffer.Memory.Slice(bufferOffset);
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private Span<byte> BufferSpan => buffer.Span.Slice(bufferOffset);
 
     /// <summary>
