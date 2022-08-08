@@ -117,6 +117,12 @@ namespace DotNext.Buffers.Text
         }
 
         private static string ToHexSlow(byte[] data, bool lowercased)
-            => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString(lowercased ? "x2" : "X2", null)));
+        {
+            var str = Convert.ToHexString(data);
+            if (lowercased)
+                str = str.ToLowerInvariant();
+
+            return str;
+        }
     }
 }
