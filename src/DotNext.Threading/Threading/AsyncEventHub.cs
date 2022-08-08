@@ -46,9 +46,7 @@ public partial class AsyncEventHub
 
     private static void ResetIfNeeded(ref TaskCompletionSource source)
     {
-        var task = source.Task;
-
-        if (task.IsCompleted)
+        if (source is { Task: { IsCompleted: true } task })
             source = new(task.AsyncState, TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
