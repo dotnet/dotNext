@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 08-07-2022
+# 08-08-2022
 Mac OS is added as a target OS for running tests to track compatibility with this operating system.
 
 <a href="https://www.nuget.org/packages/dotnext/4.7.0">DotNext 4.7.0</a>
