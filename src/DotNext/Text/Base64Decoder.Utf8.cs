@@ -1,7 +1,4 @@
 using System.Buffers;
-using System.Buffers.Text;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Text;
 
