@@ -4,7 +4,7 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext;
 
-using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfaceAttribute;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents functional interface returning arbitrary value and
@@ -20,8 +20,7 @@ using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfac
 /// <typeparam name="T1">The type of the first argument.</typeparam>
 /// <typeparam name="T2">The type of the second argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
-[FunctionalInterface]
-public interface ISupplier<in T1, in T2, out TResult>
+public interface ISupplier<in T1, in T2, out TResult> : IFunctional<Func<T1, T2, TResult>>
 {
     /// <summary>
     /// Invokes the supplier.
@@ -30,6 +29,9 @@ public interface ISupplier<in T1, in T2, out TResult>
     /// <param name="arg2">The second argument.</param>
     /// <returns>The value returned by this supplier.</returns>
     TResult Invoke(T1 arg1, T2 arg2);
+
+    /// <inheritdoc />
+    Func<T1, T2, TResult> IFunctional<Func<T1, T2, TResult>>.ToDelegate() => Invoke;
 }
 
 /// <summary>
@@ -154,6 +156,9 @@ public readonly struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1, T2, T
     /// <inheritdoc />
     TResult ISupplier<T1, T2, TResult>.Invoke(T1 arg1, T2 arg2) => func(arg1, arg2);
 
+    /// <inheritdoc />
+    Func<T1, T2, TResult> IFunctional<Func<T1, T2, TResult>>.ToDelegate() => func;
+
     /// <summary>
     /// Determines whether this object contains the same delegate instance as the specified object.
     /// </summary>
@@ -203,7 +208,7 @@ public readonly struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1, T2, T
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingComparer<T> : IComparer<T>, ISupplier<T?, T?, int>
+internal readonly struct DelegatingComparer<T> : IComparer<T>, ISupplier<T?, T?, int>, IFunctional<Comparison<T?>>
 {
     private readonly Comparison<T?> comparison;
 
@@ -212,6 +217,12 @@ internal readonly struct DelegatingComparer<T> : IComparer<T>, ISupplier<T?, T?,
 
     /// <inheritdoc />
     int ISupplier<T?, T?, int>.Invoke(T? x, T? y) => comparison(x, y);
+
+    /// <inheritdoc />
+    Func<T?, T?, int> IFunctional<Func<T?, T?, int>>.ToDelegate() => comparison.ChangeType<Func<T?, T?, int>>();
+
+    /// <inheritdoc />
+    Comparison<T?> IFunctional<Comparison<T?>>.ToDelegate() => comparison;
 
     /// <inheritdoc />
     int IComparer<T>.Compare(T? x, T? y) => comparison(x, y);

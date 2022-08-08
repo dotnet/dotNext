@@ -3,7 +3,7 @@ using System.Text;
 
 namespace DotNext.Buffers;
 
-using DecodingContext = Text.DecodingContext;
+using DecodingContext = DotNext.Text.DecodingContext;
 
 [StructLayout(LayoutKind.Auto)]
 internal struct StringReader<TBuffer> : IBufferReader<string>, IBufferReader<int>
@@ -25,11 +25,11 @@ internal struct StringReader<TBuffer> : IBufferReader<string>, IBufferReader<int
 
     public readonly int RemainingBytes => length;
 
-    readonly string IBufferReader<string>.Complete() => new(Complete());
+    string IBufferReader<string>.Complete() => new(Complete());
 
     readonly int IBufferReader<int>.Complete() => resultOffset;
 
-    internal readonly Span<char> Complete() => result.Span.Slice(0, resultOffset);
+    internal Span<char> Complete() => result.Span.Slice(0, resultOffset);
 
     public void Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
     {

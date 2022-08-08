@@ -162,7 +162,7 @@ public static partial class BufferHelpers
                 break;
             }
 
-            bufferSize = bufferSize <= maxBufferSize ? buffer.Length * 2 : throw new InsufficientMemoryException();
+            bufferSize = bufferSize <= maxBufferSize ? buffer.Length << 1 : throw new InsufficientMemoryException();
         }
 
         return charsWritten;

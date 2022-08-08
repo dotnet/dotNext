@@ -2,13 +2,23 @@
 
 namespace DotNext.Threading;
 
+using ManualResetCompletionSource = Tasks.ManualResetCompletionSource;
+
 /// <summary>
 /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
 /// </summary>
 public static partial class AsyncBridge
 {
+    private static readonly Action<ManualResetCompletionSource> ResetAction;
     private static volatile int instantiatedTasks;
     private static int maxPoolSize = Environment.ProcessorCount * 2;
+
+    static AsyncBridge()
+    {
+        ResetAction = Reset;
+
+        static void Reset(ManualResetCompletionSource source) => source.Reset();
+    }
 
     /// <summary>
     /// Obtains a task that can be used to await token cancellation.
@@ -20,7 +30,7 @@ public static partial class AsyncBridge
     public static ValueTask WaitAsync(this CancellationToken token, bool completeAsCanceled = false)
     {
         if (!token.CanBeCanceled)
-            throw new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token));
+            return ValueTask.FromException(new ArgumentException(ExceptionMessages.TokenNotCancelable, nameof(token)));
 
         if (token.IsCancellationRequested)
             return completeAsCanceled ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
@@ -29,9 +39,16 @@ public static partial class AsyncBridge
 
         // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
-            result = new(static t => t.Reset());
+        {
+            if (completeAsCanceled)
+                return new(Task.Delay(InfiniteTimeSpan, token));
+
+            result = new(ResetAction);
+        }
         else if (!TokenPool.TryTake(out result))
+        {
             result = new(CancellationTokenValueTaskCompletionCallback);
+        }
 
         result.CompleteAsCanceled = completeAsCanceled;
         result.Reset();
@@ -56,7 +73,7 @@ public static partial class AsyncBridge
 
         // do not keep long references when limit is reached
         if (instantiatedTasks > maxPoolSize)
-            result = new(static t => t.Reset());
+            result = new(ResetAction);
         else if (!HandlePool.TryTake(out result))
             result = new(WaitHandleTaskCompletionCallback);
 

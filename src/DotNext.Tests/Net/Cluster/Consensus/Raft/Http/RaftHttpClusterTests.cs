@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,7 +10,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using Replication;
-    using HttpEndPoint = Net.Http.HttpEndPoint;
 
     [ExcludeFromCodeCoverage]
     [Collection(TestCollections.Raft)]
@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host3.StartAsync();
 
             await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             // add two nodes to the cluster
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -128,15 +128,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return result;
         }
 
-        [Fact]
-        public static async Task MessageExchange()
+        [Theory]
+        [InlineData("")]
+        [InlineData("/protocol/path")]
+        public static async Task MessageExchange(string protocolPath)
         {
             var config1 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
-                {"publicEndPoint", "http://localhost:3262"},
+                {"publicEndPoint", "http://localhost:3262" + protocolPath},
                 {"coldStart", "true"},
                 {"requestTimeout", "00:01:00"}
             };
@@ -146,7 +148,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "600" },
                 {"upperElectionTimeout", "900" },
-                {"publicEndPoint", "http://localhost:3263"},
+                {"publicEndPoint", "http://localhost:3263" + protocolPath},
                 {"coldStart", "false"},
                 {"standby", "true"},
                 {"requestTimeout", "00:01:00"}
@@ -160,12 +162,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host2.StartAsync();
 
             await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
             await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
 
-            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint { Port: 3263 });
+            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is UriEndPoint { Uri: { Port: 3263 } });
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
             NotNull(messageBox);
 
@@ -225,12 +227,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host2.StartAsync();
 
             await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
             await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
 
-            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is HttpEndPoint { Port: 3263 });
+            var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is UriEndPoint { Uri: { Port: 3263 } });
             var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<TestMessageHandler>()).FirstOrDefault() as TestMessageHandler;
             NotNull(messageBox);
 
@@ -297,7 +299,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host3.StartAsync();
 
             await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(GetLocalClusterView(host1).LocalMemberAddress, listener.Result.Result.EndPoint);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             // add two nodes to the cluster
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -306,8 +308,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
             await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host2).Leader.EndPoint);
-            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host3).Leader.EndPoint);
+            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host2).Leader.EndPoint, EndPointFormatter.UriEndPointComparer);
+            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host3).Leader.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
             {
@@ -364,7 +366,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 using var host3 = CreateHost<Startup>(3264, config3);
                 await host3.StartAsync();
 
-                Equal(GetLocalClusterView(host1).LocalMemberAddress, (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint);
+                Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
 
                 // add two nodes to the cluster
                 True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -376,8 +378,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
                 var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
                 var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
-                Equal(leader1.EndPoint, leader2.EndPoint);
-                Equal(leader1.EndPoint, leader3.EndPoint);
+                Equal(leader1.EndPoint, leader2.EndPoint, EndPointFormatter.UriEndPointComparer);
+                Equal(leader1.EndPoint, leader3.EndPoint, EndPointFormatter.UriEndPointComparer);
 
                 foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
                 {
@@ -407,8 +409,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
                 var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
                 var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
-                Equal(leader1.EndPoint, leader2.EndPoint);
-                Equal(leader1.EndPoint, leader3.EndPoint);
+                Equal(leader1.EndPoint, leader2.EndPoint, EndPointFormatter.UriEndPointComparer);
+                Equal(leader1.EndPoint, leader3.EndPoint, EndPointFormatter.UriEndPointComparer);
 
                 foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
                 {
@@ -448,6 +450,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             NotNull(host.Services.GetService<IPeerMesh<IClusterMember>>());
             NotNull(host.Services.GetService<IPeerMesh<ISubscriber>>());
             NotNull(host.Services.GetService<IInputChannel>());
+            await host.StopAsync();
+        }
+
+        [Fact]
+        public static async Task SelfHost()
+        {
+            var configuration = new Dictionary<string, string>
+            {
+                {"metadata:nodeName", "TestNode"},
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+            };
+
+            using var host = new HostBuilder()
+                .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
+                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
+                .ConfigureServices(static (context, services) =>
+                {
+                    services.Configure<HttpClusterMemberConfiguration>(context.Configuration);
+                })
+                .Build();
+
+            await host.StartAsync();
+            using (var clusterHost = new RaftClusterHttpHost(host.Services, "category"))
+            {
+                Equal(new Uri(configuration["publicEndPoint"]), clusterHost.Cluster.LocalMemberAddress);
+                IsType<ConsensusOnlyState>(clusterHost.Cluster.AuditTrail);
+            }
             await host.StopAsync();
         }
     }

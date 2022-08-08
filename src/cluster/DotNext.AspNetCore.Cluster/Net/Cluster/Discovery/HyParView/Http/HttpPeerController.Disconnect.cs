@@ -45,7 +45,7 @@ internal partial class HttpPeerController
 
     private static (EndPoint, bool) DeserializeDisconnectRequest(ReadOnlySequence<byte> buffer, out SequencePosition position)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         var result = DeserializeDisconnectRequest(ref reader);
         position = reader.Position;
         return result;

@@ -162,5 +162,41 @@ namespace DotNext.Threading
             @lock.Release();
             await readLock;
         }
+
+        [Fact]
+        public static async Task LockStealing()
+        {
+            const string reason = "Hello, world!";
+            using var @lock = new AsyncReaderWriterLock();
+            True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
+
+            var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
+            var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
+            var task3 = @lock.TryStealWriteLockAsync(reason, DefaultTimeout).AsTask();
+
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+
+            @lock.Release();
+            True(await task3);
+        }
+
+        [Fact]
+        public static async Task LockStealing2()
+        {
+            const string reason = "Hello, world!";
+            using var @lock = new AsyncReaderWriterLock();
+            True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
+
+            var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
+            var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
+            var task3 = @lock.StealWriteLockAsync(reason, DefaultTimeout).AsTask();
+
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
+            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+
+            @lock.Release();
+            await task3;
+        }
     }
 }

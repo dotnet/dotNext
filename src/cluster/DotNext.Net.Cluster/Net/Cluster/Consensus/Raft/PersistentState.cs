@@ -860,6 +860,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <returns>The task representing state of the asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="TimeoutException">Timeout occurred.</exception>
+    [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]
     public async ValueTask EnsureConsistencyAsync(CancellationToken token)
     {
         ThrowIfDisposed();

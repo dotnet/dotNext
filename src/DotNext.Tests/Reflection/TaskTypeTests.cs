@@ -30,15 +30,19 @@ namespace DotNext.Reflection
         [Fact]
         public static void IsCompletedSuccessfullyPropertyGetter()
         {
-            var task = Task.CompletedTask;
-            True(TaskType.IsCompletedSuccessfullyGetter(task));
+            True(TaskType.IsCompletedSuccessfullyGetter(Task.CompletedTask));
         }
 
         [Fact]
         public static void GetResultSynchronously()
         {
-            var task = Task.FromResult(42);
-            Equal(42, TaskType.GetResultGetter<int>().Invoke(task));
+            Equal(42, TaskType.GetResultGetter<int>().Invoke(Task.FromResult(42)));
+        }
+
+        [Fact]
+        public static void IsCompletedPropertyGetter()
+        {
+            True(TaskType.GetIsCompletedGetter(Task.CompletedTask).Invoke());
         }
     }
 }

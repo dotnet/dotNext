@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Connections;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Membership;
-using HttpEndPoint = Net.Http.HttpEndPoint;
 
 /// <summary>
 /// Allows to setup special service used for configuration of <see cref="IRaftCluster"/> instance.
@@ -78,8 +78,8 @@ public static class RaftClusterConfiguration
     /// <param name="services">A collection of services.</param>
     /// <returns>A modified collection of services.</returns>
     public static IServiceCollection UseConfigurationStorage<TStorage>(this IServiceCollection services)
-        where TStorage : class, IClusterConfigurationStorage<HttpEndPoint>
-        => services.AddSingleton<IClusterConfigurationStorage<HttpEndPoint>, TStorage>();
+        where TStorage : class, IClusterConfigurationStorage<UriEndPoint>
+        => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>, TStorage>();
 
     private static PersistentClusterConfigurationStorage CreatePersistentStorageFromPath(this string path, IServiceProvider services)
         => new(path);
@@ -91,9 +91,9 @@ public static class RaftClusterConfiguration
     /// <param name="path">The absolute path to the folder on the local machine to store the list.</param>
     /// <returns>A modified collection of services.</returns>
     public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string path)
-        => services.AddSingleton<IClusterConfigurationStorage<HttpEndPoint>>(path.CreatePersistentStorageFromPath);
+        => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>>(path.CreatePersistentStorageFromPath);
 
-    private static InMemoryClusterConfigurationStorage CreateInMemoryStorage(this Action<IDictionary<ClusterMemberId, HttpEndPoint>> configuration, IServiceProvider services)
+    private static InMemoryClusterConfigurationStorage CreateInMemoryStorage(this Action<IDictionary<ClusterMemberId, UriEndPoint>> configuration, IServiceProvider services)
     {
         var storage = new InMemoryClusterConfigurationStorage();
         var builder = storage.CreateActiveConfigurationBuilder();
@@ -111,6 +111,6 @@ public static class RaftClusterConfiguration
     /// <param name="services">A collection of services.</param>
     /// <param name="configuration">The delegate that allows to configure a list of cluster members at startup.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action<IDictionary<ClusterMemberId, HttpEndPoint>> configuration)
-        => services.AddSingleton<IClusterConfigurationStorage<HttpEndPoint>>(configuration.CreateInMemoryStorage);
+    public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action<IDictionary<ClusterMemberId, UriEndPoint>> configuration)
+        => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>>(configuration.CreateInMemoryStorage);
 }

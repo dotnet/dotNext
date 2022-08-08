@@ -1,18 +1,19 @@
+using Microsoft.AspNetCore.Connections;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
 using IO;
-using HttpEndPoint = Net.Http.HttpEndPoint;
 
-internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<HttpEndPoint>
+internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<UriEndPoint>
 {
     internal InMemoryClusterConfigurationStorage()
     {
     }
 
-    protected override void Encode(HttpEndPoint address, ref BufferWriterSlim<byte> output)
+    protected override void Encode(UriEndPoint address, ref BufferWriterSlim<byte> output)
         => output.WriteEndPoint(address);
 
-    protected override HttpEndPoint Decode(ref SequenceReader reader)
-        => (HttpEndPoint)reader.ReadEndPoint();
+    protected override UriEndPoint Decode(ref SequenceReader reader)
+        => (UriEndPoint)reader.ReadEndPoint();
 }

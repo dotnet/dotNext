@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 {
-    using HttpEndPoint = Net.Http.HttpEndPoint;
     using HttpPeerClient = Net.Http.HttpPeerClient;
 
     [ExcludeFromCodeCoverage]
@@ -62,13 +62,13 @@ namespace DotNext.Net.Cluster.Discovery.HyParView.Http
 
             await Task.WhenAll(listener1.DiscoveryTask, listener1.DiscoveryTask).WaitAsync(DefaultTimeout);
 
-            Equal(new HttpEndPoint("localhost", 3362, false), listener2.DiscoveryTask.Result);
-            Equal(new HttpEndPoint("localhost", 3363, false), listener1.DiscoveryTask.Result);
+            Equal(new UriEndPoint(new("http://localhost:3362/", UriKind.Absolute)), listener2.DiscoveryTask.Result, EndPointFormatter.UriEndPointComparer);
+            Equal(new UriEndPoint(new("http://localhost:3363/", UriKind.Absolute)), listener1.DiscoveryTask.Result, EndPointFormatter.UriEndPointComparer);
 
             // shutdown peer gracefully
             await peer2.StopAsync();
 
-            Equal(new HttpEndPoint("localhost", 3363, false), await listener1.DisconnectionTask.WaitAsync(DefaultTimeout));
+            Equal(new UriEndPoint(new("http://localhost:3363/", UriKind.Absolute)), await listener1.DisconnectionTask.WaitAsync(DefaultTimeout), EndPointFormatter.UriEndPointComparer);
 
             await peer1.StopAsync();
         }

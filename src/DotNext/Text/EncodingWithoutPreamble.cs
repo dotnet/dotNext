@@ -7,10 +7,8 @@ internal sealed class EncodingWithoutPreamble : Encoding
 {
     private readonly Encoding encoding;
 
-    private EncodingWithoutPreamble(Encoding enc)
+    internal EncodingWithoutPreamble(Encoding enc)
         : base(enc.WindowsCodePage, enc.EncoderFallback, enc.DecoderFallback) => encoding = enc;
-
-    internal static Encoding Create(Encoding enc) => new EncodingWithoutPreamble(enc);
 
     public override byte[] GetPreamble() => Array.Empty<byte>();
 

@@ -41,43 +41,52 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # Quick Links
 
 * [Features](https://dotnet.github.io/dotNext/features/core/index.html)
-* [API documentation](https://dotnet.github.io/dotNext/api.html)
+* [API documentation](https://dotnet.github.io/dotNext/api/DotNext.html)
 * [Benchmarks](https://dotnet.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-04-2022
+Release Date: 08-08-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.6.1">DotNext 4.6.1</a>
+Mac OS is added as a target OS for running tests to track compatibility with this operating system.
+
+<a href="https://www.nuget.org/packages/dotnext/4.7.0">DotNext 4.7.0</a>
 * Fixed memory alignment issues
+* Added `TaskType.GetIsCompletedGetter` method that allows to obtain [Task.IsCompleted](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task.iscompleted) property in the form of closed delegate
+* Significantly improved performance of HEX conversion methods with SSSE3 hardware intrinsics
+* Introduced `DotNext.Buffers.Text.Hex` class with static methods for efficient conversion to/from hexadecimal representation of binary data with UTF-16 and UTF-8 support
+* Introduced `NextChars` extension methods that allows to fill buffer with random characters
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.6.1">DotNext.Metaprogramming 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.0">DotNext.Metaprogramming 4.7.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.6.1">DotNext.Reflection 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.0">DotNext.Reflection 4.7.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.6.1">DotNext.Unsafe 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.0">DotNext.Unsafe 4.7.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.6.1">DotNext.Threading 4.6.1</a>
-* Fixed task pooling of some asynchronous methods
+<a href="https://www.nuget.org/packages/dotnext.threading/4.7.0">DotNext.Threading 4.7.0</a>
+* Reduced memory allocation caused by extension methods declared in [Scheduler](https://dotnet.github.io/dotNext/api/DotNext.Threading.Scheduler.html) class
+* Reduced monitor lock contention in async locks
+* Added lock stealing methods to some synchronization primitives: `AsyncExclusiveLock`, `AsyncReaderWriterLock`
+* Introduced `GetConsumer` extension method for `TaskCompletionPipe<Task<T>>` class that allows to consume task results asynchronously
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.6.1">DotNext.IO 4.6.1</a>
-* Fixed task pooling of some asynchronous methods
+<a href="https://www.nuget.org/packages/dotnext.io/4.7.0">DotNext.IO 4.7.0</a>
+* Removed defensive copies of structs
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.6.1">DotNext.Net.Cluster 4.6.1</a>
-* Fixed task pooling of some asynchronous methods
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.0">DotNext.Net.Cluster 4.7.0</a>
+* Removed defensive copies of structs
+* Adaptation of [Microsoft.AspNetCore.Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) library allows to completely split network transport implementation details from Raft-specific stuff. Now you can implement custom network transport and other network-related concerns much more easier
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.6.1">DotNext.AspNetCore.Cluster 4.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.0">DotNext.AspNetCore.Cluster 4.7.0</a>
+* Removed defensive copies of structs
+* Introduced `RaftClusterHttpHost` that provides a way to host multiple Raft clusters in the same process. This feature can be used for implementation of sharding
+* Cluster node identification now relies on [UriEndPoint](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections.uriendpoint) class instead of [HttpEndPoint](https://dotnet.github.io/dotNext/api/DotNext.Net.Http.HttpEndPoint.html). This allows to use more flexible traffic routing strategies between cluster nodes
 * Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.1.0">DotNext.MaintenanceServices</a>
-* First version of library providing Application Maintenance Inteface via Unix Domain Socket and command-line shell for app administrators
-* Added support for [probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) when running app in Kubernetes
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
@@ -86,13 +95,13 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 
 | Version | .NET compatibility | Support Level |
 | ---- | ---- | ---- |
-| 0.x | .NET Standard 2.0 | Not Supported |
-| 1.x | .NET Standard 2.0 | Not Supported |
-| 2.x | .NET Standard 2.1 | Not Supported |
-| 3.x | .NET Standard 2.1, .NET 5 | Not Supported |
-| 4.x | .NET 6 | Active development |
+| 0.x | .NET Standard 2.0 | :x: |
+| 1.x | .NET Standard 2.0 | :x: |
+| 2.x | .NET Standard 2.1 | :x: |
+| 3.x | .NET Standard 2.1, .NET 5 | :x: |
+| 4.x | .NET 6 | :heavy_check_mark: |
 
-_Maintenance_ support level means that new releases will contain bug fixes only.
+:x: - unsupported, :white_check_mark: - bug and security fixes only, :heavy_check_mark: - active development
 
 # Development Process
 Philosophy of development process:

@@ -1,47 +1,89 @@
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
 using Buffers;
-using Diagnostics;
-using Threading;
 using TransportServices;
 using TransportServices.ConnectionOriented;
-using IClusterConfiguration = Membership.IClusterConfiguration;
 
-internal sealed class TcpClient : RaftClusterMember, ITcpTransport
+internal sealed class TcpClient : Client, ITcpTransport
 {
-    private readonly AsyncExclusiveLock accessLock;
-    private readonly IPEndPoint address;
+    private sealed class ConnectionContext : Disposable, IConnectionContext
+    {
+        private readonly TcpStream transport;
+        private readonly TcpProtocolStream protocol;
+        private MemoryOwner<byte> buffer;
+
+        internal ConnectionContext(TcpStream transport, TcpProtocolStream protocol, int bufferSize, MemoryAllocator<byte> allocator)
+        {
+            Debug.Assert(transport is not null);
+            Debug.Assert(protocol is not null);
+
+            this.transport = transport;
+            this.protocol = protocol;
+            buffer = allocator.Invoke(bufferSize, exactSize: false);
+        }
+
+        internal int CloseTimeout
+        {
+            get;
+            init;
+        }
+
+        ProtocolStream IConnectionContext.Protocol => protocol;
+
+        Memory<byte> IConnectionContext.Buffer => buffer.Memory;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                protocol.Dispose();
+                transport.Dispose();
+            }
+
+            buffer.Dispose();
+            base.Dispose(disposing);
+        }
+
+        protected override async ValueTask DisposeAsyncCore()
+        {
+            try
+            {
+                if (protocol?.BaseStream is SslStream ssl)
+                {
+                    using (ssl)
+                        await ssl.ShutdownAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                protocol.Dispose();
+                transport.Close(CloseTimeout);
+                transport.Dispose();
+            }
+        }
+
+        public new ValueTask DisposeAsync() => base.DisposeAsync();
+    }
+
     private readonly MemoryAllocator<byte> allocator;
     private readonly int transmissionBlockSize;
     private readonly byte ttl;
     private readonly LingerOption linger;
-    private readonly TimeSpan connectTimeout;
-    private TcpStream? transport;
-    private ProtocolStream? protocol;
-    private MemoryOwner<byte> buffer;
 
-    internal TcpClient(ILocalMember localMember, IPEndPoint endPoint, ClusterMemberId id, MemoryAllocator<byte> allocator)
+    internal TcpClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, MemoryAllocator<byte> allocator)
         : base(localMember, endPoint, id)
     {
-        accessLock = new();
+        Debug.Assert(allocator is not null);
+
         this.allocator = allocator;
         transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
         ttl = ITcpTransport.DefaultTtl;
         linger = ITcpTransport.CreateDefaultLingerOption();
-        address = endPoint;
-        connectTimeout = TimeSpan.FromSeconds(1);
-    }
-
-    internal TimeSpan ConnectTimeout
-    {
-        get => connectTimeout;
-        init => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     public SslClientAuthenticationOptions? SslOptions
@@ -68,34 +110,42 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
         init => linger = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    IPEndPoint INetworkTransport.Address => address;
+    EndPoint INetworkTransport.Address => EndPoint;
 
-    private async Task ConnectAsync(CancellationToken token)
+    private protected override async ValueTask<IConnectionContext> ConnectAsync(CancellationToken token)
     {
         var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+
+        // connection has separated timeout
+        var connectDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
         try
         {
-            await socket.ConnectAsync(address, token).ConfigureAwait(false);
+            connectDurationTracker.CancelAfter(ConnectTimeout);
+            await socket.ConnectAsync(EndPoint, token).ConfigureAwait(false);
         }
         catch
         {
             socket.Dispose();
+            connectDurationTracker.Dispose();
             throw;
         }
 
         ITcpTransport.ConfigureSocket(socket, linger, ttl);
-        transport = new(socket, owns: true);
+        var transport = new TcpStream(socket, owns: true);
         transport.WriteTimeout = (int)RequestTimeout.TotalMilliseconds;
+        TcpProtocolStream protocol;
         if (SslOptions is null)
         {
             protocol = new(transport, allocator, transmissionBlockSize);
+            connectDurationTracker.Dispose();
         }
         else
         {
             var ssl = new SslStream(transport, leaveInnerStreamOpen: true);
+
             try
             {
-                await ssl.AuthenticateAsClientAsync(SslOptions, token).ConfigureAwait(false);
+                await ssl.AuthenticateAsClientAsync(SslOptions, connectDurationTracker.Token).ConfigureAwait(false);
             }
             catch
             {
@@ -104,201 +154,17 @@ internal sealed class TcpClient : RaftClusterMember, ITcpTransport
                 transport = null;
                 throw;
             }
+            finally
+            {
+                connectDurationTracker.Dispose();
+            }
 
             protocol = new(ssl, allocator, transmissionBlockSize);
         }
 
-        if (buffer.IsEmpty)
-            buffer = allocator.Invoke(transmissionBlockSize, exactSize: false);
-    }
-
-    public override async ValueTask CancelPendingRequestsAsync()
-    {
-        accessLock.CancelSuspendedCallers(new(canceled: true));
-        await accessLock.AcquireAsync().ConfigureAwait(false);
-        try
+        return new ConnectionContext(transport, protocol, transmissionBlockSize, allocator)
         {
-            if (protocol?.BaseStream is SslStream ssl)
-            {
-                using (ssl)
-                    await ssl.ShutdownAsync().ConfigureAwait(false);
-            }
-        }
-        finally
-        {
-            protocol?.Dispose();
-            protocol = null;
-
-            transport?.Close((int)RequestTimeout.TotalMilliseconds);
-            transport = null;
-
-            accessLock.Release();
-        }
-    }
-
-    private async Task<TResponse> RequestAsync<TResponse>(Func<ProtocolStream, Memory<byte>, CancellationToken, ValueTask<TResponse>> request, CancellationToken token)
-    {
-        ThrowIfDisposed();
-
-        var timeStamp = new Timestamp();
-        var lockTaken = false;
-
-        var requestDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
-        requestDurationTracker.CancelAfter(RequestTimeout);
-        try
-        {
-            await accessLock.AcquireAsync(requestDurationTracker.Token).ConfigureAwait(false);
-            lockTaken = true;
-
-            if (protocol is null)
-            {
-                // connection has separated timeout
-                using var connectDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(requestDurationTracker.Token);
-                connectDurationTracker.CancelAfter(ConnectTimeout);
-                await ConnectAsync(connectDurationTracker.Token).ConfigureAwait(false);
-            }
-
-            Debug.Assert(buffer.IsEmpty is false);
-            Debug.Assert(protocol is not null);
-            protocol.Reset();
-            return await request(protocol, buffer.Memory, requestDurationTracker.Token).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == token)
-        {
-            DestroyConnection();
-            throw;
-        }
-        catch (Exception e)
-        {
-            Logger.MemberUnavailable(address, e);
-            ChangeStatus(ClusterMemberStatus.Unavailable);
-
-            // detect broken socket
-            DestroyConnection();
-            throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
-        }
-        finally
-        {
-            if (lockTaken)
-                accessLock.Release();
-
-            Metrics?.ReportResponseTime(timeStamp.Elapsed);
-            requestDurationTracker.Dispose();
-        }
-
-        void DestroyConnection()
-        {
-            protocol?.Dispose();
-            protocol = null;
-
-            transport?.Dispose();
-            transport = null;
-        }
-    }
-
-    private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadResultAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<PreVoteResult>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadPreVoteResultAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected override Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteSynchronizeRequestAsync(commitIndex, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadNullableInt64Async(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        static async ValueTask<IReadOnlyDictionary<string, string>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteMetadataRequestAsync(token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadMetadataResponseAsync(buffer, token).ConfigureAwait(false);
-        }
-    }
-
-    private protected override Task<bool> ResignAsync(CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        static async ValueTask<bool> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteResignRequestAsync(token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadBoolAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadResultAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadResultAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        // set IsDisposed flag earlier to avoid ObjectDisposeException in Enqueue method
-        // when it attempts to release the lock
-        base.Dispose(disposing);
-
-        if (disposing)
-        {
-            protocol?.Dispose();
-            transport?.Dispose();
-            accessLock.Dispose();
-            buffer.Dispose();
-        }
+            CloseTimeout = (int)RequestTimeout.TotalMilliseconds,
+        };
     }
 }

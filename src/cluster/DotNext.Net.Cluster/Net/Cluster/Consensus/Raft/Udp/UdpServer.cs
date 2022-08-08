@@ -45,7 +45,7 @@ internal sealed class UdpServer : UdpSocket, IServer
     private readonly Action<object?, CancellationToken> cancellationHandler;
     private readonly TimeSpan receiveTimeout;
 
-    internal UdpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
+    internal UdpServer(EndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
         : base(address, backlog, allocator, loggerFactory)
     {
         channels = new(backlog);
@@ -96,14 +96,33 @@ internal sealed class UdpServer : UdpSocket, IServer
         }
     }
 
-    public new void Start()
+    public ValueTask StartAsync(CancellationToken token)
     {
-        Bind(Address);
-        base.Start();
+        ValueTask result;
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            result = ValueTask.CompletedTask;
+            try
+            {
+                Bind(Address);
+                Start();
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
+        }
+
+        return result;
     }
 
-    private void Cleanup(bool disposing)
+    protected override void Dispose(bool disposing)
     {
+        base.Dispose(disposing);
         if (disposing)
         {
             channels.ClearAndDestroyChannels(LifecycleToken);
@@ -111,15 +130,18 @@ internal sealed class UdpServer : UdpSocket, IServer
         }
     }
 
-    protected override void Dispose(bool disposing)
+    public ValueTask DisposeAsync()
     {
+        var result = ValueTask.CompletedTask;
         try
         {
-            base.Dispose(disposing);
+            Dispose();
         }
-        finally
+        catch (Exception e)
         {
-            Cleanup(disposing);
+            result = ValueTask.FromException(e);
         }
+
+        return result;
     }
 }

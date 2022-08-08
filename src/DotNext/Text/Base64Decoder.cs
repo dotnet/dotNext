@@ -1,7 +1,8 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Text;
+
+using NewBase64Decoder = Buffers.Text.Base64Decoder;
 
 /// <summary>
 /// Represents base64 decoder suitable for decoding large base64-encoded binary
@@ -15,24 +16,18 @@ namespace DotNext.Text;
 /// Decoding methods should not be intermixed by the caller code.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-[DebuggerDisplay($"NeedMoreData = {{{nameof(NeedMoreData)}}}")]
+[Obsolete("Use DotNext.Buffers.Text.Base64Decoder type instead.")]
 public partial struct Base64Decoder
 {
-    private const int DecodingBufferSize = 258;
-
-    // 8 bytes buffer for decoding base64
-    // for utf8 encoding we need just 4 bytes
-    // but for Unicode we need 8 bytes, because max chars in reserve is 4 (4 X sizeof(char) == 8 bytes)
-    private ulong reservedBuffer;
-    private int reservedBufferSize;
+    private NewBase64Decoder decoder;
 
     /// <summary>
     /// Indicates that decoders expected additional data to decode.
     /// </summary>
-    public readonly bool NeedMoreData => reservedBufferSize > 0;
+    public readonly bool NeedMoreData => decoder.NeedMoreData;
 
     /// <summary>
     /// Resets the internal state of the decoder.
     /// </summary>
-    public void Reset() => reservedBufferSize = 0;
+    public void Reset() => decoder.Reset();
 }

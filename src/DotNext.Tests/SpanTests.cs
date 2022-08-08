@@ -93,11 +93,16 @@ namespace DotNext
 
         [Theory]
         [InlineData(0, true)]
+        [InlineData(7, true)]
+        [InlineData(10, true)]
         [InlineData(128, true)]
         [InlineData(2048, true)]
         [InlineData(0, false)]
+        [InlineData(7, false)]
+        [InlineData(10, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
+        [Obsolete]
         public static void ToHexConversion(int arraySize, bool lowercased)
         {
             var data = RandomBytes(arraySize);
@@ -105,6 +110,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete]
         public static void ToHexConversionVarLength()
         {
             ReadOnlySpan<byte> data = new byte[] { 1, 2 };
@@ -117,6 +123,7 @@ namespace DotNext
         }
 
         [Fact]
+        [Obsolete]
         public static void FromHexConversionVarLength()
         {
             ReadOnlySpan<char> data = new char[] { 'F', 'F', 'A' };
@@ -143,6 +150,7 @@ namespace DotNext
         [InlineData(0, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
+        [Obsolete]
         public static void FromHexConversion(int arraySize, bool lowercased)
         {
             var data = RandomBytes(arraySize);

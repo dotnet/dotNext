@@ -11,9 +11,6 @@ internal static class ExceptionMessages
 {
     private static readonly ResourceManager Resources = new("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-    internal static string UnresolvedHostName(string hostName)
-        => Resources.Get().Format(hostName);
-
     internal static string MissingHeader(string headerName)
         => Resources.Get().Format(headerName);
 
@@ -29,9 +26,7 @@ internal static class ExceptionMessages
 
     internal static string ReadLogEntryTwice => (string)Resources.Get();
 
-    internal static string InvalidDnsEndPointFormat => (string)Resources.Get();
-
     internal static string UnknownLocalNodeAddress => (string)Resources.Get();
 
-    internal static string UnknownContactNodeAddress => (string)Resources.Get();
+    internal static string AbsoluteUriExpected(Uri uri) => Resources.Get().Format(uri);
 }

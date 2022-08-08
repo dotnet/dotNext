@@ -6,7 +6,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 using Buffers;
 using IO;
-using IO.Log;
 using Serializable = Runtime.Serialization.Serializable;
 
 internal partial class ProtocolStream
@@ -46,7 +45,7 @@ internal partial class ProtocolStream
             Debug.Assert(bufferEnd < this.buffer.Length);
 
             var buffer = this.buffer.Memory.Slice(bufferEnd);
-            bufferEnd += await BaseStream.ReadAtLeastAsync(count, buffer, token).ConfigureAwait(false);
+            bufferEnd += await ReadFromTransportAsync(count, buffer, token).ConfigureAwait(false);
         }
     }
 
@@ -79,7 +78,7 @@ internal partial class ProtocolStream
         var buffer = this.buffer.Memory;
         MessageType result;
 
-        if ((bufferEnd = await BaseStream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0)
+        if ((bufferEnd = await ReadFromTransportAsync(buffer, token).ConfigureAwait(false)) > 0)
         {
             bufferStart = 1;
             result = (MessageType)MemoryMarshal.GetReference(buffer.Span);
@@ -234,7 +233,7 @@ internal partial class ProtocolStream
 
         // frame header is not yet in the buffer
         if (frameHeaderRemainingBytes > 0)
-            bufferEnd = BaseStream.ReadAtLeast(frameHeaderRemainingBytes, buffer.Span.Slice(bufferEnd));
+            bufferEnd = ReadFromTransport(frameHeaderRemainingBytes, buffer.Span.Slice(bufferEnd));
 
         EndReadFrame();
     }
@@ -259,7 +258,7 @@ internal partial class ProtocolStream
         frameSize -= count;
     }
 
-    public override int Read(Span<byte> output)
+    public sealed override int Read(Span<byte> output)
     {
     check_state:
         switch ((readState, frameSize is 0))
@@ -274,7 +273,7 @@ internal partial class ProtocolStream
                 if (bufferStart == bufferEnd)
                 {
                     bufferStart = 0;
-                    bufferEnd = BaseStream.Read(buffer.Span);
+                    bufferEnd = ReadFromTransport(buffer.Span);
                 }
 
                 // we can copy no more than remaining frame
@@ -282,7 +281,7 @@ internal partial class ProtocolStream
         }
     }
 
-    public override int Read(byte[] buffer, int offset, int count)
+    public sealed override int Read(byte[] buffer, int offset, int count)
     {
         ValidateBufferArguments(buffer, offset, count);
         return Read(buffer.AsSpan(offset, count));
@@ -297,12 +296,12 @@ internal partial class ProtocolStream
 
         // frame header is not yet in the buffer
         if (frameHeaderRemainingBytes > 0)
-            bufferEnd = await BaseStream.ReadAtLeastAsync(frameHeaderRemainingBytes, buffer.Memory.Slice(bufferEnd), token).ConfigureAwait(false);
+            bufferEnd = await ReadFromTransportAsync(frameHeaderRemainingBytes, buffer.Memory.Slice(bufferEnd), token).ConfigureAwait(false);
 
         EndReadFrame();
     }
 
-    public override async ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token)
+    public sealed override async ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token)
     {
         check_state:
         switch ((readState, frameSize is 0))
@@ -317,7 +316,7 @@ internal partial class ProtocolStream
                 if (bufferStart == bufferEnd)
                 {
                     bufferStart = 0;
-                    bufferEnd = await BaseStream.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+                    bufferEnd = await ReadFromTransportAsync(buffer.Memory, token).ConfigureAwait(false);
                 }
 
                 // we can copy no more than remaining frame
@@ -325,7 +324,7 @@ internal partial class ProtocolStream
         }
     }
 
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
+    public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
 
     internal async ValueTask SkipAsync(CancellationToken token)
@@ -344,7 +343,7 @@ internal partial class ProtocolStream
                     if (bufferStart == bufferEnd)
                     {
                         bufferStart = 0;
-                        bufferEnd = await BaseStream.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+                        bufferEnd = await ReadFromTransportAsync(buffer.Memory, token).ConfigureAwait(false);
                     }
 
                     SkipFrame();

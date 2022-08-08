@@ -271,16 +271,16 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     }
 }
 
-internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<IPEndPoint>
+internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<EndPoint>
 {
     internal InMemoryClusterConfigurationStorage(MemoryAllocator<byte>? allocator)
         : base(allocator)
     {
     }
 
-    protected override void Encode(IPEndPoint address, ref BufferWriterSlim<byte> output)
+    protected override void Encode(EndPoint address, ref BufferWriterSlim<byte> output)
         => output.WriteEndPoint(address);
 
-    protected override IPEndPoint Decode(ref SequenceReader reader)
-        => (IPEndPoint)reader.ReadEndPoint();
+    protected override EndPoint Decode(ref SequenceReader reader)
+        => reader.ReadEndPoint();
 }

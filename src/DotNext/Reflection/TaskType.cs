@@ -112,7 +112,23 @@ public static class TaskType
     public static Func<Task<T>, T> GetResultGetter<T>() => Cache<T>.ResultGetter;
 
     /// <summary>
-    /// Gets delegate representing getter of <see cref="Task.IsCompletedSuccessfully"/> property.
+    /// Gets a delegate representing getter method of <see cref="Task.IsCompletedSuccessfully"/> property.
     /// </summary>
     public static Func<Task, bool> IsCompletedSuccessfullyGetter { get; }
+
+    /// <summary>
+    /// Gets a delegate that representing getter method of <see cref="Task.IsCompleted"/> property
+    /// captured for the specified task.
+    /// </summary>
+    /// <param name="task">The task to reflect.</param>
+    /// <returns>The delegate representing <see cref="Task.IsCompleted"/> property of <paramref name="task"/>.</returns>
+    public static Func<bool> GetIsCompletedGetter(this Task task)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+
+        Push(task);
+        Ldftn(PropertyGet(Type<Task>(), nameof(Task.IsCompleted)));
+        Newobj(Constructor(Type<Func<bool>>(), Type<object>(), Type<IntPtr>()));
+        return Return<Func<bool>>();
+    }
 }

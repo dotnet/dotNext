@@ -4,7 +4,7 @@ using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext;
 
-using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfaceAttribute;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents functional interface returning no value and
@@ -18,14 +18,16 @@ using FunctionalInterfaceAttribute = Runtime.CompilerServices.FunctionalInterfac
 /// as closure which is not allocated on the heap.
 /// </remarks>
 /// <typeparam name="T">The type of the argument.</typeparam>
-[FunctionalInterface]
-public interface IConsumer<in T>
+public interface IConsumer<in T> : IFunctional<Action<T>>
 {
     /// <summary>
     /// Invokes the consumer.
     /// </summary>
     /// <param name="arg">The first argument.</param>
     void Invoke(T arg);
+
+    /// <inheritdoc />
+    Action<T> IFunctional<Action<T>>.ToDelegate() => Invoke;
 }
 
 /// <summary>
@@ -142,6 +144,9 @@ public readonly struct DelegatingConsumer<T> : IConsumer<T>
     /// <inheritdoc />
     void IConsumer<T>.Invoke(T arg) => action(arg);
 
+    /// <inheritdoc />
+    Action<T> IFunctional<Action<T>>.ToDelegate() => action;
+
     /// <summary>
     /// Determines whether this object contains the same delegate instance as the specified object.
     /// </summary>
@@ -180,4 +185,11 @@ public readonly struct DelegatingConsumer<T> : IConsumer<T>
     /// <returns><see langword="true"/> if the both objects contain references the different delegate instances; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(DelegatingConsumer<T> x, DelegatingConsumer<T> y)
         => !x.Equals(y);
+
+    /// <summary>
+    /// Wraps the delegate.
+    /// </summary>
+    /// <param name="action">The delegate to be wrapped.</param>
+    /// <returns>The consumer representing the delegate.</returns>
+    public static implicit operator DelegatingConsumer<T>(Action<T> action) => new(action);
 }

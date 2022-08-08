@@ -1,5 +1,3 @@
-using Debug = System.Diagnostics.Debug;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Buffers;
@@ -14,7 +12,7 @@ internal partial class ProtocolStream
         var writer = new SpanWriter<byte>(buffer.Span);
         writer.Write((byte)MessageType.Vote);
         VoteMessage.Write(ref writer, in sender, term, lastLogIndex, lastLogTerm);
-        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
+        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WritePreVoteRequestAsync(in ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -23,19 +21,19 @@ internal partial class ProtocolStream
         var writer = new SpanWriter<byte>(buffer.Span);
         writer.Write((byte)MessageType.PreVote);
         PreVoteMessage.Write(ref writer, in sender, term, lastLogIndex, lastLogTerm);
-        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
+        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WriteResponseAsync(in Result<bool> result, CancellationToken token)
     {
         Reset();
-        return BaseStream.WriteAsync(buffer.Memory.Slice(0, Result.Write(buffer.Span, in result)), token);
+        return WriteToTransportAsync(buffer.Memory.Slice(0, Result.Write(buffer.Span, in result)), token);
     }
 
     internal ValueTask WriteResponseAsync(in Result<PreVoteResult> result, CancellationToken token)
     {
         Reset();
-        return BaseStream.WriteAsync(buffer.Memory.Slice(0, Result.WritePreVoteResult(buffer.Span, in result)), token);
+        return WriteToTransportAsync(buffer.Memory.Slice(0, Result.WritePreVoteResult(buffer.Span, in result)), token);
     }
 
     internal ValueTask WriteResponseAsync(bool value, CancellationToken token)
@@ -43,7 +41,7 @@ internal partial class ProtocolStream
         Reset();
         var buffer = this.buffer.Memory.Slice(0, 1);
         buffer.Span[0] = value.ToByte();
-        return BaseStream.WriteAsync(buffer, token);
+        return WriteToTransportAsync(buffer, token);
     }
 
     internal ValueTask WriteResponseAsync(in long? value, CancellationToken token)
@@ -52,7 +50,7 @@ internal partial class ProtocolStream
         var writer = new SpanWriter<byte>(buffer.Span);
         writer.Add(value.HasValue.ToByte());
         writer.WriteInt64(value.GetValueOrDefault(), true);
-        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
+        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WriteResignRequestAsync(CancellationToken token)
@@ -60,7 +58,7 @@ internal partial class ProtocolStream
         Reset();
         var buffer = this.buffer.Memory.Slice(0, 1);
         buffer.Span[0] = (byte)MessageType.Resign;
-        return BaseStream.WriteAsync(buffer, token);
+        return WriteToTransportAsync(buffer, token);
     }
 
     internal ValueTask WriteSynchronizeRequestAsync(long commitIndex, CancellationToken token)
@@ -69,7 +67,7 @@ internal partial class ProtocolStream
         var writer = new SpanWriter<byte>(buffer.Span);
         writer.Write((byte)MessageType.Synchronize);
         writer.WriteInt64(commitIndex, true);
-        return BaseStream.WriteAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
+        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
     }
 
     internal ValueTask WriteMetadataRequestAsync(CancellationToken token)
@@ -77,7 +75,7 @@ internal partial class ProtocolStream
         Reset();
         var buffer = this.buffer.Memory.Slice(0, 1);
         buffer.Span[0] = (byte)MessageType.Metadata;
-        return BaseStream.WriteAsync(buffer, token);
+        return WriteToTransportAsync(buffer, token);
     }
 
     internal async ValueTask WriteMetadataResponseAsync(IReadOnlyDictionary<string, string> metadata, Memory<byte> buffer, CancellationToken token)
@@ -169,7 +167,7 @@ internal partial class ProtocolStream
         return writtenCount;
     }
 
-    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
+    public sealed override async ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
     {
         while (!input.IsEmpty)
         {
@@ -180,17 +178,17 @@ internal partial class ProtocolStream
             {
                 // write frame size
                 WriteFrameHeaders(bufferEnd - bufferStart - FrameHeadersSize, finalBlock: false);
-                await BaseStream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
+                await WriteToTransportAsync(buffer.Memory, token).ConfigureAwait(false);
                 bufferStart = 0;
                 bufferEnd = FrameHeadersSize;
             }
         }
     }
 
-    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
+    public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         => WriteAsync(new ReadOnlyMemory<byte>(buffer, offset, count), token).AsTask();
 
-    public override void Write(ReadOnlySpan<byte> input)
+    public sealed override void Write(ReadOnlySpan<byte> input)
     {
         while (!input.IsEmpty)
         {
@@ -201,26 +199,26 @@ internal partial class ProtocolStream
             {
                 // write frame size
                 WriteFrameHeaders(bufferEnd - bufferStart - FrameHeadersSize, finalBlock: false);
-                BaseStream.Write(buffer.Span);
+                WriteToTransport(buffer.Span);
                 bufferStart = 0;
                 bufferEnd = FrameHeadersSize;
             }
         }
     }
 
-    public override void Write(byte[] buffer, int offset, int count)
+    public sealed override void Write(byte[] buffer, int offset, int count)
     {
         ValidateBufferArguments(buffer, offset, count);
         Write(new ReadOnlySpan<byte>(buffer, offset, count));
     }
 
-    public override Task FlushAsync(CancellationToken token)
+    public sealed override Task FlushAsync(CancellationToken token)
     {
         return bufferEnd > 0 ? FlushCoreAsync() : Task.CompletedTask;
 
         async Task FlushCoreAsync()
         {
-            await BaseStream.WriteAsync(buffer.Memory.Slice(0, bufferEnd), token).ConfigureAwait(false);
+            await WriteToTransportAsync(buffer.Memory.Slice(0, bufferEnd), token).ConfigureAwait(false);
             bufferStart = bufferEnd = 0;
         }
     }
@@ -231,9 +229,9 @@ internal partial class ProtocolStream
         bufferStart = bufferEnd;
     }
 
-    public override void Flush()
+    public sealed override void Flush()
     {
-        BaseStream.Write(buffer.Span.Slice(0, bufferEnd));
+        WriteToTransport(buffer.Span.Slice(0, bufferEnd));
         bufferStart = bufferEnd = 0;
     }
 }

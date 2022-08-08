@@ -42,7 +42,7 @@ public interface ITypeMap<TValue> : IReadOnlyTypeMap<TValue>
             }
             else
             {
-                capacity = capacity * 2;
+                capacity <<= 1;
                 if ((uint)capacity > Array.MaxLength)
                     capacity = Array.MaxLength;
             }

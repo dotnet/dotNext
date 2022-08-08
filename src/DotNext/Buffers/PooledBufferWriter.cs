@@ -162,9 +162,9 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
         if (disposing)
         {
             BufferSizeCallback?.Invoke(buffer.Length);
-            buffer.Dispose();
         }
 
+        buffer.Dispose();
         base.Dispose(disposing);
     }
 }

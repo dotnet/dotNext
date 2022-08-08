@@ -22,20 +22,21 @@ internal struct Enumerable<T, TList> : IEnumerable<T>
 
         public bool MoveNext() => ++index < list.Count;
 
-        public readonly T Current => list[index];
+        public T Current => list[index];
 
-        readonly object? IEnumerator.Current => Current;
+        object? IEnumerator.Current => Current;
 
         void IEnumerator.Reset() => index = InitialIndex;
 
         public void Dispose() => this = default;
     }
 
+    // not readonly to avoid defensive copying
     private TList list;
 
     internal Enumerable(in TList list) => this.list = list;
 
-    internal readonly int Count => list.Count;
+    internal int Count => list.Count;
 
     public readonly Enumerator GetEnumerator() => new(list);
 

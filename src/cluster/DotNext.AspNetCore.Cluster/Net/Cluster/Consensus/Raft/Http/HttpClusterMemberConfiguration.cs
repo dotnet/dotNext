@@ -1,39 +1,36 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-using ComponentModel;
-using HttpEndPoint = Net.Http.HttpEndPoint;
 using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 
 /// <summary>
 /// Represents configuration of Raft HTTP cluster member.
 /// </summary>
-public class HttpClusterMemberConfiguration : ClusterMemberConfiguration
+public class HttpClusterMemberConfiguration : ClusterMemberConfiguration, IClusterMemberConfiguration
 {
-    internal const string DefaultResourcePath = "/cluster-consensus/raft";
     private const string DefaultClientHandlerName = "raftClient";
-
-    static HttpClusterMemberConfiguration()
-    {
-        PathStringConverter.Register();
-        HttpEndPointConverter.Register();
-    }
 
     private string? handlerName;
     private TimeSpan? requestTimeout;
-
-    /// <summary>
-    /// Gets or sets HTTP resource path used to capture
-    /// consensus protocol messages.
-    /// </summary>
-    [CLSCompliant(false)]
-    public PathString ProtocolPath { get; set; } = new PathString(DefaultResourcePath);
+    private Uri? publicEndPoint;
 
     /// <summary>
     /// Gets or sets the address of the local node visible to the entire cluster.
     /// </summary>
-    public HttpEndPoint? PublicEndPoint { get; set; }
+    [DisallowNull]
+    public Uri? PublicEndPoint
+    {
+        get => publicEndPoint;
+        set
+        {
+            if (value is { IsAbsoluteUri: false })
+                throw new ArgumentException(ExceptionMessages.AbsoluteUriExpected(value), nameof(value));
+
+            publicEndPoint = value;
+        }
+    }
 
     /// <summary>
     /// Gets configuration of request journal.
@@ -73,4 +70,7 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration
         get => handlerName is { Length: > 0 } ? handlerName : DefaultClientHandlerName;
         set => handlerName = value;
     }
+
+    /// <inheritdoc />
+    IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointFormatter.UriEndPointComparer;
 }

@@ -26,4 +26,6 @@ internal static class ExceptionMessages
     internal static string InvalidSourceState => (string)Resources.Get();
 
     internal static string InvalidSourceToken => (string)Resources.Get();
+
+    internal static string AsyncTaskInterrupted => (string)Resources.Get();
 }
