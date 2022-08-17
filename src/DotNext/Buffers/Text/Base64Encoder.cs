@@ -71,8 +71,6 @@ public partial struct Base64Encoder
         return reservedBufferSize;
     }
 
-    private Span<byte> ReservedBytes => Span.AsBytes(ref reservedBuffer);
-
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly string BufferedData

@@ -1,6 +1,6 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -17,11 +17,14 @@ using ExceptionAggregator = ExceptionServices.ExceptionAggregator;
 [StructLayout(LayoutKind.Auto)]
 public struct Scope : IDisposable, IAsyncDisposable
 {
-    private delegate ReadOnlySpan<object?> ReadOnlySpanSupplier<T>(T state);
+    private sealed class DynamicTuple : List<object?>, ITuple
+    {
+        int ITuple.Length => Count;
+    }
 
-    // null, or Action, or Func<ValueTask>, or IDisposable, or IAsyncDisposable, or List<object>
+    // null, or Action, or Func<ValueTask>, or IDisposable, or IAsyncDisposable
     private (object? Callback0, object? Callback1, object? Callback2, object? Callback3) callbacks;
-    private List<object>? rest;
+    private DynamicTuple? rest;
 
     private void Add(object callback)
     {
@@ -136,23 +139,25 @@ public struct Scope : IDisposable, IAsyncDisposable
     public readonly async ValueTask DisposeAsync()
     {
         var exceptions = BoxedValue<ExceptionAggregator>.Box(new());
-        await ExecuteCallbacksAsync(callbacks, static tuple => tuple.AsReadOnlySpan(), exceptions).ConfigureAwait(false);
+        await ExecuteCallbacksAsync(callbacks, exceptions).ConfigureAwait(false);
 
         if (rest is not null)
         {
-            await ExecuteCallbacksAsync(rest, static list => CollectionsMarshal.AsSpan(list), exceptions).ConfigureAwait(false);
+            await ExecuteCallbacksAsync(rest, exceptions).ConfigureAwait(false);
             rest.Clear();
         }
 
         exceptions.Value.ThrowIfNeeded();
 
-        static async ValueTask ExecuteCallbacksAsync<T>(T state, ReadOnlySpanSupplier<T> supplier, BoxedValue<ExceptionAggregator> exceptions)
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        static async ValueTask ExecuteCallbacksAsync<T>(T callbacks, BoxedValue<ExceptionAggregator> exceptions)
+            where T : notnull, ITuple
         {
-            for (int i = 0, count = supplier(state).Length; i < count; i++)
+            for (int i = 0, count = callbacks.Length; i < count; i++)
             {
                 try
                 {
-                    switch (Unsafe.Add(ref MemoryMarshal.GetReference(supplier(state)), i))
+                    switch (callbacks[i])
                     {
                         case null:
                             return;
