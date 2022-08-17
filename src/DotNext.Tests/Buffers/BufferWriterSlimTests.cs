@@ -193,17 +193,18 @@ namespace DotNext.Buffers
         [Fact]
         public static void Concatenation()
         {
+            var tuple = ("Hello, ", "world!");
             var writer = new BufferWriterSlim<char>(stackalloc char[32]);
             try
             {
-                writer.Concat(default(ValueTuple).AsReadOnlySpan<string>());
+                writer.Concat(Array.Empty<string>());
                 Empty(writer.ToString());
 
-                writer.Concat(new ValueTuple<string>("Hello, world!").AsReadOnlySpan());
+                writer.Concat(new[] { "Hello, world!" });
                 Equal("Hello, world!", writer.ToString());
                 writer.Clear(reuseBuffer: true);
 
-                writer.Concat(("Hello, ", "world!").AsReadOnlySpan());
+                writer.Concat(tuple.AsReadOnlySpan());
                 Equal("Hello, world!", writer.ToString());
             }
             finally

@@ -9,7 +9,17 @@ using Buffers;
 
 public partial struct Base64Decoder
 {
-    private Span<char> ReservedChars => MemoryMarshal.CreateSpan(ref Unsafe.As<ulong, char>(ref reservedBuffer), sizeof(ulong) / sizeof(char));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Span<char> AsChars(ref ulong value)
+        => MemoryMarshal.CreateSpan(ref Unsafe.As<ulong, char>(ref value), sizeof(ulong) / sizeof(char));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ReadOnlySpan<char> AsChars(in ulong value, int length)
+    {
+        Debug.Assert((uint)length <= (uint)(sizeof(ulong) / sizeof(char)));
+
+        return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<ulong, char>(ref Unsafe.AsRef(in value)), length);
+    }
 
     private bool DecodeFromUtf16Core<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
@@ -20,7 +30,7 @@ public partial struct Base64Decoder
             // size of the rest
             size = chars.Length - size;
             var rest = chars.Slice(size);
-            rest.CopyTo(ReservedChars);
+            rest.CopyTo(AsChars(ref reservedBuffer));
             reservedBufferSize = rest.Length; // keep the number of chars, not bytes
             chars = chars.Slice(0, size);
         }
@@ -43,7 +53,7 @@ public partial struct Base64Decoder
     {
         var newSize = reservedBufferSize + chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
-        ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
+        AsChars(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
         chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         return DecodeFromUtf16Core(tempBuffer.Span, ref writer);
     }
@@ -121,7 +131,7 @@ public partial struct Base64Decoder
         {
             reservedBufferSize = chunk.Length - consumed;
             Debug.Assert(reservedBufferSize <= 4);
-            chunk.Slice(consumed).CopyTo(ReservedChars);
+            chunk.Slice(consumed).CopyTo(AsChars(ref reservedBuffer));
         }
 
         if (consumed > 0 && produced > 0)
@@ -157,7 +167,7 @@ public partial struct Base64Decoder
     {
         var newSize = reservedBufferSize + chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
-        ReservedChars.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
+        AsChars(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
         chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         DecodeFromUtf16Core(tempBuffer.Span, output);
     }
