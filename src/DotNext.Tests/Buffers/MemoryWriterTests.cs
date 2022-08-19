@@ -221,8 +221,7 @@ namespace DotNext.Buffers
             Equal(1, collection.Count);
             Equal(42, collection[0]);
             Throws<IndexOutOfRangeException>(() => collection[1]);
-            Equal(42, Enumerable.First(collection));
-            Equal(1, Enumerable.Count(collection));
+            Equal(42, Single(collection));
 
             writer.AddAll(new[] { 43, 44 });
             Equal(3, writer.WrittenCount);
@@ -255,8 +254,7 @@ namespace DotNext.Buffers
             False(list.Contains(0));
             Equal(0, list.IndexOf(42));
             Throws<ArgumentOutOfRangeException>(() => list[1]);
-            Equal(42, Enumerable.First(list));
-            Equal(1, Enumerable.Count(list));
+            Equal(42, Single(list));
             list[0] = 10;
             Equal(10, writer.WrittenArray[0]);
 
