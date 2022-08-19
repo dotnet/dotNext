@@ -299,11 +299,13 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
     public unsafe void WriteTo(Pointer<T> destination, long count)
     {
+        if (count < 0L)
+            throw new ArgumentOutOfRangeException(nameof(count));
         if (IsNull)
             throw new NullPointerException(ExceptionMessages.NullSource);
         if (destination.IsNull)
             throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
-        Intrinsics.Copy(in value[0], out destination.value[0], count);
+        Intrinsics.Copy(in value[0], out destination.value[0], (nuint)count);
     }
 
     /// <summary>
@@ -320,13 +322,13 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
         if (IsNull)
             ThrowNullPointerException();
-        if (count < 0)
+        if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
-        if (offset < 0)
+        if (offset < 0L)
             throw new ArgumentOutOfRangeException(nameof(offset));
         if (count is 0L || (ulong)(offset + count) > (ulong)destination.LongLength)
             return 0L;
-        Intrinsics.Copy(in value[0], out destination[offset], count);
+        Intrinsics.Copy(in value[0], out destination[offset], (nuint)count);
         return count;
     }
 
@@ -415,7 +417,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new ArgumentOutOfRangeException(nameof(offset));
         if (count is 0L || (ulong)(count + offset) > (ulong)source.LongLength)
             return 0L;
-        Intrinsics.Copy(in source[offset], out value[0], count);
+        Intrinsics.Copy(in source[offset], out value[0], (nuint)count);
         return count;
     }
 
@@ -522,6 +524,9 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe byte[] ToByteArray(long length)
     {
         byte[] result;
+        if (length < 0L)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         if (IsNull || length is 0L)
         {
             result = Array.Empty<byte>();
@@ -529,7 +534,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         else
         {
             result = new byte[checked(sizeof(T) * length)];
-            Intrinsics.Copy(in ((byte*)value)[0], out result[0], result.LongLength);
+            Intrinsics.Copy(in ((byte*)value)[0], out result[0], (nuint)Intrinsics.GetLength(result));
         }
 
         return result;
@@ -544,6 +549,9 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe T[] ToArray(long length)
     {
         T[] result;
+        if (length < 0L)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
         if (IsNull || length is 0L)
         {
             result = Array.Empty<T>();
@@ -551,7 +559,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         else
         {
             result = length <= Array.MaxLength ? GC.AllocateUninitializedArray<T>((int)length, pinned: true) : new T[length];
-            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), length);
+            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
         }
 
         return result;
