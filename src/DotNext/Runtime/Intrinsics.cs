@@ -386,11 +386,11 @@ public static class Intrinsics
         where T : unmanaged
         => Copy(in input[0], out output[0]);
 
-    private static void Copy([In] ref byte source, [In] ref byte destination, nint length)
+    private static void Copy([In] ref byte source, [In] ref byte destination, nuint length)
     {
-        for (int count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
+        for (nuint count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
         {
-            count = length > int.MaxValue ? int.MaxValue : (int)length;
+            count = length > int.MaxValue ? int.MaxValue : length;
             Unsafe.CopyBlockUnaligned(ref destination, ref source, (uint)count);
         }
     }
@@ -402,13 +402,30 @@ public static class Intrinsics
     /// <param name="destination">The target address.</param>
     /// <param name="count">The number of elements to copy.</param>
     /// <typeparam name="T">The type of the element.</typeparam>
-    [CLSCompliant(false)]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("Use Copy overload that accepts the length as unsigned integer")]
     public static unsafe void Copy<T>(in T source, out T destination, long count)
         where T : unmanaged
     {
+        if (count < 0L)
+            throw new ArgumentOutOfRangeException(nameof(count));
+
+        Copy(in source, out destination, (nuint)count);
+    }
+
+    /// <summary>
+    /// Copies the specified number of elements from source address to the destination address.
+    /// </summary>
+    /// <param name="source">The address of the bytes to copy.</param>
+    /// <param name="destination">The target address.</param>
+    /// <param name="count">The number of elements to copy.</param>
+    /// <typeparam name="T">The type of the element.</typeparam>
+    [CLSCompliant(false)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe void Copy<T>(in T source, out T destination, nuint count)
+        where T : unmanaged
+    {
         Unsafe.SkipInit(out destination);
-        Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nint)count * sizeof(T)));
+        Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nuint)count * (nuint)sizeof(T)));
     }
 
     /// <summary>
