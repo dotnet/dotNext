@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -112,13 +113,22 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
     }
 
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowNullPointerException() => throw new NullPointerException();
+
     /// <summary>
     /// Converts this pointer to <see cref="Reference{TValue}"/>.
     /// </summary>
     /// <returns>The reference to the memory location identified by this pointer.</returns>
     /// <exception cref="NullPointerException">This pointer is zero.</exception>
     public unsafe Reference<T> GetReference()
-        => value != null ? Reference.FromPointer<T>(value) : throw new NullPointerException();
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Reference.FromPointer<T>(value);
+    }
 
     /// <summary>
     /// Gets boxed pointer.
@@ -145,7 +155,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe void Fill(T value, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
 
         switch (count)
         {
@@ -195,7 +205,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         get
         {
             if (IsNull)
-                throw new NullPointerException();
+                ThrowNullPointerException();
+
             return ref value[index];
         }
     }
@@ -210,13 +221,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>Array element.</returns>
     /// <exception cref="NullPointerException">This array is not allocated.</exception>
     [CLSCompliant(false)]
-    public unsafe ref T this[nuint index]
+    public unsafe ref T this[nint index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
             if (IsNull)
-                throw new NullPointerException();
+                ThrowNullPointerException();
+
             return ref value[index];
         }
     }
@@ -230,7 +242,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe void Swap(Pointer<T> other)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (other.IsNull)
             throw new ArgumentNullException(nameof(other));
         Intrinsics.Swap(value, other.value);
@@ -264,7 +276,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
         // TODO: Replace with NativeMemory.Clear
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
 
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
@@ -307,7 +319,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe long WriteTo(T[] destination, long offset, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (offset < 0)
@@ -329,7 +341,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe void WriteTo(Stream destination, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!destination.CanWrite)
@@ -374,7 +386,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe ValueTask WriteToAsync(Stream destination, long count, CancellationToken token = default)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!destination.CanWrite)
@@ -396,7 +408,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe long ReadFrom(T[] source, long offset, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (offset < 0L)
@@ -419,7 +431,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe long ReadFrom(Stream source, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!source.CanRead)
@@ -474,7 +486,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe ValueTask<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!source.CanRead)
@@ -585,7 +597,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         get
         {
             if (IsNull)
-                throw new NullPointerException();
+                ThrowNullPointerException();
+
             return ref value[0];
         }
     }
@@ -675,7 +688,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode32(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -684,7 +702,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe long BitwiseHashCode64(long count, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode64(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    }
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -695,7 +718,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nuint)count * (nuint)sizeof(T)), hash, hashFunction, salted);
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode32(value, checked((nuint)count * (nuint)sizeof(T)), hash, hashFunction, salted);
+    }
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -707,7 +735,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     public unsafe int BitwiseHashCode<THashFunction>(long count, bool salted = true)
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32<THashFunction>(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode32<THashFunction>(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -719,7 +752,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     public unsafe long BitwiseHashCode64<THashFunction>(long count, bool salted = true)
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64<THashFunction>(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode64<THashFunction>(value, checked((nuint)count * (nuint)sizeof(T)), salted);
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -730,7 +768,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nuint)count * (nuint)sizeof(T)), hash, hashFunction, salted);
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode64(value, checked((nuint)count * (nuint)sizeof(T)), hash, hashFunction, salted);
+    }
 
     /// <summary>
     /// Bitwise comparison of two memory blocks.
@@ -743,7 +786,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         if (value == other.value)
             return 0;
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (other.IsNull)
             throw new ArgumentNullException(nameof(other));
         if (count < 0L)
@@ -776,7 +819,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, nint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value + offset);
+    }
 
     /// <summary>
     /// Subtracts an offset from the value of a pointer.
@@ -802,7 +850,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, nint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value - offset);
+    }
 
     /// <summary>
     /// Adds an offset to the value of a pointer.
@@ -842,7 +895,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, nuint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value + offset);
+    }
 
     /// <summary>
     /// Subtracts an offset from the value of a pointer.
@@ -856,7 +914,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, nuint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value - offset);
+    }
 
     /// <summary>
     /// Increments this pointer by 1 element of type <typeparamref name="T"/>.
@@ -1014,7 +1077,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="ptr">The pointer to check.</param>
     /// <returns><see langword="true"/>, if this pointer is not zero; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator true(Pointer<T> ptr) => !ptr.IsNull;
+    public static bool operator true(Pointer<T> ptr) => ptr.IsNull is false;
 
     /// <summary>
     /// Checks whether this pointer is zero.
