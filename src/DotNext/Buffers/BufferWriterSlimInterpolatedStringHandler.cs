@@ -19,7 +19,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     private const char Whitespace = ' ';
 
     private readonly IFormatProvider? provider;
-    private readonly BufferWriterSlim<char>.Ref buffer;
+    private readonly BufferWriterSlim<char>.Ref buffer; // TODO: Replace with ref field in the next version of C#
     private int count;
 
     /// <summary>
