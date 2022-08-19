@@ -5,7 +5,7 @@
   <ItemGroup>
     <!--Compile-time dependencies-->
     <PackageVersion Include="Fody" Version="6.6.3"/>
-    <PackageVersion Include="InlineIL.Fody" Version="1.7.1"/>
+    <PackageVersion Include="InlineIL.Fody" Version="1.7.2"/>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118"/>
   </ItemGroup>
@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
-    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="6.0.7" />
+    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="6.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
@@ -35,8 +35,8 @@
     <!--Misc packages-->
     <PackageVersion Include="BenchmarkDotNet" Version="0.13.1" />
     <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
-    <PackageVersion Include="xunit" Version="2.4.1" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3"/>
+    <PackageVersion Include="xunit" Version="2.4.2" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5"/>
     <PackageVersion Include="coverlet.collector" Version="3.1.2"/>
   </ItemGroup>
 </Project>
