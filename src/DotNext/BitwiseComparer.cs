@@ -45,7 +45,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
             sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(first)) == ReadUnaligned<ushort>(ref InToRef<TOther, byte>(second)),
             sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(first)) == ReadUnaligned<uint>(ref InToRef<TOther, byte>(second)),
             sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(first)) == ReadUnaligned<ulong>(ref InToRef<TOther, byte>(second)),
-            _ => EqualsUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            _ => EqualsUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), (nuint)SizeOf<T>()),
         };
 
     /// <summary>
@@ -64,7 +64,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
             sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<short>(ref InToRef<TOther, byte>(second))),
             sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<uint>(ref InToRef<TOther, byte>(second))),
             sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<ulong>(ref InToRef<TOther, byte>(second))),
-            _ => CompareUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), SizeOf<T>()),
+            _ => CompareUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), (nuint)SizeOf<T>()),
         };
 
     /// <summary>
@@ -79,7 +79,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         switch (SizeOf<T>())
         {
             default:
-                return GetHashCode32Unaligned(ref InToRef<T, byte>(value), SizeOf<T>(), salted);
+                return GetHashCode32Unaligned(ref InToRef<T, byte>(value), (nuint)SizeOf<T>(), salted);
             case 0:
                 hash = 0;
                 break;
@@ -109,7 +109,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
         switch (SizeOf<T>())
         {
             default:
-                GetHashCode32Unaligned(ref hashFunction, ref InToRef<T, byte>(value), SizeOf<T>());
+                GetHashCode32Unaligned(ref hashFunction, ref InToRef<T, byte>(value), (nuint)SizeOf<T>());
                 break;
             case 0:
                 break;

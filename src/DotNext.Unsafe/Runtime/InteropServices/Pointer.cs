@@ -30,10 +30,9 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [StructLayout(LayoutKind.Auto)]
     public unsafe struct Enumerator : IEnumerator<T>
     {
-        private const int InitialPosition = -1;
         private readonly T* ptr;
         private readonly nuint count;
-        private nint index;
+        private nuint index;
 
         /// <inheritdoc/>
         object IEnumerator.Current => Current;
@@ -42,7 +41,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         {
             this.count = count > 0 ? count : throw new ArgumentOutOfRangeException(nameof(count));
             this.ptr = ptr;
-            index = InitialPosition;
+            index = nuint.MaxValue;
         }
 
         /// <summary>
@@ -67,12 +66,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         /// Adjust pointer.
         /// </summary>
         /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
-        public bool MoveNext() => ptr != null && (nuint)(++index) < count;
+        public bool MoveNext() => ptr is not null && ++index < count;
 
         /// <summary>
         /// Sets the enumerator to its initial position.
         /// </summary>
-        public void Reset() => index = InitialPosition;
+        public void Reset() => index = nuint.MaxValue;
 
         /// <summary>
         /// Releases all resources with this enumerator.
@@ -260,16 +259,17 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// </summary>
     /// <param name="count">Number of elements in the unmanaged array.</param>
     /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than or equal to zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     public unsafe void Clear(long count)
     {
+        // TODO: Replace with NativeMemory.Clear
         if (IsNull)
             throw new NullPointerException();
 
-        if ((ulong)count > (ulong)nint.MaxValue)
+        if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        Intrinsics.ClearBits(value, checked(sizeof(T) * (nint)count));
+        Intrinsics.ClearBits(value, checked((nuint)sizeof(T) * (nuint)count));
     }
 
     /// <summary>
@@ -658,12 +658,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
     public unsafe bool BitwiseEquals(Pointer<T> other, long count)
     {
+        if (count < 0L)
+            throw new ArgumentOutOfRangeException(nameof(count));
         if (value == other.value)
             return true;
         if (IsNull || other.IsNull)
             return false;
 
-        return Intrinsics.Equals(value, other, checked((nint)count * sizeof(T)));
+        return Intrinsics.Equals(value, other, checked((nuint)count * (nuint)sizeof(T)));
     }
 
     /// <summary>
@@ -673,7 +675,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nuint)count * (nuint)sizeof(T)), salted);
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -682,7 +684,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe long BitwiseHashCode64(long count, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nuint)count * (nuint)sizeof(T)), salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -693,7 +695,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nuint)count * (nuint)sizeof(T)), hash, hashFunction, salted);
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -705,7 +707,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     public unsafe int BitwiseHashCode<THashFunction>(long count, bool salted = true)
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32<THashFunction>(value, checked((nuint)count * (nuint)sizeof(T)), salted);
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -717,7 +719,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     public unsafe long BitwiseHashCode64<THashFunction>(long count, bool salted = true)
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64<THashFunction>(value, checked((nuint)count * (nuint)sizeof(T)), salted);
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -728,7 +730,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     public unsafe long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
+        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nuint)count * (nuint)sizeof(T)), hash, hashFunction, salted);
 
     /// <summary>
     /// Bitwise comparison of two memory blocks.
@@ -744,8 +746,10 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             throw new NullPointerException();
         if (other.IsNull)
             throw new ArgumentNullException(nameof(other));
+        if (count < 0L)
+            throw new ArgumentOutOfRangeException(nameof(count));
 
-        return Intrinsics.Compare(value, other, checked((nint)count * sizeof(T)));
+        return Intrinsics.Compare(value, other, checked((nuint)count * (nuint)sizeof(T)));
     }
 
     /// <summary>

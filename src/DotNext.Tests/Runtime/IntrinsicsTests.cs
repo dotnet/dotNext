@@ -66,9 +66,9 @@ namespace DotNext.Runtime
         {
             byte value1 = 10;
             byte value2 = 20;
-            False(Intrinsics.Equals(&value1, &value2, sizeof(byte)));
+            False(Intrinsics.Equals(&value1, &value2, (nuint)sizeof(byte)));
             value2 = 10;
-            True(Intrinsics.Equals(&value1, &value2, sizeof(byte)));
+            True(Intrinsics.Equals(&value1, &value2, (nuint)sizeof(byte)));
         }
 
         [Fact]
@@ -76,17 +76,17 @@ namespace DotNext.Runtime
         {
             var value1 = 10L;
             var value2 = 20L;
-            False(Intrinsics.Equals(&value1, &value2, sizeof(long)));
+            False(Intrinsics.Equals(&value1, &value2, (nuint)sizeof(long)));
             value2 = 10;
-            True(Intrinsics.Equals(&value1, &value2, sizeof(long)));
+            True(Intrinsics.Equals(&value1, &value2, (nuint)sizeof(long)));
         }
 
         [Fact]
         public static unsafe void BitwiseHashCode()
         {
             var i = 42L;
-            NotEqual(0, Intrinsics.GetHashCode32(&i, sizeof(long)));
-            NotEqual(0L, Intrinsics.GetHashCode64(&i, sizeof(long)));
+            NotEqual(0, Intrinsics.GetHashCode32(&i, (nuint)sizeof(long)));
+            NotEqual(0L, Intrinsics.GetHashCode64(&i, (nuint)sizeof(long)));
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace DotNext.Runtime
         public static unsafe void ZeroMem()
         {
             var g = Guid.NewGuid();
-            Intrinsics.ClearBits(&g, sizeof(Guid));
+            Intrinsics.ClearBits(&g, (nuint)sizeof(Guid));
             Equal(Guid.Empty, g);
         }
 
