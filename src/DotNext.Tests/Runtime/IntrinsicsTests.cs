@@ -94,7 +94,7 @@ namespace DotNext.Runtime
         {
             char[] chars1 = new[] { 'a', 'b', 'c' };
             var chars2 = new char[2];
-            Intrinsics.Copy(in chars1[1], out chars2[0], 2);
+            Intrinsics.Copy(in chars1[1], out chars2[0], (nuint)2);
             Equal('b', chars2[0]);
             Equal('c', chars2[1]);
         }
