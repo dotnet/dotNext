@@ -16,7 +16,7 @@ public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
     /// Sets all bits of allocated memory to zero.
     /// </summary>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void Clear() => Pointer.Clear(Size);
+    void Clear() => Pointer.Clear(new IntPtr(Size));
 
     /// <summary>
     /// Gets a pointer to the allocated unmanaged memory.
@@ -78,14 +78,14 @@ public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
     /// </summary>
     /// <param name="destination">The target memory location.</param>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void WriteTo(Pointer<byte> destination) => Pointer.WriteTo(destination, Size);
+    void WriteTo(Pointer<byte> destination) => Pointer.CopyTo(destination, new IntPtr(Size));
 
     /// <summary>
     /// Copies bytes from the source memory to the memory identified by this object.
     /// </summary>
     /// <param name="source">The pointer to the source unmanaged memory.</param>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void ReadFrom(Pointer<byte> source) => source.WriteTo(Pointer, Size);
+    void ReadFrom(Pointer<byte> source) => source.CopyTo(Pointer, new IntPtr(Size));
 
     /// <summary>
     /// Computes bitwise equality between two blocks of memory.
@@ -93,7 +93,7 @@ public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
     /// <param name="other">The block of memory to be compared.</param>
     /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    bool BitwiseEquals(IUnmanagedMemory other) => Size == other.Size && Pointer.BitwiseEquals(other.Pointer, Size);
+    bool BitwiseEquals(IUnmanagedMemory other) => Size == other.Size && Pointer.BitwiseEquals(other.Pointer, new IntPtr(Size));
 
     /// <summary>
     /// Bitwise comparison of the memory blocks.
@@ -101,7 +101,7 @@ public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
     /// <param name="other">The block of memory to be compared.</param>
     /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    int BitwiseCompare(IUnmanagedMemory other) => Size == other.Size ? Pointer.BitwiseCompare(other.Pointer, Size) : Size.CompareTo(other.Size);
+    int BitwiseCompare(IUnmanagedMemory other) => Size == other.Size ? Pointer.BitwiseCompare(other.Pointer, new IntPtr(Size)) : Size.CompareTo(other.Size);
 }
 
 /// <summary>
