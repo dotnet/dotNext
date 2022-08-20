@@ -390,7 +390,7 @@ public static class Intrinsics
     {
         for (nuint count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
         {
-            count = length > int.MaxValue ? int.MaxValue : length;
+            count = length > uint.MaxValue ? uint.MaxValue : length;
             Unsafe.CopyBlockUnaligned(ref destination, ref source, (uint)count);
         }
     }
