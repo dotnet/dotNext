@@ -29,7 +29,16 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="index">The index of the element to get.</param>
     /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> is out of range.</exception>
     /// <value>The pointer to the array element.</value>
-    ref T this[int index]
+    [Obsolete("Use indexer overload with native-sized integer parameter")]
+    ref T this[int index] => ref this[(nint)index];
+
+    /// <summary>
+    /// Gets element of the unmanaged array.
+    /// </summary>
+    /// <param name="index">The index of the element to get.</param>
+    /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> is out of range.</exception>
+    /// <value>The pointer to the array element.</value>
+    ref T this[nint index]
     {
         get
         {
@@ -48,6 +57,7 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="count">The number of array elements to be copied.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
+    [Obsolete("Use Span property instead")]
     long WriteTo(T[] destination, long offset, long count) => Pointer.WriteTo(destination, offset, count);
 
     /// <summary>
@@ -56,6 +66,7 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="destination">The destination array.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
+    [Obsolete("Use Span property instead")]
     long WriteTo(T[] destination) => Pointer.WriteTo(destination, 0, Math.Min(destination.LongLength, Length));
 
     /// <summary>
@@ -77,6 +88,7 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
     /// <returns>Actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
+    [Obsolete("Use Span property instead")]
     long ReadFrom(T[] source, long offset, long count) => Pointer.ReadFrom(source, offset, Math.Min(Length, count));
 
     /// <summary>
@@ -85,21 +97,28 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="source">The source array.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    long ReadFrom(T[] source) => Pointer.ReadFrom(source, 0L, source.LongLength);
+    [Obsolete("Use Span property instead")]
+    long ReadFrom(T[] source)
+    {
+        source.AsSpan().CopyTo(Span, out var writtenCount);
+        return writtenCount;
+    }
 
     /// <summary>
     /// Copies elements from the current memory location to the specified memory location.
     /// </summary>
     /// <param name="destination">The target memory location.</param>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void WriteTo(Pointer<T> destination) => Pointer.WriteTo(destination, Length);
+    [Obsolete("Use Span property instead")]
+    void WriteTo(Pointer<T> destination) => Pointer.CopyTo(destination, Length);
 
     /// <summary>
     /// Copies bytes from the source memory to the memory identified by this object.
     /// </summary>
     /// <param name="source">The pointer to the source unmanaged memory.</param>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void ReadFrom(Pointer<T> source) => source.WriteTo(Pointer, Length);
+    [Obsolete("Use Span property instead")]
+    void ReadFrom(Pointer<T> source) => source.CopyTo(Pointer, Length);
 
     /// <summary>
     /// Copies elements from the current memory location to the specified memory location.
@@ -107,10 +126,11 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="destination">The target memory location.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
+    [Obsolete("Use Span property instead")]
     long WriteTo(IUnmanagedArray<T> destination)
     {
         var count = Math.Min(Length, destination.Length);
-        Pointer.WriteTo(destination.Pointer, count);
+        Pointer.CopyTo(destination.Pointer, count);
         return count;
     }
 
@@ -128,13 +148,8 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="other">The array to be compared.</param>
     /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    unsafe bool BitwiseEquals(T[] other)
-    {
-        if (other.LongLength != Length)
-            return false;
-        fixed (T* ptr = other)
-            return BitwiseEquals(ptr);
-    }
+    [Obsolete("Use Span property instead")]
+    bool BitwiseEquals(T[] other) => Span.SequenceEqual(other);
 
     /// <summary>
     /// Bitwise comparison of the memory blocks.
@@ -150,11 +165,6 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// <param name="other">The array to be compared.</param>
     /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    unsafe int BitwiseCompare(T[] other)
-    {
-        if (Length != other.LongLength)
-            return ((long)Length).CompareTo(other.LongLength);
-        fixed (T* ptr = other)
-            return BitwiseCompare(ptr);
-    }
+    [Obsolete("Use Span property instead")]
+    int BitwiseCompare(T[] other) => Span.BitwiseCompare(other);
 }

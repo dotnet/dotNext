@@ -15,10 +15,10 @@ namespace DotNext.Buffers
             array[1] = 20;
             array[2] = 30;
             Equal(new ushort[] { 10, 20, 30 }, owner.ToArray());
-            True(owner.BitwiseCompare(new ushort[] { 10, 20, 30 }) == 0);
-            True(owner.BitwiseEquals(new ushort[] { 10, 20, 30 }));
-            False(owner.BitwiseEquals(new ushort[] { 10, 20, 40 }));
-            True(owner.BitwiseCompare(new ushort[] { 10, 20, 40 }) < 0);
+            Equal(0, owner.Span.BitwiseCompare(new ushort[] { 10, 20, 30 }));
+            True(owner.Span.BitwiseEquals(new ushort[] { 10, 20, 30 }));
+            False(owner.Span.BitwiseEquals(new ushort[] { 10, 20, 40 }));
+            True(owner.Span.BitwiseCompare(new ushort[] { 10, 20, 40 }) < 0);
             Equal(3, array.Length);
             Equal(3, owner.Length);
             Equal(6, owner.Size);
@@ -48,7 +48,7 @@ namespace DotNext.Buffers
             Equal(20, dest[1]);
             Equal(30, dest[2]);
             dest[0] = 100;
-            owner.ReadFrom(dest);
+            dest.CopyTo(owner.Span);
             Equal(100, array[0]);
         }
 
@@ -87,7 +87,7 @@ namespace DotNext.Buffers
 
             True(array1.BitwiseEquals(array2));
             True(owner1.BitwiseEquals(owner2));
-            True(owner1.BitwiseCompare(owner2) == 0);
+            Equal(0, owner1.BitwiseCompare(owner2));
             True(owner1.BitwiseEquals(owner2.Pointer));
             Equal(0, array1.BitwiseCompare(array2));
 
@@ -138,12 +138,12 @@ namespace DotNext.Buffers
             Equal(40, slice[1]);
             Equal(50, slice[2]);
             var array = new long[3];
-            owner.WriteTo(array);
+            owner.Span.CopyTo(array, out _);
             Equal(10, array[0]);
             Equal(20, array[1]);
             Equal(30, array[2]);
             array[0] = long.MaxValue;
-            owner.ReadFrom(array);
+            array.CopyTo(owner.Span);
             Equal(long.MaxValue, span[0]);
             Equal(20, span[1]);
         }
