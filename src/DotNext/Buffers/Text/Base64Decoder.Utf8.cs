@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Text;
 
@@ -10,6 +11,14 @@ using StreamConsumer = IO.StreamConsumer;
 
 public partial struct Base64Decoder
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ReadOnlySpan<byte> AsReadOnlyBytes(in ulong value, int length)
+    {
+        Debug.Assert((uint)length <= (uint)sizeof(ulong));
+
+        return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<ulong, byte>(ref Unsafe.AsRef(in value)), length);
+    }
+
     private bool DecodeFromUtf8Core<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
@@ -41,7 +50,7 @@ public partial struct Base64Decoder
     {
         var newSize = reservedBufferSize + utf8Chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-        Span.AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
+        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
         utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         return DecodeFromUtf8Core(tempBuffer.Span, ref writer);
     }
@@ -138,7 +147,7 @@ public partial struct Base64Decoder
     {
         var newSize = reservedBufferSize + utf8Chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-        Span.AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
+        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
         utf8Chars.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         DecodeFromUtf8Core(tempBuffer.Span, output);
     }

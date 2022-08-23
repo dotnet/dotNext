@@ -404,29 +404,6 @@ public static partial class Span
 
     /// <summary>
     /// Converts contiguous memory identified by the specified pointer
-    /// into <see cref="Span{T}"/>.
-    /// </summary>
-    /// <param name="value">The managed pointer.</param>
-    /// <param name="length">The length of the span.</param>
-    /// <typeparam name="T">The type of the pointer.</typeparam>
-    /// <returns>The span of contiguous memory.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero or greater that the size of <typeparamref name="T"/>.</exception>
-    public static unsafe Span<byte> AsBytes<T>(ref T value, int length)
-        where T : unmanaged
-    {
-        if ((uint)length > (uint)sizeof(T))
-            ThrowArgumentOutOfRangeException();
-
-        return MemoryMarshal.CreateSpan(ref As<T, byte>(ref value), length);
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowArgumentOutOfRangeException()
-            => throw new ArgumentOutOfRangeException(nameof(length));
-    }
-
-    /// <summary>
-    /// Converts contiguous memory identified by the specified pointer
     /// into <see cref="ReadOnlySpan{T}"/>.
     /// </summary>
     /// <param name="value">The managed pointer.</param>
@@ -436,18 +413,6 @@ public static partial class Span
     public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value)
         where T : unmanaged
         => AsBytes(ref AsRef(in value));
-
-    /// <summary>
-    /// Converts contiguous memory identified by the specified pointer
-    /// into <see cref="ReadOnlySpan{T}"/>.
-    /// </summary>
-    /// <param name="value">The managed pointer.</param>
-    /// <param name="length">The length of the span.</param>
-    /// <typeparam name="T">The type of the pointer.</typeparam>
-    /// <returns>The span of contiguous memory.</returns>
-    public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value, int length)
-        where T : unmanaged
-        => AsBytes(ref AsRef(in value), length);
 
     /// <summary>
     /// Converts contiguous memory identified by the specified pointer
