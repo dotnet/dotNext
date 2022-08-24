@@ -342,12 +342,15 @@ public static class OneDimensionalArray
     {
         if (first is null || second is null)
             return ReferenceEquals(first, second);
-        if (Intrinsics.GetLength(first) != Intrinsics.GetLength(second))
+
+        var firstLength = Intrinsics.GetLength(first);
+        if (firstLength != Intrinsics.GetLength(second))
             return false;
-        if (Intrinsics.GetLength(first) == 0)
+
+        if (firstLength is 0)
             return true;
 
-        return Intrinsics.EqualsUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(Intrinsics.GetLength(first) * sizeof(T)));
+        return Intrinsics.EqualsUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked((nuint)firstLength * (nuint)sizeof(T)));
     }
 
     /// <summary>
@@ -360,18 +363,18 @@ public static class OneDimensionalArray
     public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
         where T : unmanaged
     {
-        var length = Intrinsics.GetLength(array);
-        return length > 0 ? Intrinsics.GetHashCode32Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0;
+        var length = (nuint)Intrinsics.GetLength(array);
+        return length > 0 ? Intrinsics.GetHashCode32Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * (nuint)sizeof(T)), salted) : 0;
     }
 
     private static unsafe void BitwiseHashCode<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
         where T : unmanaged
         where THashFunction : struct, IConsumer<int>
     {
-        var length = Intrinsics.GetLength(array);
+        var length = (nuint)Intrinsics.GetLength(array);
 
         if (length > 0)
-            Intrinsics.GetHashCode32Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
+            Intrinsics.GetHashCode32Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * (nuint)sizeof(T)));
 
         if (salted)
             hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -416,10 +419,10 @@ public static class OneDimensionalArray
         where T : unmanaged
         where THashFunction : struct, IConsumer<long>
     {
-        var length = Intrinsics.GetLength(array);
+        var length = (nuint)Intrinsics.GetLength(array);
 
         if (length > 0)
-            Intrinsics.GetHashCode64Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)));
+            Intrinsics.GetHashCode64Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * (nuint)sizeof(T)));
 
         if (salted)
             hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -471,7 +474,7 @@ public static class OneDimensionalArray
         where T : unmanaged
     {
         var length = Intrinsics.GetLength(array);
-        return length > 0 ? Intrinsics.GetHashCode64Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * sizeof(T)), salted) : 0L;
+        return length > 0 ? Intrinsics.GetHashCode64Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked((nuint)length * (nuint)sizeof(T)), salted) : 0L;
     }
 
     private sealed class ArrayEqualityComparer
@@ -546,7 +549,7 @@ public static class OneDimensionalArray
         var firstLength = Intrinsics.GetLength(first);
         var cmp = firstLength.CompareTo(Intrinsics.GetLength(second));
         if (cmp == 0)
-            cmp = Intrinsics.CompareUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked(firstLength * sizeof(T)));
+            cmp = Intrinsics.CompareUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked((nuint)firstLength * (nuint)sizeof(T)));
 
         return cmp;
     }

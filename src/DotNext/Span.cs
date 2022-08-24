@@ -38,7 +38,7 @@ public static partial class Span
         if (span.IsEmpty)
             return salted ? RandomExtensions.BitwiseHashSalt : 0;
 
-        return Intrinsics.GetHashCode32Unaligned(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)), salted);
+        return Intrinsics.GetHashCode32Unaligned(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)), salted);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public static partial class Span
         where THashFunction : struct, IConsumer<int>
     {
         if (!span.IsEmpty)
-            Intrinsics.GetHashCode32Unaligned(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)));
+            Intrinsics.GetHashCode32Unaligned(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)));
 
         if (salted)
             hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -146,7 +146,7 @@ public static partial class Span
         where THashFunction : struct, IConsumer<long>
     {
         if (!span.IsEmpty)
-            Intrinsics.GetHashCode64Unaligned(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)));
+            Intrinsics.GetHashCode64Unaligned(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)));
 
         if (salted)
             hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
@@ -211,7 +211,7 @@ public static partial class Span
         if (span.IsEmpty)
             return salted ? RandomExtensions.BitwiseHashSalt : 0L;
 
-        return Intrinsics.GetHashCode64Unaligned(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nint)span.Length * sizeof(T)), salted);
+        return Intrinsics.GetHashCode64Unaligned(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)), salted);
     }
 
     /// <summary>

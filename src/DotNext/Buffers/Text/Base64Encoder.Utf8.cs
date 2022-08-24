@@ -24,7 +24,7 @@ public partial struct Base64Encoder
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - consumed;
                 Debug.Assert(reservedBufferSize <= MaxBufferedDataSize);
-                bytes.Slice(consumed).CopyTo(ReservedBytes);
+                bytes.Slice(consumed).CopyTo(Span.AsBytes(ref reservedBuffer));
                 break;
         }
 
@@ -37,7 +37,7 @@ public partial struct Base64Encoder
     {
         var newSize = reservedBufferSize + bytes.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-        ReservedBytes.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
+        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
         bytes.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         EncodeToUtf8Core(tempBuffer.Span, ref writer, flush);
     }
@@ -111,7 +111,7 @@ public partial struct Base64Encoder
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - consumed;
                 Debug.Assert(reservedBufferSize <= MaxBufferedDataSize);
-                bytes.Slice(consumed).CopyTo(ReservedBytes);
+                bytes.Slice(consumed).CopyTo(Span.AsBytes(ref reservedBuffer));
                 break;
         }
 
@@ -125,7 +125,7 @@ public partial struct Base64Encoder
         // flush the rest of the buffer
         if (HasBufferedData && flush)
         {
-            Base64.EncodeToUtf8(Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize), buffer, out consumed, out produced);
+            Base64.EncodeToUtf8(AsReadOnlyBytes(in reservedBuffer, reservedBufferSize), buffer, out consumed, out produced);
             Reset();
             output.Invoke(buffer.Slice(0, produced));
         }
@@ -137,7 +137,7 @@ public partial struct Base64Encoder
     {
         var newSize = reservedBufferSize + bytes.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-        ReservedBytes.Slice(0, reservedBufferSize).CopyTo(tempBuffer.Span);
+        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
         bytes.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         EncodeToUtf8Core(tempBuffer.Span, output, flush);
     }
@@ -246,7 +246,7 @@ public partial struct Base64Encoder
         }
         else
         {
-            Base64.EncodeToUtf8(Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize), output, out var consumed, out bytesWritten);
+            Base64.EncodeToUtf8(AsReadOnlyBytes(in reservedBuffer, reservedBufferSize), output, out var consumed, out bytesWritten);
             reservedBufferSize -= consumed;
         }
 

@@ -68,6 +68,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
+        [Obsolete]
         public static unsafe void ArrayInterop()
         {
             var array = new ushort[] { 1, 2, 3 };
@@ -85,6 +86,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
+        [Obsolete]
         public static unsafe void ArrayInteropWithOffset()
         {
             var array = new ushort[] { 1, 2, 3 };
@@ -366,7 +368,7 @@ namespace DotNext.Runtime.InteropServices
                 ptr.Set(20);
                 Equal(20, array[0]);
                 Equal(20, ptr.Get(0));
-                ptr.Set(30, 1L);
+                ptr.Set(30, 1);
                 Equal(30, array[1]);
                 Equal(30, ptr.Get(1));
                 ptr.Set(42, 0);
@@ -381,11 +383,11 @@ namespace DotNext.Runtime.InteropServices
             Pointer<int> ptr = stackalloc int[10];
             Equal(0, ptr[0]);
             Equal(0, ptr[8]);
-            ptr.Fill(42, 10L);
+            ptr.Fill(42, 10);
             Equal(42, ptr[0]);
             Equal(42, ptr[9]);
             Pointer<int> ptr2 = stackalloc int[10];
-            ptr.WriteTo(ptr2, 10);
+            ptr.CopyTo(ptr2, 10);
             Equal(42, ptr2[0]);
             Equal(42, ptr2[9]);
             ptr.Clear(10);

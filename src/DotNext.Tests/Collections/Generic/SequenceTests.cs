@@ -501,9 +501,9 @@ namespace DotNext.Collections.Generic
         public static void NativeMemoryEnumerator()
         {
             using var owner = UnmanagedMemoryAllocator.Allocate<int>(3);
-            owner[0] = 10;
-            owner[1] = 20;
-            owner[2] = 30;
+            owner[(nint)0] = 10;
+            owner[(nint)1] = 20;
+            owner[(nint)2] = 30;
 
             using var enumerator = Sequence.ToEnumerator<int>(owner.Memory);
 

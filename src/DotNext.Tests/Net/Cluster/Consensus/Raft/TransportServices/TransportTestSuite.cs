@@ -489,8 +489,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             True(await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress));
             await host3.Readiness.WaitAsync(DefaultTimeout);
 
-            Equal(host1.Leader.EndPoint, host2.Leader.EndPoint);
-            Equal(host1.Leader.EndPoint, host3.Leader.EndPoint);
+            Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host2.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
+            Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host3.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
 
             await host3.StopAsync();
             await host2.StopAsync();

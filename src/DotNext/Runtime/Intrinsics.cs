@@ -136,7 +136,7 @@ public static class Intrinsics
         sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(value)) is 0,
         sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(value)) is 0U,
         sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(value)) is 0UL,
-        _ => IsZero(ref InToRef<T, byte>(in value), Unsafe.SizeOf<T>()),
+        _ => IsZero(ref InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
     };
 
     /// <summary>
@@ -238,13 +238,13 @@ public static class Intrinsics
         return ref ReturnRef<T>();
     }
 
-    internal static int CompareUnaligned(ref byte first, ref byte second, nint length)
+    internal static int CompareUnaligned(ref byte first, ref byte second, nuint length)
     {
         var comparison = 0;
-        for (int count; length > 0L && comparison is 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
+        for (nuint count; length > 0 && comparison is 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
         {
-            count = length > int.MaxValue ? int.MaxValue : (int)length;
-            comparison = MemoryMarshal.CreateReadOnlySpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateReadOnlySpan(ref second, count));
+            count = length > int.MaxValue ? int.MaxValue : length;
+            comparison = MemoryMarshal.CreateReadOnlySpan(ref first, (int)count).SequenceCompareTo(MemoryMarshal.CreateReadOnlySpan(ref second, (int)count));
         }
 
         return comparison;
@@ -258,15 +258,27 @@ public static class Intrinsics
     /// <param name="length">The length of the first and second memory blocks.</param>
     /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
     [CLSCompliant(false)]
+    [Obsolete("Use Compare overload that accepts the length as unsigned integer")]
     public static unsafe int Compare([In] void* first, [In] void* second, nint length)
+        => length >= 0 ? Compare(first, second, (nuint)length) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Bitwise comparison of two memory blocks.
+    /// </summary>
+    /// <param name="first">The pointer to the first memory block.</param>
+    /// <param name="second">The pointer to the second memory block.</param>
+    /// <param name="length">The length of the first and second memory blocks.</param>
+    /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+    [CLSCompliant(false)]
+    public static unsafe int Compare([In] void* first, [In] void* second, nuint length)
         => CompareUnaligned(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-    internal static bool EqualsUnaligned(ref byte first, ref byte second, nint length)
+    internal static bool EqualsUnaligned(ref byte first, ref byte second, nuint length)
     {
-        for (int count; length > 0L; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
+        for (nuint count; length > 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
         {
-            count = length > int.MaxValue ? int.MaxValue : (int)length;
-            if (!MemoryMarshal.CreateReadOnlySpan(ref first, count).SequenceEqual(MemoryMarshal.CreateReadOnlySpan(ref second, count)))
+            count = length > int.MaxValue ? int.MaxValue : length;
+            if (!MemoryMarshal.CreateReadOnlySpan(ref first, (int)count).SequenceEqual(MemoryMarshal.CreateReadOnlySpan(ref second, (int)count)))
                 return false;
         }
 
@@ -280,8 +292,20 @@ public static class Intrinsics
     /// <param name="second">A pointer to the second memory block.</param>
     /// <param name="length">Length of first and second memory blocks, in bytes.</param>
     /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
+    [Obsolete("Use Compare overload that accepts the length as unsigned integer")]
     [CLSCompliant(false)]
     public static unsafe bool Equals([In] void* first, [In] void* second, nint length)
+        => length >= 0 ? Equals(first, second, (nuint)length) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Computes equality between two blocks of memory.
+    /// </summary>
+    /// <param name="first">A pointer to the first memory block.</param>
+    /// <param name="second">A pointer to the second memory block.</param>
+    /// <param name="length">Length of first and second memory blocks, in bytes.</param>
+    /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
+    [CLSCompliant(false)]
+    public static unsafe bool Equals([In] void* first, [In] void* second, nuint length)
         => EqualsUnaligned(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
     /// <summary>
@@ -362,11 +386,11 @@ public static class Intrinsics
         where T : unmanaged
         => Copy(in input[0], out output[0]);
 
-    private static void Copy([In] ref byte source, [In] ref byte destination, nint length)
+    private static void Copy([In] ref byte source, [In] ref byte destination, nuint length)
     {
-        for (int count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
+        for (nuint count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
         {
-            count = length > int.MaxValue ? int.MaxValue : (int)length;
+            count = length > uint.MaxValue ? uint.MaxValue : length;
             Unsafe.CopyBlockUnaligned(ref destination, ref source, (uint)count);
         }
     }
@@ -378,13 +402,30 @@ public static class Intrinsics
     /// <param name="destination">The target address.</param>
     /// <param name="count">The number of elements to copy.</param>
     /// <typeparam name="T">The type of the element.</typeparam>
-    [CLSCompliant(false)]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("Use Copy overload that accepts the length as unsigned integer")]
     public static unsafe void Copy<T>(in T source, out T destination, long count)
         where T : unmanaged
     {
+        if (count < 0L)
+            throw new ArgumentOutOfRangeException(nameof(count));
+
+        Copy(in source, out destination, (nuint)count);
+    }
+
+    /// <summary>
+    /// Copies the specified number of elements from source address to the destination address.
+    /// </summary>
+    /// <param name="source">The address of the bytes to copy.</param>
+    /// <param name="destination">The target address.</param>
+    /// <param name="count">The number of elements to copy.</param>
+    /// <typeparam name="T">The type of the element.</typeparam>
+    [CLSCompliant(false)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe void Copy<T>(in T source, out T destination, nuint count)
+        where T : unmanaged
+    {
         Unsafe.SkipInit(out destination);
-        Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nint)count * sizeof(T)));
+        Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nuint)count * (nuint)sizeof(T)));
     }
 
     /// <summary>
@@ -434,19 +475,20 @@ public static class Intrinsics
         => ref Unsafe.Add(ref ptr, sizeof(T));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] nint* length)
+    private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] nuint* length)
         where T : unmanaged
     {
-        *length -= sizeof(T);
+        *length -= (nuint)sizeof(T);
         return ref address.Advance<T>();
     }
 
-    private static unsafe bool IsZero([In] ref byte address, nint length)
+    private static unsafe bool IsZero([In] ref byte address, nuint length)
     {
         var result = false;
+
         if (Vector.IsHardwareAccelerated && Vector<byte>.Count > sizeof(nuint))
         {
-            while (length >= Vector<byte>.Count)
+            while (length >= (nuint)Vector<byte>.Count)
             {
                 if (Unsafe.ReadUnaligned<Vector<byte>>(ref address) == Vector<byte>.Zero)
                     address = ref address.Advance<Vector<byte>>(&length);
@@ -455,7 +497,7 @@ public static class Intrinsics
             }
         }
 
-        while (length >= sizeof(nuint))
+        while (length >= (nuint)sizeof(nuint))
         {
             if (Unsafe.ReadUnaligned<nuint>(ref address) is 0U)
                 address = ref address.Advance<nuint>(&length);
@@ -482,9 +524,25 @@ public static class Intrinsics
     /// <param name="address">The pointer to the memory to be cleared.</param>
     /// <param name="length">The length of the memory to be cleared, in bytes.</param>
     [CLSCompliant(false)]
+    [Obsolete("Use ClearBits overload that accepts the length as unsigned integer")]
     public static unsafe void ClearBits([In, Out] void* address, nint length)
     {
-        for (int count; length > 0; length -= count, address = Unsafe.Add<byte>(address, count))
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        ClearBits(address, (nuint)length);
+    }
+
+    /// <summary>
+    /// Sets all bits of allocated memory to zero.
+    /// </summary>
+    /// <param name="address">The pointer to the memory to be cleared.</param>
+    /// <param name="length">The length of the memory to be cleared, in bytes.</param>
+    [CLSCompliant(false)]
+    public static unsafe void ClearBits([In, Out] void* address, nuint length)
+    {
+        // TODO: Replace with NativeMemory.Clear
+        for (int count; length > 0; length -= (nuint)count, address = Unsafe.Add<byte>(address, count))
         {
             count = length > int.MaxValue ? int.MaxValue : (int)length;
 
@@ -494,7 +552,7 @@ public static class Intrinsics
 
     #region Bitwise Hash Code
 
-    internal static unsafe void GetHashCode64Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
+    internal static unsafe void GetHashCode64Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nuint length)
         where THashFunction : struct, IConsumer<long>
     {
         switch (length)
@@ -519,7 +577,7 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe long GetHashCode64Unaligned([In] ref byte source, nint length, bool salted)
+    internal static unsafe long GetHashCode64Unaligned([In] ref byte source, nuint length, bool salted)
     {
         var hash = new FNV1a64();
         GetHashCode64Unaligned(ref hash, ref source, length);
@@ -597,7 +655,25 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
+    [Obsolete("Use GetHashCode64 overload that accepts the length as unsigned integer")]
     public static unsafe long GetHashCode64([In] void* source, nint length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        => length >= 0 ? GetHashCode64(source, (nuint)length, hash, hashFunction, salted) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory, 64-bit version.
+    /// </summary>
+    /// <remarks>
+    /// This method may give different value each time you run the program for
+    /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
+    /// </remarks>
+    /// <param name="source">A pointer to the block of memory.</param>
+    /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+    /// <param name="hash">Initial value of the hash.</param>
+    /// <param name="hashFunction">Hashing function.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Hash code of the memory block.</returns>
+    [CLSCompliant(false)]
+    public static unsafe long GetHashCode64([In] void* source, nuint length, long hash, Func<long, long, long> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<long, long>(hashFunction, hash);
         GetHashCode64Unaligned(ref fn, ref *((byte*)source), length);
@@ -621,7 +697,25 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
+    [Obsolete("Use GetHashCode64 overload that accepts the length as unsigned integer")]
     public static unsafe long GetHashCode64<THashFunction>([In] void* source, nint length, bool salted = true)
+        where THashFunction : struct, IConsumer<long>, ISupplier<long>
+        => length >= 0 ? GetHashCode64<THashFunction>(source, (nuint)length, salted) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory, 64-bit version.
+    /// </summary>
+    /// <remarks>
+    /// This method may give different value each time you run the program for
+    /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
+    /// </remarks>
+    /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
+    /// <param name="source">A pointer to the block of memory.</param>
+    /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Hash code of the memory block.</returns>
+    [CLSCompliant(false)]
+    public static unsafe long GetHashCode64<THashFunction>([In] void* source, nuint length, bool salted = true)
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
     {
         var hash = new THashFunction();
@@ -645,7 +739,23 @@ public static class Intrinsics
     /// <returns>Content hash code.</returns>
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
+    [Obsolete("Use GetHashCode64 overload that accepts the length as unsigned integer")]
     public static unsafe long GetHashCode64([In] void* source, nint length, bool salted = true)
+        => length >= 0 ? GetHashCode64Unaligned(ref *((byte*)source), (nuint)length, salted) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory.
+    /// </summary>
+    /// <param name="source">A pointer to the block of memory.</param>
+    /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <remarks>
+    /// This method uses FNV-1a hash algorithm.
+    /// </remarks>
+    /// <returns>Content hash code.</returns>
+    /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
+    [CLSCompliant(false)]
+    public static unsafe long GetHashCode64([In] void* source, nuint length, bool salted = true)
         => GetHashCode64Unaligned(ref *((byte*)source), length, salted);
 
     /// <summary>
@@ -662,7 +772,25 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
+    [Obsolete("Use GetHashCode32 overload that accepts the length as unsigned integer")]
     public static unsafe int GetHashCode32([In] void* source, nint length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        => length >= 0 ? GetHashCode32(source, (nuint)length, hash, hashFunction, salted) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory.
+    /// </summary>
+    /// <remarks>
+    /// This method may give different value each time you run the program for
+    /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
+    /// </remarks>
+    /// <param name="source">A pointer to the block of memory.</param>
+    /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+    /// <param name="hash">Initial value of the hash.</param>
+    /// <param name="hashFunction">Hashing function.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Hash code of the memory block.</returns>
+    [CLSCompliant(false)]
+    public static unsafe int GetHashCode32([In] void* source, nuint length, int hash, Func<int, int, int> hashFunction, bool salted = true)
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
         GetHashCode32Unaligned(ref fn, ref *((byte*)source), length);
@@ -673,7 +801,7 @@ public static class Intrinsics
         return fn.Invoke();
     }
 
-    internal static unsafe void GetHashCode32Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nint length)
+    internal static unsafe void GetHashCode32Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nuint length)
         where THashFunction : struct, IConsumer<int>
     {
         switch (length)
@@ -695,7 +823,7 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe int GetHashCode32Unaligned([In] ref byte source, nint length, bool salted)
+    internal static unsafe int GetHashCode32Unaligned([In] ref byte source, nuint length, bool salted)
     {
         var hash = new FNV1a32();
         GetHashCode32Unaligned(ref hash, ref source, length);
@@ -719,7 +847,25 @@ public static class Intrinsics
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Hash code of the memory block.</returns>
     [CLSCompliant(false)]
+    [Obsolete("Use GetHashCode32 overload that accepts the length as unsigned integer")]
     public static unsafe int GetHashCode32<THashFunction>([In] void* source, nint length, bool salted = true)
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
+        => length >= 0 ? GetHashCode32<THashFunction>(source, (nuint)length, salted) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory.
+    /// </summary>
+    /// <remarks>
+    /// This method may give different value each time you run the program for
+    /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
+    /// </remarks>
+    /// <typeparam name="THashFunction">The type providing implementation of the hash function.</typeparam>
+    /// <param name="source">A pointer to the block of memory.</param>
+    /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Hash code of the memory block.</returns>
+    [CLSCompliant(false)]
+    public static unsafe int GetHashCode32<THashFunction>([In] void* source, nuint length, bool salted = true)
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
         var hash = new THashFunction();
@@ -743,7 +889,23 @@ public static class Intrinsics
     /// <returns>Content hash code.</returns>
     /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
     [CLSCompliant(false)]
+    [Obsolete("Use GetHashCode32 overload that accepts the length as unsigned integer")]
     public static unsafe int GetHashCode32([In] void* source, nint length, bool salted = true)
+        => length >= 0 ? GetHashCode32(source, (nuint)length, salted) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory.
+    /// </summary>
+    /// <param name="source">A pointer to the block of memory.</param>
+    /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <remarks>
+    /// This method uses FNV-1a hash algorithm.
+    /// </remarks>
+    /// <returns>Content hash code.</returns>
+    /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
+    [CLSCompliant(false)]
+    public static unsafe int GetHashCode32([In] void* source, nuint length, bool salted = true)
         => GetHashCode32Unaligned(ref *((byte*)source), length, salted);
     #endregion
 

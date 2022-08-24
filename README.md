@@ -46,46 +46,33 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-08-2022
+Release Date: 08-24-2022
 
-Mac OS is added as a target OS for running tests to track compatibility with this operating system.
-
-<a href="https://www.nuget.org/packages/dotnext/4.7.0">DotNext 4.7.0</a>
-* Fixed memory alignment issues
-* Added `TaskType.GetIsCompletedGetter` method that allows to obtain [Task.IsCompleted](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task.iscompleted) property in the form of closed delegate
-* Significantly improved performance of HEX conversion methods with SSSE3 hardware intrinsics
-* Introduced `DotNext.Buffers.Text.Hex` class with static methods for efficient conversion to/from hexadecimal representation of binary data with UTF-16 and UTF-8 support
-* Introduced `NextChars` extension methods that allows to fill buffer with random characters
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.0">DotNext.Metaprogramming 4.7.0</a>
+<a href="https://www.nuget.org/packages/dotnext/4.7.1">DotNext 4.7.1</a>
+* Fixed source-level compatibility issues with Roslyn compiler shipped with .NET 6.0.8 (SDK 6.0.400) due to backward incompatible changes in it
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.0">DotNext.Reflection 4.7.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.1">DotNext.Metaprogramming 4.7.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.0">DotNext.Unsafe 4.7.0</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.1">DotNext.Reflection 4.7.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.7.0">DotNext.Threading 4.7.0</a>
-* Reduced memory allocation caused by extension methods declared in [Scheduler](https://dotnet.github.io/dotNext/api/DotNext.Threading.Scheduler.html) class
-* Reduced monitor lock contention in async locks
-* Added lock stealing methods to some synchronization primitives: `AsyncExclusiveLock`, `AsyncReaderWriterLock`
-* Introduced `GetConsumer` extension method for `TaskCompletionPipe<Task<T>>` class that allows to consume task results asynchronously
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.1">DotNext.Unsafe 4.7.1</a>
+* Completed first phase of migration of `Pointer<T>` and related data types to **nint** and **nuint** data types
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.7.0">DotNext.IO 4.7.0</a>
-* Removed defensive copies of structs
+<a href="https://www.nuget.org/packages/dotnext.threading/4.7.1">DotNext.Threading 4.7.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.0">DotNext.Net.Cluster 4.7.0</a>
-* Removed defensive copies of structs
-* Adaptation of [Microsoft.AspNetCore.Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) library allows to completely split network transport implementation details from Raft-specific stuff. Now you can implement custom network transport and other network-related concerns much more easier
+<a href="https://www.nuget.org/packages/dotnext.io/4.7.1">DotNext.IO 4.7.1</a>
+* Fixed source-level compatibility issues with Roslyn compiler shipped with .NET 6.0.8 (SDK 6.0.400) due to backward incompatible changes in it
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.0">DotNext.AspNetCore.Cluster 4.7.0</a>
-* Removed defensive copies of structs
-* Introduced `RaftClusterHttpHost` that provides a way to host multiple Raft clusters in the same process. This feature can be used for implementation of sharding
-* Cluster node identification now relies on [UriEndPoint](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections.uriendpoint) class instead of [HttpEndPoint](https://dotnet.github.io/dotNext/api/DotNext.Net.Http.HttpEndPoint.html). This allows to use more flexible traffic routing strategies between cluster nodes
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.1">DotNext.Net.Cluster 4.7.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.1">DotNext.AspNetCore.Cluster 4.7.1</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

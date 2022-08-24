@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Text;
@@ -71,8 +72,6 @@ public partial struct Base64Encoder
         return reservedBufferSize;
     }
 
-    private Span<byte> ReservedBytes => Span.AsBytes(ref reservedBuffer);
-
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly string BufferedData
@@ -88,4 +87,12 @@ public partial struct Base64Encoder
     /// Resets the internal state of the encoder.
     /// </summary>
     public void Reset() => reservedBufferSize = 0;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ReadOnlySpan<byte> AsReadOnlyBytes(in ushort value, int length)
+    {
+        Debug.Assert((uint)length <= (uint)sizeof(ushort));
+
+        return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<ushort, byte>(ref Unsafe.AsRef(in value)), length);
+    }
 }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -208,13 +207,14 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumeratorCore();
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal ReadOnlySpan<TDelegate> Span => list switch
+    private static ReadOnlySpan<TDelegate> GetSpan(in object? list) => list switch
     {
         null => ReadOnlySpan<TDelegate>.Empty,
         TDelegate => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<object, TDelegate>(ref Unsafe.AsRef(in list)), 1),
         _ => Unsafe.As<TDelegate[]>(list),
     };
+
+    internal static ReadOnlySpan<TDelegate> GetList(in InvocationList<TDelegate> list) => GetSpan(in list.list);
 }
 
 /// <summary>
@@ -230,7 +230,7 @@ public static class InvocationList
     /// <returns>A span over the delegates in the list.</returns>
     public static ReadOnlySpan<TDelegate> AsSpan<TDelegate>(this ref InvocationList<TDelegate> delegates)
         where TDelegate : MulticastDelegate
-        => delegates.Span;
+        => InvocationList<TDelegate>.GetList(in delegates);
 
     /// <summary>
     /// Invokes all actions in the list.
@@ -240,7 +240,7 @@ public static class InvocationList
     /// <param name="arg">The argument of the action.</param>
     public static void Invoke<T>(this InvocationList<Action<T>> actions, T arg)
     {
-        foreach (var action in actions.Span)
+        foreach (var action in actions.AsSpan())
             action(arg);
     }
 
@@ -254,7 +254,7 @@ public static class InvocationList
     /// <param name="arg2">The second argument of the action.</param>
     public static void Invoke<T1, T2>(this InvocationList<Action<T1, T2>> actions, T1 arg1, T2 arg2)
     {
-        foreach (var action in actions.Span)
+        foreach (var action in actions.AsSpan())
             action(arg1, arg2);
     }
 }

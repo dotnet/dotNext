@@ -13,15 +13,14 @@ namespace DotNext.Runtime.InteropServices
             Equal(Array.Empty<int>(), array);
             Equal(Array.Empty<int>(), array.ToArray());
             Equal(Stream.Null, array.AsStream());
-            True(array.BitwiseEquals(Array.Empty<int>()));
-            Equal(0, array.BitwiseCompare(Array.Empty<int>()));
+            True(array.Span.IsEmpty);
             Empty(array);
             True(array.Pointer.IsNull);
             array = (IUnmanagedArray<int>)array.Clone();
             Equal(0, array.Length);
             Equal(Array.Empty<int>(), array);
-            Equal(Array.Empty<int>(), array.ToArray());
-            Equal(Stream.Null, array.AsStream());
+            Same(Array.Empty<int>(), array.ToArray());
+            Same(Stream.Null, array.AsStream());
         }
 
         [Fact]

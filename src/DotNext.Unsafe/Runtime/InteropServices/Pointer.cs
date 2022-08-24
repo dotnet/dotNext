@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -30,10 +31,9 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [StructLayout(LayoutKind.Auto)]
     public unsafe struct Enumerator : IEnumerator<T>
     {
-        private const int InitialPosition = -1;
         private readonly T* ptr;
         private readonly nuint count;
-        private nint index;
+        private nuint index;
 
         /// <inheritdoc/>
         object IEnumerator.Current => Current;
@@ -42,7 +42,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         {
             this.count = count > 0 ? count : throw new ArgumentOutOfRangeException(nameof(count));
             this.ptr = ptr;
-            index = InitialPosition;
+            index = nuint.MaxValue;
         }
 
         /// <summary>
@@ -67,12 +67,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         /// Adjust pointer.
         /// </summary>
         /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
-        public bool MoveNext() => ptr != null && (nuint)(++index) < count;
+        public bool MoveNext() => ptr is not null && ++index < count;
 
         /// <summary>
         /// Sets the enumerator to its initial position.
         /// </summary>
-        public void Reset() => index = InitialPosition;
+        public void Reset() => index = nuint.MaxValue;
 
         /// <summary>
         /// Releases all resources with this enumerator.
@@ -113,13 +113,22 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     {
     }
 
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowNullPointerException() => throw new NullPointerException();
+
     /// <summary>
     /// Converts this pointer to <see cref="Reference{TValue}"/>.
     /// </summary>
     /// <returns>The reference to the memory location identified by this pointer.</returns>
     /// <exception cref="NullPointerException">This pointer is zero.</exception>
     public unsafe Reference<T> GetReference()
-        => value != null ? Reference.FromPointer<T>(value) : throw new NullPointerException();
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Reference.FromPointer<T>(value);
+    }
 
     /// <summary>
     /// Gets boxed pointer.
@@ -143,29 +152,42 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="count">The length of the array.</param>
     /// <exception cref="NullPointerException">This pointer is zero.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-    public unsafe void Fill(T value, long count)
+    [Obsolete("Use Fill overload with native-sized integer parameter")]
+    public void Fill(T value, long count)
+        => Fill(value, new IntPtr(count));
+
+    /// <summary>
+    /// Fills the elements of the array with a specified value.
+    /// </summary>
+    /// <param name="value">The value to assign to each element of the array.</param>
+    /// <param name="count">The length of the array.</param>
+    /// <exception cref="NullPointerException">This pointer is zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+    public void Fill(T value, nint count)
+    {
+        if (count < 0L)
+            throw new ArgumentOutOfRangeException(nameof(count));
+
+        Fill(value, (nuint)count);
+    }
+
+    /// <summary>
+    /// Fills the elements of the array with a specified value.
+    /// </summary>
+    /// <param name="value">The value to assign to each element of the array.</param>
+    /// <param name="count">The length of the array.</param>
+    /// <exception cref="NullPointerException">This pointer is zero.</exception>
+    [CLSCompliant(false)]
+    public unsafe void Fill(T value, nuint count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
 
-        switch (count)
+        var pointer = this.value;
+        for (nuint len; count > 0; count -= len, pointer += len)
         {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(count));
-            case 0:
-                break;
-            default:
-                var pointer = this.value;
-                do
-                {
-                    var actualCount = count.Truncate();
-                    var span = new Span<T>(pointer, actualCount);
-                    span.Fill(value);
-                    count -= actualCount;
-                    pointer += actualCount;
-                }
-                while (count > 0);
-                break;
+            len = count > int.MaxValue ? int.MaxValue : count;
+            new Span<T>(pointer, (int)len).Fill(value);
         }
     }
 
@@ -190,13 +212,15 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="index">Element index.</param>
     /// <returns>Array element.</returns>
     /// <exception cref="NullPointerException">This array is not allocated.</exception>
+    [Obsolete("Use indexer overload with native-sized integer parameter")]
     public unsafe ref T this[long index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
             if (IsNull)
-                throw new NullPointerException();
+                ThrowNullPointerException();
+
             return ref value[index];
         }
     }
@@ -211,13 +235,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>Array element.</returns>
     /// <exception cref="NullPointerException">This array is not allocated.</exception>
     [CLSCompliant(false)]
-    public unsafe ref T this[nuint index]
+    public unsafe ref T this[nint index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
             if (IsNull)
-                throw new NullPointerException();
+                ThrowNullPointerException();
+
             return ref value[index];
         }
     }
@@ -231,7 +256,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe void Swap(Pointer<T> other)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (other.IsNull)
             throw new ArgumentNullException(nameof(other));
         Intrinsics.Swap(value, other.value);
@@ -244,7 +269,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         set => *this.value = (T)value!;
     }
 
-    internal unsafe MemoryHandle Pin(long elementIndex)
+    internal unsafe MemoryHandle Pin(nint elementIndex)
         => new(value + elementIndex);
 
     /// <inheritdoc />
@@ -260,23 +285,44 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// </summary>
     /// <param name="count">Number of elements in the unmanaged array.</param>
     /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than or equal to zero.</exception>
-    public unsafe void Clear(long count)
-    {
-        if (IsNull)
-            throw new NullPointerException();
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+    [Obsolete("Use Clear overload with native-sized integer parameter")]
+    public void Clear(long count) => Clear(new IntPtr(count));
 
-        if ((ulong)count > (ulong)nint.MaxValue)
+    /// <summary>
+    /// Fill memory with zero bytes.
+    /// </summary>
+    /// <param name="count">Number of elements in the unmanaged array.</param>
+    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+    public void Clear(nint count)
+    {
+        if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        Intrinsics.ClearBits(value, checked(sizeof(T) * (nint)count));
+        Clear((nuint)count);
+    }
+
+    /// <summary>
+    /// Fill memory with zero bytes.
+    /// </summary>
+    /// <param name="count">Number of elements in the unmanaged array.</param>
+    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+    [CLSCompliant(false)]
+    public unsafe void Clear(nuint count)
+    {
+        // TODO: Replace with NativeMemory.Clear
+        if (IsNull)
+            ThrowNullPointerException();
+
+        Intrinsics.ClearBits(value, checked((nuint)sizeof(T) * count));
     }
 
     /// <summary>
     /// Sets value at the address represented by this pointer to the default value of <typeparamref name="T"/>.
     /// </summary>
     /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
-    public unsafe void Clear() => Value = default;
+    public void Clear() => Value = default;
 
     /// <summary>
     /// Copies block of memory from the source address to the destination address.
@@ -285,12 +331,54 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="count">The number of elements to be copied.</param>
     /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
     /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
-    public unsafe void WriteTo(Pointer<T> destination, long count)
+    [Obsolete("Use CopyTo method instead")]
+    public void WriteTo(Pointer<T> destination, long count)
+        => CopyTo(destination, new IntPtr(count));
+
+    /// <summary>
+    /// Copies a block of memory identifier by this pointer to the specified location.
+    /// </summary>
+    /// <param name="destination">The destination memory block.</param>
+    /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
+    public unsafe void CopyTo(Span<T> destination)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        Intrinsics.Copy(in value[0], out MemoryMarshal.GetReference(destination), (nuint)destination.Length);
+    }
+
+    /// <summary>
+    /// Copies block of memory from the source address to the destination address.
+    /// </summary>
+    /// <param name="destination">Destination address.</param>
+    /// <param name="count">The number of elements to be copied.</param>
+    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+    /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
+    [CLSCompliant(false)]
+    public void CopyTo(Pointer<T> destination, nint count)
+    {
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count));
+
+        CopyTo(destination, (nuint)count);
+    }
+
+    /// <summary>
+    /// Copies block of memory from the source address to the destination address.
+    /// </summary>
+    /// <param name="destination">Destination address.</param>
+    /// <param name="count">The number of elements to be copied.</param>
+    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
+    /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
+    [CLSCompliant(false)]
+    public unsafe void CopyTo(Pointer<T> destination, nuint count)
     {
         if (IsNull)
             throw new NullPointerException(ExceptionMessages.NullSource);
         if (destination.IsNull)
             throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
+
         Intrinsics.Copy(in value[0], out destination.value[0], count);
     }
 
@@ -304,17 +392,18 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>Actual number of copied elements.</returns>
     /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> or <paramref name="offset"/> is less than zero.</exception>
+    [Obsolete("Use CopyTo method instead")]
     public unsafe long WriteTo(T[] destination, long offset, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
-        if (count < 0)
+            ThrowNullPointerException();
+        if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
-        if (offset < 0)
+        if (offset < 0L)
             throw new ArgumentOutOfRangeException(nameof(offset));
         if (count is 0L || (ulong)(offset + count) > (ulong)destination.LongLength)
             return 0L;
-        Intrinsics.Copy(in value[0], out destination[offset], count);
+        Intrinsics.Copy(in value[0], out destination[offset], (nuint)count);
         return count;
     }
 
@@ -329,7 +418,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe void WriteTo(Stream destination, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!destination.CanWrite)
@@ -339,23 +428,10 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
 
         static void WriteTo(byte* source, long length, Stream destination)
         {
-            while (length > 0L)
+            for (int count; length > 0; length -= count, source += count)
             {
-                var bytes = new ReadOnlySpan<byte>(source, length.Truncate());
-                destination.Write(bytes);
-                length -= bytes.Length;
+                destination.Write(new ReadOnlySpan<byte>(source, count = length.Truncate()));
             }
-        }
-    }
-
-    private static async ValueTask WriteToSteamAsync(nint source, long length, Stream destination, CancellationToken token)
-    {
-        while (length > 0L)
-        {
-            using var manager = new MemorySource(source, length.Truncate());
-            await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
-            length -= manager.Length;
-            source += manager.Length;
         }
     }
 
@@ -371,16 +447,27 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     /// <exception cref="ArgumentException">The stream is not writable.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public unsafe ValueTask WriteToAsync(Stream destination, long count, CancellationToken token = default)
+    public ValueTask WriteToAsync(Stream destination, long count, CancellationToken token = default)
     {
         if (IsNull)
-            throw new NullPointerException();
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (!destination.CanWrite)
-            throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+            return ValueTask.FromException(new NullPointerException());
 
-        return count == 0 ? ValueTask.CompletedTask : WriteToSteamAsync(Address, checked(count * sizeof(T)), destination, token);
+        if (!destination.CanWrite)
+            return ValueTask.FromException(new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination)));
+
+        unsafe
+        {
+            return count is 0L ? ValueTask.CompletedTask : WriteToAsync(Address, checked(count * sizeof(T)), destination, token);
+        }
+
+        static async ValueTask WriteToAsync(nint source, long length, Stream destination, CancellationToken token)
+        {
+            for (int count; length > 0; length -= count, source += count)
+            {
+                using var manager = new MemorySource(source, count = length.Truncate());
+                await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <summary>
@@ -393,17 +480,18 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>Actual number of copied elements.</returns>
     /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> or <paramref name="offset"/> is less than zero.</exception>
+    [Obsolete("Use CopyTo method instead")]
     public unsafe long ReadFrom(T[] source, long offset, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (offset < 0L)
             throw new ArgumentOutOfRangeException(nameof(offset));
         if (count is 0L || (ulong)(count + offset) > (ulong)source.LongLength)
             return 0L;
-        Intrinsics.Copy(in source[offset], out value[0], count);
+        Intrinsics.Copy(in source[offset], out value[0], (nuint)count);
         return count;
     }
 
@@ -419,45 +507,25 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     public unsafe long ReadFrom(Stream source, long count)
     {
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
         if (!source.CanRead)
             throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
 
-        return count == 0L ? 0L : ReadFrom(source, (byte*)value, checked(sizeof(T) * count));
+        return count is 0L ? 0L : ReadFrom(source, (byte*)value, checked(sizeof(T) * count));
 
         static long ReadFrom(Stream source, byte* destination, long length)
         {
             var total = 0L;
-            while (length > 0)
+            for (int bytesRead; length > 0L; total += bytesRead, length -= bytesRead)
             {
-                var bytesRead = source.Read(new Span<byte>(&destination[total], length.Truncate()));
-                if (bytesRead == 0)
+                if ((bytesRead = source.Read(new Span<byte>(&destination[total], length.Truncate()))) is 0)
                     break;
-                total += bytesRead;
-                length -= bytesRead;
             }
 
             return total;
         }
-    }
-
-    private static async ValueTask<long> ReadFromStreamAsync(Stream source, nint destination, long length, CancellationToken token)
-    {
-        var total = 0L;
-        while (length > 0L)
-        {
-            using var manager = new MemorySource(destination, length.Truncate());
-            var bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false);
-            if (bytesRead == 0)
-                break;
-            length -= bytesRead;
-            destination += bytesRead;
-            total += bytesRead;
-        }
-
-        return total;
     }
 
     /// <summary>
@@ -471,16 +539,48 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <exception cref="ArgumentException">The stream is not readable.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public unsafe ValueTask<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
+    public ValueTask<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
     {
-        if (IsNull)
-            throw new NullPointerException();
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (!source.CanRead)
-            throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
+        ValueTask<long> result;
 
-        return count == 0L ? new(0L) : ReadFromStreamAsync(source, Address, checked(sizeof(T) * count), token);
+        if (count < 0L)
+        {
+            result = ValueTask.FromException<long>(new ArgumentOutOfRangeException(nameof(count)));
+        }
+        else if (IsNull)
+        {
+            result = ValueTask.FromException<long>(new NullPointerException());
+        }
+        else if (!source.CanRead)
+        {
+            result = ValueTask.FromException<long>(new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source)));
+        }
+        else if (count is 0L)
+        {
+            result = new(0L);
+        }
+        else
+        {
+            unsafe
+            {
+                result = ReadFromStreamAsync(source, Address, checked(sizeof(T) * count), token);
+            }
+        }
+
+        return result;
+
+        static async ValueTask<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
+        {
+            var total = 0L;
+            for (int bytesRead; length > 0L; length -= bytesRead, destination += bytesRead, total += bytesRead)
+            {
+                using var manager = new MemorySource(destination, length.Truncate());
+                if ((bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false)) is 0)
+                    break;
+            }
+
+            return total;
+        }
     }
 
     /// <summary>
@@ -492,11 +592,16 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this memory.</param>
     /// <param name="access">The type of the access supported by the returned stream.</param>
     /// <returns>The stream representing the memory identified by this pointer.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than 0.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe Stream AsStream(long count, FileAccess access = FileAccess.ReadWrite)
     {
+        if (count < 0L)
+            throw new ArgumentOutOfRangeException(nameof(count));
+
         if (IsNull)
             return Stream.Null;
+
         count = checked(count * sizeof(T));
         return new UnmanagedMemoryStream((byte*)value, count, count, access);
     }
@@ -507,17 +612,38 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// </summary>
     /// <param name="length">Number of elements to copy.</param>
     /// <returns>A copy of memory block in the form of byte array.</returns>
-    public unsafe byte[] ToByteArray(long length)
+    [Obsolete("Use ToByteArray overload with native-sized integer parameter")]
+    public byte[] ToByteArray(long length) => ToByteArray(new IntPtr(length));
+
+    /// <summary>
+    /// Copies the block of memory referenced by this pointer
+    /// into managed heap as array of bytes.
+    /// </summary>
+    /// <param name="length">Number of elements to copy.</param>
+    /// <returns>A copy of memory block in the form of byte array.</returns>
+    public byte[] ToByteArray(nint length)
+        => length >= 0 ? ToByteArray((nuint)length) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Copies the block of memory referenced by this pointer
+    /// into managed heap as array of bytes.
+    /// </summary>
+    /// <param name="length">Number of elements to copy.</param>
+    /// <returns>A copy of memory block in the form of byte array.</returns>
+    [CLSCompliant(false)]
+    public unsafe byte[] ToByteArray(nuint length)
     {
         byte[] result;
-        if (IsNull || length is 0L)
+
+        if (IsNull || length is 0)
         {
             result = Array.Empty<byte>();
         }
         else
         {
-            result = new byte[checked(sizeof(T) * length)];
-            Intrinsics.Copy(in ((byte*)value)[0], out result[0], result.LongLength);
+            length = checked((nuint)sizeof(T) * length);
+            result = new byte[length];
+            Intrinsics.Copy(in ((byte*)value)[0], out MemoryMarshal.GetArrayDataReference(result), length);
         }
 
         return result;
@@ -529,16 +655,36 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// </summary>
     /// <param name="length">The length of the memory block to be copied.</param>
     /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
-    public unsafe T[] ToArray(long length)
+    [Obsolete("Use ToByteArray overload with native-sized integer parameter")]
+    public T[] ToArray(long length) => ToArray(new IntPtr(length));
+
+    /// <summary>
+    /// Copies the block of memory referenced by this pointer
+    /// into managed heap as a pinned array.
+    /// </summary>
+    /// <param name="length">The length of the memory block to be copied.</param>
+    /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
+    public T[] ToArray(nint length)
+        => length >= 0 ? ToArray((nuint)length) : throw new ArgumentOutOfRangeException(nameof(length));
+
+    /// <summary>
+    /// Copies the block of memory referenced by this pointer
+    /// into managed heap as a pinned array.
+    /// </summary>
+    /// <param name="length">The length of the memory block to be copied.</param>
+    /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
+    [CLSCompliant(false)]
+    public unsafe T[] ToArray(nuint length)
     {
         T[] result;
-        if (IsNull || length is 0L)
+
+        if (IsNull || length is 0)
         {
             result = Array.Empty<T>();
         }
         else
         {
-            result = length <= Array.MaxLength ? GC.AllocateUninitializedArray<T>((int)length, pinned: true) : new T[length];
+            result = length <= (nuint)Array.MaxLength ? GC.AllocateUninitializedArray<T>((int)length, pinned: true) : new T[length];
             Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), length);
         }
 
@@ -585,7 +731,8 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         get
         {
             if (IsNull)
-                throw new NullPointerException();
+                ThrowNullPointerException();
+
             return ref value[0];
         }
     }
@@ -604,8 +751,16 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="index">The index of the element.</param>
     /// <returns>The value stored in the memory at the specified position.</returns>
     /// <exception cref="NullPointerException">The pointer is 0.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T Get(long index) => this[index];
+    [Obsolete("Use Get overload with native-sized integer parameter")]
+    public T Get(long index) => Get(new IntPtr(index));
+
+    /// <summary>
+    /// Gets the value stored in the memory at the specified position.
+    /// </summary>
+    /// <param name="index">The index of the element.</param>
+    /// <returns>The value stored in the memory at the specified position.</returns>
+    /// <exception cref="NullPointerException">The pointer is 0.</exception>
+    public T Get(nint index) => this[index];
 
     /// <summary>
     /// Sets the value stored in the memory identified by this pointer.
@@ -621,7 +776,16 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="value">The value to be stored in the memory.</param>
     /// <param name="index">The index of the element to modify.</param>
     /// <exception cref="NullPointerException">The pointer is 0.</exception>
-    public void Set(T value, long index) => this[index] = value;
+    [Obsolete("Use Set overload with native-sized integer parameter")]
+    public void Set(T value, long index) => Set(value, new IntPtr(index));
+
+    /// <summary>
+    /// Sets the value at the specified position in the memory.
+    /// </summary>
+    /// <param name="value">The value to be stored in the memory.</param>
+    /// <param name="index">The index of the element to modify.</param>
+    /// <exception cref="NullPointerException">The pointer is 0.</exception>
+    public void Set(T value, nint index) => this[index] = value;
 
     /// <summary>
     /// Gets enumerator over raw memory.
@@ -629,18 +793,17 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="length">A number of elements to iterate.</param>
     /// <returns>Iterator object.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
-    public unsafe Enumerator GetEnumerator(long length)
-    {
-        Enumerator result;
-        if (IsNull || length is 0L)
-            result = default;
-        else if (length < 0L)
-            throw new ArgumentOutOfRangeException(nameof(length));
-        else
-            result = GetEnumerator((nuint)length);
+    [Obsolete("Use GetEnumerator overload with native-sized integer parameter")]
+    public Enumerator GetEnumerator(long length)
+        => GetEnumerator(new IntPtr(length));
 
-        return result;
-    }
+    /// <summary>
+    /// Gets enumerator over raw memory.
+    /// </summary>
+    /// <param name="length">A number of elements to iterate.</param>
+    /// <returns>Iterator object.</returns>
+    public unsafe Enumerator GetEnumerator(nint length)
+        => length >= 0 ? GetEnumerator((nuint)length) : throw new ArgumentOutOfRangeException(nameof(length));
 
     /// <summary>
     /// Gets enumerator over raw memory.
@@ -656,14 +819,33 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="other">The pointer identifies block of memory to be compared.</param>
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
     /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
-    public unsafe bool BitwiseEquals(Pointer<T> other, long count)
+    [Obsolete("Use BitwiseEquals overload with native-sized integer parameter")]
+    public bool BitwiseEquals(Pointer<T> other, long count) => BitwiseEquals(other, new IntPtr(count));
+
+    /// <summary>
+    /// Computes bitwise equality between two blocks of memory.
+    /// </summary>
+    /// <param name="other">The pointer identifies block of memory to be compared.</param>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
+    /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
+    public bool BitwiseEquals(Pointer<T> other, nint count)
+        => count >= 0 ? BitwiseEquals(other, (nuint)count) : throw new ArgumentOutOfRangeException(nameof(count));
+
+    /// <summary>
+    /// Computes bitwise equality between two blocks of memory.
+    /// </summary>
+    /// <param name="other">The pointer identifies block of memory to be compared.</param>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
+    /// <returns><see langword="true"/>, if both memory blocks have the same bytes; otherwise, <see langword="false"/>.</returns>
+    [CLSCompliant(false)]
+    public unsafe bool BitwiseEquals(Pointer<T> other, nuint count)
     {
         if (value == other.value)
             return true;
         if (IsNull || other.IsNull)
             return false;
 
-        return Intrinsics.Equals(value, other, checked((nint)count * sizeof(T)));
+        return Intrinsics.Equals(value, other, checked(count * (nuint)sizeof(T)));
     }
 
     /// <summary>
@@ -672,8 +854,32 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
-    public unsafe int BitwiseHashCode(long count, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), salted);
+    [Obsolete("Use BitwiseHashCode overload with native-sized integer parameter")]
+    public int BitwiseHashCode(long count, bool salted = true) => BitwiseHashCode(new IntPtr(count), salted);
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    public int BitwiseHashCode(nint count, bool salted = true)
+        => count >= 0 ? BitwiseHashCode((nuint)count, salted) : throw new ArgumentOutOfRangeException(nameof(count));
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    [CLSCompliant(false)]
+    public unsafe int BitwiseHashCode(nuint count, bool salted = true)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode32(value, checked(count * (nuint)sizeof(T)), salted);
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -681,8 +887,33 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
-    public unsafe long BitwiseHashCode64(long count, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), salted);
+    [Obsolete("Use BitwiseHashCode64 overload with native-sized integer parameter")]
+    public long BitwiseHashCode64(long count, bool salted = true)
+        => BitwiseHashCode64(new IntPtr(count), salted);
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    public long BitwiseHashCode64(nint count, bool salted = true)
+        => count >= 0 ? BitwiseHashCode64((nuint)count, salted) : throw new ArgumentOutOfRangeException(nameof(count));
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    [CLSCompliant(false)]
+    public unsafe long BitwiseHashCode64(nuint count, bool salted = true)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode64(value, checked(count * (nuint)sizeof(T)), salted);
+    }
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -692,8 +923,37 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="hashFunction">The custom hash function.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
-    public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
+    [Obsolete("Use BitwiseHashCode overload with native-sized integer parameter")]
+    public int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        => BitwiseHashCode(new IntPtr(count), hash, hashFunction, salted);
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+    /// <param name="hashFunction">The custom hash function.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    public int BitwiseHashCode(nint count, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        => count >= 0 ? BitwiseHashCode((nuint)count, hash, hashFunction, salted) : throw new ArgumentOutOfRangeException(nameof(count));
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+    /// <param name="hashFunction">The custom hash function.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    [CLSCompliant(false)]
+    public unsafe int BitwiseHashCode(nuint count, int hash, Func<int, int, int> hashFunction, bool salted = true)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode32(value, checked(count * (nuint)sizeof(T)), hash, hashFunction, salted);
+    }
 
     /// <summary>
     /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -702,10 +962,61 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
-    [CLSCompliant(false)]
-    public unsafe int BitwiseHashCode<THashFunction>(long count, bool salted = true)
+    [Obsolete("Use BitwiseHashCode overload with native-sized integer parameter")]
+    public int BitwiseHashCode<THashFunction>(long count, bool salted = true)
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode32<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
+        => BitwiseHashCode(new IntPtr(count), salted);
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    public int BitwiseHashCode<THashFunction>(nint count, bool salted = true)
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
+        => count >= 0 ? BitwiseHashCode((nuint)count, salted) : throw new ArgumentOutOfRangeException(nameof(count));
+
+    /// <summary>
+    /// Computes 32-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    [CLSCompliant(false)]
+    public unsafe int BitwiseHashCode<THashFunction>(nuint count, bool salted = true)
+        where THashFunction : struct, IConsumer<int>, ISupplier<int>
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode32<THashFunction>(value, checked(count * (nuint)sizeof(T)), salted);
+    }
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    [Obsolete("Use BitwiseHashCode64 overload with native-sized integer parameter")]
+    public long BitwiseHashCode64<THashFunction>(long count, bool salted = true)
+        where THashFunction : struct, IConsumer<long>, ISupplier<long>
+        => BitwiseHashCode64(new IntPtr(count), salted);
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    public long BitwiseHashCode64<THashFunction>(nint count, bool salted = true)
+        where THashFunction : struct, IConsumer<long>, ISupplier<long>
+        => count >= 0 ? BitwiseHashCode64((nuint)count, salted) : throw new ArgumentOutOfRangeException(nameof(count));
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -715,9 +1026,14 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
     [CLSCompliant(false)]
-    public unsafe long BitwiseHashCode64<THashFunction>(long count, bool salted = true)
+    public unsafe long BitwiseHashCode64<THashFunction>(nuint count, bool salted = true)
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64<THashFunction>(value, checked((nint)count * sizeof(T)), salted);
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode64<THashFunction>(value, checked(count * (nuint)sizeof(T)), salted);
+    }
 
     /// <summary>
     /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -727,8 +1043,37 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="hashFunction">The custom hash function.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
-    public unsafe long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
-        => IsNull ? throw new NullPointerException() : Intrinsics.GetHashCode64(value, checked((nint)count * sizeof(T)), hash, hashFunction, salted);
+    [Obsolete("Use BitwiseHashCode64 overload with native-sized integer parameter")]
+    public long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        => BitwiseHashCode64(new IntPtr(count), hash, hashFunction, salted);
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+    /// <param name="hashFunction">The custom hash function.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    public long BitwiseHashCode64(nint count, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        => count >= 0 ? BitwiseHashCode64((nuint)count, hash, hashFunction, salted) : throw new ArgumentOutOfRangeException(nameof(count));
+
+    /// <summary>
+    /// Computes 64-bit hash code for the block of memory identified by this pointer.
+    /// </summary>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+    /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+    /// <param name="hashFunction">The custom hash function.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>Content hash code.</returns>
+    [CLSCompliant(false)]
+    public unsafe long BitwiseHashCode64(nuint count, long hash, Func<long, long, long> hashFunction, bool salted = true)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Intrinsics.GetHashCode64(value, checked(count * (nuint)sizeof(T)), hash, hashFunction, salted);
+    }
 
     /// <summary>
     /// Bitwise comparison of two memory blocks.
@@ -736,16 +1081,35 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="other">The pointer identifies block of memory to be compared.</param>
     /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
     /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-    public unsafe int BitwiseCompare(Pointer<T> other, long count)
+    [Obsolete("Use BitwiseCompare overload with native-sized integer parameter")]
+    public int BitwiseCompare(Pointer<T> other, long count) => BitwiseCompare(other, new IntPtr(count));
+
+    /// <summary>
+    /// Bitwise comparison of two memory blocks.
+    /// </summary>
+    /// <param name="other">The pointer identifies block of memory to be compared.</param>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
+    /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+    public int BitwiseCompare(Pointer<T> other, nint count)
+        => count >= 0 ? BitwiseCompare(other, (nuint)count) : throw new ArgumentOutOfRangeException(nameof(count));
+
+    /// <summary>
+    /// Bitwise comparison of two memory blocks.
+    /// </summary>
+    /// <param name="other">The pointer identifies block of memory to be compared.</param>
+    /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by both pointers.</param>
+    /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
+    [CLSCompliant(false)]
+    public unsafe int BitwiseCompare(Pointer<T> other, nuint count)
     {
         if (value == other.value)
             return 0;
         if (IsNull)
-            throw new NullPointerException();
+            ThrowNullPointerException();
         if (other.IsNull)
             throw new ArgumentNullException(nameof(other));
 
-        return Intrinsics.Compare(value, other, checked((nint)count * sizeof(T)));
+        return Intrinsics.Compare(value, other, checked(count * (nuint)sizeof(T)));
     }
 
     /// <summary>
@@ -772,7 +1136,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, nint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value + offset);
+    }
 
     /// <summary>
     /// Subtracts an offset from the value of a pointer.
@@ -798,7 +1167,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, nint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value - offset);
+    }
 
     /// <summary>
     /// Adds an offset to the value of a pointer.
@@ -811,7 +1185,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, long offset)
-        => pointer + (nint)offset;
+        => pointer + new IntPtr(offset);
 
     /// <summary>
     /// Subtracts an offset from the value of a pointer.
@@ -824,7 +1198,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, long offset)
-        => pointer - (nint)offset;
+        => pointer - new IntPtr(offset);
 
     /// <summary>
     /// Adds an offset to the value of a pointer.
@@ -838,7 +1212,12 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, nuint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value + offset);
+    }
 
     /// <summary>
     /// Subtracts an offset from the value of a pointer.
@@ -852,21 +1231,26 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, nuint offset)
-        => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
+    {
+        if (pointer.IsNull)
+            ThrowNullPointerException();
+
+        return new(pointer.value - offset);
+    }
 
     /// <summary>
     /// Increments this pointer by 1 element of type <typeparamref name="T"/>.
     /// </summary>
     /// <param name="pointer">The pointer to add the offset to.</param>
     /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
-    public static Pointer<T> operator ++(Pointer<T> pointer) => pointer + 1;
+    public static Pointer<T> operator ++(Pointer<T> pointer) => pointer + (nuint)1;
 
     /// <summary>
     /// Decrements this pointer by 1 element of type <typeparamref name="T"/>.
     /// </summary>
     /// <param name="pointer">The pointer to subtract the offset from.</param>
     /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
-    public static Pointer<T> operator --(Pointer<T> pointer) => pointer - 1;
+    public static Pointer<T> operator --(Pointer<T> pointer) => pointer - (nuint)1;
 
     /// <summary>
     /// Indicates that the first pointer represents the same memory location as the second pointer.
@@ -1010,7 +1394,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="ptr">The pointer to check.</param>
     /// <returns><see langword="true"/>, if this pointer is not zero; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool operator true(Pointer<T> ptr) => !ptr.IsNull;
+    public static bool operator true(Pointer<T> ptr) => ptr.IsNull is false;
 
     /// <summary>
     /// Checks whether this pointer is zero.
