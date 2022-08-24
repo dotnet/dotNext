@@ -1,6 +1,34 @@
 Release Notes
 ====
 
+# 08-24-2022
+<a href="https://www.nuget.org/packages/dotnext/4.7.1">DotNext 4.7.1</a>
+* Fixed source-level compatibility issues with Roslyn compiler shipped with .NET 6.0.8 (SDK 6.0.400) due to backward incompatible changes in it
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.1">DotNext.Metaprogramming 4.7.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.1">DotNext.Reflection 4.7.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.1">DotNext.Unsafe 4.7.1</a>
+* Completed first phase of migration of `Pointer<T>` and related data types to **nint** and **nuint** data types
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.7.1">DotNext.Threading 4.7.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.7.1">DotNext.IO 4.7.1</a>
+* Fixed source-level compatibility issues with Roslyn compiler shipped with .NET 6.0.8 (SDK 6.0.400) due to backward incompatible changes in it
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.1">DotNext.Net.Cluster 4.7.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.1">DotNext.AspNetCore.Cluster 4.7.1</a>
+* Updated dependencies
+
 # 08-08-2022
 Mac OS is added as a target OS for running tests to track compatibility with this operating system.
 

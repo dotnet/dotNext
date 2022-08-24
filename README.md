@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-20-2022
+Release Date: 08-24-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.7.1">DotNext 4.7.1</a>
 * Fixed source-level compatibility issues with Roslyn compiler shipped with .NET 6.0.8 (SDK 6.0.400) due to backward incompatible changes in it
