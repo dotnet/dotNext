@@ -167,5 +167,12 @@ namespace DotNext.Runtime.Caching
             True(cache.TryUpdate(0, 42, 0));
             Equal(42, cache[0]);
         }
+
+        [Fact]
+        public static void CheckCapacity()
+        {
+            var cache = new ConcurrentCache<int, object>(5, CacheEvictionPolicy.LFU);
+            Equal(5, cache.Capacity);
+        }
     }
 }
