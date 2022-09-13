@@ -73,7 +73,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
         else
         {
-            lastPair.Links.Previous = pair;
+            firstPair.Links.Previous = pair;
             pair.Links.Next = firstPair;
             firstPair = pair;
         }
