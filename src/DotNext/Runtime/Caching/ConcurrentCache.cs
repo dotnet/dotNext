@@ -179,9 +179,14 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     public int Count => count;
 
     /// <summary>
+    /// Gets the capacity of this cache.
+    /// </summary>
+    public int Capacity => buckets.Length;
+
+    /// <summary>
     /// Gets enumerator over all key/value pairs.
     /// </summary>
-    /// <returns>Gets the enumerator over all key/value pairs.</returns>
+    /// <returns>Unsorted enumerator over all key/value pairs.</returns>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
         return GetEnumerator(buckets);
