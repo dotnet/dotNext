@@ -11,12 +11,13 @@ namespace DotNext.Runtime.Caching
             var cache = new ConcurrentCache<int, string>(10, CacheEvictionPolicy.LRU);
             True(cache.TryAdd(0, "0"));
             True(cache.TryAdd(1, "1"));
+            True(cache.TryAdd(2, "2"));
 
             Equal("0", cache[0]);
             Equal("1", cache[1]);
 
-            False(cache.TryGetValue(2, out _));
-            Equal(2, cache.Count);
+            False(cache.TryGetValue(3, out _));
+            Equal(3, cache.Count);
 
             True(cache.TryRemove(0, out var actual));
             Equal("0", actual);
