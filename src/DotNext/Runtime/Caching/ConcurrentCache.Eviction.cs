@@ -63,6 +63,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
         if ((child.Links.Next = parent.Links.Next) is not null)
             child.Links.Next.Links.Previous = child;
+
+        parent.Links.Next = child;
     }
 
     private void AddFirst(KeyValuePair pair)
