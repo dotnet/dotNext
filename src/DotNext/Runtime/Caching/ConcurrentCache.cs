@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Runtime.Caching;
 
@@ -206,6 +207,43 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
                     yield return new(current.Key, GetValue(current));
             }
         }
+    }
+
+    /// <summary>
+    /// Gets a sorted set of cache entries.
+    /// </summary>
+    /// <remarks>
+    /// In contrast to <see cref="GetEnumerator"/>, this method allows to obtain sorted set of cache entries.
+    /// However, the method has impact performance on the overall cache. It suspends eviction process during execution.
+    /// </remarks>
+    /// <param name="buffer">The buffer used as a destination to write cache entries.</param>
+    /// <param name="descendingOrder">
+    /// <see langword="true"/> to start from the least (or most) recently used cache entry;
+    /// <see langword="false"/> to start from the eldest used cache entry.
+    /// </param>
+    /// <returns>The actual number of written items.</returns>
+    public int TakeSnapshot(Span<KeyValuePair<TKey, TValue>> buffer, bool descendingOrder = true)
+    {
+        var count = 0;
+        lock (evictionLock)
+        {
+            if (descendingOrder)
+            {
+                for (var current = firstPair; current is not null && count < buffer.Length; current = current.Links.Next)
+                {
+                    Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
+                }
+            }
+            else
+            {
+                for (var current = lastPair; current is not null && count < buffer.Length; current = current.Links.Previous)
+                {
+                    Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
+                }
+            }
+        }
+
+        return count;
     }
 
     /// <inheritdoc />

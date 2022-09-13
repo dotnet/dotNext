@@ -174,5 +174,61 @@ namespace DotNext.Runtime.Caching
             var cache = new ConcurrentCache<int, object>(5, CacheEvictionPolicy.LFU);
             Equal(5, cache.Capacity);
         }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static void InsertionOrderLRU(bool descendingOrder)
+        {
+            var cache = new ConcurrentCache<int, double>(5, CacheEvictionPolicy.LRU);
+            True(cache.TryAdd(0, 0D));
+            True(cache.TryAdd(1, 1D));
+            True(cache.TryAdd(2, 2D));
+
+            cache.TryGetValue(0, out _);
+            Span<KeyValuePair<int, double>> snapshot = stackalloc KeyValuePair<int, double>[3];
+            Equal(3, cache.TakeSnapshot(snapshot, descendingOrder));
+
+            if (descendingOrder)
+            {
+                Equal(new(0, 0D), snapshot[0]);
+                Equal(new(2, 2D), snapshot[1]);
+                Equal(new(1, 1D), snapshot[2]);
+            }
+            else
+            {
+                Equal(new(0, 0D), snapshot[2]);
+                Equal(new(2, 2D), snapshot[1]);
+                Equal(new(1, 1D), snapshot[0]);
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static void InsertionOrderLFU(bool descendingOrder)
+        {
+            var cache = new ConcurrentCache<int, double>(5, CacheEvictionPolicy.LFU);
+            True(cache.TryAdd(0, 0D));
+            True(cache.TryAdd(1, 1D));
+            True(cache.TryAdd(2, 2D));
+
+            cache.TryGetValue(0, out _);
+            Span<KeyValuePair<int, double>> snapshot = stackalloc KeyValuePair<int, double>[3];
+            Equal(3, cache.TakeSnapshot(snapshot, descendingOrder));
+
+            if (descendingOrder)
+            {
+                Equal(new(2, 2D), snapshot[0]);
+                Equal(new(0, 0D), snapshot[1]);
+                Equal(new(1, 1D), snapshot[2]);
+            }
+            else
+            {
+                Equal(new(2, 2D), snapshot[2]);
+                Equal(new(0, 0D), snapshot[1]);
+                Equal(new(1, 1D), snapshot[0]);
+            }
+        }
     }
 }
