@@ -28,7 +28,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         ref Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed => ref consumedCallback;
     }
 
-    private sealed class State
+    [StructLayout(LayoutKind.Auto)]
+    private struct State
     {
         private const long ExclusiveMode = -1L;
 
@@ -39,11 +40,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal long RemainingLocks
         {
-            get => remainingLocks.VolatileRead();
+            readonly get => remainingLocks.VolatileRead();
             private set => remainingLocks.VolatileWrite(value);
         }
 
-        internal bool IsWeakLockAllowed => RemainingLocks > 0L;
+        internal readonly bool IsWeakLockAllowed => RemainingLocks > 0L;
 
         internal void AcquireWeakLock() => remainingLocks.DecrementAndGet();
 
@@ -59,9 +60,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             }
         }
 
-        internal bool IsStrongLockHeld => RemainingLocks < 0L;
+        internal readonly bool IsStrongLockHeld => RemainingLocks < 0L;
 
-        internal bool IsStrongLockAllowed => RemainingLocks == ConcurrencyLevel;
+        internal readonly bool IsStrongLockAllowed => RemainingLocks == ConcurrencyLevel;
 
         internal void AcquireStrongLock() => RemainingLocks = ExclusiveMode;
 
@@ -71,13 +72,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private readonly struct WeakLockManager : ILockManager<WaitNode>
     {
-        private readonly State state;
+        bool ILockManager.IsLockAllowed
+            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(this)).IsWeakLockAllowed;
 
-        internal WeakLockManager(State state) => this.state = state;
-
-        bool ILockManager.IsLockAllowed => state.IsWeakLockAllowed;
-
-        void ILockManager.AcquireLock() => state.AcquireWeakLock();
+        void ILockManager.AcquireLock()
+            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(this)).AcquireWeakLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = false;
@@ -86,19 +85,17 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private readonly struct StrongLockManager : ILockManager<WaitNode>
     {
-        private readonly State state;
+        bool ILockManager.IsLockAllowed
+            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(this)).IsStrongLockAllowed;
 
-        internal StrongLockManager(State state) => this.state = state;
-
-        bool ILockManager.IsLockAllowed => state.IsStrongLockAllowed;
-
-        void ILockManager.AcquireLock() => state.AcquireStrongLock();
+        void ILockManager.AcquireLock()
+            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(this)).AcquireStrongLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = true;
     }
 
-    private readonly State state;
+    private State state;
     private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
@@ -148,32 +145,27 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     public bool IsStrongLockHeld => state.IsStrongLockHeld;
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool TryAcquire<TManager>()
+        where TManager : struct, ILockManager<WaitNode>
+    {
+        ThrowIfDisposed();
+        return TryAcquire(ref Unsafe.As<State, TManager>(ref state));
+    }
+
     /// <summary>
     /// Attempts to obtain lock synchronously without blocking caller thread.
     /// </summary>
     /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
     /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool TryAcquire(bool strongLock)
-    {
-        ThrowIfDisposed();
-        if (strongLock)
-        {
-            var manager = new StrongLockManager(state);
-            return TryAcquire(ref manager);
-        }
-        else
-        {
-            var manager = new WeakLockManager(state);
-            return TryAcquire(ref manager);
-        }
-    }
+        => strongLock ? TryAcquire<StrongLockManager>() : TryAcquire<WeakLockManager>();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Acquire<TManager>(ref TManager manager, bool throwOnTimeout, bool zeroTimeout)
+    private ValueTaskFactory Acquire<TManager>(bool throwOnTimeout, bool zeroTimeout)
         where TManager : struct, ILockManager<WaitNode>
-        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
+        => Wait(ref Unsafe.As<State, TManager>(ref state), ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -189,20 +181,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
         {
-            ValueTaskFactory factory;
-
-            if (strongLock)
-            {
-                var manager = new StrongLockManager(state);
-                factory = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero);
-            }
-            else
-            {
-                var manager = new WeakLockManager(state);
-                factory = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero);
-            }
-
-            task = factory.CreateTask(timeout, token);
+            task = (strongLock
+                ? Acquire<StrongLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero)
+                : Acquire<WeakLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero)).CreateTask(timeout, token);
         }
 
         return task;
@@ -223,19 +204,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
         {
-            ValueTaskFactory factory;
-            if (strongLock)
-            {
-                var manager = new StrongLockManager(state);
-                factory = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero);
-            }
-            else
-            {
-                var manager = new WeakLockManager(state);
-                factory = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero);
-            }
-
-            task = factory.CreateVoidTask(timeout, token);
+            task = (strongLock
+                ? Acquire<StrongLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero)
+                : Acquire<WeakLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero)).CreateVoidTask(timeout, token);
         }
 
         return task;
@@ -251,30 +222,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
     {
-        ValueTask task;
-
-        if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            ValueTaskFactory factory;
-            if (strongLock)
-            {
-                var manager = new StrongLockManager(state);
-                factory = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false);
-            }
-            else
-            {
-                var manager = new WeakLockManager(state);
-                factory = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false);
-            }
-
-            task = factory.CreateVoidTask(token);
-        }
-
-        return task;
+        return token.IsCancellationRequested
+            ? ValueTask.FromCanceled(token)
+            : (strongLock ? Acquire<StrongLockManager>(throwOnTimeout: false, zeroTimeout: false) : Acquire<WeakLockManager>(throwOnTimeout: false, zeroTimeout: false))
+            .CreateVoidTask(token);
     }
 
     private void DrainWaitQueue()
