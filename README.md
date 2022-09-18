@@ -61,6 +61,7 @@ Release Date: 09-14-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.7.2">DotNext.Threading 4.7.2</a>
+* Reduced memory allocation caused by several async lock types
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.7.2">DotNext.IO 4.7.2</a>
