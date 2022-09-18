@@ -31,16 +31,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         protected override void AfterConsumed() => AfterConsumed(this);
 
         ref Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed => ref consumedCallback;
-
-        internal bool IsReadLock => Type != LockType.Exclusive;
-
-        internal bool IsUpgradeableLock => Type == LockType.Upgrade;
-
-        internal bool IsWriteLock => Type == LockType.Exclusive;
     }
 
     // describes internal state of reader/writer lock
-    internal sealed class State
+    [StructLayout(LayoutKind.Auto)]
+    internal struct State
     {
         private long version;  // version of write lock
 
@@ -48,14 +43,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         private long readLocks; // volatile
         private volatile bool writeLock;
 
-        internal State()
+        public State()
         {
             version = long.MinValue;
             writeLock = false;
             readLocks = 0L;
         }
 
-        internal bool WriteLock => writeLock;
+        internal readonly bool WriteLock => writeLock;
 
         internal void DowngradeFromWriteLock()
         {
@@ -78,15 +73,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
         internal long ReadLocks
         {
-            get => readLocks.VolatileRead();
+            readonly get => readLocks.VolatileRead();
             private set => readLocks.VolatileWrite(value);
         }
 
-        internal long Version => version.VolatileRead();
+        internal readonly long Version => version.VolatileRead();
 
-        internal bool IsWriteLockAllowed => !writeLock && ReadLocks == 0L;
+        internal readonly bool IsWriteLockAllowed => !writeLock && ReadLocks == 0L;
 
-        internal bool IsUpgradeToWriteLockAllowed => !writeLock && ReadLocks == 1L;
+        internal readonly bool IsUpgradeToWriteLockAllowed => !writeLock && ReadLocks == 1L;
 
         internal void AcquireWriteLock()
         {
@@ -95,7 +90,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             version.IncrementAndGet();
         }
 
-        internal bool IsReadLockAllowed => !writeLock;
+        internal readonly bool IsReadLockAllowed => !writeLock;
 
         internal void AcquireReadLock() => readLocks.IncrementAndGet();
     }
@@ -103,13 +98,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private readonly struct ReadLockManager : ILockManager<WaitNode>
     {
-        private readonly State state;
+        bool ILockManager.IsLockAllowed
+            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(this)).IsReadLockAllowed;
 
-        internal ReadLockManager(State state) => this.state = state;
-
-        bool ILockManager.IsLockAllowed => state.IsReadLockAllowed;
-
-        void ILockManager.AcquireLock() => state.AcquireReadLock();
+        void ILockManager.AcquireLock()
+            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(this)).AcquireReadLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Read;
@@ -118,13 +111,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private readonly struct WriteLockManager : ILockManager<WaitNode>
     {
-        private readonly State state;
+        bool ILockManager.IsLockAllowed
+            => Unsafe.As<WriteLockManager, State>(ref Unsafe.AsRef(this)).IsWriteLockAllowed;
 
-        internal WriteLockManager(State state) => this.state = state;
-
-        bool ILockManager.IsLockAllowed => state.IsWriteLockAllowed;
-
-        void ILockManager.AcquireLock() => state.AcquireWriteLock();
+        void ILockManager.AcquireLock()
+            => Unsafe.As<WriteLockManager, State>(ref Unsafe.AsRef(this)).AcquireWriteLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Exclusive;
@@ -133,13 +124,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private readonly struct UpgradeManager : ILockManager<WaitNode>
     {
-        private readonly State state;
+        bool ILockManager.IsLockAllowed
+            => Unsafe.As<UpgradeManager, State>(ref Unsafe.AsRef(this)).IsUpgradeToWriteLockAllowed;
 
-        internal UpgradeManager(State state) => this.state = state;
-
-        bool ILockManager.IsLockAllowed => state.IsUpgradeToWriteLockAllowed;
-
-        void ILockManager.AcquireLock() => state.AcquireWriteLock();
+        void ILockManager.AcquireLock()
+            => Unsafe.As<UpgradeManager, State>(ref Unsafe.AsRef(this)).AcquireWriteLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Upgrade;
@@ -154,13 +143,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         private readonly long version;
         private readonly bool valid;
 
-        internal LockStamp(State state)
+        internal LockStamp(in State state)
         {
             version = state.Version;
             valid = true;
         }
 
-        internal bool IsValid(State state)
+        internal bool IsValid(in State state)
             => valid && state.Version == version && !state.WriteLock;
 
         private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
@@ -208,7 +197,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             => !first.Equals(in second);
     }
 
-    private readonly State state;
+    private State state;
     private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
@@ -251,7 +240,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Gets a value that indicates whether the read lock taken.
     /// </summary>
-    public bool IsReadLockHeld => CurrentReadCount != 0L;
+    public bool IsReadLockHeld => CurrentReadCount is not 0L;
 
     /// <summary>
     /// Gets a value that indicates whether the write lock taken.
@@ -270,7 +259,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         // Ordering of version and lock state must be respected:
         // Write lock acquisition changes the state to Acquired and then increments the version.
         // Optimistic read lock reads the version and then checks Acquired lock state to avoid false positivies.
-        var stamp = new LockStamp(state);
+        var stamp = new LockStamp(in state);
         return state.WriteLock ? default : stamp;
     }
 
@@ -279,7 +268,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <param name="stamp">A stamp to check.</param>
     /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-    public bool Validate(in LockStamp stamp) => stamp.IsValid(state);
+    public bool Validate(in LockStamp stamp) => stamp.IsValid(in state);
 
     /// <summary>
     /// Attempts to obtain reader lock synchronously without blocking caller thread.
@@ -291,14 +280,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         ThrowIfDisposed();
 
-        var manager = new ReadLockManager(state);
-        return TryAcquire(ref manager);
+        return TryAcquire(ref Unsafe.As<State, ReadLockManager>(ref state));
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Acquire<TManager>(ref TManager manager, bool throwOnTimeout, bool zeroTimeout)
+    private ValueTaskFactory Acquire<TManager>(bool throwOnTimeout, bool zeroTimeout)
         where TManager : struct, ILockManager<WaitNode>
-        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
+        => Wait(ref Unsafe.As<State, TManager>(ref state), ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -313,10 +301,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-        {
-            var manager = new ReadLockManager(state);
-            task = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
-        }
+            task = Acquire<ReadLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
 
         return task;
     }
@@ -335,10 +320,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
-        {
-            var manager = new ReadLockManager(state);
-            task = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
-        }
+            task = Acquire<ReadLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
 
         return task;
     }
@@ -353,20 +335,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
-    {
-        ValueTask task;
-        if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            var manager = new ReadLockManager(state);
-            task = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
-        }
-
-        return task;
-    }
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<ReadLockManager>(throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
 
     /// <summary>
     /// Attempts to acquire write lock without blocking.
@@ -378,13 +347,8 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public bool TryEnterWriteLock(in LockStamp stamp)
     {
         ThrowIfDisposed();
-        if (stamp.IsValid(state))
-        {
-            var manager = new WriteLockManager(state);
-            return TryAcquire(ref manager);
-        }
 
-        return false;
+        return stamp.IsValid(in state) && TryAcquire(ref Unsafe.As<State, WriteLockManager>(ref state));
     }
 
     /// <summary>
@@ -397,8 +361,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         ThrowIfDisposed();
 
-        var manager = new WriteLockManager(state);
-        return TryAcquire(ref manager);
+        return TryAcquire(ref Unsafe.As<State, WriteLockManager>(ref state));
     }
 
     /// <summary>
@@ -414,10 +377,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-        {
-            var manager = new WriteLockManager(state);
-            task = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
-        }
+            task = Acquire<WriteLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
 
         return task;
     }
@@ -432,21 +392,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
-    {
-        ValueTask task;
-
-        if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            var manager = new WriteLockManager(state);
-            task = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
-        }
-
-        return task;
-    }
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<WriteLockManager>(throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -462,10 +408,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
-        {
-            var manager = new WriteLockManager(state);
-            task = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
-        }
+            task = Acquire<WriteLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
 
         return task;
     }
@@ -480,13 +423,8 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         ThrowIfDisposed();
 
-        var manager = new UpgradeManager(state);
-        return TryAcquire(ref manager);
+        return TryAcquire(ref Unsafe.As<State, UpgradeManager>(ref state));
     }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Acquire(ref UpgradeManager manager, bool throwOnTimeout, bool zeroTimeout)
-        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Tries to upgrade the read lock to the write lock asynchronously.
@@ -501,10 +439,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-        {
-            var manager = new UpgradeManager(state);
-            task = Acquire(ref manager, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
-        }
+            task = Acquire<UpgradeManager>(throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
 
         return task;
     }
@@ -519,21 +454,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
-    {
-        ValueTask task;
-
-        if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            var manager = new UpgradeManager(state);
-            task = Acquire(ref manager, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
-        }
-
-        return task;
-    }
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<UpgradeManager>(throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -549,19 +470,16 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
-        {
-            var manager = new UpgradeManager(state);
-            task = Acquire(ref manager, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
-        }
+            task = Acquire<UpgradeManager>(throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
 
         return task;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Steal(ref WriteLockManager manager, object? reason, bool throwOnTimeout, bool zeroTimeout)
+    private ValueTaskFactory StealWriteLock(object? reason, bool throwOnTimeout, bool zeroTimeout)
     {
         Interrupt(reason);
-        return Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
+        return Wait(ref Unsafe.As<State, WriteLockManager>(ref state), ref pool, throwOnTimeout, zeroTimeout);
     }
 
     /// <summary>
@@ -578,10 +496,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-        {
-            var manager = new WriteLockManager(state);
-            task = Steal(ref manager, reason, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
-        }
+            task = StealWriteLock(reason, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
 
         return task;
     }
@@ -601,10 +516,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
         if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
-        {
-            var manager = new WriteLockManager(state);
-            task = Steal(ref manager, reason, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
-        }
+            task = StealWriteLock(reason, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
 
         return task;
     }
@@ -620,21 +532,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
-    {
-        ValueTask task;
-
-        if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            var manager = new WriteLockManager(state);
-            task = Steal(ref manager, reason, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
-        }
-
-        return task;
-    }
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : StealWriteLock(reason, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
 
     private void DrainWaitQueue()
     {
