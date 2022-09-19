@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-14-2022
+Release Date: 09-19-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.7.2">DotNext 4.7.2</a>
 * Critical bug fixes for `ConcurrentCache<TKey, TValue>` class: incorrect behavior of LFU policy (wrong sorting order)
