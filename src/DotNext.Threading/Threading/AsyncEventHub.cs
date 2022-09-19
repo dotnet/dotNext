@@ -372,15 +372,7 @@ public partial class AsyncEventHub
         return tasks;
     }
 
-    private Task[] GetTasks()
-    {
-        var tasks = new Task[sources.Length];
-
-        for (var i = 0; i < sources.Length; i++)
-            tasks[i] = sources[i].Task;
-
-        return tasks;
-    }
+    private Task[] GetTasks() => Array.ConvertAll(sources, static src => src.Task);
 
     private Task<int> WaitAnyCoreAsync(ReadOnlySpan<int> eventIndexes, TimeSpan timeout, CancellationToken token)
     {
@@ -686,7 +678,7 @@ public partial class AsyncEventHub
 
         lock (accessLock)
         {
-            foreach (ref var source in sources.AsSpan())
+            foreach (var source in sources)
                 source.TrySetCanceled(token);
         }
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Runtime.Caching;
 
@@ -21,16 +22,23 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     // A conforming CLI shall guarantee that read and write access to properly aligned memory
     // locations no larger than the native word size.
     // See Section I.12.6.6 in https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf
-    private static readonly bool IsValueWriteAtomic = Type.GetTypeCode(typeof(TValue)) switch
+    private static readonly bool IsValueWriteAtomic;
+
+    static ConcurrentCache()
     {
-        TypeCode.SByte or TypeCode.Byte
-            or TypeCode.Int16 or TypeCode.UInt16
-            or TypeCode.Int32 or TypeCode.UInt32
-            or TypeCode.Single or TypeCode.Char or TypeCode.Boolean
-            or TypeCode.String or TypeCode.DBNull => true,
-        TypeCode.Int64 or TypeCode.UInt64 or TypeCode.Double => IntPtr.Size is sizeof(long),
-        _ => Unsafe.SizeOf<TValue>() == IntPtr.Size && RuntimeHelpers.IsReferenceOrContainsReferences<TValue>(),
-    };
+        var valueType = typeof(TValue);
+
+        IsValueWriteAtomic = Type.GetTypeCode(valueType) switch
+        {
+            TypeCode.SByte or TypeCode.Byte
+                or TypeCode.Int16 or TypeCode.UInt16
+                or TypeCode.Int32 or TypeCode.UInt32
+                or TypeCode.Single or TypeCode.Char or TypeCode.Boolean
+                or TypeCode.String or TypeCode.DBNull => true,
+            TypeCode.Int64 or TypeCode.UInt64 or TypeCode.Double => IntPtr.Size is sizeof(long),
+            _ => valueType.IsOneOf(typeof(nint), typeof(nuint)) || Unsafe.SizeOf<TValue>() == IntPtr.Size && RuntimeHelpers.IsReferenceOrContainsReferences<TValue>(),
+        };
+    }
 
     private readonly int concurrencyLevel;
 
@@ -179,9 +187,14 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     public int Count => count;
 
     /// <summary>
+    /// Gets the capacity of this cache.
+    /// </summary>
+    public int Capacity => buckets.Length;
+
+    /// <summary>
     /// Gets enumerator over all key/value pairs.
     /// </summary>
-    /// <returns>Gets the enumerator over all key/value pairs.</returns>
+    /// <returns>Unsorted enumerator over all key/value pairs.</returns>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
         return GetEnumerator(buckets);
@@ -194,6 +207,43 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
                     yield return new(current.Key, GetValue(current));
             }
         }
+    }
+
+    /// <summary>
+    /// Gets a sorted set of cache entries.
+    /// </summary>
+    /// <remarks>
+    /// In contrast to <see cref="GetEnumerator"/>, this method allows to obtain sorted set of cache entries.
+    /// However, the method has impact performance on the overall cache. It suspends eviction process during execution.
+    /// </remarks>
+    /// <param name="buffer">The buffer used as a destination to write cache entries.</param>
+    /// <param name="descendingOrder">
+    /// <see langword="true"/> to start from the least (or most) recently used cache entry;
+    /// <see langword="false"/> to start from the eldest used cache entry.
+    /// </param>
+    /// <returns>The actual number of written items.</returns>
+    public int TakeSnapshot(Span<KeyValuePair<TKey, TValue>> buffer, bool descendingOrder = true)
+    {
+        var count = 0;
+        lock (evictionLock)
+        {
+            if (descendingOrder)
+            {
+                for (var current = firstPair; current is not null && count < buffer.Length; current = current.Links.Next)
+                {
+                    Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
+                }
+            }
+            else
+            {
+                for (var current = lastPair; current is not null && count < buffer.Length; current = current.Links.Previous)
+                {
+                    Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
+                }
+            }
+        }
+
+        return count;
     }
 
     /// <inheritdoc />

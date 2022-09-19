@@ -46,33 +46,31 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-24-2022
+Release Date: 09-19-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.7.1">DotNext 4.7.1</a>
-* Fixed source-level compatibility issues with Roslyn compiler shipped with .NET 6.0.8 (SDK 6.0.400) due to backward incompatible changes in it
+<a href="https://www.nuget.org/packages/dotnext/4.7.2">DotNext 4.7.2</a>
+* Critical bug fixes for `ConcurrentCache<TKey, TValue>` class: incorrect behavior of LFU policy (wrong sorting order)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.2">DotNext.Metaprogramming 4.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.1">DotNext.Metaprogramming 4.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.2">DotNext.Reflection 4.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.1">DotNext.Reflection 4.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.2">DotNext.Unsafe 4.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.1">DotNext.Unsafe 4.7.1</a>
-* Completed first phase of migration of `Pointer<T>` and related data types to **nint** and **nuint** data types
+<a href="https://www.nuget.org/packages/dotnext.threading/4.7.2">DotNext.Threading 4.7.2</a>
+* Reduced memory allocation caused by several async lock types
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.7.1">DotNext.Threading 4.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.7.2">DotNext.IO 4.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.7.1">DotNext.IO 4.7.1</a>
-* Fixed source-level compatibility issues with Roslyn compiler shipped with .NET 6.0.8 (SDK 6.0.400) due to backward incompatible changes in it
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.2">DotNext.Net.Cluster 4.7.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.1">DotNext.Net.Cluster 4.7.1</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.1">DotNext.AspNetCore.Cluster 4.7.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.2">DotNext.AspNetCore.Cluster 4.7.2</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
