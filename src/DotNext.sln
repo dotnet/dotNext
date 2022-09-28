@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.MaintenanceServices
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineAMI", "examples\CommandLineAMI\CommandLineAMI.csproj", "{39583DDE-E579-44AD-B7AF-5BB77D979E55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.Workflow", "DotNext.Workflow\DotNext.Workflow.csproj", "{A4EF4FF5-882F-4C86-8430-18FC0028CB45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bench|Any CPU = Bench|Any CPU
@@ -141,6 +143,12 @@ Global
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4EF4FF5-882F-4C86-8430-18FC0028CB45}.Bench|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4EF4FF5-882F-4C86-8430-18FC0028CB45}.Bench|Any CPU.Build.0 = Debug|Any CPU
+		{A4EF4FF5-882F-4C86-8430-18FC0028CB45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4EF4FF5-882F-4C86-8430-18FC0028CB45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4EF4FF5-882F-4C86-8430-18FC0028CB45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4EF4FF5-882F-4C86-8430-18FC0028CB45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -49,6 +49,7 @@
     <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj"/>
     <ProjectReference Include="..\DotNext\DotNext.csproj"/>
     <ProjectReference Include="..\DotNext.MaintenanceServices\DotNext.MaintenanceServices.csproj"/>
+    <ProjectReference Include="..\DotNext.Workflow\DotNext.Workflow.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
