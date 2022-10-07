@@ -6,11 +6,12 @@ namespace DotNext.Workflow
     [ExcludeFromCodeCoverage]
     public sealed class ActivityTests : Test
     {
-        private sealed class TestActivity : Activity
+        private sealed class TestActivity : Activity<string>
         {
-            protected override async ActivityResult ExecuteAsync()
+            protected override async ActivityResult<string> ExecuteAsync(IActivityContext<string> context, CancellationToken token)
             {
                 await Task.Delay(10);
+                return string.Empty;
             }
         }
 
