@@ -2,8 +2,8 @@ using IAsyncStateMachine = System.Runtime.CompilerServices.IAsyncStateMachine;
 
 namespace DotNext.Workflow;
 
-internal interface ICheckpointCallback
+internal interface IActivityStateValidator
 {
-    Task CheckpointReachedAsync<TState>(ActivityInstance instance, TState executionState, TimeSpan remainingTime)
+    bool Validate<TState>()
         where TState : IAsyncStateMachine;
 }

@@ -1,18 +1,25 @@
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Workflow;
 
+/// <summary>
+/// Represents checkpoint processing result.
+/// </summary>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct CheckpointResult
 {
     [StructLayout(LayoutKind.Auto)]
-    public struct Awaiter : INotifyCompletion
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public readonly struct Awaiter : ICriticalNotifyCompletion
     {
-        private Task? result;
+        private readonly StrongBox<Task?> result;
 
-        public bool IsCompleted => false;
+        public Awaiter() => result = new();
+
+        public bool IsCompleted => result is not null;
 
         private static bool TryGetException(Task t, [NotNullWhen(true)] out InstancePersistenceException? error)
         {
@@ -38,24 +45,36 @@ public readonly struct CheckpointResult
         {
             bool completedSynchronously;
 
-            if (completedSynchronously = t.IsCompleted)
+            if ((completedSynchronously = t.IsCompleted) && TryGetException(t, out var error))
             {
-                t = TryGetException(t, out var error) ? Task.FromException(error) : null;
+                t = Task.FromException(error);
             }
 
-            this.result = t;
+            this.result.Value = t;
             return completedSynchronously;
         }
 
-        public void GetResult()
-        {
-            if (result is not null && TryGetException(result, out var error))
-                throw error;
-        }
+        /// <summary>
+        /// Gets a value indicating how the workflow is restored.
+        /// </summary>
+        /// <returns>
+        /// <see langword="true"/> if the workflow is resumed locally;
+        /// <see langword="false"/> if the workflow is restored from the checkpoint.
+        /// </returns>
+        public bool GetResult()
+            => result?.Value is { IsCompleted: true } t && (TryGetException(t, out var error) ? throw error : true);
 
         /// <inheritdoc />
         void INotifyCompletion.OnCompleted(Action continuation) => throw new NotImplementedException();
+
+        /// <inheritdoc />
+        void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation) => throw new NotImplementedException();
     }
 
-    public Awaiter GetAwaiter() => default;
+    /// <summary>
+    /// Gets awaiter for the checkpoint processing operation.
+    /// </summary>
+    /// <returns>The awaiter.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public Awaiter GetAwaiter() => new();
 }

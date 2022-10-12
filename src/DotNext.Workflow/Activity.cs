@@ -1,7 +1,10 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Workflow;
+
+using static Metadata.ActivityMetaModel;
 
 /// <summary>
 /// Represents root class for all activities.
@@ -12,13 +15,6 @@ public abstract class Activity
     {
     }
 
-    internal static string GetName(Type activityType)
-    {
-        var result = activityType.Name;
-        var index = result.LastIndexOf(nameof(Activity));
-        return index > 0 ? result.Remove(index) : result;
-    }
-
     /// <summary>
     /// Gets name of the activity.
     /// </summary>
@@ -26,26 +22,40 @@ public abstract class Activity
     /// <returns></returns>
     public static string GetName<TActivity>()
         where TActivity : Activity
-        => GetName(typeof(TActivity));
+        => GetActivityName(typeof(TActivity));
 
-    internal abstract Type? GetStateMachineType();
+    /// <summary>
+    /// Instructs underlying workflow engine that the workflow reaches the checkpoint and the state
+    /// of the workflow can be persisted.
+    /// </summary>
+    /// <returns>The asynchronous result of the operation.</returns>
+    protected static CheckpointResult Checkpoint() => new();
 }
 
 /// <summary>
 /// Represents a class for custom activities to derive from.
 /// </summary>
-/// <typeparam name="TInput">The type containing input parameters for the activity; or <see cref="Missing"/> for activity without parameters.</typeparam>
+/// <typeparam name="TInput">The type encapsulating input parameters of the activity; or <see cref="Missing"/> for activity without parameters.</typeparam>
 public abstract class Activity<TInput> : Activity
     where TInput : class
 {
     /// <summary>
+    /// Initializes this instance of activity, asynchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method is called in the beginning of the lifecycle of this instance. However, during the lifetime
+    /// of the activity it can be called multiple times (if activity continues its execution on another machine).
+    /// </remarks>
+    /// <param name="context">The activity execution context.</param>
+    /// <returns>The task representing asynchronous result.</returns>
+    internal protected virtual ValueTask InitializeAsync(ActivityContext<TInput> context) => ValueTask.CompletedTask;
+
+    internal protected virtual ValueTask CleanupAsync(ActivityContext<TInput> context) => ValueTask.CompletedTask;
+
+    /// <summary>
     /// Provides activity logic.
     /// </summary>
     /// <param name="context">The execution context.</param>
-    /// <param name="token">The token that can be used to cancel the activity.</param>
     /// <returns>Activity result.</returns>
-    protected abstract ActivityResult ExecuteAsync(ActivityContext<TInput> context, CancellationToken token);
-
-    internal sealed override Type? GetStateMachineType()
-        => ((Delegate)ExecuteAsync).Method.GetCustomAttribute<StateMachineAttribute>()?.StateMachineType;
+    internal protected abstract ActivityResult ExecuteAsync(ActivityContext<TInput> context);
 }

@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Workflow;
 
-[AsyncMethodBuilder(typeof(ActivityBuilder))]
+[AsyncMethodBuilder(typeof(ActivityStateHandler))]
 public readonly struct ActivityResult
 {
     public readonly struct Awaiter : INotifyCompletion, ICriticalNotifyCompletion

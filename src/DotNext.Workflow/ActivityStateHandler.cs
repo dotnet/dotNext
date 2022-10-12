@@ -1,46 +1,41 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Workflow;
 
+using Metadata;
+
 /// <summary>
-/// Represents activity builder.
+/// Represents activity runtime state builder.
 /// </summary>
+/// <remarks>
+/// This class is for internal purposes only.
+/// </remarks>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public sealed class ActivityBuilder : TaskCompletionSource
+public sealed class ActivityStateHandler : TaskCompletionSource
 {
-    internal const int InitialState = -1;
-    internal const int FinalState = -2;
-    private readonly ICheckpointCallback checkpointCallback;
     private readonly ActivityMetaModel metaModel;
     private IAsyncStateMachine? box;
     private ExecutionContext? context;
     private Action? moveNextAction;
 
-    internal ActivityBuilder(ICheckpointCallback checkpointCallback, ActivityMetaModel metaModel)
+    internal ActivityStateHandler(ActivityMetaModel metaModel)
         : base(TaskCreationOptions.RunContinuationsAsynchronously)
     {
-        Debug.Assert(checkpointCallback is not null);
         Debug.Assert(metaModel is not null);
 
-        this.checkpointCallback = checkpointCallback;
         this.metaModel = metaModel;
     }
-
-    internal string ActivityName => metaModel.Name;
-
-    internal ActivityOptions Options => metaModel.Options;
 
     /// <summary>
     /// Always throws <see cref="NotImplementedException"/>.
     /// </summary>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public static ActivityBuilder Create() => throw new NotImplementedException();
+    [Obsolete("This method is not allowed to be called directly", error: true)]
+    public static ActivityStateHandler? Create() => RuntimeHelpers.GetUninitializedObject(typeof(ActivityStateHandler)) as ActivityStateHandler;
 
     public new ActivityResult Task => new(base.Task);
 
@@ -51,6 +46,10 @@ public sealed class ActivityBuilder : TaskCompletionSource
         moveNextAction = null;
     }
 
+    /// <summary>
+    /// Informs that the activity has been completed unsuccessfully.
+    /// </summary>
+    /// <param name="e">The exception to be associated with the activity.</param>
     public new void SetException(Exception e)
     {
         Cleanup();
@@ -61,21 +60,23 @@ public sealed class ActivityBuilder : TaskCompletionSource
             base.SetException(e);
     }
 
+    /// <summary>
+    /// Informs that the activity has been completed successfully.
+    /// </summary>
     public new void SetResult()
     {
         Cleanup();
         base.SetResult();
     }
 
-    private async Task PersistStateAsync<TState>(TState state)
+    private static async Task CheckpointReachedAsync<TState>(ActivityContext context, TState state)
         where TState : IAsyncStateMachine
     {
-        var context = metaModel.GetActivityContext(ref state);
         Debug.Assert(context is not null);
 
         if (context.RemainingTime.RemainingTime.TryGetValue(out var remainingTime))
         {
-            await checkpointCallback.CheckpointReachedAsync(new(metaModel.Name, context.InstanceName), state, remainingTime).ConfigureAwait(false);
+            await context.Engine.ActivityCheckpointReachedAsync(context.Instance, state, remainingTime).ConfigureAwait(false);
             await context.OnCheckpoint().ConfigureAwait(false);
         }
         else
@@ -84,11 +85,13 @@ public sealed class ActivityBuilder : TaskCompletionSource
         }
     }
 
-    private void PersistState<TState>(ref CheckpointResult.Awaiter awaiter, ref TState state, bool unsafeCompletion)
+    private void CheckpointReachedAsync<TState>(ref CheckpointResult.Awaiter awaiter, ref TState state, bool unsafeCompletion)
         where TState : IAsyncStateMachine
     {
-        var persistenceTask = PersistStateAsync(state);
+        var context = metaModel.GetActivityContext(ref state);
+        Debug.Assert(context is not null);
 
+        var persistenceTask = CheckpointReachedAsync(context, state);
         if (awaiter.SetResult(persistenceTask))
         {
             // completed synchronously, advances state machine
@@ -139,10 +142,14 @@ public sealed class ActivityBuilder : TaskCompletionSource
         where TStateMachine : IAsyncStateMachine
     {
         if (typeof(TAwaiter) == typeof(CheckpointResult.Awaiter))
-            PersistState(ref Unsafe.As<TAwaiter, CheckpointResult.Awaiter>(ref awaiter), ref stateMachine, unsafeCompletion: false);
-
-        SetStateMachineBox(ref stateMachine);
-        awaiter.OnCompleted(moveNextAction);
+        {
+            CheckpointReachedAsync(ref Unsafe.As<TAwaiter, CheckpointResult.Awaiter>(ref awaiter), ref stateMachine, unsafeCompletion: false);
+        }
+        else
+        {
+            SetStateMachineBox(ref stateMachine);
+            awaiter.OnCompleted(moveNextAction);
+        }
     }
 
     public void AwaitUnsafeOnCompleted<TAwaiter, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields)] TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
@@ -150,17 +157,26 @@ public sealed class ActivityBuilder : TaskCompletionSource
         where TStateMachine : IAsyncStateMachine
     {
         if (typeof(TAwaiter) == typeof(CheckpointResult.Awaiter))
-            PersistState(ref Unsafe.As<TAwaiter, CheckpointResult.Awaiter>(ref awaiter), ref stateMachine, unsafeCompletion: true);
-
-        SetStateMachineBox(ref stateMachine);
-        awaiter.UnsafeOnCompleted(moveNextAction);
+        {
+            CheckpointReachedAsync(ref Unsafe.As<TAwaiter, CheckpointResult.Awaiter>(ref awaiter), ref stateMachine, unsafeCompletion: true);
+        }
+        else
+        {
+            SetStateMachineBox(ref stateMachine);
+            awaiter.OnCompleted(moveNextAction);
+        }
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
+    [Obsolete("This method is not allowed to be called directly", error: true)]
     public void Start<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields)] TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : IAsyncStateMachine
-        => throw new NotImplementedException();
+        => throw new ActivityStateMachineDiscoveryException<TStateMachine>(); // capture actual generic type
 
-    public void SetStateMachine(IAsyncStateMachine stateMachine)
-        => box = stateMachine;
+    /// <summary>
+    /// Associates activity state machine with this builder.
+    /// </summary>
+    /// <param name="value">The state machine.</param>
+    public void SetStateMachine(IAsyncStateMachine value)
+        => SetStateMachineBox(ref value);
 }

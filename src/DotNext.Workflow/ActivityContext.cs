@@ -12,27 +12,38 @@ using Timeout = Threading.Timeout;
 public abstract class ActivityContext
 {
     private readonly Timeout remainingTime;
+    private readonly CancellationToken token;
+    private readonly ActivityInstance instance;
 
     // null, or Func<Task>, or Action, or List<Delegate>
     private object? checkpointCallbacks;
+    private readonly Task? activityTask;
 
-    private protected ActivityContext(string instanceName, TimeSpan timeout)
+    private protected ActivityContext(WorkflowEngine engine, in ActivityInstance instance, TimeSpan timeout, CancellationToken token)
     {
-        Debug.Assert(instanceName is { Length: > 0 });
+        Debug.Assert(engine is not null);
 
-        InstanceName = instanceName;
+        Engine = engine;
+        this.instance = instance;
         remainingTime = new(timeout);
+        this.token = token;
+    }
+
+    internal Task ActivityTask
+    {
+        get => activityTask ?? Task.CompletedTask;
+        init => activityTask = value;
     }
 
     /// <summary>
     /// Gets the unique name of executing activity.
     /// </summary>
-    public string InstanceName { get; }
+    public ref readonly ActivityInstance Instance => ref instance;
 
     /// <summary>
-    /// Gets a value indicating that the activity is canceled by the request.
+    /// Gets cancellation token.
     /// </summary>
-    public bool IsCanceled { get; internal init; }
+    public ref readonly CancellationToken Token => ref token;
 
     private void OnCheckpoint(Delegate callback)
     {
@@ -138,6 +149,9 @@ public abstract class ActivityContext
         }
     }
 
+    /// <summary>
+    /// Gets deadline of the activity.
+    /// </summary>
     public ref readonly Timeout RemainingTime => ref remainingTime;
 
     /// <summary>
@@ -146,21 +160,40 @@ public abstract class ActivityContext
     public abstract Activity ExecutingActivity { get; }
 
     /// <summary>
-    /// Gets context of the caller activity.
+    /// Gets input data.
     /// </summary>
-    public ActivityContext? Parent { get; internal init; }
+    public abstract object Input { get; }
+
+    /// <summary>
+    /// Gets workflow engine.
+    /// </summary>
+    public WorkflowEngine Engine { get; }
+
+    internal abstract ValueTask InitializeAsync();
+
+    internal abstract ValueTask CleanupAsync();
 }
 
 public sealed class ActivityContext<TInput> : ActivityContext
     where TInput : class
 {
-    internal ActivityContext(string instanceName, TimeSpan timeout, Activity<TInput> activity)
-        : base(instanceName, timeout)
+    internal ActivityContext(TInput input, Activity<TInput> activity, WorkflowEngine engine, in ActivityInstance instance, TimeSpan timeout, CancellationToken token)
+        : base(engine, in instance, timeout, token)
     {
         Debug.Assert(activity is not null);
+        Debug.Assert(input is not null);
 
         ExecutingActivity = activity;
+        Input = input;
     }
 
+    /// <inheritdoc />
     public override Activity<TInput> ExecutingActivity { get; }
+
+    /// <inheritdoc />
+    public override TInput Input { get; }
+
+    internal override ValueTask InitializeAsync() => ExecutingActivity.InitializeAsync(this);
+
+    internal override ValueTask CleanupAsync() => ExecutingActivity.CleanupAsync(this);
 }

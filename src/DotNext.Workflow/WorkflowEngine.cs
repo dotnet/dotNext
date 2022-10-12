@@ -7,43 +7,16 @@ using ExceptionDispatchInfo = System.Runtime.ExceptionServices.ExceptionDispatch
 
 namespace DotNext.Workflow;
 
+using Metadata;
 using Threading;
 
 /// <summary>
 /// Represents workflow execution engine.
 /// </summary>
-public abstract class WorkflowEngine : ICheckpointCallback, IAsyncDisposable
+public abstract class WorkflowEngine : IActivityStateValidator, IActivityStartedCallback, IAsyncDisposable
 {
-    private readonly struct RunningActivity : IDisposable
-    {
-        private readonly CancellationTokenSource? source;
-        internal readonly Task ActivityTask;
-
-        internal RunningActivity(ActivityBuilder builder, TimeSpan timeout, CancellationToken lifecycleToken)
-        {
-            ActivityTask = builder.As<TaskCompletionSource>().Task;
-
-            if (timeout == InfiniteTimeSpan)
-            {
-                Token = lifecycleToken;
-            }
-            else
-            {
-                source = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
-                source.CancelAfter(timeout);
-                Token = source.Token;
-            }
-        }
-
-        internal bool CanTimeout => source is not null;
-
-        internal CancellationToken Token { get; }
-
-        public void Dispose() => source?.Dispose();
-    }
-
-    private readonly Dictionary<Type, ActivityMetaModel> models;
-    private readonly Dictionary<ActivityInstance, RunningActivity> instances;
+    private readonly Dictionary<string, ActivityMetaModel> models;
+    private readonly Dictionary<ActivityInstance, ActivityContext> instances;
     private readonly AsyncExclusiveLock stateLock;
     private readonly CancellationTokenSource lifecycleSource;
     private readonly CancellationToken lifecycleToken; // cached to avoid ObjectDisposedException
@@ -54,7 +27,7 @@ public abstract class WorkflowEngine : ICheckpointCallback, IAsyncDisposable
     /// </summary>
     protected WorkflowEngine()
     {
-        models = new Dictionary<Type, ActivityMetaModel>();
+        models = new(StringComparer.Ordinal);
         stateLock = new();
         lifecycleSource = new();
         lifecycleToken = lifecycleSource.Token;
@@ -62,7 +35,7 @@ public abstract class WorkflowEngine : ICheckpointCallback, IAsyncDisposable
     }
 
     /// <summary>
-    /// Registers 
+    /// Registers an activity.
     /// </summary>
     /// <typeparam name="TInput"></typeparam>
     /// <typeparam name="TActivity"></typeparam>
@@ -70,115 +43,173 @@ public abstract class WorkflowEngine : ICheckpointCallback, IAsyncDisposable
     /// <param name="options"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public WorkflowEngine RegisterActivity<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods)] TInput, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] TActivity>(Func<TActivity> activityFactory, ActivityOptions? options = null)
+    public WorkflowEngine RegisterActivity<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.PublicMethods)] TInput, TActivity>(Func<TActivity> activityFactory, ActivityOptions? options = null)
         where TInput : class
         where TActivity : Activity<TInput>
     {
         ArgumentNullException.ThrowIfNull(activityFactory);
 
-        var model = new ActivityMetaModel(activityFactory, options ?? ActivityOptions.Default);
-        return models.TryAdd(typeof(TActivity), model) ? this : throw new ArgumentException();
+        // create raw instance of activity
+        var activity = RuntimeHelpers.GetUninitializedObject(typeof(TActivity)) as TActivity;
+        Debug.Assert(activity is not null);
+        GC.SuppressFinalize(activity);
+
+        // catch special exception
+        try
+        {
+            // this method will raise ActivityStateMachineDiscoveryException<T> exception that acts as a factory for
+            // activity metamodel
+            activity.ExecuteAsync(null!);
+        }
+        catch (ActivityStateMachineDiscoveryException e)
+        {
+            var model = e.CreateMetaModel<TInput, TActivity>(activityFactory, options ?? ActivityOptions.Default);
+
+            if (!model.Validate(this))
+                throw new Exception();
+
+            if (!models.TryAdd(Activity.GetName<TActivity>(), model))
+                throw new ArgumentException();
+        }
+
+        return this;
     }
 
-    protected abstract Task ActivityStarted<TInput>(ActivityInstance instance, TInput input, ActivityOptions options)
+    protected virtual bool ValidateActivityState<TState>()
+        where TState : IAsyncStateMachine
+        => true;
+
+    bool IActivityStateValidator.Validate<TState>() => ValidateActivityState<TState>();
+
+    protected abstract ValueTask ActivityStarted<TInput>(ActivityInstance instance, TInput input, ActivityOptions options)
         where TInput : class;
 
-    protected abstract Task ActivityCheckpointReachedAsync<TState>(ActivityInstance instance, TState executionState, TimeSpan remainingTime)
+    ValueTask IActivityStartedCallback.InvokeAsync<TInput>(ActivityInstance instance, TInput input, ActivityOptions options)
+        => ActivityStarted<TInput>(instance, input, options);
+
+    internal protected abstract ValueTask ActivityCheckpointReachedAsync<TState>(ActivityInstance instance, TState executionState, TimeSpan remainingTime)
         where TState : IAsyncStateMachine;
 
-    Task ICheckpointCallback.CheckpointReachedAsync<TState>(ActivityInstance instance, TState executionState, TimeSpan remainingTime)
-        => ActivityCheckpointReachedAsync(instance, executionState, remainingTime);
+    protected abstract ValueTask ActivityCompleted(ActivityInstance instance, Exception? e);
 
-    protected abstract Task ActivityCompleted(ActivityInstance instance, Exception? e);
-
-    private async Task ExecuteAsync<TInput>(string instanceName, TInput input, ActivityBuilder builder, IAsyncStateMachine activityState, TimeSpan timeout, bool notifyStarted)
-        where TInput : class
+    // core method that launches activity and controls its execution
+    private async Task ExecuteAsync(ActivityMetaModel model, IActivityStateProvider provider)
     {
-        var lockTaken = false;
-        ActivityInstance instance;
-        var activity = default(RunningActivity);
-
-        // inform that the activity has been started
+        CancellationTokenSource? workflowTokenSource = null;
         try
         {
-            await stateLock.AcquireAsync(lifecycleToken).ConfigureAwait(false);
-            lockTaken = true;
+            var lockTaken = false;
+            ActivityInstance instance = new(provider.InstanceName, model.Name);
+            var activityState = default(IAsyncStateMachine);
+            ActivityContext context;
 
-            instance = new(instanceName, builder.ActivityName);
-            activity = new(builder, timeout, lifecycleToken);
-
-            if (!instances.TryAdd(instance, activity))
+            // prepare cancellation token
+            if (provider.RemainingTime != InfiniteTimeSpan)
             {
-                activity.Dispose();
-                throw new DuplicateWorkflowInstanceException(instance);
+                // attach timeout later
+                workflowTokenSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
             }
 
-            if (notifyStarted)
-                await ActivityStarted(instance, input, builder.Options).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            builder.SetException(e);
-            activity.Dispose();
-            throw;
+            // inform that the activity has been started
+            try
+            {
+                await stateLock.AcquireAsync(lifecycleToken).ConfigureAwait(false);
+                lockTaken = true;
+
+                (activityState, context) = model.PrepareForExecution(in instance, provider, this, workflowTokenSource?.Token ?? lifecycleToken);
+
+                if (!instances.TryAdd(instance, context))
+                    throw new DuplicateWorkflowInstanceException(instance);
+
+                if (provider is InitialActivityStateProvider initialStateProvider)
+                    await initialStateProvider.InvokeCallback(this, instance).ConfigureAwait(false);
+
+                await context.InitializeAsync().ConfigureAwait(false);
+            }
+            catch (DuplicateWorkflowInstanceException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                if (activityState is not null)
+                    model.SetException(ref activityState, e);
+
+                instances.Remove(instance);
+                throw;
+            }
+            finally
+            {
+                if (lockTaken)
+                    stateLock.Release();
+            }
+
+            // execute workflow
+            workflowTokenSource?.CancelAfter(provider.RemainingTime); // attach timeout
+            activityState.MoveNext();
+
+            // finalize execution
+            var error = default(ExceptionDispatchInfo);
+            try
+            {
+                await context.ActivityTask.ConfigureAwait(false);
+                await context.CleanupAsync().ConfigureAwait(false);
+
+                switch (context.ExecutingActivity)
+                {
+                    case IAsyncDisposable disposable:
+                        await disposable.DisposeAsync().ConfigureAwait(false);
+                        break;
+                    case IDisposable disposable:
+                        disposable.Dispose();
+                        break;
+                }
+            }
+            catch (OperationCanceledException) when (lifecycleToken.IsCancellationRequested)
+            {
+                throw;
+            }
+            catch (OperationCanceledException e) when (workflowTokenSource?.Token == e.CancellationToken)
+            {
+                var timeoutEx = new TimeoutException(null, e);
+
+                if (e.StackTrace is { Length: > 0 } stackTrace)
+                    ExceptionDispatchInfo.SetRemoteStackTrace(timeoutEx, stackTrace);
+
+                error = ExceptionDispatchInfo.Capture(timeoutEx);
+            }
+            catch (Exception e)
+            {
+                error = ExceptionDispatchInfo.Capture(e);
+            }
+
+            // remove activity from the tracking list
+            lockTaken = false;
+            try
+            {
+                await stateLock.AcquireAsync(lifecycleToken).ConfigureAwait(false);
+                lockTaken = true;
+
+                instances.Remove(instance);
+            }
+            catch (ObjectDisposedException) when (lifecycleToken.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(lifecycleToken);
+            }
+            finally
+            {
+                if (lockTaken)
+                    stateLock.Release();
+            }
+
+            // notify about activity completion
+            await ActivityCompleted(instance, error?.SourceException).ConfigureAwait(false);
+            error?.Throw();
         }
         finally
         {
-            if (lockTaken)
-                stateLock.Release();
+            workflowTokenSource?.Dispose();
         }
-
-        // execute workflow
-        activityState.MoveNext();
-
-        // finalize execution
-        var error = default(ExceptionDispatchInfo);
-        try
-        {
-            await builder.As<TaskCompletionSource>().Task.ConfigureAwait(false);
-        }
-        catch (OperationCanceledException) when (lifecycleToken.IsCancellationRequested)
-        {
-            throw;
-        }
-        catch (OperationCanceledException e) when (activity.CanTimeout && e.CancellationToken == activity.Token)
-        {
-            var timeoutEx = new TimeoutException(null, e);
-
-            if (e.StackTrace is { Length: > 0 } stackTrace)
-                ExceptionDispatchInfo.SetRemoteStackTrace(timeoutEx, stackTrace);
-
-            error = ExceptionDispatchInfo.Capture(timeoutEx);
-        }
-        catch (Exception e)
-        {
-            error = ExceptionDispatchInfo.Capture(e);
-        }
-        finally
-        {
-            activity.Dispose();
-        }
-
-        await ActivityCompleted(instance, error?.SourceException).ConfigureAwait(false);
-
-        // remove activity from the tracking list
-        lockTaken = false;
-        try
-        {
-            await stateLock.AcquireAsync(lifecycleToken).ConfigureAwait(false);
-            instances.Remove(instance);
-        }
-        catch (ObjectDisposedException) when (lifecycleToken.IsCancellationRequested)
-        {
-            throw new OperationCanceledException(lifecycleToken);
-        }
-        finally
-        {
-            if (lockTaken)
-                stateLock.Release();
-        }
-
-        error?.Throw();
     }
 
     /// <summary>
@@ -194,31 +225,40 @@ public abstract class WorkflowEngine : ICheckpointCallback, IAsyncDisposable
         where TInput : class
         where TActivity : Activity<TInput>
     {
+        if (instanceName is not { Length: > 0 })
+            return Task.FromException(new ArgumentNullException(nameof(instanceName)));
+
         if (input is null)
             return Task.FromException(new ArgumentNullException(nameof(input)));
 
-        if (!models.TryGetValue(typeof(TActivity), out var model))
+        if (!models.TryGetValue(Activity.GetName<TActivity>(), out var model))
             return Task.FromException(new GenericArgumentException<TActivity>("", nameof(TInput)));
 
-        var activity = model.ActivityFactory() as TActivity;
-        Debug.Assert(activity is not null);
-
-        var builder = new ActivityBuilder(this, model);
-        var activityState = model.CreateStateMachine(
-            ActivityBuilder.InitialState,
-            builder,
-            new ActivityContext<TInput>(instanceName, model.Options.Timeout, activity),
-            activity,
-            CancellationToken.None
-        );
-
-        return ExecuteAsync(instanceName, input, builder, activityState, model.Options.Timeout, notifyStarted: true);
+        return ExecuteAsync(model, new ActivityMetaModel<TInput>.InitialActivityStateProvider(instanceName, input, model));
     }
 
     public Task ExecuteAsync<TActivity>(string instanceName)
         where TActivity : Activity<Missing>
         => ExecuteAsync<Missing, TActivity>(instanceName, Missing.Value);
 
+    protected Task ExecuteAsync(string activityName, IActivityStateProvider provider)
+    {
+        if (activityName is not { Length: > 0 })
+            return Task.FromException(new ArgumentNullException(nameof(activityName)));
+
+        if (provider is null)
+            return Task.FromException(new ArgumentNullException(nameof(provider)));
+
+        if (!models.TryGetValue(activityName, out var model))
+            return Task.FromException(new ArgumentException());
+
+        return ExecuteAsync(model, provider);
+    }
+
+    /// <summary>
+    /// Stops all workflows executed locally by this engine.
+    /// </summary>
+    /// <returns>The task representing asynchronous result.</returns>
     protected virtual async ValueTask DisposeAsyncCore()
     {
         lifecycleSource.Cancel();
@@ -235,16 +275,12 @@ public abstract class WorkflowEngine : ICheckpointCallback, IAsyncDisposable
                 {
                     // suspend any exception
                 }
-                finally
-                {
-                    activity.Dispose();
-                }
             }
         }
         finally
         {
-            stateLock.Dispose();
             instances.Clear();
+            stateLock.Dispose();
             lifecycleSource.Dispose();
         }
     }

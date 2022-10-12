@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Workflow
 {
@@ -8,18 +8,33 @@ namespace DotNext.Workflow
     {
         private sealed class TestActivity : Activity<string>
         {
-            protected override async ActivityResult<string> ExecuteAsync(IActivityContext<string> context, CancellationToken token)
+            private readonly StrongBox<string> result;
+
+            internal TestActivity(StrongBox<string> result) => this.result = result;
+
+            protected override async ActivityResult ExecuteAsync(ActivityContext<string> context)
             {
-                await Task.Delay(10);
-                return string.Empty;
+                True(context.Token.CanBeCanceled);
+
+                await Task.Yield();
+                DelayResult(context);
+                True(await Checkpoint());
+            }
+
+            private void DelayResult(ActivityContext<string> context)
+            {
+                context.OnCheckpoint(() => result.Value = context.Input);
             }
         }
 
         [Fact]
-        public static void BasicFunctions()
+        public static async void BasicFunctions()
         {
-            var act = new TestActivity();
-            act.ToString();
+            var result = new StrongBox<string>();
+            await using var engine = new InMemoryWorkflowEngine();
+            engine.RegisterActivity<string, TestActivity>(() => new TestActivity(result));
+            await engine.ExecuteAsync<string, TestActivity>("instance", "Hello, world!");
+            Equal("Hello, world!", result.Value);
         }
     }
 }
