@@ -3,6 +3,7 @@
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
+    [Obsolete]
     public sealed class EqualityComparerBuilderTests : Test
     {
         private sealed unsafe class UnsafeClass
