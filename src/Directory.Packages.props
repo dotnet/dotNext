@@ -4,7 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!--Compile-time dependencies-->
-    <PackageVersion Include="Fody" Version="6.6.3"/>
+    <PackageVersion Include="Fody" Version="6.6.4"/>
     <PackageVersion Include="InlineIL.Fody" Version="1.7.2"/>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118"/>
@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
-    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="6.0.9" />
+    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="6.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
