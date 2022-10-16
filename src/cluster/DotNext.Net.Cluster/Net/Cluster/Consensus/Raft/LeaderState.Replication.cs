@@ -54,17 +54,13 @@ internal partial class LeaderState
             fingerprint = (proposedConfig ?? activeConfig).Fingerprint;
         }
 
-        private Task<Result<bool>> StartCoreAsync()
+        internal Task<Result<bool>> ReplicateAsync()
         {
             logger.ReplicationStarted(member.EndPoint, currentIndex);
             return (currentIndex >= member.NextIndex ?
                 auditTrail.ReadAsync(this, member.NextIndex, token) :
                 ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token)).AsTask();
         }
-
-        // ensure that the replication process is forked
-        internal Task<Result<bool>> ReplicateAsync(bool fork = true)
-            => fork ? System.Threading.Tasks.Task.Run(StartCoreAsync) : StartCoreAsync();
 
         private void Complete()
         {
