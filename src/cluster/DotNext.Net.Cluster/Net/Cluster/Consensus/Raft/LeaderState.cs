@@ -83,7 +83,7 @@ internal sealed partial class LeaderState : RaftState
         if (leaseRenewalThreshold is 1)
             RenewLease(startTime);
         else
-            leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
+            leaseRenewalThreshold = (leaseRenewalThreshold >> 1) + 1;
 
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
         await foreach (var task in responsePipe.ConfigureAwait(false))
