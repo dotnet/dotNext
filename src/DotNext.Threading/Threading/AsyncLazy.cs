@@ -37,7 +37,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <exception cref="ArgumentException"><paramref name="valueFactory"/> is <see langword="null"/>.</exception>
     public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
     {
-        factory = valueFactory ?? throw new ArgumentNullException(nameof(factory));
+        factory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
         this.resettable = resettable;
     }
 
