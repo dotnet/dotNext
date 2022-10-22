@@ -77,13 +77,13 @@
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
     <div class="level2"><span class="xref">RaftClusterHttpHost</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">IHostedService</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">IHostedService</a></div>
     <div><span class="xref">IAsyncDisposable</span></div>
   </div>
   <div class="inheritedMembers">
@@ -176,7 +176,7 @@ For instance, if you want to implement sharding.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
         <td><span class="parametername">loggingCategory</span></td>
         <td><p>The category of the logs to be produced by the implementation.</p>
 </td>
@@ -185,14 +185,14 @@ For instance, if you want to implement sharding.</p>
   </table>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_IServiceProvider_System_String__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>A list of required services that must be provided by <code data-dev-comment-type="paramref" class="paramref">activationContext</code>:</p>
-<table><tbody><tr><td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.options.ioptionsmonitor-1">IOptionsMonitor&lt;TOptions&gt;</a> of type <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.HttpClusterMemberConfiguration.html">HttpClusterMemberConfiguration</a></td><td>Provides configuration of the local cluster member.</td></tr><tr><td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory">ILoggerFactory</a></td><td>Provides logging infrastructure.</td></tr></tbody></table>
+<table><tbody><tr><td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.options.ioptionsmonitor-1">IOptionsMonitor&lt;TOptions&gt;</a> of type <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.HttpClusterMemberConfiguration.html">HttpClusterMemberConfiguration</a></td><td>Provides configuration of the local cluster member.</td></tr><tr><td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory">ILoggerFactory</a></td><td>Provides logging infrastructure.</td></tr></tbody></table>
 A list of optional services that may be provided by <code data-dev-comment-type="paramref" class="paramref">activationContext</code>:
-<table><tbody><tr><td><a class="xref" href="DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a></td><td>Provides custom message processing.</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.html">IClusterMemberLifetime</a></td><td>Provides instance lifetime hooks.</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html">IClusterConfigurationStorage&lt;TAddress&gt;</a> of type <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td>Provides cluster configuration storage.</td></tr><tr><td><see cref="!:IHttpMessageHandlerFactory"></see></td><td>
+<table><tbody><tr><td><a class="xref" href="DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a></td><td>Provides custom message processing.</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.html">IClusterMemberLifetime</a></td><td>Provides instance lifetime hooks.</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html">IClusterConfigurationStorage&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td>Provides cluster configuration storage.</td></tr><tr><td><see cref="!:IHttpMessageHandlerFactory"></see></td><td>
 Provides <see cref="!:HttpMessageHandler"></see> implementation used by the local
 node to communicate with other cluster members.
 This is a key interface that can be used to share the same HTTP connection between
 multiple cluster instances when accessing the same node.
-</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a></td><td>Allows to capture runtime metrics associated with the local node.</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterMemberAnnouncer-1.html">ClusterMemberAnnouncer&lt;TAddress&gt;</a> of type <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td>Allows to announce a new node the cluster leader.</td></tr></tbody></table>
+</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a></td><td>Allows to capture runtime metrics associated with the local node.</td></tr><tr><td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterMemberAnnouncer-1.html">ClusterMemberAnnouncer&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td>Allows to announce a new node the cluster leader.</td></tr></tbody></table>
 You can supply these services from the implementation of <see cref="!:IServiceProvider"></see> interface provided
 by Dependency Injection container or override some of the supplied services using <a class="xref" href="DotNext.ServiceProviderFactory.html">ServiceProviderFactory</a>.
 </div>
@@ -255,7 +255,7 @@ by Dependency Injection container or override some of the supplied services usin
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.http.pathstring">PathString</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.http.pathstring">PathString</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -289,7 +289,7 @@ by Dependency Injection container or override some of the supplied services usin
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.http.httpcontext">HttpContext</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.http.httpcontext">HttpContext</a></td>
         <td><span class="parametername">context</span></td>
         <td><p>HTTP request context.</p>
 </td>
@@ -342,7 +342,7 @@ For instance, if you want to implement sharding.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">disposing</span></td>
         <td></td>
       </tr>
@@ -516,7 +516,7 @@ For instance, if you want to implement sharding.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">Microsoft.Extensions.Hosting.IHostedService</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">Microsoft.Extensions.Hosting.IHostedService</a>
   </div>
   <div>
       <span class="xref">IAsyncDisposable</span>

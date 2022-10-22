@@ -72,22 +72,22 @@
   
   <h1 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor" class="text-break">Class ReadOnlySequenceAccessor
   </h1>
-  <div class="markdown level0 summary"><p>Represents factory of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> objects
+  <div class="markdown level0 summary"><p>Represents factory of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> objects
 representing memory-mapped file content.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
     <div class="level2"><span class="xref">ReadOnlySequenceAccessor</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</div>
     <div><span class="xref">IDisposable</span></div>
-    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -151,7 +151,7 @@ representing memory-mapped file content.</p>
 accessed concurrently. For concurrent access, you need to obtain a new instance of
 <a class="xref" href="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html">ReadOnlySequenceAccessor</a> class.
 The class uses lazy initialization of memory-mapped file segment
-every time when <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> switching between segments.</p>
+every time when <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> switching between segments.</p>
 </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -165,7 +165,7 @@ every time when <a class="xref" href="https://docs.microsoft.com/dotnet/api/syst
   <a id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_FileStream_System_Int32_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(FileStream,System.Int32)">ReadOnlySequenceAccessor(FileStream, Int32)</h4>
   <div class="markdown level1 summary"><p>Initializes a new accessor over memory-mapped file segments represented
-as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>.</p>
+as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -189,9 +189,9 @@ as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.re
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">segmentSize</span></td>
-        <td><p>The size of single segment, in bytes, that can be returned by <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>
+        <td><p>The size of single segment, in bytes, that can be returned by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>
 as contiguous block of memory. So this parameter defines actual amount of occupied virtual memory.</p>
 </td>
       </tr>
@@ -207,7 +207,7 @@ as contiguous block of memory. So this parameter defines actual amount of occupi
   <a id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int32_System_Int64_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int32,System.Int64)">ReadOnlySequenceAccessor(MemoryMappedFile, Int32, Int64)</h4>
   <div class="markdown level1 summary"><p>Initializes a new accessor over memory-mapped file segments represented
-as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>.</p>
+as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -225,20 +225,20 @@ as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.re
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorymappedfiles.memorymappedfile">MemoryMappedFile</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.memorymappedfiles.memorymappedfile">MemoryMappedFile</a></td>
         <td><span class="parametername">file</span></td>
         <td><p>The memory-mapped file.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">segmentSize</span></td>
-        <td><p>The size of single segment, in bytes, that can be returned by <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>
+        <td><p>The size of single segment, in bytes, that can be returned by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>
 as contiguous block of memory. So this parameter defines actual amount of occupied virtual memory.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">size</span></td>
         <td><p>The observable length, in bytes, of memory-mapped file.</p>
 </td>
@@ -273,7 +273,7 @@ as contiguous block of memory. So this parameter defines actual amount of occupi
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -310,7 +310,7 @@ concurrently.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">disposing</span></td>
         <td></td>
       </tr>

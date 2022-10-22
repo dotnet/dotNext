@@ -77,22 +77,22 @@
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">BoxedValue&lt;T&gt;</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone#system-object-memberwiseclone">Object.MemberwiseClone()</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.html">DotNext.Runtime</a></h6>
@@ -120,14 +120,14 @@
     </tbody>
   </table>
   <h5 id="DotNext_Runtime_BoxedValue_1_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Equals(Object)</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">GetHashCode()</a> and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">ToString()</a>
+  <div class="markdown level0 remarks"><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Equals(Object)</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">GetHashCode()</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">ToString()</a>
 implementations match to the real implementations of the appropriate value type.
 This type is completely compatible with runtime representation of the boxed value. For instance,
 the following code is correct:</p>
 <pre><code>static int Unbox(object obj) => (int)obj;
 BoxedValue&lt;int> boxed = BoxedValue&lt;int>.Box(42);
 int value = Unbox(boxed);</code></pre>
-<p>Additionally, it means that <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">GetType()</a> returns type information for <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> type,
+<p>Additionally, it means that <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">GetType()</a> returns type information for <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> type,
 not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T&gt;</a>.</p>
 </div>
   <h3 id="properties">Properties
@@ -241,7 +241,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">obj</span></td>
         <td></td>
       </tr>
@@ -257,13 +257,13 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a></div>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">Object.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -289,13 +289,13 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a></div>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode#system-object-gethashcode">Object.GetHashCode()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_GetTypedReference_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.GetTypedReference(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -323,7 +323,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></td>
         <td><span class="parametername">boxedValue</span></td>
         <td><p>The boxed value of type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </td>
@@ -374,13 +374,13 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a></div>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_BoxedValue_1_TryBox_System_Nullable__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%601.TryBox(System.Nullable%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -408,7 +408,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;</td>
         <td><span class="parametername">value</span></td>
         <td><p>The value to be boxed.</p>
 </td>
@@ -510,7 +510,7 @@ not for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;</td>
         <td><span class="parametername">value</span></td>
         <td><p>The value to be boxed.</p>
 </td>
