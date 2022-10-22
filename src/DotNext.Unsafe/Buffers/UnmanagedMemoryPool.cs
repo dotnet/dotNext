@@ -54,7 +54,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
             throw new ArgumentOutOfRangeException(nameof(length));
         if (length < 0)
             length = defaultBufferSize;
-        var result = new UnmanagedMemoryOwner<T>(length, true, true) { OnDisposed = removeMemory };
+        var result = new UnmanagedMemoryOwner<T>(length, zeroMem: true, true) { OnDisposed = removeMemory };
         if (removeMemory is not null)
             AddTracking(result);
         return result;
