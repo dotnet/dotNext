@@ -114,39 +114,18 @@ public partial class PersistentState
 
             var hash = offset;
             var length = input.Length;
-            ref byte ptr = ref MemoryMarshal.GetReference(input);
+            ref byte ptr = ref MemoryMarshal.GetReference(input); // pointer is unaligned
 
-            // Perf: x % 2^n == x & (2^n - 1)
-            const nint moduloOperand = sizeof(long) - 1;
-            if ((Intrinsics.AddressOf(in ptr) & moduloOperand) is 0)
+            for (; length >= sizeof(long); length -= sizeof(long))
             {
-                // pointer is aligned
-                for (; length >= sizeof(long); length -= sizeof(long))
-                {
-                    hash = HashRound(hash, Unsafe.As<byte, long>(ref ptr));
-                    ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-                }
-
-                if (length >= sizeof(int))
-                {
-                    hash = HashRound(hash, Unsafe.As<byte, int>(ref ptr));
-                    ptr = ref Unsafe.Add(ref ptr, sizeof(int));
-                }
+                hash = HashRound(hash, Unsafe.ReadUnaligned<long>(ref ptr));
+                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
             }
-            else
-            {
-                // pointer is unaligned
-                for (; length >= sizeof(long); length -= sizeof(long))
-                {
-                    hash = HashRound(hash, Unsafe.ReadUnaligned<long>(ref ptr));
-                    ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-                }
 
-                if (length >= sizeof(int))
-                {
-                    hash = HashRound(hash, Unsafe.ReadUnaligned<int>(ref ptr));
-                    ptr = ref Unsafe.Add(ref ptr, sizeof(int));
-                }
+            if (length >= sizeof(int))
+            {
+                hash = HashRound(hash, Unsafe.ReadUnaligned<int>(ref ptr));
+                ptr = ref Unsafe.Add(ref ptr, sizeof(int));
             }
 
             // hash rest of the data
@@ -158,6 +137,7 @@ public partial class PersistentState
 
             return hash;
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static long HashRound(long hash, long data) => unchecked((hash ^ data) * prime);
         }
 
