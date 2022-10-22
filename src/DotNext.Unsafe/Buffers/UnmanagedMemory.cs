@@ -23,8 +23,11 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     private protected UnmanagedMemory(int length, bool zeroMem)
     {
-        var size = (nuint)SizeOf(length);
-        address = zeroMem ? NativeMemory.AllocZeroed(size) : NativeMemory.Alloc(size);
+        Debug.Assert(length > 0);
+
+        address = zeroMem
+            ? NativeMemory.AllocZeroed((nuint)length, (nuint)sizeof(T))
+            : NativeMemory.Alloc((nuint)length, (nuint)sizeof(T));
         Length = length;
         owner = true;
     }

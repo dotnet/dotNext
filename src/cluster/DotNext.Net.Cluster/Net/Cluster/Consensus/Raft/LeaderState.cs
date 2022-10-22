@@ -66,7 +66,8 @@ internal sealed partial class LeaderState : RaftState
                 if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
-                responsePipe.Add(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync());
+                // fork replication procedure
+                responsePipe.Add(Task.Run(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync));
             }
         }
 
@@ -82,7 +83,7 @@ internal sealed partial class LeaderState : RaftState
         if (leaseRenewalThreshold is 1)
             RenewLease(startTime);
         else
-            leaseRenewalThreshold = (leaseRenewalThreshold / 2) + 1;
+            leaseRenewalThreshold = (leaseRenewalThreshold >> 1) + 1;
 
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
         await foreach (var task in responsePipe.ConfigureAwait(false))
@@ -174,7 +175,7 @@ internal sealed partial class LeaderState : RaftState
         static TaskCompletionPipe<Task<Result<bool>>> CreatePipe(int capacity)
         {
             if (capacity < int.MaxValue / 2)
-                capacity *= 2;
+                capacity <<= 1;
 
             return new(capacity);
         }

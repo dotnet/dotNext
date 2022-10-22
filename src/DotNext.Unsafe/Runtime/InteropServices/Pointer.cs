@@ -165,7 +165,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     public void Fill(T value, nint count)
     {
-        if (count < 0L)
+        if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
 
         Fill(value, (nuint)count);
@@ -234,7 +234,6 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="index">Element index.</param>
     /// <returns>Array element.</returns>
     /// <exception cref="NullPointerException">This array is not allocated.</exception>
-    [CLSCompliant(false)]
     public unsafe ref T this[nint index]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
