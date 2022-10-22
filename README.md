@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-16-2022
+Release Date: 10-22-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.7.3">DotNext 4.7.3</a>
 * Deprecation of [EqualityComparerBuilder&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html) in favor of [C# Records](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record)
@@ -59,9 +59,11 @@ Release Date: 10-16-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.3">DotNext.Unsafe 4.7.3</a>
+* Removed redundant type cast in `Pointer<T>` value type
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.7.3">DotNext.Threading 4.7.3</a>
+* Fixed parameter name when throwing `ArgumentNullException` in `AsyncLazy<T>` constructor
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.7.3">DotNext.IO 4.7.3</a>

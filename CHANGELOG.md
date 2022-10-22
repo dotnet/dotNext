@@ -1,6 +1,34 @@
 Release Notes
 ====
 
+# 10-22-2022
+<a href="https://www.nuget.org/packages/dotnext/4.7.3">DotNext 4.7.3</a>
+* Deprecation of [EqualityComparerBuilder&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html) in favor of [C# Records](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.3">DotNext.Metaprogramming 4.7.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.3">DotNext.Reflection 4.7.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.3">DotNext.Unsafe 4.7.3</a>
+* Removed redundant type cast in `Pointer<T>` value type
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.7.3">DotNext.Threading 4.7.3</a>
+* Fixed parameter name when throwing `ArgumentNullException` in `AsyncLazy<T>` constructor
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.7.3">DotNext.IO 4.7.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.3">DotNext.Net.Cluster 4.7.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.3">DotNext.AspNetCore.Cluster 4.7.3</a>
+* Updated dependencies
+
 # 09-19-2022
 <a href="https://www.nuget.org/packages/dotnext/4.7.2">DotNext 4.7.2</a>
 * Critical bug fixes for `ConcurrentCache<TKey, TValue>` class: incorrect behavior of LFU policy (wrong sorting order)
