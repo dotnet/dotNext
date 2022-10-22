@@ -21,7 +21,7 @@ internal sealed class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMe
 
     unsafe object ICloneable.Clone()
     {
-        var copy = new UnmanagedMemoryOwner<T>(Length, false, fromPool);
+        var copy = new UnmanagedMemoryOwner<T>(Length, zeroMem: false, fromPool);
         Buffer.MemoryCopy(Address.ToPointer(), copy.Address.ToPointer(), Size, Size);
         return copy;
     }
