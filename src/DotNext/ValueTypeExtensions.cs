@@ -108,7 +108,7 @@ public static class ValueTypeExtensions
     /// <param name="value">The value to convert.</param>
     /// <returns><see langword="true"/> if <c>value != 0</c>; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ToBoolean(this int value) => value != 0;
+    public static bool ToBoolean(this int value) => value is not 0;
 
     /// <summary>
     /// Truncates 64-bit signed integer.
