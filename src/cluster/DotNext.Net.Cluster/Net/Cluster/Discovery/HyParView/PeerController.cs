@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
@@ -172,36 +171,35 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
                 result = Task.CompletedTask;
                 break;
             case CommandType.Join:
-                Debug.Assert(command.Sender is not null);
-                result = ProcessJoinAsync(command.Sender);
+                command.Join(out var sender);
+                result = ProcessJoinAsync(sender);
                 break;
             case CommandType.ForwardJoin:
-                Debug.Assert(command.Sender is not null);
-                Debug.Assert(command.Origin is not null);
-                result = ProcessForwardJoinAsync(command.Sender, command.Origin, command.TimeToLive);
+                command.ForwardJoin(out sender, out var origin, out var ttl);
+                result = ProcessForwardJoinAsync(sender, origin, ttl);
                 break;
             case CommandType.Neighbor:
-                Debug.Assert(command.Sender is not null);
-                result = ProcessNeighborAsync(command.Sender, command.IsAliveOrHighPriority);
+                command.Neighbor(out sender, out var highPriority);
+                result = ProcessNeighborAsync(sender, highPriority);
                 break;
             case CommandType.Disconnect:
-                Debug.Assert(command.Sender is not null);
-                result = ProcessDisconnectAsync(command.Sender, command.IsAliveOrHighPriority);
+                command.Disconnect(out sender, out var isAlive);
+                result = ProcessDisconnectAsync(sender, isAlive);
                 break;
             case CommandType.ShuffleReply:
-                result = ProcessShuffleReply(command.Peers);
+                command.ShuffleReply(out var peers);
+                result = ProcessShuffleReply(peers);
                 break;
             case CommandType.Shuffle:
-                Debug.Assert(command.Sender is not null);
-                Debug.Assert(command.Origin is not null);
-                result = ProcessShuffleAsync(command.Sender, command.Origin, command.Peers, command.TimeToLive);
+                command.Shuffle(out sender, out origin, out peers, out ttl);
+                result = ProcessShuffleAsync(sender, origin, peers, ttl);
                 break;
             case CommandType.ForceShuffle:
                 result = ProcessShuffleAsync();
                 break;
             case CommandType.Broadcast:
-                Debug.Assert(command.RumourTransport is not null);
-                result = ProcessBroadcastAsync(command.RumourTransport);
+                command.Broadcast(out var senderFactory);
+                result = ProcessBroadcastAsync(senderFactory);
                 break;
         }
 
