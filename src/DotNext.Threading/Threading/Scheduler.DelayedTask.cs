@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
@@ -24,6 +25,7 @@ public static partial class Scheduler
         /// <summary>
         /// Gets delayed task.
         /// </summary>
+        /// <seealso cref="DelayedTaskCanceledException"/>
         public abstract Task Task { get; }
 
         /// <summary>
@@ -100,9 +102,9 @@ public static partial class Scheduler
                 {
                     case 0U:
                         machine.delayAwaiter = Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
+                        machine.state = 1U;
                         if (machine.delayAwaiter.IsCompleted)
                             goto case 1U;
-                        machine.state = 1U;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
                     case 1U:
@@ -123,6 +125,17 @@ public static partial class Scheduler
             catch (Exception e)
             {
                 machine.Cleanup();
+
+                if (machine.state is 1U && e is OperationCanceledException canceledEx)
+                {
+                    e = new DelayedTaskCanceledException(canceledEx);
+
+                    if (canceledEx.StackTrace is { Length: > 0 } stackTrace)
+                        ExceptionDispatchInfo.SetRemoteStackTrace(e, stackTrace);
+                    else
+                        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+                }
+
                 machine.builder.SetException(e);
             }
         }
@@ -151,9 +164,7 @@ public static partial class Scheduler
         {
         }
 
-        /// <summary>
-        /// Gets delayed task.
-        /// </summary>
+        /// <inheritdoc />
         public override abstract Task<TResult> Task { get; }
 
         /// <summary>
@@ -202,9 +213,9 @@ public static partial class Scheduler
                 {
                     case 0U:
                         machine.delayAwaiter = System.Threading.Tasks.Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
+                        machine.state = 1U;
                         if (machine.delayAwaiter.IsCompleted)
                             goto case 1U;
-                        machine.state = 1U;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
                     case 1U:
@@ -224,6 +235,17 @@ public static partial class Scheduler
             catch (Exception e)
             {
                 machine.Cleanup();
+
+                if (machine.state is 1U && e is OperationCanceledException canceledEx)
+                {
+                    e = new DelayedTaskCanceledException(canceledEx);
+
+                    if (canceledEx.StackTrace is { Length: > 0 } stackTrace)
+                        ExceptionDispatchInfo.SetRemoteStackTrace(e, stackTrace);
+                    else
+                        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+                }
+
                 machine.builder.SetException(e);
             }
         }
@@ -239,5 +261,17 @@ public static partial class Scheduler
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
             => builder.SetStateMachine(stateMachine);
+    }
+
+    /// <summary>
+    /// Represents an exception indicating that the delayed task is canceled safely without entering
+    /// the scheduled callback.
+    /// </summary>
+    public sealed class DelayedTaskCanceledException : OperationCanceledException
+    {
+        internal DelayedTaskCanceledException(OperationCanceledException e)
+            : base(e.Message, e, e.CancellationToken)
+        {
+        }
     }
 }
