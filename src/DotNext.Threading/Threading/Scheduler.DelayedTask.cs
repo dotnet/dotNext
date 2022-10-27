@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using Debug = System.Diagnostics.Debug;
@@ -18,6 +17,8 @@ public static partial class Scheduler
         private protected readonly CancellationToken token; // cached token to avoid ObjectDisposedException
         private volatile CancellationTokenSource? tokenSource;
         private protected uint state;
+        private protected const uint InitialState = 0U;
+        private protected const uint DelayState = 1U;
 
         private protected DelayedTask(CancellationToken token)
             => this.token = (tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token)).Token;
@@ -47,7 +48,7 @@ public static partial class Scheduler
             }
         }
 
-        private protected void Cleanup() => Interlocked.Exchange(ref tokenSource, null)?.Dispose();
+        private protected virtual void Cleanup() => Interlocked.Exchange(ref tokenSource, null)?.Dispose();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected static void GetResultAndClear(ref ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter)
@@ -57,12 +58,51 @@ public static partial class Scheduler
         }
 
         /// <summary>
-        /// Gets delayed task.
+        /// Gets an awaiter used to await this task.
         /// </summary>
-        /// <param name="task">Delayed task.</param>
-        /// <returns>The delayed task.</returns>
-        [return: NotNullIfNotNull("task")]
-        public static implicit operator Task?(DelayedTask? task) => task?.Task;
+        /// <returns>An awaiter instance.</returns>
+        public TaskAwaiter GetAwaiter() => Task.GetAwaiter();
+
+        /// <summary>
+        /// Configures an awaiter used to await this task.
+        /// </summary>
+        /// <param name="continueOnCapturedContext">
+        /// <see langword="true"/> to attempt to marshal the continuation back to the original context captured;
+        /// otherwise, <see langword="false"/>.
+        /// </param>
+        /// <returns>An awaiter instance.</returns>
+        public ConfiguredTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)
+            => Task.ConfigureAwait(continueOnCapturedContext);
+
+        private protected abstract void SetException(Exception e);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static unsafe void MoveNext<T>(T stateMachine, delegate*<T, void> stateMachineAction)
+            where T : DelayedTask
+        {
+            Debug.Assert(stateMachineAction != null);
+
+            try
+            {
+                stateMachineAction(stateMachine);
+            }
+            catch (Exception e)
+            {
+                stateMachine.Cleanup();
+
+                if (stateMachine.state is DelayState && e is OperationCanceledException canceledEx)
+                {
+                    e = new DelayedTaskCanceledException(canceledEx);
+
+                    if (canceledEx.StackTrace is { Length: > 0 } stackTrace)
+                        ExceptionDispatchInfo.SetRemoteStackTrace(e, stackTrace);
+                    else
+                        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+                }
+
+                stateMachine.SetException(e);
+            }
+        }
     }
 
     private sealed class DelayedTaskStateMachine<TArgs> : DelayedTask, IAsyncStateMachine
@@ -94,25 +134,30 @@ public static partial class Scheduler
 
         public override Task Task => builder.Task;
 
-        private static void MoveNext(DelayedTaskStateMachine<TArgs> machine)
+        void IAsyncStateMachine.MoveNext()
         {
-            try
+            unsafe
+            {
+                MoveNext(this, &AdvanceStateMachine);
+            }
+
+            static void AdvanceStateMachine(DelayedTaskStateMachine<TArgs> machine)
             {
                 switch (machine.state)
                 {
-                    case 0U:
+                    case InitialState:
                         machine.delayAwaiter = Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
-                        machine.state = 1U;
+                        machine.state = DelayState;
                         if (machine.delayAwaiter.IsCompleted)
-                            goto case 1U;
+                            goto case DelayState;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
-                    case 1U:
+                    case DelayState:
                         GetResultAndClear(ref machine.delayAwaiter);
                         machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.callbackAwaiter.IsCompleted)
                             goto default;
-                        machine.state = 2U;
+                        machine.state = DelayState + 1U;
                         machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
                         break;
                     default:
@@ -122,32 +167,16 @@ public static partial class Scheduler
                         break;
                 }
             }
-            catch (Exception e)
-            {
-                machine.Cleanup();
-
-                if (machine.state is 1U && e is OperationCanceledException canceledEx)
-                {
-                    e = new DelayedTaskCanceledException(canceledEx);
-
-                    if (canceledEx.StackTrace is { Length: > 0 } stackTrace)
-                        ExceptionDispatchInfo.SetRemoteStackTrace(e, stackTrace);
-                    else
-                        ExceptionDispatchInfo.SetCurrentStackTrace(e);
-                }
-
-                machine.builder.SetException(e);
-            }
         }
 
-        void IAsyncStateMachine.MoveNext() => MoveNext(this);
-
-        private new void Cleanup()
+        private protected override void Cleanup()
         {
             callbackAwaiter = default;
             delayAwaiter = default;
             base.Cleanup();
         }
+
+        private protected override void SetException(Exception e) => builder.SetException(e);
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
             => builder.SetStateMachine(stateMachine);
@@ -168,12 +197,21 @@ public static partial class Scheduler
         public override abstract Task<TResult> Task { get; }
 
         /// <summary>
-        /// Gets delayed task.
+        /// Gets an awaiter used to await this task.
         /// </summary>
-        /// <param name="task">Delayed task.</param>
-        /// <returns>The delayed task.</returns>
-        [return: NotNullIfNotNull("task")]
-        public static implicit operator Task<TResult>?(DelayedTask<TResult>? task) => task?.Task;
+        /// <returns>An awaiter instance.</returns>
+        public new TaskAwaiter<TResult> GetAwaiter() => Task.GetAwaiter();
+
+        /// <summary>
+        /// Configures an awaiter used to await this task.
+        /// </summary>
+        /// <param name="continueOnCapturedContext">
+        /// <see langword="true"/> to attempt to marshal the continuation back to the original context captured;
+        /// otherwise, <see langword="false"/>.
+        /// </param>
+        /// <returns>An awaiter instance.</returns>
+        public new ConfiguredTaskAwaitable<TResult> ConfigureAwait(bool continueOnCapturedContext)
+            => Task.ConfigureAwait(continueOnCapturedContext);
     }
 
     private sealed class DelayedTaskStateMachine<TArgs, TResult> : DelayedTask<TResult>, IAsyncStateMachine
@@ -205,25 +243,30 @@ public static partial class Scheduler
 
         public override Task<TResult> Task => builder.Task;
 
-        private static void MoveNext(DelayedTaskStateMachine<TArgs, TResult> machine)
+        void IAsyncStateMachine.MoveNext()
         {
-            try
+            unsafe
+            {
+                MoveNext(this, &AdvanceStateMachine);
+            }
+
+            static void AdvanceStateMachine(DelayedTaskStateMachine<TArgs, TResult> machine)
             {
                 switch (machine.state)
                 {
-                    case 0U:
+                    case InitialState:
                         machine.delayAwaiter = System.Threading.Tasks.Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
-                        machine.state = 1U;
+                        machine.state = DelayState;
                         if (machine.delayAwaiter.IsCompleted)
-                            goto case 1U;
+                            goto case DelayState;
                         machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
                         break;
-                    case 1U:
+                    case DelayState:
                         GetResultAndClear(ref machine.delayAwaiter);
                         machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
                         if (machine.callbackAwaiter.IsCompleted)
                             goto default;
-                        machine.state = 2U;
+                        machine.state = DelayState + 1U;
                         machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
                         break;
                     default:
@@ -232,32 +275,16 @@ public static partial class Scheduler
                         break;
                 }
             }
-            catch (Exception e)
-            {
-                machine.Cleanup();
-
-                if (machine.state is 1U && e is OperationCanceledException canceledEx)
-                {
-                    e = new DelayedTaskCanceledException(canceledEx);
-
-                    if (canceledEx.StackTrace is { Length: > 0 } stackTrace)
-                        ExceptionDispatchInfo.SetRemoteStackTrace(e, stackTrace);
-                    else
-                        ExceptionDispatchInfo.SetCurrentStackTrace(e);
-                }
-
-                machine.builder.SetException(e);
-            }
         }
 
-        void IAsyncStateMachine.MoveNext() => MoveNext(this);
-
-        private new void Cleanup()
+        private protected override void Cleanup()
         {
             delayAwaiter = default;
             callbackAwaiter = default;
             base.Cleanup();
         }
+
+        private protected override void SetException(Exception e) => builder.SetException(e);
 
         void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
             => builder.SetStateMachine(stateMachine);
