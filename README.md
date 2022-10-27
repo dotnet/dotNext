@@ -70,6 +70,7 @@ Release Date: 10-27-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.4">DotNext.Net.Cluster 4.7.4</a>
+* Smallish performance improvements when processing command queue in HyParView implementation
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.4">DotNext.AspNetCore.Cluster 4.7.4</a>
