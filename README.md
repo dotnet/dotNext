@@ -46,33 +46,33 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-22-2022
+Release Date: 10-27-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.7.3">DotNext 4.7.3</a>
-* Deprecation of [EqualityComparerBuilder&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html) in favor of [C# Records](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record)
+<a href="https://www.nuget.org/packages/dotnext/4.7.4">DotNext 4.7.4</a>
+* Fixed [126](https://github.com/dotnet/dotNext/issues/126)
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.3">DotNext.Metaprogramming 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.4">DotNext.Metaprogramming 4.7.4</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.3">DotNext.Reflection 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.4">DotNext.Reflection 4.7.4</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.3">DotNext.Unsafe 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.4">DotNext.Unsafe 4.7.4</a>
 * Removed redundant type cast in `Pointer<T>` value type
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.7.3">DotNext.Threading 4.7.3</a>
-* Fixed parameter name when throwing `ArgumentNullException` in `AsyncLazy<T>` constructor
+<a href="https://www.nuget.org/packages/dotnext.threading/4.7.4">DotNext.Threading 4.7.4</a>
+* `Scheduler.DelayedTaskCanceledException` is added to identify graceful cancellation of the scheduled task (when it was canceled without entering the callback)
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.7.3">DotNext.IO 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.7.4">DotNext.IO 4.7.4</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.3">DotNext.Net.Cluster 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.4">DotNext.Net.Cluster 4.7.4</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.3">DotNext.AspNetCore.Cluster 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.4">DotNext.AspNetCore.Cluster 4.7.4</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
