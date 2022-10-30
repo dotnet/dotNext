@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
@@ -33,52 +34,105 @@ public partial class PeerController
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Command
     {
-        private readonly object? peersOrMessageTransport;
-
-        internal CommandType Type { get; private init; }
-
-        // null only if Type is ShuffleReply or ForceShuffle
-        [DisallowNull]
-        internal EndPoint? Sender { get; private init; }
+        internal CommandType Type { get; private init; } // TODO: Change to required in C# 11
 
         [DisallowNull]
-        internal EndPoint? Origin { get; private init; }
-
-        internal bool IsAliveOrHighPriority
-        {
-            get => TimeToLive != 0;
-            private init => TimeToLive = value.ToInt32();
-        }
-
-        internal int TimeToLive { get; private init; }
+        private EndPoint? Address1 { get; init; }
 
         [DisallowNull]
-        internal Func<PeerController, IRumorSender>? RumourTransport
+        private EndPoint? Address2 { get; init; }
+
+        private int Int32Param { get; init; }
+
+        [DisallowNull]
+        private object? ObjectParam { get; init; }
+
+        internal static Command Join(EndPoint joinedPeer) => new() { Type = CommandType.Join, Address1 = joinedPeer };
+
+        internal void Join(out EndPoint joinedPeer)
         {
-            get => peersOrMessageTransport as Func<PeerController, IRumorSender>;
-            private init => peersOrMessageTransport = value;
+            Debug.Assert(Type is CommandType.Join);
+            Debug.Assert(Address1 is not null);
+
+            joinedPeer = Address1;
         }
 
-        internal IReadOnlyCollection<EndPoint> Peers
+        internal static Command ForwardJoin(EndPoint sender, EndPoint joinedPeer, int ttl)
+            => new() { Type = CommandType.ForwardJoin, Address1 = sender, Address2 = joinedPeer, Int32Param = ttl };
+
+        internal void ForwardJoin(out EndPoint sender, out EndPoint joinedPeer, out int ttl)
         {
-            get => peersOrMessageTransport as IReadOnlyCollection<EndPoint> ?? Array.Empty<EndPoint>();
-            private init => peersOrMessageTransport = value;
+            Debug.Assert(Type is CommandType.ForwardJoin);
+            Debug.Assert(Address1 is not null);
+            Debug.Assert(Address2 is not null);
+
+            sender = Address1;
+            joinedPeer = Address2;
+            ttl = Int32Param;
         }
 
-        internal static Command Join(EndPoint joinedPeer) => new() { Type = CommandType.Join, Sender = joinedPeer };
+        internal static Command Neighbor(EndPoint sender, bool highPriority)
+            => new() { Type = CommandType.Neighbor, Address1 = sender, Int32Param = highPriority.ToInt32() };
 
-        internal static Command ForwardJoin(EndPoint sender, EndPoint joinedPeer, int ttl) => new() { Type = CommandType.ForwardJoin, Sender = sender, Origin = joinedPeer, TimeToLive = ttl };
+        internal void Neighbor(out EndPoint sender, out bool highPriority)
+        {
+            Debug.Assert(Type is CommandType.Neighbor);
+            Debug.Assert(Address1 is not null);
 
-        internal static Command Neighbor(EndPoint sender, bool highPriority) => new() { Type = CommandType.Neighbor, Sender = sender, IsAliveOrHighPriority = highPriority };
+            sender = Address1;
+            highPriority = Int32Param.ToBoolean();
+        }
 
-        internal static Command Disconnect(EndPoint sender, bool isAlive) => new() { Type = CommandType.Disconnect, Sender = sender, IsAliveOrHighPriority = isAlive };
+        internal static Command Disconnect(EndPoint sender, bool isAlive)
+            => new() { Type = CommandType.Disconnect, Address1 = sender, Int32Param = isAlive.ToInt32() };
 
-        internal static Command Shuffle(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int ttl) => new() { Type = CommandType.Shuffle, Sender = sender, Origin = origin, Peers = peers, TimeToLive = ttl };
+        internal void Disconnect(out EndPoint sender, out bool isAlive)
+        {
+            Debug.Assert(Type is CommandType.Disconnect);
+            Debug.Assert(Address1 is not null);
+
+            sender = Address1;
+            isAlive = Int32Param.ToBoolean();
+        }
+
+        internal static Command Shuffle(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int ttl)
+            => new() { Type = CommandType.Shuffle, Address1 = sender, Address2 = origin, ObjectParam = peers, Int32Param = ttl };
+
+        internal void Shuffle(out EndPoint sender, out EndPoint origin, out IReadOnlyCollection<EndPoint> peers, out int ttl)
+        {
+            Debug.Assert(Type is CommandType.Shuffle);
+            Debug.Assert(Address1 is not null);
+            Debug.Assert(Address2 is not null);
+            Debug.Assert(ObjectParam is IReadOnlyCollection<EndPoint>);
+
+            sender = Address1;
+            origin = Address2;
+            peers = (IReadOnlyCollection<EndPoint>)ObjectParam;
+            ttl = Int32Param;
+        }
 
         internal static Command ForceShuffle() => new() { Type = CommandType.ForceShuffle };
 
-        internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers) => new() { Type = CommandType.ShuffleReply, Peers = peers };
+        internal static Command ShuffleReply(IReadOnlyCollection<EndPoint> peers)
+            => new() { Type = CommandType.ShuffleReply, ObjectParam = peers };
 
-        internal static Command Broadcast(Func<PeerController, IRumorSender> senderFactory) => new() { Type = CommandType.Broadcast, RumourTransport = senderFactory };
+        internal void ShuffleReply(out IReadOnlyCollection<EndPoint> peers)
+        {
+            Debug.Assert(Type is CommandType.ShuffleReply);
+            Debug.Assert(ObjectParam is IReadOnlyCollection<EndPoint>);
+
+            peers = (IReadOnlyCollection<EndPoint>)ObjectParam;
+        }
+
+        internal static Command Broadcast(Func<PeerController, IRumorSender> senderFactory)
+            => new() { Type = CommandType.Broadcast, ObjectParam = senderFactory };
+
+        internal void Broadcast(out Func<PeerController, IRumorSender> senderFactory)
+        {
+            Debug.Assert(Type is CommandType.Broadcast);
+            Debug.Assert(ObjectParam is Func<PeerController, IRumorSender>);
+
+            senderFactory = (Func<PeerController, IRumorSender>)ObjectParam;
+        }
     }
 }
