@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-27-2022
+Release Date: 10-30-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.7.4">DotNext 4.7.4</a>
 * Fixed [126](https://github.com/dotnet/dotNext/issues/126)
