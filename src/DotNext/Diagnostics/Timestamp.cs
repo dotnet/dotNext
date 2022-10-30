@@ -46,7 +46,7 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// Gets the current point in time.
     /// </summary>
     [Obsolete("Use public parameterless constructor instead")]
-    public static Timestamp Current => new(GetTimestamp());
+    public static Timestamp Current => new();
 
     private static long ToTicks(double duration)
         => unchecked((long)(TickFrequency * duration));
