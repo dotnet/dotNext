@@ -14,11 +14,12 @@ public static partial class Scheduler
     /// </summary>
     public abstract class DelayedTask
     {
+        private protected const uint InitialState = 0U;
+        private protected const uint DelayState = 1U;
+
         private protected readonly CancellationToken token; // cached token to avoid ObjectDisposedException
         private volatile CancellationTokenSource? tokenSource;
         private protected uint state;
-        private protected const uint InitialState = 0U;
-        private protected const uint DelayState = 1U;
 
         private protected DelayedTask(CancellationToken token)
             => this.token = (tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token)).Token;
