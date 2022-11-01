@@ -216,6 +216,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
+    protected sealed override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
+        => await ConfigurationStorage.RemoveMemberAsync(member.Id, token).ConfigureAwait(false);
+
+    /// <inheritdoc />
     bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
     /// <inheritdoc />

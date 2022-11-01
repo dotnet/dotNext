@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using List = Collections.Generic.List;
 
-internal partial class LeaderState
+internal partial class LeaderState<TMember>
 {
     // it behaves like SortedList but allows to remove multiple keys in batch manner
     // key is log entry index, value is log entry term

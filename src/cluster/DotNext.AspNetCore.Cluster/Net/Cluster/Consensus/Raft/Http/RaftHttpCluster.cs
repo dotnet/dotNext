@@ -187,6 +187,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         return null;
     }
 
+    protected override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
+        => await ConfigurationStorage.RemoveMemberAsync(member.Id, token).ConfigureAwait(false);
+
     private void Cleanup()
     {
         configurationTracker.Dispose();

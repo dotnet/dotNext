@@ -300,5 +300,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             EventName = EventIdPrefix + "." + nameof(LeaderStateExitedWithError)
         )]
         public static partial void LeaderStateExitedWithError(this ILogger logger, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 36,
+            LogLevel.Warning,
+            "The leader failed to process unresponsive member {RemoteEndPoint}",
+            EventName = EventIdPrefix + "." + nameof(FailedToProcessUnresponsiveMember)
+        )]
+        public static partial void FailedToProcessUnresponsiveMember(this ILogger logger, EndPoint remoteEndPoint, Exception e);
+
+        [LoggerMessage(
+            EventIdOffset + 37,
+            LogLevel.Information,
+            "Unresponsive cluster member {RemoteEndPoint} detected",
+            EventName = EventIdPrefix + "." + nameof(UnresponsiveMemberDetected)
+        )]
+        public static partial void UnresponsiveMemberDetected(this ILogger logger, EndPoint remoteEndPoint);
     }
 }
