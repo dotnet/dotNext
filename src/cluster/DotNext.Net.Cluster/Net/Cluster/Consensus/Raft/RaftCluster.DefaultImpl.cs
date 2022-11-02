@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Threading.Channels;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -68,6 +69,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     private readonly int warmupRounds;
     private readonly bool coldStart;
     private readonly ClusterConfiguration cachedConfig;
+    private readonly Channel<ClusterConfigurationEvent<EndPoint>> configurationEvents;
     private Task pollingLoopTask;
     private IServer? server;
 
@@ -90,6 +92,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         ConfigurationStorage = configuration.ConfigurationStorage ?? new InMemoryClusterConfigurationStorage(allocator);
         pollingLoopTask = Task.CompletedTask;
         cachedConfig = new();
+        configurationEvents = Channel.CreateUnbounded<ClusterConfigurationEvent<EndPoint>>(new() { SingleWriter = true, SingleReader = true });
     }
 
     /// <summary>
@@ -107,6 +110,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <returns>The task representing asynchronous execution of the method.</returns>
     public override async Task StartAsync(CancellationToken token = default)
     {
+        ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteAsync;
         if (coldStart)
         {
             // in case of cold start, add the local member to the configuration
@@ -147,6 +151,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
         await (server?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
         server = null;
+        ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
         await base.StopAsync(token).ConfigureAwait(false);
     }
 
@@ -193,7 +198,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 
     private async Task ConfigurationPollingLoop()
     {
-        await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken).ConfigureAwait(false))
+        await foreach (var eventInfo in configurationEvents.Reader.ReadAllAsync(LifecycleToken).ConfigureAwait(false))
         {
             if (eventInfo.IsAdded)
             {
@@ -316,6 +321,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             server?.Dispose();
             server = null;
             cachedConfig.Dispose();
+            configurationEvents.Writer.TryComplete();
         }
 
         base.Dispose(disposing);

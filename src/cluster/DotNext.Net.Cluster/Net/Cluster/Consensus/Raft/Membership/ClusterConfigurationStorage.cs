@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
@@ -21,17 +20,16 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     /// </summary>
     protected readonly MemoryAllocator<byte>? allocator;
     private readonly Random fingerprintSource;
-    private readonly Channel<ClusterConfigurationEvent<TAddress>> events;
     private readonly AsyncExclusiveLock accessLock;
     private protected ImmutableDictionary<ClusterMemberId, TAddress> activeCache, proposedCache;
     private volatile TaskCompletionSource activatedEvent;
+    private Func<ClusterConfigurationEvent<TAddress>, CancellationToken, ValueTask>? handlers;
 
-    private protected ClusterConfigurationStorage(int eventQueueCapacity, MemoryAllocator<byte>? allocator)
+    private protected ClusterConfigurationStorage(MemoryAllocator<byte>? allocator)
     {
         this.allocator = allocator;
         fingerprintSource = new();
         activeCache = proposedCache = ImmutableDictionary<ClusterMemberId, TAddress>.Empty;
-        events = Channel.CreateBounded<ClusterConfigurationEvent<TAddress>>(new BoundedChannelOptions(eventQueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
         activatedEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         accessLock = new();
     }
@@ -243,22 +241,34 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
         }
     }
 
-    /// <inheritdoc />
-    IAsyncEnumerable<ClusterConfigurationEvent<TAddress>> IClusterConfigurationStorage<TAddress>.PollChangesAsync(CancellationToken token)
-        => events.Reader.ReadAllAsync(token);
+    /// <summary>
+    /// An event occurred when proposed configuration is applied.
+    /// </summary>
+    public event Func<ClusterConfigurationEvent<TAddress>, CancellationToken, ValueTask> ActiveConfigurationChanged
+    {
+        add => handlers += value;
+        remove => handlers -= value;
+    }
 
-    private protected async ValueTask CompareAsync(IReadOnlyDictionary<ClusterMemberId, TAddress> active, IReadOnlyDictionary<ClusterMemberId, TAddress> proposed)
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask OnActiveConfigurationChanged(ClusterConfigurationEvent<TAddress> ev, CancellationToken token)
+    {
+        foreach (Func<ClusterConfigurationEvent<TAddress>, CancellationToken, ValueTask> handler in handlers?.GetInvocationList() ?? Array.Empty<Func<ClusterConfigurationEvent<TAddress>, CancellationToken, ValueTask>>())
+            await handler.Invoke(ev, token).ConfigureAwait(false);
+    }
+
+    private protected async ValueTask CompareAsync(IReadOnlyDictionary<ClusterMemberId, TAddress> active, IReadOnlyDictionary<ClusterMemberId, TAddress> proposed, CancellationToken token)
     {
         foreach (var (id, address) in active)
         {
             if (!proposed.ContainsKey(id))
-                await events.Writer.WriteAsync(new() { Id = id, Address = address, IsAdded = false }).ConfigureAwait(false);
+                await OnActiveConfigurationChanged(new() { Id = id, Address = address, IsAdded = false }, token).ConfigureAwait(false);
         }
 
         foreach (var (id, address) in proposed)
         {
             if (!active.ContainsKey(id))
-                await events.Writer.WriteAsync(new() { Id = id, Address = address, IsAdded = true }).ConfigureAwait(false);
+                await OnActiveConfigurationChanged(new() { Id = id, Address = address, IsAdded = true }, token).ConfigureAwait(false);
         }
     }
 
@@ -269,7 +279,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
         {
             activeCache = activeCache.Clear();
             proposedCache = proposedCache.Clear();
-            events.Writer.TryComplete();
+            handlers = null;
             accessLock.Dispose();
         }
 

@@ -74,7 +74,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     /// </summary>
     /// <param name="allocator">The memory allocator.</param>
     protected InMemoryClusterConfigurationStorage(MemoryAllocator<byte>? allocator = null)
-        : base(10, allocator)
+        : base(allocator)
     {
     }
 
@@ -114,7 +114,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
 
         async ValueTask ApplyProposedAsync()
         {
-            await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
+            await CompareAsync(activeCache, proposedCache, token).ConfigureAwait(false);
 
             active?.Dispose();
             active = proposed;

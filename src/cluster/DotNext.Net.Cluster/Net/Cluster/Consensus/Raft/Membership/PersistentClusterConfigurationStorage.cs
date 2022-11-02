@@ -116,7 +116,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     }
 
     private PersistentClusterConfigurationStorage(DirectoryInfo storage, int fileBufferSize, MemoryAllocator<byte>? allocator)
-        : base(10, allocator)
+        : base(allocator)
     {
         if (!storage.Exists)
             storage.Create();
@@ -164,7 +164,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         async ValueTask ApplyProposedAsync()
         {
             await proposed.CopyToAsync(active, token).ConfigureAwait(false);
-            await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
+            await CompareAsync(activeCache, proposedCache, token).ConfigureAwait(false);
             activeCache = proposedCache;
 
             proposed.Clear();

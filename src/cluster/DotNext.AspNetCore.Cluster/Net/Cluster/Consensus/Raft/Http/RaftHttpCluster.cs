@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Threading.Channels;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
@@ -28,6 +29,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     private readonly HttpVersionPolicy protocolVersionPolicy;
     private readonly UriEndPoint localNode;
     private readonly int warmupRounds;
+    private readonly Channel<ClusterConfigurationEvent<UriEndPoint>> configurationEvents;
 
     public RaftHttpCluster(
         IOptionsMonitor<HttpClusterMemberConfiguration> config,
@@ -86,6 +88,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
         // track changes in configuration, do not track membership
         configurationTracker = config.OnChange(ConfigurationChanged);
+        configurationEvents = Channel.CreateUnbounded<ClusterConfigurationEvent<UriEndPoint>>(new() { SingleWriter = true, SingleReader = true });
     }
 
     protected override IClusterConfigurationStorage<UriEndPoint> ConfigurationStorage { get; }
@@ -137,6 +140,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     public override async Task StartAsync(CancellationToken token)
     {
         configurator?.OnStart(this, metadata);
+        ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteAsync;
 
         if (coldStart)
         {
@@ -172,6 +176,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     {
         configurator?.OnStop(this);
         duplicationDetector.Trim(100);
+        ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
         return base.StopAsync(token);
     }
 
@@ -195,6 +200,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         configurationTracker.Dispose();
         duplicationDetector.Dispose();
         messageHandlers = ImmutableList<IInputChannel>.Empty;
+        configurationEvents.Writer.TryComplete();
     }
 
     protected override void Dispose(bool disposing)
