@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 using static System.Threading.Timeout;
 
@@ -6,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
 using Buffers;
 using IO;
+using Threading;
 
 /// <summary>
 /// Represents base class for all implementations of cluster configuration storages.
@@ -20,6 +22,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     protected readonly MemoryAllocator<byte>? allocator;
     private readonly Random fingerprintSource;
     private readonly Channel<ClusterConfigurationEvent<TAddress>> events;
+    private readonly AsyncExclusiveLock accessLock;
     private protected ImmutableDictionary<ClusterMemberId, TAddress> activeCache, proposedCache;
     private volatile TaskCompletionSource activatedEvent;
 
@@ -30,6 +33,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
         activeCache = proposedCache = ImmutableDictionary<ClusterMemberId, TAddress>.Empty;
         events = Channel.CreateBounded<ClusterConfigurationEvent<TAddress>>(new BoundedChannelOptions(eventQueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
         activatedEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        accessLock = new();
     }
 
     private protected long GenerateFingerprint() => fingerprintSource.NextInt64();
@@ -116,21 +120,66 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     /// <param name="configuration">The proposed configuration.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    public abstract ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default);
+    protected abstract ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default);
+
+    /// <inheritdoc/>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    async ValueTask IClusterConfigurationStorage.ProposeAsync(IClusterConfiguration configuration, CancellationToken token)
+    {
+        await accessLock.AcquireAsync(token).ConfigureAwait(false);
+        try
+        {
+            await ProposeAsync(configuration, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            accessLock.Release();
+        }
+    }
 
     /// <summary>
     /// Applies proposed configuration as active configuration.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    public abstract ValueTask ApplyAsync(CancellationToken token = default);
+    protected abstract ValueTask ApplyAsync(CancellationToken token = default);
+
+    /// <inheritdoc/>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    async ValueTask IClusterConfigurationStorage.ApplyAsync(CancellationToken token)
+    {
+        await accessLock.AcquireAsync(token).ConfigureAwait(false);
+        try
+        {
+            await ApplyAsync(token).ConfigureAwait(false);
+        }
+        finally
+        {
+            accessLock.Release();
+        }
+    }
 
     /// <summary>
     /// Loads configuration from the storage.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    public abstract ValueTask LoadConfigurationAsync(CancellationToken token = default);
+    protected abstract ValueTask LoadConfigurationAsync(CancellationToken token = default);
+
+    /// <inheritdoc/>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    async ValueTask IClusterConfigurationStorage.LoadConfigurationAsync(CancellationToken token)
+    {
+        await accessLock.AcquireAsync(token).ConfigureAwait(false);
+        try
+        {
+            await LoadConfigurationAsync(token).ConfigureAwait(false);
+        }
+        finally
+        {
+            accessLock.Release();
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating that this storage has proposed configuration.
@@ -151,7 +200,22 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     /// <see langword="true"/> if the new member is added to the proposed configuration;
     /// <see langword="false"/> if the storage has the proposed configuration already.
     /// </returns>
-    public abstract ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default);
+    protected abstract ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default);
+
+    /// <inheritdoc/>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    async ValueTask<bool> IClusterConfigurationStorage<TAddress>.AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token)
+    {
+        await accessLock.AcquireAsync(token).ConfigureAwait(false);
+        try
+        {
+            return await AddMemberAsync(id, address, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            accessLock.Release();
+        }
+    }
 
     /// <summary>
     /// Proposes removal of the existing member.
@@ -162,7 +226,22 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     /// <see langword="true"/> if the new member is added to the proposed configuration;
     /// <see langword="false"/> if the storage has the proposed configuration already.
     /// </returns>
-    public abstract ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default);
+    protected abstract ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default);
+
+    /// <inheritdoc/>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    async ValueTask<bool> IClusterConfigurationStorage<TAddress>.RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
+    {
+        await accessLock.AcquireAsync(token).ConfigureAwait(false);
+        try
+        {
+            return await RemoveMemberAsync(id, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            accessLock.Release();
+        }
+    }
 
     /// <inheritdoc />
     IAsyncEnumerable<ClusterConfigurationEvent<TAddress>> IClusterConfigurationStorage<TAddress>.PollChangesAsync(CancellationToken token)
@@ -191,6 +270,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
             activeCache = activeCache.Clear();
             proposedCache = proposedCache.Clear();
             events.Writer.TryComplete();
+            accessLock.Dispose();
         }
 
         base.Dispose(disposing);

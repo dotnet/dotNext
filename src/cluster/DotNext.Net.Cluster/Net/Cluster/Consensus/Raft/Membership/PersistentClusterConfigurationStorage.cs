@@ -139,13 +139,8 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// </summary>
     public sealed override IClusterConfiguration? ProposedConfiguration => proposed.IsEmpty ? null : proposed;
 
-    /// <summary>
-    /// Proposes the configuration.
-    /// </summary>
-    /// <param name="configuration">The proposed configuration.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    public sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
+    /// <inheritdoc/>
+    protected sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
     {
         using var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = bufferSize };
         writer.WriteInt64(configuration.Fingerprint, littleEndian: true);
@@ -158,14 +153,11 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         var builder = proposedCache.ToBuilder();
         Decode(builder, writer.WrittenMemory.Slice(ClusterConfiguration.PayloadOffset));
         proposedCache = builder.ToImmutable();
+        Interlocked.MemoryBarrierProcessWide();
     }
 
-    /// <summary>
-    /// Applies proposed configuration as active configuration.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    public sealed override ValueTask ApplyAsync(CancellationToken token = default)
+    /// <inheritdoc/>
+    protected sealed override ValueTask ApplyAsync(CancellationToken token = default)
     {
         return proposed.IsEmpty ? ValueTask.CompletedTask : ApplyProposedAsync();
 
@@ -178,16 +170,13 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
             proposed.Clear();
             proposedCache = proposedCache.Clear();
 
+            Interlocked.MemoryBarrierProcessWide();
             OnActivated();
         }
     }
 
-    /// <summary>
-    /// Loads configuration from file system.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    public sealed override async ValueTask LoadConfigurationAsync(CancellationToken token = default)
+    /// <inheritdoc/>
+    protected sealed override async ValueTask LoadConfigurationAsync(CancellationToken token = default)
     {
         var builder = ImmutableDictionary.CreateBuilder<ClusterMemberId, TAddress>();
 
@@ -218,6 +207,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
             proposedCache = builder.ToImmutable();
         }
 
+        Interlocked.MemoryBarrierProcessWide();
         builder.Clear();
     }
 
@@ -243,7 +233,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     }
 
     /// <inheritdoc />
-    public sealed override async ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
+    protected sealed override async ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
     {
         if (!proposed.IsEmpty || activeCache.ContainsKey(id))
             return false;
@@ -256,13 +246,14 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         using (var buffer = Encode(builder, proposed.Fingerprint))
             await proposed.UpdateAsync(buffer.Memory, token).ConfigureAwait(false);
 
+        Interlocked.MemoryBarrierProcessWide();
         builder.Clear();
 
         return true;
     }
 
     /// <inheritdoc />
-    public sealed override async ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
+    protected sealed override async ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
     {
         if (!proposed.IsEmpty || !activeCache.ContainsKey(id))
             return false;
@@ -276,6 +267,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         using (var buffer = Encode(builder, proposed.Fingerprint))
             await proposed.UpdateAsync(buffer.Memory, token).ConfigureAwait(false);
 
+        Interlocked.MemoryBarrierProcessWide();
         builder.Clear();
 
         return true;
