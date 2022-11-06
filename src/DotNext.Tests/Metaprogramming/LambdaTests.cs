@@ -447,5 +447,35 @@ namespace DotNext.Metaprogramming
 
             static Task<string> Reprocess() => Task.FromResult("Hello, world!");
         }
+
+        [Fact]
+        public static async Task RegressionIssue127()
+        {
+            var lambda = AsyncLambda<Func<Task<string>>>(_ =>
+            {
+                var hello = DeclareVariable<string>("hello");
+                var foo = DeclareVariable<Func<string>>("foo");
+                Assign(hello, "hello".Const());
+                Assign(foo, Expression.Lambda<Func<string>>(hello));
+                Return(foo.Invoke());
+            });
+
+            Equal("hello", await lambda.Compile().Invoke());
+        }
+
+        [Fact]
+        public static async Task ParameterClosure()
+        {
+            var lambda = AsyncLambda<Func<string, Task<string>>>(ctx =>
+            {
+                var hello = DeclareVariable<string>("hello");
+                var foo = DeclareVariable<Func<string>>("foo");
+                Assign(hello, "hello".Const());
+                Assign(foo, Expression.Lambda<Func<string>>(typeof(string).CallStatic(nameof(string.Concat), hello, ctx[0])));
+                Return(foo.Invoke());
+            });
+
+            Equal("hello, world", await lambda.Compile().Invoke(", world"));
+        }
     }
 }
