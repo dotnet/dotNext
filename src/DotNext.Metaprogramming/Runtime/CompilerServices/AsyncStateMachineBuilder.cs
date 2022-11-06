@@ -91,10 +91,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
             node = node.Update(Empty<ParameterExpression>(), node.Expressions);
             return context.Rewrite(node, base.VisitBlock);
         }
-        else
-        {
-            return VisitBlock(Expression.Block(typeof(void), node.Variables, node.Expressions));
-        }
+
+        return VisitBlock(Expression.Block(typeof(void), node.Variables, node.Expressions));
     }
 
     protected override Expression VisitConditional(ConditionalExpression node)
@@ -380,15 +378,11 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitLoop(LoopExpression node)
     {
-        if (node.Type == typeof(void))
-        {
-            Statement.Rewrite(ref node);
-            return context.Rewrite(node, base.VisitLoop);
-        }
-        else
-        {
+        if (node.Type != typeof(void))
             throw new NotSupportedException(ExceptionMessages.VoidLoopExpected);
-        }
+
+        Statement.Rewrite(ref node);
+        return context.Rewrite(node, base.VisitLoop);
     }
 
     // do not rewrite the body of inner lambda expression
