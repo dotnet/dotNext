@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 11-08-2022
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.5">DotNext.Metaprogramming 4.7.5</a>
+* Fixed [127](https://github.com/dotnet/dotNext/issues/127)
+
 # 10-30-2022
 <a href="https://www.nuget.org/packages/dotnext/4.7.4">DotNext 4.7.4</a>
 * Fixed [126](https://github.com/dotnet/dotNext/issues/126)

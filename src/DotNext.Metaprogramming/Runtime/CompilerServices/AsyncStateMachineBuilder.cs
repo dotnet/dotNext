@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using static System.Diagnostics.Debug;
 using static System.Linq.Enumerable;
 
@@ -37,7 +38,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     }
 
     internal readonly TaskType Task;
-    internal readonly IDictionary<ParameterExpression, MemberExpression?> Variables;
+    internal readonly Dictionary<ParameterExpression, MemberExpression?> Variables;
     private readonly VisitorContext context;
 
     // this label indicates end of async method when successful result should be returned
@@ -49,7 +50,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     internal AsyncStateMachineBuilder(Type taskType, IReadOnlyList<ParameterExpression> parameters)
     {
         Task = new TaskType(taskType);
-        Variables = new Dictionary<ParameterExpression, MemberExpression?>(new VariableEqualityComparer());
+        Variables = new(new VariableEqualityComparer());
         for (var position = 0; position < parameters.Count; position++)
         {
             var parameter = parameters[position];
@@ -71,6 +72,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
            orderby position ascending
            select candidate;
 
+    internal IEnumerable<ParameterExpression> Closures => Variables.Keys.Where(ClosureAnalyzer.IsClosure);
+
     private ParameterExpression NewStateSlot(Type type)
         => NewStateSlot(() => Expression.Variable(type));
 
@@ -91,10 +94,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
             node = node.Update(Empty<ParameterExpression>(), node.Expressions);
             return context.Rewrite(node, base.VisitBlock);
         }
-        else
-        {
-            return VisitBlock(Expression.Block(typeof(void), node.Variables, node.Expressions));
-        }
+
+        return VisitBlock(Expression.Block(typeof(void), node.Variables, node.Expressions));
     }
 
     protected override Expression VisitConditional(ConditionalExpression node)
@@ -146,7 +147,14 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         => node.Type == typeof(void) ? context.Rewrite(node, Converter.Identity<LabelExpression>()) : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
 
     protected override Expression VisitLambda<T>(Expression<T> node)
-        => context.Rewrite(node, base.VisitLambda);
+    {
+        // inner lambda may have closures, we must handle this accordingly
+        var analyzer = new ClosureAnalyzer(Variables);
+        var lambda = analyzer.Visit(node) as LambdaExpression;
+        Debug.Assert(lambda is not null);
+
+        return analyzer.Closures.Count > 0 ? new ClosureExpression(lambda, analyzer.Closures) : lambda;
+    }
 
     protected override Expression VisitListInit(ListInitExpression node)
         => context.Rewrite(node, base.VisitListInit);
@@ -380,21 +388,12 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitLoop(LoopExpression node)
     {
-        if (node.Type == typeof(void))
-        {
-            Statement.Rewrite(ref node);
-            return context.Rewrite(node, base.VisitLoop);
-        }
-        else
-        {
+        if (node.Type != typeof(void))
             throw new NotSupportedException(ExceptionMessages.VoidLoopExpected);
-        }
-    }
 
-    // do not rewrite the body of inner lambda expression
-    [return: NotNullIfNotNull("node")]
-    public override Expression? Visit(Expression? node)
-        => node is LambdaExpression ? node.ReduceExtensions() : base.Visit(node);
+        Statement.Rewrite(ref node);
+        return context.Rewrite(node, base.VisitLoop);
+    }
 
     protected override Expression VisitDynamic(DynamicExpression node)
         => context.Rewrite(node, base.VisitDynamic);
@@ -470,9 +469,36 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         var parameters = methodBuilder.Parameters;
         ICollection<Expression> newBody = new LinkedList<Expression>();
 
+        // initialize closure containers
+        foreach (var localVar in methodBuilder.Closures)
+        {
+            if (methodBuilder.Variables[localVar]?.Expression is MemberExpression inner)
+            {
+                inner = inner.Update(stateVariable);
+                newBody.Add(inner.Assign(inner.Type.New()));
+            }
+        }
+
         // save all parameters into fields
         foreach (var parameter in parameters)
-            newBody.Add(methodBuilder.Variables[parameter]!.Update(stateVariable).Assign(parameter));
+        {
+            var parameterHolder = methodBuilder.Variables[parameter];
+            Debug.Assert(parameterHolder is not null);
+
+            // detect closure
+            if (ClosureAnalyzer.IsClosure(parameter) && parameterHolder.Expression is MemberExpression inner)
+            {
+                inner = inner.Update(stateVariable);
+                parameterHolder = parameterHolder.Update(inner);
+            }
+            else
+            {
+                parameterHolder = parameterHolder.Update(stateVariable);
+            }
+
+            newBody.Add(parameterHolder.Assign(parameter));
+        }
+
         var startMethod = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start));
         Debug.Assert(startMethod is not null);
         newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(startMethod, stateMachineMethod, stateVariable)));
@@ -514,14 +540,20 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         }
     }
 
-    private static MemberExpression[] CreateStateHolderType(Type returnType, bool usePooling, ParameterExpression[] variables, out ParameterExpression stateMachine)
+    private static MemberExpression[] CreateStateHolderType(Type returnType, bool usePooling, IReadOnlyList<ParameterExpression> variables, out ParameterExpression stateMachine)
     {
         var sm = new StateMachineBuilder(returnType, usePooling);
         MemberExpression[] slots;
         using (var builder = new ValueTupleBuilder())
         {
             foreach (var v in variables)
-                builder.Add(v.Type);
+            {
+                var type = ClosureAnalyzer.IsClosure(v)
+                    ? typeof(StrongBox<>).MakeGenericType(v.Type)
+                    : v.Type;
+                builder.Add(type);
+            }
+
             slots = builder.Build(sm.Build, out _);
         }
 
@@ -535,7 +567,12 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         var vars = variables.Keys.ToArray();
         var slots = CreateStateHolderType(returnType, usePooling, vars, out var stateMachine);
         for (var i = 0L; i < slots.LongLength; i++)
-            variables[vars[i]] = slots[i];
+        {
+            var v = vars[i];
+            var s = slots[i];
+            variables[v] = ClosureAnalyzer.IsClosure(v) ? s.Field(nameof(StrongBox<int>.Value)) : s;
+        }
+
         return stateMachine;
     }
 
@@ -560,6 +597,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
             AsyncResultExpression result => Visit(result.Reduce(stateMachine, methodBuilder.AsyncMethodEnd)),
             StateMachineExpression sme => Visit(sme.Reduce(stateMachine)),
             Statement statement => Visit(statement.Reduce()),
+            ClosureExpression closure => closure.Reduce(methodBuilder.Variables),
             _ => base.VisitExtension(node),
         };
     }

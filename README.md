@@ -46,35 +46,10 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-30-2022
+Release Date: 11-08-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.7.4">DotNext 4.7.4</a>
-* Fixed [126](https://github.com/dotnet/dotNext/issues/126)
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.4">DotNext.Metaprogramming 4.7.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.4">DotNext.Reflection 4.7.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.4">DotNext.Unsafe 4.7.4</a>
-* Removed redundant type cast in `Pointer<T>` value type
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/4.7.4">DotNext.Threading 4.7.4</a>
-* `Scheduler.DelayedTaskCanceledException` is added to identify graceful cancellation of the scheduled task (when it was canceled without entering the callback)
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.io/4.7.4">DotNext.IO 4.7.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.4">DotNext.Net.Cluster 4.7.4</a>
-* Smallish performance improvements when processing command queue in HyParView implementation
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.4">DotNext.AspNetCore.Cluster 4.7.4</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.5">DotNext.Metaprogramming 4.7.5</a>
+* Fixed [127](https://github.com/dotnet/dotNext/issues/127)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
