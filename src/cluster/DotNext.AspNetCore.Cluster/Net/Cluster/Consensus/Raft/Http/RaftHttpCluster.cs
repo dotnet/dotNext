@@ -13,6 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 using Membership;
 using Messaging;
 using Net.Http;
+using IFailureDetector = Diagnostics.IFailureDetector;
 using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
 using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
@@ -40,9 +41,11 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IClusterConfigurationStorage<UriEndPoint>? configStorage = null,
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
         MetricsCollector? metrics = null,
-        ClusterMemberAnnouncer<UriEndPoint>? announcer = null)
+        ClusterMemberAnnouncer<UriEndPoint>? announcer = null,
+        Func<IRaftClusterMember, IFailureDetector>? failureDetectorFactory = null)
         : this(config, messageHandlers, loggerFactory.CreateLogger<RaftHttpCluster>(), configurator, auditTrail, configStorage, httpHandlerFactory, metrics, announcer)
     {
+        FailureDetectorFactory = failureDetectorFactory;
     }
 
     internal RaftHttpCluster(
