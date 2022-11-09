@@ -11,18 +11,18 @@
   </ItemGroup>
   <ItemGroup>
     <!--System packages-->
-    <PackageVersion Include="System.Collections.Immutable" Version="6.0.0" />
+    <PackageVersion Include="System.Collections.Immutable" Version="7.0.0" />
     <PackageVersion Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageVersion Include="System.IO.Pipelines" Version="6.0.3" />
-    <PackageVersion Include="System.Resources.Extensions" Version="6.0.0"/>
-    <PackageVersion Include="System.Runtime.Caching" Version="6.0.0" />
+    <PackageVersion Include="System.IO.Pipelines" Version="7.0.0" />
+    <PackageVersion Include="System.Resources.Extensions" Version="7.0.0"/>
+    <PackageVersion Include="System.Runtime.Caching" Version="7.0.0" />
     <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0"/>
-    <PackageVersion Include="System.Threading.Channels" Version="6.0.0" />
+    <PackageVersion Include="System.Threading.Channels" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
-    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="6.0.10" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="6.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="6.0.0" />
