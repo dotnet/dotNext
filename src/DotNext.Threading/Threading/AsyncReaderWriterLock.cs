@@ -37,7 +37,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     internal struct State
     {
-        private long version;  // version of write lock
+        private ulong version;  // version of write lock
 
         // number of acquired read locks
         private long readLocks; // volatile
@@ -45,7 +45,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
         public State()
         {
-            version = long.MinValue;
+            version = 0UL;
             writeLock = false;
             readLocks = 0L;
         }
@@ -77,7 +77,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             private set => readLocks.VolatileWrite(value);
         }
 
-        internal readonly long Version => version.VolatileRead();
+        internal readonly ulong Version => version.VolatileRead();
 
         internal readonly bool IsWriteLockAllowed => !writeLock && ReadLocks == 0L;
 
@@ -140,7 +140,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     public readonly struct LockStamp : IEquatable<LockStamp>
     {
-        private readonly long version;
+        private readonly ulong version;
         private readonly bool valid;
 
         internal LockStamp(in State state)
