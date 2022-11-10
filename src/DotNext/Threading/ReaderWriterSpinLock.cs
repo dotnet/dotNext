@@ -18,16 +18,16 @@ public struct ReaderWriterSpinLock
     [StructLayout(LayoutKind.Auto)]
     public readonly struct LockStamp : IEquatable<LockStamp>
     {
-        private readonly int version;
+        private readonly uint version;
         private readonly bool valid;
 
-        internal LockStamp(in int version)
+        internal LockStamp(in uint version)
         {
             this.version = version.VolatileRead();
             valid = true;
         }
 
-        internal bool IsValid(in int version) => valid && this.version == version.VolatileRead();
+        internal bool IsValid(in uint version) => valid && this.version == version.VolatileRead();
 
         private bool Equals(in LockStamp other)
             => version == other.version && valid == other.valid;
@@ -80,7 +80,7 @@ public struct ReaderWriterSpinLock
     private const int SingleReaderState = 1;
 
     private volatile int state;
-    private int version;    // volatile
+    private uint version;    // volatile
 
     /// <summary>
     /// Returns a stamp that can be validated later.
