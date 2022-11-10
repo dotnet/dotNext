@@ -43,13 +43,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         private long readLocks; // volatile
         private volatile bool writeLock;
 
-        public State()
-        {
-            version = 0UL;
-            writeLock = false;
-            readLocks = 0L;
-        }
-
         internal readonly bool WriteLock => writeLock;
 
         internal void DowngradeFromWriteLock()
