@@ -15,7 +15,7 @@ namespace DotNext.Buffers;
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable
+public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IResettable
 {
     /// <summary>
     /// Represents default initial buffer size.
@@ -91,6 +91,9 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable
     /// </summary>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     void Clear();
+
+    /// <inheritdoc />
+    void IResettable.Reset() => Clear();
 
     /// <summary>
     /// Attempts to get written content as contiguous block of memory.

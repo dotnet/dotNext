@@ -4,7 +4,7 @@ namespace DotNext.Diagnostics;
 /// Represents failure detector that can be used to determine availability of the particular resource in
 /// distributed environment such as a cluser to peer-to-peer network.
 /// </summary>
-public interface IFailureDetector
+public interface IFailureDetector : IResettable
 {
     /// <summary>
     /// Indicates that the resource associated with this detector is considered to be up
@@ -21,9 +21,4 @@ public interface IFailureDetector
     /// Notifies that this detector received a heartbeat from the associated resource.
     /// </summary>
     void ReportHeartbeat();
-
-    /// <summary>
-    /// Resets internal state of this detector.
-    /// </summary>
-    void Reset();
 }

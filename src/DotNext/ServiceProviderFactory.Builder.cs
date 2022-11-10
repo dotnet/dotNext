@@ -5,7 +5,7 @@ public partial class ServiceProviderFactory
     /// <summary>
     /// Represents builder of the service provider.
     /// </summary>
-    public sealed class Builder : ISupplier<IServiceProvider>
+    public sealed class Builder : ISupplier<IServiceProvider>, IResettable
     {
         private readonly IDictionary<Type, object?> services = new Dictionary<Type, object?>();
 
@@ -42,6 +42,9 @@ public partial class ServiceProviderFactory
         /// Clears internal state of this builder and makes it reusable for subsequent calls.
         /// </summary>
         public void Clear() => services.Clear();
+
+        /// <inheritdoc />
+        void IResettable.Reset() => Clear();
 
         /// <inheritdoc />
         IServiceProvider ISupplier<IServiceProvider>.Invoke() => Build();
