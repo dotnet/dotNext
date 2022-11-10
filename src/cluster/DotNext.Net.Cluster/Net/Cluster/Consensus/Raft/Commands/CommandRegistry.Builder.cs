@@ -2,12 +2,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
 using Runtime.Serialization;
 
-public partial class CommandInterpreter
+public partial class CommandInterpreter : IBuildable<CommandInterpreter, CommandInterpreter.Builder>
 {
     /// <summary>
     /// Represents builder of the interpreter.
     /// </summary>
-    public sealed class Builder : ISupplier<CommandInterpreter>
+    public sealed class Builder : ISupplier<CommandInterpreter>, IResettable
     {
         private readonly Dictionary<int, CommandHandler> interpreters;
         private readonly Dictionary<Type, int> identifiers;
@@ -56,13 +56,19 @@ public partial class CommandInterpreter
             identifiers.Clear();
         }
 
+        /// <inheritdoc />
+        void IResettable.Reset() => Clear();
+
         /// <summary>
         /// Constructs an instance of <see cref="CommandInterpreter"/>.
         /// </summary>
         /// <returns>A new instance of the interpreter.</returns>
         public CommandInterpreter Build() => new(interpreters, identifiers, snapshotCommandId);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         CommandInterpreter ISupplier<CommandInterpreter>.Invoke() => Build();
     }
+
+    /// <inheritdoc />
+    static Builder IBuildable<CommandInterpreter, Builder>.CreateBuilder() => new();
 }

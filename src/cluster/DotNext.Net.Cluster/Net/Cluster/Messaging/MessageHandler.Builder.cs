@@ -2,12 +2,12 @@ namespace DotNext.Net.Cluster.Messaging;
 
 using Runtime.Serialization;
 
-public partial class MessageHandler
+public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.Builder>
 {
     /// <summary>
     /// Represents builder of message handlers.
     /// </summary>
-    public sealed class Builder : ISupplier<MessageHandler>
+    public sealed class Builder : ISupplier<MessageHandler>, IResettable
     {
         private readonly Dictionary<string, RpcHandler> rpcHandlers;
         private readonly Dictionary<string, SignalHandler> signalHandlers;
@@ -158,6 +158,9 @@ public partial class MessageHandler
             signalHandlers.Clear();
         }
 
+        /// <inheritdoc />
+        void IResettable.Reset() => Clear();
+
         /// <summary>
         /// Constructs message hander based on registered delegates.
         /// </summary>
@@ -167,4 +170,7 @@ public partial class MessageHandler
         /// <inheritdoc/>
         MessageHandler ISupplier<MessageHandler>.Invoke() => Build();
     }
+
+    /// <inheritdoc />
+    static Builder IBuildable<MessageHandler, MessageHandler.Builder>.CreateBuilder() => new();
 }
