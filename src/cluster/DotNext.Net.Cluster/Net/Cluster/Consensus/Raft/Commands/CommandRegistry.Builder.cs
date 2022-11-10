@@ -69,6 +69,9 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         CommandInterpreter ISupplier<CommandInterpreter>.Invoke() => Build();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a new instance of <see cref="Builder"/>.
+    /// </summary>
+    /// <returns>A new instance of <see cref="Builder"/>.</returns>
     static Builder IBuildable<CommandInterpreter, Builder>.CreateBuilder() => new();
 }

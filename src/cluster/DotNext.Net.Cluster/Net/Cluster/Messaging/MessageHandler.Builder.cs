@@ -171,6 +171,9 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         MessageHandler ISupplier<MessageHandler>.Invoke() => Build();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a new instance of <see cref="Builder"/>.
+    /// </summary>
+    /// <returns>A new instance of <see cref="Builder"/>.</returns>
     static Builder IBuildable<MessageHandler, MessageHandler.Builder>.CreateBuilder() => new();
 }
