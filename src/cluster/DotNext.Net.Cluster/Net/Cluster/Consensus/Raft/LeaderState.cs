@@ -10,7 +10,8 @@ using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
 using Timestamp = Diagnostics.Timestamp;
 
-internal sealed partial class LeaderState : RaftState
+internal sealed partial class LeaderState<TMember> : RaftState<TMember>
+    where TMember : class, IRaftClusterMember
 {
     private const int MaxTermCacheSize = 100;
     private readonly long currentTerm;
@@ -19,9 +20,8 @@ internal sealed partial class LeaderState : RaftState
     internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
 
     private Task? heartbeatTask;
-    internal ILeaderStateMetrics? Metrics;
 
-    internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term, TimeSpan maxLease)
+    internal LeaderState(IRaftStateMachine<TMember> stateMachine, bool allowPartitioning, long term, TimeSpan maxLease)
         : base(stateMachine)
     {
         currentTerm = term;
@@ -31,13 +31,19 @@ internal sealed partial class LeaderState : RaftState
         (leaseTokenSource = new()).Cancel();
         precedingTermCache = new(MaxTermCacheSize);
         this.maxLease = maxLease;
-        leaseTimer = new(OnLeaseExpired, new WeakReference<LeaderState>(this), InfiniteTimeSpan, InfiniteTimeSpan);
+        leaseTimer = new(OnLeaseExpired, new WeakReference<LeaderState<TMember>>(this), InfiniteTimeSpan, InfiniteTimeSpan);
 
         static void OnLeaseExpired(object? state)
         {
-            if ((state as WeakReference<LeaderState>)?.TryGetTarget(out var leader) ?? false)
+            if ((state as WeakReference<LeaderState<TMember>>)?.TryGetTarget(out var leader) ?? false)
                 leader.OnLeaseExpired();
         }
+    }
+
+    internal ILeaderStateMetrics? Metrics
+    {
+        private get;
+        init;
     }
 
     private async Task<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
@@ -67,7 +73,7 @@ internal sealed partial class LeaderState : RaftState
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
-                responsePipe.Add(Task.Run(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync));
+                responsePipe.Add(QueueReplication(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token)));
             }
         }
 
@@ -88,11 +94,14 @@ internal sealed partial class LeaderState : RaftState
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
         await foreach (var task in responsePipe.ConfigureAwait(false))
         {
+            var member = ReplicationWorkItem.GetReplicatedMember(task);
+            Debug.Assert(member is not null);
             Debug.Assert(task.IsCompleted);
 
             try
             {
                 var result = task.GetAwaiter().GetResult();
+                failureDetector?.ReportHeartbeat(member);
                 term = Math.Max(term, result.Term);
                 quorum++;
 
@@ -123,6 +132,10 @@ internal sealed partial class LeaderState : RaftState
             {
                 Logger.LogError(e, ExceptionMessages.UnexpectedError);
             }
+
+            // report unavailable cluster member
+            if ((failureDetector?.IsAlive(member) ?? true) is false)
+                UnavailableMemberDetected(member, LeadershipToken);
         }
 
         Metrics?.ReportBroadcastTime(startTime.Elapsed);
@@ -212,7 +225,7 @@ internal sealed partial class LeaderState : RaftState
         replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
         replicationEvent.Dispose();
 
-        Metrics = null;
+        failureDetector?.Clear();
     }
 
     protected override async ValueTask DisposeAsyncCore()

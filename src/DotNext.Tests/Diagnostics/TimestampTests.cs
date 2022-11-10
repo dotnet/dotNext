@@ -85,5 +85,15 @@ namespace DotNext.Diagnostics
             True(ts.IsFuture);
             False(ts.IsPast);
         }
+
+        [Fact]
+        public static void AddSubtractZero()
+        {
+            var ts = default(Timestamp) + TimeSpan.Zero;
+            True(ts.IsEmpty);
+
+            ts = default(Timestamp) - TimeSpan.Zero;
+            True(ts.IsEmpty);
+        }
     }
 }

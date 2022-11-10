@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Fact]
         public static void AddAndGet()
         {
-            var cache = new LeaderState.TermCache(10);
+            var cache = new LeaderState<RaftClusterMember>.TermCache(10);
             cache.Add(10, 42);
             cache.Add(11, 43);
             cache.Add(9, 41);
