@@ -31,7 +31,7 @@ internal struct StringReader<TBuffer> : IBufferReader<string>, IBufferReader<int
 
     internal Span<char> Complete() => result.Span.Slice(0, resultOffset);
 
-    public void Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
+    public void Append(scoped ReadOnlySpan<byte> bytes, scoped ref int consumedBytes)
     {
         length -= bytes.Length;
         resultOffset += decoder.GetChars(bytes, result.Span.Slice(resultOffset), length == 0);

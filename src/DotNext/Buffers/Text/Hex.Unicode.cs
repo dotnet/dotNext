@@ -15,7 +15,7 @@ public static partial class Hex
     /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
     /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
     /// <returns>The actual number of characters in <paramref name="output"/> written by the method.</returns>
-    public static unsafe int EncodeToUtf16(ReadOnlySpan<byte> bytes, Span<char> output, bool lowercased = false)
+    public static unsafe int EncodeToUtf16(scoped ReadOnlySpan<byte> bytes, scoped Span<char> output, bool lowercased = false)
     {
         if (bytes.IsEmpty || output.IsEmpty)
             return 0;
@@ -176,7 +176,7 @@ public static partial class Hex
     /// <param name="bytes">The bytes to convert.</param>
     /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
     /// <returns>The hexadecimal representation of bytes.</returns>
-    public static string EncodeToUtf16(ReadOnlySpan<byte> bytes, bool lowercased = false)
+    public static string EncodeToUtf16(scoped ReadOnlySpan<byte> bytes, bool lowercased = false)
     {
         string result;
 
@@ -201,7 +201,7 @@ public static partial class Hex
     /// <param name="output">The output buffer used to write decoded bytes.</param>
     /// <returns>The actual number of bytes in <paramref name="output"/> written by the method.</returns>
     /// <exception cref="FormatException"><paramref name="chars"/> contain invalid hexadecimal symbol.</exception>
-    public static int DecodeFromUtf16(ReadOnlySpan<char> chars, Span<byte> output)
+    public static int DecodeFromUtf16(scoped ReadOnlySpan<char> chars, scoped Span<byte> output)
     {
         if (chars.IsEmpty || output.IsEmpty)
             return 0;

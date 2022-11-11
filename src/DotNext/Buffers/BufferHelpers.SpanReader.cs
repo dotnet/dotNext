@@ -17,7 +17,7 @@ public static partial class BufferHelpers
     /// <see langword="true"/> if memory block contains enough amount of unread bytes to decode the value;
     /// otherwise, <see langword="false"/>.
     /// </returns>
-    public static unsafe bool TryRead<T>(this ref SpanReader<byte> reader, out T result)
+    public static unsafe bool TryRead<T>(scoped this ref SpanReader<byte> reader, out T result)
         where T : unmanaged
     {
         if (MemoryMarshal.TryRead(reader.RemainingSpan, out result))
@@ -38,7 +38,7 @@ public static partial class BufferHelpers
     /// <returns>The value deserialized from bytes.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe T Read<T>(this ref SpanReader<byte> reader)
+    public static unsafe T Read<T>(scoped this ref SpanReader<byte> reader)
         where T : unmanaged
         => Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(reader.Read(sizeof(T))));
 
@@ -50,7 +50,7 @@ public static partial class BufferHelpers
     /// <returns>The decoded value.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static short ReadInt16(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static short ReadInt16(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
     {
         var result = reader.Read<short>();
         if (isLittleEndian != BitConverter.IsLittleEndian)
@@ -67,7 +67,7 @@ public static partial class BufferHelpers
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static ushort ReadUInt16(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static ushort ReadUInt16(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
     {
         var result = reader.Read<ushort>();
         if (isLittleEndian != BitConverter.IsLittleEndian)
@@ -83,7 +83,7 @@ public static partial class BufferHelpers
     /// <returns>The decoded value.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int ReadInt32(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static int ReadInt32(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
     {
         var result = reader.Read<int>();
         if (isLittleEndian != BitConverter.IsLittleEndian)
@@ -100,7 +100,7 @@ public static partial class BufferHelpers
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static uint ReadUInt32(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static uint ReadUInt32(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
     {
         var result = reader.Read<uint>();
         if (isLittleEndian != BitConverter.IsLittleEndian)
@@ -116,7 +116,7 @@ public static partial class BufferHelpers
     /// <returns>The decoded value.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long ReadInt64(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static long ReadInt64(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
     {
         var result = reader.Read<long>();
         if (isLittleEndian != BitConverter.IsLittleEndian)
@@ -133,7 +133,7 @@ public static partial class BufferHelpers
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static ulong ReadUInt64(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static ulong ReadUInt64(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
     {
         var result = reader.Read<ulong>();
         if (isLittleEndian != BitConverter.IsLittleEndian)
@@ -149,7 +149,7 @@ public static partial class BufferHelpers
     /// <returns>The decoded value.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float ReadSingle(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static float ReadSingle(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
         => BitConverter.Int32BitsToSingle(reader.ReadInt32(isLittleEndian));
 
     /// <summary>
@@ -160,7 +160,7 @@ public static partial class BufferHelpers
     /// <returns>The decoded value.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double ReadDouble(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static double ReadDouble(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
         => BitConverter.Int64BitsToDouble(reader.ReadInt64(isLittleEndian));
 
     /// <summary>
@@ -171,6 +171,6 @@ public static partial class BufferHelpers
     /// <returns>The decoded value.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Half ReadHalf(this ref SpanReader<byte> reader, bool isLittleEndian)
+    public static Half ReadHalf(scoped this ref SpanReader<byte> reader, bool isLittleEndian)
         => BitConverter.Int16BitsToHalf(reader.ReadInt16(isLittleEndian));
 }

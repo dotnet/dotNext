@@ -29,7 +29,7 @@ public static partial class StreamSource
 
         Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, arg, token);
 
-        void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => output(input, arg);
+        void IReadOnlySpanConsumer.Invoke(scoped ReadOnlySpan<byte> input) => output(input, arg);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -75,7 +75,7 @@ public static partial class StreamSource
 
         Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, output, token);
 
-        void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => output.Write(input);
+        void IReadOnlySpanConsumer.Invoke(scoped ReadOnlySpan<byte> input) => output.Write(input);
     }
 
     // should be used if TBuffer is IReadOnlySpanConsumer
@@ -99,7 +99,7 @@ public static partial class StreamSource
 
         Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, output, token);
 
-        void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => Unsafe.As<IReadOnlySpanConsumer>(output).Invoke(input);
+        void IReadOnlySpanConsumer.Invoke(scoped ReadOnlySpan<byte> input) => Unsafe.As<IReadOnlySpanConsumer>(output).Invoke(input);
     }
 
     private static void Flush<TArg>(Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync, TArg arg)

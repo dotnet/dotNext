@@ -43,7 +43,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     void Write(ReadOnlySpan<T> input);
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
+    void IReadOnlySpanConsumer<T>.Invoke(scoped ReadOnlySpan<T> input)
         => Write(input);
 
     /// <summary>
@@ -84,7 +84,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <param name="output">The memory block to be modified.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-    int CopyTo(Span<T> output);
+    int CopyTo(scoped Span<T> output);
 
     /// <summary>
     /// Clears the contents of the writer.

@@ -258,7 +258,7 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
     /// <param name="output">The memory block to be modified.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-    public int CopyTo(Span<T> output)
+    public int CopyTo(scoped Span<T> output)
     {
         ThrowIfDisposed();
         var total = 0;

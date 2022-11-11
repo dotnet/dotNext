@@ -19,7 +19,7 @@ public static class Result
     /// <typeparam name="T">Value type.</typeparam>
     /// <param name="result">The result.</param>
     /// <returns>Nullable value.</returns>
-    public static T? OrNull<T>(this in Result<T> result)
+    public static T? OrNull<T>(scoped this in Result<T> result)
         where T : struct
         => result.TryGet(out var value) ? value : null;
 
@@ -30,7 +30,7 @@ public static class Result
     /// <typeparam name="TError">The type of the error code.</typeparam>
     /// <param name="result">The result.</param>
     /// <returns>Nullable value.</returns>
-    public static T? OrNull<T, TError>(this in Result<T, TError> result)
+    public static T? OrNull<T, TError>(scoped this in Result<T, TError> result)
         where T : struct
         where TError : struct, Enum
         => result.TryGet(out var value) ? value : null;

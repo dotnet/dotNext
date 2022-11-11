@@ -23,7 +23,7 @@ public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, Cancell
     /// Invokes the consumer.
     /// </summary>
     /// <param name="span">The span of elements.</param>
-    void Invoke(ReadOnlySpan<T> span);
+    void Invoke(scoped ReadOnlySpan<T> span);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
@@ -83,7 +83,7 @@ public readonly unsafe struct ReadOnlySpanConsumer<T, TArg> : IReadOnlySpanConsu
     public bool IsEmpty => ptr is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => ptr(span, arg);
+    void IReadOnlySpanConsumer<T>.Invoke(scoped ReadOnlySpan<T> span) => ptr(span, arg);
 }
 
 /// <summary>
@@ -116,7 +116,7 @@ public readonly struct DelegatingReadOnlySpanConsumer<T, TArg> : IReadOnlySpanCo
     public bool IsEmpty => action is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => action(span, arg);
+    void IReadOnlySpanConsumer<T>.Invoke(scoped ReadOnlySpan<T> span) => action(span, arg);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
@@ -166,7 +166,7 @@ public readonly struct BufferConsumer<T> : IReadOnlySpanConsumer<T>, IEquatable<
     public bool IsEmpty => output is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => output.Write(span);
+    void IReadOnlySpanConsumer<T>.Invoke(scoped ReadOnlySpan<T> span) => output.Write(span);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)

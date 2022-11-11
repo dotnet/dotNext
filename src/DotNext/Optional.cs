@@ -117,7 +117,7 @@ public static class Optional
     /// <typeparam name="T">Type of value.</typeparam>
     /// <param name="value">The value to convert.</param>
     /// <returns>The value wrapped into Optional container.</returns>
-    public static Optional<T> ToOptional<T>(this in T? value)
+    public static Optional<T> ToOptional<T>(scoped this in T? value)
         where T : struct
         => value.HasValue ? Some(value.GetValueOrDefault()) : None<T>();
 
@@ -127,7 +127,7 @@ public static class Optional
     /// <typeparam name="T">Value type.</typeparam>
     /// <param name="value">Optional value.</param>
     /// <returns>Nullable value.</returns>
-    public static T? OrNull<T>(this in Optional<T> value)
+    public static T? OrNull<T>(scoped this in Optional<T> value)
         where T : struct
         => value.HasValue ? value.OrDefault() : null;
 

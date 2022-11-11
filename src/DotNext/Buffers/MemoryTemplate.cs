@@ -43,7 +43,7 @@ public readonly struct MemoryTemplate<T>
             this.rewriter = rewriter;
         }
 
-        void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input) => buffer.Write(input);
+        void IReadOnlySpanConsumer<T>.Invoke(scoped ReadOnlySpan<T> input) => buffer.Write(input);
 
         void IConsumer<int>.Invoke(int index) => rewriter(index, buffer);
     }
@@ -62,7 +62,7 @@ public readonly struct MemoryTemplate<T>
             this.state = state;
         }
 
-        void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input) => output(input, state);
+        void IReadOnlySpanConsumer<T>.Invoke(scoped ReadOnlySpan<T> input) => output(input, state);
 
         void IConsumer<int>.Invoke(int index) => rewriter(index, state);
     }
@@ -76,7 +76,7 @@ public readonly struct MemoryTemplate<T>
     /// </summary>
     /// <param name="template">The template containing placeholders for replacement.</param>
     /// <param name="placeholder">The span of elements representing template placeholder.</param>
-    public MemoryTemplate(ReadOnlyMemory<T> template, ReadOnlySpan<T> placeholder)
+    public MemoryTemplate(ReadOnlyMemory<T> template, scoped ReadOnlySpan<T> placeholder)
     {
         this.template = template;
         if (placeholder.IsEmpty || placeholder.Length > template.Length)
@@ -96,7 +96,7 @@ public readonly struct MemoryTemplate<T>
     /// </summary>
     public ReadOnlyMemory<T> Value => template;
 
-    private static Placeholder? BuildPlaceholdersChain(ReadOnlySpan<T> source, ReadOnlySpan<T> placeholder)
+    private static Placeholder? BuildPlaceholdersChain(scoped ReadOnlySpan<T> source, scoped ReadOnlySpan<T> placeholder)
     {
         Placeholder? head = null, tail = null;
 
@@ -224,7 +224,7 @@ public static class MemoryTemplate
             this.replacement = replacement;
         }
 
-        void IReadOnlySpanConsumer<char>.Invoke(ReadOnlySpan<char> input) => output.Append(input);
+        void IReadOnlySpanConsumer<char>.Invoke(scoped ReadOnlySpan<char> input) => output.Append(input);
 
         void IConsumer<int>.Invoke(int index) => output.Append(replacement[index]);
     }
@@ -241,7 +241,7 @@ public static class MemoryTemplate
             this.replacement = replacement;
         }
 
-        void IReadOnlySpanConsumer<char>.Invoke(ReadOnlySpan<char> input) => output.Write(input);
+        void IReadOnlySpanConsumer<char>.Invoke(scoped ReadOnlySpan<char> input) => output.Write(input);
 
         void IConsumer<int>.Invoke(int index) => output.Write(replacement[index]);
     }
@@ -258,7 +258,7 @@ public static class MemoryTemplate
             this.replacement = replacement;
         }
 
-        void IReadOnlySpanConsumer<char>.Invoke(ReadOnlySpan<char> input) => output.Write(input);
+        void IReadOnlySpanConsumer<char>.Invoke(scoped ReadOnlySpan<char> input) => output.Write(input);
 
         void IConsumer<int>.Invoke(int index) => output.Write(replacement[index]);
     }

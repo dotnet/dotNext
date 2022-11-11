@@ -21,7 +21,7 @@ public partial struct Base64Decoder
         return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<ulong, char>(ref Unsafe.AsRef(in value)), length);
     }
 
-    private bool DecodeFromUtf16Core<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+    private bool DecodeFromUtf16Core<TWriter>(scoped ReadOnlySpan<char> chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var size = chars.Length & 3;
@@ -48,7 +48,7 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private bool CopyAndDecodeFromUtf16<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+    private bool CopyAndDecodeFromUtf16<TWriter>(scoped ReadOnlySpan<char> chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var newSize = reservedBufferSize + chars.Length;
@@ -59,7 +59,7 @@ public partial struct Base64Decoder
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool DecodeFromUtf16<TWriter>(ReadOnlySpan<char> chars, ref TWriter writer)
+    private bool DecodeFromUtf16<TWriter>(scoped ReadOnlySpan<char> chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
         => NeedMoreData ? CopyAndDecodeFromUtf16(chars, ref writer) : DecodeFromUtf16Core(chars, ref writer);
 
@@ -70,7 +70,7 @@ public partial struct Base64Decoder
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf16(ReadOnlySpan<char> chars, IBufferWriter<byte> output)
+    public void DecodeFromUtf16(scoped ReadOnlySpan<char> chars, IBufferWriter<byte> output)
     {
         ArgumentNullException.ThrowIfNull(output);
 
@@ -85,7 +85,7 @@ public partial struct Base64Decoder
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf16(in ReadOnlySequence<char> chars, IBufferWriter<byte> output)
+    public void DecodeFromUtf16(scoped in ReadOnlySequence<char> chars, IBufferWriter<byte> output)
     {
         ArgumentNullException.ThrowIfNull(output);
 
@@ -103,7 +103,7 @@ public partial struct Base64Decoder
     /// <param name="allocator">The allocator of the result buffer.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     /// <returns>A buffer containing decoded bytes.</returns>
-    public MemoryOwner<byte> DecodeFromUtf16(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
+    public MemoryOwner<byte> DecodeFromUtf16(scoped ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator = null)
     {
         var result = new MemoryOwnerWrapper<byte>(allocator);
 
@@ -115,7 +115,7 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private void DecodeFromUtf16Core<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+    private void DecodeFromUtf16Core<TConsumer>(scoped ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         const int maxInputBlockSize = (DecodingBufferSize / 3) * 4;
@@ -142,7 +142,7 @@ public partial struct Base64Decoder
         }
 
         // true - encoding completed, false - need more data
-        static bool Decode(ReadOnlySpan<char> input, Span<byte> output, out int consumedChars, out int producedBytes)
+        static bool Decode(scoped ReadOnlySpan<char> input, scoped Span<byte> output, out int consumedChars, out int producedBytes)
         {
             Debug.Assert(output.Length == DecodingBufferSize);
             Debug.Assert(input.Length <= maxInputBlockSize);
@@ -162,7 +162,7 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private void CopyAndDecodeFromUtf16<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+    private void CopyAndDecodeFromUtf16<TConsumer>(scoped ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         var newSize = reservedBufferSize + chars.Length;
@@ -179,7 +179,7 @@ public partial struct Base64Decoder
     /// <param name="chars">The span containing base64-encoded bytes.</param>
     /// <param name="output">The consumer called for decoded portion of data.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf16<TConsumer>(ReadOnlySpan<char> chars, TConsumer output)
+    public void DecodeFromUtf16<TConsumer>(scoped ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         if (NeedMoreData)
@@ -196,7 +196,7 @@ public partial struct Base64Decoder
     /// <param name="callback">The callback called for decoded portion of data.</param>
     /// <param name="arg">The argument to be passed to the callback.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf16<TArg>(ReadOnlySpan<char> chars, ReadOnlySpanAction<byte, TArg> callback, TArg arg)
+    public void DecodeFromUtf16<TArg>(scoped ReadOnlySpan<char> chars, ReadOnlySpanAction<byte, TArg> callback, TArg arg)
         => DecodeFromUtf16(chars, new DelegatingReadOnlySpanConsumer<byte, TArg>(callback, arg));
 
     /// <summary>
@@ -208,7 +208,7 @@ public partial struct Base64Decoder
     /// <param name="arg">The argument to be passed to the callback.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     [CLSCompliant(false)]
-    public unsafe void DecodeFromUtf16<TArg>(ReadOnlySpan<char> chars, delegate*<ReadOnlySpan<byte>, TArg, void> callback, TArg arg)
+    public unsafe void DecodeFromUtf16<TArg>(scoped ReadOnlySpan<char> chars, delegate*<ReadOnlySpan<byte>, TArg, void> callback, TArg arg)
         => DecodeFromUtf16(chars, new ReadOnlySpanConsumer<byte, TArg>(callback, arg));
 
     /// <summary>

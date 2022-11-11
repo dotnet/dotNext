@@ -181,7 +181,7 @@ public static partial class BufferHelpers
     /// <param name="writtenCount">The number of copied elements.</param>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void CopyTo<T>(this in ReadOnlySequence<T> source, Span<T> destination, out int writtenCount)
+    public static void CopyTo<T>(this in ReadOnlySequence<T> source, scoped Span<T> destination, out int writtenCount)
     {
         if (source.IsSingleSegment)
         {
@@ -270,7 +270,7 @@ public static partial class BufferHelpers
     /// <param name="provider">The formatting provider.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(this IBufferWriter<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] ref BufferWriterInterpolatedStringHandler handler)
+    public static int WriteString(this IBufferWriter<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] scoped ref BufferWriterInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -279,7 +279,7 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(this IBufferWriter<char> writer, [InterpolatedStringHandlerArgument("writer")] ref BufferWriterInterpolatedStringHandler handler)
+    public static int WriteString(this IBufferWriter<char> writer, [InterpolatedStringHandlerArgument("writer")] scoped ref BufferWriterInterpolatedStringHandler handler)
         => WriteString(writer, null, ref handler);
 
     /// <summary>
@@ -306,7 +306,7 @@ public static partial class BufferHelpers
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="characters">The characters to write.</param>
-    public static void WriteLine(this IBufferWriter<char> writer, ReadOnlySpan<char> characters)
+    public static void WriteLine(this IBufferWriter<char> writer, scoped ReadOnlySpan<char> characters)
     {
         writer.Write(characters);
         writer.Write(Environment.NewLine);
@@ -318,7 +318,7 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">An array of strings.</param>
     /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
-    public static void Concat(this IBufferWriter<char> writer, ReadOnlySpan<string?> values)
+    public static void Concat(this IBufferWriter<char> writer, scoped ReadOnlySpan<string?> values)
     {
         switch (values.Length)
         {
@@ -372,7 +372,7 @@ public static partial class BufferHelpers
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteFormattable<T>(this IBufferWriter<char> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    public static int WriteFormattable<T>(this IBufferWriter<char> writer, T value, scoped ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, ISpanFormattable
     {
         int charsWritten;
@@ -415,7 +415,7 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">A sequence of values to convert.</param>
     [RequiresPreviewFeatures]
-    public static void WriteFormattable<T>(this IBufferWriter<byte> writer, ReadOnlySpan<T> values)
+    public static void WriteFormattable<T>(this IBufferWriter<byte> writer, scoped ReadOnlySpan<T> values)
         where T : notnull, IBinaryFormattable<T>
     {
         if (values.IsEmpty)

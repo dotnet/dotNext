@@ -27,7 +27,7 @@ internal struct MemoryReader : IBufferReader<int>, IBufferReader<Missing>
 
     internal readonly bool IsCompleted => offset >= buffer.Length;
 
-    public void Append(ReadOnlySpan<byte> block, ref int consumedBytes)
+    public void Append(scoped ReadOnlySpan<byte> block, scoped ref int consumedBytes)
     {
         block.CopyTo(buffer.Span.Slice(offset));
         offset += block.Length;

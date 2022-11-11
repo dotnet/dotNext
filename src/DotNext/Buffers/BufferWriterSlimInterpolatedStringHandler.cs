@@ -50,7 +50,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     public void AppendLiteral(string? value)
         => AppendFormatted(value.AsSpan());
 
-    internal static int AppendFormatted<T>(ref BufferWriterSlim<char> buffer, T value, string? format, IFormatProvider? provider)
+    internal static int AppendFormatted<T>(scoped ref BufferWriterSlim<char> buffer, T value, string? format, IFormatProvider? provider)
     {
         int charsWritten;
 
@@ -88,7 +88,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
 
         return charsWritten;
 
-        static int Write(ref BufferWriterSlim<char> buffer, ReadOnlySpan<char> chars)
+        static int Write(scoped ref BufferWriterSlim<char> buffer, scoped ReadOnlySpan<char> chars)
         {
             buffer.Write(chars);
             return chars.Length;
@@ -108,13 +108,13 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// Writes the specified character span to the handler.
     /// </summary>
     /// <param name="value">The span to write.</param>
-    public void AppendFormatted(ReadOnlySpan<char> value)
+    public void AppendFormatted(scoped ReadOnlySpan<char> value)
     {
         buffer.Value.Write(value);
         count += value.Length;
     }
 
-    private void AppendFormatted(ReadOnlySpan<char> value, int alignment, bool leftAlign)
+    private void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment, bool leftAlign)
     {
         Debug.Assert(alignment >= 0);
 
@@ -149,7 +149,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// Minimum number of characters that should be written for this value. If the value is negative,
     /// it indicates left-aligned and the required minimum is the absolute value.
     /// </param>
-    public void AppendFormatted(ReadOnlySpan<char> value, int alignment)
+    public void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment)
     {
         var leftAlign = false;
 

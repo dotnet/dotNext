@@ -21,7 +21,7 @@ public static partial class Span
     /// <param name="span">The span whose content to be hashed.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the span content.</returns>
-    public static int BitwiseHashCode<T>(this Span<T> span, bool salted = true)
+    public static int BitwiseHashCode<T>(scoped this Span<T> span, bool salted = true)
         where T : unmanaged
         => BitwiseHashCode((ReadOnlySpan<T>)span, salted);
 
@@ -32,7 +32,7 @@ public static partial class Span
     /// <param name="span">The span whose content to be hashed.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the span content.</returns>
-    public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, bool salted = true)
+    public static unsafe int BitwiseHashCode<T>(scoped this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
     {
         if (span.IsEmpty)
@@ -50,7 +50,7 @@ public static partial class Span
     /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
-    public static int BitwiseHashCode<T>(this Span<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
+    public static int BitwiseHashCode<T>(scoped this Span<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
         where T : unmanaged
         => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
 
@@ -63,7 +63,7 @@ public static partial class Span
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static int BitwiseHashCode<T, THashFunction>(this Span<T> span, bool salted = true)
+    public static int BitwiseHashCode<T, THashFunction>(scoped this Span<T> span, bool salted = true)
         where T : unmanaged
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
         => BitwiseHashCode<T, THashFunction>((ReadOnlySpan<T>)span, salted);
@@ -77,7 +77,7 @@ public static partial class Span
     /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
-    public static long BitwiseHashCode64<T>(this Span<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
+    public static long BitwiseHashCode64<T>(scoped this Span<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
         where T : unmanaged
         => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
 
@@ -90,12 +90,12 @@ public static partial class Span
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static long BitwiseHashCode64<T, THashFunction>(this Span<T> span, bool salted = true)
+    public static long BitwiseHashCode64<T, THashFunction>(scoped this Span<T> span, bool salted = true)
         where T : unmanaged
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
         => BitwiseHashCode64<T, THashFunction>((ReadOnlySpan<T>)span, salted);
 
-    private static unsafe void BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
+    private static unsafe void BitwiseHashCode<T, THashFunction>(scoped ReadOnlySpan<T> span, scoped ref THashFunction hashFunction, bool salted)
         where T : unmanaged
         where THashFunction : struct, IConsumer<int>
     {
@@ -115,7 +115,7 @@ public static partial class Span
     /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
-    public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
+    public static int BitwiseHashCode<T>(scoped this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
         where T : unmanaged
     {
         var fn = new Accumulator<int, int>(hashFunction, hash);
@@ -132,7 +132,7 @@ public static partial class Span
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static int BitwiseHashCode<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
+    public static int BitwiseHashCode<T, THashFunction>(scoped this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
     {
@@ -141,7 +141,7 @@ public static partial class Span
         return hash.Invoke();
     }
 
-    private static unsafe void BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
+    private static unsafe void BitwiseHashCode64<T, THashFunction>(scoped ReadOnlySpan<T> span, scoped ref THashFunction hashFunction, bool salted)
         where T : unmanaged
         where THashFunction : struct, IConsumer<long>
     {
@@ -161,7 +161,7 @@ public static partial class Span
     /// <param name="hashFunction">Custom hashing algorithm.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
-    public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
+    public static long BitwiseHashCode64<T>(scoped this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
         where T : unmanaged
     {
         var fn = new Accumulator<long, long>(hashFunction, hash);
@@ -178,7 +178,7 @@ public static partial class Span
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
     [CLSCompliant(false)]
-    public static long BitwiseHashCode64<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
+    public static long BitwiseHashCode64<T, THashFunction>(scoped this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
     {
@@ -194,7 +194,7 @@ public static partial class Span
     /// <param name="span">The span whose content to be hashed.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the span content.</returns>
-    public static long BitwiseHashCode64<T>(this Span<T> span, bool salted = true)
+    public static long BitwiseHashCode64<T>(scoped this Span<T> span, bool salted = true)
         where T : unmanaged
         => BitwiseHashCode64((ReadOnlySpan<T>)span, salted);
 
@@ -205,7 +205,7 @@ public static partial class Span
     /// <param name="span">The span whose content to be hashed.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the span content.</returns>
-    public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, bool salted = true)
+    public static unsafe long BitwiseHashCode64<T>(scoped this ReadOnlySpan<T> span, bool salted = true)
         where T : unmanaged
     {
         if (span.IsEmpty)
@@ -224,7 +224,7 @@ public static partial class Span
     /// <param name="first">The first memory span to compare.</param>
     /// <param name="second">The second memory span to compare.</param>
     /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
-    public static bool BitwiseEquals<T>(this Span<T> first, Span<T> second)
+    public static bool BitwiseEquals<T>(scoped this Span<T> first, scoped Span<T> second)
         where T : unmanaged
         => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
 
@@ -238,7 +238,7 @@ public static partial class Span
     /// <param name="first">The first memory span to compare.</param>
     /// <param name="second">The second memory span to compare.</param>
     /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
-    public static bool BitwiseEquals<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
+    public static bool BitwiseEquals<T>(scoped this ReadOnlySpan<T> first, scoped ReadOnlySpan<T> second)
         where T : unmanaged
         => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
 
@@ -249,7 +249,7 @@ public static partial class Span
     /// <param name="first">The first memory span to compare.</param>
     /// <param name="second">The second array to compare.</param>
     /// <returns>Comparison result.</returns>
-    public static int BitwiseCompare<T>(this Span<T> first, Span<T> second)
+    public static int BitwiseCompare<T>(scoped this Span<T> first, scoped Span<T> second)
         where T : unmanaged
         => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
@@ -260,7 +260,7 @@ public static partial class Span
     /// <param name="first">The first memory span to compare.</param>
     /// <param name="second">The second array to compare.</param>
     /// <returns>Comparison result.</returns>
-    public static int BitwiseCompare<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
+    public static int BitwiseCompare<T>(scoped this ReadOnlySpan<T> first, scoped ReadOnlySpan<T> second)
         where T : unmanaged
         => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
@@ -271,7 +271,7 @@ public static partial class Span
     /// <param name="comparison">The comparer used for sorting.</param>
     /// <typeparam name="T">The type of the elements.</typeparam>
     [CLSCompliant(false)]
-    public static unsafe void Sort<T>(this Span<T> span, delegate*<T?, T?, int> comparison)
+    public static unsafe void Sort<T>(scoped this Span<T> span, delegate*<T?, T?, int> comparison)
         => MemoryExtensions.Sort<T, ComparerWrapper<T>>(span, comparison);
 
     /// <summary>
@@ -313,7 +313,7 @@ public static partial class Span
     public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
         => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
 
-    private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
+    private static int IndexOf<T, TComparer>(scoped ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
         where TComparer : struct, ISupplier<T, T, bool>
     {
         while ((uint)startIndex < (uint)span.Length)
@@ -336,7 +336,7 @@ public static partial class Span
     /// <param name="startIndex">The search starting position.</param>
     /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
     /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
-    public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer)
+    public static int IndexOf<T>(scoped this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer)
         => IndexOf<T, DelegatingSupplier<T, T, bool>>(span, value, startIndex, comparer);
 
     /// <summary>
@@ -349,10 +349,10 @@ public static partial class Span
     /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
     /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
     [CLSCompliant(false)]
-    public static unsafe int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, delegate*<T, T, bool> comparer)
+    public static unsafe int IndexOf<T>(scoped this ReadOnlySpan<T> span, T value, int startIndex, delegate*<T, T, bool> comparer)
         => IndexOf<T, Supplier<T, T, bool>>(span, value, startIndex, comparer);
 
-    internal static void ForEach<T>(ReadOnlySpan<T> span, Action<T> action)
+    internal static void ForEach<T>(scoped ReadOnlySpan<T> span, Action<T> action)
     {
         foreach (var item in span)
             action(item);
@@ -364,7 +364,7 @@ public static partial class Span
     /// <typeparam name="T">The type of the elements.</typeparam>
     /// <param name="span">The span to iterate.</param>
     /// <param name="action">The action to be applied for each element of the span.</param>
-    public static void ForEach<T>(this Span<T> span, RefAction<T, int> action)
+    public static void ForEach<T>(scoped this Span<T> span, RefAction<T, int> action)
     {
         for (var i = 0; i < span.Length; i++)
             action(ref span[i], i);
@@ -380,7 +380,7 @@ public static partial class Span
     /// <param name="arg">The argument to be passed to the action.</param>
     /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
     [CLSCompliant(false)]
-    public static unsafe void ForEach<T, TArg>(this Span<T> span, delegate*<ref T, TArg, void> action, TArg arg)
+    public static unsafe void ForEach<T, TArg>(scoped this Span<T> span, delegate*<ref T, TArg, void> action, TArg arg)
     {
         if (action is null)
             throw new ArgumentNullException(nameof(action));
@@ -433,7 +433,7 @@ public static partial class Span
     /// <param name="allocator">The memory allocator used to allocate buffer for the result.</param>
     /// <typeparam name="T">The type of the elements in the memory.</typeparam>
     /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
-    public static MemoryOwner<T> Concat<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second, MemoryAllocator<T>? allocator = null)
+    public static MemoryOwner<T> Concat<T>(scoped this ReadOnlySpan<T> first, scoped ReadOnlySpan<T> second, MemoryAllocator<T>? allocator = null)
     {
         MemoryOwner<T> result;
         var length = first.Length + second.Length;
@@ -468,7 +468,7 @@ public static partial class Span
     /// <param name="allocator">The memory allocator used to allocate buffer for the result.</param>
     /// <typeparam name="T">The type of the elements in the memory.</typeparam>
     /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
-    public static MemoryOwner<T> Concat<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second, ReadOnlySpan<T> third, MemoryAllocator<T>? allocator = null)
+    public static MemoryOwner<T> Concat<T>(scoped this ReadOnlySpan<T> first, scoped ReadOnlySpan<T> second, scoped ReadOnlySpan<T> third, MemoryAllocator<T>? allocator = null)
     {
         if (first.IsEmpty && second.IsEmpty && third.IsEmpty)
             return default;
@@ -493,7 +493,7 @@ public static partial class Span
     /// <param name="span">The span of elements to be copied to the buffer.</param>
     /// <param name="allocator">Optional buffer allocator.</param>
     /// <returns>The copy of the elements from <paramref name="span"/>.</returns>
-    public static MemoryOwner<T> Copy<T>(this ReadOnlySpan<T> span, MemoryAllocator<T>? allocator = null)
+    public static MemoryOwner<T> Copy<T>(scoped this ReadOnlySpan<T> span, MemoryAllocator<T>? allocator = null)
     {
         if (span.IsEmpty)
             return default;
@@ -514,7 +514,7 @@ public static partial class Span
     /// <param name="writtenCount">The number of copied elements.</param>
     /// <typeparam name="T">The type of the elements in the span.</typeparam>
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    public static void CopyTo<T>(this ReadOnlySpan<T> source, Span<T> destination, out int writtenCount)
+    public static void CopyTo<T>(scoped this ReadOnlySpan<T> source, scoped Span<T> destination, out int writtenCount)
     {
         if (source.Length > destination.Length)
         {
@@ -535,7 +535,7 @@ public static partial class Span
     /// <param name="destination">Destination memory.</param>
     /// <param name="writtenCount">The number of copied elements.</param>
     /// <typeparam name="T">The type of the elements in the span.</typeparam>
-    public static void CopyTo<T>(this Span<T> source, Span<T> destination, out int writtenCount)
+    public static void CopyTo<T>(scoped this Span<T> source, scoped Span<T> destination, out int writtenCount)
         => CopyTo((ReadOnlySpan<T>)source, destination, out writtenCount);
 
     /// <summary>
@@ -544,7 +544,7 @@ public static partial class Span
     /// <typeparam name="T">The type of the elements in the span.</typeparam>
     /// <param name="span">The span of elements to shuffle.</param>
     /// <param name="random">The source of random values.</param>
-    public static void Shuffle<T>(this Span<T> span, Random random)
+    public static void Shuffle<T>(scoped this Span<T> span, Random random)
     {
         for (var i = span.Length - 1; i > 0; i--)
         {
@@ -569,7 +569,7 @@ public static partial class Span
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     /// <param name="span">The span of elements.</param>
     /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span)
+    public static Optional<T> FirstOrNone<T>(scoped this ReadOnlySpan<T> span)
         => span.Length > 0 ? span[0] : Optional<T>.None;
 
     /// <summary>
@@ -578,7 +578,7 @@ public static partial class Span
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     /// <param name="span">The span of elements.</param>
     /// <returns>The last element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-    public static Optional<T> LastOrNone<T>(this ReadOnlySpan<T> span)
+    public static Optional<T> LastOrNone<T>(scoped this ReadOnlySpan<T> span)
         => span.Length > 0 ? span[span.Length - 1] : Optional<T>.None;
 
     /// <summary>
@@ -589,7 +589,7 @@ public static partial class Span
     /// <param name="filter">A function to test each element for a condition.</param>
     /// <returns>The first element in the span that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="filter"/> is <see langword="null"/>.</exception>
-    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span, Predicate<T> filter)
+    public static Optional<T> FirstOrNone<T>(scoped this ReadOnlySpan<T> span, Predicate<T> filter)
     {
         ArgumentNullException.ThrowIfNull(filter);
 
@@ -610,14 +610,14 @@ public static partial class Span
     /// <param name="span">The span of elements.</param>
     /// <param name="random">The source of random values.</param>
     /// <returns>Randomly selected element from the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-    public static Optional<T> PeekRandom<T>(this ReadOnlySpan<T> span, Random random) => span.Length switch
+    public static Optional<T> PeekRandom<T>(scoped this ReadOnlySpan<T> span, Random random) => span.Length switch
     {
         0 => Optional<T>.None,
         1 => MemoryMarshal.GetReference(span),
         int length => span[random.Next(length)], // cannot use MemoryMarshal here because Random.Next is virtual so bounds check required for security reasons
     };
 
-    internal static bool ElementAt<T>(ReadOnlySpan<T> span, int index, [MaybeNullWhen(false)] out T element)
+    internal static bool ElementAt<T>(scoped ReadOnlySpan<T> span, int index, [MaybeNullWhen(false)] out T element)
     {
         if ((uint)index < (uint)span.Length)
         {
@@ -637,7 +637,7 @@ public static partial class Span
     /// </remarks>
     /// <typeparam name="T">The type of the element.</typeparam>
     /// <param name="span">The span of elements.</param>
-    public static void Initialize<T>(this Span<T> span)
+    public static void Initialize<T>(scoped this Span<T> span)
         where T : new()
     {
         foreach (ref var item in span)
@@ -654,7 +654,7 @@ public static partial class Span
     /// <param name="allocator">The allocator of the concatenated string.</param>
     /// <returns>A buffer containing characters from the concatenated strings.</returns>
     /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
-    public static MemoryOwner<char> Concat(ReadOnlySpan<string?> values, MemoryAllocator<char>? allocator = null)
+    public static MemoryOwner<char> Concat(scoped ReadOnlySpan<string?> values, MemoryAllocator<char>? allocator = null)
     {
         MemoryOwner<char> result;
 

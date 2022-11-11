@@ -66,7 +66,7 @@ public partial struct Base64Encoder
     /// <param name="output">The output buffer.</param>
     /// <returns>The number of bytes copied to <paramref name="output"/>.</returns>
     /// <exception cref="ArgumentException"><paramref name="output"/> is not large enough.</exception>
-    public readonly int GetBufferedData(Span<byte> output)
+    public readonly int GetBufferedData(scoped Span<byte> output)
     {
         Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize).CopyTo(output);
         return reservedBufferSize;
@@ -78,7 +78,7 @@ public partial struct Base64Encoder
     {
         get
         {
-            var bufferedData = Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize);
+            var bufferedData = AsReadOnlyBytes(in reservedBuffer, reservedBufferSize);
             return bufferedData.IsEmpty ? string.Empty : Convert.ToBase64String(bufferedData);
         }
     }

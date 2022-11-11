@@ -164,7 +164,7 @@ public ref partial struct BufferWriterSlim<T>
     /// <param name="input">The span of elements to be written.</param>
     /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place <paramref name="input"/> elements to it and this builder is not growable.</exception>
     /// <exception cref="OverflowException">The size of the internal buffer becomes greater than <see cref="int.MaxValue"/>.</exception>
-    public void Write(ReadOnlySpan<T> input)
+    public void Write(scoped ReadOnlySpan<T> input)
     {
         if (!input.IsEmpty)
         {
@@ -214,7 +214,7 @@ public ref partial struct BufferWriterSlim<T>
     /// </summary>
     /// <param name="output">The buffer to receive last added items.</param>
     /// <returns><see langword="true"/> if items are removed successfully; otherwise, <see langword="false"/>.</returns>
-    public bool TryPop(Span<T> output)
+    public bool TryPop(scoped Span<T> output)
     {
         if (position >= output.Length && Buffer.Slice(position - output.Length, output.Length).TryCopyTo(output))
         {

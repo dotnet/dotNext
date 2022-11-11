@@ -127,6 +127,8 @@ namespace DotNext.Buffers
                 builder.WriteSingle(float.MinValue, false);
                 builder.WriteDouble(double.MaxValue, true);
                 builder.WriteDouble(double.MinValue, false);
+                builder.WriteHalf(Half.MaxValue, true);
+                builder.WriteHalf(Half.MinValue, false);
 
                 var reader = new SpanReader<byte>(builder.WrittenSpan);
                 Equal(short.MinValue, reader.ReadInt16(true));
@@ -145,6 +147,8 @@ namespace DotNext.Buffers
                 Equal(float.MinValue, reader.ReadSingle(false));
                 Equal(double.MaxValue, reader.ReadDouble(true));
                 Equal(double.MinValue, reader.ReadDouble(false));
+                Equal(Half.MaxValue, reader.ReadHalf(true));
+                Equal(Half.MinValue, reader.ReadHalf(false));
             }
             finally
             {
@@ -193,7 +197,6 @@ namespace DotNext.Buffers
         [Fact]
         public static void Concatenation()
         {
-            var tuple = ("Hello, ", "world!");
             var writer = new BufferWriterSlim<char>(stackalloc char[32]);
             try
             {
@@ -204,7 +207,7 @@ namespace DotNext.Buffers
                 Equal("Hello, world!", writer.ToString());
                 writer.Clear(reuseBuffer: true);
 
-                writer.Concat(tuple.AsReadOnlySpan());
+                writer.Concat(("Hello, ", "world!").AsReadOnlySpan());
                 Equal("Hello, world!", writer.ToString());
             }
             finally

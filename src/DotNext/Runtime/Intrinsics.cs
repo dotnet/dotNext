@@ -96,7 +96,7 @@ public static class Intrinsics
     /// <param name="output">Conversion result.</param>
     /// <typeparam name="T">The value type to be converted.</typeparam>
     /// <typeparam name="TResult">The type of output struct.</typeparam>
-    public static void Bitcast<T, TResult>(in T input, out TResult output)
+    public static void Bitcast<T, TResult>(scoped in T input, out TResult output)
         where T : unmanaged
         where TResult : unmanaged
     {
@@ -129,7 +129,7 @@ public static class Intrinsics
     /// <typeparam name="T">The type of the value to check.</typeparam>
     /// <param name="value">Value to check.</param>
     /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-    public static bool IsDefault<T>(in T value) => Unsafe.SizeOf<T>() switch
+    public static bool IsDefault<T>(scoped in T value) => Unsafe.SizeOf<T>() switch
     {
         0 => true,
         sizeof(byte) => InToRef<T, byte>(value) is 0,
@@ -215,7 +215,7 @@ public static class Intrinsics
     /// <param name="value">The object whose address is obtained.</param>
     /// <returns>An address of the given object.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nint AddressOf<T>(in T value)
+    public static nint AddressOf<T>(scoped in T value)
     {
         PushInRef(in value);
         Conv_I();
@@ -273,7 +273,7 @@ public static class Intrinsics
     public static unsafe int Compare([In] void* first, [In] void* second, nuint length)
         => CompareUnaligned(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-    internal static bool EqualsUnaligned(ref byte first, ref byte second, nuint length)
+    internal static bool EqualsUnaligned(scoped ref byte first, scoped ref byte second, nuint length)
     {
         for (nuint count; length > 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
         {
@@ -334,7 +334,7 @@ public static class Intrinsics
     /// <typeparam name="T">The type of the managed pointer.</typeparam>
     /// <exception cref="NullReferenceException"><paramref name="value"/> pointer is <see langword="null"/>.</exception>
     [StackTraceHidden]
-    public static void ThrowIfNull<T>(in T value)
+    public static void ThrowIfNull<T>(scoped in T value)
     {
         if (Unsafe.IsNullRef(ref Unsafe.AsRef(in value)))
             throw new NullReferenceException();
@@ -347,7 +347,7 @@ public static class Intrinsics
     /// <param name="input">The reference to the source location.</param>
     /// <param name="output">The reference to the destination location.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Copy<T>(in T input, out T output)
+    public static void Copy<T>(scoped in T input, out T output)
         where T : struct
     {
         PushOutRef(out output);
@@ -403,7 +403,7 @@ public static class Intrinsics
     /// <param name="count">The number of elements to copy.</param>
     /// <typeparam name="T">The type of the element.</typeparam>
     [Obsolete("Use Copy overload that accepts the length as unsigned integer")]
-    public static unsafe void Copy<T>(in T source, out T destination, long count)
+    public static unsafe void Copy<T>(scoped in T source, out T destination, long count)
         where T : unmanaged
     {
         if (count < 0L)
@@ -421,7 +421,7 @@ public static class Intrinsics
     /// <typeparam name="T">The type of the element.</typeparam>
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void Copy<T>(in T source, out T destination, nuint count)
+    public static unsafe void Copy<T>(scoped in T source, out T destination, nuint count)
         where T : unmanaged
     {
         Unsafe.SkipInit(out destination);
@@ -434,7 +434,7 @@ public static class Intrinsics
     /// <param name="first">The first value to be replaced with <paramref name="second"/>.</param>
     /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public static void Swap<T>(ref T first, ref T second)
+    public static void Swap<T>(scoped ref T first, scoped ref T second)
     {
         var tmp = first;
         first = second;
@@ -461,7 +461,7 @@ public static class Intrinsics
     /// <param name="second">The second managed pointer.</param>
     /// <returns><see langword="true"/>, if both managed pointers are equal; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AreSame<T>(in T first, in T second)
+    public static bool AreSame<T>(scoped in T first, scoped in T second)
     {
         PushInRef(in first);
         PushInRef(in second);
@@ -482,7 +482,7 @@ public static class Intrinsics
         return ref address.Advance<T>();
     }
 
-    private static unsafe bool IsZero([In] ref byte address, nuint length)
+    private static unsafe bool IsZero([In] scoped ref byte address, nuint length)
     {
         var result = false;
 
@@ -552,7 +552,7 @@ public static class Intrinsics
 
     #region Bitwise Hash Code
 
-    internal static unsafe void GetHashCode64Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nuint length)
+    internal static unsafe void GetHashCode64Unaligned<THashFunction>(scoped ref THashFunction hash, [In] scoped ref byte source, nuint length)
         where THashFunction : struct, IConsumer<long>
     {
         switch (length)
@@ -577,7 +577,7 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe long GetHashCode64Unaligned([In] ref byte source, nuint length, bool salted)
+    internal static unsafe long GetHashCode64Unaligned([In] scoped ref byte source, nuint length, bool salted)
     {
         var hash = new FNV1a64();
         GetHashCode64Unaligned(ref hash, ref source, length);
@@ -801,7 +801,7 @@ public static class Intrinsics
         return fn.Invoke();
     }
 
-    internal static unsafe void GetHashCode32Unaligned<THashFunction>(ref THashFunction hash, [In] ref byte source, nuint length)
+    internal static unsafe void GetHashCode32Unaligned<THashFunction>(scoped ref THashFunction hash, [In] scoped ref byte source, nuint length)
         where THashFunction : struct, IConsumer<int>
     {
         switch (length)
@@ -823,7 +823,7 @@ public static class Intrinsics
         }
     }
 
-    internal static unsafe int GetHashCode32Unaligned([In] ref byte source, nuint length, bool salted)
+    internal static unsafe int GetHashCode32Unaligned([In] scoped ref byte source, nuint length, bool salted)
     {
         var hash = new FNV1a32();
         GetHashCode32Unaligned(ref hash, ref source, length);
@@ -914,7 +914,7 @@ public static class Intrinsics
     /// </summary>
     /// <typeparam name="T">Blittable type.</typeparam>
     /// <param name="value">The value which bytes should be reversed.</param>
-    public static void Reverse<T>(ref T value)
+    public static void Reverse<T>(scoped ref T value)
         where T : unmanaged
         => Span.AsBytes(ref value).Reverse();
 
