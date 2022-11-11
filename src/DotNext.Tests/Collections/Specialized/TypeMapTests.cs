@@ -34,11 +34,12 @@ namespace DotNext.Collections.Specialized
             True(map.Remove<string>(out result));
             Equal(50, result);
 
-            False(map.Replace<string>(42).HasValue);
+            False(map.Set<string>(42, out _));
             True(map.TryGetValue<string>(out result));
             Equal(42, result);
 
-            Equal(42, map.Replace<string>(50));
+            True(map.Set<string>(50, out var tmp));
+            Equal(42, tmp);
             True(map.TryGetValue<string>(out result));
             Equal(50, result);
 
@@ -84,7 +85,8 @@ namespace DotNext.Collections.Specialized
             True(map.Remove<string>());
             True(map.AddOrUpdate<string>(60L));
 
-            Equal(60L, map.Replace<string>(70L));
+            True(map.Set<string>(70L, out var tmp));
+            Equal(60L, tmp);
         }
 
         [Theory]
