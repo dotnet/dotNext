@@ -49,6 +49,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 Release Date: 11-08-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.8.0">DotNext 4.8.0</a>
+* Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
 * Added [Builder Pattern](https://en.wikipedia.org/wiki/Builder_pattern) concept as an interface
 * Updated dependencies
 
