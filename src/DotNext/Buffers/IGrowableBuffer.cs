@@ -43,7 +43,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     void Write(ReadOnlySpan<T> input);
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer<T>.Invoke(scoped ReadOnlySpan<T> input)
+    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
         => Write(input);
 
     /// <summary>

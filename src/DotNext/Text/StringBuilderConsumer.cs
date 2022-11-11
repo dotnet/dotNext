@@ -30,7 +30,7 @@ public readonly struct StringBuilderConsumer : IReadOnlySpanConsumer, IEquatable
     public bool IsEmpty => builder is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer.Invoke(scoped ReadOnlySpan<char> chars)
+    void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<char> chars)
         => builder.Append(chars);
 
     /// <inheritdoc />

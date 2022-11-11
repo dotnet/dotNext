@@ -29,7 +29,7 @@ public readonly struct StreamConsumer : IReadOnlySpanConsumer, IEquatable<Stream
     public bool IsEmpty => output is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer.Invoke(scoped ReadOnlySpan<byte> input) => output.Write(input);
+    void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<byte> input) => output.Write(input);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)

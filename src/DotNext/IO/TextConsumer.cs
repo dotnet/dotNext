@@ -29,7 +29,7 @@ public readonly struct TextConsumer : IReadOnlySpanConsumer, IFlushable
     public bool IsEmpty => output is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer.Invoke(scoped ReadOnlySpan<char> input) => output.Write(input);
+    void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<char> input) => output.Write(input);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<char> input, CancellationToken token)
