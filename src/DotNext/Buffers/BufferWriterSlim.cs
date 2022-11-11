@@ -60,7 +60,7 @@ public ref partial struct BufferWriterSlim<T>
 
         initialBuffer = default;
         this.allocator = allocator;
-        extraBuffer = initialCapacity == 0 ? default : allocator.Invoke(initialCapacity, false);
+        extraBuffer = initialCapacity is 0 ? default : allocator.Invoke(initialCapacity, exactSize: false);
         position = 0;
     }
 
