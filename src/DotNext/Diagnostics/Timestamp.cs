@@ -28,6 +28,16 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     }
 
     /// <summary>
+    /// Constructs timestamp from <see cref="TimeSpan"/>.
+    /// </summary>
+    /// <param name="ts">The point in time.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="ts"/> is negative.</exception>
+    public Timestamp(TimeSpan ts)
+        : this(ts >= TimeSpan.Zero ? FromTimeSpan(ts) : throw new ArgumentOutOfRangeException(nameof(ts)))
+    {
+    }
+
+    /// <summary>
     /// Gets a value indicating that the timestamp is zero.
     /// </summary>
     public bool IsEmpty => ticks is 0L;
@@ -57,6 +67,9 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing this timestamp.
     /// </summary>
+    /// <remarks>
+    /// This property may return a value with lost precision.
+    /// </remarks>
     public TimeSpan Value => new(ToTicks(ticks));
 
     /// <summary>
@@ -70,8 +83,11 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing the given timestamp.
     /// </summary>
+    /// <remarks>
+    /// This operation leads to loss of precision.
+    /// </remarks>
     /// <param name="stamp">The timestamp to convert.</param>
-    public static implicit operator TimeSpan(Timestamp stamp) => stamp.Value;
+    public static explicit operator TimeSpan(Timestamp stamp) => stamp.Value;
 
     /// <summary>
     /// Determines whether the current timestamp equals to the specified timestamp.
