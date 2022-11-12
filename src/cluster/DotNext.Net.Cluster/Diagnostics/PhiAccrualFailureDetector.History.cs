@@ -27,7 +27,7 @@ public partial class PhiAccrualFailureDetector
         }
 
         internal virtual HeartbeatHistorySnapshot Next(Timestamp stamp)
-            => currentTs.IsEmpty ? new HeartbeatHistorySnapshot(stamp, MaxSampleSize) : new HeartbeatHistorySnapshotData(stamp, MaxSampleSize, (stamp - currentTs).Value);
+            => currentTs.IsEmpty ? new HeartbeatHistorySnapshot(stamp, MaxSampleSize) : new HeartbeatHistorySnapshotData(stamp, MaxSampleSize, stamp.Value - currentTs.Value);
 
         internal static HeartbeatHistorySnapshot Initial(int maxSampleSize) => new(maxSampleSize);
     }
@@ -67,7 +67,7 @@ public partial class PhiAccrualFailureDetector
                 size = previous.size + 1L;
             }
 
-            interval = (ts - previous.currentTs).Value;
+            interval = ts.Value - previous.currentTs.Value;
             intervals = intervals.Enqueue(interval);
             intervalSum += interval;
             squaredIntervalSum += Pow2(interval);
@@ -89,8 +89,8 @@ public partial class PhiAccrualFailureDetector
 
         internal override double Phi(Timestamp ts, TimeSpan acceptableHeartbeatPause, TimeSpan minStdDeviation, out TimeSpan interval)
         {
-            interval = (ts - currentTs).Value;
-            var intervalMillis = (ts - currentTs).Value.TotalMilliseconds;
+            interval = ts.Value - currentTs.Value;
+            var intervalMillis = interval.TotalMilliseconds;
             var meanMillis = (Mean + acceptableHeartbeatPause).TotalMilliseconds;
             var deviationMillis = Math.Max(StdDeviation, minStdDeviation.TotalMilliseconds);
 

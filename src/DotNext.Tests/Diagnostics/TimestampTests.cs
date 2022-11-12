@@ -44,7 +44,7 @@ namespace DotNext.Diagnostics
         public static void Conversion()
         {
             var ts = new Timestamp();
-            Equal(ts.Value, ts);
+            Equal(ts.Value, (TimeSpan)ts);
         }
 
         [Fact]
