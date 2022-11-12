@@ -45,6 +45,9 @@ namespace DotNext.Diagnostics
         {
             var ts = new Timestamp();
             Equal(ts.Value, (TimeSpan)ts);
+
+            ts = new(TimeSpan.FromSeconds(1.2D));
+            Equal(TimeSpan.FromSeconds(1.2D), ts.Value);
         }
 
         [Fact]
