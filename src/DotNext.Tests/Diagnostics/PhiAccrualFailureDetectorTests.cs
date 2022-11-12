@@ -22,7 +22,7 @@ namespace DotNext.Diagnostics
             long now = 1420070400000L;
             for (int i = 0; i < 300; i++)
             {
-                var ts = default(Timestamp) + TimeSpan.FromMilliseconds(now + i * 1000);
+                var ts = new Timestamp(TimeSpan.FromMilliseconds(now + i * 1000));
                 double phi;
 
                 if (i > 290)
