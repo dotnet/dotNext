@@ -33,8 +33,8 @@ Quick overview of additional features:
 * [PipeExtensions](https://dotnet.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) provides high-level I/O operations for pipelines such as string encoding and decoding
 * A rich set of high-performance [memory buffers](https://dotnet.github.io/dotNext/features/io/buffers.html) for efficient I/O
 * String formatting, encoding and decoding with low GC pressure: [dynamic char buffers](https://dotnet.github.io/dotNext/features/io/buffers.html#char-buffer)
-* Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster)
-* Fully-featured [HyParView implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster)
+* Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#raft)
+* Fully-featured [HyParView implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#hyparview)
 
 All these things are implemented in 100% managed code on top of existing .NET API without modifications of Roslyn compiler or CoreFX libraries.
 
