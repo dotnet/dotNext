@@ -18,7 +18,7 @@ internal sealed class ClosureAnalyzer : ExpressionVisitor
         Closures = new(variables.Count, variables.Comparer);
     }
 
-    [return: NotNullIfNotNull("node")]
+    [return: NotNullIfNotNull(nameof(node))]
     public override Expression? Visit(Expression? node)
     {
         if (node is ParameterExpression p && locals.Contains(p))

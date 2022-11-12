@@ -124,7 +124,7 @@ public static partial class BufferHelpers
     /// <param name="provider">The formatting provider.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(scoped this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
+    public static int WriteString(scoped this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(provider))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -133,7 +133,7 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(scoped this ref BufferWriterSlim<char> writer, [InterpolatedStringHandlerArgument("writer")] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
+    public static int WriteString(scoped this ref BufferWriterSlim<char> writer, [InterpolatedStringHandlerArgument(nameof(writer))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
         => WriteString(ref writer, null, ref handler);
 
     /// <summary>

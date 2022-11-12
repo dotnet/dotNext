@@ -56,7 +56,7 @@ public static class StringExtensions
     /// <param name="maxLength">Maximum length.</param>
     /// <returns>Trimmed string value.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
-    [return: NotNullIfNotNull("str")]
+    [return: NotNullIfNotNull(nameof(str))]
     public static string? TrimLength(this string? str, int maxLength)
     {
         if (maxLength < 0)

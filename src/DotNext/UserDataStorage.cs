@@ -144,7 +144,7 @@ public readonly ref partial struct UserDataStorage
     /// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
     /// <returns>User data.</returns>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
-    [return: NotNullIfNotNull("defaultValue")]
+    [return: NotNullIfNotNull(nameof(defaultValue))]
     public TValue? Get<TValue>(UserDataSlot<TValue> slot, TValue? defaultValue)
     {
         if (!slot.IsAllocated)

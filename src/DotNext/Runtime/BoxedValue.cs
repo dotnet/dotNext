@@ -42,7 +42,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// <param name="boxedValue">The boxed value of type <typeparamref name="T"/>.</param>
     /// <returns>The typed reference to a boxed value of type <typeparamref name="T"/>.</returns>
     /// <exception cref="ArgumentException"><paramref name="boxedValue"/> is not of type <typeparamref name="T"/>.</exception>
-    [return: NotNullIfNotNull("boxedValue")]
+    [return: NotNullIfNotNull(nameof(boxedValue))]
     public static BoxedValue<T>? GetTypedReference(object? boxedValue) => boxedValue switch
     {
         null => null,
@@ -62,7 +62,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// </summary>
     /// <param name="value">The value to be boxed.</param>
     /// <returns>A boxed representation of the value.</returns>
-    [return: NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull(nameof(value))]
     public static BoxedValue<T>? TryBox(in T? value) => Unsafe.As<BoxedValue<T>?>(value);
 
     /// <summary>
@@ -83,7 +83,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// </summary>
     /// <param name="value">The value to be boxed.</param>
     /// <returns>A boxed representation of the value.</returns>
-    [return: NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull(nameof(value))]
     public static explicit operator BoxedValue<T>?(in T? value) => TryBox(in value);
 
     /// <inheritdoc />

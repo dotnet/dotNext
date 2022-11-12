@@ -324,7 +324,7 @@ public sealed class Event<THandler> : EventBase<THandler>, IEvent<THandler>
     /// </summary>
     /// <param name="event">Reflected event.</param>
     /// <returns>The delegate which can be used to attach new handlers to the event.</returns>
-    [return: NotNullIfNotNull("event")]
+    [return: NotNullIfNotNull(nameof(@event))]
     public static Action<THandler>? operator +(Event<THandler>? @event) => @event?.addMethod;
 
     /// <summary>
@@ -332,7 +332,7 @@ public sealed class Event<THandler> : EventBase<THandler>, IEvent<THandler>
     /// </summary>
     /// <param name="event">Reflected event.</param>
     /// <returns>The delegate which can be used to detach from the event.</returns>
-    [return: NotNullIfNotNull("event")]
+    [return: NotNullIfNotNull(nameof(@event))]
     public static Action<THandler>? operator -(Event<THandler>? @event) => @event?.removeMethod;
 
     private static Event<THandler>? Reflect(Type declaringType, string eventName, bool nonPublic)
@@ -481,7 +481,7 @@ public sealed class Event<T, THandler> : EventBase<THandler>, IEvent<T, THandler
     /// </summary>
     /// <param name="event">Reflected event.</param>
     /// <returns>The delegate which can be used to attach new handlers to the event.</returns>
-    [return: NotNullIfNotNull("event")]
+    [return: NotNullIfNotNull(nameof(@event))]
     public static Accessor? operator +(Event<T, THandler>? @event) => @event?.addMethod;
 
     /// <summary>
@@ -489,7 +489,7 @@ public sealed class Event<T, THandler> : EventBase<THandler>, IEvent<T, THandler
     /// </summary>
     /// <param name="event">Reflected event.</param>
     /// <returns>The delegate which can be used to detach from the event.</returns>
-    [return: NotNullIfNotNull("event")]
+    [return: NotNullIfNotNull(nameof(@event))]
     public static Accessor? operator -(Event<T, THandler>? @event) => @event?.removeMethod;
 
     private static Event<T, THandler>? Reflect(string eventName, bool nonPublic)

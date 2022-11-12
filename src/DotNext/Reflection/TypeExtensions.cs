@@ -211,7 +211,7 @@ public static class TypeExtensions
     /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>;
     /// or if object is <see langword="null"/> and <paramref name="type"/> is value type.
     /// </exception>
-    [return: NotNullIfNotNull("obj")]
+    [return: NotNullIfNotNull(nameof(obj))]
     public static object? Cast(this Type type, object? obj)
     {
         if (obj is null)

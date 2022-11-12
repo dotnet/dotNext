@@ -73,7 +73,7 @@ internal class Statement : Expression
         }
     }
 
-    [return: NotNullIfNotNull("expr")]
+    [return: NotNullIfNotNull(nameof(expr))]
     internal static Expression? Wrap(Expression? expr)
     {
         switch (expr)

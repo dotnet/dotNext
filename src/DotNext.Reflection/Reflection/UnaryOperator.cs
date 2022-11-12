@@ -81,7 +81,7 @@ public enum UnaryOperator : int
 /// </summary>
 /// <typeparam name="TOperand">Target type.</typeparam>
 /// <typeparam name="TResult">Type of unary operator result.</typeparam>
-[DefaultMember("Invoke")]
+[DefaultMember(nameof(Invoke))]
 public sealed class UnaryOperator<TOperand, TResult> : Operator<Operator<TOperand, TResult>>
 {
     private sealed class Cache : Cache<UnaryOperator<TOperand, TResult>>

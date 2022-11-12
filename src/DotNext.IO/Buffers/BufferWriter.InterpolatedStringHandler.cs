@@ -238,7 +238,7 @@ public partial class BufferWriter
     /// <param name="provider">The format provider.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>The number of produced bytes.</returns>
-    public static int WriteString(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "context", "buffer", "provider")] ref EncodingInterpolatedStringHandler handler)
+    public static int WriteString(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer), nameof(provider))] ref EncodingInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -248,6 +248,6 @@ public partial class BufferWriter
     /// <param name="context">The encoding context.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>The number of produced bytes.</returns>
-    public static int WriteString(this IBufferWriter<byte> writer, in EncodingContext context, [InterpolatedStringHandlerArgument("writer", "context")] ref EncodingInterpolatedStringHandler handler)
+    public static int WriteString(this IBufferWriter<byte> writer, in EncodingContext context, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context))] ref EncodingInterpolatedStringHandler handler)
         => WriteString(writer, in context, Span<char>.Empty, null, ref handler);
 }
