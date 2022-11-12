@@ -40,7 +40,7 @@ public static class Disposable<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         }
         else
         {
-            throw new MissingMethodException(typeof(T), nameof(IDisposable.Dispose), typeof(void), Array.Empty<Type>());
+            throw new MissingMethodException(typeof(T), nameof(IDisposable.Dispose), typeof(void), Type.EmptyTypes);
         }
     }
 

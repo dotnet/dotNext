@@ -181,7 +181,7 @@ public static class TypeExtensions
     /// </code>
     /// </example>
     public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
-        => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
+        => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Type.EmptyTypes;
 
     /// <summary>
     /// Indicates that object of one type can be implicitly converted into another without boxing.
