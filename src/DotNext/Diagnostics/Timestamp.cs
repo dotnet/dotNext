@@ -78,7 +78,17 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <remarks>
     /// This property is always greater than or equal to <see cref="TimeSpan.Zero"/>.
     /// </remarks>
-    public TimeSpan Elapsed => new(ToTicks(Math.Max(0L, GetTimestamp() - ticks)));
+    public TimeSpan Elapsed => new(ToTicks(ElapsedTicks));
+
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in timer ticks.
+    /// </summary>
+    public long ElapsedTicks => Math.Max(0L, GetTimestamp() - ticks);
+
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in milliseconds.
+    /// </summary>
+    public double ElapsedMilliseconds => ((double)ElapsedTicks / Frequency) * 1_000D;
 
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing the given timestamp.

@@ -98,5 +98,14 @@ namespace DotNext.Diagnostics
             ts = default(Timestamp) - TimeSpan.Zero;
             True(ts.IsEmpty);
         }
+
+        [Fact]
+        public static void ElapsedMilliseconds()
+        {
+            var ts = new Timestamp();
+            Thread.Sleep(10);
+            var e = ts.ElapsedMilliseconds;
+            True(e >= 10D);
+        }
     }
 }
