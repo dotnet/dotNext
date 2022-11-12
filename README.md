@@ -51,6 +51,7 @@ Release Date: 11-08-2022
 <a href="https://www.nuget.org/packages/dotnext/4.8.0">DotNext 4.8.0</a>
 * Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
 * Added [Builder Pattern](https://en.wikipedia.org/wiki/Builder_pattern) concept as an interface
+* Added extra properties to [Timestamp](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type for precise measurements
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.8.0">DotNext.Metaprogramming 4.8.0</a>
