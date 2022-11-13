@@ -167,7 +167,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     };
 
     private bool Equals(in ClusterMemberId other)
-        => address == other.address && port == other.port && length == other.length && family == other.family;
+        => BitwiseComparer<ClusterMemberId>.Equals(in this, in other);
 
     /// <summary>
     /// Determines whether the current identifier is equal
@@ -199,7 +199,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         Format(ref writer);
-        return Convert.ToHexString(writer.WrittenSpan);
+        return Hex.EncodeToUtf16(writer.WrittenSpan);
     }
 
     /// <summary>
