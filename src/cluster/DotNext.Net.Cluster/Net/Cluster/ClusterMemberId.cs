@@ -156,8 +156,9 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// </summary>
     /// <param name="ep">The address of the cluster member.</param>
     /// <returns>The identifier of the cluster member.</returns>
-    public static ClusterMemberId FromEndPoint(EndPoint ep) => ep switch
+    public static ClusterMemberId FromEndPoint(EndPoint? ep) => ep switch
     {
+        null => default,
         IPEndPoint ip => new(ip),
         HttpEndPoint http => new(http),
         DnsEndPoint dns => new(dns),
