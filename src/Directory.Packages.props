@@ -5,7 +5,7 @@
   <ItemGroup>
     <!--Compile-time dependencies-->
     <PackageVersion Include="Fody" Version="6.6.4"/>
-    <PackageVersion Include="InlineIL.Fody" Version="1.7.2"/>
+    <PackageVersion Include="InlineIL.Fody" Version="1.7.3"/>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118"/>
   </ItemGroup>
