@@ -27,7 +27,7 @@ Quick overview of additional features:
 * [Attachment of user data to an arbitrary objects](https://dotnet.github.io/dotNext/features/core/userdata.html)
 * Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
 * [Fast Reflection](https://dotnet.github.io/dotNext/features/reflection/fast.html)
-* Fast conversion of bytes to hexadecimal representation and vice versa using `ToHex` and `FromHex` methods from [Span](https://dotnet.github.io/dotNext/api/DotNext.Span.html) static class
+* Fast conversion of bytes to hexadecimal representation and vice versa with [Hex](https://dotnet.github.io/dotNext/api/DotNext.Buffers.Text.Hex.html) class
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
 * [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
 * [PipeExtensions](https://dotnet.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) provides high-level I/O operations for pipelines such as string encoding and decoding
