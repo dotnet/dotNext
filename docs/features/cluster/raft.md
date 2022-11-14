@@ -534,7 +534,7 @@ var term = cluster.Term;
 await cluster.ReplicateAsync(new MyLogEntry(term), Timeout.InfiniteTimeSpan, token);
 ```
 
-The same pattern is applicable to [disk-based state machine](xref:DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine) except snapshotting except snapshotting.
+The same pattern is applicable to [disk-based state machine](xref:DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine) except snapshotting.
 
 Designing binary format for custom log entries and interpreter for them may be hard. Examine [this](./wal.md) article to learn how to use Interpreter Framework shipped with the library.
 
