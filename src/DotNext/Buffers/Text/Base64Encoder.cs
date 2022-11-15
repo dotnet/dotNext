@@ -68,7 +68,7 @@ public partial struct Base64Encoder
     /// <exception cref="ArgumentException"><paramref name="output"/> is not large enough.</exception>
     public readonly int GetBufferedData(scoped Span<byte> output)
     {
-        Span.AsReadOnlyBytes(in reservedBuffer).Slice(0, reservedBufferSize).CopyTo(output);
+        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(output);
         return reservedBufferSize;
     }
 
