@@ -14,7 +14,7 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
         acceptableHeartbeatPause = TimeSpan.Zero,
         suspiciousGrowthThreshold = TimeSpan.Zero;
 
-    private volatile HeartbeatHistorySnapshot snapshot = HeartbeatHistorySnapshot.Initial(200);
+    private volatile HeartbeatSlidingWindow snapshot = HeartbeatSlidingWindow.Initial(200);
     private Action<TimeSpan>? suspiciousGrowthCallback;
 
     /// <summary>
@@ -38,7 +38,7 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     public int MaxSampleSize
     {
         get => snapshot.MaxSampleSize;
-        init => snapshot = value > 0 ? HeartbeatHistorySnapshot.Initial(value) : throw new ArgumentOutOfRangeException(nameof(value));
+        init => snapshot = value > 0 ? HeartbeatSlidingWindow.Initial(value) : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// <summary>
     /// Indicates that this detector has received any heartbeats and started monitoring of the resource.
     /// </summary>
-    public bool IsMonitoring => snapshot.GetType() != typeof(HeartbeatHistorySnapshot);
+    public bool IsMonitoring => snapshot.GetType() != typeof(HeartbeatSlidingWindow);
 
     /// <summary>
     /// Notifies that this detector received a heartbeat from the associated resource.
@@ -110,7 +110,7 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     public void ReportHeartbeat(Timestamp ts)
     {
         TimeSpan interval;
-        HeartbeatHistorySnapshot currentSnapshot, newSnapshot = snapshot;
+        HeartbeatSlidingWindow currentSnapshot, newSnapshot = snapshot;
 
         do
         {
@@ -139,13 +139,13 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// </summary>
     public void Reset()
     {
-        HeartbeatHistorySnapshot currentSnapshot, newSnapshot = snapshot;
+        HeartbeatSlidingWindow currentSnapshot, newSnapshot = snapshot;
 
         do
         {
             currentSnapshot = newSnapshot;
 
-            newSnapshot = HeartbeatHistorySnapshot.Initial(currentSnapshot.MaxSampleSize);
+            newSnapshot = HeartbeatSlidingWindow.Initial(currentSnapshot.MaxSampleSize);
         }
         while (!ReferenceEquals(newSnapshot = Interlocked.CompareExchange(ref snapshot, newSnapshot, currentSnapshot), currentSnapshot));
     }
