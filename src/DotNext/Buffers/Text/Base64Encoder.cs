@@ -48,7 +48,7 @@ public partial struct Base64Encoder
 
     /// <summary>
     /// Indicates that the size of the encoded data is not a multiple of 3
-    /// and the encoder.
+    /// and this encoder expects input data.
     /// </summary>
     public readonly bool HasBufferedData => reservedBufferSize > 0;
 
