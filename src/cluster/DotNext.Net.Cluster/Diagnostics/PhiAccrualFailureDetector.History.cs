@@ -126,7 +126,7 @@ public partial class PhiAccrualFailureDetector
             var deviationMillis = Math.Max(StdDeviation, minStdDeviation.TotalMilliseconds);
 
             var y = (intervalMillis - meanMillis) / deviationMillis;
-            var e = Math.Exp(-y * (1.5976 + (0.070566 * y * y)));
+            var e = Math.Exp(-y * (1.5976D + (0.070566D * y * y)));
 
             return -Math.Log10(intervalMillis > meanMillis ? e / (1D + e) : 1D - (1D / (1D + e)));
         }
