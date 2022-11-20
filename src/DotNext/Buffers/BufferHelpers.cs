@@ -38,7 +38,7 @@ public static partial class BufferHelpers
             return ReadOnlySequence<T>.Empty;
 
         if (ReferenceEquals(head, tail))
-            return new ReadOnlySequence<T>(head.Memory);
+            return new(head.Memory);
 
         return Chunk<T>.CreateSequence(head, tail);
 
