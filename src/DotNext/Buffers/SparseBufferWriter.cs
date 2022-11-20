@@ -1,13 +1,10 @@
 using System.Buffers;
-using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers;
-
-using Sequence = Collections.Generic.Sequence;
 
 /// <summary>
 /// Represents builder of the sparse memory buffer.
@@ -20,7 +17,7 @@ using Sequence = Collections.Generic.Sequence;
 /// <seealso cref="PooledArrayBufferWriter{T}"/>
 /// <seealso cref="PooledBufferWriter{T}"/>
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FragmentedBytes = {{{nameof(FragmentedBytes)}}}")]
-public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMemory<T>>, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
+public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
 {
     private readonly int chunkSize;
     private readonly MemoryAllocator<T>? allocator;
@@ -221,6 +218,7 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
     /// </summary>
     /// <param name="consumer">The consumer of this buffer.</param>
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+    /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer)
         where TConsumer : notnull, IReadOnlySpanConsumer<T>
     {
@@ -287,24 +285,6 @@ public partial class SparseBufferWriter<T> : Disposable, IEnumerable<ReadOnlyMem
     /// <inheritdoc />
     ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
         => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : BufferHelpers.ToReadOnlySequence(this);
-
-    /// <summary>
-    /// Gets enumerator over memory segments.
-    /// </summary>
-    /// <returns>The enumerator over memory segments.</returns>
-    /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-    public Enumerator GetEnumerator()
-    {
-        ThrowIfDisposed();
-        return new Enumerator(first);
-    }
-
-    /// <inheritdoc />
-    IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => first is null ? Sequence.GetEmptyEnumerator<ReadOnlyMemory<T>>() : GetEnumerator();
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     private void ReleaseChunks()
     {

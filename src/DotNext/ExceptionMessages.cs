@@ -52,4 +52,6 @@ internal static class ExceptionMessages
     internal static string NoResult<TError>(TError errorCode)
         where TError : struct, Enum
         => string.Format(Resources.GetString("NoResult")!, errorCode);
+
+    internal static string EndOfBuffer(long remaining) => string.Format(Resources.GetString("EndOfBuffer")!, remaining);
 }
