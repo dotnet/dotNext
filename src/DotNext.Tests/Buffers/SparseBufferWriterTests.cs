@@ -61,7 +61,7 @@ namespace DotNext.Buffers
             var current = writer.End;
             writer.Write(Enumerable.Range(0, 16).ToArray());
 
-            Collection(writer.Read(current, 16), static block => Equal(Enumerable.Range(0, 16).ToArray(), block.ToArray()));
+            Equal(Enumerable.Range(0, 16), writer.Read(ref current, 16L).ToArray());
         }
 
         [Fact]
@@ -74,11 +74,7 @@ namespace DotNext.Buffers
             writer.Write(Enumerable.Range(0, 16).ToArray());
             writer.Write(Enumerable.Range(16, 16).ToArray());
 
-            Collection(
-                writer.Read(current, 32),
-                static block => Equal(Enumerable.Range(0, 13).ToArray(), block.ToArray()),
-                static block => Equal(Enumerable.Range(13, 16).ToArray(), block.ToArray()),
-                static block => Equal(Enumerable.Range(29, 3).ToArray(), block.ToArray()));
+            Equal(Enumerable.Range(0, 32), writer.Read(ref current, 32L).ToArray());
         }
 
         [Fact]
@@ -91,10 +87,10 @@ namespace DotNext.Buffers
             var position = default(SequencePosition);
             var buffer = new int[16];
             Equal(buffer.Length, writer.CopyTo(buffer, ref position));
-            Equal(Enumerable.Range(0, 16).ToArray(), buffer);
+            Equal(Enumerable.Range(0, 16), buffer);
 
             Equal(buffer.Length, writer.CopyTo(buffer, ref position));
-            Equal(Enumerable.Range(16, 16).ToArray(), buffer);
+            Equal(Enumerable.Range(16, 16), buffer);
 
             Equal(0, writer.CopyTo(buffer, ref position));
         }
@@ -129,6 +125,23 @@ namespace DotNext.Buffers
                 writer,
                 static block => Equal(Enumerable.Range(0, 16).ToArray(), block.ToArray()),
                 static block => Equal(Enumerable.Range(16, 16), block.ToArray()));
+        }
+
+        [Fact]
+        public static void Navigation()
+        {
+            using var writer = new SparseBufferWriter<int>(chunkSize: 16);
+            writer.Write(Enumerable.Range(0, 16).ToArray());
+            writer.Write(Enumerable.Range(16, 16).ToArray());
+
+            var buffer = new int[14];
+            var position = writer.GetPosition(3L);
+            Equal(buffer.Length, writer.CopyTo(buffer, ref position));
+            Equal(Enumerable.Range(3, 14), buffer);
+
+            position = writer.GetPosition(3L, position);
+            Equal(13, writer.CopyTo(buffer, ref position));
+            Equal(Enumerable.Range(19, 13), buffer.Take(13));
         }
     }
 }

@@ -1,7 +1,9 @@
+using System.Buffers;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
 
@@ -57,7 +59,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// However, the call of <see cref="Clear"/> method invalidates any position object. The value of this
     /// property remains unchanged between invocations of read-only operations.
     /// </remarks>
-    /// <seealso cref="Read(SequencePosition, long)"/>
+    /// <seealso cref="Read(ref SequencePosition, long)"/>
     public SequencePosition End => last?.EndOfChunk ?? default;
 
     /// <summary>
@@ -66,51 +68,36 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     public SequencePosition Start => new(first, 0);
 
     /// <summary>
-    /// Returns position at an offset from the start of this buffer.
+    /// Returns a position at an offset from the specified position within this buffer.
     /// </summary>
-    /// <param name="offset">The offset from the start of this buffer.</param>
-    /// <returns>The position within this buffer.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
-    /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
-    public SequencePosition GetPosition(long offset)
+    /// <param name="offset">The offset from the specified <paramref name="origin"/> position.</param>
+    /// <param name="origin">A position from which to initiate the offset.</param>
+    /// <returns>The position at <paramref name="offset"/> from <paramref name="origin"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> is negative or greater than the number of available elements starting from <paramref name="origin"/>.</exception>
+    public SequencePosition GetPosition(long offset, SequencePosition origin = default)
     {
         ThrowIfDisposed();
 
-        if (offset < 0L || offset > length)
-            throw new ArgumentOutOfRangeException(nameof(offset));
-
-        SequencePosition result;
-
         if (offset is 0L)
-        {
-            result = Start;
-        }
-        else if (offset == length)
-        {
-            result = End;
-        }
-        else
-        {
-            result = default(SequencePosition);
-            for (var current = first; current is not null && offset > 0L; current = current.Next)
-            {
-                var chunkLength = current.WrittenMemory.Length;
-                if (offset <= current.WrittenMemory.Length)
-                {
-                    result = new(current, unchecked((int)offset));
-                    break;
-                }
+            return origin;
 
-                offset -= chunkLength;
-            }
+        NormalizePosition(ref origin);
+
+        for (long chunkLength; offset > 0L && origin.GetObject() is MemoryChunk current; offset -= chunkLength, origin = new(current.Next, 0))
+        {
+            chunkLength = current.WrittenMemory.Length - origin.GetInteger();
+            if (offset <= chunkLength)
+                return new(current, unchecked((int)offset));
         }
 
-        return result;
+        throw new ArgumentOutOfRangeException(nameof(offset));
     }
 
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private static ReadOnlyMemory<T> Read(ref SequencePosition position, ref long count)
     {
+        Debug.Assert(count >= 0L);
+
         if (position.GetObject() is not MemoryChunk currentChunk || count is 0L)
             return ReadOnlyMemory<T>.Empty;
 
@@ -145,32 +132,39 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     }
 
     /// <summary>
-    /// Reads the data from this buffer.
+    /// Reads the data from this buffer, and advances the position to the specified number of elements.
     /// </summary>
-    /// <param name="start">The start position within this buffer.</param>
+    /// <param name="position">The start position within this buffer.</param>
     /// <param name="count">The number of elements to read.</param>
     /// <returns>A collection of memory chunks containing the requested number of elements.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     /// <exception cref="InvalidOperationException">The end of the buffer has reached but <paramref name="count"/> is larger than the number of available elements.</exception>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
-    public IEnumerable<ReadOnlyMemory<T>> Read(SequencePosition start, long count)
+    public ReadOnlySequence<T> Read(ref SequencePosition position, long count)
     {
         ThrowIfDisposed();
 
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        NormalizePosition(ref start);
-        return ReadCore(start, count);
+        NormalizePosition(ref position);
+        Chunk<T>? head = null, tail = null;
 
-        static IEnumerable<ReadOnlyMemory<T>> ReadCore(SequencePosition start, long count)
+        while (Read(ref position, ref count) is { IsEmpty: false } block)
         {
-            while (Read(ref start, ref count) is { IsEmpty: false } block)
-                yield return block;
-
-            if (count > 0L)
-                throw new InvalidOperationException(ExceptionMessages.EndOfBuffer(count));
+            Chunk<T>.AddChunk(in block, ref head, ref tail);
         }
+
+        if (count > 0L)
+            throw new InvalidOperationException(ExceptionMessages.EndOfBuffer(count));
+
+        if (head is null || tail is null)
+            return ReadOnlySequence<T>.Empty;
+
+        if (ReferenceEquals(head, tail))
+            return new(head.Memory);
+
+        return Chunk<T>.CreateSequence(head, tail);
     }
 
     /// <summary>
