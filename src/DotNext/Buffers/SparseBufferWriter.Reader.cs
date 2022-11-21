@@ -128,7 +128,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     private void NormalizePosition(scoped ref SequencePosition position)
     {
         if (position.GetObject() is not MemoryChunk)
-            position = Start;
+            position = new(first, position.GetInteger());
     }
 
     /// <summary>
