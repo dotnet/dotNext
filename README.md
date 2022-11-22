@@ -52,6 +52,7 @@ Release Date: 11-08-2022
 * Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
 * Added [Builder Pattern](https://en.wikipedia.org/wiki/Builder_pattern) concept as an interface
 * Added extra properties to [Timestamp](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type for precise measurements
+* Introduced additional methods for reading data from [sparse buffer](https://dotnet.github.io/dotNext/api/DotNext.Buffers.SparseBufferWriter-1.html) with help of [SequencePosition](https://learn.microsoft.com/en-us/dotnet/api/system.sequenceposition) cursor
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.8.0">DotNext.Metaprogramming 4.8.0</a>
