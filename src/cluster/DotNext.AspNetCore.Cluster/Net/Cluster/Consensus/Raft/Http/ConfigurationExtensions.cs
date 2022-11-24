@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
+using Extensions;
 using Messaging;
 using Net.Http;
 using Replication;
@@ -25,6 +26,7 @@ public static partial class ConfigurationExtensions
             .AddSingleton<IHostedService>(clusterNodeCast)
             .AddSingleton<ICluster>(clusterNodeCast)
             .AddSingleton<IRaftHttpCluster>(clusterNodeCast)
+            .AddSingleton<IStandbyStateSupport>(clusterNodeCast)
             .AddSingleton<IRaftCluster>(clusterNodeCast)
             .AddSingleton<IMessageBus>(clusterNodeCast)
             .AddSingleton<IReplicationCluster>(clusterNodeCast)

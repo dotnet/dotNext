@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
 using Diagnostics;
+using Extensions;
 using IO.Log;
 using Membership;
 using Threading;
@@ -20,7 +21,7 @@ using IReplicationCluster = Replication.IReplicationCluster;
 /// Represents transport-independent implementation of Raft protocol.
 /// </summary>
 /// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
-public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine<TMember>, IAsyncDisposable
+public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveClusterMemberRemovalSupport, IStandbyStateSupport, IRaftStateMachine<TMember>, IAsyncDisposable
     where TMember : class, IRaftClusterMember, IDisposable
 {
     private readonly bool allowPartitioning, aggressiveStickiness;
@@ -30,9 +31,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     private readonly Random random;
     private readonly TaskCompletionSource readinessProbe;
     private readonly Action<TMember?> onLeaderChangedThreadPoolCallback;
+    private readonly bool standbyNode;
 
     private ClusterMemberId localMemberId;
-    private bool standbyNode;
     private AsyncLock transitionSync;  // used to synchronize state transitions
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
@@ -70,15 +71,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     }
 
     /// <summary>
-    /// Gets or sets the failure detector factory.
+    /// Gets or sets failure detector to be used by the leader node to detect and remove unresponsive followers.
     /// </summary>
-    /// <remarks>
-    /// Failure detector is used to detect dead cluster nodes to remove them from the cluster configuration.
-    /// </remarks>
     public Func<TMember, IFailureDetector>? FailureDetectorFactory
     {
         get;
         init;
+    }
+
+    /// <inheritdoc/>
+    Func<IClusterMember, IFailureDetector>? IUnresponsiveClusterMemberRemovalSupport.FailureDetectorFactory
+    {
+        init => FailureDetectorFactory = value;
     }
 
     /// <summary>
@@ -344,22 +348,31 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous execution of this operation.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [Obsolete("Use ResumeStateTransitionAsync(CancellationToken) method instead.")]
     public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
+        => await ResumeStateTransitionAsync(token).ConfigureAwait(false);
+
+    /// <inheritdoc cref="IStandbyStateSupport.ResumeStateTransitionAsync(CancellationToken)"/>
+    public async ValueTask<bool> ResumeStateTransitionAsync(CancellationToken token = default)
     {
         ThrowIfDisposed();
-        if (standbyNode && state is StandbyState<TMember> standbyState)
+
+        if (state is StandbyState<TMember> standbyState)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var transitionLock = default(AsyncLock.Holder);
             try
             {
                 transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-                standbyNode = false;
 
-                var initialState = new FollowerState<TMember>(this) { Metrics = Metrics };
-                state = initialState;
-                standbyState.Dispose();
-                initialState.StartServing(ElectionTimeout, LifecycleToken);
+                // ensure that we trying to update the same state
+                if (ReferenceEquals(state, standbyState))
+                {
+                    var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
+                    await UpdateStateAsync(newState).ConfigureAwait(false);
+                    newState.StartServing(ElectionTimeout, LifecycleToken);
+                    return true;
+                }
             }
             catch (OperationCanceledException e) when (tokenSource is not null)
             {
@@ -371,7 +384,46 @@ public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, I
                 transitionLock.Dispose();
             }
         }
+
+        return false;
     }
+
+    /// <inheritdoc cref="IStandbyStateSupport.SuspendStateTransitionAsync(CancellationToken)"/>
+    public async ValueTask<bool> SuspendStateTransitionAsync(CancellationToken token = default)
+    {
+        ThrowIfDisposed();
+
+        if (state is FollowerState<TMember> followerState)
+        {
+            var tokenSource = token.LinkTo(LifecycleToken);
+            var transitionLock = default(AsyncLock.Holder);
+            try
+            {
+                transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+
+                // ensure that we trying to update the same state
+                if (ReferenceEquals(state, followerState))
+                {
+                    await UpdateStateAsync(new StandbyState<TMember>(this)).ConfigureAwait(false);
+                    return true;
+                }
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+                transitionLock.Dispose();
+            }
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc cref="IStandbyStateSupport.IsStateTransitionSuspended"/>
+    public bool IsStateTransitionSuspended => state is StandbyState<TMember>;
 
     private async Task CancelPendingRequestsAsync()
     {
