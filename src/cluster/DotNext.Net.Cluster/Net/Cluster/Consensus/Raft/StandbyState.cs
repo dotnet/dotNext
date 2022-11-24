@@ -11,4 +11,6 @@ internal sealed class StandbyState<TMember> : RaftState<TMember>
         : base(stateMachine)
     {
     }
+
+    internal bool Resumable { get; init; } = true;
 }

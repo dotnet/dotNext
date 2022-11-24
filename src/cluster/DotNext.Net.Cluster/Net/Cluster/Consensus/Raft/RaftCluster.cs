@@ -357,7 +357,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         ThrowIfDisposed();
 
-        if (state is StandbyState<TMember> standbyState)
+        if (state is StandbyState<TMember> { Resumable: true } standbyState)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var transitionLock = default(AsyncLock.Holder);
@@ -875,10 +875,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             (Leader is TMember leader && await leader.ResignAsync(token).ConfigureAwait(false));
     }
 
-    private ValueTask MoveToStandbyState()
+    private ValueTask MoveToStandbyState(bool resumable = true)
     {
         Leader = null;
-        return UpdateStateAsync(new StandbyState<TMember>(this));
+        return UpdateStateAsync(new StandbyState<TMember>(this) { Resumable = resumable });
     }
 
     /// <inheritdoc />
