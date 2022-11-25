@@ -30,5 +30,5 @@ public interface ICluster : IPeerMesh<IClusterMember>
     /// Revokes leadership and starts new election process.
     /// </summary>
     /// <returns><see langword="true"/> if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-    Task<bool> ResignAsync(CancellationToken token);
+    Task<bool> ResignAsync(CancellationToken token = default);
 }

@@ -764,32 +764,21 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
     protected async Task<bool> ResignAsync(CancellationToken token)
     {
-        bool result;
-
-        if (state is StandbyState<TMember>)
-        {
-            result = false;
-        }
-        else
+        if (state is LeaderState<TMember> leaderState)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var lockHolder = default(AsyncLock.Holder);
-
             try
             {
                 lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
 
-                if (state is LeaderState<TMember>)
+                if (ReferenceEquals(state, leaderState))
                 {
                     var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     Leader = null;
-                    result = true;
                     newState.StartServing(ElectionTimeout, LifecycleToken);
-                }
-                else
-                {
-                    result = false;
+                    return true;
                 }
             }
             catch (OperationCanceledException e) when (tokenSource is not null)
@@ -803,7 +792,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             }
         }
 
-        return result;
+        return false;
     }
 
     /// <summary>
