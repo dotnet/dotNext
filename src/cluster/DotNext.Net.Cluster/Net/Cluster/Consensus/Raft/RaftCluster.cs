@@ -21,7 +21,7 @@ using IReplicationCluster = Replication.IReplicationCluster;
 /// Represents transport-independent implementation of Raft protocol.
 /// </summary>
 /// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
-public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveClusterMemberRemovalSupport, IStandbyStateSupport, IRaftStateMachine<TMember>, IAsyncDisposable
+public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveClusterMemberRemovalSupport, IStandbyModeSupport, IRaftStateMachine<TMember>, IAsyncDisposable
     where TMember : class, IRaftClusterMember, IDisposable
 {
     private readonly bool allowPartitioning, aggressiveStickiness;
@@ -350,10 +350,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [Obsolete("Use ResumeStateTransitionAsync(CancellationToken) method instead.")]
     public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
-        => await ResumeStateTransitionAsync(token).ConfigureAwait(false);
+        => await RevertToNormalModeAsync(token).ConfigureAwait(false);
 
-    /// <inheritdoc cref="IStandbyStateSupport.ResumeStateTransitionAsync(CancellationToken)"/>
-    public async ValueTask<bool> ResumeStateTransitionAsync(CancellationToken token = default)
+    /// <inheritdoc cref="IStandbyModeSupport.RevertToNormalModeAsync(CancellationToken)"/>
+    public async ValueTask<bool> RevertToNormalModeAsync(CancellationToken token = default)
     {
         ThrowIfDisposed();
 
@@ -388,8 +388,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return false;
     }
 
-    /// <inheritdoc cref="IStandbyStateSupport.SuspendStateTransitionAsync(CancellationToken)"/>
-    public async ValueTask<bool> SuspendStateTransitionAsync(CancellationToken token = default)
+    /// <inheritdoc cref="IStandbyModeSupport.EnableStandbyModeAsync(CancellationToken)"/>
+    public async ValueTask<bool> EnableStandbyModeAsync(CancellationToken token = default)
     {
         ThrowIfDisposed();
 
@@ -422,8 +422,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return false;
     }
 
-    /// <inheritdoc cref="IStandbyStateSupport.IsStateTransitionSuspended"/>
-    public bool IsStateTransitionSuspended => state is StandbyState<TMember>;
+    /// <inheritdoc cref="IStandbyModeSupport.Standby"/>
+    public bool Standby => state is StandbyState<TMember>;
 
     private async Task CancelPendingRequestsAsync()
     {

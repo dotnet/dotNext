@@ -3,7 +3,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Extensions;
 /// <summary>
 /// Provides support of Standby state in addition to standard cluster member states defined in Raft (follower, candidate, leader).
 /// </summary>
-public interface IStandbyStateSupport : IRaftCluster
+public interface IStandbyModeSupport : IRaftCluster
 {
     /// <summary>
     /// Turns this node into regular state when the node can be elected as leader.
@@ -13,7 +13,7 @@ public interface IStandbyStateSupport : IRaftCluster
     /// <see langword="true"/> if state transition is resumed successfully;
     /// <see langword="false"/> if state transition was not suspended.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    ValueTask<bool> ResumeStateTransitionAsync(CancellationToken token = default);
+    ValueTask<bool> RevertToNormalModeAsync(CancellationToken token = default);
 
     /// <summary>
     /// Suspends any transition over Raft states.
@@ -27,10 +27,10 @@ public interface IStandbyStateSupport : IRaftCluster
     /// <see langword="false"/> if operation fails because state transition is already suspended or the local member is not in Follower state.
     /// </returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    ValueTask<bool> SuspendStateTransitionAsync(CancellationToken token = default);
+    ValueTask<bool> EnableStandbyModeAsync(CancellationToken token = default);
 
     /// <summary>
     /// Gets a value indicating that the local member cannot be elected as cluster leader.
     /// </summary>
-    bool IsStateTransitionSuspended { get; }
+    bool Standby { get; }
 }

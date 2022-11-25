@@ -26,7 +26,7 @@ public static partial class ConfigurationExtensions
             .AddSingleton<IHostedService>(clusterNodeCast)
             .AddSingleton<ICluster>(clusterNodeCast)
             .AddSingleton<IRaftHttpCluster>(clusterNodeCast)
-            .AddSingleton<IStandbyStateSupport>(clusterNodeCast)
+            .AddSingleton<IStandbyModeSupport>(clusterNodeCast)
             .AddSingleton<IRaftCluster>(clusterNodeCast)
             .AddSingleton<IMessageBus>(clusterNodeCast)
             .AddSingleton<IReplicationCluster>(clusterNodeCast)
