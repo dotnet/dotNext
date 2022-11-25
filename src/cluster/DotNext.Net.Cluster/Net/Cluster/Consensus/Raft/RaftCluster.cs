@@ -337,7 +337,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous execution of this operation.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [Obsolete("Use ResumeStateTransitionAsync(CancellationToken) method instead.")]
+    [Obsolete("Use RevertToNormalModeAsync(CancellationToken) method instead.")]
     public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
         => await RevertToNormalModeAsync(token).ConfigureAwait(false);
 
