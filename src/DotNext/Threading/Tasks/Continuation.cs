@@ -1,7 +1,6 @@
 namespace DotNext.Threading.Tasks;
 
 using Generic;
-using static Runtime.Intrinsics;
 
 internal static class Continuation<T, TConstant>
     where TConstant : Constant<T>, new()
@@ -28,7 +27,7 @@ public static class Continuation
     /// <param name="task">The task to await.</param>
     /// <returns><paramref name="task"/> in final state.</returns>
     public static Task<Task> OnCompleted(this Task task)
-        => task.ContinueWith(Func.Identity<Task>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+        => task.ContinueWith(Func.Identity<Task>(), CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
     /// <summary>
     /// Allows to obtain original <see cref="Task{R}"/> in its final state after <c>await</c> without
@@ -38,7 +37,7 @@ public static class Continuation
     /// <param name="task">The task to await.</param>
     /// <returns><paramref name="task"/> in final state.</returns>
     public static Task<Task<TResult>> OnCompleted<TResult>(this Task<TResult> task)
-        => task.ContinueWith(Func.Identity<Task<TResult>>(), DefaultOf<CancellationToken>(), TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+        => task.ContinueWith(Func.Identity<Task<TResult>>(), CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
 
     /// <summary>
     /// Returns constant value if underlying task is failed.
