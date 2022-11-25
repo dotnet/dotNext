@@ -393,6 +393,77 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [Fact]
+        public static async Task StandbyMode()
+        {
+            var config1 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+                {"metadata:nodeName", "node1"}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"partitioning", "false" },
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node2"}
+            };
+            var config3 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3264"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node3"}
+            };
+
+            var listener = new LeaderTracker();
+            using var host1 = CreateHost<Startup>(3262, config1, listener);
+            await host1.StartAsync();
+            True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+
+            // two nodes in frozen state
+            using var host2 = CreateHost<Startup>(3263, config2);
+            await host2.StartAsync();
+
+            using var host3 = CreateHost<Startup>(3264, config3);
+            await host3.StartAsync();
+
+            await listener.Result.WaitAsync(DefaultTimeout);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+
+            // add two nodes to the cluster
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
+            await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+            True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
+            await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
+
+            // suspend two nodes
+            False(await GetLocalClusterView(host1).EnableStandbyModeAsync());
+            True(await GetLocalClusterView(host2).EnableStandbyModeAsync());
+            True(GetLocalClusterView(host2).Standby);
+            True(await GetLocalClusterView(host3).EnableStandbyModeAsync());
+            True(GetLocalClusterView(host3).Standby);
+
+            // resign leadership
+            True(await GetLocalClusterView(host1).ResignAsync());
+
+            // ensure that node1 is elected as leader again
+            False((await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).IsRemote);
+
+            // resume two nodes
+            await GetLocalClusterView(host2).RevertToNormalModeAsync();
+            False(GetLocalClusterView(host2).Standby);
+            await GetLocalClusterView(host3).RevertToNormalModeAsync();
+            False(GetLocalClusterView(host3).Standby);
+
+            await host3.StopAsync();
+            await host2.StopAsync();
+            await host1.StopAsync();
+        }
+
+        [Fact]
         public static async Task RegressionIssue108()
         {
             var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
