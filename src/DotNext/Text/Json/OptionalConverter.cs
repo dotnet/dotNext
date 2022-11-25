@@ -12,15 +12,20 @@ public sealed class OptionalConverter<[DynamicallyAccessedMembers(DynamicallyAcc
 {
     /// <inheritdoc />
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     public override void Write(Utf8JsonWriter writer, Optional<T> value, JsonSerializerOptions options)
     {
-        if (value.IsUndefined)
-            throw new InvalidOperationException(ExceptionMessages.UndefinedValueDetected);
-
-        if (value.IsNull)
-            writer.WriteNullValue();
-        else
-            JsonSerializer.Serialize<T?>(writer, value.OrDefault(), options);
+        switch (value)
+        {
+            case { IsUndefined: true }:
+                throw new InvalidOperationException(ExceptionMessages.UndefinedValueDetected);
+            case { IsNull: true }:
+                writer.WriteNullValue();
+                break;
+            default:
+                JsonSerializer.Serialize<T?>(writer, value.OrDefault(), options);
+                break;
+        }
     }
 
     /// <inheritdoc />
