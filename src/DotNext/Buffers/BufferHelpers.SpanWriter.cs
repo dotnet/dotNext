@@ -17,7 +17,7 @@ public static partial class BufferHelpers
     /// <see langword="true"/> if all bytes are copied successfully;
     /// <see langword="false"/> if remaining space in the underlying span is not enough to place all <paramref name="value"/> bytes.
     /// </returns>
-    public static bool TryWrite<T>(scoped this ref SpanWriter<byte> writer, scoped in T value)
+    public static bool TryWrite<T>(this ref SpanWriter<byte> writer, scoped in T value)
         where T : unmanaged
         => writer.TryWrite(Span.AsReadOnlyBytes(in value));
 
@@ -29,7 +29,7 @@ public static partial class BufferHelpers
     /// <typeparam name="T">The blittable type.</typeparam>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place all <paramref name="value"/> bytes.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void Write<T>(scoped this ref SpanWriter<byte> writer, scoped in T value)
+    public static unsafe void Write<T>(this ref SpanWriter<byte> writer, scoped in T value)
         where T : unmanaged
         => Unsafe.WriteUnaligned<T>(ref MemoryMarshal.GetReference(writer.Slide(sizeof(T))), value);
 
@@ -41,7 +41,7 @@ public static partial class BufferHelpers
     /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void WriteInt16(scoped this ref SpanWriter<byte> writer, short value, bool isLittleEndian)
+    public static void WriteInt16(this ref SpanWriter<byte> writer, short value, bool isLittleEndian)
         => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value));
 
     /// <summary>
@@ -53,7 +53,7 @@ public static partial class BufferHelpers
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static void WriteUInt16(scoped this ref SpanWriter<byte> writer, ushort value, bool isLittleEndian)
+    public static void WriteUInt16(this ref SpanWriter<byte> writer, ushort value, bool isLittleEndian)
         => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value));
 
     /// <summary>
@@ -64,7 +64,7 @@ public static partial class BufferHelpers
     /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void WriteInt32(scoped this ref SpanWriter<byte> writer, int value, bool isLittleEndian)
+    public static void WriteInt32(this ref SpanWriter<byte> writer, int value, bool isLittleEndian)
         => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value));
 
     /// <summary>
@@ -76,7 +76,7 @@ public static partial class BufferHelpers
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static void WriteUInt32(scoped this ref SpanWriter<byte> writer, uint value, bool isLittleEndian)
+    public static void WriteUInt32(this ref SpanWriter<byte> writer, uint value, bool isLittleEndian)
         => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value));
 
     /// <summary>
@@ -87,7 +87,7 @@ public static partial class BufferHelpers
     /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void WriteInt64(scoped this ref SpanWriter<byte> writer, long value, bool isLittleEndian)
+    public static void WriteInt64(this ref SpanWriter<byte> writer, long value, bool isLittleEndian)
         => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value));
 
     /// <summary>
@@ -99,7 +99,7 @@ public static partial class BufferHelpers
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
-    public static void WriteUInt64(scoped this ref SpanWriter<byte> writer, ulong value, bool isLittleEndian)
+    public static void WriteUInt64(this ref SpanWriter<byte> writer, ulong value, bool isLittleEndian)
         => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value));
 
     /// <summary>
@@ -110,7 +110,7 @@ public static partial class BufferHelpers
     /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void WriteSingle(scoped this ref SpanWriter<byte> writer, float value, bool isLittleEndian)
+    public static void WriteSingle(this ref SpanWriter<byte> writer, float value, bool isLittleEndian)
         => writer.WriteInt32(BitConverter.SingleToInt32Bits(value), isLittleEndian);
 
     /// <summary>
@@ -121,7 +121,7 @@ public static partial class BufferHelpers
     /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void WriteDouble(scoped this ref SpanWriter<byte> writer, double value, bool isLittleEndian)
+    public static void WriteDouble(this ref SpanWriter<byte> writer, double value, bool isLittleEndian)
         => writer.WriteInt64(BitConverter.DoubleToInt64Bits(value), isLittleEndian);
 
     /// <summary>
@@ -132,7 +132,7 @@ public static partial class BufferHelpers
     /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void WriteHalf(scoped this ref SpanWriter<byte> writer, Half value, bool isLittleEndian)
+    public static void WriteHalf(this ref SpanWriter<byte> writer, Half value, bool isLittleEndian)
         => writer.WriteInt16(BitConverter.HalfToInt16Bits(value), isLittleEndian);
 
     /// <summary>
@@ -140,7 +140,7 @@ public static partial class BufferHelpers
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="input">The string builder.</param>
-    public static void Write(scoped this ref SpanWriter<char> writer, StringBuilder input)
+    public static void Write(this ref SpanWriter<char> writer, StringBuilder input)
     {
         foreach (var chunk in input.GetChunks())
             writer.Write(chunk.Span);
@@ -155,7 +155,7 @@ public static partial class BufferHelpers
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="writer"/> is not large enough to place the characters.</exception>
-    public static void Write<T>(scoped this ref SpanWriter<char> writer, T value, scoped ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    public static void Write<T>(this ref SpanWriter<char> writer, T value, scoped ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, ISpanFormattable
     {
         if (!value.TryFormat(writer.RemainingSpan, out var writtenCount, format, provider))
