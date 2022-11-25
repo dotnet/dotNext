@@ -305,7 +305,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
-        var localMember = GetLocalMember();
+        var localMember = members.Values.FirstOrDefault(static m => m.IsRemote is false);
 
         // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
         if (localMember is not null)
@@ -318,17 +318,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
             state = new StandbyState<TMember>(this);
-        }
-
-        TMember? GetLocalMember()
-        {
-            foreach (var member in members.Values)
-            {
-                if (!member.IsRemote)
-                    return member;
-            }
-
-            return null;
         }
     }
 
