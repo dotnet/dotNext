@@ -11,13 +11,13 @@ namespace DotNext.Text.Json;
 /// For AOT and self-contained app deployment models, use <see cref="OptionalConverter{T}"/>
 /// converter explicitly as an argument for <see cref="JsonConverterAttribute"/>.
 /// </remarks>
-[RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-public sealed class OptionalConverterFactory : JsonConverterFactory
+public sealed class OptionalConverterFactory : JsonConverterFactory // TODO: Add [RequiresDynamicCode] in .NET 7
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert) => typeToConvert.IsOptional();
 
     /// <inheritdoc />
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "No way to annotate the entire class")]
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         var underlyingType = Optional.GetUnderlyingType(typeToConvert);
