@@ -25,6 +25,7 @@ public static class TypeExtensions
     /// <param name="type">The type to inspect.</param>
     /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public static bool IsUnmanaged(this Type type)
     {
         switch (type)
@@ -62,7 +63,7 @@ public static class TypeExtensions
     /// <param name="includeTopLevel"><see langword="true"/> to return <paramref name="type"/> as first element in the collection.</param>
     /// <param name="includeInterfaces"><see langword="true"/> to include implemented interfaces; <see langword="false"/> to return inheritance hierarchy only.</param>
     /// <returns>Read-only collection of base types and, optionally, all implemented interfaces.</returns>
-    public static IEnumerable<Type> GetBaseTypes(this Type type, bool includeTopLevel = false, bool includeInterfaces = false)
+    public static IEnumerable<Type> GetBaseTypes([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type, bool includeTopLevel = false, bool includeInterfaces = false)
     {
         for (var lookup = includeTopLevel ? type : type.BaseType; lookup is not null; lookup = lookup.BaseType)
             yield return lookup;
@@ -79,7 +80,7 @@ public static class TypeExtensions
     /// <param name="type">The type that contains overridden method.</param>
     /// <param name="abstractMethod">The abstract method definition.</param>
     /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public static MethodInfo? Devirtualize(this Type type, MethodInfo abstractMethod)
     {
         if (abstractMethod is { IsFinal: true } or { IsVirtual: false } or { DeclaringType: null })
@@ -117,7 +118,7 @@ public static class TypeExtensions
     }
 
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
-    internal static Type? FindGenericInstance(this Type type, Type genericDefinition)
+    internal static Type? FindGenericInstance([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type, Type genericDefinition)
     {
         bool IsGenericInstanceOf(Type candidate)
             => candidate.IsConstructedGenericType && candidate.GetGenericTypeDefinition() == genericDefinition;
@@ -165,7 +166,7 @@ public static class TypeExtensions
     /// typeof(List&lt;int&gt;).IsGenericInstanceOf(typeof(List&lt;int&gt;));   //returns true
     /// </code>
     /// </example>
-    public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
+    public static bool IsGenericInstanceOf([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type, Type genericDefinition)
         => FindGenericInstance(type, genericDefinition) is not null;
 
     /// <summary>
@@ -180,7 +181,7 @@ public static class TypeExtensions
     /// elementTypes[0] == typeof(byte); //true
     /// </code>
     /// </example>
-    public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
+    public static Type[] GetGenericArguments([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type, Type genericDefinition)
         => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Type.EmptyTypes;
 
     /// <summary>

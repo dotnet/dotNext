@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Cluster.Messaging;
 
 using IO;
@@ -76,7 +78,7 @@ public static class Messenger
     /// <typeparam name="TRequest">The type of outbound message.</typeparam>
     /// <typeparam name="TResponse">The type of inbound message.</typeparam>
     /// <returns>The deserialized response.</returns>
-    public static Task<TResponse> SendJsonMessageAsync<TRequest, TResponse>(this ISubscriber messenger, MessageReader<TResponse> responseReader, string messageName, TRequest request, CancellationToken token)
+    public static Task<TResponse> SendJsonMessageAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]TRequest, TResponse>(this ISubscriber messenger, MessageReader<TResponse> responseReader, string messageName, TRequest request, CancellationToken token)
         => messenger.SendMessageAsync(new JsonMessage<TRequest>(messageName, request), responseReader, token);
 
     /// <summary>
@@ -89,6 +91,6 @@ public static class Messenger
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <typeparam name="TSignal">JSON-serializable type of signal payload.</typeparam>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public static Task SendJsonSignalAsync<TSignal>(this ISubscriber messenger, string messageName, TSignal signal, bool requiresConfirmation = true, CancellationToken token = default)
+    public static Task SendJsonSignalAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]TSignal>(this ISubscriber messenger, string messageName, TSignal signal, bool requiresConfirmation = true, CancellationToken token = default)
         => messenger.SendSignalAsync(new JsonMessage<TSignal>(messageName, signal), requiresConfirmation, token);
 }

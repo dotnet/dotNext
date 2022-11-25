@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
@@ -8,6 +9,7 @@ namespace DotNext.Threading.Tasks;
 /// <summary>
 /// Represents base class for producer of value task.
 /// </summary>
+[SuppressMessage("Usage", "CA1001", Justification = "CTS is disposed automatically when passing through lifecycle of the completion source")]
 public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 {
     private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
