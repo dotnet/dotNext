@@ -9,7 +9,7 @@ internal partial class ServerExchange
         var count = ConfigurationExchange.ParseAnnouncement(input.Span, out var fingerprint, out var length);
         input = input.Slice(count);
         var result = await Writer.WriteAsync(input, token).ConfigureAwait(false);
-        task = server.ProposeConfigurationAsync(Reader.ReadBlockAsync, length, fingerprint, token);
+        task = server.ProposeConfigurationAsync(Reader.ReadBlockAsync, length, fingerprint, token).AsTask();
         if (result.IsCompleted || completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);

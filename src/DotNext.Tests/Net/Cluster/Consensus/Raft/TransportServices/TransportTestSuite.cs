@@ -78,9 +78,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             bool ILocalMember.IsLeader(IRaftClusterMember member) => throw new NotImplementedException();
 
-            Task<bool> ILocalMember.ResignAsync(CancellationToken token) => Task.FromResult(true);
+            ValueTask<bool> ILocalMember.ResignAsync(CancellationToken token) => ValueTask.FromResult(true);
 
-            async Task ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
+            async ValueTask ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
             {
                 using var buffer = MemoryAllocator.Allocate<byte>(configurationLength.Truncate(), true);
                 await configurationReader(buffer.Memory, token).ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 ReceivedConfiguration = buffer.Memory.ToArray();
             }
 
-            private async Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+            private async ValueTask<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
                 where TEntry : IRaftLogEntry
             {
                 Equal(42L, senderTerm);
@@ -133,10 +133,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return new Result<bool>(43L, true);
             }
 
-            Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+            ValueTask<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
                 => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, fingerprint, applyConfig, token);
 
-            async Task<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+            async ValueTask<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
             {
                 if (config.Length > 0L)
                     ReceivedConfiguration = await config.ToByteArrayAsync(token: token);
@@ -144,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return await AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, config.Fingerprint, applyConfig, token);
             }
 
-            async Task<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            async ValueTask<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             {
                 Equal(42L, senderTerm);
                 Equal(10, snapshotIndex);
@@ -154,28 +154,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return new Result<bool>(43L, true);
             }
 
-            Task<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(42L, term);
                 Equal(1L, lastLogIndex);
                 Equal(56L, lastLogTerm);
-                return Task.FromResult(new Result<bool>(43L, true));
+                return ValueTask.FromResult(new Result<bool>(43L, true));
             }
 
-            Task<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            ValueTask<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(10L, term);
                 Equal(2L, lastLogIndex);
                 Equal(99L, lastLogTerm);
-                return Task.FromResult(new Result<PreVoteResult>(44L, PreVoteResult.Accepted));
+                return ValueTask.FromResult(new Result<PreVoteResult>(44L, PreVoteResult.Accepted));
             }
 
-            Task<long?> ILocalMember.SynchronizeAsync(long commitIndex, CancellationToken token)
+            ValueTask<long?> ILocalMember.SynchronizeAsync(long commitIndex, CancellationToken token)
             {
                 Equal(long.MaxValue, commitIndex);
-                return Task.FromResult<long?>(42L);
+                return ValueTask.FromResult<long?>(42L);
             }
 
             public IReadOnlyDictionary<string, string> Metadata { get; }

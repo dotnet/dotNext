@@ -5,7 +5,7 @@ using static Runtime.Intrinsics;
 internal partial class ServerExchange
 {
     private void BeginResign(CancellationToken token)
-        => task = server.ResignAsync(token);
+        => task = server.ResignAsync(token).AsTask();
 
     private async ValueTask<(PacketHeaders, int, bool)> EndResign(Memory<byte> payload)
     {
