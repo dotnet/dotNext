@@ -62,11 +62,9 @@ Release Date: 11-08-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.8.0">DotNext.Unsafe 4.8.0</a>
-* Removed redundant type cast in `Pointer<T>` value type
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.8.0">DotNext.Threading 4.8.0</a>
-* `Scheduler.DelayedTaskCanceledException` is added to identify graceful cancellation of the scheduled task (when it was canceled without entering the callback)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.8.0">DotNext.IO 4.8.0</a>
@@ -75,10 +73,13 @@ Release Date: 11-08-2022
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.0">DotNext.Net.Cluster 4.8.0</a>
 * Added automatic removal of unresponsive nodes from Raft cluster using Failure Detector
 * Added implementation of Phi Accrual Failure Detector
+* Added ability to turn cluster node into Standby mode and back to normal mode (see [discussion](https://github.com/dotnet/dotNext/discussions/134))
+* Raft functional extensions are grouped as a set of interfaces located in a new `DotNext.Net.Cluster.Consensus.Raft.Extensions` namespace
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.0">DotNext.AspNetCore.Cluster 4.8.0</a>
 * Added automatic removal of unresponsive nodes from Raft cluster using Failure Detector registered in DI
+* Raft functional extensions are available for query through DI as interfaces
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
