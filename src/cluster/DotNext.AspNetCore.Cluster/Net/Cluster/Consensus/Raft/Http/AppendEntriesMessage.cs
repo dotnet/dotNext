@@ -274,8 +274,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
 
     private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
     {
-        StringSegment boundary;
-
         if (count is 0L || !AspNetMediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
         {
             // jump to empty set of log entries
@@ -285,7 +283,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
             // log entries encoded as efficient binary stream
             return new OctetStreamLogEntriesReader(request.BodyReader, count);
         }
-        else if ((boundary = HeaderUtils.RemoveQuotes(mediaType.Boundary)).Length > 0)
+        else if (HeaderUtils.RemoveQuotes(mediaType.Boundary) is { Length: > 0 } boundary)
         {
             return new MultipartLogEntriesReader(boundary.ToString(), request.Body, count);
         }
@@ -324,7 +322,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
     private sealed class OctetStreamLogEntriesWriter : HttpContent
     {
         private readonly IDataTransferObject configuration;
-        private readonly Enumerable<TEntry, TList> entries;
+        private Enumerable<TEntry, TList> entries; // not readonly to avoid defensive copies
 
         internal OctetStreamLogEntriesWriter(in TList entries, IDataTransferObject configuration)
         {
@@ -388,9 +386,9 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         private const char Quote = '\"';
         private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
 
-        private readonly Enumerable<TEntry, TList> entries;
         private readonly string boundary;
         private readonly IDataTransferObject configuration;
+        private Enumerable<TEntry, TList> entries; // not readonly to avoid defensive copies
 
         internal MultipartLogEntriesWriter(in TList entries, IDataTransferObject configuration)
         {
