@@ -252,7 +252,6 @@ public class QueuedSynchronizer : Disposable
     /// </remarks>
     /// <returns>A list of suspended callers.</returns>
     /// <seealso cref="TrackSuspendedCallers"/>
-    [CLSCompliant(false)]
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyList<object?> GetSuspendedCallers()
         => callerInfo is null ? Array.Empty<object?>() : GetSuspendedCallersCore();
