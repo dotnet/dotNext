@@ -29,9 +29,7 @@ internal sealed class Startup
             .AddSingleton<IInputChannel, Mailbox>()
             .AddSingleton<MetricsCollector, TestMetricsCollector>();
 
-        var configPath = configuration[PersistentConfigurationPath];
-
-        if (configPath is { Length: > 0 })
+        if (configuration[PersistentConfigurationPath] is { Length: > 0 } configPath)
             services.UsePersistentConfigurationStorage(configPath);
     }
 }
