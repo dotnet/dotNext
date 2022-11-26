@@ -29,10 +29,9 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     private ClusterMemberId(IPEndPoint endPoint)
     {
         Span<byte> bytes = stackalloc byte[16];
-        if (endPoint.Address.TryWriteBytes(bytes, out length))
-            address = new(bytes);
-        else
-            throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endPoint));
+        address = endPoint.Address.TryWriteBytes(bytes, out length)
+            ? new(bytes)
+            : throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endPoint));
         port = endPoint.Port;
         family = (int)endPoint.AddressFamily;
     }
@@ -124,7 +123,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <param name="reader">The memory block reader.</param>
     public ClusterMemberId(ref SpanReader<byte> reader)
     {
-        address = new Guid(reader.Read(16));
+        address = new(reader.Read(16));
         port = reader.ReadInt32(true);
         length = reader.ReadInt32(true);
         family = reader.ReadInt32(true);
