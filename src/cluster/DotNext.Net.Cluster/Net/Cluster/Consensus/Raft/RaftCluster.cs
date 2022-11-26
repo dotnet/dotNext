@@ -55,7 +55,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         allowPartitioning = config.Partitioning;
         members = MemberList.Empty;
         transitionSync = AsyncLock.Exclusive();
-        transitionCancellation = new CancellationTokenSource();
+        transitionCancellation = new();
         LifecycleToken = transitionCancellation.Token;
         auditTrail = new ConsensusOnlyState();
         heartbeatThreshold = config.HeartbeatThreshold;
@@ -417,9 +417,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private async Task CancelPendingRequestsAsync()
     {
-        var tasks = new List<Task>(members.Count);
-        foreach (var member in members.Values)
-            tasks.Add(member.CancelPendingRequestsAsync().AsTask());
+        var tasks = members.Values.Select(static m => m.CancelPendingRequestsAsync().AsTask()).ToArray();
 
         try
         {
@@ -431,7 +429,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
         finally
         {
-            tasks.Clear(); // help GC
+            Array.Clear(tasks); // help GC
         }
     }
 
@@ -536,10 +534,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     protected async ValueTask<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
+        var result = false;
         using var tokenSource = token.LinkTo(LifecycleToken);
         using var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-        var result = false;
         var currentTerm = auditTrail.Term;
+
         if (currentTerm <= senderTerm)
         {
             Timestamp.Refresh(ref lastUpdated);
@@ -610,8 +609,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         long currentTerm;
 
         // PreVote doesn't cause transition to another Raft state so locking not needed
-        var tokenSource = token.LinkTo(LifecycleToken);
-        try
+        using (var tokenSource = token.LinkTo(LifecycleToken))
         {
             currentTerm = auditTrail.Term;
 
@@ -628,10 +626,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 result = PreVoteResult.RejectedByFollower;
             }
-        }
-        finally
-        {
-            tokenSource?.Dispose();
         }
 
         return new(currentTerm, result);
@@ -710,9 +704,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         if (currentTerm > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
             goto exit;
 
-        using (var tokenSource = token.LinkTo(LifecycleToken))
-        using (var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+        var tokenSource = token.LinkTo(LifecycleToken);
+        var transitionLock = default(AsyncLock.Holder);
+        try
         {
+            transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             currentTerm = auditTrail.Term;
 
             if (currentTerm > senderTerm)
@@ -742,6 +738,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                 result = true;
             }
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+            transitionLock.Dispose();
         }
 
     exit:
