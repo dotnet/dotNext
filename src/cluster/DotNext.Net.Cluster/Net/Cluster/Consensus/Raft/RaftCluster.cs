@@ -382,7 +382,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         ThrowIfDisposed();
 
-        if (state is FollowerState<TMember> followerState)
+        RaftState<TMember> currentState;
+        if ((currentState = state) is FollowerState<TMember> or CandidateState<TMember>)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var transitionLock = default(AsyncLock.Holder);
@@ -391,7 +392,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
 
                 // ensure that we trying to update the same state
-                if (ReferenceEquals(state, followerState))
+                if (ReferenceEquals(state, currentState))
                 {
                     await UpdateStateAsync(new StandbyState<TMember>(this)).ConfigureAwait(false);
                     return true;
