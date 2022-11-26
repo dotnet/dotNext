@@ -149,7 +149,7 @@ public class QueuedSynchronizer : Disposable
         protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
 
         private void ReportLockDuration()
-            => lockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
+            => lockDurationCounter?.Invoke(createdAt.ElapsedMilliseconds);
 
         private protected static void AfterConsumed<T>(T node)
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
