@@ -384,7 +384,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         private const string CrLf = "\r\n";
         private const string DoubleDash = "--";
         private const char Quote = '\"';
-        private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
 
         private readonly string boundary;
         private readonly IDataTransferObject configuration;
@@ -438,8 +437,8 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
         {
             const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
-            EncodingContext encodingContext = DefaultHttpEncoding;
-            using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, DefaultHttpEncoding.GetMaxByteCount(maxChars)))
+            var encodingContext = new EncodingContext(Encoding.Latin1, reuseEncoder: true);
+            using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, encodingContext.Encoding.GetMaxByteCount(maxChars)))
             using (var builder = new PooledArrayBufferWriter<char> { Capacity = maxChars })
             {
                 // encode configuration in raw format without boundaries
@@ -473,8 +472,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
                 builder.Write(DoubleDash + CrLf);
                 await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory, token: token).ConfigureAwait(false);
             }
-
-            encodingContext.Reset();
         }
 
         protected override bool TryComputeLength(out long length)
