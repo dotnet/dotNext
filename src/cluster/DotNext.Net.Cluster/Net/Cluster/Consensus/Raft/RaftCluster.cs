@@ -122,8 +122,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
 
     /// <summary>
-    /// Indicates that local member is a leader.
+    /// Indicates that the local member is a leader.
     /// </summary>
+    [Obsolete("Use LeadershipToken property instead.")]
     protected bool IsLeaderLocal => state is LeaderState<TMember>;
 
     /// <summary>
