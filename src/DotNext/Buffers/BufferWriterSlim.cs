@@ -266,7 +266,7 @@ public ref partial struct BufferWriterSlim<T>
     }
 
     /// <summary>
-    /// lears the data written to the underlying buffer.
+    /// Clears the data written to the underlying buffer.
     /// </summary>
     /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>
     public void Clear(bool reuseBuffer = false)
