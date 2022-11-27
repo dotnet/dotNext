@@ -227,7 +227,8 @@ public static partial class BufferHelpers
             item = default!;
         }
 
-        owner.Clear(false);
+        owner.Clear(clearBuffer: false);
+        owner = default;
     }
 
     /// <summary>

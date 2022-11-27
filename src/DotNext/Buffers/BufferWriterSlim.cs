@@ -290,9 +290,15 @@ public ref partial struct BufferWriterSlim<T>
     public void Dispose()
     {
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        {
             initialBuffer.Clear();
+            extraBuffer.Clear(clearBuffer: true);
+        }
+        else
+        {
+            extraBuffer.Clear(clearBuffer: false);
+        }
 
-        extraBuffer.Dispose();
         this = default;
     }
 
