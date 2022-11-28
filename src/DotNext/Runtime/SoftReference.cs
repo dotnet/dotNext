@@ -30,8 +30,6 @@ public sealed class SoftReference<T> : IOptionMonad<T>
             this.parent = parent;
         }
 
-        void IGCCallback.StopTracking() => GC.SuppressFinalize(this);
-
         ~Tracker()
         {
             // Thread safety: preserve order of fields
