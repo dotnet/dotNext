@@ -9,6 +9,7 @@ using Membership;
 using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
 using Timestamp = Diagnostics.Timestamp;
+using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 
 internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
@@ -174,8 +175,14 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         for (var forced = false; ; responsePipe.Reset())
         {
             var startTime = new Timestamp();
-            if (!await DoHeartbeats(startTime, responsePipe, auditTrail, configurationStorage, token).ConfigureAwait(false))
-                break;
+
+            // we want to minimize GC intrusion during replication process
+            // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
+            using (GCLatencyModeScope.SustainedLowLatency)
+            {
+                if (!await DoHeartbeats(startTime, responsePipe, auditTrail, configurationStorage, token).ConfigureAwait(false))
+                    break;
+            }
 
             if (forced)
                 DrainReplicationQueue();
