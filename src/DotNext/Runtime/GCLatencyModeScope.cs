@@ -15,7 +15,7 @@ public readonly struct GCLatencyModeScope : IDisposable
     /// Initializes a new scope that affects GC intrusion level.
     /// </summary>
     /// <param name="mode">GC latency mode.</param>
-    public GCLatencyMode(GCLatencyMode mode)
+    public GCLatencyModeScope(GCLatencyMode mode)
     {
         currentMode = GCSettings.LatencyMode;
         GCSettings.LatencyMode = mode;
