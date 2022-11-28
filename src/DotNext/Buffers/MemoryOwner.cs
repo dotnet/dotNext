@@ -284,8 +284,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         {
             AssertValid();
 
-            ref var first = ref First;
-            return Unsafe.IsNullRef(ref first) ? Span<T>.Empty : MemoryMarshal.CreateSpan(ref first, length);
+            return MemoryMarshal.CreateSpan(ref First, length);
         }
     }
 
