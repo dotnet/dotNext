@@ -95,6 +95,13 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         Notify();
     }
 
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private void Enqueue(T task, uint expectedVersion)
+    {
+        if (version == expectedVersion)
+            Enqueue(task);
+    }
+
     /// <summary>
     /// Adds the task to this pipe.
     /// </summary>
@@ -105,8 +112,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         ArgumentNullException.ThrowIfNull(task);
 
-        if (!TryAdd(task, out var version))
-            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new Continuation(this, task, version).Invoke);
+        if (!TryAdd(task, out var expectedVersion))
+            task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => { if (version == expectedVersion) Enqueue(task, expectedVersion); });
     }
 
     /// <summary>
@@ -229,30 +236,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
                 Debug.Assert(task.IsCompleted);
 
                 yield return task;
-            }
-        }
-    }
-
-    private sealed class Continuation : Tuple<TaskCompletionPipe<T>, T, uint>
-    {
-        internal Continuation(TaskCompletionPipe<T> pipe, T task, uint version)
-            : base(pipe, task, version)
-        {
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        internal void Invoke() => Enqueue(Item1, Item2, Item3);
-
-        private static void Enqueue(TaskCompletionPipe<T> pipe, T task, uint expectedVersion)
-        {
-            // skip completed task if the pipe was reset
-            if (pipe.version == expectedVersion)
-            {
-                lock (pipe)
-                {
-                    if (pipe.version == expectedVersion)
-                        pipe.Enqueue(task);
-                }
             }
         }
     }
