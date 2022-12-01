@@ -28,7 +28,6 @@ namespace DotNext.Threading.Tasks
                 result += task.Result;
             }
 
-            False(pipe.HasPendingTasks);
             Equal(4200, result);
         }
 
@@ -63,12 +62,9 @@ namespace DotNext.Threading.Tasks
             var pipe = new TaskCompletionPipe<Task<int>>();
             pipe.Add(Task.FromResult(42));
             pipe.Add(Task.FromResult(43));
-            True(pipe.HasPendingTasks);
             True(await pipe.WaitToReadAsync());
-            True(pipe.HasPendingTasks);
             True(pipe.TryRead(out var task));
             Equal(42, task.Result);
-            True(pipe.HasPendingTasks);
 
             pipe.Add(Task.FromResult(44));
             pipe.Add(Task.FromResult(45));
@@ -131,6 +127,7 @@ namespace DotNext.Threading.Tasks
             pipe.Complete();
             True(await consumer1);
             True(await consumer2);
+            True(await pipe.WaitToReadAsync());
         }
     }
 }
