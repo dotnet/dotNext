@@ -6,10 +6,10 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Runtime | .NET 6.0.7 (6.0.722.32202), X64 RyuJIT |
+| Runtime | .NET 6.0.11 (6.0.1122.52304), X64 RyuJIT AVX2 |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
-| OS | Ubuntu 20.04.4 |
+| OS | Ubuntu 22.04.1 |
 | CPU | Intel Core i7-6700HQ CPU 2.60GHz (Skylake) |
 | Number of CPUs | 1 |
 | Physical Cores | 4 |
@@ -211,3 +211,17 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 | 'ConcurrentDictionary, Set + TryGetValue' | 59.608 ns | 0.3600 ns | 0.3191 ns |
 |             'ConcurrentTypeMap, GetOrAdd' | 10.249 ns | 0.0435 ns | 0.0407 ns |
 |          'ConcurrentDictionary, GetOrAdd' | 16.019 ns | 0.0739 ns | 0.0692 ns |
+
+# TaskCompletionPipe
+[This benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Threading/Tasks/ChannelVersusPipeBenchmark.cs) demonstrates efficiency of [Task Completion Pipe](./features/threading/taskpipe.md) versus [async channels](https://learn.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1) from .NET. The efficiency is achieved because the pipe sorts the submitted task in the order of their completion in time. The fastest result is available immediately for the consumer, while the channel needs to wait for completion of the task and only then add it to the queue.
+
+|                         Method | Number of input tasks |        Mean |     Error |    StdDev | Ratio | RatioSD |
+|------------------------------- |---------------------- |------------:|----------:|----------:|------:|--------:|
+|   ProduceConsumeCompletionPipe |                    10 |    15.68 us |  0.410 us |  1.176 us |  0.76 |    0.08 |
+| ProduceConsumeUnboundedChannel |                    10 |    20.69 us |  0.585 us |  1.688 us |  1.00 |    0.00 |
+|                                |                       |             |           |           |       |         |
+|   ProduceConsumeCompletionPipe |                   100 |    89.37 us |  1.783 us |  2.054 us |  0.63 |    0.02 |
+| ProduceConsumeUnboundedChannel |                   100 |   141.32 us |  2.794 us |  3.326 us |  1.00 |    0.00 |
+|                                |                       |             |           |           |       |         |
+|   ProduceConsumeCompletionPipe |                  1000 |   820.54 us | 16.048 us | 24.985 us |  0.70 |    0.02 |
+| ProduceConsumeUnboundedChannel |                  1000 | 1,177.71 us | 21.948 us | 19.457 us |  1.00 |    0.00 |
