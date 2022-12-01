@@ -65,6 +65,9 @@ Release Date: 11-08-2022
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.8.0">DotNext.Threading 4.8.0</a>
+* `TaskCompletionPipe<T>` doesn't require capacity anymore
+* Fix: potential consumer hang when a number consumers is larger than number of pending tasks
+* Added `TaskCompletionPipe<T>.HasPendingTasks` property that allows to identify remaining tasks to consume
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.8.0">DotNext.IO 4.8.0</a>
