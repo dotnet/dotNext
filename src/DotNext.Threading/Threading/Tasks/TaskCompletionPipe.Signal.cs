@@ -34,17 +34,14 @@ public partial class TaskCompletionPipe<T>
         signal.Detach();
     }
 
-    private void DrainWaitQueue(bool value)
+    // detach all suspended callers to process out of the monitor lock
+    private LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
-        {
-            next = current.CleanupAndGotoNext();
-            current.TrySetResult(Sentinel.Instance, value);
-        }
-
+        var result = first;
         first = last = null;
+        return result;
     }
 
     private LinkedValueTaskCompletionSource<bool> EnqueueNode()

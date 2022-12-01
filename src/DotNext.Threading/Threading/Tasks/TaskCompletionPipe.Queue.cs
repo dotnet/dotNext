@@ -27,22 +27,24 @@ public partial class TaskCompletionPipe<T>
 
         internal void Invoke()
         {
+            LinkedValueTaskCompletionSource<bool>? waitNode = null;
             if (owner?.version.VolatileRead() == expectedVersion)
             {
                 lock (owner)
                 {
                     if (owner.version == expectedVersion)
-                        owner.EnqueueCompletedTask(this);
+                        waitNode = owner.EnqueueCompletedTask(this);
                 }
             }
 
             owner = null;
+            waitNode?.TrySetResultAndSentinelToAll(result: true);
         }
     }
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private void EnqueueCompletedTask(LinkedTaskNode node)
+    private LinkedValueTaskCompletionSource<bool>? EnqueueCompletedTask(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(this));
         Debug.Assert(node is { Task: { IsCompleted: true } });
@@ -56,7 +58,8 @@ public partial class TaskCompletionPipe<T>
             lastTask = lastTask.Next = node;
         }
 
-        DrainWaitQueue(value: true);
+        scheduledTasksCount--;
+        return DetachWaitQueue();
     }
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)

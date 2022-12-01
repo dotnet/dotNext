@@ -34,11 +34,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     /// <summary>
-    /// Gets a value indicating that the pipe has tasks available for consuming.
-    /// </summary>
-    public bool HasPendingTasks => scheduledTasksCount.VolatileRead() > 0U;
-
-    /// <summary>
     /// Marks the pipe as being complete, meaning no more items will be added to it.
     /// </summary>
     /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
@@ -47,9 +42,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         if (completionRequested)
             throw new InvalidOperationException();
-
-        if (scheduledTasksCount is 0U)
-            DrainWaitQueue(value: false);
 
         completionRequested = true;
     }
@@ -66,7 +58,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TryAdd(T task, out uint currentVersion)
+    private bool TryAdd(T task, out uint currentVersion, out LinkedValueTaskCompletionSource<bool>? waitNode)
     {
         if (completionRequested)
             throw new InvalidOperationException();
@@ -76,10 +68,11 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         if (task.IsCompleted)
         {
-            EnqueueCompletedTask(new(task));
+            waitNode = EnqueueCompletedTask(new(task));
             return true;
         }
 
+        waitNode = null;
         return false;
     }
 
@@ -93,8 +86,20 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         ArgumentNullException.ThrowIfNull(task);
 
-        if (!TryAdd(task, out var expectedVersion))
+        if (TryAdd(task, out var expectedVersion, out var waitNode))
+            waitNode?.TrySetResultAndSentinelToAll(result: true);
+        else
             task.ConfigureAwait(false).GetAwaiter().OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion).Invoke);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private LinkedValueTaskCompletionSource<bool>? ResetCore()
+    {
+        version += 1U;
+        scheduledTasksCount = 0U;
+        completionRequested = false;
+        ClearTaskQueue();
+        return DetachWaitQueue();
     }
 
     /// <summary>
@@ -104,15 +109,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// The pipe can be reused only if there are no active consumers and producers.
     /// Otherwise, the behavior of the pipe is unspecified.
     /// </remarks>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    public void Reset()
-    {
-        version += 1U;
-        scheduledTasksCount = 0U;
-        completionRequested = false;
-        ClearTaskQueue();
-        DrainWaitQueue(value: false);
-    }
+    public void Reset() => ResetCore()?.TrySetResultAndSentinelToAll(result: false);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal QueuedSynchronizer.ValueTaskFactory TryDequeue(out T? task)
@@ -121,9 +118,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         if (TryDequeueCompletedTask(out task))
         {
-            Debug.Assert(scheduledTasksCount > 0U);
-
-            scheduledTasksCount--;
             result = new(true);
         }
         else if (IsCompleted)
@@ -144,18 +138,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <param name="task">The completed task.</param>
     /// <returns><see langword="true"/> if a task was read; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public bool TryRead([MaybeNullWhen(false)]out T task)
-    {
-        if (TryDequeueCompletedTask(out task))
-        {
-            Debug.Assert(scheduledTasksCount > 0U);
-
-            scheduledTasksCount--;
-            return true;
-        }
-
-        return false;
-    }
+    public bool TryRead([NotNullWhen(true)] out T? task) => TryDequeueCompletedTask(out task);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private QueuedSynchronizer.ValueTaskFactory Wait(bool zeroTimeout)
