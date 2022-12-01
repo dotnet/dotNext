@@ -81,12 +81,10 @@ public sealed class LockExpression : CustomExpression
     /// </summary>
     /// <param name="body">The new body of the synchronized block of code.</param>
     /// <returns>Updated expression.</returns>
-    public LockExpression Update(Expression body)
+    public LockExpression Update(Expression body) => new LockExpression(assignment is null ? SyncRoot : assignment.Right)
     {
-        var result = assignment is null ? new LockExpression(SyncRoot) : new LockExpression(assignment.Right);
-        result.Body = body;
-        return result;
-    }
+        Body = body,
+    };
 
     /// <summary>
     /// Translates this expression into predefined set of expressions

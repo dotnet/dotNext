@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Timestamp = Diagnostics.Timestamp;
 
-internal partial class LeaderState
+internal partial class LeaderState<TMember>
 {
     private sealed class LeaderLease : ILeaderLease
     {

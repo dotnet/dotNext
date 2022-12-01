@@ -127,6 +127,7 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Call(method, expr, salted);
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static IEnumerable<FieldInfo> GetAllFields(Type type)
     {
         foreach (var t in type.GetBaseTypes(includeTopLevel: true))

@@ -19,7 +19,7 @@ public partial struct Base64Decoder
         return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<ulong, byte>(ref Unsafe.AsRef(in value)), length);
     }
 
-    private bool DecodeFromUtf8Core<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
+    private bool DecodeFromUtf8Core<TWriter>(scoped ReadOnlySpan<byte> utf8Chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var produced = Base64.GetMaxDecodedFromUtf8Length(utf8Chars.Length);
@@ -45,7 +45,7 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private bool CopyAndDecodeFromUtf8<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
+    private bool CopyAndDecodeFromUtf8<TWriter>(scoped ReadOnlySpan<byte> utf8Chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var newSize = reservedBufferSize + utf8Chars.Length;
@@ -56,7 +56,7 @@ public partial struct Base64Decoder
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool DecodeFromUtf8<TWriter>(ReadOnlySpan<byte> utf8Chars, ref TWriter writer)
+    private bool DecodeFromUtf8<TWriter>(scoped ReadOnlySpan<byte> utf8Chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
         => NeedMoreData ? CopyAndDecodeFromUtf8(utf8Chars, ref writer) : DecodeFromUtf8Core(utf8Chars, ref writer);
 
@@ -67,7 +67,7 @@ public partial struct Base64Decoder
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf8(ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
+    public void DecodeFromUtf8(scoped ReadOnlySpan<byte> utf8Chars, IBufferWriter<byte> output)
     {
         ArgumentNullException.ThrowIfNull(output);
 
@@ -82,7 +82,7 @@ public partial struct Base64Decoder
     /// <param name="output">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf8(in ReadOnlySequence<byte> utf8Chars, IBufferWriter<byte> output)
+    public void DecodeFromUtf8(scoped in ReadOnlySequence<byte> utf8Chars, IBufferWriter<byte> output)
     {
         ArgumentNullException.ThrowIfNull(output);
 
@@ -99,7 +99,7 @@ public partial struct Base64Decoder
     /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="allocator">The allocator of the result buffer.</param>
     /// <returns>A buffer containing decoded bytes.</returns>
-    public MemoryOwner<byte> DecodeFromUtf8(ReadOnlySpan<byte> utf8Chars, MemoryAllocator<byte>? allocator = null)
+    public MemoryOwner<byte> DecodeFromUtf8(scoped ReadOnlySpan<byte> utf8Chars, MemoryAllocator<byte>? allocator = null)
     {
         var result = new MemoryOwnerWrapper<byte>(allocator);
 
@@ -111,7 +111,7 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private void DecodeFromUtf8Core<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
+    private void DecodeFromUtf8Core<TConsumer>(scoped ReadOnlySpan<byte> utf8Chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         Span<byte> buffer = stackalloc byte[DecodingBufferSize];
@@ -142,7 +142,7 @@ public partial struct Base64Decoder
     }
 
     [SkipLocalsInit]
-    private void CopyAndDecodeFromUtf8<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
+    private void CopyAndDecodeFromUtf8<TConsumer>(scoped ReadOnlySpan<byte> utf8Chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         var newSize = reservedBufferSize + utf8Chars.Length;
@@ -159,7 +159,7 @@ public partial struct Base64Decoder
     /// <param name="utf8Chars">The span containing base64-encoded bytes.</param>
     /// <param name="output">The consumer called for decoded portion of data.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf8<TConsumer>(ReadOnlySpan<byte> utf8Chars, TConsumer output)
+    public void DecodeFromUtf8<TConsumer>(scoped ReadOnlySpan<byte> utf8Chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         if (NeedMoreData)
@@ -176,7 +176,7 @@ public partial struct Base64Decoder
     /// <param name="output">The callback called for decoded portion of data.</param>
     /// <param name="arg">The argument to be passed to the callback.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf8<TArg>(ReadOnlySpan<byte> utf8Chars, ReadOnlySpanAction<byte, TArg> output, TArg arg)
+    public void DecodeFromUtf8<TArg>(scoped ReadOnlySpan<byte> utf8Chars, ReadOnlySpanAction<byte, TArg> output, TArg arg)
         => DecodeFromUtf8(utf8Chars, new DelegatingReadOnlySpanConsumer<byte, TArg>(output, arg));
 
     /// <summary>
@@ -188,7 +188,7 @@ public partial struct Base64Decoder
     /// <param name="arg">The argument to be passed to the callback.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     [CLSCompliant(false)]
-    public unsafe void DecodeFromUtf8<TArg>(ReadOnlySpan<byte> utf8Chars, delegate*<ReadOnlySpan<byte>, TArg, void> output, TArg arg)
+    public unsafe void DecodeFromUtf8<TArg>(scoped ReadOnlySpan<byte> utf8Chars, delegate*<ReadOnlySpan<byte>, TArg, void> output, TArg arg)
         => DecodeFromUtf8(utf8Chars, new ReadOnlySpanConsumer<byte, TArg>(output, arg));
 
     /// <summary>
@@ -197,7 +197,7 @@ public partial struct Base64Decoder
     /// <param name="utf8Chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="output">The stream used as destination for decoded bytes.</param>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf8(ReadOnlySpan<byte> utf8Chars, Stream output)
+    public void DecodeFromUtf8(scoped ReadOnlySpan<byte> utf8Chars, Stream output)
         => DecodeFromUtf8<StreamConsumer>(utf8Chars, output);
 
     /// <summary>

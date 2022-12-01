@@ -44,9 +44,9 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
 
         if (enumerable is null)
         {
-            getEnumerator = collection.Call(collection.Type.GetMethod(GetEnumeratorMethod, Array.Empty<Type>()) ?? throw new ArgumentException(ExceptionMessages.EnumerablePatternExpected));
+            getEnumerator = collection.Call(collection.Type.GetMethod(GetEnumeratorMethod, Type.EmptyTypes) ?? throw new ArgumentException(ExceptionMessages.EnumerablePatternExpected));
             enumeratorVar = Variable(getEnumerator.Method.ReturnType, EnumeratorVarName);
-            moveNextCall = Call(enumeratorVar, nameof(IEnumerator.MoveNext), Array.Empty<Type>());
+            moveNextCall = Call(enumeratorVar, nameof(IEnumerator.MoveNext), Type.EmptyTypes);
         }
         else
         {

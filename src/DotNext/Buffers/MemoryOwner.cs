@@ -284,8 +284,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         {
             AssertValid();
 
-            ref var first = ref First;
-            return Unsafe.IsNullRef(ref first) ? Span<T>.Empty : MemoryMarshal.CreateSpan(ref first, length);
+            return MemoryMarshal.CreateSpan(ref First, length);
         }
     }
 
@@ -346,28 +345,30 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
     public readonly ref T this[int index] => ref this[(nint)index];
 
-    internal void Clear(bool clearBuffer)
+    internal readonly void Clear(bool clearBuffer)
     {
-        switch (owner)
+        if (array is null)
         {
-            case null:
-                if (array is not null && clearBuffer)
-                    Array.Clear(array);
-
-                break;
-            case IDisposable disposable:
-                disposable.Dispose();
-                break;
-            case ArrayPool<T> pool when array is not null:
-                pool.Return(array, clearBuffer);
-                break;
+            Debug.Assert(owner is null or IDisposable);
+            Unsafe.As<IDisposable>(owner)?.Dispose();
         }
-
-        this = default;
+        else if (owner is not null)
+        {
+            Debug.Assert(owner is ArrayPool<T>);
+            Unsafe.As<ArrayPool<T>>(owner).Return(array, clearBuffer);
+        }
+        else if (clearBuffer)
+        {
+            Array.Clear(array);
+        }
     }
 
     /// <summary>
     /// Releases rented memory.
     /// </summary>
-    public void Dispose() => Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+    public void Dispose()
+    {
+        Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        this = default;
+    }
 }

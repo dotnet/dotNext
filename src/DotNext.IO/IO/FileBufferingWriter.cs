@@ -739,7 +739,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// </summary>
     /// <param name="output">The memory block used as a destination for copy operation.</param>
     /// <returns>The actual number of copied elements.</returns>
-    public int CopyTo(Span<byte> output)
+    public int CopyTo(scoped Span<byte> output)
     {
         var totalBytes = 0;
 

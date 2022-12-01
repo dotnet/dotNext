@@ -7,10 +7,11 @@ namespace DotNext.Buffers;
 
 public static partial class BufferHelpers
 {
-    private static unsafe void Write<T>(ref BufferWriterSlim<byte> builder, delegate*<Span<byte>, T, void> encoder, ref T value)
+    [SkipLocalsInit]
+    private static unsafe void Write<T>(ref BufferWriterSlim<byte> builder, delegate*<Span<byte>, T, void> encoder, T value)
         where T : unmanaged
     {
-        var memory = Span.AsBytes(ref value);
+        Span<byte> memory = stackalloc byte[sizeof(T)];
         encoder(memory, value);
         builder.Write(memory);
     }
@@ -88,13 +89,22 @@ public static partial class BufferHelpers
         => Write<float>(ref builder, isLittleEndian ? &WriteSingleLittleEndian : &WriteSingleBigEndian, ref value);
 
     /// <summary>
-    /// Encodes doubke-precision floating-point number as bytes.
+    /// Encodes double-precision floating-point number as bytes.
     /// </summary>
     /// <param name="builder">The buffer writer.</param>
     /// <param name="value">The value to be encoded.</param>
     /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
     public static unsafe void WriteDouble(this ref BufferWriterSlim<byte> builder, double value, bool isLittleEndian)
         => Write<double>(ref builder, isLittleEndian ? &WriteDoubleLittleEndian : &WriteDoubleBigEndian, ref value);
+
+    /// <summary>
+    /// Encodes half-precision floating-point number as bytes.
+    /// </summary>
+    /// <param name="builder">The buffer writer.</param>
+    /// <param name="value">The value to be encoded.</param>
+    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+    public static unsafe void WriteHalf(this ref BufferWriterSlim<byte> builder, Half value, bool isLittleEndian)
+        => Write<Half>(ref builder, isLittleEndian ? &WriteHalfLittleEndian : &WriteHalfBigEndian, value);
 
     /// <summary>
     /// Writes the contents of string builder to the buffer.
@@ -114,7 +124,7 @@ public static partial class BufferHelpers
     /// <param name="provider">The formatting provider.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument("writer", "provider")] ref BufferWriterSlimInterpolatedStringHandler handler)
+    public static int WriteString(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(provider))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -123,7 +133,7 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(this ref BufferWriterSlim<char> writer, [InterpolatedStringHandlerArgument("writer")] ref BufferWriterSlimInterpolatedStringHandler handler)
+    public static int WriteString(this ref BufferWriterSlim<char> writer, [InterpolatedStringHandlerArgument(nameof(writer))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
         => WriteString(ref writer, null, ref handler);
 
     /// <summary>
@@ -147,7 +157,7 @@ public static partial class BufferHelpers
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteFormattable<T>(this ref BufferWriterSlim<char> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    public static int WriteFormattable<T>(this ref BufferWriterSlim<char> writer, T value, scoped ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, ISpanFormattable
     {
         int charsWritten;
@@ -180,7 +190,7 @@ public static partial class BufferHelpers
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="characters">The characters to write.</param>
-    public static void WriteLine(this ref BufferWriterSlim<char> writer, ReadOnlySpan<char> characters)
+    public static void WriteLine(this ref BufferWriterSlim<char> writer, scoped ReadOnlySpan<char> characters)
     {
         writer.Write(characters);
         writer.Write(Environment.NewLine);
@@ -192,7 +202,7 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">An array of strings.</param>
     /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
-    public static void Concat(this ref BufferWriterSlim<char> writer, ReadOnlySpan<string?> values)
+    public static void Concat(this ref BufferWriterSlim<char> writer, scoped ReadOnlySpan<string?> values)
     {
         switch (values.Length)
         {
@@ -259,7 +269,7 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">A sequence of values to convert.</param>
     [RequiresPreviewFeatures]
-    public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, ReadOnlySpan<T> values)
+    public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, scoped ReadOnlySpan<T> values)
         where T : notnull, IBinaryFormattable<T>
     {
         if (values.IsEmpty)

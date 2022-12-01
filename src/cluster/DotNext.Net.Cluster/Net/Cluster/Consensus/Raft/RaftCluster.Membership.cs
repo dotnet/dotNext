@@ -200,7 +200,7 @@ public partial class RaftCluster<TMember>
             if (MemberList.TryRemove(ref members, id, out result) && !result.IsRemote && state is not null)
             {
                 // local member is removed, downgrade it
-                await MoveToStandbyState().ConfigureAwait(false);
+                await MoveToStandbyState(resumable: false).ConfigureAwait(false);
             }
 
             if (ReferenceEquals(result, Leader))
@@ -263,7 +263,7 @@ public partial class RaftCluster<TMember>
                 var term = Term;
 
                 // do replication
-                var result = await new LeaderState.Replicator(auditTrail, ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync().ConfigureAwait(false);
+                var result = await new LeaderState<TMember>.Replicator(auditTrail, ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync().ConfigureAwait(false);
 
                 if (!result.Value && result.Term > term)
                     return false;

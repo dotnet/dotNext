@@ -17,13 +17,23 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
     private readonly long ticks;
 
-    private Timestamp(long ticks) => this.ticks = Math.Max(ticks, 1L); // ensure that timestamp is not empty
+    private Timestamp(long ticks) => this.ticks = ticks;
 
     /// <summary>
     /// Captures the current point in time.
     /// </summary>
     public Timestamp()
-        : this(GetTimestamp())
+        : this(Math.Max(GetTimestamp(), 1L)) // ensure that timestamp is not empty
+    {
+    }
+
+    /// <summary>
+    /// Constructs timestamp from <see cref="TimeSpan"/>.
+    /// </summary>
+    /// <param name="ts">The point in time.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="ts"/> is negative.</exception>
+    public Timestamp(TimeSpan ts)
+        : this(ts >= TimeSpan.Zero ? FromTimeSpan(ts) : throw new ArgumentOutOfRangeException(nameof(ts)))
     {
     }
 
@@ -46,7 +56,7 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// Gets the current point in time.
     /// </summary>
     [Obsolete("Use public parameterless constructor instead")]
-    public static Timestamp Current => new(GetTimestamp());
+    public static Timestamp Current => new();
 
     private static long ToTicks(double duration)
         => unchecked((long)(TickFrequency * duration));
@@ -57,6 +67,9 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing this timestamp.
     /// </summary>
+    /// <remarks>
+    /// This property may return a value with lost precision.
+    /// </remarks>
     public TimeSpan Value => new(ToTicks(ticks));
 
     /// <summary>
@@ -65,13 +78,26 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     /// <remarks>
     /// This property is always greater than or equal to <see cref="TimeSpan.Zero"/>.
     /// </remarks>
-    public TimeSpan Elapsed => new(ToTicks(Math.Max(0L, GetTimestamp() - ticks)));
+    public TimeSpan Elapsed => new(ToTicks(ElapsedTicks));
+
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in timer ticks.
+    /// </summary>
+    public long ElapsedTicks => Math.Max(0L, GetTimestamp() - ticks);
+
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in milliseconds.
+    /// </summary>
+    public double ElapsedMilliseconds => ((double)ElapsedTicks / Frequency) * 1_000D;
 
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing the given timestamp.
     /// </summary>
+    /// <remarks>
+    /// This operation leads to loss of precision.
+    /// </remarks>
     /// <param name="stamp">The timestamp to convert.</param>
-    public static implicit operator TimeSpan(Timestamp stamp) => stamp.Value;
+    public static explicit operator TimeSpan(Timestamp stamp) => stamp.Value;
 
     /// <summary>
     /// Determines whether the current timestamp equals to the specified timestamp.

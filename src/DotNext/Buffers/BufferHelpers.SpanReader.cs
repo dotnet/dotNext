@@ -17,7 +17,7 @@ public static partial class BufferHelpers
     /// <see langword="true"/> if memory block contains enough amount of unread bytes to decode the value;
     /// otherwise, <see langword="false"/>.
     /// </returns>
-    public static unsafe bool TryRead<T>(this ref SpanReader<byte> reader, out T result)
+    public static unsafe bool TryRead<T>(this scoped ref SpanReader<byte> reader, out T result)
         where T : unmanaged
     {
         if (MemoryMarshal.TryRead(reader.RemainingSpan, out result))

@@ -17,21 +17,12 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     private bool completionRequested;
 
     // Allows to skip scheduled tasks in case of reuse
-    private volatile uint version;
+    private uint version;
 
     /// <summary>
     /// Initializes a new pipe.
     /// </summary>
-    /// <param name="capacity">The expected number of tasks to be placed to the pipe.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
-    public TaskCompletionPipe(int capacity = 0)
-    {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
-
-        pool = new(OnCompleted);
-        completedTasks = new(capacity);
-    }
+    public TaskCompletionPipe() => pool = new(OnCompleted);
 
     [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(Signal signal)
@@ -42,21 +33,21 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         pool.Return(signal);
     }
 
-    /// <summary>
-    /// Marks the pipe as being complete, meaning no more items will be added to it.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public void Complete()
+    private LinkedValueTaskCompletionSource<bool>? CompleteCore()
     {
         if (completionRequested)
             throw new InvalidOperationException();
 
-        if (scheduledTasksCount is 0U)
-            DrainWaitQueue();
-
         completionRequested = true;
+        return scheduledTasksCount is 0U ? DetachWaitQueue() : null;
     }
+
+    /// <summary>
+    /// Marks the pipe as being complete, meaning no more items will be added to it.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
+    public void Complete() => CompleteCore()?.TrySetResultAndSentinelToAll(result: false);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private bool IsCompleted
@@ -70,7 +61,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TryAdd(T task, out uint currentVersion)
+    private bool TryAdd(T task, out uint currentVersion, out LinkedValueTaskCompletionSource<bool>? waitNode)
     {
         if (completionRequested)
             throw new InvalidOperationException();
@@ -80,19 +71,12 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
 
         if (task.IsCompleted)
         {
-            Enqueue(task);
+            waitNode = EnqueueCompletedTask(new(task));
             return true;
         }
 
+        waitNode = null;
         return false;
-    }
-
-    private void Enqueue(T task)
-    {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        completedTasks.Enqueue(task);
-        Notify();
     }
 
     /// <summary>
@@ -105,39 +89,43 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         ArgumentNullException.ThrowIfNull(task);
 
-        if (!TryAdd(task, out var version))
-            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new Continuation(this, task, version).Invoke);
+        if (!TryAdd(task, out var expectedVersion, out var waitNode))
+        {
+            Debug.Assert(waitNode is null);
+            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion).Invoke);
+        }
+        else if (waitNode is not null)
+        {
+            waitNode.TrySetResultAndSentinelToAll(result: true);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private LinkedValueTaskCompletionSource<bool>? ResetCore()
+    {
+        version += 1U;
+        scheduledTasksCount = 0U;
+        completionRequested = false;
+        ClearTaskQueue();
+        return DetachWaitQueue();
     }
 
     /// <summary>
     /// Reuses the pipe.
     /// </summary>
-    /// <param name="capacity">A new capacity of internal queue.</param>
     /// <remarks>
     /// The pipe can be reused only if there are no active consumers and producers.
     /// Otherwise, the behavior of the pipe is unspecified.
     /// </remarks>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    public void Reset(int capacity = 0)
-    {
-        Interlocked.Increment(ref version);
-        scheduledTasksCount = 0;
-        completionRequested = false;
-        completedTasks.Clear();
-        completedTasks.EnsureCapacity(capacity);
-        DrainWaitQueue();
-    }
+    public void Reset() => ResetCore()?.TrySetResultAndSentinelToAll(result: false);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal QueuedSynchronizer.ValueTaskFactory TryDequeue(out T? task)
     {
         QueuedSynchronizer.ValueTaskFactory result;
 
-        if (completedTasks.TryDequeue(out task))
+        if (TryDequeueCompletedTask(out task))
         {
-            Debug.Assert(scheduledTasksCount > 0U);
-
-            scheduledTasksCount--;
             result = new(true);
         }
         else if (IsCompleted)
@@ -158,25 +146,14 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     /// <param name="task">The completed task.</param>
     /// <returns><see langword="true"/> if a task was read; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public bool TryRead([MaybeNullWhen(false)]out T task)
-    {
-        if (completedTasks.TryDequeue(out task))
-        {
-            Debug.Assert(scheduledTasksCount > 0U);
-
-            scheduledTasksCount--;
-            return true;
-        }
-
-        return false;
-    }
+    public bool TryRead([NotNullWhen(true)] out T? task) => TryDequeueCompletedTask(out task);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private QueuedSynchronizer.ValueTaskFactory Wait(bool zeroTimeout)
     {
         QueuedSynchronizer.ValueTaskFactory result;
 
-        if (!completedTasks.IsEmpty)
+        if (firstTask is not null)
         {
             result = new(true);
         }
@@ -229,30 +206,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
                 Debug.Assert(task.IsCompleted);
 
                 yield return task;
-            }
-        }
-    }
-
-    private sealed class Continuation : Tuple<TaskCompletionPipe<T>, T, uint>
-    {
-        internal Continuation(TaskCompletionPipe<T> pipe, T task, uint version)
-            : base(pipe, task, version)
-        {
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        internal void Invoke() => Enqueue(Item1, Item2, Item3);
-
-        private static void Enqueue(TaskCompletionPipe<T> pipe, T task, uint expectedVersion)
-        {
-            // skip completed task if the pipe was reset
-            if (pipe.version == expectedVersion)
-            {
-                lock (pipe)
-                {
-                    if (pipe.version == expectedVersion)
-                        pipe.Enqueue(task);
-                }
             }
         }
     }

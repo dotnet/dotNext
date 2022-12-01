@@ -13,7 +13,7 @@
 | [Interop between function pointer and delegate](https://github.com/dotnet/csharplang/discussions/3680) | [DelegateHelpers](https://dotnet.github.io/dotNext/api/DotNext.DelegateHelpers.html) factory methods |
 | [Check if an instance of T is default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html) |
 | [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://dotnet.github.io/dotNext/features/concept.html) |
-| [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://dotnet.github.io/dotNext/features/metaprogramming/index.html) |
+| [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), e.g. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://dotnet.github.io/dotNext/features/metaprogramming/index.html) |
 | [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://dotnet.github.io/dotNext/features/threading/index.html) |
 | [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://dotnet.github.io/dotNext/features/cluster/wal.html)  |
 | [Memory-mapped file as Memory&lt;byte&gt;](https://github.com/dotnet/runtime/issues/37227) | [MemoryMappedFileExtensions](https://dotnet.github.io/dotNext/features/io/mmfile.html) |
@@ -27,14 +27,14 @@ Quick overview of additional features:
 * [Attachment of user data to an arbitrary objects](https://dotnet.github.io/dotNext/features/core/userdata.html)
 * Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
 * [Fast Reflection](https://dotnet.github.io/dotNext/features/reflection/fast.html)
-* Fast conversion of bytes to hexadecimal representation and vice versa using `ToHex` and `FromHex` methods from [Span](https://dotnet.github.io/dotNext/api/DotNext.Span.html) static class
+* Fast conversion of bytes to hexadecimal representation and vice versa with [Hex](https://dotnet.github.io/dotNext/api/DotNext.Buffers.Text.Hex.html) class
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
 * [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
 * [PipeExtensions](https://dotnet.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) provides high-level I/O operations for pipelines such as string encoding and decoding
 * A rich set of high-performance [memory buffers](https://dotnet.github.io/dotNext/features/io/buffers.html) for efficient I/O
 * String formatting, encoding and decoding with low GC pressure: [dynamic char buffers](https://dotnet.github.io/dotNext/features/io/buffers.html#char-buffer)
-* Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster)
-* Fully-featured [HyParView implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster)
+* Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#raft)
+* Fully-featured [HyParView implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#hyparview)
 
 All these things are implemented in 100% managed code on top of existing .NET API without modifications of Roslyn compiler or CoreFX libraries.
 
@@ -46,33 +46,42 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-22-2022
+Release Date: 11-08-2022
 
-<a href="https://www.nuget.org/packages/dotnext/4.7.3">DotNext 4.7.3</a>
-* Deprecation of [EqualityComparerBuilder&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html) in favor of [C# Records](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record)
+<a href="https://www.nuget.org/packages/dotnext/4.8.0">DotNext 4.8.0</a>
+* Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
+* Added [Builder Pattern](https://en.wikipedia.org/wiki/Builder_pattern) concept as an interface
+* Added extra properties to [Timestamp](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type for precise measurements
+* Introduced additional methods for reading data from [sparse buffer](https://dotnet.github.io/dotNext/api/DotNext.Buffers.SparseBufferWriter-1.html) with help of [SequencePosition](https://learn.microsoft.com/en-us/dotnet/api/system.sequenceposition) cursor
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.3">DotNext.Metaprogramming 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.8.0">DotNext.Metaprogramming 4.8.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.7.3">DotNext.Reflection 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.8.0">DotNext.Reflection 4.8.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.7.3">DotNext.Unsafe 4.7.3</a>
-* Removed redundant type cast in `Pointer<T>` value type
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.8.0">DotNext.Unsafe 4.8.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.7.3">DotNext.Threading 4.7.3</a>
-* Fixed parameter name when throwing `ArgumentNullException` in `AsyncLazy<T>` constructor
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.0">DotNext.Threading 4.8.0</a>
+* `TaskCompletionPipe<T>` doesn't require capacity anymore
+* Fix: potential consumer hangs when a number consumers is larger than number of pending tasks
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.7.3">DotNext.IO 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.8.0">DotNext.IO 4.8.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.7.3">DotNext.Net.Cluster 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.0">DotNext.Net.Cluster 4.8.0</a>
+* Added automatic removal of unresponsive nodes from Raft cluster using Failure Detector
+* Added implementation of Phi Accrual Failure Detector
+* Added ability to turn cluster node into Standby mode and back to normal mode (see [discussion](https://github.com/dotnet/dotNext/discussions/134))
+* Raft functional extensions are grouped as a set of interfaces located in a new `DotNext.Net.Cluster.Consensus.Raft.Extensions` namespace
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.7.3">DotNext.AspNetCore.Cluster 4.7.3</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.0">DotNext.AspNetCore.Cluster 4.8.0</a>
+* Added automatic removal of unresponsive nodes from Raft cluster using Failure Detector registered in DI
+* Raft functional extensions are available for query through DI as interfaces
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
@@ -99,7 +108,7 @@ Philosophy of development process:
 1. Stay cross-platform
 1. Provide benchmarks
 
-# Our Users
+# Users
 .NEXT is used by several companies in their projects:
 
 [![Copenhagen Atomics](https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Copenhagenatomics_logo_gray.png/320px-Copenhagenatomics_logo_gray.png)](https://www.copenhagenatomics.com)

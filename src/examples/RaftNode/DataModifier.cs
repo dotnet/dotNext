@@ -16,10 +16,9 @@ internal sealed class DataModifier : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while (await timer.WaitForNextTickAsync(stoppingToken).ConfigureAwait(false))
         {
-            await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
-
             var leadershipToken = cluster.LeadershipToken;
             if (!leadershipToken.IsCancellationRequested)
             {

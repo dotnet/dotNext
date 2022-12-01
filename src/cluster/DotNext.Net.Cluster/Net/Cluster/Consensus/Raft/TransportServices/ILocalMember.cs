@@ -13,24 +13,24 @@ internal interface ILocalMember
 
     bool IsLeader(IRaftClusterMember member);
 
-    Task ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token);
+    ValueTask ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token);
 
-    Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+    ValueTask<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry;
 
-    Task<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, Membership.IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    ValueTask<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, Membership.IClusterConfiguration config, bool applyConfig, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry;
 
-    Task<Result<bool>> VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+    ValueTask<Result<bool>> VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-    Task<Result<PreVoteResult>> PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
+    ValueTask<Result<PreVoteResult>> PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
-    Task<bool> ResignAsync(CancellationToken token);
+    ValueTask<bool> ResignAsync(CancellationToken token);
 
-    Task<Result<bool>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+    ValueTask<Result<bool>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         where TSnapshot : notnull, IRaftLogEntry;
 
-    Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
+    ValueTask<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
 
     ILogger Logger => NullLogger.Instance;
 }

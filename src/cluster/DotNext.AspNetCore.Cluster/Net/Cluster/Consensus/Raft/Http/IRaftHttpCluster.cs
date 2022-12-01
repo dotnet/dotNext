@@ -1,11 +1,12 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
+using Extensions;
 using Messaging;
 
 /// <summary>
 /// Represents local view of Raft cluster built on top of ASP.NET Core infrastructure.
 /// </summary>
-public interface IRaftHttpCluster : IRaftCluster, IMessageBus
+public interface IRaftHttpCluster : IRaftCluster, IMessageBus, IStandbyModeSupport, IUnresponsiveClusterMemberRemovalSupport
 {
     /// <summary>
     /// Announces a new member in the cluster.

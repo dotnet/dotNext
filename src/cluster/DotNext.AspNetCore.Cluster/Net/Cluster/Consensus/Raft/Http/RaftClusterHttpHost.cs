@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Membership;
 using Messaging;
+using IFailureDetector = Diagnostics.IFailureDetector;
 
 /// <summary>
 /// Represents a host of local Raft cluster node.
@@ -69,6 +70,10 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     /// <term><see cref="ClusterMemberAnnouncer{TAddress}"/> of type <see cref="UriEndPoint"/></term>
     /// <description>Allows to announce a new node the cluster leader.</description>
     /// </item>
+    /// <item>
+    /// <term><see cref="Func{IRaftClusterMember, IFailureDetector}"/> with generic arguments <see cref="IRaftClusterMember"/> and <see cref="IFailureDetector"/></term>
+    /// <description>Provides failure detection mechanism that allows the leader to remove unresponsive members from the cluster.</description>
+    /// </item>
     /// </list>
     /// You can supply these services from the implementation of <see cref="IServiceProvider"/> interface provided
     /// by Dependency Injection container or override some of the supplied services using <see cref="ServiceProviderFactory"/>.
@@ -85,7 +90,10 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
             configStorage: activationContext.GetService<IClusterConfigurationStorage<UriEndPoint>>(),
             httpHandlerFactory: activationContext.GetService<IHttpMessageHandlerFactory>(),
             metrics: activationContext.GetService<MetricsCollector>(),
-            announcer: activationContext.GetService<ClusterMemberAnnouncer<UriEndPoint>>());
+            announcer: activationContext.GetService<ClusterMemberAnnouncer<UriEndPoint>>())
+        {
+            FailureDetectorFactory = activationContext.GetService<Func<IRaftClusterMember, IFailureDetector>>(),
+        };
     }
 
     /// <summary>

@@ -147,7 +147,7 @@ public abstract class Operator<TSignature> : IOperator<TSignature>
     /// Returns the delegate instance that can be used to invoke operator.
     /// </summary>
     /// <param name="op">The reflected operator.</param>
-    [return: NotNullIfNotNull("op")]
+    [return: NotNullIfNotNull(nameof(op))]
     public static implicit operator TSignature?(Operator<TSignature>? op) => op?.Invoker;
 
     /// <summary>

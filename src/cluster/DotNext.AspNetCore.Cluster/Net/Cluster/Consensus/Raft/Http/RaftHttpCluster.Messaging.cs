@@ -207,9 +207,9 @@ internal partial class RaftHttpCluster : IOutputChannel
         {
             await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
         }
-        else if (IsLeaderLocal)
+        else if (LeadershipToken is { IsCancellationRequested: false } lt)
         {
-            var tokenSource = token.LinkTo(LeadershipToken);
+            var tokenSource = token.LinkTo(lt);
             try
             {
                 await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);

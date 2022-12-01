@@ -27,7 +27,7 @@ internal struct BigIntegerReader<TBuffer> : IBufferReader<BigInteger>
 
     internal Span<byte> Complete() => result.Span.Slice(0, resultOffset);
 
-    public void Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
+    public void Append(scoped ReadOnlySpan<byte> bytes, scoped ref int consumedBytes)
     {
         bytes.CopyTo(result.Span.Slice(resultOffset), out consumedBytes);
         length -= consumedBytes;

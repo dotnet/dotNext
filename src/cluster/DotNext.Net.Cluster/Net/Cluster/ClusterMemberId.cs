@@ -29,10 +29,9 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     private ClusterMemberId(IPEndPoint endPoint)
     {
         Span<byte> bytes = stackalloc byte[16];
-        if (endPoint.Address.TryWriteBytes(bytes, out length))
-            address = new(bytes);
-        else
-            throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endPoint));
+        address = endPoint.Address.TryWriteBytes(bytes, out length)
+            ? new(bytes)
+            : throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endPoint));
         port = endPoint.Port;
         family = (int)endPoint.AddressFamily;
     }
@@ -124,7 +123,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <param name="reader">The memory block reader.</param>
     public ClusterMemberId(ref SpanReader<byte> reader)
     {
-        address = new Guid(reader.Read(16));
+        address = new(reader.Read(16));
         port = reader.ReadInt32(true);
         length = reader.ReadInt32(true);
         family = reader.ReadInt32(true);
@@ -156,8 +155,9 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// </summary>
     /// <param name="ep">The address of the cluster member.</param>
     /// <returns>The identifier of the cluster member.</returns>
-    public static ClusterMemberId FromEndPoint(EndPoint ep) => ep switch
+    public static ClusterMemberId FromEndPoint(EndPoint? ep) => ep switch
     {
+        null => default,
         IPEndPoint ip => new(ip),
         HttpEndPoint http => new(http),
         DnsEndPoint dns => new(dns),
@@ -166,7 +166,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     };
 
     private bool Equals(in ClusterMemberId other)
-        => address == other.address && port == other.port && length == other.length && family == other.family;
+        => BitwiseComparer<ClusterMemberId>.Equals(in this, in other);
 
     /// <summary>
     /// Determines whether the current identifier is equal
@@ -198,7 +198,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         Format(ref writer);
-        return Convert.ToHexString(writer.WrittenSpan);
+        return Hex.EncodeToUtf16(writer.WrittenSpan);
     }
 
     /// <summary>

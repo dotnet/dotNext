@@ -13,7 +13,7 @@ using StringBuilderConsumer = DotNext.Text.StringBuilderConsumer;
 
 public partial struct Base64Encoder
 {
-    private void EncodeToCharsCore<TWriter>(ReadOnlySpan<byte> bytes, ref TWriter writer, bool flush)
+    private void EncodeToCharsCore<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped ref TWriter writer, bool flush)
         where TWriter : notnull, IBufferWriter<char>
     {
         var size = bytes.Length % 3;
@@ -37,7 +37,7 @@ public partial struct Base64Encoder
     }
 
     [SkipLocalsInit]
-    private void CopyAndEncodeToChars<TWriter>(ReadOnlySpan<byte> bytes, ref TWriter writer, bool flush)
+    private void CopyAndEncodeToChars<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped ref TWriter writer, bool flush)
         where TWriter : notnull, IBufferWriter<char>
     {
         var newSize = reservedBufferSize + bytes.Length;
@@ -48,7 +48,7 @@ public partial struct Base64Encoder
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void EncodeToChars<TWriter>(ReadOnlySpan<byte> bytes, ref TWriter writer, bool flush)
+    private void EncodeToChars<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped ref TWriter writer, bool flush)
         where TWriter : notnull, IBufferWriter<char>
     {
         Debug.Assert(bytes.Length <= MaxInputSize);
@@ -70,7 +70,7 @@ public partial struct Base64Encoder
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public void EncodeToChars(ReadOnlySpan<byte> bytes, IBufferWriter<char> output, bool flush = false)
+    public void EncodeToChars(scoped ReadOnlySpan<byte> bytes, IBufferWriter<char> output, bool flush = false)
     {
         ArgumentNullException.ThrowIfNull(output);
 
@@ -91,7 +91,7 @@ public partial struct Base64Encoder
     /// </param>
     /// <returns>The buffer containing encoded bytes.</returns>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public MemoryOwner<char> EncodeToChars(ReadOnlySpan<byte> bytes, MemoryAllocator<char>? allocator = null, bool flush = false)
+    public MemoryOwner<char> EncodeToChars(scoped ReadOnlySpan<byte> bytes, MemoryAllocator<char>? allocator = null, bool flush = false)
     {
         if (bytes.Length >= MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
@@ -102,7 +102,7 @@ public partial struct Base64Encoder
     }
 
     [SkipLocalsInit]
-    private void EncodeToCharsCore<TConsumer>(ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
+    private void EncodeToCharsCore<TConsumer>(scoped ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
         where TConsumer : notnull, IReadOnlySpanConsumer<char>
     {
         Span<char> buffer = stackalloc char[EncodingBufferSize];
@@ -153,7 +153,7 @@ public partial struct Base64Encoder
     }
 
     [SkipLocalsInit]
-    private void CopyAndEncodeToChars<TConsumer>(ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
+    private void CopyAndEncodeToChars<TConsumer>(scoped ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
         where TConsumer : notnull, IReadOnlySpanConsumer<char>
     {
         var newSize = reservedBufferSize + bytes.Length;
@@ -173,7 +173,7 @@ public partial struct Base64Encoder
     /// <see langword="true"/> to encode the final block and insert padding if necessary;
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
-    public void EncodeToChars<TConsumer>(ReadOnlySpan<byte> bytes, TConsumer output, bool flush = false)
+    public void EncodeToChars<TConsumer>(scoped ReadOnlySpan<byte> bytes, TConsumer output, bool flush = false)
         where TConsumer : notnull, IReadOnlySpanConsumer<char>
     {
         if (HasBufferedData)
@@ -193,7 +193,7 @@ public partial struct Base64Encoder
     /// <see langword="true"/> to encode the final block and insert padding if necessary;
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
-    public void EncodeToChars<TArg>(ReadOnlySpan<byte> bytes, ReadOnlySpanAction<char, TArg> output, TArg arg, bool flush = false)
+    public void EncodeToChars<TArg>(scoped ReadOnlySpan<byte> bytes, ReadOnlySpanAction<char, TArg> output, TArg arg, bool flush = false)
         => EncodeToChars(bytes, new DelegatingReadOnlySpanConsumer<char, TArg>(output, arg), flush);
 
     /// <summary>
@@ -208,7 +208,7 @@ public partial struct Base64Encoder
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
     [CLSCompliant(false)]
-    public unsafe void EncodeToChars<TArg>(ReadOnlySpan<byte> bytes, delegate*<ReadOnlySpan<char>, TArg, void> output, TArg arg, bool flush = false)
+    public unsafe void EncodeToChars<TArg>(scoped ReadOnlySpan<byte> bytes, delegate*<ReadOnlySpan<char>, TArg, void> output, TArg arg, bool flush = false)
         => EncodeToChars(bytes, new ReadOnlySpanConsumer<char, TArg>(output, arg), flush);
 
     /// <summary>
@@ -220,7 +220,7 @@ public partial struct Base64Encoder
     /// <see langword="true"/> to encode the final block and insert padding if necessary;
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
-    public void EncodeToChars(ReadOnlySpan<byte> bytes, TextWriter output, bool flush = false)
+    public void EncodeToChars(scoped ReadOnlySpan<byte> bytes, TextWriter output, bool flush = false)
         => EncodeToChars<TextConsumer>(bytes, output, flush);
 
     /// <summary>
@@ -232,7 +232,7 @@ public partial struct Base64Encoder
     /// <see langword="true"/> to encode the final block and insert padding if necessary;
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
-    public void EncodeToChars(ReadOnlySpan<byte> bytes, StringBuilder output, bool flush = false)
+    public void EncodeToChars(scoped ReadOnlySpan<byte> bytes, StringBuilder output, bool flush = false)
         => EncodeToChars<StringBuilderConsumer>(bytes, output, flush);
 
     /// <summary>
@@ -269,7 +269,7 @@ public partial struct Base64Encoder
     /// </summary>
     /// <param name="output">The buffer of characters.</param>
     /// <returns>The number of written characters.</returns>
-    public int Flush(Span<char> output)
+    public int Flush(scoped Span<char> output)
     {
         int charsWritten;
 

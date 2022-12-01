@@ -120,7 +120,7 @@ public ref struct SpanWriter<T>
     /// <see langword="true"/> if all elements are copied successfully;
     /// <see langword="false"/> if remaining space in the underlying span is not enough to place all elements from <paramref name="input"/>.
     /// </returns>
-    public bool TryWrite(ReadOnlySpan<T> input)
+    public bool TryWrite(scoped ReadOnlySpan<T> input)
     {
         if (!input.TryCopyTo(span.Slice(position)))
             return false;
@@ -134,7 +134,7 @@ public ref struct SpanWriter<T>
     /// </summary>
     /// <param name="input">The span of elements to copy from.</param>
     /// <returns>The number of written elements.</returns>
-    public int Write(ReadOnlySpan<T> input)
+    public int Write(scoped ReadOnlySpan<T> input)
     {
         input.CopyTo(RemainingSpan, out var writtenCount);
         position += writtenCount;

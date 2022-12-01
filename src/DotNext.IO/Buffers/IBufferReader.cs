@@ -4,7 +4,7 @@ internal interface IBufferReader<out T>
 {
     int RemainingBytes { get; }
 
-    void Append(ReadOnlySpan<byte> block, ref int consumedBytes);
+    void Append(scoped ReadOnlySpan<byte> block, scoped ref int consumedBytes);
 
     T Complete();
 

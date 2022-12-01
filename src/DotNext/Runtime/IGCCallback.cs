@@ -2,7 +2,7 @@ namespace DotNext.Runtime;
 
 internal interface IGCCallback
 {
-    void StopTracking();
+    void StopTracking() => GC.SuppressFinalize(this);
 }
 
 internal sealed class GCIntermediateReference : WeakReference

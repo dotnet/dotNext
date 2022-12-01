@@ -394,7 +394,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <param name="defaultValue">The value to be returned if there is no value present.</param>
     /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
-    [return: NotNullIfNotNull("defaultValue")]
+    [return: NotNullIfNotNull(nameof(defaultValue))]
     public T? Or(T? defaultValue) => HasValue ? value : defaultValue;
 
     /// <summary>

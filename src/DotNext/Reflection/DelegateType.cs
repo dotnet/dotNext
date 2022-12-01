@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Reflection;
@@ -16,7 +17,7 @@ public static class DelegateType
     /// <typeparam name="TDelegate">Type of delegate.</typeparam>
     /// <returns>An object representing reflected method Invoke.</returns>
     /// <exception cref="GenericArgumentException{G}"><typeparamref name="TDelegate"/> is not a concrete delegate type.</exception>
-    public static MethodInfo GetInvokeMethod<TDelegate>()
+    public static MethodInfo GetInvokeMethod<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>()
         where TDelegate : Delegate
     {
         var delegateType = typeof(TDelegate);

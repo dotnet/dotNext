@@ -52,7 +52,7 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
     /// Extracts delegate which can be used to invoke this constructor.
     /// </summary>
     /// <param name="ctor">The reflected constructor.</param>
-    [return: NotNullIfNotNull("ctor")]
+    [return: NotNullIfNotNull(nameof(ctor))]
     public static implicit operator TSignature?(Constructor<TSignature>? ctor) => ctor?.invoker;
 
     /// <summary>
@@ -133,7 +133,7 @@ public sealed class Constructor<TSignature> : ConstructorInfo, IConstructor<TSig
     /// Returns the type arguments of a generic method or the type parameters of a generic method definition.
     /// </summary>
     /// <returns>The list of generic arguments.</returns>
-    public override Type[] GetGenericArguments() => Array.Empty<Type>();
+    public override Type[] GetGenericArguments() => Type.EmptyTypes;
 
     /// <summary>
     /// Gets a value indicating whether the constructor is generic.

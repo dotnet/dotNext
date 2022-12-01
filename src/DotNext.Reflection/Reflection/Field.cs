@@ -308,7 +308,7 @@ public sealed class Field<T, TValue> : FieldBase<TValue>, IField<T, TValue>
     /// Obtains field getter in the form of the delegate instance.
     /// </summary>
     /// <param name="field">The reflected field.</param>
-    [return: NotNullIfNotNull("field")]
+    [return: NotNullIfNotNull(nameof(field))]
     public static implicit operator MemberGetter<T, TValue>?(Field<T, TValue>? field) => field?.getter;
 
     /// <summary>
@@ -480,7 +480,7 @@ public sealed class Field<TValue> : FieldBase<TValue>, IField<TValue>
     /// Obtains field getter in the form of the delegate instance.
     /// </summary>
     /// <param name="field">The reflected field.</param>
-    [return: NotNullIfNotNull("field")]
+    [return: NotNullIfNotNull(nameof(field))]
     public static implicit operator MemberGetter<TValue>?(Field<TValue>? field) => field?.getter;
 
     /// <summary>
