@@ -497,6 +497,16 @@ dotnet run -- http 3264 node3
 ```
 Now you can see replication messages in each Terminal window. The replicated state stored in the `node1`, `node2` and `node3` folders. You can restart one of the nodes and make sure that its state is recovered correctly.
 
+# Extensions
+Raft implementation provided by .NEXT library contains some extensions of the original algorithm. For instance, _Standby_ extra state is added in addition to _Follower_, _Candidate_, and _Leader_ states. All those extensions are grouped into interfaces that can be found in [separated namespace](xref:DotNext.Net.Cluster.Consensus.Raft.Extensions).
+
+## Automatic failure detection
+Automatic Failure Detection is another extension to original Raft algorithm that allows cluster leader to detect unresponsive followers and remove those from the cluster configuration. This behavior allows to detect and tolerate permanent failures of a particular cluster node and remove it from the majority calculation to remain cluster available for writes. For instance, we have 7 nodes in the cluster. The cluster remains available if at least 4 nodes are alive. With failure detector, we can remove 3 faulty nodes and reconfigure the cluster dynamically to indicate that the cluster has 4 nodes only. In that case, the cluster remains available even with 3 nodes.
+
+However, the current implementation needs to inform the rest of the cluster about faulty node. In other words, the cluster must be available for writes. If 4 of 7 nodes are detected as faulty in the same time, it is not possible to reconfigure the cluster because there is no majority to keep the leader working as expected.
+
+[IFailureDetector](xref:DotNext.Diagnostics.IFailureDetector) interface is an extension point that provides failure detection algorithm. The library ships [φ Accrual Failure Detector](DotNext.Diagnostics.PhiAccrualFailureDetector) as an efficient implementation of the detector which is based on anomalies of response time. By default, automatic failure detection is disabled. But the caller code can specify a factory for failure detectors. In that case, the internals of Raft implementation instantiate failure detector for each cluster member automatically on a leader's side. See [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.FailureDetectorFactory) property for more information. In DI environment (ASP.NET Core), the factory can be registered as singleton service.
+
 # Development and Debugging
 It may be hard to reproduce the real cluster on developer's machine. You may want to run your node in _Debug_ mode and ensure that the node you're running is a leader node. To do that, you need to start the node in _Cold Start_ mode.
 

@@ -9,13 +9,14 @@ List of supported features:
 * Network transport: TCP, UDP, HTTP 1.1, HTTP/2, HTTP/3, custom transport on top of [ASP.NET Core Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) abstraction
 * TLS support: TCP, HTTP 1.1, HTTP/2, HTTP/3
 * High-performance, general-purpose [Persistent Write-Ahead Log](https://dotnet.github.io/dotNext/features/cluster/wal.html) supporting log compaction
+* Automatic detection and removal of unresponsive cluster nodes using custom or Phi Accrual Failure Detector shipped out-of-the-box
 * Replication of log entries across cluster nodes
 * Tight integration with ASP.NET Core framework
 * Friendly to Docker/LXC/Windows containers
 * Everything is extensible
     * Custom write-ahead log
     * Custom network transport
-    * Cluster members discovery
+    * Custom failure detector
 
 Useful links:
 * [Overview of Cluster Programming Model](https://dotnet.github.io/dotNext/features/cluster/index.html)
