@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-08-2022
+Release Date: 12-01-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.8.0">DotNext 4.8.0</a>
 * Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
