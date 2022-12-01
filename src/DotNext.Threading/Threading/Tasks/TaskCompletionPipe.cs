@@ -86,10 +86,14 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
         ArgumentNullException.ThrowIfNull(task);
 
-        if (TryAdd(task, out var expectedVersion, out var waitNode))
-            waitNode?.TrySetResultAndSentinelToAll(result: true);
-        else
+        if (!TryAdd(task, out var expectedVersion, out var waitNode))
+        {
             task.ConfigureAwait(false).GetAwaiter().OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion).Invoke);
+        }
+        else if (waitNode is not null)
+        {
+            waitNode.TrySetResultAndSentinelToAll(result: true);
+        }
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
