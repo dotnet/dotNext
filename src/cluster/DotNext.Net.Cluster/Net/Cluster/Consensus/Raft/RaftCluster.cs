@@ -640,7 +640,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         var votes = 0;
 
         // analyze responses
-        await foreach (var response in SendRequestsAsync(currentTerm, lastIndex, lastTerm).ConfigureAwait(false))
+        await foreach (var response in SendRequestsAsync(members.Values, currentTerm, lastIndex, lastTerm, LifecycleToken).ConfigureAwait(false))
         {
             Debug.Assert(response.IsCompleted);
 
@@ -675,12 +675,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         return votes > 0;
 
-        IAsyncEnumerable<Task<Result<PreVoteResult>>> SendRequestsAsync(long currentTerm, long lastIndex, long lastTerm)
+        static IAsyncEnumerable<Task<Result<PreVoteResult>>> SendRequestsAsync(IEnumerable<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
         {
-            var members = this.members;
-            var responses = new TaskCompletionPipe<Task<Result<PreVoteResult>>>(members.Count);
-            foreach (var member in members.Values)
-                responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, LifecycleToken));
+            var responses = new TaskCompletionPipe<Task<Result<PreVoteResult>>>();
+            foreach (var member in members)
+                responses.Add(member.PreVoteAsync(currentTerm, lastIndex, lastTerm, token));
 
             responses.Complete();
             return responses;

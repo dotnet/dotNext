@@ -10,7 +10,7 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task StressTest()
         {
-            var pipe = new TaskCompletionPipe<Task<int>>(4);
+            var pipe = new TaskCompletionPipe<Task<int>>();
             for (var i = 0; i < 100; i++)
             {
                 pipe.Add(Task.Run<int>(async () =>
@@ -28,13 +28,14 @@ namespace DotNext.Threading.Tasks
                 result += task.Result;
             }
 
+            False(pipe.HasPendingTasks);
             Equal(4200, result);
         }
 
         [Fact]
         public static async Task StressTest2()
         {
-            var pipe = new TaskCompletionPipe<Task<int>>(4);
+            var pipe = new TaskCompletionPipe<Task<int>>();
             for (var i = 0; i < 100; i++)
             {
                 pipe.Add(Task.Run<int>(async () =>
@@ -59,12 +60,15 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task QueueGrowth()
         {
-            var pipe = new TaskCompletionPipe<Task<int>>(4);
+            var pipe = new TaskCompletionPipe<Task<int>>();
             pipe.Add(Task.FromResult(42));
             pipe.Add(Task.FromResult(43));
+            True(pipe.HasPendingTasks);
             True(await pipe.WaitToReadAsync());
+            True(pipe.HasPendingTasks);
             True(pipe.TryRead(out var task));
             Equal(42, task.Result);
+            True(pipe.HasPendingTasks);
 
             pipe.Add(Task.FromResult(44));
             pipe.Add(Task.FromResult(45));
@@ -91,11 +95,11 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task ResetWhenScheduled()
         {
-            var pipe = new TaskCompletionPipe<Task>(capacity: 1);
+            var pipe = new TaskCompletionPipe<Task>();
             var source = new TaskCompletionSource();
             pipe.Add(source.Task);
 
-            pipe.Reset(capacity: 10);
+            pipe.Reset();
             pipe.Complete();
             source.SetResult();
             False(await pipe.WaitToReadAsync());
@@ -104,7 +108,7 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task ConsumePipe()
         {
-            var pipe = new TaskCompletionPipe<Task<int>>(capacity: 3);
+            var pipe = new TaskCompletionPipe<Task<int>>();
             pipe.Add(Task.Run(Func.Constant(42)));
             pipe.Add(Task.Run(Func.Constant(43)));
             pipe.Add(Task.Run(Func.Constant(44)));
@@ -114,6 +118,19 @@ namespace DotNext.Threading.Tasks
             Contains(42, array);
             Contains(43, array);
             Contains(44, array);
+        }
+
+        [Fact]
+        public static async Task TooManyConsumers()
+        {
+            var pipe = new TaskCompletionPipe<Task<int>>();
+            var consumer1 = pipe.WaitToReadAsync().AsTask();
+            var consumer2 = pipe.WaitToReadAsync().AsTask();
+
+            pipe.Add(Task.FromResult(42));
+            pipe.Complete();
+            True(await consumer1);
+            True(await consumer2);
         }
     }
 }

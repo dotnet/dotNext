@@ -34,28 +34,14 @@ public partial class TaskCompletionPipe<T>
         signal.Detach();
     }
 
-    private void Notify()
-    {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
-        {
-            next = current.Next;
-
-            RemoveNode(current);
-            if (current.TrySetResult(Sentinel.Instance, value: true))
-                break;
-        }
-    }
-
-    private void DrainWaitQueue()
+    private void DrainWaitQueue(bool value)
     {
         Debug.Assert(Monitor.IsEntered(this));
 
         for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            current?.TrySetResult(value: false);
+            current.TrySetResult(Sentinel.Instance, value);
         }
 
         first = last = null;

@@ -1,88 +1,80 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
 
 public partial class TaskCompletionPipe<T>
 {
-    [StructLayout(LayoutKind.Auto)]
-    private struct Queue
+    private class LinkedTaskNode
     {
-        private const int GrowFactor = 2;
-        private const int MinimumGrow = 10;
+        internal readonly T Task;
+        internal LinkedTaskNode? Next;
 
-        private T[] array;
-        private int head;       // The index from which to dequeue if the queue isn't empty.
-        private int tail;       // The index at which to enqueue if the queue isn't full.
+        internal LinkedTaskNode(T task) => Task = task;
+    }
 
-        internal Queue(int capacity)
+    private sealed class LazyLinkedTaskNode : LinkedTaskNode
+    {
+        private readonly uint expectedVersion;
+        private TaskCompletionPipe<T>? owner;
+
+        internal LazyLinkedTaskNode(T task, TaskCompletionPipe<T> owner, uint version)
+            : base(task)
         {
-            array = capacity == 0 ? Array.Empty<T>() : new T[capacity];
-            head = tail = 0;
+            expectedVersion = version;
+            this.owner = owner;
         }
 
-        internal readonly bool IsEmpty => head == tail;
-
-        internal bool TryDequeue([MaybeNullWhen(false)]out T task)
+        internal void Invoke()
         {
-            if (IsEmpty)
+            if (owner?.version.VolatileRead() == expectedVersion)
             {
-                task = default;
-                return false;
+                lock (owner)
+                {
+                    if (owner.version == expectedVersion)
+                        owner.EnqueueCompletedTask(this);
+                }
             }
 
-            ref var element = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), head++);
-            task = element;
-            element = null;
-            return true;
-        }
-
-        private void Grow()
-        {
-            if (head > 0)
-            {
-                var newTail = tail - head;
-                Array.Copy(array, head, array, 0, newTail);
-                Array.Clear(array, newTail, head);
-                head = 0;
-                tail = newTail;
-            }
-            else if ((uint)array.Length < (uint)Array.MaxLength)
-            {
-                var newCapacity = GrowFactor * array.Length;
-                if ((uint)newCapacity > (uint)Array.MaxLength)
-                    newCapacity = Array.MaxLength;
-
-                Array.Resize(ref array, Math.Max(newCapacity, array.Length + MinimumGrow));
-            }
-            else
-            {
-                throw new InsufficientMemoryException();
-            }
-        }
-
-        internal void Enqueue(T task)
-        {
-            if ((uint)tail >= (uint)array.Length)
-                Grow();
-
-            // avoid covariance check
-            Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), tail++) = task;
-        }
-
-        internal void Clear()
-        {
-            head = tail = 0;
-            Array.Clear(array);
-        }
-
-        internal void EnsureCapacity(int capacity)
-        {
-            if (array.Length < capacity)
-                array = new T[capacity];
+            owner = null;
         }
     }
 
-    private Queue completedTasks;
+    private LinkedTaskNode? firstTask, lastTask;
+
+    private void EnqueueCompletedTask(LinkedTaskNode node)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(node is { Task: { IsCompleted: true } });
+
+        if (firstTask is null || lastTask is null)
+        {
+            firstTask = lastTask = node;
+        }
+        else
+        {
+            lastTask = lastTask.Next = node;
+        }
+
+        DrainWaitQueue(value: true);
+    }
+
+    private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)
+    {
+        if (firstTask is not null)
+        {
+            task = firstTask.Task;
+            var next = firstTask.Next;
+            firstTask.Next = null; // help GC
+            if ((firstTask = next) is null)
+                lastTask = null;
+
+            return true;
+        }
+
+        task = null;
+        return false;
+    }
+
+    private void ClearTaskQueue() => firstTask = lastTask = null;
 }

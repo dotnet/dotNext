@@ -169,10 +169,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         using var cancellationSource = token.LinkTo(LeadershipToken);
-        var responsePipe = CreatePipe(Members.Count);
         await Task.Yield(); // unblock the caller
 
-        for (var forced = false; ; responsePipe.Reset())
+        var forced = false;
+        for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset())
         {
             var startTime = new Timestamp();
 
@@ -190,14 +190,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             // subtract heartbeat processing duration from heartbeat period for better stability
             var delay = period - startTime.Elapsed;
             forced = await WaitForReplicationAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token).ConfigureAwait(false);
-        }
-
-        static TaskCompletionPipe<Task<Result<bool>>> CreatePipe(int capacity)
-        {
-            if (capacity < int.MaxValue / 2)
-                capacity <<= 1;
-
-            return new(capacity);
         }
     }
 
@@ -242,7 +234,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             timerCancellation.Cancel(false);
             replicationEvent.CancelSuspendedCallers(LeadershipToken);
             await leaseTimer.DisposeAsync().ConfigureAwait(false);
-            await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false);
+            await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false); // may throw OperationCanceledException
+        }
+        catch (OperationCanceledException) when (heartbeatTask?.IsCanceled ?? true)
+        {
+            // suspend cancellation
         }
         catch (Exception e)
         {
