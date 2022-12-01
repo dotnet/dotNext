@@ -57,6 +57,20 @@ namespace DotNext.Threading.Tasks
         }
 
         [Fact]
+        public static async Task ConsumerAfterAddingButBeforeCompletion()
+        {
+            var pipe = new TaskCompletionPipe<Task<int>>();
+            pipe.Add(Task.FromResult(1));
+            var consumer = pipe.GetConsumer().GetAsyncEnumerator();
+            True(await consumer.MoveNextAsync());
+
+            var t = consumer.MoveNextAsync().AsTask();
+            pipe.Complete();
+
+            False(await t);
+        }
+
+        [Fact]
         public static async Task QueueGrowth()
         {
             var pipe = new TaskCompletionPipe<Task<int>>();

@@ -30,11 +30,11 @@ public partial class TaskCompletionPipe<T>
             LinkedValueTaskCompletionSource<bool>? waitNode = null;
             if (owner?.version.VolatileRead() == expectedVersion)
             {
-                lock (owner)
-                {
-                    if (owner.version == expectedVersion)
-                        waitNode = owner.EnqueueCompletedTask(this);
-                }
+                // no need to use try-finally because none of the code inside may throw an exception
+                Monitor.Enter(owner);
+                if (owner.version == expectedVersion)
+                    waitNode = owner.EnqueueCompletedTask(this);
+                Monitor.Exit(owner);
             }
 
             owner = null;
@@ -64,6 +64,8 @@ public partial class TaskCompletionPipe<T>
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)
     {
+        Debug.Assert(Monitor.IsEntered(this));
+
         if (firstTask is not null)
         {
             task = firstTask.Task;
@@ -79,5 +81,10 @@ public partial class TaskCompletionPipe<T>
         return false;
     }
 
-    private void ClearTaskQueue() => firstTask = lastTask = null;
+    private void ClearTaskQueue()
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        firstTask = lastTask = null;
+    }
 }

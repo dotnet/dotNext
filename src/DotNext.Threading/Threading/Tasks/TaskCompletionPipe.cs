@@ -33,18 +33,21 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
         pool.Return(signal);
     }
 
-    /// <summary>
-    /// Marks the pipe as being complete, meaning no more items will be added to it.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    public void Complete()
+    private LinkedValueTaskCompletionSource<bool>? CompleteCore()
     {
         if (completionRequested)
             throw new InvalidOperationException();
 
         completionRequested = true;
+        return scheduledTasksCount is 0U ? DetachWaitQueue() : null;
     }
+
+    /// <summary>
+    /// Marks the pipe as being complete, meaning no more items will be added to it.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
+    public void Complete() => CompleteCore()?.TrySetResultAndSentinelToAll(result: false);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private bool IsCompleted
