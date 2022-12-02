@@ -153,6 +153,9 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         await (server?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
         server = null;
         ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
+        configurationEvents.Writer.TryComplete();
+        await pollingLoopTask.ConfigureAwait(false);
+        pollingLoopTask = Task.CompletedTask;
         await base.StopAsync(token).ConfigureAwait(false);
     }
 
@@ -323,7 +326,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             server?.Dispose();
             server = null;
             cachedConfig.Dispose();
-            configurationEvents.Writer.TryComplete();
+            configurationEvents.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
         }
 
         base.Dispose(disposing);

@@ -175,12 +175,15 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         StartFollowing();
     }
 
-    public override Task StopAsync(CancellationToken token)
+    public override async Task StopAsync(CancellationToken token)
     {
         configurator?.OnStop(this);
         duplicationDetector.Trim(100);
         ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
-        return base.StopAsync(token);
+        configurationEvents.Writer.TryComplete();
+        await pollingLoopTask.ConfigureAwait(false);
+        pollingLoopTask = Task.CompletedTask;
+        await base.StopAsync(token).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -203,7 +206,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         configurationTracker.Dispose();
         duplicationDetector.Dispose();
         messageHandlers = ImmutableList<IInputChannel>.Empty;
-        configurationEvents.Writer.TryComplete();
+        configurationEvents.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
     }
 
     protected override void Dispose(bool disposing)
