@@ -130,7 +130,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         }
         finally
         {
-            votingCancellation.Dispose();
+            Dispose(disposing: true);
         }
     }
 

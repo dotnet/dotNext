@@ -74,15 +74,6 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         Metrics?.ReportHeartbeat();
     }
 
-    private void Cleanup()
-    {
-        refreshEvent.Dispose();
-        suppressionEvent.Dispose();
-        trackerCancellation.Dispose();
-        tracker = null;
-        Metrics = null;
-    }
-
     protected override async ValueTask DisposeAsyncCore()
     {
         try
@@ -96,7 +87,7 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         }
         finally
         {
-            Cleanup();
+            Dispose(disposing: true);
         }
     }
 
@@ -104,7 +95,11 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
     {
         if (disposing)
         {
-            Cleanup();
+            refreshEvent.Dispose();
+            suppressionEvent.Dispose();
+            trackerCancellation.Dispose();
+            tracker = null;
+            Metrics = null;
         }
 
         base.Dispose(disposing);
