@@ -109,7 +109,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// </summary>
     /// <param name="token">The token that can be used to cancel initialization process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public override async Task StartAsync(CancellationToken token = default)
+    public async Task StartAsync(CancellationToken token = default)
     {
         ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteAsync;
         if (coldStart)
@@ -131,7 +131,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         }
 
         pollingLoopTask = ConfigurationPollingLoop();
-        await base.StartAsync(token).ConfigureAwait(false);
+        await StartAsync(IsLocalMember, token).ConfigureAwait(false);
         server = serverFactory(this);
         await server.StartAsync(token).ConfigureAwait(false);
         StartFollowing();
@@ -140,8 +140,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             await announcer(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
-    protected override bool IsLocalAddress(EndPoint address) => EndPointComparer.Equals(LocalMemberAddress, address);
+    private ValueTask<bool> IsLocalMember(RaftClusterMember member, CancellationToken token)
+        => new(EndPointComparer.Equals(LocalMemberAddress, member.EndPoint));
 
     /// <summary>
     /// Stops serving local member.

@@ -308,17 +308,21 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Starts serving local member.
     /// </summary>
+    /// <param name="localMemberDetector">A predicate that allows to resolve local cluster member.</param>
     /// <param name="token">The token that can be used to cancel initialization process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="localMemberDetector"/> is <see langword="null"/>.</exception>
     /// <seealso cref="StartFollowing"/>
-    public virtual async Task StartAsync(CancellationToken token)
+    protected async Task StartAsync(Func<TMember, CancellationToken, ValueTask<bool>> localMemberDetector, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(localMemberDetector);
+
         await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
         // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
         foreach (var member in members.Values)
         {
-            if (IsLocalAddress(member.EndPoint))
+            if (await localMemberDetector(member, token).ConfigureAwait(false))
             {
                 localMemberId = member.Id;
                 state = standbyNode ? new StandbyState<TMember>(this) : new FollowerState<TMember>(this);
@@ -330,17 +334,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
         state = new StandbyState<TMember>(this);
     }
-
-    /// <summary>
-    /// Indicates that the specified address represents the current node.
-    /// </summary>
-    /// <remarks>
-    /// This method is called internally from <see cref="StartAsync(CancellationToken)"/>
-    /// to determine address of the local node to bootstrap Raft infrastructure correctly.
-    /// </remarks>
-    /// <param name="address">The address to check.</param>
-    /// <returns><see langword="true"/> if <paramref name="address"/> represents address of this node; otherwise, <see langword="false"/>.</returns>
-    protected abstract bool IsLocalAddress(EndPoint address);
 
     /// <summary>
     /// Starts Follower timer.

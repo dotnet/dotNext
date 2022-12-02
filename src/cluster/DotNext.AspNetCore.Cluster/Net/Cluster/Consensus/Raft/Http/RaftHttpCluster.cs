@@ -140,7 +140,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     Uri IRaftHttpCluster.LocalMemberAddress => localNode.Uri;
 
-    public override async Task StartAsync(CancellationToken token)
+    public async Task StartAsync(CancellationToken token)
     {
         configurator?.OnStart(this, metadata);
         ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteAsync;
@@ -165,13 +165,16 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         }
 
         pollingLoopTask = ConfigurationPollingLoop();
-        await base.StartAsync(token).ConfigureAwait(false);
+        await StartAsync(IsLocalMember, token).ConfigureAwait(false);
 
         if (!coldStart && announcer is not null)
             await announcer(LocalMemberId, localNode, token).ConfigureAwait(false);
 
         StartFollowing();
     }
+
+    private ValueTask<bool> IsLocalMember(RaftClusterMember member, CancellationToken token)
+        => new(EndPointComparer.Equals(localNode, member.EndPoint));
 
     public override Task StopAsync(CancellationToken token)
     {
@@ -194,8 +197,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
             }
         }
     }
-
-    protected override bool IsLocalAddress(EndPoint address) => EndPointComparer.Equals(localNode, address);
 
     /// <inheritdoc />
     ISubscriber? IPeerMesh<ISubscriber>.TryGetPeer(EndPoint peer)
