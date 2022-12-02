@@ -148,15 +148,26 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// </summary>
     /// <param name="token">The token that can be used to cancel shutdown process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public override async Task StopAsync(CancellationToken token = default)
+    public override Task StopAsync(CancellationToken token = default)
     {
-        await (server?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
-        server = null;
-        ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
-        configurationEvents.Writer.TryComplete();
-        await pollingLoopTask.ConfigureAwait(false);
-        pollingLoopTask = Task.CompletedTask;
-        await base.StopAsync(token).ConfigureAwait(false);
+        return LifecycleToken.IsCancellationRequested ? Task.CompletedTask : StopAsync();
+
+        async Task StopAsync()
+        {
+            try
+            {
+                await (server?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
+                server = null;
+                ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
+                configurationEvents.Writer.TryComplete();
+                await pollingLoopTask.ConfigureAwait(false);
+                pollingLoopTask = Task.CompletedTask;
+            }
+            finally
+            {
+                await base.StopAsync(token).ConfigureAwait(false);
+            }
+        }
     }
 
     private RaftClusterMember CreateMember(ClusterMemberId id, EndPoint address)
@@ -330,12 +341,5 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         }
 
         base.Dispose(disposing);
-    }
-
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsyncCore()
-    {
-        await base.DisposeAsyncCore().ConfigureAwait(false);
-        cachedConfig.Dispose();
     }
 }

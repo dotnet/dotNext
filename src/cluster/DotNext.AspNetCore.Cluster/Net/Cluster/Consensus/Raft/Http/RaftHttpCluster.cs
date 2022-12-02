@@ -175,15 +175,26 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         StartFollowing();
     }
 
-    public override async Task StopAsync(CancellationToken token)
+    public override Task StopAsync(CancellationToken token)
     {
-        configurator?.OnStop(this);
-        duplicationDetector.Trim(100);
-        ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
-        configurationEvents.Writer.TryComplete();
-        await pollingLoopTask.ConfigureAwait(false);
-        pollingLoopTask = Task.CompletedTask;
-        await base.StopAsync(token).ConfigureAwait(false);
+        return LifecycleToken.IsCancellationRequested ? Task.CompletedTask : StopAsync();
+
+        async Task StopAsync()
+        {
+            try
+            {
+                configurator?.OnStop(this);
+                duplicationDetector.Trim(100);
+                ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
+                configurationEvents.Writer.TryComplete();
+                await pollingLoopTask.ConfigureAwait(false);
+                pollingLoopTask = Task.CompletedTask;
+            }
+            finally
+            {
+                await base.StopAsync(token).ConfigureAwait(false);
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -201,25 +212,16 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     protected override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
         => await ConfigurationStorage.RemoveMemberAsync(member.Id, token).ConfigureAwait(false);
 
-    private void Cleanup()
-    {
-        configurationTracker.Dispose();
-        duplicationDetector.Dispose();
-        messageHandlers = ImmutableList<IInputChannel>.Empty;
-        configurationEvents.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
-    }
-
     protected override void Dispose(bool disposing)
     {
         if (disposing)
-            Cleanup();
+        {
+            configurationTracker.Dispose();
+            duplicationDetector.Dispose();
+            messageHandlers = ImmutableList<IInputChannel>.Empty;
+            configurationEvents.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
+        }
 
         base.Dispose(disposing);
-    }
-
-    protected override ValueTask DisposeAsyncCore()
-    {
-        Cleanup();
-        return base.DisposeAsyncCore();
     }
 }

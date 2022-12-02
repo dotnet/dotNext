@@ -442,16 +442,19 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     /// <param name="token">The token that can be used to cancel shutdown process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public virtual async Task StopAsync(CancellationToken token)
+    public virtual Task StopAsync(CancellationToken token)
     {
-        if (transitionCancellation.IsCancellationRequested)
-            return;
-        transitionCancellation.Cancel(false);
-        await CancelPendingRequestsAsync().ConfigureAwait(false);
-        electionEvent.TrySetCanceled();
-        using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+        return LifecycleToken.IsCancellationRequested ? Task.CompletedTask : StopAsync();
+
+        async Task StopAsync()
         {
-            await MoveToStandbyState().ConfigureAwait(false);
+            transitionCancellation.Cancel(false);
+            await CancelPendingRequestsAsync().ConfigureAwait(false);
+            electionEvent.TrySetCanceled();
+            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+            {
+                await MoveToStandbyState().ConfigureAwait(false);
+            }
         }
     }
 
@@ -1084,28 +1087,24 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc />
     IReadOnlySet<EndPoint> IPeerMesh.Peers => ImmutableHashSet.CreateRange(EndPointComparer, members.Values.Select(static m => m.EndPoint));
 
-    private void Cleanup()
-    {
-        Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
-        transitionCancellation.Dispose();
-        transitionSync.Dispose();
-        state.Dispose();
-        TrySetDisposedException(readinessProbe);
-        ConfigurationStorage.Dispose();
-
-        memberAddedHandlers = memberRemovedHandlers = default;
-        leaderChangedHandlers = default;
-        TrySetDisposedException(electionEvent);
-    }
-
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            if (!transitionCancellation.IsCancellationRequested)
+            if (!LifecycleToken.IsCancellationRequested)
                 Logger.StopAsyncWasNotCalled();
-            Cleanup();
+
+            Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
+            transitionCancellation.Dispose();
+            transitionSync.Dispose();
+            state.Dispose();
+            TrySetDisposedException(readinessProbe);
+            ConfigurationStorage.Dispose();
+
+            memberAddedHandlers = memberRemovedHandlers = default;
+            leaderChangedHandlers = default;
+            TrySetDisposedException(electionEvent);
         }
 
         base.Dispose(disposing);
@@ -1115,7 +1114,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     protected override async ValueTask DisposeAsyncCore()
     {
         await StopAsync(CancellationToken.None).ConfigureAwait(false);
-        Cleanup();
+        Dispose(disposing: true);
     }
 
     /// <inheritdoc />
