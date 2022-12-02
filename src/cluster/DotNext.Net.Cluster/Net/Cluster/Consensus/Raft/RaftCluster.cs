@@ -334,6 +334,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Indicates that the specified address represents the current node.
     /// </summary>
+    /// <remarks>
+    /// This method is called internally from <see cref="StartAsync(CancellationToken)"/>
+    /// to determine address of the local node to bootstrap Raft infrastructure correctly.
+    /// </remarks>
     /// <param name="address">The address to check.</param>
     /// <returns><see langword="true"/> if <paramref name="address"/> represents address of this node; otherwise, <see langword="false"/>.</returns>
     protected abstract bool IsLocalAddress(EndPoint address);
