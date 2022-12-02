@@ -266,7 +266,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
     public Task<TMember> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default)
-        => electionEvent.Task;
+        => electionEvent.Task.WaitAsync(timeout, token);
 
     /// <inheritdoc />
     Task<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
