@@ -88,7 +88,7 @@ public sealed class CustomTransportTests : TransportTestSuite
         => SendingSynchronizationRequestTest(CreateServer, CreateClient);
 
     private static GenericClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout)
-        => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateClientFactory(), DefaultAllocator) { IsRemote = true, ConnectTimeout = timeout };
+        => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateClientFactory(), DefaultAllocator) { ConnectTimeout = timeout };
 
     private static GenericServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout)
         => new(address, CreateServerFactory(), member, DefaultAllocator, NullLoggerFactory.Instance) { ReceiveTimeout = timeout };

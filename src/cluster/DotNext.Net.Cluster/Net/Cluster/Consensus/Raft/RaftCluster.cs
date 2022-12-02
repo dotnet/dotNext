@@ -32,8 +32,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly TaskCompletionSource readinessProbe;
     private readonly Action<TMember?> onLeaderChangedThreadPoolCallback;
     private readonly bool standbyNode;
-
     private ClusterMemberId localMemberId;
+
     private AsyncLock transitionSync;  // used to synchronize state transitions
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
@@ -274,27 +274,36 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private ValueTask UnfreezeAsync()
     {
-        return readinessProbe.Task.IsCompleted ? ValueTask.CompletedTask : UnfreezeCoreAsync();
+        ValueTask result;
+
+        // ensure that local member has been received
+        TMember? localMember;
+        if (readinessProbe.Task.IsCompleted || (localMember = FindLocalMember()) is null)
+        {
+            result = ValueTask.CompletedTask;
+        }
+        else if (standbyNode)
+        {
+            readinessProbe.TrySetResult();
+            result = new(readinessProbe.Task);
+        }
+        else
+        {
+            result = UnfreezeCoreAsync();
+        }
+
+        return result;
 
         async ValueTask UnfreezeCoreAsync()
         {
-            // ensure that local member has been received
-            foreach (var member in members.Values)
-            {
-                if (member.Id == localMemberId)
-                {
-                    if (!standbyNode)
-                    {
-                        var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
-                        await UpdateStateAsync(newState).ConfigureAwait(false);
-                        newState.StartServing(ElectionTimeout, LifecycleToken);
-                    }
-
-                    readinessProbe.TrySetResult();
-                }
-            }
+            var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
+            await UpdateStateAsync(newState).ConfigureAwait(false);
+            newState.StartServing(ElectionTimeout, LifecycleToken);
+            readinessProbe.TrySetResult();
         }
     }
+
+    private TMember? FindLocalMember() => members.Values.FirstOrDefault(static m => m.IsRemote is false);
 
     /// <summary>
     /// Starts serving local member.
@@ -306,21 +315,28 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
-        var localMember = members.Values.FirstOrDefault(static m => m.IsRemote is false);
-
         // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
-        if (localMember is not null)
+        foreach (var member in members.Values)
         {
-            localMemberId = localMember.Id;
-            state = standbyNode ? new StandbyState<TMember>(this) : new FollowerState<TMember>(this);
-            readinessProbe.TrySetResult();
+            if (IsLocalAddress(member.EndPoint))
+            {
+                localMemberId = member.Id;
+                state = standbyNode ? new StandbyState<TMember>(this) : new FollowerState<TMember>(this);
+                readinessProbe.TrySetResult();
+                return;
+            }
         }
-        else
-        {
-            // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
-            state = new StandbyState<TMember>(this);
-        }
+
+        // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
+        state = new StandbyState<TMember>(this);
     }
+
+    /// <summary>
+    /// Indicates that the specified address represents the current node.
+    /// </summary>
+    /// <param name="address">The address to check.</param>
+    /// <returns><see langword="true"/> if <paramref name="address"/> represents address of this node; otherwise, <see langword="false"/>.</returns>
+    protected abstract bool IsLocalAddress(EndPoint address);
 
     /// <summary>
     /// Starts Follower timer.

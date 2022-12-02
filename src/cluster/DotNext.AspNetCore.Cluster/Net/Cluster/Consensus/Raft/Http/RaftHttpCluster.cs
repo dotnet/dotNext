@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -109,7 +110,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
         result.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
         result.DefaultVersionPolicy = protocolVersionPolicy;
-        result.IsRemote = EndPointComparer.Equals(result.EndPoint, localNode) is false;
         result.SetProtocolVersion(protocolVersion);
         return result;
     }
@@ -149,7 +149,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         {
             // in case of cold start, add the local member to the configuration
             var localMember = CreateMember(LocalMemberId, localNode);
-            localMember.IsRemote = false;
+            Debug.Assert(localMember.IsRemote is false);
             await AddMemberAsync(localMember, token).ConfigureAwait(false);
             await ConfigurationStorage.AddMemberAsync(LocalMemberId, localNode, token).ConfigureAwait(false);
             await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
@@ -160,9 +160,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
             foreach (var (id, address) in ConfigurationStorage.ActiveConfiguration)
             {
-                var member = CreateMember(id, address);
-                member.IsRemote = EndPointComparer.Equals(localNode, address) is false;
-                await AddMemberAsync(member, token).ConfigureAwait(false);
+                await AddMemberAsync(CreateMember(id, address), token).ConfigureAwait(false);
             }
         }
 
@@ -196,6 +194,8 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
             }
         }
     }
+
+    protected override bool IsLocalAddress(EndPoint address) => EndPointComparer.Equals(localNode, address);
 
     /// <inheritdoc />
     ISubscriber? IPeerMesh<ISubscriber>.TryGetPeer(EndPoint peer)

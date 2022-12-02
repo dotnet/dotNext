@@ -198,11 +198,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     bool IClusterMember.IsLeader => context.IsLeader(this);
 
-    public bool IsRemote
-    {
-        get;
-        internal set;
-    }
+    public bool IsRemote => Id != context.LocalMember;
 
     ClusterMemberStatus IClusterMember.Status => IsRemote ? status.Value : ClusterMemberStatus.Available;
 

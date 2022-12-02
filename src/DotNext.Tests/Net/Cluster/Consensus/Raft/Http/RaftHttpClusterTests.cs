@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -563,6 +564,86 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 await host2.StopAsync();
                 await host1.StopAsync();
             }
+        }
+
+        [Fact]
+        public async Task ClusterRecovery()
+        {
+            var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            var config1 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+                {"metadata:nodeName", "node1"},
+                // {"requestTimeout", "00:00:01"},
+                // {"rpcTimeout", "00:00:01"},
+                // {"lowerElectionTimeout", "6000" },
+                // {"upperElectionTimeout", "9000" },
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node1")}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"partitioning", "false" },
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node2"},
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node2")}
+            };
+            var config3 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3264"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node3"},
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")}
+            };
+
+            // two nodes in frozen state
+            using var host2 = CreateHost<Startup>(3263, config2);
+            using var host3 = CreateHost<Startup>(3264, config3);
+
+            IClusterMember leader2, leader3;
+            EndPoint oldLeader;
+            using (var host1 = CreateHost<Startup>(3262, config1))
+            {
+                await host1.StartAsync();
+                True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+                await host2.StartAsync();
+                await host3.StartAsync();
+
+                Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
+
+                // add two nodes to the cluster
+                await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress);
+                await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+                await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress);
+                await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
+
+                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
+                leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+                Equal(leader1.EndPoint, leader2.EndPoint, EndPointFormatter.UriEndPointComparer);
+                Equal(leader1.EndPoint, leader3.EndPoint, EndPointFormatter.UriEndPointComparer);
+                False(GetLocalClusterView(host1).LeadershipToken.IsCancellationRequested);
+                oldLeader = leader1.EndPoint;
+
+                // stop the leader
+                await host1.StopAsync();
+            }
+
+            // wait for new election
+            do
+            {
+                leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+            }
+            while (leader2 is null || leader3 is null || EndPointFormatter.UriEndPointComparer.Equals(oldLeader, leader2.EndPoint) || EndPointFormatter.Equals(oldLeader, leader3.EndPoint));
+
+            await host2.StopAsync();
+            await host3.StopAsync();
         }
 
         [Fact]

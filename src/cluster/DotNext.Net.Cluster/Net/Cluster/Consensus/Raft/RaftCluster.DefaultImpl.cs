@@ -116,7 +116,6 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         {
             // in case of cold start, add the local member to the configuration
             var localMember = CreateMember(LocalMemberId, LocalMemberAddress);
-            localMember.IsRemote = false;
             await AddMemberAsync(localMember, token).ConfigureAwait(false);
             await ConfigurationStorage.AddMemberAsync(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
             await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
@@ -127,9 +126,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 
             foreach (var (id, address) in ConfigurationStorage.ActiveConfiguration)
             {
-                var member = CreateMember(id, address);
-                member.IsRemote = EndPointComparer.Equals(address, LocalMemberAddress) is false;
-                await AddMemberAsync(member, token).ConfigureAwait(false);
+                await AddMemberAsync(CreateMember(id, address), token).ConfigureAwait(false);
             }
         }
 
@@ -142,6 +139,9 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         if (!coldStart && announcer is not null)
             await announcer(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    protected override bool IsLocalAddress(EndPoint address) => EndPointComparer.Equals(LocalMemberAddress, address);
 
     /// <summary>
     /// Stops serving local member.
@@ -187,7 +187,6 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     public async Task<bool> AddMemberAsync(ClusterMemberId id, EndPoint address, CancellationToken token = default)
     {
         using var member = CreateMember(id, address);
-        member.IsRemote = EndPointComparer.Equals(LocalMemberAddress, address) is false;
         return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
     }
 
@@ -218,9 +217,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             if (eventInfo.IsAdded)
             {
                 var member = CreateMember(eventInfo.Id, eventInfo.Address);
-                if (await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
-                    member.IsRemote = EndPointComparer.Equals(eventInfo.Address, LocalMemberAddress) is false;
-                else
+                if (!await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
                     member.Dispose();
             }
             else
