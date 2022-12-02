@@ -172,7 +172,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public MetricsCollector? Metrics
     {
         protected get;
-        set;
+        init;
     }
 
     /// <summary>
