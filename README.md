@@ -77,6 +77,7 @@ Release Date: 12-01-2022
 * Added implementation of Phi Accrual Failure Detector
 * Added ability to turn cluster node into Standby mode and back to normal mode (see [discussion](https://github.com/dotnet/dotNext/discussions/134))
 * Raft functional extensions are grouped as a set of interfaces located in a new `DotNext.Net.Cluster.Consensus.Raft.Extensions` namespace
+* Fixed cluster recovery when cold start mode is used ([135](https://github.com/dotnet/dotNext/issues/135))
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.0">DotNext.AspNetCore.Cluster 4.8.0</a>
