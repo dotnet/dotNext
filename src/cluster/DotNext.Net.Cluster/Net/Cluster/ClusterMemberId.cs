@@ -3,6 +3,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Connections;
 using static System.Buffers.Binary.BinaryPrimitives;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster;
 
@@ -129,11 +130,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         family = reader.ReadInt32(true);
     }
 
-    /// <summary>
-    /// Deserializes the cluster member ID.
-    /// </summary>
-    /// <param name="input">The memory block reader.</param>
-    /// <returns>The identifier of the cluster member.</returns>
+    /// <inheritdoc cref="IBinaryFormattable{T}.Parse(ref SpanReader{byte})"/>
     static ClusterMemberId IBinaryFormattable<ClusterMemberId>.Parse(ref SpanReader<byte> input)
         => new(ref input);
 
@@ -165,8 +162,9 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         _ => new(ep.Serialize())
     };
 
-    private bool Equals(in ClusterMemberId other)
-        => BitwiseComparer<ClusterMemberId>.Equals(in this, in other);
+    private bool Equals(in ClusterMemberId other) => address.Equals(other.address)
+            && Unsafe.As<int, ulong>(ref Unsafe.AsRef(in port)) == Unsafe.As<int, ulong>(ref Unsafe.AsRef(in other.port)) // port + length = 8 bytes
+            && family == other.family;
 
     /// <summary>
     /// Determines whether the current identifier is equal
