@@ -116,7 +116,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     internal PathString ProtocolPath { get; }
 
-    protected sealed override ILogger Logger { get; }
+    protected override ILogger Logger { get; }
 
     ILogger IHostingContext.Logger => Logger;
 
