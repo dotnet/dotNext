@@ -77,6 +77,7 @@ public static class AtomicEnum
 public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     where TEnum : struct, Enum
 {
+    // TODO: Rewrite when https://github.com/dotnet/runtime/issues/64658 becomes available
     private ulong value;
 
     /// <summary>
