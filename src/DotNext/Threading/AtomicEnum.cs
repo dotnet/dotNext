@@ -57,13 +57,13 @@ public static class AtomicEnum
                 Volatile.Write(ref Unsafe.As<TEnum, byte>(ref value), ReinterpretCast<TEnum, byte>(newValue));
                 break;
             case sizeof(ushort):
-                Volatile.Write(ref Unsafe.As<TEnum, ushort>(ref value), ReinterpretCast<TEnum, byte>(newValue));
+                Volatile.Write(ref Unsafe.As<TEnum, ushort>(ref value), ReinterpretCast<TEnum, ushort>(newValue));
                 break;
             case sizeof(uint):
                 Volatile.Write(ref Unsafe.As<TEnum, uint>(ref value), ReinterpretCast<TEnum, uint>(newValue));
                 break;
             case sizeof(ulong):
-                Volatile.Write(ref Unsafe.As<TEnum, ulong>(ref value), ReinterpretCast<TEnum, byte>(newValue));
+                Volatile.Write(ref Unsafe.As<TEnum, ulong>(ref value), ReinterpretCast<TEnum, ulong>(newValue));
                 break;
         }
     }
