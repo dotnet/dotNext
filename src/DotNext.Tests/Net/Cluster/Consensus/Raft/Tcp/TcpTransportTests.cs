@@ -238,6 +238,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         }
 
         [Fact]
+        public Task ClusterRecovery()
+        {
+            return ClusterRecoveryCore(CreateCluster);
+
+            static RaftCluster CreateCluster(int port, bool coldStart)
+            {
+                var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port)) { ColdStart = coldStart };
+                return new(config);
+            }
+        }
+
+        [Fact]
         public Task RequestSynchronization()
         {
             static TcpServer CreateServer(ILocalMember member, EndPoint address, TimeSpan timeout) => new(address, 100, member, DefaultAllocator, NullLoggerFactory.Instance)
