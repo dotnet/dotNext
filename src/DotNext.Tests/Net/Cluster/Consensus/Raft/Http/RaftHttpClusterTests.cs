@@ -354,16 +354,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"metadata:nodeName", "node3"}
             };
 
-            Func<IRaftClusterMember, IFailureDetector> failureDetectorFactory = static m => new PhiAccrualFailureDetector() { Threshold = 8D };
-            using var host1 = CreateHost<Startup>(3262, config1, failureDetectorFactory: failureDetectorFactory);
+            using var host1 = CreateHost<Startup>(3262, config1, failureDetectorFactory: CreateFailureDetector);
             await host1.StartAsync();
             True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
 
             // two nodes in frozen state
-            using var host2 = CreateHost<Startup>(3263, config2, failureDetectorFactory: failureDetectorFactory);
+            using var host2 = CreateHost<Startup>(3263, config2, failureDetectorFactory: CreateFailureDetector);
             await host2.StartAsync();
 
-            using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: failureDetectorFactory);
+            using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: CreateFailureDetector);
             await host3.StartAsync();
 
             Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
@@ -389,6 +388,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             await host2.StopAsync();
             await host1.StopAsync();
+
+            static IFailureDetector CreateFailureDetector(IRaftClusterMember member)
+                => new PhiAccrualFailureDetector() { Threshold = 7D };
         }
 
         [Fact]
