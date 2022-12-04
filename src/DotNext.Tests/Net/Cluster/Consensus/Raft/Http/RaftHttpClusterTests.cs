@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 )
                 .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-                .ConfigureLogging(static builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+                .ConfigureLogging(builder => builder.AddTestDebugLogger(port.ToString()).SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()
                 .Build();
         }
