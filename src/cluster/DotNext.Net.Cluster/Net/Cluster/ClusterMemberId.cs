@@ -25,7 +25,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public static int Size => 16 + sizeof(long) + sizeof(int);
 
     private readonly Guid address;
-    private readonly long lengthAndPort; // pack two fields as 8 bytes for more efficient equality operation
+    private readonly ulong lengthAndPort; // pack two fields as 8 bytes for more efficient equality operation
     private readonly int family;
 
     private ClusterMemberId(IPEndPoint endPoint)
@@ -80,11 +80,12 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(static (address, index) => address[index], address.Size, address, false));
         this.address = new(bytes);
 
-        lengthAndPort = address.Size;
+        lengthAndPort = unchecked((uint)address.Size);
         family = (int)address.Family;
     }
 
-    private static long Combine(long length, long port) => length | (port << 32);
+    private static ulong Combine(int length, int port)
+        => unchecked((uint)length | (((ulong)port) << 32));
 
     /// <summary>
     /// Initializes a new unique identifier from set of bytes.
@@ -112,7 +113,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         Span<byte> bytes = stackalloc byte[16];
         random.NextBytes(bytes);
         address = new(bytes);
-        lengthAndPort = random.NextInt64();
+        lengthAndPort = random.Next<ulong>();
         family = random.Next();
     }
 
@@ -123,7 +124,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public ClusterMemberId(ref SpanReader<byte> reader)
     {
         address = new(reader.Read(16));
-        lengthAndPort = reader.ReadInt64(true);
+        lengthAndPort = reader.ReadUInt64(true);
         family = reader.ReadInt32(true);
     }
 
@@ -139,7 +140,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public void Format(ref SpanWriter<byte> writer)
     {
         address.TryWriteBytes(writer.Slide(16));
-        writer.WriteInt64(lengthAndPort, true);
+        writer.WriteUInt64(lengthAndPort, true);
         writer.WriteInt32(family, true);
     }
 
