@@ -22,18 +22,19 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <summary>
     /// Gets size of this type, in bytes.
     /// </summary>
-    public static int Size => 16 + (sizeof(int) * 3);
+    public static int Size => 16 + sizeof(long) + sizeof(int);
 
     private readonly Guid address;
-    private readonly int port, length, family;
+    private readonly long lengthAndPort; // pack two fields as 8 bytes for more efficient equality operation
+    private readonly int family;
 
     private ClusterMemberId(IPEndPoint endPoint)
     {
         Span<byte> bytes = stackalloc byte[16];
-        address = endPoint.Address.TryWriteBytes(bytes, out length)
+        address = endPoint.Address.TryWriteBytes(bytes, out var length)
             ? new(bytes)
             : throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endPoint));
-        port = endPoint.Port;
+        lengthAndPort = Combine(length, endPoint.Port);
         family = (int)endPoint.AddressFamily;
     }
 
@@ -44,8 +45,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         WriteInt64LittleEndian(bytes, Span.BitwiseHashCode64(endPoint.Host.AsSpan(), false));
         address = new(bytes);
 
-        length = endPoint.Host.Length;
-        port = endPoint.Port;
+        lengthAndPort = Combine(endPoint.Host.Length, endPoint.Port);
         family = (int)endPoint.AddressFamily;
     }
 
@@ -57,8 +57,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         bytes[sizeof(long)] = endPoint.IsSecure.ToByte();
         address = new(bytes);
 
-        length = endPoint.Host.Length;
-        port = endPoint.Port;
+        lengthAndPort = Combine(endPoint.Host.Length, endPoint.Port);
         family = (int)endPoint.AddressFamily;
     }
 
@@ -70,8 +69,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         WriteInt64LittleEndian(bytes.Slice(sizeof(long)), Span.BitwiseHashCode64(uri.PathAndQuery.AsSpan(), false));
         address = new(bytes);
 
-        length = uri.AbsoluteUri.Length;
-        port = uri.Port;
+        lengthAndPort = Combine(uri.AbsoluteUri.Length, uri.Port);
         family = (int)uri.HostNameType;
     }
 
@@ -82,10 +80,11 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(static (address, index) => address[index], address.Size, address, false));
         this.address = new(bytes);
 
-        port = Intrinsics.GetHashCode32(static (address, index) => address[index], address.Size, address, false);
+        lengthAndPort = address.Size;
         family = (int)address.Family;
-        length = address.Size;
     }
+
+    private static long Combine(long length, long port) => length | (port << 32);
 
     /// <summary>
     /// Initializes a new unique identifier from set of bytes.
@@ -113,8 +112,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         Span<byte> bytes = stackalloc byte[16];
         random.NextBytes(bytes);
         address = new(bytes);
-        port = random.Next();
-        length = random.Next();
+        lengthAndPort = random.NextInt64();
         family = random.Next();
     }
 
@@ -125,8 +123,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public ClusterMemberId(ref SpanReader<byte> reader)
     {
         address = new(reader.Read(16));
-        port = reader.ReadInt32(true);
-        length = reader.ReadInt32(true);
+        lengthAndPort = reader.ReadInt64(true);
         family = reader.ReadInt32(true);
     }
 
@@ -142,8 +139,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public void Format(ref SpanWriter<byte> writer)
     {
         address.TryWriteBytes(writer.Slide(16));
-        writer.WriteInt32(port, true);
-        writer.WriteInt32(length, true);
+        writer.WriteInt64(lengthAndPort, true);
         writer.WriteInt32(family, true);
     }
 
@@ -163,7 +159,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     };
 
     private bool Equals(in ClusterMemberId other) => address.Equals(other.address)
-            && Unsafe.As<int, ulong>(ref Unsafe.AsRef(in port)) == Unsafe.As<int, ulong>(ref Unsafe.AsRef(in other.port)) // port + length = 8 bytes
+            && lengthAndPort == other.lengthAndPort
             && family == other.family;
 
     /// <summary>
@@ -186,7 +182,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// Gets the hash code of this identifier.
     /// </summary>
     /// <returns>The hash code of this identifier.</returns>
-    public override int GetHashCode() => HashCode.Combine(address, port, length, family);
+    public override int GetHashCode() => HashCode.Combine(address, lengthAndPort, family);
 
     /// <summary>
     /// Returns hexadecimal representation of this identifier.
