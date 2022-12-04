@@ -22,7 +22,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <summary>
     /// Gets size of this type, in bytes.
     /// </summary>
-    public static int Size => 16 + sizeof(long) + sizeof(int);
+    public static int Size => 16 + sizeof(ulong) + sizeof(int);
 
     private readonly Guid address;
     private readonly ulong lengthAndPort; // pack two fields as 8 bytes for more efficient equality operation
