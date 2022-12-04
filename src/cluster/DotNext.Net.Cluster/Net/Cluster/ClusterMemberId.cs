@@ -205,14 +205,12 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public static bool TryParse(ReadOnlySpan<char> identifier, out ClusterMemberId value)
     {
         Span<byte> bytes = stackalloc byte[Size];
-        if (Hex.DecodeFromUtf16(identifier, bytes) == bytes.Length)
-        {
-            value = new(bytes);
-            return true;
-        }
 
-        value = default;
-        return false;
+        bool result;
+        value = (result = Hex.DecodeFromUtf16(identifier, bytes) == bytes.Length)
+            ? new(bytes)
+            : default;
+        return result;
     }
 
     /// <summary>
