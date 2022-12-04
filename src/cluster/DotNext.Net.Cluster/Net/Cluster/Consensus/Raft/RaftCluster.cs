@@ -30,7 +30,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly double heartbeatThreshold, clockDriftBound;
     private readonly Random random;
     private readonly TaskCompletionSource readinessProbe;
-    private readonly Action<TMember?> onLeaderChangedThreadPoolCallback;
     private readonly bool standbyNode;
     private ClusterMemberId localMemberId;
 
@@ -65,7 +64,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         localMemberId = new(random);
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        onLeaderChangedThreadPoolCallback = OnLeaderChanged;
         state = new StandbyState<TMember>(this);
         EndPointComparer = config.EndPointComparer;
     }
@@ -248,13 +246,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     break;
             }
 
-            // execute event handlers asynchronously to avoid blocking of the caller
-            if (raiseEventHandlers && !leaderChangedHandlers.IsEmpty)
-                ThreadPool.QueueUserWorkItem(onLeaderChangedThreadPoolCallback, value, preferLocal: true);
+            if (raiseEventHandlers)
+                leaderChangedHandlers.Invoke(this, value);
         }
     }
-
-    private void OnLeaderChanged(TMember? member) => leaderChangedHandlers.Invoke(this, member);
 
     /// <summary>
     /// Waits for the leader election asynchronously.
@@ -301,9 +296,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             newState.StartServing(ElectionTimeout, LifecycleToken);
             readinessProbe.TrySetResult();
         }
-    }
 
-    private TMember? FindLocalMember() => members.Values.FirstOrDefault(static m => m.IsRemote is false);
+        TMember? FindLocalMember() => members.Values.FirstOrDefault(static m => m.IsRemote is false);
+    }
 
     /// <summary>
     /// Starts serving local member.
@@ -579,15 +574,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     await auditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, token).ConfigureAwait(false);
                     result = true;
 
-                    // This node is in sync with the leader and no entries arrived
-                    if (emptySet)
-                    {
-                        if (senderMember is not null && !replicationHandlers.IsEmpty)
-                            replicationHandlers.Invoke(this, senderMember);
-
-                        await UnfreezeAsync().ConfigureAwait(false);
-                    }
-
                     // process configuration
                     var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
                     switch ((config.Fingerprint == fingerprint, applyConfig))
@@ -604,6 +590,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                             result = false;
                             break;
                     }
+                }
+
+                // This node is in sync with the leader and no entries arrived
+                if (emptySet && senderMember is not null)
+                {
+                    replicationHandlers.Invoke(this, senderMember);
+                    await UnfreezeAsync().ConfigureAwait(false);
                 }
             }
         }
