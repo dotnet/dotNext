@@ -61,7 +61,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         standbyNode = config.Standby;
         clockDriftBound = config.ClockDriftBound;
         readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        localMemberId = new(random);
+        localMemberId = config.Id ?? new(random);
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         state = new StandbyState<TMember>(this);
