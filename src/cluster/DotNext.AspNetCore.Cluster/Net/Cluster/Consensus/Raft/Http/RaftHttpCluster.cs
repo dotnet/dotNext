@@ -62,11 +62,11 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         : base(config.CurrentValue)
     {
         openConnectionForEachRequest = config.CurrentValue.OpenConnectionForEachRequest;
-        metadata = new MemberMetadata(config.CurrentValue.Metadata);
+        metadata = new(config.CurrentValue.Metadata);
         requestTimeout = config.CurrentValue.RequestTimeout;
         raftRpcTimeout = config.CurrentValue.RpcTimeout;
         connectTimeout = TimeSpan.FromMilliseconds(config.CurrentValue.LowerElectionTimeout);
-        duplicationDetector = new DuplicateRequestDetector(config.CurrentValue.RequestJournal);
+        duplicationDetector = new(config.CurrentValue.RequestJournal);
         clientHandlerName = config.CurrentValue.ClientHandlerName;
         protocolVersion = config.CurrentValue.ProtocolVersion;
         protocolVersionPolicy = config.CurrentValue.ProtocolVersionPolicy;
@@ -102,7 +102,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     private RaftClusterMember CreateMember(in ClusterMemberId id, UriEndPoint address)
     {
-        var result = new RaftClusterMember(this, address, id)
+        var result = new RaftClusterMember(this, address, in id)
         {
             Timeout = requestTimeout,
             Metrics = Metrics as IClientMetricsCollector,
@@ -124,7 +124,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
     {
-        metadata = new MemberMetadata(configuration.Metadata);
+        metadata = new(configuration.Metadata);
     }
 
     IReadOnlyDictionary<string, string> IHostingContext.Metadata => metadata;
