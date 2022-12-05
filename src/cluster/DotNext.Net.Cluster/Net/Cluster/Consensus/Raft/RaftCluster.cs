@@ -273,7 +273,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         // ensure that local member has been received
         TMember? localMember;
-        if (readinessProbe.Task.IsCompleted || (localMember = FindLocalMember()) is null)
+        if (readinessProbe.Task.IsCompleted || (localMember = TryGetLocalMember()) is null)
         {
             result = ValueTask.CompletedTask;
         }
@@ -296,9 +296,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             newState.StartServing(ElectionTimeout, LifecycleToken);
             readinessProbe.TrySetResult();
         }
-
-        TMember? FindLocalMember() => members.Values.FirstOrDefault(static m => m.IsRemote is false);
     }
+
+    private TMember? TryGetLocalMember() => members.Values.FirstOrDefault(static m => m.IsRemote is false);
 
     /// <summary>
     /// Starts serving local member.
@@ -355,7 +355,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         ThrowIfDisposed();
 
-        if (state is StandbyState<TMember> { Resumable: true } standbyState)
+        if (TryGetLocalMember() is not null && state is StandbyState<TMember> { Resumable: true } standbyState)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var transitionLock = default(AsyncLock.Holder);
