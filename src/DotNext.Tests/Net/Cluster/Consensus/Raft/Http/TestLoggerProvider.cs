@@ -47,7 +47,7 @@ internal sealed class TestLoggerProvider : Disposable, ILoggerProvider
                 return;
 
             var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
-            buffer.WriteString($"[{prefix}][{new Timestamp()}]{logLevel}: {message}");
+            buffer.WriteString($"[{prefix}]({new Timestamp()}){logLevel}: {message}");
 
             if (exception is not null)
             {
