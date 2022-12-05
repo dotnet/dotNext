@@ -364,7 +364,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
 
                 // ensure that we trying to update the same state
-                if (ReferenceEquals(state, standbyState))
+                if (TryGetLocalMember() is not null && ReferenceEquals(state, standbyState))
                 {
                     var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
                     await UpdateStateAsync(newState).ConfigureAwait(false);
