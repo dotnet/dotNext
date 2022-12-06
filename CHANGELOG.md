@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 12-01-2022
+# 12-06-2022
 <a href="https://www.nuget.org/packages/dotnext/4.8.0">DotNext 4.8.0</a>
 * Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
 * Added [Builder Pattern](https://en.wikipedia.org/wiki/Builder_pattern) concept as an interface
