@@ -56,7 +56,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
         => consumer.Invoke(WrittenMemory, token);
 
     /// <inheritdoc />
-    readonly int IGrowableBuffer<char>.CopyTo(Span<char> output)
+    readonly int IGrowableBuffer<char>.CopyTo(scoped Span<char> output)
     {
         WrittenMemory.Span.CopyTo(output, out var writtenCount);
         return writtenCount;

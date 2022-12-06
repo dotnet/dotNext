@@ -116,7 +116,7 @@ public ref struct SpanReader<T>
     /// </summary>
     /// <param name="output">The span used to write elements from the underlying span.</param>
     /// <returns><see langword="true"/> if size of <paramref name="output"/> is less than or equal to <see cref="RemainingCount"/>; otherwise, <see langword="false"/>.</returns>
-    public bool TryRead(Span<T> output)
+    public bool TryRead(scoped Span<T> output)
         => TryRead(output.Length, out var input) && input.TryCopyTo(output);
 
     /// <summary>
@@ -169,7 +169,7 @@ public ref struct SpanReader<T>
     /// </summary>
     /// <param name="output">The span used to write elements from the underlying span.</param>
     /// <returns>The number of obtained elements.</returns>
-    public int Read(Span<T> output)
+    public int Read(scoped Span<T> output)
     {
         RemainingSpan.CopyTo(output, out var writtenCount);
         position += writtenCount;

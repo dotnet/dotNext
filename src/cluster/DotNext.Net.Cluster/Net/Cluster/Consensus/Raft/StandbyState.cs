@@ -4,10 +4,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 /// This is ephemeral state indicating that
 /// the cluster member will not become a leader.
 /// </summary>
-internal sealed class StandbyState : RaftState
+internal sealed class StandbyState<TMember> : RaftState<TMember>
+    where TMember : class, IRaftClusterMember
 {
-    internal StandbyState(IRaftStateMachine stateMachine)
+    internal StandbyState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
     }
+
+    internal bool Resumable { get; init; } = true;
 }

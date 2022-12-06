@@ -7,7 +7,7 @@ internal partial class ServerExchange
     private void BeginVote(ReadOnlyMemory<byte> payload, CancellationToken token)
     {
         VoteExchange.Parse(payload.Span, out var sender, out var term, out var lastLogIndex, out var lastLogTerm);
-        task = server.VoteAsync(sender, term, lastLogIndex, lastLogTerm, token);
+        task = server.VoteAsync(sender, term, lastLogIndex, lastLogTerm, token).AsTask();
     }
 
     private async ValueTask<(PacketHeaders, int, bool)> EndVote(Memory<byte> payload)

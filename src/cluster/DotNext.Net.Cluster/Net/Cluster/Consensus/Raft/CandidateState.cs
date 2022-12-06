@@ -3,7 +3,8 @@
 using IO.Log;
 using Threading.Tasks;
 
-internal sealed class CandidateState : RaftState
+internal sealed class CandidateState<TMember> : RaftState<TMember>
+    where TMember : class, IRaftClusterMember
 {
     private enum VotingResult : byte
     {
@@ -17,17 +18,17 @@ internal sealed class CandidateState : RaftState
     internal readonly long Term;
     private Task? votingTask;
 
-    internal CandidateState(IRaftStateMachine stateMachine, long term)
+    internal CandidateState(IRaftStateMachine<TMember> stateMachine, long term)
         : base(stateMachine)
     {
         votingCancellation = new();
         Term = term;
     }
 
-    private async Task EndVoting(IAsyncEnumerable<(IRaftClusterMember, long, VotingResult)> voters)
+    private async Task EndVoting(IAsyncEnumerable<(TMember, long, VotingResult)> voters)
     {
         var votes = 0;
-        var localMember = default(IRaftClusterMember);
+        var localMember = default(TMember);
         await foreach (var (member, term, result) in voters.ConfigureAwait(false))
         {
             if (IsDisposingOrDisposed)
@@ -78,18 +79,17 @@ internal sealed class CandidateState : RaftState
     internal void StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         Logger.VotingStarted(timeout, Term);
-        var members = Members;
-        var voters = new TaskCompletionPipe<Task<(IRaftClusterMember, long, VotingResult)>>(members.Count);
+        var voters = new TaskCompletionPipe<Task<(TMember, long, VotingResult)>>();
 
         // start voting in parallel
-        foreach (var member in members)
+        foreach (var member in Members)
             voters.Add(VoteAsync(member, Term, auditTrail, votingCancellation.Token));
 
         voters.Complete();
         votingCancellation.CancelAfter(timeout);
         votingTask = EndVoting(voters.GetConsumer());
 
-        static async Task<(IRaftClusterMember, long, VotingResult)> VoteAsync(IRaftClusterMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
+        static async Task<(TMember, long, VotingResult)> VoteAsync(TMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             // unblock the caller
             await Task.Yield();
@@ -130,7 +130,7 @@ internal sealed class CandidateState : RaftState
         }
         finally
         {
-            votingCancellation.Dispose();
+            Dispose(disposing: true);
         }
     }
 

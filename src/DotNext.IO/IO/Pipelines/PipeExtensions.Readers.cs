@@ -48,7 +48,7 @@ public static partial class PipeExtensions
         void IBufferReader<Missing>.EndOfStream()
             => remainingBytes = limited ? throw new EndOfStreamException() : 0;
 
-        void IBufferReader<Missing>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
+        void IBufferReader<Missing>.Append(scoped ReadOnlySpan<byte> block, scoped ref int consumedBytes)
         {
             hash.AppendData(block);
             if (limited)

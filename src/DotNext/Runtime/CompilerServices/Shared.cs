@@ -22,7 +22,7 @@ public sealed class Shared<T>
     /// </summary>
     /// <param name="value">The value to be placed to the container.</param>
     /// <returns>The boxed representation of the value; or <see langword="null"/> if <paramref name="value"/> is <see langword="null"/>.</returns>
-    [return: NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull(nameof(value))]
     public static implicit operator Shared<T>?(in T? value)
         => value.HasValue ? new() { Value = value.GetValueOrDefault() } : null;
 

@@ -13,7 +13,7 @@ public static class MethodExtensions
     /// </summary>
     /// <param name="method">The method to reflect.</param>
     /// <returns>The array of parameter types.</returns>
-    [return: NotNullIfNotNull("method")]
+    [return: NotNullIfNotNull(nameof(method))]
     public static Type[]? GetParameterTypes(this MethodBase? method)
         => method is null ? null : Array.ConvertAll(method.GetParameters(), static p => p.ParameterType);
 

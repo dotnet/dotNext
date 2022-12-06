@@ -1,5 +1,7 @@
 ﻿namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using ClusterMemberIdConverter = ComponentModel.ClusterMemberIdConverter;
+
 /// <summary>
 /// Represents configuration of cluster member.
 /// </summary>
@@ -9,6 +11,8 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     private TimeSpan? rpcTimeout;
     private double clockDriftBound = 1D, heartbeatThreshold = 0.5D;
     private int warmupRounds = 10;
+
+    static ClusterMemberConfiguration() => ClusterMemberIdConverter.Register();
 
     /// <summary>
     /// Gets lower possible value of leader election timeout, in milliseconds.
@@ -100,4 +104,9 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     /// to the candidate state if the leader is reachable via the network.
     /// </summary>
     public bool AggressiveLeaderStickiness { get; set; }
+
+    /// <summary>
+    /// Gets or sets custom member identifier. If not set, it will be generated randomly.
+    /// </summary>
+    public ClusterMemberId? Id { get; set; }
 }

@@ -58,7 +58,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 ConnectTimeout = timeout,
                 TransmissionBlockSize = 65535,
                 SslOptions = useSsl ? CreateClientSslOptions() : null,
-                IsRemote = true
             };
 
             return RequestResponseTest(CreateServer, CreateClient);
@@ -79,7 +78,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
                 TransmissionBlockSize = 65535,
-                IsRemote = true
             };
 
             return StressTestCore(CreateServer, CreateClient);
@@ -102,7 +100,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
                 TransmissionBlockSize = 300,
-                IsRemote = true
             };
 
             return MetadataRequestResponseTest(CreateServer, CreateClient, smallAmountOfMetadata);
@@ -147,7 +144,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 TransmissionBlockSize = 400,
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
-                IsRemote = true
             };
 
             return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior, useEmptyEntry);
@@ -178,7 +174,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
-                IsRemote = true
             };
 
             return SendingSnapshotAndEntriesAndConfiguration(CreateServer, CreateClient, payloadSize, behavior);
@@ -202,7 +197,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
                 TransmissionBlockSize = 350,
-                IsRemote = true
             };
 
             return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
@@ -226,7 +220,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
                 TransmissionBlockSize = 350,
-                IsRemote = true
             };
 
             return SendingConfigurationTest(CreateServer, CreateClient, payloadSize);
@@ -236,6 +229,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         public Task Leadership()
         {
             return LeadershipCore(CreateCluster);
+
+            static RaftCluster CreateCluster(int port, bool coldStart)
+            {
+                var config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port)) { ColdStart = coldStart };
+                return new(config);
+            }
+        }
+
+        [Fact]
+        public Task ClusterRecovery()
+        {
+            return ClusterRecoveryCore(CreateCluster);
 
             static RaftCluster CreateCluster(int port, bool coldStart)
             {
@@ -259,7 +264,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
                 TransmissionBlockSize = 350,
-                IsRemote = true
             };
 
             return SendingSynchronizationRequestTest(CreateServer, CreateClient);

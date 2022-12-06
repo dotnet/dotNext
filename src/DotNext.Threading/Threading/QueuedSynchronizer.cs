@@ -149,7 +149,7 @@ public class QueuedSynchronizer : Disposable
         protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
 
         private void ReportLockDuration()
-            => lockDurationCounter?.Invoke(createdAt.Elapsed.TotalMilliseconds);
+            => lockDurationCounter?.Invoke(createdAt.ElapsedMilliseconds);
 
         private protected static void AfterConsumed<T>(T node)
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
@@ -252,7 +252,6 @@ public class QueuedSynchronizer : Disposable
     /// </remarks>
     /// <returns>A list of suspended callers.</returns>
     /// <seealso cref="TrackSuspendedCallers"/>
-    [CLSCompliant(false)]
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyList<object?> GetSuspendedCallers()
         => callerInfo is null ? Array.Empty<object?>() : GetSuspendedCallersCore();
@@ -424,27 +423,12 @@ public class QueuedSynchronizer : Disposable
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        unsafe
-        {
-            DrainWaitQueue(first, &TrySetCanceled, token);
-        }
-
+        first?.TrySetCanceledAndSentinelToAll(token);
         first = last = null;
-
-        static bool TrySetCanceled(LinkedValueTaskCompletionSource<bool> source, CancellationToken token)
-            => source.TrySetCanceled(Sentinel.Instance, token);
     }
 
     private protected static long ResumeAll(LinkedValueTaskCompletionSource<bool>? head)
-    {
-        unsafe
-        {
-            return DrainWaitQueue(head, &TrySetResult, arg: true);
-        }
-
-        static bool TrySetResult(LinkedValueTaskCompletionSource<bool> source, bool result)
-            => source.TrySetResult(Sentinel.Instance, result);
-    }
+        => head?.TrySetResultAndSentinelToAll(result: true) ?? 0L;
 
     private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
@@ -458,46 +442,15 @@ public class QueuedSynchronizer : Disposable
     [MethodImpl(MethodImplOptions.Synchronized)]
     private void NotifyObjectDisposed(Exception? reason = null)
     {
-        reason ??= new ObjectDisposedException(GetType().Name);
-
-        unsafe
-        {
-            DrainWaitQueue(first, &TrySetException, reason);
-        }
-
+        first?.TrySetExceptionAndSentinelToAll(reason ?? new ObjectDisposedException(GetType().Name));
         first = last = null;
-    }
-
-    private static bool TrySetException(LinkedValueTaskCompletionSource<bool> source, Exception reason)
-        => source.TrySetException(Sentinel.Instance, reason);
-
-    private static unsafe long DrainWaitQueue<T>(LinkedValueTaskCompletionSource<bool>? first, delegate*<LinkedValueTaskCompletionSource<bool>, T, bool> callback, T arg)
-    {
-        Debug.Assert(callback != null);
-
-        var count = 0L;
-
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
-        {
-            next = current.CleanupAndGotoNext();
-
-            if (callback(current, arg))
-                count++;
-        }
-
-        return count;
     }
 
     private protected void Interrupt(object? reason)
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        var e = new PendingTaskInterruptedException { Reason = reason };
-        unsafe
-        {
-            DrainWaitQueue(first, &TrySetException, e);
-        }
-
+        first?.TrySetExceptionAndSentinelToAll(new PendingTaskInterruptedException { Reason = reason });
         first = last = null;
     }
 

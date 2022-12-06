@@ -95,7 +95,7 @@ public static partial class Span
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
         => BitwiseHashCode64<T, THashFunction>((ReadOnlySpan<T>)span, salted);
 
-    private static unsafe void BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
+    private static unsafe void BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, scoped ref THashFunction hashFunction, bool salted)
         where T : unmanaged
         where THashFunction : struct, IConsumer<int>
     {
@@ -141,7 +141,7 @@ public static partial class Span
         return hash.Invoke();
     }
 
-    private static unsafe void BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, ref THashFunction hashFunction, bool salted)
+    private static unsafe void BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, scoped ref THashFunction hashFunction, bool salted)
         where T : unmanaged
         where THashFunction : struct, IConsumer<long>
     {

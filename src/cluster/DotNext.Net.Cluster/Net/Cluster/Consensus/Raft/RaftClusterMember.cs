@@ -66,7 +66,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     /// <summary>
     /// Determines whether this member is not a local node.
     /// </summary>
-    public bool IsRemote { get; internal set; }
+    public bool IsRemote => Id != localMember.Id;
 
     /// <summary>
     /// Gets the status of this member.

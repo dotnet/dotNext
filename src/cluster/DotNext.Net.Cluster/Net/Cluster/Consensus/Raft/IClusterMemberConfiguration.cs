@@ -50,4 +50,9 @@ public interface IClusterMemberConfiguration
     /// Gets comparer for endpoint address.
     /// </summary>
     IEqualityComparer<EndPoint> EndPointComparer => EqualityComparer<EndPoint>.Default;
+
+    /// <summary>
+    /// Gets custom member identifier.
+    /// </summary>
+    ClusterMemberId? Id => null;
 }

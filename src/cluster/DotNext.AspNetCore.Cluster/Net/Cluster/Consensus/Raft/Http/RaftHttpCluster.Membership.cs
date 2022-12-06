@@ -24,14 +24,12 @@ internal partial class RaftHttpCluster
 
     private async Task ConfigurationPollingLoop()
     {
-        await foreach (var eventInfo in ConfigurationStorage.PollChangesAsync(LifecycleToken).ConfigureAwait(false))
+        await foreach (var eventInfo in configurationEvents.Reader.ReadAllAsync(LifecycleToken).ConfigureAwait(false))
         {
             if (eventInfo.IsAdded)
             {
                 var member = CreateMember(eventInfo.Id, eventInfo.Address);
-                if (await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
-                    member.IsRemote = eventInfo.Address != localNode;
-                else
+                if (!await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
                     member.Dispose();
             }
             else
@@ -49,7 +47,6 @@ internal partial class RaftHttpCluster
     private async Task<bool> AddMemberAsync(ClusterMemberId id, UriEndPoint address, CancellationToken token)
     {
         using var member = CreateMember(id, address);
-        member.IsRemote = EndPointComparer.Equals(localNode, address) is false;
         return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
     }
 

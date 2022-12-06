@@ -40,7 +40,7 @@ public static partial class Type<T>
     /// <summary>
     /// Provides access to constructor of type <typeparamref name="T"/> without parameters.
     /// </summary>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor
     {
         /// <summary>
@@ -107,7 +107,7 @@ public static partial class Type<T>
     /// Provides access to constructor of type <typeparamref name="T"/> with single parameter.
     /// </summary>
     /// <typeparam name="TParam">Type of constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<TParam>
     {
         /// <summary>
@@ -154,7 +154,7 @@ public static partial class Type<T>
     /// </summary>
     /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
     /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2>
     {
         /// <summary>
@@ -206,7 +206,7 @@ public static partial class Type<T>
     /// <typeparam name="T1">Type of first constructor parameter.</typeparam>
     /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
     /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3>
     {
         /// <summary>
@@ -261,7 +261,7 @@ public static partial class Type<T>
     /// <typeparam name="T2">Type of second constructor parameter.</typeparam>
     /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
     /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3, T4>
     {
         /// <summary>
@@ -319,7 +319,7 @@ public static partial class Type<T>
     /// <typeparam name="T3">Type of third constructor parameter.</typeparam>
     /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
     /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3, T4, T5>
     {
         /// <summary>
@@ -383,7 +383,7 @@ public static partial class Type<T>
     /// <typeparam name="T4">Type of fourth constructor parameter.</typeparam>
     /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
     /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3, T4, T5, T6>
     {
         /// <summary>
@@ -446,7 +446,7 @@ public static partial class Type<T>
     /// <typeparam name="T5">Type of fifth constructor parameter.</typeparam>
     /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
     /// <typeparam name="T7">Type of seventh constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3, T4, T5, T6, T7>
     {
         /// <summary>
@@ -512,7 +512,7 @@ public static partial class Type<T>
     /// <typeparam name="T6">Type of sixth constructor parameter.</typeparam>
     /// <typeparam name="T7">Type of seventh constructor parameter.</typeparam>
     /// <typeparam name="T8">Type of eighth constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3, T4, T5, T6, T7, T8>
     {
         /// <summary>
@@ -581,7 +581,7 @@ public static partial class Type<T>
     /// <typeparam name="T7">Type of seventh constructor parameter.</typeparam>
     /// <typeparam name="T8">Type of eighth constructor parameter.</typeparam>
     /// <typeparam name="T9">Type of ninth constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3, T4, T5, T6, T7, T8, T9>
     {
         /// <summary>
@@ -653,7 +653,7 @@ public static partial class Type<T>
     /// <typeparam name="T8">Type of eighth constructor parameter.</typeparam>
     /// <typeparam name="T9">Type of ninth constructor parameter.</typeparam>
     /// <typeparam name="T10">Type of tenth constructor parameter.</typeparam>
-    [DefaultMember("Invoke")]
+    [DefaultMember(nameof(Invoke))]
     public static class Constructor<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
     {
         /// <summary>

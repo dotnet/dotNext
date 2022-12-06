@@ -29,17 +29,17 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private long nextIndex, fingerprint;
     internal IClientMetricsCollector? Metrics;
 
-    internal RaftClusterMember(IHostingContext context, UriEndPoint remoteMember, ClusterMemberId id)
+    internal RaftClusterMember(IHostingContext context, UriEndPoint remoteMember, in ClusterMemberId id)
         : base(remoteMember.Uri, context.CreateHttpHandler(), true)
     {
         this.context = context;
-        status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
+        status = new(ClusterMemberStatus.Unknown);
         EndPoint = remoteMember;
         Id = id;
         resourcePath = remoteMember.Uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped) is { Length: > 0 }
             ? null
             : new(DefaultProtocolPath, UriKind.Relative);
-        DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
+        DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new()).ToString()));
     }
 
     event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
@@ -70,11 +70,11 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         // doesn't match to HttpClient.Timeout
         CancellationTokenSource? timeoutControl;
         CancellationToken tokenWithTimeout;
-        if (context.TryGetTimeout<TMessage>(out var timeout) && timeout != Timeout)
+        if (context.TryGetTimeout<TMessage>(out var timeout) && timeout < Timeout)
         {
             timeoutControl = CancellationTokenSource.CreateLinkedTokenSource(token);
+            tokenWithTimeout = timeoutControl.Token;
             timeoutControl.CancelAfter(timeout);
-            tokenWithTimeout = token;
         }
         else
         {
@@ -107,7 +107,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             // more info about handling timeouts in .NET 5
             throw MemberUnavailable(timeoutEx);
         }
-        catch (OperationCanceledException e) when (e.CancellationToken != token)
+        catch (OperationCanceledException e) when (token.IsCancellationRequested is false)
         {
             // This handler catches inability to connect to the remote host on Windows platform.
             // On Linux, this situation is handled by handler for HttpRequestException
@@ -198,11 +198,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     bool IClusterMember.IsLeader => context.IsLeader(this);
 
-    public bool IsRemote
-    {
-        get;
-        internal set;
-    }
+    public bool IsRemote => Id != context.LocalMember;
 
     ClusterMemberStatus IClusterMember.Status => IsRemote ? status.Value : ClusterMemberStatus.Available;
 

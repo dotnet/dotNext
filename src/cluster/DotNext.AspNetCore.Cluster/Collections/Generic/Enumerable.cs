@@ -14,7 +14,7 @@ internal struct Enumerable<T, TList> : IEnumerable<T>
         private int index;
         private TList list;
 
-        internal Enumerator(TList list)
+        internal Enumerator(in TList list)
         {
             this.list = list;
             index = InitialIndex;
@@ -31,8 +31,7 @@ internal struct Enumerable<T, TList> : IEnumerable<T>
         public void Dispose() => this = default;
     }
 
-    // not readonly to avoid defensive copying
-    private TList list;
+    private TList list; // not readonly to avoid defensive copies
 
     internal Enumerable(in TList list) => this.list = list;
 
@@ -40,8 +39,8 @@ internal struct Enumerable<T, TList> : IEnumerable<T>
 
     public readonly Enumerator GetEnumerator() => new(list);
 
-    readonly IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        => list.Count == 0 ? Sequence.GetEmptyEnumerator<T>() : GetEnumerator();
+    IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        => list.Count is 0 ? Sequence.GetEmptyEnumerator<T>() : GetEnumerator();
 
-    readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

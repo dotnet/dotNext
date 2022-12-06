@@ -44,7 +44,10 @@ namespace DotNext.Diagnostics
         public static void Conversion()
         {
             var ts = new Timestamp();
-            Equal(ts.Value, ts);
+            Equal(ts.Value, (TimeSpan)ts);
+
+            ts = new(TimeSpan.FromSeconds(1.2D));
+            Equal(TimeSpan.FromSeconds(1.2D), ts.Value);
         }
 
         [Fact]
@@ -84,6 +87,25 @@ namespace DotNext.Diagnostics
             var ts = new Timestamp() + TimeSpan.FromHours(1);
             True(ts.IsFuture);
             False(ts.IsPast);
+        }
+
+        [Fact]
+        public static void AddSubtractZero()
+        {
+            var ts = default(Timestamp) + TimeSpan.Zero;
+            True(ts.IsEmpty);
+
+            ts = default(Timestamp) - TimeSpan.Zero;
+            True(ts.IsEmpty);
+        }
+
+        [Fact]
+        public static void ElapsedMilliseconds()
+        {
+            var ts = new Timestamp();
+            Thread.Sleep(10);
+            var e = ts.ElapsedMilliseconds;
+            True(e >= 10D);
         }
     }
 }

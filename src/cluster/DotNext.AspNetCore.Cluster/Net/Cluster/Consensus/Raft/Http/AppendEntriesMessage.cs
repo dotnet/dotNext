@@ -274,8 +274,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
 
     private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
     {
-        StringSegment boundary;
-
         if (count is 0L || !AspNetMediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
         {
             // jump to empty set of log entries
@@ -285,7 +283,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
             // log entries encoded as efficient binary stream
             return new OctetStreamLogEntriesReader(request.BodyReader, count);
         }
-        else if ((boundary = HeaderUtils.RemoveQuotes(mediaType.Boundary)).Length > 0)
+        else if (HeaderUtils.RemoveQuotes(mediaType.Boundary) is { Length: > 0 } boundary)
         {
             return new MultipartLogEntriesReader(boundary.ToString(), request.Body, count);
         }
@@ -324,7 +322,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
     private sealed class OctetStreamLogEntriesWriter : HttpContent
     {
         private readonly IDataTransferObject configuration;
-        private readonly Enumerable<TEntry, TList> entries;
+        private Enumerable<TEntry, TList> entries; // not readonly to avoid defensive copies
 
         internal OctetStreamLogEntriesWriter(in TList entries, IDataTransferObject configuration)
         {
@@ -386,11 +384,10 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         private const string CrLf = "\r\n";
         private const string DoubleDash = "--";
         private const char Quote = '\"';
-        private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
 
-        private readonly Enumerable<TEntry, TList> entries;
         private readonly string boundary;
         private readonly IDataTransferObject configuration;
+        private Enumerable<TEntry, TList> entries; // not readonly to avoid defensive copies
 
         internal MultipartLogEntriesWriter(in TList entries, IDataTransferObject configuration)
         {
@@ -440,8 +437,8 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context, CancellationToken token)
         {
             const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
-            EncodingContext encodingContext = DefaultHttpEncoding;
-            using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, DefaultHttpEncoding.GetMaxByteCount(maxChars)))
+            var encodingContext = new EncodingContext(Encoding.Latin1, reuseEncoder: true);
+            using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, encodingContext.Encoding.GetMaxByteCount(maxChars)))
             using (var builder = new PooledArrayBufferWriter<char> { Capacity = maxChars })
             {
                 // encode configuration in raw format without boundaries
@@ -475,8 +472,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
                 builder.Write(DoubleDash + CrLf);
                 await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory, token: token).ConfigureAwait(false);
             }
-
-            encodingContext.Reset();
         }
 
         protected override bool TryComputeLength(out long length)

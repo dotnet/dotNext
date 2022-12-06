@@ -3,13 +3,13 @@
   <PropertyGroup>
   <TargetFrameworks>net6.0</TargetFrameworks>
   <RootNamespace>DotNext</RootNamespace>
-  <LangVersion>latest</LangVersion>
+  <LangVersion>preview</LangVersion>
   <Nullable>enable</Nullable>
   <ImplicitUsings>true</ImplicitUsings>
   <IsTrimmable>false</IsTrimmable>
   <Features>nullablePublicOnly</Features>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	<VersionPrefix>4.7.4</VersionPrefix>
+	<VersionPrefix>4.8.0</VersionPrefix>
   <VersionSuffix></VersionSuffix>
 	<Authors>.NET Foundation and Contributors</Authors>
 	<Product>.NEXT Family of Libraries</Product>

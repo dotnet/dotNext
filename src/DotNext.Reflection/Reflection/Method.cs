@@ -289,7 +289,7 @@ public sealed class Method<TSignature> : MethodInfo, IMethod<TSignature>, IEquat
     /// Gets a delegate representing this method.
     /// </summary>
     /// <param name="method">The reflected method.</param>
-    [return: NotNullIfNotNull("method")]
+    [return: NotNullIfNotNull(nameof(method))]
     public static implicit operator TSignature?(Method<TSignature>? method) => method?.Invoker;
 
     /// <inheritdoc/>

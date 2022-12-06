@@ -8,7 +8,7 @@ internal partial class ServerExchange
     {
         var snapshot = new ReceivedLogEntry(ref input, Reader, out var sender, out var senderTerm, out var snapshotIndex);
         var result = await Writer.WriteAsync(input, token).ConfigureAwait(false);
-        task = server.InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token);
+        task = server.InstallSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, token).AsTask();
         if (result.IsCompleted | completed)
         {
             await Writer.CompleteAsync().ConfigureAwait(false);

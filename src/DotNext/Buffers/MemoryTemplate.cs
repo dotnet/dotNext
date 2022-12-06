@@ -76,7 +76,7 @@ public readonly struct MemoryTemplate<T>
     /// </summary>
     /// <param name="template">The template containing placeholders for replacement.</param>
     /// <param name="placeholder">The span of elements representing template placeholder.</param>
-    public MemoryTemplate(ReadOnlyMemory<T> template, ReadOnlySpan<T> placeholder)
+    public MemoryTemplate(ReadOnlyMemory<T> template, scoped ReadOnlySpan<T> placeholder)
     {
         this.template = template;
         if (placeholder.IsEmpty || placeholder.Length > template.Length)
@@ -96,7 +96,7 @@ public readonly struct MemoryTemplate<T>
     /// </summary>
     public ReadOnlyMemory<T> Value => template;
 
-    private static Placeholder? BuildPlaceholdersChain(ReadOnlySpan<T> source, ReadOnlySpan<T> placeholder)
+    private static Placeholder? BuildPlaceholdersChain(scoped ReadOnlySpan<T> source, scoped ReadOnlySpan<T> placeholder)
     {
         Placeholder? head = null, tail = null;
 

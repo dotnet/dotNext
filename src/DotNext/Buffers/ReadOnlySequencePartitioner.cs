@@ -149,7 +149,7 @@ public static class ReadOnlySequencePartitioner
     /// <param name="sequence">The sequence of elements.</param>
     /// <param name="splitOnSegments">
     /// <see langword="true"/> to split the sequence to the number of partitions equals to the number of the segments within the sequence;
-    /// <see langword="false"/> to split the sequence the number of partitions provided explicitly.
+    /// <see langword="false"/> to split the sequence dynamically to balance the workload.
     /// </param>
     /// <returns>The partitioner for the sequence.</returns>
     public static OrderablePartitioner<T> CreatePartitioner<T>(this in ReadOnlySequence<T> sequence, bool splitOnSegments = false)

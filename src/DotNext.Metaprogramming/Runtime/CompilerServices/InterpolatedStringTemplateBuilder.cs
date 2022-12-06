@@ -68,7 +68,7 @@ public struct InterpolatedStringTemplateBuilder
             statements.Add(statement);
         }
 
-        internal void WriteTo(ref int position, ref BufferWriterSlim<char> output)
+        internal void WriteTo(scoped ref int position, scoped ref BufferWriterSlim<char> output)
         {
             if (argumentType is null)
             {

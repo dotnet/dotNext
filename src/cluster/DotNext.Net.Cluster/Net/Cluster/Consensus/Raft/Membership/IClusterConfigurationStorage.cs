@@ -20,7 +20,7 @@ public interface IClusterConfigurationStorage : IDisposable
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    ValueTask LoadConfigurationAsync(CancellationToken token);
+    ValueTask LoadConfigurationAsync(CancellationToken token = default);
 
     /// <summary>
     /// Proposes the configuration.
@@ -79,11 +79,9 @@ public interface IClusterConfigurationStorage<TAddress> : IClusterConfigurationS
     ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default);
 
     /// <summary>
-    /// Polls for change in cluster configuration.
+    /// An event occurred when proposed configuration is applied.
     /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The stream of configuration events.</returns>
-    IAsyncEnumerable<ClusterConfigurationEvent<TAddress>> PollChangesAsync(CancellationToken token = default);
+    event Func<ClusterConfigurationEvent<TAddress>, CancellationToken, ValueTask> ActiveConfigurationChanged;
 
     /// <summary>
     /// Represents active cluster configuration maintained by the node.

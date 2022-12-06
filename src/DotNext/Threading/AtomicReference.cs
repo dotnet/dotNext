@@ -98,7 +98,7 @@ public static class AtomicReference
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [return: NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull(nameof(value))]
     public static T GetAndAccumulate<T>(ref T value, T x, Func<T, T, T> accumulator)
         where T : class?
         => Accumulate<T, DelegatingSupplier<T, T, T>>(ref value, x, accumulator).OldValue;
@@ -116,7 +116,7 @@ public static class AtomicReference
     /// <param name="accumulator">A side-effect-free function of two arguments.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [return: NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull(nameof(value))]
     [CLSCompliant(false)]
     public static unsafe T GetAndAccumulate<T>(ref T value, T x, delegate*<T, T, T> accumulator)
         where T : class?
@@ -158,7 +158,7 @@ public static class AtomicReference
     /// <param name="updater">A side-effect-free function.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [return: NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull(nameof(value))]
     public static T GetAndUpdate<T>(ref T value, Func<T, T> updater)
         where T : class?
         => Update<T, DelegatingSupplier<T, T>>(ref value, updater).OldValue;
@@ -172,7 +172,7 @@ public static class AtomicReference
     /// <param name="updater">A side-effect-free function.</param>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [return: NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull(nameof(value))]
     [CLSCompliant(false)]
     public static unsafe T GetAndUpdate<T>(ref T value, delegate*<T, T> updater)
         where T : class?

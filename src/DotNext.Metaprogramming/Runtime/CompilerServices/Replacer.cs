@@ -15,7 +15,7 @@ internal sealed class Replacer : ExpressionVisitor
     internal void Replace(Expression expected, Expression actual)
         => replacement.Add(expected, actual);
 
-    [return: NotNullIfNotNull("node")]
+    [return: NotNullIfNotNull(nameof(node))]
     public override Expression? Visit(Expression? node)
     {
         if (node is not null && replacement.TryGetValue(node, out var newNode))

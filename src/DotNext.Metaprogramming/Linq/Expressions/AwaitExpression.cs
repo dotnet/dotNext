@@ -42,9 +42,9 @@ public sealed class AwaitExpression : CustomExpression
         }
 
         // expression type must have type with GetAwaiter() method
-        MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), null);
+        MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Type.EmptyTypes, null);
         GetAwaiter = expression.Call(getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetAwaiterMethod(expression.Type)));
-        getAwaiter = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Array.Empty<Type>(), null);
+        getAwaiter = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Type.EmptyTypes, null);
         GetResultMethod = getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetResultMethod(GetAwaiter.Type));
     }
 

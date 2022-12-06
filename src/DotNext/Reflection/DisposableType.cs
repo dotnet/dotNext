@@ -11,7 +11,7 @@ public static class DisposableType
 {
     private const BindingFlags PublicInstanceMethod = BindingFlags.Instance | BindingFlags.Public;
 
-    private static MethodInfo? GetDisposeMethod(Type type, Type disposableType, string disposeMethodName, Type returnType)
+    private static MethodInfo? GetDisposeMethod([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type type, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type disposableType, string disposeMethodName, Type returnType)
     {
         if (disposableType.IsAssignableFrom(type))
             return disposableType.GetMethod(disposeMethodName, Type.EmptyTypes);
@@ -30,8 +30,7 @@ public static class DisposableType
     /// </remarks>
     /// <param name="type">The type to inspect.</param>
     /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
-    public static MethodInfo? GetDisposeMethod(this Type type)
+    public static MethodInfo? GetDisposeMethod([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] this Type type)
         => GetDisposeMethod(type, typeof(IDisposable), nameof(IDisposable.Dispose), typeof(void));
 
     /// <summary>
@@ -39,7 +38,6 @@ public static class DisposableType
     /// </summary>
     /// <param name="type">The type to inspect.</param>
     /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)]
-    public static MethodInfo? GetDisposeAsyncMethod(this Type type)
+    public static MethodInfo? GetDisposeAsyncMethod([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] this Type type)
         => GetDisposeMethod(type, typeof(IAsyncDisposable), nameof(IAsyncDisposable.DisposeAsync), typeof(ValueTask));
 }

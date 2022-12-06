@@ -16,7 +16,7 @@ internal struct SevenBitEncodedIntReader : IBufferReader<int>
 
     readonly int IBufferReader<int>.RemainingBytes => remainingBytes;
 
-    void IBufferReader<int>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
+    void IBufferReader<int>.Append(scoped ReadOnlySpan<byte> block, scoped ref int consumedBytes)
     {
         consumedBytes = 0;
         foreach (var b in block)

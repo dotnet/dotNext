@@ -10,7 +10,7 @@ using StreamConsumer = IO.StreamConsumer;
 
 public partial struct Base64Encoder
 {
-    private void EncodeToUtf8Core<TWriter>(ReadOnlySpan<byte> bytes, ref TWriter writer, bool flush)
+    private void EncodeToUtf8Core<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped ref TWriter writer, bool flush)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var produced = Base64.GetMaxEncodedToUtf8Length(bytes.Length);
@@ -32,7 +32,7 @@ public partial struct Base64Encoder
     }
 
     [SkipLocalsInit]
-    private void CopyAndEncodeToUtf8<TWriter>(ReadOnlySpan<byte> bytes, ref TWriter writer, bool flush)
+    private void CopyAndEncodeToUtf8<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped ref TWriter writer, bool flush)
         where TWriter : notnull, IBufferWriter<byte>
     {
         var newSize = reservedBufferSize + bytes.Length;
@@ -43,7 +43,7 @@ public partial struct Base64Encoder
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void EncodeToUtf8<TWriter>(ReadOnlySpan<byte> bytes, ref TWriter writer, bool flush)
+    private void EncodeToUtf8<TWriter>(scoped ReadOnlySpan<byte> bytes, scoped ref TWriter writer, bool flush)
         where TWriter : notnull, IBufferWriter<byte>
     {
         Debug.Assert(bytes.Length <= MaxInputSize);
@@ -65,7 +65,7 @@ public partial struct Base64Encoder
     /// </param>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public void EncodeToUtf8(ReadOnlySpan<byte> bytes, IBufferWriter<byte> output, bool flush = false)
+    public void EncodeToUtf8(scoped ReadOnlySpan<byte> bytes, IBufferWriter<byte> output, bool flush = false)
     {
         ArgumentNullException.ThrowIfNull(output);
 
@@ -86,7 +86,7 @@ public partial struct Base64Encoder
     /// </param>
     /// <returns>The buffer containing encoded bytes.</returns>
     /// <exception cref="ArgumentException">The length of <paramref name="bytes"/> is greater than <see cref="MaxInputSize"/>.</exception>
-    public MemoryOwner<byte> EncodeToUtf8(ReadOnlySpan<byte> bytes, MemoryAllocator<byte>? allocator = null, bool flush = false)
+    public MemoryOwner<byte> EncodeToUtf8(scoped ReadOnlySpan<byte> bytes, MemoryAllocator<byte>? allocator = null, bool flush = false)
     {
         if (bytes.Length > MaxInputSize)
             throw new ArgumentException(ExceptionMessages.LargeBuffer, nameof(bytes));
@@ -97,7 +97,7 @@ public partial struct Base64Encoder
     }
 
     [SkipLocalsInit]
-    private void EncodeToUtf8Core<TConsumer>(ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
+    private void EncodeToUtf8Core<TConsumer>(scoped ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         Span<byte> buffer = stackalloc byte[EncodingBufferSize];
@@ -132,7 +132,7 @@ public partial struct Base64Encoder
     }
 
     [SkipLocalsInit]
-    private void CopyAndEncodeToUtf8<TConsumer>(ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
+    private void CopyAndEncodeToUtf8<TConsumer>(scoped ReadOnlySpan<byte> bytes, TConsumer output, bool flush)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         var newSize = reservedBufferSize + bytes.Length;
@@ -152,7 +152,7 @@ public partial struct Base64Encoder
     /// <see langword="true"/> to encode the final block and insert padding if necessary;
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
-    public void EncodeToUtf8<TConsumer>(ReadOnlySpan<byte> bytes, TConsumer output, bool flush = false)
+    public void EncodeToUtf8<TConsumer>(scoped ReadOnlySpan<byte> bytes, TConsumer output, bool flush = false)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
         if (HasBufferedData)
@@ -172,7 +172,7 @@ public partial struct Base64Encoder
     /// <see langword="true"/> to encode the final block and insert padding if necessary;
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
-    public void EncodeToUtf8<TArg>(ReadOnlySpan<byte> bytes, ReadOnlySpanAction<byte, TArg> output, TArg arg, bool flush = false)
+    public void EncodeToUtf8<TArg>(scoped ReadOnlySpan<byte> bytes, ReadOnlySpanAction<byte, TArg> output, TArg arg, bool flush = false)
         => EncodeToUtf8(bytes, new DelegatingReadOnlySpanConsumer<byte, TArg>(output, arg), flush);
 
     /// <summary>
@@ -187,7 +187,7 @@ public partial struct Base64Encoder
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
     [CLSCompliant(false)]
-    public unsafe void EncodeToUtf8<TArg>(ReadOnlySpan<byte> bytes, delegate*<ReadOnlySpan<byte>, TArg, void> output, TArg arg, bool flush = false)
+    public unsafe void EncodeToUtf8<TArg>(scoped ReadOnlySpan<byte> bytes, delegate*<ReadOnlySpan<byte>, TArg, void> output, TArg arg, bool flush = false)
         => EncodeToUtf8(bytes, new ReadOnlySpanConsumer<byte, TArg>(output, arg), flush);
 
     /// <summary>
@@ -199,7 +199,7 @@ public partial struct Base64Encoder
     /// <see langword="true"/> to encode the final block and insert padding if necessary;
     /// <see langword="false"/> to encode a fragment without padding.
     /// </param>
-    public void EncodeToUtf8(ReadOnlySpan<byte> bytes, Stream output, bool flush = false)
+    public void EncodeToUtf8(scoped ReadOnlySpan<byte> bytes, Stream output, bool flush = false)
         => EncodeToUtf8<StreamConsumer>(bytes, output, flush);
 
     /// <summary>
@@ -236,7 +236,7 @@ public partial struct Base64Encoder
     /// </summary>
     /// <param name="output">The output buffer of size 4.</param>
     /// <returns>The number of written bytes.</returns>
-    public int Flush(Span<byte> output)
+    public int Flush(scoped Span<byte> output)
     {
         int bytesWritten;
 

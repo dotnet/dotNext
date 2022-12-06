@@ -88,7 +88,7 @@ public struct BufferWriterInterpolatedStringHandler
 
         return charsWritten;
 
-        static int Write(IBufferWriter<char> buffer, ReadOnlySpan<char> chars)
+        static int Write(IBufferWriter<char> buffer, scoped ReadOnlySpan<char> chars)
         {
             buffer.Write(chars);
             return chars.Length;
@@ -108,13 +108,13 @@ public struct BufferWriterInterpolatedStringHandler
     /// Writes the specified character span to the handler.
     /// </summary>
     /// <param name="value">The span to write.</param>
-    public void AppendFormatted(ReadOnlySpan<char> value)
+    public void AppendFormatted(scoped ReadOnlySpan<char> value)
     {
         buffer.Write(value);
         count += value.Length;
     }
 
-    private void AppendFormatted(ReadOnlySpan<char> value, int alignment, bool leftAlign)
+    private void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment, bool leftAlign)
     {
         Debug.Assert(alignment >= 0);
 
@@ -149,7 +149,7 @@ public struct BufferWriterInterpolatedStringHandler
     /// Minimum number of characters that should be written for this value. If the value is negative,
     /// it indicates left-aligned and the required minimum is the absolute value.
     /// </param>
-    public void AppendFormatted(ReadOnlySpan<char> value, int alignment)
+    public void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment)
     {
         var leftAlign = false;
 

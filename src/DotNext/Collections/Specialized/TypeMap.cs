@@ -104,23 +104,23 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     public void Set<TKey>(TValue value)
         => Set(ITypeMap<TValue>.GetIndex<TKey>(), value);
 
-    private Optional<TValue> Replace(int index, TValue value)
+    private bool Set(int index, TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
     {
         EnsureCapacity(index);
         ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-        Optional<TValue> result;
 
-        if (holder.HasValue)
+        bool result;
+        if (result = holder.HasValue)
         {
-            result = holder.Value;
+            oldValue = holder.Value;
         }
         else
         {
-            result = Optional<TValue>.None;
+            oldValue = default;
             holder.HasValue = true;
         }
 
-        holder.Value = value;
+        holder.Value = newValue;
         return result;
     }
 
@@ -128,10 +128,21 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// Replaces the existing value with a new value.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="value">A new value.</param>
+    /// <param name="newValue">A new value.</param>
+    /// <param name="oldValue">The replaced value.</param>
+    /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
+    public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
+        => Set(ITypeMap<TValue>.GetIndex<TKey>(), newValue, out oldValue);
+
+    /// <summary>
+    /// Replaces the existing value with a new value.
+    /// </summary>
+    /// <typeparam name="TKey">The type acting as a key.</typeparam>
+    /// <param name="newValue">A new value.</param>
     /// <returns>The replaced value.</returns>
-    public Optional<TValue> Replace<TKey>(TValue value)
-        => Replace(ITypeMap<TValue>.GetIndex<TKey>(), value);
+    [Obsolete("Use Set overload instead")]
+    public Optional<TValue> Replace<TKey>(TValue newValue)
+        => Set(ITypeMap<TValue>.GetIndex<TKey>(), newValue, out var oldValue) ? Optional.Some(oldValue!) : Optional.None<TValue>();
 
     /// <summary>
     /// Determines whether the map has association between the value and the specified type.

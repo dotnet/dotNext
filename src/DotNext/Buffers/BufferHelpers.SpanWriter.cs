@@ -17,7 +17,7 @@ public static partial class BufferHelpers
     /// <see langword="true"/> if all bytes are copied successfully;
     /// <see langword="false"/> if remaining space in the underlying span is not enough to place all <paramref name="value"/> bytes.
     /// </returns>
-    public static bool TryWrite<T>(this ref SpanWriter<byte> writer, in T value)
+    public static bool TryWrite<T>(this ref SpanWriter<byte> writer, scoped in T value)
         where T : unmanaged
         => writer.TryWrite(Span.AsReadOnlyBytes(in value));
 
@@ -29,7 +29,7 @@ public static partial class BufferHelpers
     /// <typeparam name="T">The blittable type.</typeparam>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place all <paramref name="value"/> bytes.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void Write<T>(this ref SpanWriter<byte> writer, in T value)
+    public static unsafe void Write<T>(this ref SpanWriter<byte> writer, scoped in T value)
         where T : unmanaged
         => Unsafe.WriteUnaligned<T>(ref MemoryMarshal.GetReference(writer.Slide(sizeof(T))), value);
 
@@ -155,7 +155,7 @@ public static partial class BufferHelpers
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="writer"/> is not large enough to place the characters.</exception>
-    public static void Write<T>(this ref SpanWriter<char> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    public static void Write<T>(this ref SpanWriter<char> writer, T value, scoped ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, ISpanFormattable
     {
         if (!value.TryFormat(writer.RemainingSpan, out var writtenCount, format, provider))

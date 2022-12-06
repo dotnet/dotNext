@@ -90,7 +90,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// </summary>
     /// <param name="endPoint">The endpoint.</param>
     /// <returns>A new instance of <see cref="UriBuilder"/>.</returns>
-    [return: NotNullIfNotNull("endPoint")]
+    [return: NotNullIfNotNull(nameof(endPoint))]
     public static explicit operator UriBuilder?(HttpEndPoint? endPoint) => endPoint?.CreateUriBuilder();
 
     /// <summary>

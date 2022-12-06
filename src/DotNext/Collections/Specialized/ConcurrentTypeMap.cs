@@ -277,9 +277,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool AddOrUpdate<TKey>(TValue value)
         => AddOrUpdate(ITypeMap<TValue>.GetIndex<TKey>(), value);
 
-    private Optional<TValue> Replace(int index, TValue value)
+    private bool Set(int index, TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
     {
-        for (Optional<TValue> result; ;)
+        for (bool result; ;)
         {
             var entries = this.entries;
 
@@ -291,11 +291,11 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
 
-            result = entry.AcquireLock() is EmptyValueState
-                ? Optional<TValue>.None
-                : entry.Value;
+            oldValue = (result = entry.AcquireLock() is HasValueState)
+                ? entry.Value
+                : default;
 
-            entry.Value = value;
+            entry.Value = newValue;
             entry.ReleaseLock(HasValueState);
 
             return result;
@@ -306,10 +306,21 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// Replaces the existing value with a new value.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="value">A new value.</param>
+    /// <param name="newValue">A new value.</param>
+    /// <param name="oldValue">The replaced value.</param>
+    /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
+    public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
+        => Set(ITypeMap<TValue>.GetIndex<TKey>(), newValue, out oldValue);
+
+    /// <summary>
+    /// Replaces the existing value with a new value.
+    /// </summary>
+    /// <typeparam name="TKey">The type acting as a key.</typeparam>
+    /// <param name="newValue">A new value.</param>
     /// <returns>The replaced value.</returns>
-    public Optional<TValue> Replace<TKey>(TValue value)
-        => Replace(ITypeMap<TValue>.GetIndex<TKey>(), value);
+    [Obsolete("Use Set overload instead")]
+    public Optional<TValue> Replace<TKey>(TValue newValue)
+        => Set(ITypeMap<TValue>.GetIndex<TKey>(), newValue, out var oldValue) ? Optional.Some(oldValue!) : Optional.None<TValue>();
 
     private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {

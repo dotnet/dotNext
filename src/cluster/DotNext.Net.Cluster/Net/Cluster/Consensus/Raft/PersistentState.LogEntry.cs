@@ -295,7 +295,7 @@ public partial class PersistentState
     /// <param name="options">Serialization options.</param>
     /// <returns>The log entry representing JSON-serializable content.</returns>
     /// <seealso cref="LogEntry.DeserializeFromJsonAsync(Func{string, Type}?, JsonSerializerOptions?, CancellationToken)"/>
-    public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
+    public JsonLogEntry<T> CreateJsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
         => new(Term, content, typeId, options);
 
     /// <summary>
@@ -311,6 +311,7 @@ public partial class PersistentState
     /// <returns>The log entry representing JSON-serializable content.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="typeId"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
     /// <seealso cref="LogEntry.DeserializeFromJsonAsync(Func{string, Type}, JsonSerializerContext, CancellationToken)"/>
+    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2091", Justification = "Type information is supplied using JsonTypeInfo without the need of Reflection")]
     public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string typeId, JsonTypeInfo<T> typeInfo)
         => new(Term, content, typeId ?? throw new ArgumentNullException(nameof(typeId)), typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
 }

@@ -5,7 +5,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Threading;
 
-internal sealed class FollowerState : RaftState
+internal sealed class FollowerState<TMember> : RaftState<TMember>
+    where TMember : class, IRaftClusterMember
 {
     private readonly AsyncAutoResetEvent refreshEvent;
     private readonly AsyncManualResetEvent suppressionEvent;
@@ -14,7 +15,7 @@ internal sealed class FollowerState : RaftState
     internal IFollowerStateMetrics? Metrics;
     private volatile bool timedOut;
 
-    internal FollowerState(IRaftStateMachine stateMachine)
+    internal FollowerState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
         refreshEvent = new(initialState: false);
@@ -73,15 +74,6 @@ internal sealed class FollowerState : RaftState
         Metrics?.ReportHeartbeat();
     }
 
-    private void Cleanup()
-    {
-        refreshEvent.Dispose();
-        suppressionEvent.Dispose();
-        trackerCancellation.Dispose();
-        tracker = null;
-        Metrics = null;
-    }
-
     protected override async ValueTask DisposeAsyncCore()
     {
         try
@@ -95,7 +87,7 @@ internal sealed class FollowerState : RaftState
         }
         finally
         {
-            Cleanup();
+            Dispose(disposing: true);
         }
     }
 
@@ -103,7 +95,11 @@ internal sealed class FollowerState : RaftState
     {
         if (disposing)
         {
-            Cleanup();
+            refreshEvent.Dispose();
+            suppressionEvent.Dispose();
+            trackerCancellation.Dispose();
+            tracker = null;
+            Metrics = null;
         }
 
         base.Dispose(disposing);
@@ -112,9 +108,9 @@ internal sealed class FollowerState : RaftState
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct TransitionSuppressionScope : IDisposable
     {
-        private readonly FollowerState? state;
+        private readonly FollowerState<TMember>? state;
 
-        internal TransitionSuppressionScope(FollowerState? state)
+        internal TransitionSuppressionScope(FollowerState<TMember>? state)
         {
             state?.SuspendTracking();
             this.state = state;

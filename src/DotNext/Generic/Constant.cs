@@ -54,6 +54,6 @@ public abstract class Constant<T> : ISupplier<T>
     /// Extracts constant value.
     /// </summary>
     /// <param name="const">The constant value holder.</param>
-    [return: NotNullIfNotNull("const")]
+    [return: NotNullIfNotNull(nameof(@const))]
     public static implicit operator T?(Constant<T>? @const) => @const is null ? default : @const.Value;
 }

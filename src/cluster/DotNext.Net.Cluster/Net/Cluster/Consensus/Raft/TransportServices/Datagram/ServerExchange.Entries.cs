@@ -129,7 +129,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
         entriesExchangeCoordinator.Signal(state = State.AppendEntriesReceived);
         EntriesExchange.ParseAnnouncement(announcement, out var sender, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount, out var configState);
 
-        task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState is { ApplyConfig: true }, token);
+        task = server.AppendEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, configState?.Fingerprint, configState is { ApplyConfig: true }, token).AsTask();
     }
 
     private async ValueTask<bool> BeginReceiveEntry(ReadOnlyMemory<byte> prologue, bool completed, CancellationToken token)

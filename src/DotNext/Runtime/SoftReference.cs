@@ -30,8 +30,6 @@ public sealed class SoftReference<T> : IOptionMonad<T>
             this.parent = parent;
         }
 
-        void IGCCallback.StopTracking() => GC.SuppressFinalize(this);
-
         ~Tracker()
         {
             // Thread safety: preserve order of fields
@@ -171,7 +169,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     bool IOptionMonad<T>.HasValue => Target is not null;
 
     /// <inheritdoc />
-    [return: NotNullIfNotNull("defaultValue")]
+    [return: NotNullIfNotNull(nameof(defaultValue))]
     T? IOptionMonad<T>.Or(T? defaultValue) => Target ?? defaultValue;
 
     /// <inheritdoc />

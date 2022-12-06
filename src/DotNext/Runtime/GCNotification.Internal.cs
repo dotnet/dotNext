@@ -17,8 +17,6 @@ public partial class GCNotification
             this.filter = filter;
         }
 
-        void IGCCallback.StopTracking() => GC.SuppressFinalize(this);
-
         ~Tracker()
         {
             var memoryInfo = GC.GetGCMemoryInfo();
@@ -252,8 +250,6 @@ public partial class GCNotification
                     : new ExecutionContextAndTaskSchedulerBoundCallback<T>(callback, state, executionContext, TaskScheduler.Current);
             }
         }
-
-        void IGCCallback.StopTracking() => GC.SuppressFinalize(this);
 
         ~Tracker()
         {

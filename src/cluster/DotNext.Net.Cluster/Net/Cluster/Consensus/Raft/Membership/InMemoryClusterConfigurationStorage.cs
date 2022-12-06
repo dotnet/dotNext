@@ -74,7 +74,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     /// </summary>
     /// <param name="allocator">The memory allocator.</param>
     protected InMemoryClusterConfigurationStorage(MemoryAllocator<byte>? allocator = null)
-        : base(10, allocator)
+        : base(allocator)
     {
     }
 
@@ -92,13 +92,8 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     /// </summary>
     public sealed override IClusterConfiguration? ProposedConfiguration => proposed;
 
-    /// <summary>
-    /// Proposes the configuration.
-    /// </summary>
-    /// <param name="configuration">The proposed configuration.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    public sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
+    /// <inheritdoc/>
+    protected sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
     {
         var config = await configuration.ToMemoryAsync(allocator, token).ConfigureAwait(false);
 
@@ -109,16 +104,17 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         var builder = proposedCache.ToBuilder();
         Decode(builder, config.Memory);
         proposedCache = builder.ToImmutable();
+        Interlocked.MemoryBarrierProcessWide();
     }
 
     /// <inheritdoc />
-    public sealed override ValueTask ApplyAsync(CancellationToken token)
+    protected sealed override ValueTask ApplyAsync(CancellationToken token)
     {
         return proposed is null ? ValueTask.CompletedTask : ApplyProposedAsync();
 
         async ValueTask ApplyProposedAsync()
         {
-            await CompareAsync(activeCache, proposedCache).ConfigureAwait(false);
+            await CompareAsync(activeCache, proposedCache, token).ConfigureAwait(false);
 
             active?.Dispose();
             active = proposed;
@@ -127,6 +123,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
             proposed = null;
             proposedCache = proposedCache.Clear();
 
+            Interlocked.MemoryBarrierProcessWide();
             OnActivated();
         }
     }
@@ -170,13 +167,14 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         proposedCache = builder.ToImmutable();
 
         proposed = new(GenerateFingerprint(), Encode(builder));
+        Interlocked.MemoryBarrierProcessWide();
         builder.Clear();
 
         return true;
     }
 
     /// <inheritdoc />
-    public sealed override ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
+    protected sealed override ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
     {
         ValueTask<bool> result;
         if (token.IsCancellationRequested)
@@ -217,13 +215,14 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         proposedCache = builder.ToImmutable();
 
         proposed = new(GenerateFingerprint(), Encode(builder));
+        Interlocked.MemoryBarrierProcessWide();
         builder.Clear();
 
         return true;
     }
 
     /// <inheritdoc />
-    public sealed override ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
+    protected sealed override ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
     {
         ValueTask<bool> result;
         if (token.IsCancellationRequested)
@@ -252,7 +251,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     public ConfigurationBuilder CreateActiveConfigurationBuilder() => new(this);
 
     /// <inheritdoc />
-    public sealed override ValueTask LoadConfigurationAsync(CancellationToken token = default)
+    protected sealed override ValueTask LoadConfigurationAsync(CancellationToken token = default)
         => ValueTask.CompletedTask;
 
     /// <inheritdoc />

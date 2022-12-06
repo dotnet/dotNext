@@ -22,6 +22,10 @@ public partial class SparseBufferWriter<T>
             private set;
         }
 
+        internal SequencePosition StartOfNextChunk => new(Next, 0);
+
+        internal SequencePosition EndOfChunk => new(this, WrittenMemory.Length);
+
         internal abstract int Write(ReadOnlySpan<T> input);
 
         protected override void Dispose(bool disposing)

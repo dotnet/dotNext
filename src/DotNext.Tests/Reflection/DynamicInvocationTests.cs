@@ -141,7 +141,7 @@ namespace DotNext.Reflection
         [Fact]
         public static unsafe void OperatorDynamicInvoke()
         {
-            var method = typeof(IntPtr).GetMethod(nameof(IntPtr.ToPointer), Array.Empty<Type>()).Unreflect();
+            var method = typeof(IntPtr).GetMethod(nameof(IntPtr.ToPointer), Type.EmptyTypes).Unreflect();
             Equal(new IntPtr(42), new IntPtr(Pointer.Unbox(method.Invoke(new IntPtr(42)))));
 
             method = typeof(IntPtr).GetMethod("op_Explicit", new[] { typeof(void*) }).Unreflect();
