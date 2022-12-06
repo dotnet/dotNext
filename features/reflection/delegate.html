@@ -80,7 +80,7 @@
 
 var sizeOf = new Func&lt;ICollection, int&gt;(collection =&gt; collection.Count);
 </code></pre>
-<p>This approach generates unecessary hidden statis method which is used to create instance of <code>Predicate</code> delegate. <code>CreateOpenDelegate</code> allows to create open delegate without usage of non-intuitive method <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">Delegate.CreateDelegate</a>.</p>
+<p>This approach generates unecessary hidden static method which is used to create instance of <code>Predicate</code> delegate. <code>CreateOpenDelegate</code> allows to create open delegate without usage of non-intuitive method <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">Delegate.CreateDelegate</a>.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System.Collections;
 
