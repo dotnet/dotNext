@@ -68,8 +68,8 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="open-and-closed-delegates">Open and Closed Delegates</h1>
 
-<p>Common Language Runtime supports <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">open and closed delegates</a> but there is no native support of them at syntax level in C#. Java supports <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method references</a> to do that. C# syntactically supports closed delegate based created from instance method or open delegate created from static method.</p>
-<p>Additionally, there is no way to create a delegate instance from property getter, index property or overloaded implicit/explicit type cast operator. <a class="xref" href="../../api/DotNext.DelegateHelpers.html">DelegateHelpers</a> class offers two methods to provide necessary syntactic sugar:</p>
+<p>Common Language Runtime supports <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">open and closed delegates</a> but there is no native support of them at the syntax level in C#. Java supports <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method references</a> to do that. C# syntactically supports closed delegate based created from instance method or open delegate created from static method.</p>
+<p>Additionally, there is no way to create a delegate instance for a property getter, indexer or overloaded implicit/explicit type cast operator. <a class="xref" href="../../api/DotNext.DelegateHelpers.html">DelegateHelpers</a> class offers two methods to provide necessary syntactic sugar:</p>
 <ul>
 <li><code>CreateOpenDelegate</code> to create open delegate based on instance method, property, indexer, or overloaded operator</li>
 <li><code>CreateClosedDelegateFactory</code> to create closed delegate based on static method, indexer, or overloaded operator</li>
@@ -80,7 +80,7 @@
 
 var sizeOf = new Func&lt;ICollection, int&gt;(collection =&gt; collection.Count);
 </code></pre>
-<p>This approach generates unecessary hidden static method which is used to create instance of <code>Predicate</code> delegate. <code>CreateOpenDelegate</code> allows to create open delegate without usage of non-intuitive method <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">Delegate.CreateDelegate</a>.</p>
+<p>This approach generates unecessary hidden static method which is used to create instance of <code>Predicate</code> delegate. <code>CreateOpenDelegate</code> allows to create open delegate without counter-intuitive usage of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.createdelegate#System_Delegate_CreateDelegate_System_Type_System_Object_System_String_System_Boolean_">Delegate.CreateDelegate</a>.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System.Collections;
 
@@ -89,16 +89,16 @@ var sizeOf = DelegateHelpers.CreateOpenDelegate&lt;Func&lt;ICollection, int&gt;&
 <p><code>sizeOf</code> delegate instance representing <code>get_Count</code> getter method directly instead of wrapping it into static method.</p>
 <div class="WARNING">
 <h5>Warning</h5>
-<p><code>CreateOpenDelegate</code> method utilizes Expression Trees feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of <code>CreateDelegate</code>. That's why it is recommended to create such delegates statically and save them into <strong>static readonly</strong> fields. However, <code>CreateOpenDelegate</code> doesn't use dynamic code compilation feature.</p>
+<p><code>CreateOpenDelegate</code> method utilizes Expression Trees feature of C# programming language. There is no free lunch and you paying for such a convenience by performance when instantiating delegate instead of <code>CreateDelegate</code>. That's why it is recommended to create such delegates statically and save them into <strong>static readonly</strong> fields. However, <code>CreateOpenDelegate</code> doesn't use dynamic code compilation feature.</p>
 </div>
 <p>This method is suitable for capturing overloaded operator.</p>
 <pre><code class="lang-csharp">var decimalToInt = DelegateHelpers.CreateOpenDelegate&lt;Func&lt;int, decimal&gt;&gt;(i =&gt; (decimal) i);
 
 decimal d = decimalToInt(42);
 </code></pre>
-<p>Built-in operators cannot be captured as delegates and method return <strong>null</strong>.</p>
+<p>Built-in operators cannot be captured as delegates and method returns <strong>null</strong>.</p>
 <h1 id="closed-delegates">Closed Delegates</h1>
-<p>Closed delegates allows to pass the first argument into static method implicitly (through <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> property). The only way to create closed delegate in C# is to use extension method or closure:</p>
+<p>Closed delegates allow to pass first argument to the underlying method implicitly (through <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> property). The only way to create closed delegate in C# is to use extension method or closure:</p>
 <pre><code class="lang-csharp">var str = &quot;Hello, world!&quot;;
 var isEmpty = new Func&lt;bool&gt;(() =&gt; string.IsNullOrEmpty(str));
 </code></pre>
@@ -109,7 +109,7 @@ var isEmpty = new Func&lt;bool&gt;(() =&gt; string.IsNullOrEmpty(str));
 var str = &quot;Hello, world&quot;;
 Func&lt;bool&gt; isEmpty = new Func&lt;string, bool&gt;(string.IsNullOrEmpty).Method.CreateDelegate&lt;Func&lt;bool&gt;&gt;(str);
 </code></pre>
-<p>It is better, but we loosing readability of code. The same behavior can be achieved using <code>CreateClosedDelegateFactory</code>:</p>
+<p>Now it looks better, but we loosing readability of code. The same behavior can be achieved using <code>CreateClosedDelegateFactory</code>:</p>
 <pre><code class="lang-csharp">using DotNext;
 
 var str1 = &quot;&quot;;
@@ -119,7 +119,7 @@ var factory = DelegateHelpers.CreateClosedDelegateFactory&lt;Func&lt;bool&gt;&gt
 Func&lt;bool&gt; isEmpty1 = factory(str1);
 Func&lt;bool&gt; isEmpty2 = factory(str2);
 </code></pre>
-<p>The factory returned by method <code>CreateClosedDelegateFactory</code> can be used to create closed delegate instance through passing the first implicit argument into it. This approach doesn't produce anonymous type. Instead of this, captured implicit argument stored in <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> property and passed into the method automatically by CLR.</p>
+<p>The factory returned by method <code>CreateClosedDelegateFactory</code> can be used to create closed delegate instances through passing first implicit argument to it. This approach doesn't produce anonymous type. Instead, captured argument is stored in <a href="https://docs.microsoft.com/en-us/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> property and passed to the method automatically by CLR.</p>
 </article>
           </div>
           
