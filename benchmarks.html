@@ -1322,7 +1322,7 @@ dotnet run -c Bench
 </tbody>
 </table>
 <h1 id="taskcompletionpipe">TaskCompletionPipe</h1>
-<p><a href="https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Threading/Tasks/ChannelVersusPipeBenchmark.cs">This benchmark</a> demonstrates efficiency of <a href="features/threading/taskpipe.html">Task Completion Pipe</a> versus <a href="https://learn.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1">async channels</a> from .NET. The efficiency is achieved because the pipe sorts the submitted task in the order of their completion in time. The fastest result is available immediately for the consumer, while the channel needs to wait for completion of the task and only then add it to the queue.</p>
+<p><a href="https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Threading/Tasks/ChannelVersusPipeBenchmark.cs">This benchmark</a> demonstrates efficiency of <a href="features/threading/taskpipe.html">Task Completion Pipe</a> versus <a href="https://learn.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1">async channels</a> from .NET. Pipe sorts the submitted tasks in order of their completion in time. The fastest result is available immediately for the consumer, while the channel needs to wait for completion of the task and only then add it to the queue.</p>
 <table>
 <thead>
 <tr>
