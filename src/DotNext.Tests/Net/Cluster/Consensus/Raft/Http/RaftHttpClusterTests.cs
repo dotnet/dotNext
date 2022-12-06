@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -42,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 )
                 .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-                .ConfigureLogging(static builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+                .ConfigureLogging(builder => builder.AddTestDebugLogger(port.ToString()).SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()
                 .Build();
         }
@@ -353,21 +354,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"metadata:nodeName", "node3"}
             };
 
-            var listener = new LeaderTracker();
-            Func<IRaftClusterMember, IFailureDetector> failureDetectorFactory = static m => new PhiAccrualFailureDetector() { Threshold = 8D };
-            using var host1 = CreateHost<Startup>(3262, config1, listener, failureDetectorFactory);
+            using var host1 = CreateHost<Startup>(3262, config1, failureDetectorFactory: CreateFailureDetector);
             await host1.StartAsync();
             True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
 
             // two nodes in frozen state
-            using var host2 = CreateHost<Startup>(3263, config2, failureDetectorFactory: failureDetectorFactory);
+            using var host2 = CreateHost<Startup>(3263, config2, failureDetectorFactory: CreateFailureDetector);
             await host2.StartAsync();
 
-            using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: failureDetectorFactory);
+            using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: CreateFailureDetector);
             await host3.StartAsync();
 
-            await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
+            var memberGoneTask = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            GetLocalClusterView(host1).PeerGone += (mesh, args) =>
+            {
+                if (args.PeerAddress is UriEndPoint { Uri: { Port: 3264 } })
+                    memberGoneTask.TrySetResult();
+            };
 
             // add two nodes to the cluster
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -377,12 +381,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
             False(GetLocalClusterView(host1).LeadershipToken.IsCancellationRequested);
-            var memberGoneTask = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-            GetLocalClusterView(host1).PeerGone += (mesh, args) =>
-            {
-                if (args.PeerAddress is UriEndPoint { Uri: { Port: 3264 } })
-                    memberGoneTask.TrySetResult();
-            };
 
             // stop member and wait on its removal
             await host3.StopAsync();
@@ -390,6 +388,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             await host2.StopAsync();
             await host1.StopAsync();
+
+            static IFailureDetector CreateFailureDetector(IRaftClusterMember member)
+                => new PhiAccrualFailureDetector() { Threshold = 7D };
         }
 
         [Fact]
@@ -566,6 +567,86 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [Fact]
+        public async Task ClusterRecovery()
+        {
+            var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            var config1 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+                {"metadata:nodeName", "node1"},
+                // {"requestTimeout", "00:00:01"},
+                // {"rpcTimeout", "00:00:01"},
+                // {"lowerElectionTimeout", "6000" },
+                // {"upperElectionTimeout", "9000" },
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node1")}
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"partitioning", "false" },
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node2"},
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node2")}
+            };
+            var config3 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3264"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node3"},
+                {Startup.PersistentConfigurationPath, Path.Combine(configRoot, "node3")}
+            };
+
+            // two nodes in frozen state
+            using var host2 = CreateHost<Startup>(3263, config2);
+            using var host3 = CreateHost<Startup>(3264, config3);
+
+            IClusterMember leader2, leader3;
+            EndPoint oldLeader;
+            using (var host1 = CreateHost<Startup>(3262, config1))
+            {
+                await host1.StartAsync();
+                True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+                await host2.StartAsync();
+                await host3.StartAsync();
+
+                Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
+
+                // add two nodes to the cluster
+                await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress);
+                await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+                await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress);
+                await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
+
+                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
+                leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+                Equal(leader1.EndPoint, leader2.EndPoint, EndPointFormatter.UriEndPointComparer);
+                Equal(leader1.EndPoint, leader3.EndPoint, EndPointFormatter.UriEndPointComparer);
+                False(GetLocalClusterView(host1).LeadershipToken.IsCancellationRequested);
+                oldLeader = leader1.EndPoint;
+
+                // stop the leader
+                await host1.StopAsync();
+            }
+
+            // wait for new election
+            do
+            {
+                leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+            }
+            while (leader2 is null || leader3 is null || EndPointFormatter.UriEndPointComparer.Equals(oldLeader, leader2.EndPoint) || EndPointFormatter.Equals(oldLeader, leader3.EndPoint));
+
+            await host2.StopAsync();
+            await host3.StopAsync();
+        }
+
+        [Fact]
         public static async Task DependencyInjection()
         {
             var config = new Dictionary<string, string>
@@ -595,12 +676,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         [Fact]
         public static async Task SelfHost()
         {
+            const string memberId = "DE9F69D738B6577C6E357C8E43C367D825A94FC78F8E11E136836404";
             var configuration = new Dictionary<string, string>
             {
                 {"metadata:nodeName", "TestNode"},
                 {"partitioning", "false"},
                 {"publicEndPoint", "http://localhost:3262"},
                 {"coldStart", "true"},
+                {"id", memberId},
             };
 
             using var host = new HostBuilder()
@@ -616,6 +699,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using (var clusterHost = new RaftClusterHttpHost(host.Services, "category"))
             {
                 Equal(new Uri(configuration["publicEndPoint"]), clusterHost.Cluster.LocalMemberAddress);
+                Equal(memberId, clusterHost.Cluster.LocalMemberId.ToString());
                 IsType<ConsensusOnlyState>(clusterHost.Cluster.AuditTrail);
             }
             await host.StopAsync();

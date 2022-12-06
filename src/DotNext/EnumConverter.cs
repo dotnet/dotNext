@@ -252,15 +252,15 @@ public static class EnumConverter
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static T ToEnumUnchecked<T>(this ulong value)
-        where T : struct, Enum => EnumTypeCode<T>.Value switch
-    {
-        TypeCode.Empty => default(T),
-        TypeCode.Byte or TypeCode.SByte => ReinterpretCast<byte, T>(unchecked((byte)value)),
-        TypeCode.Char or TypeCode.Int16 or TypeCode.UInt16 => ReinterpretCast<ushort, T>(unchecked((ushort)value)),
-        TypeCode.Int32 or TypeCode.UInt32 or TypeCode.Single => ReinterpretCast<uint, T>(unchecked((uint)value)),
-        TypeCode.Int64 or TypeCode.UInt64 or TypeCode.Double => ReinterpretCast<ulong, T>(value),
-        _ => value.ChangeType<ulong, T>(),
-    };
+        where T : struct, Enum
+        => Unsafe.SizeOf<T>() switch
+        {
+            sizeof(byte) => ReinterpretCast<byte, T>(unchecked((byte)value)),
+            sizeof(ushort) => ReinterpretCast<ushort, T>(unchecked((ushort)value)),
+            sizeof(uint) => ReinterpretCast<uint, T>(unchecked((uint)value)),
+            sizeof(ulong) => ReinterpretCast<ulong, T>(value),
+            _ => value.ChangeType<ulong, T>(),
+        };
 
     /// <summary>
     /// Converts enum value into primitive type <see cref="long"/>.
@@ -291,16 +291,15 @@ public static class EnumConverter
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ulong ToUInt64Unchecked<T>(this T value)
-        where T : struct, Enum => EnumTypeCode<T>.Value switch
-    {
-        TypeCode.Empty => 0UL,
-        TypeCode.Boolean => ReinterpretCast<T, bool>(value).ToByte(),
-        TypeCode.Byte or TypeCode.SByte => ReinterpretCast<T, byte>(value),
-        TypeCode.Int16 or TypeCode.UInt16 or TypeCode.Char => ReinterpretCast<T, ushort>(value),
-        TypeCode.Int32 or TypeCode.UInt32 or TypeCode.Single => ReinterpretCast<T, uint>(value),
-        TypeCode.Int64 or TypeCode.UInt64 or TypeCode.Double => ReinterpretCast<T, ulong>(value),
-        _ => throw new NotSupportedException(),
-    };
+        where T : struct, Enum
+        => Unsafe.SizeOf<T>() switch
+        {
+            sizeof(byte) => ReinterpretCast<T, byte>(value),
+            sizeof(ushort) => ReinterpretCast<T, ushort>(value),
+            sizeof(uint) => ReinterpretCast<T, uint>(value),
+            sizeof(ulong) => ReinterpretCast<T, ulong>(value),
+            _ => throw new InvalidCastException(),
+        };
 
     /// <summary>
     /// Converts enum value into primitive type <see cref="int"/>.

@@ -26,7 +26,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <summary>
     /// Establishes metrics collector.
     /// </summary>
-    MetricsCollector Metrics { set; }
+    MetricsCollector Metrics { init; }
 
     /// <summary>
     /// Defines persistent state for the Raft-based cluster.

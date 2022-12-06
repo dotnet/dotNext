@@ -455,6 +455,54 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             Equal(42L, await client.As<IRaftClusterMember>().SynchronizeAsync(long.MaxValue, CancellationToken.None));
         }
 
+        private protected async Task ClusterRecoveryCore(Func<int, bool, RaftCluster> clusterFactory)
+        {
+            await using var host2 = clusterFactory(3271, false);
+            await using var host3 = clusterFactory(3272, false);
+
+            IClusterMember leader2, leader3;
+            EndPoint oldLeader;
+            await using (var host1 = clusterFactory(3270, true))
+            {
+                await host1.StartAsync();
+                True(host1.Readiness.IsCompletedSuccessfully);
+
+                await host2.StartAsync();
+                await host3.StartAsync();
+
+                Equal(host1.LocalMemberAddress, (await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
+
+                // add two nodes to the cluster
+                await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress);
+                await host2.Readiness.WaitAsync(DefaultTimeout);
+
+                await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress);
+                await host3.Readiness.WaitAsync(DefaultTimeout);
+
+                var leader1 = await host1.WaitForLeaderAsync(DefaultTimeout);
+                leader2 = await host2.WaitForLeaderAsync(DefaultTimeout);
+                leader3 = await host3.WaitForLeaderAsync(DefaultTimeout);
+                Equal(leader1.EndPoint, leader2.EndPoint);
+                Equal(leader1.EndPoint, leader3.EndPoint);
+                False(host1.LeadershipToken.IsCancellationRequested);
+                oldLeader = leader1.EndPoint;
+
+                // stop the leader
+                await host1.StopAsync();
+            }
+
+            // wait for new election
+            do
+            {
+                leader2 = await host2.WaitForLeaderAsync(DefaultTimeout);
+                leader3 = await host3.WaitForLeaderAsync(DefaultTimeout);
+            }
+            while (leader2 is null || leader3 is null || object.Equals(oldLeader, leader2.EndPoint) || object.Equals(oldLeader, leader3.EndPoint));
+
+            await host2.StopAsync();
+            await host3.StopAsync();
+        }
+
         private protected async Task LeadershipCore(Func<int, bool, RaftCluster> clusterFactory)
         {
             // first node - cold start

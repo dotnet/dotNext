@@ -1,6 +1,44 @@
 Release Notes
 ====
 
+# 12-06-2022
+<a href="https://www.nuget.org/packages/dotnext/4.8.0">DotNext 4.8.0</a>
+* Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
+* Added [Builder Pattern](https://en.wikipedia.org/wiki/Builder_pattern) concept as an interface
+* Added extra properties to [Timestamp](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type for precise measurements
+* Introduced additional methods for reading data from [sparse buffer](https://dotnet.github.io/dotNext/api/DotNext.Buffers.SparseBufferWriter-1.html) with help of [SequencePosition](https://learn.microsoft.com/en-us/dotnet/api/system.sequenceposition) cursor
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.8.0">DotNext.Metaprogramming 4.8.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.8.0">DotNext.Reflection 4.8.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.8.0">DotNext.Unsafe 4.8.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.0">DotNext.Threading 4.8.0</a>
+* `TaskCompletionPipe<T>` doesn't require capacity anymore
+* Fix: potential consumer hangs when a number consumers is larger than number of pending tasks
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.8.0">DotNext.IO 4.8.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.0">DotNext.Net.Cluster 4.8.0</a>
+* Added automatic removal of unresponsive nodes from Raft cluster using Failure Detector
+* Added implementation of Phi Accrual Failure Detector
+* Added ability to turn cluster node into Standby mode and back to normal mode (see [discussion](https://github.com/dotnet/dotNext/discussions/134))
+* Raft functional extensions are grouped as a set of interfaces located in a new `DotNext.Net.Cluster.Consensus.Raft.Extensions` namespace
+* Fixed cluster recovery when cold start mode is used ([135](https://github.com/dotnet/dotNext/issues/135))
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.0">DotNext.AspNetCore.Cluster 4.8.0</a>
+* Added automatic removal of unresponsive nodes from Raft cluster using Failure Detector registered in DI
+* Raft functional extensions are available for query through DI as interfaces
+* Updated dependencies
+
 # 11-08-2022
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.7.5">DotNext.Metaprogramming 4.7.5</a>
 * Fixed [127](https://github.com/dotnet/dotNext/issues/127)

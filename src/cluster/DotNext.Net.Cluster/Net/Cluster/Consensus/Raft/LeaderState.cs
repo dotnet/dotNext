@@ -211,22 +211,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
     }
 
-    private void Cleanup()
-    {
-        timerCancellation.Dispose();
-        heartbeatTask = null;
-
-        lease = null;
-        leaseTimer.Dispose();
-        leaseTokenSource.Dispose();
-
-        // cancel replication queue
-        replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
-        replicationEvent.Dispose();
-
-        failureDetector?.Clear();
-    }
-
     protected override async ValueTask DisposeAsyncCore()
     {
         try
@@ -236,17 +220,13 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             await leaseTimer.DisposeAsync().ConfigureAwait(false);
             await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false); // may throw OperationCanceledException
         }
-        catch (OperationCanceledException) when (heartbeatTask?.IsCanceled ?? true)
-        {
-            // suspend cancellation
-        }
         catch (Exception e)
         {
             Logger.LeaderStateExitedWithError(e);
         }
         finally
         {
-            Cleanup();
+            Dispose(disposing: true);
         }
     }
 
@@ -254,7 +234,18 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     {
         if (disposing)
         {
-            Cleanup();
+            timerCancellation.Dispose();
+            heartbeatTask = null;
+
+            lease = null;
+            leaseTimer.Dispose();
+            leaseTokenSource.Dispose();
+
+            // cancel replication queue
+            replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+            replicationEvent.Dispose();
+
+            failureDetector?.Clear();
         }
 
         base.Dispose(disposing);

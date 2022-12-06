@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using static InlineIL.IL;
 
 namespace DotNext.Threading;
 
@@ -27,19 +26,14 @@ public static class AtomicEnum
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TEnum VolatileRead<TEnum>(this ref TEnum value)
         where TEnum : struct, Enum
-    {
-        return Unsafe.SizeOf<TEnum>() == sizeof(long) && IntPtr.Size != sizeof(long)
-            ? ReinterpretCast<long, TEnum>(Volatile.Read(ref Unsafe.As<TEnum, long>(ref value)))
-            : ReadCore(ref value);
-
-        static TEnum ReadCore(ref TEnum location)
+        => Unsafe.SizeOf<TEnum>() switch
         {
-            PushInRef(in location);
-            Emit.Volatile();
-            Emit.Ldobj<TEnum>();
-            return Return<TEnum>();
-        }
-    }
+            sizeof(byte) => ReinterpretCast<byte, TEnum>(Volatile.Read(ref Unsafe.As<TEnum, byte>(ref value))),
+            sizeof(ushort) => ReinterpretCast<ushort, TEnum>(Volatile.Read(ref Unsafe.As<TEnum, ushort>(ref value))),
+            sizeof(uint) => ReinterpretCast<uint, TEnum>(Volatile.Read(ref Unsafe.As<TEnum, uint>(ref value))),
+            sizeof(ulong) => ReinterpretCast<ulong, TEnum>(Volatile.Read(ref Unsafe.As<TEnum, ulong>(ref value))),
+            _ => value,
+        };
 
     /// <summary>
     /// Writes the specified value to the specified field. On systems that require it,
@@ -57,18 +51,20 @@ public static class AtomicEnum
     public static void VolatileWrite<TEnum>(this ref TEnum value, TEnum newValue)
         where TEnum : struct, Enum
     {
-        if (Unsafe.SizeOf<TEnum>() == sizeof(long) && IntPtr.Size != sizeof(long))
-            Volatile.Write(ref Unsafe.As<TEnum, long>(ref value), ReinterpretCast<TEnum, long>(newValue));
-        else
-            WriteCore(ref value, newValue);
-
-        static void WriteCore(ref TEnum location, TEnum value)
+        switch (Unsafe.SizeOf<TEnum>())
         {
-            Push(ref location);
-            Push(value);
-            Emit.Volatile();
-            Emit.Stobj<TEnum>();
-            Emit.Ret();
+            case sizeof(byte):
+                Volatile.Write(ref Unsafe.As<TEnum, byte>(ref value), ReinterpretCast<TEnum, byte>(newValue));
+                break;
+            case sizeof(ushort):
+                Volatile.Write(ref Unsafe.As<TEnum, ushort>(ref value), ReinterpretCast<TEnum, ushort>(newValue));
+                break;
+            case sizeof(uint):
+                Volatile.Write(ref Unsafe.As<TEnum, uint>(ref value), ReinterpretCast<TEnum, uint>(newValue));
+                break;
+            case sizeof(ulong):
+                Volatile.Write(ref Unsafe.As<TEnum, ulong>(ref value), ReinterpretCast<TEnum, ulong>(newValue));
+                break;
         }
     }
 }
@@ -81,6 +77,7 @@ public static class AtomicEnum
 public struct AtomicEnum<TEnum> : IEquatable<TEnum>
     where TEnum : struct, Enum
 {
+    // TODO: Rewrite when https://github.com/dotnet/runtime/issues/64658 becomes available
     private ulong value;
 
     /// <summary>
