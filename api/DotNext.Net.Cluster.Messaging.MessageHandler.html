@@ -82,6 +82,7 @@
   </div>
   <div class="implements">
     <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.IBuildable-2.html">IBuildable</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Messaging.MessageHandler.html">MessageHandler</a>, <a class="xref" href="DotNext.Net.Cluster.Messaging.MessageHandler.Builder.html">MessageHandler.Builder</a>&gt;</div>
     <div><a class="xref" href="DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a></div>
   </div>
   <div class="inheritedMembers">
@@ -112,7 +113,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Messaging_MessageHandler_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class MessageHandler : IInputChannel</code></pre>
+    <pre><code class="lang-csharp hljs">public class MessageHandler : IBuildable&lt;MessageHandler, MessageHandler.Builder&gt;, IInputChannel</code></pre>
   </div>
   <h5 id="DotNext_Net_Cluster_Messaging_MessageHandler_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The handler can be constructed in two ways: using <a class="xref" href="DotNext.Net.Cluster.Messaging.MessageHandler.Builder.html">MessageHandler.Builder</a>
@@ -327,6 +328,9 @@ Task HandleAsync(ISubscriber sender, InputMessage input, object? context, Cancel
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.IBuildable-2.html">IBuildable&lt;TSelf, TBuilder&gt;</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a>
   </div>

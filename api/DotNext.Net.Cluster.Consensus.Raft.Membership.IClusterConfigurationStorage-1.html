@@ -119,7 +119,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ActiveConfiguration.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage%601.ActiveConfiguration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/IClusterConfigurationStorage.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/IClusterConfigurationStorage.cs/#L89">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ActiveConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage`1.ActiveConfiguration*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ActiveConfiguration" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage`1.ActiveConfiguration">ActiveConfiguration</h4>
@@ -150,7 +150,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ProposedConfiguration.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage%601.ProposedConfiguration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/IClusterConfigurationStorage.cs/#L96">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/IClusterConfigurationStorage.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ProposedConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage`1.ProposedConfiguration*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ProposedConfiguration" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage`1.ProposedConfiguration">ProposedConfiguration</h4>
@@ -243,56 +243,6 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_PollChangesAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage%601.PollChangesAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/IClusterConfigurationStorage.cs/#L86">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_PollChangesAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage`1.PollChangesAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_PollChangesAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage`1.PollChangesAsync(CancellationToken)">PollChangesAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Polls for change in cluster configuration.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">IAsyncEnumerable&lt;ClusterConfigurationEvent&lt;TAddress&gt;&gt; PollChangesAsync(CancellationToken token = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">CancellationToken</span></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">IAsyncEnumerable</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationEvent-1.html">ClusterConfigurationEvent</a>&lt;TAddress&gt;&gt;</td>
-        <td><p>The stream of configuration events.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_RemoveMemberAsync_DotNext_Net_Cluster_ClusterMemberId_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage%601.RemoveMemberAsync(DotNext.Net.Cluster.ClusterMemberId%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -345,6 +295,38 @@
         <td><p><span class="xref">true</span> if the new member is added to the proposed configuration;
 <span class="xref">false</span> if the storage has the proposed configuration already.</p>
 </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ActiveConfigurationChanged.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage%601.ActiveConfigurationChanged%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Membership/IClusterConfigurationStorage.cs/#L84">View Source</a>
+  </span>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Membership_IClusterConfigurationStorage_1_ActiveConfigurationChanged" data-uid="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage`1.ActiveConfigurationChanged">ActiveConfigurationChanged</h4>
+  <div class="markdown level1 summary"><p>An event occurred when proposed configuration is applied.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">event Func&lt;ClusterConfigurationEvent&lt;TAddress&gt;, CancellationToken, ValueTask&gt; ActiveConfigurationChanged</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterConfigurationEvent-1.html">ClusterConfigurationEvent</a>&lt;TAddress&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</td>
+        <td></td>
       </tr>
     </tbody>
   </table>

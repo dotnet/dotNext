@@ -93,6 +93,7 @@
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
     <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
     <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
   </div>
@@ -123,7 +124,7 @@
       <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__Clear">BufferWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.Clear()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyTo_DotNext_Span__0__">BufferWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.CopyTo(Span&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyTo_scoped__0_output_">BufferWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.CopyTo(scoped, T, output)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__TryGetWrittenContent_ReadOnlyMemory__0___">BufferWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.TryGetWrittenContent(ReadOnlyMemory&lt;T&gt;)</a>
@@ -214,7 +215,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_PooledBufferWriter_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PooledBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;&gt;&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IMemoryOwner&lt;T&gt;, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class PooledBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;&gt;&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IResettable, IMemoryOwner&lt;T&gt;, IDisposable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -613,6 +614,9 @@
   </div>
   <div>
       <span class="xref">IDisposable</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.imemoryowner-1">System.Buffers.IMemoryOwner&lt;T&gt;</a>

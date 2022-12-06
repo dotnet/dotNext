@@ -114,19 +114,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_DecodeFromUtf16_ReadOnlySpan_System_Char__DotNext_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.DecodeFromUtf16(ReadOnlySpan%7BSystem.Char%7D%2CDotNext.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_DecodeFromUtf16_scoped_System_Char_chars_scoped_System_Byte_output_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.DecodeFromUtf16(scoped%2CSystem.Char%2Cchars%2Cscoped%2CSystem.Byte%2Coutput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Hex.Unicode.cs/#L204">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Hex_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Hex.DecodeFromUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Hex_DecodeFromUtf16_ReadOnlySpan_System_Char__DotNext_Span_System_Byte__" data-uid="DotNext.Buffers.Text.Hex.DecodeFromUtf16(ReadOnlySpan{System.Char},DotNext.Span{System.Byte})">DecodeFromUtf16(ReadOnlySpan&lt;Char&gt;, Span&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Buffers_Text_Hex_DecodeFromUtf16_scoped_System_Char_chars_scoped_System_Byte_output_" data-uid="DotNext.Buffers.Text.Hex.DecodeFromUtf16(scoped,System.Char,chars,scoped,System.Byte,output)">DecodeFromUtf16(scoped, Char, chars, scoped, Byte, output)</h4>
   <div class="markdown level1 summary"><p>Decodes hexadecimal representation of bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int DecodeFromUtf16(ReadOnlySpan&lt;char&gt; chars, Span&lt;byte&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int DecodeFromUtf16(scoped ReadOnlySpan, char, chars, scoped Span, byte, output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -139,16 +139,34 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
-        <td><span class="parametername">chars</span></td>
-        <td><p>The hexadecimal representation of bytes.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
       </tr>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output buffer used to write decoded bytes.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">Span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">output</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -170,19 +188,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_DecodeFromUtf8_ReadOnlySpan_System_Byte__DotNext_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.DecodeFromUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CDotNext.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_DecodeFromUtf8_scoped_System_Byte_chars_scoped_System_Byte_output_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.DecodeFromUtf8(scoped%2CSystem.Byte%2Cchars%2Cscoped%2CSystem.Byte%2Coutput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Hex.Utf8.cs/#L149">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Hex_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Hex.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Hex_DecodeFromUtf8_ReadOnlySpan_System_Byte__DotNext_Span_System_Byte__" data-uid="DotNext.Buffers.Text.Hex.DecodeFromUtf8(ReadOnlySpan{System.Byte},DotNext.Span{System.Byte})">DecodeFromUtf8(ReadOnlySpan&lt;Byte&gt;, Span&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Buffers_Text_Hex_DecodeFromUtf8_scoped_System_Byte_chars_scoped_System_Byte_output_" data-uid="DotNext.Buffers.Text.Hex.DecodeFromUtf8(scoped,System.Byte,chars,scoped,System.Byte,output)">DecodeFromUtf8(scoped, Byte, chars, scoped, Byte, output)</h4>
   <div class="markdown level1 summary"><p>Decodes hexadecimal representation of bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int DecodeFromUtf8(this ReadOnlySpan&lt;byte&gt; chars, Span&lt;byte&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int DecodeFromUtf8(scoped ReadOnlySpan, byte, chars, scoped Span, byte, output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -195,16 +213,34 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">chars</span></td>
-        <td><p>The hexadecimal representation of bytes.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
       </tr>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output buffer used to write decoded bytes.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">Span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">output</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -226,19 +262,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf16_ReadOnlySpan_System_Byte__DotNext_Span_System_Char__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf16(ReadOnlySpan%7BSystem.Byte%7D%2CDotNext.Span%7BSystem.Char%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf16_scoped_System_Byte_bytes_scoped_System_Char_output_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf16(scoped%2CSystem.Byte%2Cbytes%2Cscoped%2CSystem.Char%2Coutput%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Hex.Unicode.cs/#L18">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Hex_EncodeToUtf16_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf16_ReadOnlySpan_System_Byte__DotNext_Span_System_Char__System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf16(ReadOnlySpan{System.Byte},DotNext.Span{System.Char},System.Boolean)">EncodeToUtf16(ReadOnlySpan&lt;Byte&gt;, Span&lt;Char&gt;, Boolean)</h4>
+  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf16_scoped_System_Byte_bytes_scoped_System_Char_output_System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf16(scoped,System.Byte,bytes,scoped,System.Char,output,System.Boolean)">EncodeToUtf16(scoped, Byte, bytes, scoped, Char, output, Boolean)</h4>
   <div class="markdown level1 summary"><p>Converts set of bytes into hexadecimal representation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int EncodeToUtf16(ReadOnlySpan&lt;byte&gt; bytes, Span&lt;char&gt; output, bool lowercased = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int EncodeToUtf16(scoped ReadOnlySpan, byte, bytes, scoped Span, char, output, bool lowercased = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -251,16 +287,34 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">bytes</span></td>
-        <td><p>The bytes to convert.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
       </tr>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The buffer used to write hexadecimal representation of bytes.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">bytes</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">Span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">output</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
@@ -288,19 +342,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf16_ReadOnlySpan_System_Byte__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf16(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf16_scoped_System_Byte_bytes_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf16(scoped%2CSystem.Byte%2Cbytes%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Hex.Unicode.cs/#L179">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Hex_EncodeToUtf16_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf16_ReadOnlySpan_System_Byte__System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf16(ReadOnlySpan{System.Byte},System.Boolean)">EncodeToUtf16(ReadOnlySpan&lt;Byte&gt;, Boolean)</h4>
+  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf16_scoped_System_Byte_bytes_System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf16(scoped,System.Byte,bytes,System.Boolean)">EncodeToUtf16(scoped, Byte, bytes, Boolean)</h4>
   <div class="markdown level1 summary"><p>Converts set of bytes into hexadecimal representation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string EncodeToUtf16(ReadOnlySpan&lt;byte&gt; bytes, bool lowercased = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static string EncodeToUtf16(scoped ReadOnlySpan, byte, bytes, bool lowercased = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -313,10 +367,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">bytes</span></td>
-        <td><p>The bytes to convert.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">bytes</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
@@ -344,19 +407,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf8_ReadOnlySpan_System_Byte__DotNext_Span_System_Byte__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CDotNext.Span%7BSystem.Byte%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf8_scoped_System_Byte_bytes_scoped_System_Byte_output_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf8(scoped%2CSystem.Byte%2Cbytes%2Cscoped%2CSystem.Byte%2Coutput%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Hex.Utf8.cs/#L18">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Hex_EncodeToUtf8_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf8_ReadOnlySpan_System_Byte__DotNext_Span_System_Byte__System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf8(ReadOnlySpan{System.Byte},DotNext.Span{System.Byte},System.Boolean)">EncodeToUtf8(ReadOnlySpan&lt;Byte&gt;, Span&lt;Byte&gt;, Boolean)</h4>
+  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf8_scoped_System_Byte_bytes_scoped_System_Byte_output_System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf8(scoped,System.Byte,bytes,scoped,System.Byte,output,System.Boolean)">EncodeToUtf8(scoped, Byte, bytes, scoped, Byte, output, Boolean)</h4>
   <div class="markdown level1 summary"><p>Converts set of bytes into hexadecimal representation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int EncodeToUtf8(ReadOnlySpan&lt;byte&gt; bytes, Span&lt;byte&gt; output, bool lowercased = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int EncodeToUtf8(scoped ReadOnlySpan, byte, bytes, scoped Span, byte, output, bool lowercased = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -369,16 +432,34 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">bytes</span></td>
-        <td><p>The bytes to convert.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
       </tr>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The buffer used to write hexadecimal representation of bytes, in UTF-8 encoding.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">bytes</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">Span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">output</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
@@ -406,19 +487,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf8_ReadOnlySpan_System_Byte__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Hex_EncodeToUtf8_scoped_System_Byte_bytes_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Hex.EncodeToUtf8(scoped%2CSystem.Byte%2Cbytes%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Hex.Utf8.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Hex_EncodeToUtf8_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf8_ReadOnlySpan_System_Byte__System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf8(ReadOnlySpan{System.Byte},System.Boolean)">EncodeToUtf8(ReadOnlySpan&lt;Byte&gt;, Boolean)</h4>
+  <h4 id="DotNext_Buffers_Text_Hex_EncodeToUtf8_scoped_System_Byte_bytes_System_Boolean_" data-uid="DotNext.Buffers.Text.Hex.EncodeToUtf8(scoped,System.Byte,bytes,System.Boolean)">EncodeToUtf8(scoped, Byte, bytes, Boolean)</h4>
   <div class="markdown level1 summary"><p>Converts set of bytes into hexadecimal representation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static byte[] EncodeToUtf8(ReadOnlySpan&lt;byte&gt; bytes, bool lowercased = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static byte[] EncodeToUtf8(scoped ReadOnlySpan, byte, bytes, bool lowercased = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -431,10 +512,19 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">bytes</span></td>
-        <td><p>The bytes to convert.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">bytes</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>

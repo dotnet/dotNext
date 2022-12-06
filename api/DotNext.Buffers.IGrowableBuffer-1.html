@@ -92,12 +92,15 @@
     <div>
       <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;.ToDelegate()</a>
     </div>
+    <div>
+      <a class="xref" href="DotNext.IResettable.html#DotNext_IResettable_Reset">IResettable.Reset()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_IGrowableBuffer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IGrowableBuffer&lt;T&gt; : IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IGrowableBuffer&lt;T&gt; : IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IResettable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -206,19 +209,19 @@ that can hold this buffer.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_IGrowableBuffer_1_CopyTo_DotNext_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.IGrowableBuffer%601.CopyTo(DotNext.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_IGrowableBuffer_1_CopyTo_scoped__0_output_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.IGrowableBuffer%601.CopyTo(scoped%2C%600%2Coutput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IGrowableBuffer.cs/#L87">View Source</a>
   </span>
   <a id="DotNext_Buffers_IGrowableBuffer_1_CopyTo_" data-uid="DotNext.Buffers.IGrowableBuffer`1.CopyTo*"></a>
-  <h4 id="DotNext_Buffers_IGrowableBuffer_1_CopyTo_DotNext_Span__0__" data-uid="DotNext.Buffers.IGrowableBuffer`1.CopyTo(DotNext.Span{`0})">CopyTo(Span&lt;T&gt;)</h4>
+  <h4 id="DotNext_Buffers_IGrowableBuffer_1_CopyTo_scoped__0_output_" data-uid="DotNext.Buffers.IGrowableBuffer`1.CopyTo(scoped,`0,output)">CopyTo(scoped, T, output)</h4>
   <div class="markdown level1 summary"><p>Copies the contents of this writer to the specified memory block.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">int CopyTo(Span&lt;T&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">int CopyTo(scoped Span, T, output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -231,10 +234,19 @@ that can hold this buffer.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The memory block to be modified.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">Span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">output</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -391,7 +403,7 @@ that can hold this buffer.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_IGrowableBuffer_1_TryGetWrittenContent_ReadOnlyMemory__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.IGrowableBuffer%601.TryGetWrittenContent(ReadOnlyMemory%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IGrowableBuffer.cs/#L100">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IGrowableBuffer.cs/#L103">View Source</a>
   </span>
   <a id="DotNext_Buffers_IGrowableBuffer_1_TryGetWrittenContent_" data-uid="DotNext.Buffers.IGrowableBuffer`1.TryGetWrittenContent*"></a>
   <h4 id="DotNext_Buffers_IGrowableBuffer_1_TryGetWrittenContent_ReadOnlyMemory__0___" data-uid="DotNext.Buffers.IGrowableBuffer`1.TryGetWrittenContent(ReadOnlyMemory{`0}@)">TryGetWrittenContent(out ReadOnlyMemory&lt;T&gt;)</h4>
@@ -538,6 +550,21 @@ that can hold this buffer.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_IGrowableBuffer_1_DotNext_IResettable_Reset.md&amp;value=---%0Auid%3A%20DotNext.Buffers.IGrowableBuffer%601.DotNext%23IResettable%23Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/IGrowableBuffer.cs/#L96">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_IGrowableBuffer_1_DotNext_IResettable_Reset_" data-uid="DotNext.Buffers.IGrowableBuffer`1.DotNext#IResettable#Reset*"></a>
+  <h4 id="DotNext_Buffers_IGrowableBuffer_1_DotNext_IResettable_Reset" data-uid="DotNext.Buffers.IGrowableBuffer`1.DotNext#IResettable#Reset">IResettable.Reset()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void IResettable.Reset()</code></pre>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>

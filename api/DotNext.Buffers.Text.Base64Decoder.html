@@ -147,19 +147,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_ReadOnlySpan_System_Char__DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(ReadOnlySpan%7BSystem.Char%7D%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_scoped_System_Buffers_ReadOnlySequence_System_Char___System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(scoped%2CSystem.Buffers.ReadOnlySequence%7BSystem.Char%7D%40%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L106">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L88">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_ReadOnlySpan_System_Char__DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(ReadOnlySpan{System.Char},DotNext.Buffers.MemoryAllocator{System.Byte})">DecodeFromUtf16(ReadOnlySpan&lt;Char&gt;, MemoryAllocator&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_scoped_System_Buffers_ReadOnlySequence_System_Char___System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(scoped,System.Buffers.ReadOnlySequence{System.Char}@,System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf16(scoped, in ReadOnlySequence&lt;Char&gt;, IBufferWriter&lt;Byte&gt;)</h4>
   <div class="markdown level1 summary"><p>Decodes base64 characters.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;byte&gt; DecodeFromUtf16(ReadOnlySpan&lt;char&gt; chars, MemoryAllocator&lt;byte&gt; allocator = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16(scoped, in ReadOnlySequence&lt;char&gt; chars, IBufferWriter&lt;byte&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -172,10 +172,64 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
         <td><span class="parametername">chars</span></td>
         <td><p>The span containing base64-encoded bytes.</p>
 </td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The output growable buffer used to write decoded bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_scoped_System_Char_chars_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(scoped%2CSystem.Char%2Cchars%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L106">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16*"></a>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_scoped_System_Char_chars_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(scoped,System.Char,chars,DotNext.Buffers.MemoryAllocator{System.Byte})">DecodeFromUtf16(scoped, Char, chars, MemoryAllocator&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Decodes base64 characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;byte&gt; DecodeFromUtf16(scoped ReadOnlySpan, char, chars, MemoryAllocator&lt;byte&gt; allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
@@ -203,19 +257,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_ReadOnlySpan_System_Char__System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(ReadOnlySpan%7BSystem.Char%7D%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_scoped_System_Char_chars_System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(scoped%2CSystem.Char%2Cchars%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_ReadOnlySpan_System_Char__System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(ReadOnlySpan{System.Char},System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf16(ReadOnlySpan&lt;Char&gt;, IBufferWriter&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_scoped_System_Char_chars_System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(scoped,System.Char,chars,System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf16(scoped, Char, chars, IBufferWriter&lt;Byte&gt;)</h4>
   <div class="markdown level1 summary"><p>Decodes base64 characters.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16(ReadOnlySpan&lt;char&gt; chars, IBufferWriter&lt;byte&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16(scoped ReadOnlySpan, char, chars, IBufferWriter&lt;byte&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -228,10 +282,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
-        <td><span class="parametername">chars</span></td>
-        <td><p>The span containing base64-encoded bytes.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
@@ -243,59 +306,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_System_Buffers_ReadOnlySequence_System_Char___System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(System.Buffers.ReadOnlySequence%7BSystem.Char%7D%40%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L88">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_System_Buffers_ReadOnlySequence_System_Char___System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16(System.Buffers.ReadOnlySequence{System.Char}@,System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf16(in ReadOnlySequence&lt;Char&gt;, IBufferWriter&lt;Byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Decodes base64 characters.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16(in ReadOnlySequence&lt;char&gt; chars, IBufferWriter&lt;byte&gt; output)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
-        <td><span class="parametername">chars</span></td>
-        <td><p>The span containing base64-encoded bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output growable buffer used to write decoded bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_ReadOnlySpan_System_Char_____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16%60%601(ReadOnlySpan%7BSystem.Char%7D%2C%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_scoped_System_Char_chars____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16%60%601(scoped%2CSystem.Char%2Cchars%2C%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L210">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_ReadOnlySpan_System_Char_____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16``1(ReadOnlySpan{System.Char},,``0)">DecodeFromUtf16&lt;TArg&gt;(ReadOnlySpan&lt;Char&gt;, delegate*&lt;ReadOnlySpan&lt;Byte&gt;, TArg, Void&gt;, TArg)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_scoped_System_Char_chars____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16``1(scoped,System.Char,chars,,``0)">DecodeFromUtf16&lt;TArg&gt;(scoped, Char, chars, delegate*&lt;ReadOnlySpan&lt;Byte&gt;, TArg, Void&gt;, TArg)</h4>
   <div class="markdown level1 summary"><p>Decodes base64-encoded bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16&lt;TArg&gt;(ReadOnlySpan&lt;char&gt; chars, delegate*&lt;ReadOnlySpan&lt;byte&gt;, TArg, void&gt; callback, TArg arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16&lt;TArg&gt;(scoped ReadOnlySpan, char, chars, delegate*&lt;ReadOnlySpan&lt;byte&gt;, TArg, void&gt; callback, TArg arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -308,10 +331,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
-        <td><span class="parametername">chars</span></td>
-        <td><p>The span containing base64-encoded bytes.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td>delegate*&lt;<span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, TArg, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.void">Void</a>&gt;</td>
@@ -345,19 +377,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_ReadOnlySpan_System_Char____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16%60%601(ReadOnlySpan%7BSystem.Char%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_scoped_System_Char_chars___0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16%60%601(scoped%2CSystem.Char%2Cchars%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L182">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_ReadOnlySpan_System_Char____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16``1(ReadOnlySpan{System.Char},``0)">DecodeFromUtf16&lt;TConsumer&gt;(ReadOnlySpan&lt;Char&gt;, TConsumer)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_scoped_System_Char_chars___0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16``1(scoped,System.Char,chars,``0)">DecodeFromUtf16&lt;TConsumer&gt;(scoped, Char, chars, TConsumer)</h4>
   <div class="markdown level1 summary"><p>Decodes base64-encoded bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16&lt;TConsumer&gt;(ReadOnlySpan&lt;char&gt; chars, TConsumer output)
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16&lt;TConsumer&gt;(scoped ReadOnlySpan, char, chars, TConsumer output)
 
     where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
@@ -372,10 +404,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
-        <td><span class="parametername">chars</span></td>
-        <td><p>The span containing base64-encoded bytes.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">TConsumer</span></td>
@@ -403,19 +444,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_ReadOnlySpan_System_Char__System_Buffers_ReadOnlySpanAction_System_Byte___0____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16%60%601(ReadOnlySpan%7BSystem.Char%7D%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_scoped_System_Char_chars_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16%60%601(scoped%2CSystem.Char%2Cchars%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Unicode.cs/#L199">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_ReadOnlySpan_System_Char__System_Buffers_ReadOnlySpanAction_System_Byte___0____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16``1(ReadOnlySpan{System.Char},System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0)">DecodeFromUtf16&lt;TArg&gt;(ReadOnlySpan&lt;Char&gt;, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf16__1_scoped_System_Char_chars_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf16``1(scoped,System.Char,chars,System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0)">DecodeFromUtf16&lt;TArg&gt;(scoped, Char, chars, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg)</h4>
   <div class="markdown level1 summary"><p>Decodes base64-encoded bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16&lt;TArg&gt;(ReadOnlySpan&lt;char&gt; chars, ReadOnlySpanAction&lt;byte, TArg&gt; callback, TArg arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf16&lt;TArg&gt;(scoped ReadOnlySpan, char, chars, ReadOnlySpanAction&lt;byte, TArg&gt; callback, TArg arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -428,10 +469,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
-        <td><span class="parametername">chars</span></td>
-        <td><p>The span containing base64-encoded bytes.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>, TArg&gt;</td>
@@ -527,19 +577,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_ReadOnlySpan_System_Byte__DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Buffers_ReadOnlySequence_System_Byte___System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped%2CSystem.Buffers.ReadOnlySequence%7BSystem.Byte%7D%40%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L102">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_ReadOnlySpan_System_Byte__DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(ReadOnlySpan{System.Byte},DotNext.Buffers.MemoryAllocator{System.Byte})">DecodeFromUtf8(ReadOnlySpan&lt;Byte&gt;, MemoryAllocator&lt;Byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Decoes UTF-8 encoded base64 string.</p>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Buffers_ReadOnlySequence_System_Byte___System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped,System.Buffers.ReadOnlySequence{System.Byte}@,System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf8(scoped, in ReadOnlySequence&lt;Byte&gt;, IBufferWriter&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Decodes UTF-8 encoded base64 string.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;byte&gt; DecodeFromUtf8(ReadOnlySpan&lt;byte&gt; utf8Chars, MemoryAllocator&lt;byte&gt; allocator = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8(scoped, in ReadOnlySequence&lt;byte&gt; utf8Chars, IBufferWriter&lt;byte&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -552,10 +602,64 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">utf8Chars</span></td>
         <td><p>UTF-8 encoded portion of base64 string.</p>
 </td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The output growable buffer used to write decoded bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Byte_utf8Chars_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped%2CSystem.Byte%2Cutf8Chars%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Byte_utf8Chars_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped,System.Byte,utf8Chars,DotNext.Buffers.MemoryAllocator{System.Byte})">DecodeFromUtf8(scoped, Byte, utf8Chars, MemoryAllocator&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Decoes UTF-8 encoded base64 string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;byte&gt; DecodeFromUtf8(scoped ReadOnlySpan, byte, utf8Chars, MemoryAllocator&lt;byte&gt; allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">utf8Chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
@@ -583,19 +687,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_ReadOnlySpan_System_Byte__Stream_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CStream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Byte_utf8Chars_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped%2CSystem.Byte%2Cutf8Chars%2CStream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L200">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_ReadOnlySpan_System_Byte__Stream_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(ReadOnlySpan{System.Byte},Stream)">DecodeFromUtf8(ReadOnlySpan&lt;Byte&gt;, Stream)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Byte_utf8Chars_Stream_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped,System.Byte,utf8Chars,Stream)">DecodeFromUtf8(scoped, Byte, utf8Chars, Stream)</h4>
   <div class="markdown level1 summary"><p>Decodes UTF-8 encoded base64 string and writes result to the stream synchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8(ReadOnlySpan&lt;byte&gt; utf8Chars, Stream output)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8(scoped ReadOnlySpan, byte, utf8Chars, Stream output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -608,10 +712,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">utf8Chars</span></td>
-        <td><p>UTF-8 encoded portion of base64 string.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">utf8Chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">Stream</span></td>
@@ -623,19 +736,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_ReadOnlySpan_System_Byte__System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Byte_utf8Chars_System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped%2CSystem.Byte%2Cutf8Chars%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_ReadOnlySpan_System_Byte__System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(ReadOnlySpan{System.Byte},System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf8(ReadOnlySpan&lt;Byte&gt;, IBufferWriter&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_scoped_System_Byte_utf8Chars_System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(scoped,System.Byte,utf8Chars,System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf8(scoped, Byte, utf8Chars, IBufferWriter&lt;Byte&gt;)</h4>
   <div class="markdown level1 summary"><p>Decodes UTF-8 encoded base64 string.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8(ReadOnlySpan&lt;byte&gt; utf8Chars, IBufferWriter&lt;byte&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8(scoped ReadOnlySpan, byte, utf8Chars, IBufferWriter&lt;byte&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -648,10 +761,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">utf8Chars</span></td>
-        <td><p>UTF-8 encoded portion of base64 string.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">utf8Chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
@@ -663,59 +785,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_System_Buffers_ReadOnlySequence_System_Byte___System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D%40%2CSystem.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L85">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_System_Buffers_ReadOnlySequence_System_Byte___System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8(System.Buffers.ReadOnlySequence{System.Byte}@,System.Buffers.IBufferWriter{System.Byte})">DecodeFromUtf8(in ReadOnlySequence&lt;Byte&gt;, IBufferWriter&lt;Byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Decodes UTF-8 encoded base64 string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8(in ReadOnlySequence&lt;byte&gt; utf8Chars, IBufferWriter&lt;byte&gt; output)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">utf8Chars</span></td>
-        <td><p>UTF-8 encoded portion of base64 string.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output growable buffer used to write decoded bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_ReadOnlySpan_System_Byte_____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8%60%601(ReadOnlySpan%7BSystem.Byte%7D%2C%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_scoped_System_Byte_utf8Chars____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8%60%601(scoped%2CSystem.Byte%2Cutf8Chars%2C%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L190">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_ReadOnlySpan_System_Byte_____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8``1(ReadOnlySpan{System.Byte},,``0)">DecodeFromUtf8&lt;TArg&gt;(ReadOnlySpan&lt;Byte&gt;, delegate*&lt;ReadOnlySpan&lt;Byte&gt;, TArg, Void&gt;, TArg)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_scoped_System_Byte_utf8Chars____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8``1(scoped,System.Byte,utf8Chars,,``0)">DecodeFromUtf8&lt;TArg&gt;(scoped, Byte, utf8Chars, delegate*&lt;ReadOnlySpan&lt;Byte&gt;, TArg, Void&gt;, TArg)</h4>
   <div class="markdown level1 summary"><p>Decodes UTF-8 encoded base64 string.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8&lt;TArg&gt;(ReadOnlySpan&lt;byte&gt; utf8Chars, delegate*&lt;ReadOnlySpan&lt;byte&gt;, TArg, void&gt; output, TArg arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8&lt;TArg&gt;(scoped ReadOnlySpan, byte, utf8Chars, delegate*&lt;ReadOnlySpan&lt;byte&gt;, TArg, void&gt; output, TArg arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -728,10 +810,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">utf8Chars</span></td>
-        <td><p>UTF-8 encoded portion of base64 string.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">utf8Chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td>delegate*&lt;<span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, TArg, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.void">Void</a>&gt;</td>
@@ -765,19 +856,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_ReadOnlySpan_System_Byte____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8%60%601(ReadOnlySpan%7BSystem.Byte%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_scoped_System_Byte_utf8Chars___0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8%60%601(scoped%2CSystem.Byte%2Cutf8Chars%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L162">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_ReadOnlySpan_System_Byte____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8``1(ReadOnlySpan{System.Byte},``0)">DecodeFromUtf8&lt;TConsumer&gt;(ReadOnlySpan&lt;Byte&gt;, TConsumer)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_scoped_System_Byte_utf8Chars___0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8``1(scoped,System.Byte,utf8Chars,``0)">DecodeFromUtf8&lt;TConsumer&gt;(scoped, Byte, utf8Chars, TConsumer)</h4>
   <div class="markdown level1 summary"><p>Decodes base64-encoded bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8&lt;TConsumer&gt;(ReadOnlySpan&lt;byte&gt; utf8Chars, TConsumer output)
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8&lt;TConsumer&gt;(scoped ReadOnlySpan, byte, utf8Chars, TConsumer output)
 
     where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
@@ -792,10 +883,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">utf8Chars</span></td>
-        <td><p>The span containing base64-encoded bytes.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">utf8Chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><span class="xref">TConsumer</span></td>
@@ -823,19 +923,19 @@ Decoding methods should not be intermixed by the caller code.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_ReadOnlySpan_System_Byte__System_Buffers_ReadOnlySpanAction_System_Byte___0____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8%60%601(ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_scoped_System_Byte_utf8Chars_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8%60%601(scoped%2CSystem.Byte%2Cutf8Chars%2CSystem.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Text/Base64Decoder.Utf8.cs/#L179">View Source</a>
   </span>
   <a id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8*"></a>
-  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_ReadOnlySpan_System_Byte__System_Buffers_ReadOnlySpanAction_System_Byte___0____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8``1(ReadOnlySpan{System.Byte},System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0)">DecodeFromUtf8&lt;TArg&gt;(ReadOnlySpan&lt;Byte&gt;, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg)</h4>
+  <h4 id="DotNext_Buffers_Text_Base64Decoder_DecodeFromUtf8__1_scoped_System_Byte_utf8Chars_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_" data-uid="DotNext.Buffers.Text.Base64Decoder.DecodeFromUtf8``1(scoped,System.Byte,utf8Chars,System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0)">DecodeFromUtf8&lt;TArg&gt;(scoped, Byte, utf8Chars, ReadOnlySpanAction&lt;Byte, TArg&gt;, TArg)</h4>
   <div class="markdown level1 summary"><p>Decodes UTF-8 encoded base64 string.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8&lt;TArg&gt;(ReadOnlySpan&lt;byte&gt; utf8Chars, ReadOnlySpanAction&lt;byte, TArg&gt; output, TArg arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public void DecodeFromUtf8&lt;TArg&gt;(scoped ReadOnlySpan, byte, utf8Chars, ReadOnlySpanAction&lt;byte, TArg&gt; output, TArg arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -848,10 +948,19 @@ Decoding methods should not be intermixed by the caller code.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">utf8Chars</span></td>
-        <td><p>UTF-8 encoded portion of base64 string.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">utf8Chars</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>, TArg&gt;</td>

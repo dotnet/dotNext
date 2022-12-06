@@ -89,13 +89,14 @@ switch to file as its backing store.</p>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
     <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
     <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
     <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.html">DotNext.IO</a></h6>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_FileBufferingWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class FileBufferingWriter : Stream, IBufferWriter&lt;byte&gt;, IGrowableBuffer&lt;byte&gt;, IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class FileBufferingWriter : Stream, IBufferWriter&lt;byte&gt;, IGrowableBuffer&lt;byte&gt;, IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;, IResettable, IFlushable</code></pre>
   </div>
   <h5 id="DotNext_IO_FileBufferingWriter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class can be used to write buffered content to a target <see cref="!:Stream"></see>
@@ -538,19 +539,19 @@ uses the value returned by <see cref="!:Path.GetTempPath"></see>.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_DotNext_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(DotNext.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_scoped_System_Byte_output_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(scoped%2CSystem.Byte%2Coutput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L742">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
-  <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_DotNext_Span_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(DotNext.Span{System.Byte})">CopyTo(Span&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_scoped_System_Byte_output_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(scoped,System.Byte,output)">CopyTo(scoped, Byte, output)</h4>
   <div class="markdown level1 summary"><p>Drains buffered content to the memory block synchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int CopyTo(Span&lt;byte&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public int CopyTo(scoped Span, byte, output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -563,10 +564,19 @@ uses the value returned by <see cref="!:Path.GetTempPath"></see>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The memory block used as a destination for copy operation.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">Span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">output</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2601,6 +2611,9 @@ This method is useful only if the file was not created as temporary file.</p>
   </div>
   <div>
       <span class="xref">IDisposable</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>

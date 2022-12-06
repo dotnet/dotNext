@@ -180,7 +180,7 @@ parameter.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L95">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L106">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Clear_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Clear*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Clear" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Clear">Clear()</h4>
@@ -196,7 +196,7 @@ parameter.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Remove__1.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Remove%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L82">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L93">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Remove_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Remove__1" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove``1">Remove&lt;TKey&gt;()</h4>
@@ -244,7 +244,7 @@ parameter.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Remove__1__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Remove%60%601(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L90">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L101">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Remove_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Remove__1__0__" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove``1(`0@)">Remove&lt;TKey&gt;(out TValue)</h4>
@@ -310,7 +310,7 @@ parameter.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Replace__1__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Replace%60%601(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L75">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L84">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Replace_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Replace*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Replace__1__0_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Replace``1(`0)">Replace&lt;TKey&gt;(TValue)</h4>
@@ -319,7 +319,7 @@ parameter.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Optional&lt;TValue&gt; Replace&lt;TKey&gt;(TValue value)</code></pre>
+    <pre><code class="lang-csharp hljs">virtual Optional&lt;TValue&gt; Replace&lt;TKey&gt;(TValue newValue)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -333,7 +333,7 @@ parameter.</p>
     <tbody>
       <tr>
         <td><span class="xref">TValue</span></td>
-        <td><span class="parametername">value</span></td>
+        <td><span class="parametername">newValue</span></td>
         <td><p>A new value.</p>
 </td>
       </tr>
@@ -401,6 +401,78 @@ parameter.</p>
         <td><span class="xref">TValue</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>The value to set.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type acting as a key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Set__1__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Set%60%601(%600%2C%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L76">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_ITypeMap_1_Set_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Set*"></a>
+  <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Set__1__0__0__" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Set``1(`0,`0@)">Set&lt;TKey&gt;(TValue, out TValue)</h4>
+  <div class="markdown level1 summary"><p>Replaces the existing value with a new value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool Set&lt;TKey&gt;(TValue newValue, out TValue oldValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">newValue</span></td>
+        <td><p>A new value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">oldValue</span></td>
+        <td><p>The replaced value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if value is replaced; <span class="xref">false</span> if a new value is added without replacement.</p>
 </td>
       </tr>
     </tbody>

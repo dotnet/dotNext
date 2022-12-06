@@ -81,6 +81,10 @@
     <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
     <div class="level2"><span class="xref">CommandInterpreter</span></div>
   </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.IBuildable-2.html">IBuildable</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a>, <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.html">CommandInterpreter.Builder</a>&gt;</div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -139,7 +143,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class CommandInterpreter : Disposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class CommandInterpreter : Disposable, IBuildable&lt;CommandInterpreter, CommandInterpreter.Builder&gt;</code></pre>
   </div>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The interpreter can be constructed in two ways: using <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.html">CommandInterpreter.Builder</a>
@@ -355,6 +359,10 @@ with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandIn
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.IBuildable-2.html">IBuildable&lt;TSelf, TBuilder&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>

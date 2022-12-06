@@ -84,12 +84,13 @@
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><span class="xref">System.Collections.IEnumerable</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
     <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
     <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
+    <div><span class="xref">System.Collections.IEnumerable</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource</a>&lt;T&gt;</div>
     <div><span class="xref">IDisposable</span></div>
@@ -132,7 +133,7 @@
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1_System_Buffers_ReadOnlySpanAction__0___0____0_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;T, TArg&gt;, TArg)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo_DotNext_Span__0__">SparseBufferWriter&lt;T&gt;.CopyTo(Span&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo_scoped__0_output_">SparseBufferWriter&lt;T&gt;.CopyTo(scoped, T, output)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Clear">SparseBufferWriter&lt;T&gt;.Clear()</a>
@@ -141,16 +142,37 @@
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_DotNext_ISupplier_System_Buffers_ReadOnlySequence_T___Invoke">SparseBufferWriter&lt;T&gt;.ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;.Invoke()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_GetEnumerator">SparseBufferWriter&lt;T&gt;.GetEnumerator()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_System_Collections_IEnumerable_GetEnumerator">SparseBufferWriter&lt;T&gt;.IEnumerable.GetEnumerator()</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Dispose_System_Boolean_">SparseBufferWriter&lt;T&gt;.Dispose(Boolean)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_ToString">SparseBufferWriter&lt;T&gt;.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_End">SparseBufferWriter&lt;T&gt;.End</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Start">SparseBufferWriter&lt;T&gt;.Start</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_GetPosition_System_Int64_SequencePosition_">SparseBufferWriter&lt;T&gt;.GetPosition(Int64, SequencePosition)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Read_SequencePosition__System_Int64_">SparseBufferWriter&lt;T&gt;.Read(SequencePosition, Int64)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo_scoped__0_output_scoped_SequencePosition__">SparseBufferWriter&lt;T&gt;.CopyTo(scoped, T, output, scoped, SequencePosition)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_SequencePosition_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TConsumer&gt;(TConsumer, SequencePosition)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_scoped_SequencePosition__System_Int64_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TConsumer&gt;(TConsumer, scoped, SequencePosition, Int64)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_GetEnumerator">SparseBufferWriter&lt;T&gt;.GetEnumerator()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_System_Collections_IEnumerable_GetEnumerator">SparseBufferWriter&lt;T&gt;.IEnumerable.GetEnumerator()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_System_Buffers_IBufferWriter_T__Advance_System_Int32_">SparseBufferWriter&lt;T&gt;.IBufferWriter&lt;T&gt;.Advance(Int32)</a>
@@ -208,7 +230,7 @@
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Buffers_SequenceBuilder_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class SequenceBuilder&lt;T&gt; : SparseBufferWriter&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IBufferWriter&lt;T&gt;, IReadOnlySequenceSource&lt;T&gt;, ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlySequence&lt;T&gt;&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class SequenceBuilder&lt;T&gt; : SparseBufferWriter&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IResettable, IBufferWriter&lt;T&gt;, IReadOnlySequenceSource&lt;T&gt;, ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlySequence&lt;T&gt;&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -354,9 +376,6 @@ chunk size.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <span class="xref">System.Collections.IEnumerable&lt;&gt;</span>
-  </div>
-  <div>
       <a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a>
   </div>
   <div>
@@ -370,6 +389,12 @@ chunk size.</p>
   </div>
   <div>
       <span class="xref">IDisposable</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
+  </div>
+  <div>
+      <span class="xref">System.Collections.IEnumerable&lt;&gt;</span>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">System.Buffers.IBufferWriter&lt;T&gt;</a>

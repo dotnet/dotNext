@@ -465,7 +465,7 @@ is used for memory pooling.</p>
   </span>
   <a id="DotNext_Buffers_BufferWriterSlim_1_Clear_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Clear*"></a>
   <h4 id="DotNext_Buffers_BufferWriterSlim_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Clear(System.Boolean)">Clear(Boolean)</h4>
-  <div class="markdown level1 summary"><p>lears the data written to the underlying buffer.</p>
+  <div class="markdown level1 summary"><p>Clears the data written to the underlying buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -561,7 +561,7 @@ is used for memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L307">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L313">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriterSlim_1_ToString_" data-uid="DotNext.Buffers.BufferWriterSlim`1.ToString*"></a>
   <h4 id="DotNext_Buffers_BufferWriterSlim_1_ToString" data-uid="DotNext.Buffers.BufferWriterSlim`1.ToString">ToString()</h4>
@@ -747,19 +747,19 @@ this method returns constructed string instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_TryPop_DotNext_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.TryPop(DotNext.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_TryPop_scoped__0_output_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.TryPop(scoped%2C%600%2Coutput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L217">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriterSlim_1_TryPop_" data-uid="DotNext.Buffers.BufferWriterSlim`1.TryPop*"></a>
-  <h4 id="DotNext_Buffers_BufferWriterSlim_1_TryPop_DotNext_Span__0__" data-uid="DotNext.Buffers.BufferWriterSlim`1.TryPop(DotNext.Span{`0})">TryPop(Span&lt;T&gt;)</h4>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_TryPop_scoped__0_output_" data-uid="DotNext.Buffers.BufferWriterSlim`1.TryPop(scoped,`0,output)">TryPop(scoped, T, output)</h4>
   <div class="markdown level1 summary"><p>Attempts to remove a sequence of last added items.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryPop(Span&lt;T&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool TryPop(scoped Span, T, output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -772,10 +772,19 @@ this method returns constructed string instance.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The buffer to receive last added items.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">Span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">output</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -797,19 +806,19 @@ this method returns constructed string instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Write_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Write(ReadOnlySpan%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_BufferWriterSlim_1_Write_scoped__0_input_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriterSlim%601.Write(scoped%2C%600%2Cinput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/BufferWriterSlim.cs/#L167">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriterSlim_1_Write_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Write*"></a>
-  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Write_ReadOnlySpan__0__" data-uid="DotNext.Buffers.BufferWriterSlim`1.Write(ReadOnlySpan{`0})">Write(ReadOnlySpan&lt;T&gt;)</h4>
+  <h4 id="DotNext_Buffers_BufferWriterSlim_1_Write_scoped__0_input_" data-uid="DotNext.Buffers.BufferWriterSlim`1.Write(scoped,`0,input)">Write(scoped, T, input)</h4>
   <div class="markdown level1 summary"><p>Writes elements to this buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Write(ReadOnlySpan&lt;T&gt; input)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Write(scoped ReadOnlySpan, T, input)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -822,10 +831,19 @@ this method returns constructed string instance.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;T&gt;</td>
-        <td><span class="parametername">input</span></td>
-        <td><p>The span of elements to be written.</p>
-</td>
+        <td><span class="xref">scoped</span></td>
+        <td><span class="parametername">ReadOnlySpan</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">input</span></td>
+        <td><span class="parametername"></span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>

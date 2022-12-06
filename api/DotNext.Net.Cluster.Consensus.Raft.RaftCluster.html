@@ -84,6 +84,8 @@
   </div>
   <div class="implements">
     <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Extensions.IUnresponsiveClusterMemberRemovalSupport.html">IUnresponsiveClusterMemberRemovalSupport</a></div>
+    <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.html">IStandbyModeSupport</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>&gt;</div>
     <div><a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html">IReplicationCluster</a></div>
@@ -95,6 +97,12 @@
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_FailureDetectorFactory">RaftCluster&lt;RaftClusterMember&gt;.FailureDetectorFactory</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_Consensus_Raft_Extensions_IUnresponsiveClusterMemberRemovalSupport_FailureDetectorFactory">RaftCluster&lt;RaftClusterMember&gt;.IUnresponsiveClusterMemberRemovalSupport.FailureDetectorFactory</a>
+    </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_EndPointComparer">RaftCluster&lt;RaftClusterMember&gt;.EndPointComparer</a>
     </div>
@@ -162,10 +170,22 @@
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_Cluster_ICluster_WaitForLeaderAsync_TimeSpan_CancellationToken_">RaftCluster&lt;RaftClusterMember&gt;.ICluster.WaitForLeaderAsync(TimeSpan, CancellationToken)</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StartAsync_DotNext_Func__0_CancellationToken_ValueTask_System_Boolean___CancellationToken_">RaftCluster&lt;RaftClusterMember&gt;.StartAsync(Func&lt;RaftClusterMember, CancellationToken, ValueTask&lt;Boolean&gt;&gt;, CancellationToken)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_StartFollowing">RaftCluster&lt;RaftClusterMember&gt;.StartFollowing()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_TurnIntoRegularNodeAsync_CancellationToken_">RaftCluster&lt;RaftClusterMember&gt;.TurnIntoRegularNodeAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_RevertToNormalModeAsync_CancellationToken_">RaftCluster&lt;RaftClusterMember&gt;.RevertToNormalModeAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_EnableStandbyModeAsync_CancellationToken_">RaftCluster&lt;RaftClusterMember&gt;.EnableStandbyModeAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Standby">RaftCluster&lt;RaftClusterMember&gt;.Standby</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_InstallSnapshotAsync__1_DotNext_Net_Cluster_ClusterMemberId_System_Int64___0_System_Int64_CancellationToken_">RaftCluster&lt;RaftClusterMember&gt;.InstallSnapshotAsync&lt;TSnapshot&gt;(ClusterMemberId, Int64, TSnapshot, Int64, CancellationToken)</a>
@@ -205,6 +225,9 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DotNext_Net_IPeerMesh_Peers">RaftCluster&lt;RaftClusterMember&gt;.IPeerMesh.Peers</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DisposeAsyncCore">RaftCluster&lt;RaftClusterMember&gt;.DisposeAsyncCore()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DisposeAsync">RaftCluster&lt;RaftClusterMember&gt;.DisposeAsync()</a>
@@ -283,7 +306,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class RaftCluster : RaftCluster&lt;RaftClusterMember&gt;, IRaftCluster, IReplicationCluster&lt;IRaftLogEntry&gt;, IReplicationCluster, ICluster, IPeerMesh&lt;IClusterMember&gt;, IPeerMesh&lt;IRaftClusterMember&gt;, IPeerMesh</code></pre>
+    <pre><code class="lang-csharp hljs">public class RaftCluster : RaftCluster&lt;RaftClusterMember&gt;, IUnresponsiveClusterMemberRemovalSupport, IStandbyModeSupport, IRaftCluster, IReplicationCluster&lt;IRaftLogEntry&gt;, IReplicationCluster, ICluster, IPeerMesh&lt;IClusterMember&gt;, IPeerMesh&lt;IRaftClusterMember&gt;, IPeerMesh</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -292,7 +315,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster__ctor_DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.%23ctor(DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster__ctor_DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.#ctor(DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration)">RaftCluster(RaftCluster.NodeConfiguration)</h4>
@@ -328,7 +351,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_ConfigurationStorage.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.ConfigurationStorage%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_ConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.ConfigurationStorage*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_ConfigurationStorage" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.ConfigurationStorage">ConfigurationStorage</h4>
@@ -360,7 +383,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_LocalMemberAddress.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.LocalMemberAddress%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L98">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L102">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_LocalMemberAddress_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.LocalMemberAddress*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_LocalMemberAddress" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.LocalMemberAddress">LocalMemberAddress</h4>
@@ -393,7 +416,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_AddMemberAsync_DotNext_Net_Cluster_ClusterMemberId_System_Net_EndPoint_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.AddMemberAsync(DotNext.Net.Cluster.ClusterMemberId%2CSystem.Net.EndPoint%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L167">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L187">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_AddMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.AddMemberAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_AddMemberAsync_DotNext_Net_Cluster_ClusterMemberId_System_Net_EndPoint_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.AddMemberAsync(DotNext.Net.Cluster.ClusterMemberId,System.Net.EndPoint,CancellationToken)">AddMemberAsync(ClusterMemberId, EndPoint, CancellationToken)</h4>
@@ -456,7 +479,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L308">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L330">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -489,42 +512,10 @@
   <div><span class="xref">DotNext.Net.Cluster.Consensus.Raft.RaftCluster&lt;DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember&gt;.Dispose(System.Boolean)</span></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.DisposeAsyncCore%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L321">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_DisposeAsyncCore_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.DisposeAsyncCore*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_DisposeAsyncCore" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.DisposeAsyncCore">DisposeAsyncCore()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override async ValueTask DisposeAsyncCore()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">ValueTask</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><span class="xref">DotNext.Net.Cluster.Consensus.Raft.RaftCluster&lt;DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember&gt;.DisposeAsyncCore()</span></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_RemoveMemberAsync_System_Net_EndPoint_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.RemoveMemberAsync(System.Net.EndPoint%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L183">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L202">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_RemoveMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.RemoveMemberAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_RemoveMemberAsync_System_Net_EndPoint_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.RemoveMemberAsync(System.Net.EndPoint,CancellationToken)">RemoveMemberAsync(EndPoint, CancellationToken)</h4>
@@ -581,7 +572,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_StartAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.StartAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L108">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L112">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_StartAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.StartAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_StartAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.StartAsync(CancellationToken)">StartAsync(CancellationToken)</h4>
@@ -590,7 +581,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override async Task StartAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public async Task StartAsync(CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -626,14 +617,12 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><span class="xref">DotNext.Net.Cluster.Consensus.Raft.RaftCluster&lt;DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember&gt;.StartAsync(CancellationToken)</span></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_StopAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.StopAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L146">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_StopAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.StopAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_StopAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.StopAsync(CancellationToken)">StopAsync(CancellationToken)</h4>
@@ -642,7 +631,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override async Task StopAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public override Task StopAsync(CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -680,7 +669,67 @@
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><span class="xref">DotNext.Net.Cluster.Consensus.Raft.RaftCluster&lt;DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember&gt;.StopAsync(CancellationToken)</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_UnavailableMemberDetected_DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UnavailableMemberDetected(DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L236">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_UnavailableMemberDetected_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UnavailableMemberDetected*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_UnavailableMemberDetected_DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UnavailableMemberDetected(DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember,CancellationToken)">UnavailableMemberDetected(RaftClusterMember, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected sealed override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember.html">RaftClusterMember</a></td>
+        <td><span class="parametername">member</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">DotNext.Net.Cluster.Consensus.Raft.RaftCluster&lt;DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember&gt;.UnavailableMemberDetected(DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember, CancellationToken)</span></div>
   <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Extensions.IUnresponsiveClusterMemberRemovalSupport.html">IUnresponsiveClusterMemberRemovalSupport</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.html">IStandbyModeSupport</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a>
   </div>
@@ -768,7 +817,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L17" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L19" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

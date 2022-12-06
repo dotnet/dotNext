@@ -137,12 +137,11 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Scheduler_DelayedTask_1_Task.md&amp;value=---%0Auid%3A%20DotNext.Threading.Scheduler.DelayedTask%601.Task%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs/#L157">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs/#L198">View Source</a>
   </span>
   <a id="DotNext_Threading_Scheduler_DelayedTask_1_Task_" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.Task*"></a>
   <h4 id="DotNext_Threading_Scheduler_DelayedTask_1_Task" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.Task">Task</h4>
-  <div class="markdown level1 summary"><p>Gets delayed task.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
@@ -165,23 +164,23 @@
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Threading.Scheduler.DelayedTask.html#DotNext_Threading_Scheduler_DelayedTask_Task">Scheduler.DelayedTask.Task</a></div>
-  <h3 id="operators">Operators
+  <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Scheduler_DelayedTask_1_op_Implicit_DotNext_Threading_Scheduler_DelayedTask__0___System_Nullable_Task__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Scheduler.DelayedTask%601.op_Implicit(DotNext.Threading.Scheduler.DelayedTask%7B%600%7D)~System.Nullable%7BTask%7B%600%7D%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Scheduler_DelayedTask_1_ConfigureAwait_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Scheduler.DelayedTask%601.ConfigureAwait(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs/#L164">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs/#L214">View Source</a>
   </span>
-  <a id="DotNext_Threading_Scheduler_DelayedTask_1_op_Implicit_" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.op_Implicit*"></a>
-  <h4 id="DotNext_Threading_Scheduler_DelayedTask_1_op_Implicit_DotNext_Threading_Scheduler_DelayedTask__0___System_Nullable_Task__0__" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.op_Implicit(DotNext.Threading.Scheduler.DelayedTask{`0})~System.Nullable{Task{`0}}">Implicit(Scheduler.DelayedTask&lt;TResult&gt; to Nullable&lt;Task&lt;TResult&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>Gets delayed task.</p>
+  <a id="DotNext_Threading_Scheduler_DelayedTask_1_ConfigureAwait_" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.ConfigureAwait*"></a>
+  <h4 id="DotNext_Threading_Scheduler_DelayedTask_1_ConfigureAwait_System_Boolean_" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.ConfigureAwait(System.Boolean)">ConfigureAwait(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Configures an awaiter used to await this task.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static implicit operator Task&lt;TResult&gt;? (Scheduler.DelayedTask&lt;TResult&gt; task)</code></pre>
+    <pre><code class="lang-csharp hljs">public ConfiguredTaskAwaitable&lt;TResult&gt; ConfigureAwait(bool continueOnCapturedContext)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -194,9 +193,10 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Scheduler.DelayedTask-1.html">Scheduler.DelayedTask</a>&lt;TResult&gt;</td>
-        <td><span class="parametername">task</span></td>
-        <td><p>Delayed task.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">continueOnCapturedContext</span></td>
+        <td><p><span class="xref">true</span> to attempt to marshal the continuation back to the original context captured;
+otherwise, <span class="xref">false</span>.</p>
 </td>
       </tr>
     </tbody>
@@ -211,8 +211,40 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">Task</span>&lt;TResult&gt;&gt;</td>
-        <td><p>The delayed task.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.configuredtaskawaitable-1">ConfiguredTaskAwaitable</a>&lt;TResult&gt;</td>
+        <td><p>An awaiter instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Scheduler_DelayedTask_1_GetAwaiter.md&amp;value=---%0Auid%3A%20DotNext.Threading.Scheduler.DelayedTask%601.GetAwaiter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs/#L204">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Scheduler_DelayedTask_1_GetAwaiter_" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.GetAwaiter*"></a>
+  <h4 id="DotNext_Threading_Scheduler_DelayedTask_1_GetAwaiter" data-uid="DotNext.Threading.Scheduler.DelayedTask`1.GetAwaiter">GetAwaiter()</h4>
+  <div class="markdown level1 summary"><p>Gets an awaiter used to await this task.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TaskAwaiter&lt;TResult&gt; GetAwaiter()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.taskawaiter-1">TaskAwaiter</a>&lt;TResult&gt;</td>
+        <td><p>An awaiter instance.</p>
 </td>
       </tr>
     </tbody>
@@ -280,7 +312,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Scheduler_DelayedTask_1.md&amp;value=---%0Auid%3A%20DotNext.Threading.Scheduler.DelayedTask%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs/#L147" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Scheduler.DelayedTask.cs/#L190" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
