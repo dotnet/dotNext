@@ -21,7 +21,7 @@ namespace DotNext
         public static void RandomInt()
         {
             using var rng = new DummyRNG(42);
-            Equal(42, rng.Next());
+            Equal(42 >> 1, rng.Next()); // because Next applies >> 1 for every randomly generated 32-bit unsigned integer
         }
 
         public static IEnumerable<object[]> RandomDoubleTestData()

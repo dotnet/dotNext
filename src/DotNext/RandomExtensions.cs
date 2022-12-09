@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -5,7 +6,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext;
 
-using ByteBuffer = Buffers.MemoryRental<byte>;
+using Buffers;
 
 /// <summary>
 /// Provides random data generation.
@@ -17,6 +18,49 @@ public static class RandomExtensions
     /// </summary>
     internal static readonly int BitwiseHashSalt = Random.Shared.Next();
 
+    private ref struct CachedRandomNumberGenerator
+    {
+        private readonly RandomNumberGenerator random;
+        private SpanReader<byte> reader;
+
+        internal CachedRandomNumberGenerator(RandomNumberGenerator rng, Span<byte> randomVector)
+        {
+            random = rng;
+            reader = new(randomVector);
+        }
+
+        private uint NextUInt32()
+        {
+            uint result;
+            while (!reader.TryRead(out result))
+            {
+                reader.Reset();
+                random.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in MemoryMarshal.GetReference(reader.Span)), reader.Span.Length));
+            }
+
+            return result;
+        }
+
+        internal uint NextUInt32(uint maxValue)
+        {
+            // Algorithm: https://arxiv.org/pdf/1805.10941.pdf
+            var rnd = NextUInt32();
+            var m = (ulong)rnd * maxValue;
+
+            var low = (uint)m;
+            if (low < maxValue)
+            {
+                for (var t = unchecked(~maxValue + 1U) % maxValue; low < t; low = (uint)m)
+                {
+                    rnd = NextUInt32();
+                    m = (ulong)rnd * maxValue;
+                }
+            }
+
+            return (uint)(m >> 32);
+        }
+    }
+
     private static void NextCharsCore(Random rng, ReadOnlySpan<char> allowedChars, Span<char> buffer)
     {
         Debug.Assert(rng is not null);
@@ -25,7 +69,7 @@ public static class RandomExtensions
 
         ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
         foreach (ref var element in buffer)
-            element = Unsafe.Add(ref firstChar, rng.Next(0, allowedChars.Length));
+            element = Unsafe.Add(ref firstChar, rng.Next(allowedChars.Length));
     }
 
     [SkipLocalsInit]
@@ -35,16 +79,47 @@ public static class RandomExtensions
         Debug.Assert(!buffer.IsEmpty);
         Debug.Assert(!allowedChars.IsEmpty);
 
-        var offset = buffer.Length << 2;
-        using ByteBuffer bytes = (uint)offset <= (uint)ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
+        var randomBufLength = buffer.Length << 2;
+        using MemoryRental<byte> bytes = (uint)randomBufLength <= (uint)MemoryRental<byte>.StackallocThreshold
+            ? stackalloc byte[randomBufLength]
+            : new MemoryRental<byte>(randomBufLength);
         rng.GetBytes(bytes.Span);
-        offset = 0;
-        ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
-        foreach (ref var element in buffer)
+
+        if (BitOperations.IsPow2(allowedChars.Length))
         {
-            var randomNumber = BitConverter.ToUInt32(bytes.Span.Slice(offset)) % (uint)allowedChars.Length;
-            element = Unsafe.Add(ref firstChar, randomNumber);
-            offset += sizeof(int);
+            // optimized branch, we can avoid modulo operation at all and have a unbiased version
+            NextCharsFast(bytes.Span, allowedChars, buffer);
+        }
+        else
+        {
+            var cachedRng = new CachedRandomNumberGenerator(rng, bytes.Span);
+            NextChars(ref cachedRng, allowedChars, buffer);
+        }
+
+        static void NextCharsFast(ReadOnlySpan<byte> randomVector, ReadOnlySpan<char> allowedChars, Span<char> output)
+        {
+            Debug.Assert(BitOperations.IsPow2(allowedChars.Length));
+
+            // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
+            var moduloOperand = (uint)(allowedChars.Length - 1);
+
+            ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
+            foreach (ref var element in output)
+            {
+                var randomNumber = BitConverter.ToUInt32(randomVector) & moduloOperand;
+                element = Unsafe.Add(ref firstChar, randomNumber);
+                randomVector = randomVector.Slice(sizeof(uint));
+            }
+        }
+
+        static void NextChars(scoped ref CachedRandomNumberGenerator rng, ReadOnlySpan<char> allowedChars, Span<char> output)
+        {
+            ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
+            foreach (ref var element in output)
+            {
+                var randomNumber = rng.NextUInt32((uint)allowedChars.Length);
+                element = Unsafe.Add(ref firstChar, randomNumber);
+            }
         }
     }
 
@@ -172,9 +247,21 @@ public static class RandomExtensions
     /// Generates random non-negative random integer.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
-    /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
+    /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>).</returns>
     public static int Next(this RandomNumberGenerator random)
-        => random.Next<int>() & int.MaxValue; // remove sign bit. Abs function may cause OverflowException
+    {
+        const uint maxValue = uint.MaxValue >> 1;
+        Unsafe.SkipInit(out uint result);
+
+        do
+        {
+            random.GetBytes(Span.AsBytes(ref result));
+            result >>= 1; // remove sign bit
+        }
+        while (result is maxValue);
+
+        return (int)result;
+    }
 
     /// <summary>
     /// Generates random boolean value.
@@ -222,7 +309,7 @@ public static class RandomExtensions
         where T : unmanaged
     {
         Unsafe.SkipInit(out T result);
-        random.GetBytes(new Span<byte>(&result, sizeof(T)));
+        random.GetBytes(Span.AsBytes(ref result));
         return result;
     }
 }
