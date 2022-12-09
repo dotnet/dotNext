@@ -322,6 +322,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {
                     NotEmpty(await member.GetMetadataAsync());
                 }
+
+                Equal(ClusterMemberStatus.Available, member.Status);
             }
 
             await host3.StopAsync();

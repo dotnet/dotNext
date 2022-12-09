@@ -540,6 +540,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host2.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
             Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host3.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
 
+            foreach (var member in host1.Members)
+            {
+                var status = member.Status;
+                if (status is not ClusterMemberStatus.Available)
+                    Fail($"Member {member.EndPoint} has unexpected status {status}");
+            }
+
             await host3.StopAsync();
             await host2.StopAsync();
             await host1.StopAsync();
