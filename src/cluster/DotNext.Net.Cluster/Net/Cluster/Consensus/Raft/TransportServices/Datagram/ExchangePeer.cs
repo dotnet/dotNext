@@ -42,12 +42,14 @@ internal sealed class ExchangePeer : RaftClusterMember
         try
         {
             client.Enqueue(exchange, timeoutSource.Token);
-            return await exchange.Invoke(timeoutSource.Token).ConfigureAwait(false);
+            var result = await exchange.Invoke(timeoutSource.Token).ConfigureAwait(false);
+            Touch();
+            return result;
         }
         catch (Exception e) when (e is not OperationCanceledException || !token.IsCancellationRequested)
         {
             Logger.MemberUnavailable(EndPoint, e);
-            ChangeStatus(ClusterMemberStatus.Unavailable);
+            Status = ClusterMemberStatus.Unavailable;
             throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
         }
         finally

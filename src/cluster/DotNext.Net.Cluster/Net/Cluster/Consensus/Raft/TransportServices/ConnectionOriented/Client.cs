@@ -52,7 +52,9 @@ internal abstract class Client : RaftClusterMember
             context ??= await ConnectAsync(requestDurationTracker.Token).ConfigureAwait(false);
 
             context.Protocol.Reset();
-            return await request(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            var result = await request(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            Touch();
+            return result;
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
@@ -64,7 +66,7 @@ internal abstract class Client : RaftClusterMember
         catch (Exception e)
         {
             Logger.MemberUnavailable(EndPoint, e);
-            ChangeStatus(ClusterMemberStatus.Unavailable);
+            Status = ClusterMemberStatus.Unavailable;
 
             // detect broken socket
             context?.Dispose();

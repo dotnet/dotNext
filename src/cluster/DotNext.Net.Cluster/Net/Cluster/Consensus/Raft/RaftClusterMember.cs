@@ -71,7 +71,11 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     /// <summary>
     /// Gets the status of this member.
     /// </summary>
-    public ClusterMemberStatus Status => status.Value;
+    public ClusterMemberStatus Status
+    {
+        get => IsRemote ? status.Value : ClusterMemberStatus.Available;
+        private protected set => IClusterMember.OnMemberStatusChanged(this, ref status, value, statusChangedHandlers);
+    }
 
     /// <summary>
     /// Informs about status change.
@@ -101,10 +105,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     /// <returns>The task representing asynchronous execution of this method.</returns>
     public abstract ValueTask CancelPendingRequestsAsync();
 
-    private protected void ChangeStatus(ClusterMemberStatus newState)
-        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, statusChangedHandlers);
-
-    internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
+    internal void Touch() => Status = ClusterMemberStatus.Available;
 
     private protected abstract Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
@@ -156,4 +157,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     /// <inheritdoc />
     Task<long?> IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)
         => IsRemote ? SynchronizeAsync(commitIndex, token) : Task.FromResult<long?>(null);
+
+    /// <inheritdoc />
+    public override string ToString() => EndPoint.ToString() ?? Id.ToString();
 }
