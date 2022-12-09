@@ -88,7 +88,7 @@ public static class RandomExtensions
 
         if (BitOperations.IsPow2(allowedChars.Length))
         {
-            // optimized branch, we can avoid modulo operation at all and have a unbiased version
+            // optimized branch, we can avoid modulo operation at all and have an unbiased version
             NextCharsFast(bytes.Span, allowedChars, buffer);
         }
         else
