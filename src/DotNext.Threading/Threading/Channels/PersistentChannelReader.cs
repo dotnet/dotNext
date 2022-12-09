@@ -78,7 +78,14 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             buffer = new MultipleReadersBuffer();
         }
 
-        fileOptions = new FileCreationOptions(FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.Asynchronous | FileOptions.SequentialScan);
+        fileOptions = new()
+        {
+            Mode = FileMode.Open,
+            Access = FileAccess.Read,
+            Share = FileShare.ReadWrite,
+            Optimization = FileOptions.Asynchronous | FileOptions.SequentialScan,
+        };
+
         cursor = new ChannelCursor(reader.Location, StateFileName);
         this.readRate = readRate;
         this.reliableEnumeration = reliableEnumeration;

@@ -3,6 +3,7 @@ using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels
 {
+    using static Collections.Generic.Sequence;
     using static IO.StreamExtensions;
 
     [ExcludeFromCodeCoverage]
@@ -227,6 +228,47 @@ namespace DotNext.Threading.Channels
         }
 
         [Fact]
+        public static async Task RegressionIssue136()
+        {
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+            { Location = path, PartitionCapacity = 3 }))
+            {
+                await Produce(channel.Writer, 0M, 30M);
+            }
+
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+            { Location = path, PartitionCapacity = 3 }))
+            {
+                await Produce(channel.Writer, 30M, 60M);
+            }
+
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+            { Location = path, PartitionCapacity = 3 }))
+            {
+                channel.Writer.Complete();
+                await Consume(channel.Reader);
+            }
+
+            static async Task Produce(ChannelWriter<decimal> writer, decimal start, decimal end)
+            {
+                for (decimal i = start; i < end; i++)
+                {
+                    await writer.WriteAsync(i);
+                }
+            }
+
+            static async Task Consume(ChannelReader<decimal> reader)
+            {
+                var array = await reader.ReadAllAsync().ToArrayAsync();
+                Equal(60, array.Length);
+
+                for (var i = 0; i < array.Length; i++)
+                    Equal(new decimal(i), array[i]);
+            }
+        }
+
+        [Fact]
         public static async Task ReentrantConsumption()
         {
             var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -234,9 +276,7 @@ namespace DotNext.Threading.Channels
             await ProduceTestSet(path, 1000M, 2000M);
             await ProduceTestSet(path, 2000M, 3000M);
 
-            await ConsumeTestSet(path, 0M, 1000M);
-            await ConsumeTestSet(path, 1000M, 2000M);
-            await ConsumeTestSet(path, 2000M, 3000M);
+            await ConsumeTestSet(path, 0M, 3000M);
 
             static async Task ProduceTestSet(string path, decimal startInclusive, decimal endExclusive)
             {

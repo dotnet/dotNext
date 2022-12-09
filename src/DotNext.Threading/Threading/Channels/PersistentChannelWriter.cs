@@ -20,7 +20,15 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
     {
         writeLock = singleWriter ? default : AsyncLock.Exclusive();
         this.writer = writer;
-        fileOptions = new FileCreationOptions(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous | FileOptions.WriteThrough, initialSize);
+        fileOptions = new()
+        {
+            Mode = FileMode.OpenOrCreate,
+            Access = FileAccess.ReadWrite,
+            Share = FileShare.Read,
+            Optimization = FileOptions.Asynchronous | FileOptions.WriteThrough,
+            InitialSize = initialSize,
+        };
+
         cursor = new ChannelCursor(writer.Location, StateFileName);
     }
 

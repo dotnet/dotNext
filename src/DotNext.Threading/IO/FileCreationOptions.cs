@@ -5,27 +5,16 @@ namespace DotNext.IO;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct FileCreationOptions
 {
-    internal readonly FileAccess Access;
-    internal readonly FileMode Mode;
-    internal readonly FileShare Share;
-    internal readonly FileOptions Optimization;
-    internal readonly long InitialSize;
+    internal FileAccess Access { get; init; }
 
-    internal FileCreationOptions(FileMode mode, FileAccess access, FileShare share, FileOptions options, long initialSize = 0L)
-    {
-        Access = access;
-        Mode = mode;
-        Share = share;
-        Optimization = options;
-        InitialSize = initialSize;
-    }
+    internal FileMode Mode { get; init; }
 
-    internal FileStreamOptions ToFileStreamOptions(int bufferSize) => new()
-    {
-        Mode = Mode,
-        Access = Access,
-        Share = Share,
-        Options = Optimization,
-        BufferSize = bufferSize,
-    };
+    internal FileShare Share { get; init; }
+
+    internal FileOptions Optimization { get; init; }
+
+    internal long InitialSize { get; init; }
+
+    internal FileStream CreateStream(string fileName, int bufferSize)
+        => new(fileName, Mode, Access, Share, bufferSize, Optimization);
 }
