@@ -18,6 +18,7 @@ public static class RandomExtensions
     /// </summary>
     internal static readonly int BitwiseHashSalt = Random.Shared.Next();
 
+    [StructLayout(LayoutKind.Auto)]
     private ref struct CachedRandomNumberGenerator
     {
         private readonly RandomNumberGenerator random;
