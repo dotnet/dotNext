@@ -17,8 +17,7 @@ internal struct ChannelCursor
     private const int OffsetOffset = PositionOffset + sizeof(long);
     private readonly SafeFileHandle stateFile;
     private readonly byte[] stateBuffer;
-    private long position;
-    private long offset;
+    private long position, offset;
 
     internal ChannelCursor(DirectoryInfo location, string stateFileName)
     {

@@ -8,7 +8,7 @@ internal interface IChannel
 {
     DirectoryInfo Location { get; }
 
-    void GetOrCreatePartition(ref ChannelCursor cursor, [NotNull] ref Partition? partition, in FileCreationOptions options, bool deleteOnDispose);
+    void GetOrCreatePartition(ref ChannelCursor cursor, [NotNull] ref Partition? partition, in FileStreamFactory factory, bool deleteOnDispose);
 
     Task Completion { get; }
 }

@@ -3,7 +3,7 @@
 namespace DotNext.IO;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct FileCreationOptions
+internal readonly struct FileStreamFactory
 {
     internal FileAccess Access { get; init; }
 

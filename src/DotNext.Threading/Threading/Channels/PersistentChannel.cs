@@ -91,11 +91,11 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token)
         => readTrigger.WaitAsync(token).AsTask();
 
-    private Partition CreateTopicStream(long partition, in FileCreationOptions options, out bool created)
-        => new(location, partition, options, bufferSize, out created);
+    private Partition CreateTopicStream(long partition, in FileStreamFactory factory, out bool created)
+        => new(location, partition, in factory, bufferSize, out created);
 
     /// <inheritdoc />
-    void IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull] ref Partition? partition, in FileCreationOptions options, bool deleteOnDispose)
+    void IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull] ref Partition? partition, in FileStreamFactory factory, bool deleteOnDispose)
     {
         var partitionNumber = state.Position / maxCount;
         var p = partition;
@@ -103,7 +103,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
 
         if (p is null)
         {
-            p = CreateTopicStream(partitionNumber, options, out created);
+            p = CreateTopicStream(partitionNumber, in factory, out created);
 
             if (created)
                 state.Reset();
@@ -117,7 +117,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
             p.Dispose();
             if (deleteOnDispose)
                 File.Delete(fileName);
-            p = CreateTopicStream(partitionNumber, options, out created);
+            p = CreateTopicStream(partitionNumber, factory, out created);
             state.Reset();
         }
 
