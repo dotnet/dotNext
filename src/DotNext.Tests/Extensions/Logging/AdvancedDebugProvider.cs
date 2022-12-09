@@ -1,21 +1,19 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Http;
+namespace DotNext.Extensions.Logging;
 
 using Buffers;
 using Diagnostics;
 
 [ExcludeFromCodeCoverage]
-internal sealed class TestLoggerProvider : Disposable, ILoggerProvider
+internal sealed class AdvancedDebugProvider : Disposable, ILoggerProvider
 {
     private readonly string prefix;
 
-    internal TestLoggerProvider(string prefix) => this.prefix = prefix;
+    internal AdvancedDebugProvider(string prefix) => this.prefix = prefix;
 
     public ILogger CreateLogger(string name) => new Logger(name, prefix);
 
@@ -61,18 +59,5 @@ internal sealed class TestLoggerProvider : Disposable, ILoggerProvider
 
             Debug.WriteLine(message, name);
         }
-    }
-}
-
-[ExcludeFromCodeCoverage]
-internal static class TestLoggerProviderExtensions
-{
-    private static TestLoggerProvider CreateProvider(this string prefix, IServiceProvider services)
-        => new(prefix);
-
-    internal static ILoggingBuilder AddTestDebugLogger(this ILoggingBuilder builder, string prefix)
-    {
-        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, TestLoggerProvider>(prefix.CreateProvider));
-        return builder;
     }
 }

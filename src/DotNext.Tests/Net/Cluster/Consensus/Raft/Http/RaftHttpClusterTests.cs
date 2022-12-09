@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Diagnostics;
     using Messaging;
     using Replication;
+    using static DotNext.Extensions.Logging.TestLoggers;
 
     [ExcludeFromCodeCoverage]
     [Collection(TestCollections.Raft)]
@@ -43,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 )
                 .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-                .ConfigureLogging(builder => builder.AddTestDebugLogger(port.ToString()).SetMinimumLevel(LogLevel.Debug))
+                .ConfigureLogging(builder => builder.AddDebugLogger(port.ToString()).SetMinimumLevel(LogLevel.Debug))
                 .JoinCluster()
                 .Build();
         }
