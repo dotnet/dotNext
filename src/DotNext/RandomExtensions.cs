@@ -45,16 +45,14 @@ public static class RandomExtensions
         internal uint NextUInt32(uint maxValue)
         {
             // Algorithm: https://arxiv.org/pdf/1805.10941.pdf
-            var rnd = NextUInt32();
-            var m = (ulong)rnd * maxValue;
-
+            var m = (ulong)NextUInt32() * maxValue;
             var low = (uint)m;
+
             if (low < maxValue)
             {
                 for (var t = unchecked(~maxValue + 1U) % maxValue; low < t; low = (uint)m)
                 {
-                    rnd = NextUInt32();
-                    m = (ulong)rnd * maxValue;
+                    m = (ulong)NextUInt32() * maxValue;
                 }
             }
 
