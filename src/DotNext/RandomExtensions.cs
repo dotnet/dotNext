@@ -1,8 +1,8 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext;
 
@@ -18,15 +18,45 @@ public static class RandomExtensions
     /// </summary>
     internal static readonly int BitwiseHashSalt = Random.Shared.Next();
 
+    private interface IRandomBytesSource
+    {
+        void GetBytes(Span<byte> bytes);
+    }
+
     [StructLayout(LayoutKind.Auto)]
-    private ref struct CachedRandomNumberGenerator
+    private readonly struct RandomBytesSource : IRandomBytesSource
+    {
+        private readonly Random random;
+
+        internal RandomBytesSource(Random r) => random = r;
+
+        void IRandomBytesSource.GetBytes(Span<byte> bytes) => random.NextBytes(bytes);
+
+        public static implicit operator RandomBytesSource(Random r) => new(r);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct CryptographicRandomBytesSource : IRandomBytesSource
     {
         private readonly RandomNumberGenerator random;
+
+        internal CryptographicRandomBytesSource(RandomNumberGenerator r) => random = r;
+
+        void IRandomBytesSource.GetBytes(Span<byte> bytes) => random.GetBytes(bytes);
+
+        public static implicit operator CryptographicRandomBytesSource(RandomNumberGenerator r) => new(r);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private ref struct CachedRandomNumberGenerator<TRandom>
+        where TRandom : struct, IRandomBytesSource
+    {
+        private TRandom randomBytesSource; // SpanAction, Random, or RandomNumberGenerator
         private SpanReader<byte> reader;
 
-        internal CachedRandomNumberGenerator(RandomNumberGenerator rng, Span<byte> randomVector)
+        internal CachedRandomNumberGenerator(TRandom random, Span<byte> randomVector)
         {
-            random = rng;
+            randomBytesSource = random;
             reader = new(randomVector);
         }
 
@@ -36,7 +66,7 @@ public static class RandomExtensions
             while (!reader.TryRead(out result))
             {
                 reader.Reset();
-                random.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in MemoryMarshal.GetReference(reader.Span)), reader.Span.Length));
+                randomBytesSource.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in MemoryMarshal.GetReference(reader.Span)), reader.Span.Length));
             }
 
             return result;
@@ -60,21 +90,9 @@ public static class RandomExtensions
         }
     }
 
-    private static void NextCharsCore(Random rng, ReadOnlySpan<char> allowedChars, Span<char> buffer)
+    private static void NextChars<TRandom>(TRandom random, ReadOnlySpan<char> allowedChars, Span<char> buffer)
+        where TRandom : struct, IRandomBytesSource
     {
-        Debug.Assert(rng is not null);
-        Debug.Assert(!buffer.IsEmpty);
-        Debug.Assert(!allowedChars.IsEmpty);
-
-        ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
-        foreach (ref var element in buffer)
-            element = Unsafe.Add(ref firstChar, rng.Next(allowedChars.Length));
-    }
-
-    [SkipLocalsInit]
-    private static void NextCharsCore(RandomNumberGenerator rng, ReadOnlySpan<char> allowedChars, Span<char> buffer)
-    {
-        Debug.Assert(rng is not null);
         Debug.Assert(!buffer.IsEmpty);
         Debug.Assert(!allowedChars.IsEmpty);
 
@@ -82,7 +100,7 @@ public static class RandomExtensions
         using MemoryRental<byte> bytes = (uint)randomBufLength <= (uint)MemoryRental<byte>.StackallocThreshold
             ? stackalloc byte[randomBufLength]
             : new MemoryRental<byte>(randomBufLength);
-        rng.GetBytes(bytes.Span);
+        random.GetBytes(bytes.Span);
 
         if (BitOperations.IsPow2(allowedChars.Length))
         {
@@ -91,34 +109,36 @@ public static class RandomExtensions
         }
         else
         {
-            var cachedRng = new CachedRandomNumberGenerator(rng, bytes.Span);
-            NextChars(ref cachedRng, allowedChars, buffer);
+            var cachedRng = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
+            NextCharsCore(ref cachedRng, allowedChars, buffer);
         }
+    }
 
-        static void NextCharsFast(ReadOnlySpan<byte> randomVector, ReadOnlySpan<char> allowedChars, Span<char> output)
+    private static void NextCharsFast(ReadOnlySpan<byte> randomVector, ReadOnlySpan<char> allowedChars, Span<char> output)
+    {
+        Debug.Assert(BitOperations.IsPow2(allowedChars.Length));
+        Debug.Assert(randomVector.Length == output.Length * 4);
+
+        // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
+        var moduloOperand = (uint)(allowedChars.Length - 1);
+
+        ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
+        foreach (ref var element in output)
         {
-            Debug.Assert(BitOperations.IsPow2(allowedChars.Length));
-
-            // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
-            var moduloOperand = (uint)(allowedChars.Length - 1);
-
-            ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
-            foreach (ref var element in output)
-            {
-                var randomNumber = BitConverter.ToUInt32(randomVector) & moduloOperand;
-                element = Unsafe.Add(ref firstChar, randomNumber);
-                randomVector = randomVector.Slice(sizeof(uint));
-            }
+            var randomNumber = BitConverter.ToUInt32(randomVector) & moduloOperand;
+            element = Unsafe.Add(ref firstChar, randomNumber);
+            randomVector = randomVector.Slice(sizeof(uint));
         }
+    }
 
-        static void NextChars(scoped ref CachedRandomNumberGenerator rng, ReadOnlySpan<char> allowedChars, Span<char> output)
+    private static void NextCharsCore<TRandom>(scoped ref CachedRandomNumberGenerator<TRandom> rng, ReadOnlySpan<char> allowedChars, Span<char> output)
+        where TRandom : struct, IRandomBytesSource
+    {
+        ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
+        foreach (ref var element in output)
         {
-            ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
-            foreach (ref var element in output)
-            {
-                var randomNumber = rng.NextUInt32((uint)allowedChars.Length);
-                element = Unsafe.Add(ref firstChar, randomNumber);
-            }
+            var randomNumber = rng.NextUInt32((uint)allowedChars.Length);
+            element = Unsafe.Add(ref firstChar, randomNumber);
         }
     }
 
@@ -134,18 +154,21 @@ public static class RandomExtensions
     {
         ArgumentNullException.ThrowIfNull(random);
 
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
-
         string result;
-        if (length is 0 || allowedChars.IsEmpty)
+        switch (length)
         {
-            result = string.Empty;
-        }
-        else
-        {
-            result = new('\0', length);
-            NextCharsCore(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
+            case < 0:
+                throw new ArgumentOutOfRangeException(nameof(length));
+            case 0:
+                result = string.Empty;
+                break;
+            default:
+                if (allowedChars.IsEmpty)
+                    goto case 0;
+
+                result = new('\0', length);
+                NextChars<RandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
+                break;
         }
 
         return result;
@@ -173,7 +196,7 @@ public static class RandomExtensions
         ArgumentNullException.ThrowIfNull(random);
 
         if (!allowedChars.IsEmpty && !buffer.IsEmpty)
-            NextCharsCore(random, allowedChars, buffer);
+            NextChars<RandomBytesSource>(random, allowedChars, buffer);
     }
 
     /// <summary>
@@ -188,18 +211,21 @@ public static class RandomExtensions
     {
         ArgumentNullException.ThrowIfNull(random);
 
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
-
         string result;
-        if (length is 0 || allowedChars.IsEmpty)
+        switch (length)
         {
-            result = string.Empty;
-        }
-        else
-        {
-            result = new('\0', length);
-            NextCharsCore(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
+            case < 0:
+                throw new ArgumentOutOfRangeException(nameof(length));
+            case 0:
+                result = string.Empty;
+                break;
+            default:
+                if (allowedChars.IsEmpty)
+                    goto case 0;
+
+                result = new('\0', length);
+                NextChars<CryptographicRandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
+                break;
         }
 
         return result;
@@ -227,7 +253,7 @@ public static class RandomExtensions
         ArgumentNullException.ThrowIfNull(random);
 
         if (!allowedChars.IsEmpty && !buffer.IsEmpty)
-            NextCharsCore(random, allowedChars, buffer);
+            NextChars<CryptographicRandomBytesSource>(random, allowedChars, buffer);
     }
 
     /// <summary>
