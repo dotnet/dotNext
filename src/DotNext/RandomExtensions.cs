@@ -30,7 +30,8 @@ public static class RandomExtensions
     {
         private readonly Random random;
 
-        internal RandomBytesSource(Random r) => random = r;
+        internal RandomBytesSource(Random random)
+            => this.random = random ?? throw new ArgumentNullException(nameof(random));
 
         void IRandomBytesSource.GetBytes(Span<byte> bytes) => random.NextBytes(bytes);
 
@@ -42,7 +43,8 @@ public static class RandomExtensions
     {
         private readonly RandomNumberGenerator random;
 
-        internal CryptographicRandomBytesSource(RandomNumberGenerator r) => random = r;
+        internal CryptographicRandomBytesSource(RandomNumberGenerator random)
+            => this.random = random ?? throw new ArgumentNullException(nameof(random));
 
         void IRandomBytesSource.GetBytes(Span<byte> bytes) => random.GetBytes(bytes);
 
@@ -154,30 +156,10 @@ public static class RandomExtensions
     /// <param name="allowedChars">The allowed characters for the random string.</param>
     /// <param name="length">The length of the random string.</param>
     /// <returns>Randomly generated string.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
-    {
-        ArgumentNullException.ThrowIfNull(random);
-
-        string result;
-        switch (length)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(length));
-            case 0:
-                result = string.Empty;
-                break;
-            default:
-                if (allowedChars.IsEmpty)
-                    goto case 0;
-
-                result = new('\0', length);
-                NextChars<RandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
-                break;
-        }
-
-        return result;
-    }
+        => NextString<RandomBytesSource>(random, allowedChars, length);
 
     /// <summary>
     /// Generates random string of the given length.
@@ -211,11 +193,14 @@ public static class RandomExtensions
     /// <param name="allowedChars">The allowed characters for the random string.</param>
     /// <param name="length">The length of the random string.</param>
     /// <returns>Randomly generated string.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
-    {
-        ArgumentNullException.ThrowIfNull(random);
+        => NextString<CryptographicRandomBytesSource>(random, allowedChars, length);
 
+    private static string NextString<TRandom>(TRandom random, ReadOnlySpan<char> allowedChars, int length)
+        where TRandom : struct, IRandomBytesSource
+    {
         string result;
         switch (length)
         {
@@ -229,7 +214,7 @@ public static class RandomExtensions
                     goto case 0;
 
                 result = new('\0', length);
-                NextChars<CryptographicRandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference<char>(result), length));
+                NextChars(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
                 break;
         }
 
