@@ -18,6 +18,8 @@ public static class RandomExtensions
     /// </summary>
     internal static readonly int BitwiseHashSalt = Random.Shared.Next();
 
+    private static readonly bool CleanupInternalBuffer = !LibrarySettings.DisableRandomStringInternalBufferCleanup;
+
     private interface IRandomBytesSource
     {
         void GetBytes(Span<byte> bytes);
@@ -112,6 +114,9 @@ public static class RandomExtensions
             var cachedRng = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
             NextChars(ref cachedRng, allowedChars, buffer);
         }
+
+        if (CleanupInternalBuffer)
+            bytes.Span.Clear();
     }
 
     private static void NextCharsFast(ReadOnlySpan<byte> randomVector, ReadOnlySpan<char> allowedChars, Span<char> output)
