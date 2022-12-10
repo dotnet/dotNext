@@ -12,13 +12,6 @@ using static Runtime.Intrinsics;
 /// </summary>
 public static partial class Sequence
 {
-    private const int HashSalt = -1521134295;
-
-    // cached to avoid allocation
-    private static readonly Func<int, object?, int> ObjectHashCode = GetHashCode;
-
-    private static int GetHashCode(int hash, object? obj) => (hash * HashSalt) + obj?.GetHashCode() ?? 0;
-
     /// <summary>
     /// Computes hash code for the sequence of objects.
     /// </summary>
@@ -27,8 +20,9 @@ public static partial class Sequence
     /// <returns>The hash code computed from each element in the sequence.</returns>
     public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
     {
-        var hashCode = sequence.Aggregate(-910176598, ObjectHashCode);
-        return salted ? (hashCode * HashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
+        const int hashSalt = -1521134295;
+        var hashCode = sequence.Aggregate(-910176598, static (hash, obj) => (hash * hashSalt) + obj?.GetHashCode() ?? 0);
+        return salted ? (hashCode * hashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
     }
 
     internal static bool SequenceEqual(IEnumerable<object>? first, IEnumerable<object>? second)
