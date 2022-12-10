@@ -111,8 +111,8 @@ public static class RandomExtensions
         }
         else
         {
-            var cachedRng = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
-            NextChars(ref cachedRng, allowedChars, buffer);
+            var cache = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
+            NextChars(ref cache, allowedChars, buffer);
         }
 
         if (CleanupInternalBuffer)
@@ -128,22 +128,22 @@ public static class RandomExtensions
         var moduloOperand = (uint)(allowedChars.Length - 1);
 
         ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
-        foreach (ref var element in output)
+        foreach (ref var outputChar in output)
         {
-            var randomNumber = BitConverter.ToUInt32(randomVector) & moduloOperand;
-            element = Unsafe.Add(ref firstChar, randomNumber);
+            var charPos = BitConverter.ToUInt32(randomVector) & moduloOperand;
+            outputChar = Unsafe.Add(ref firstChar, charPos);
             randomVector = randomVector.Slice(sizeof(uint));
         }
     }
 
-    private static void NextChars<TRandom>(scoped ref CachedRandomNumberGenerator<TRandom> rng, ReadOnlySpan<char> allowedChars, Span<char> output)
+    private static void NextChars<TRandom>(scoped ref CachedRandomNumberGenerator<TRandom> cache, ReadOnlySpan<char> allowedChars, Span<char> output)
         where TRandom : struct, IRandomBytesSource
     {
         ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
-        foreach (ref var element in output)
+        foreach (ref var outputChar in output)
         {
-            var randomNumber = rng.NextUInt32((uint)allowedChars.Length);
-            element = Unsafe.Add(ref firstChar, randomNumber);
+            var charPos = cache.NextUInt32((uint)allowedChars.Length);
+            outputChar = Unsafe.Add(ref firstChar, charPos);
         }
     }
 
