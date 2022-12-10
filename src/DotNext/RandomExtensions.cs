@@ -66,7 +66,7 @@ public static class RandomExtensions
             while (!reader.TryRead(out result))
             {
                 reader.Reset();
-                randomBytesSource.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in MemoryMarshal.GetReference(reader.Span)), reader.Span.Length));
+                randomBytesSource.GetBytes(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(reader.Span), reader.RemainingCount));
             }
 
             return result;
