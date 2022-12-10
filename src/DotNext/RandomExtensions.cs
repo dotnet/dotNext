@@ -95,7 +95,7 @@ public static class RandomExtensions
     }
 
     [SkipLocalsInit]
-    private static void NextChars<TRandom>(TRandom random, ReadOnlySpan<char> allowedChars, Span<char> buffer)
+    private static void Next<TRandom, T>(TRandom random, ReadOnlySpan<T> allowedChars, Span<T> buffer)
         where TRandom : struct, IRandomBytesSource
     {
         Debug.Assert(!buffer.IsEmpty);
@@ -110,27 +110,27 @@ public static class RandomExtensions
         if (BitOperations.IsPow2(allowedChars.Length))
         {
             // optimized branch, we can avoid modulo operation at all and have an unbiased version
-            NextCharsFast(bytes.Span, allowedChars, buffer);
+            Next(bytes.Span, allowedChars, buffer);
         }
         else
         {
             var cache = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
-            NextChars(ref cache, allowedChars, buffer);
+            Next(ref cache, allowedChars, buffer);
         }
 
         if (CleanupInternalBuffer)
             bytes.Span.Clear();
     }
 
-    private static void NextCharsFast(ReadOnlySpan<byte> randomVector, ReadOnlySpan<char> allowedChars, Span<char> output)
+    private static void Next<T>(ReadOnlySpan<byte> randomVector, ReadOnlySpan<T> input, Span<T> output)
     {
-        Debug.Assert(BitOperations.IsPow2(allowedChars.Length));
-        Debug.Assert(randomVector.Length == output.Length * 4);
+        Debug.Assert(BitOperations.IsPow2(input.Length));
+        Debug.Assert(randomVector.Length == output.Length * sizeof(uint));
 
         // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
-        var moduloOperand = (uint)(allowedChars.Length - 1);
+        var moduloOperand = (uint)(input.Length - 1);
 
-        ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
+        ref var firstChar = ref MemoryMarshal.GetReference(input);
         foreach (ref var outputChar in output)
         {
             var charPos = BitConverter.ToUInt32(randomVector) & moduloOperand;
@@ -139,13 +139,13 @@ public static class RandomExtensions
         }
     }
 
-    private static void NextChars<TRandom>(scoped ref CachedRandomNumberGenerator<TRandom> cache, ReadOnlySpan<char> allowedChars, Span<char> output)
+    private static void Next<TRandom, T>(scoped ref CachedRandomNumberGenerator<TRandom> cache, ReadOnlySpan<T> input, Span<T> output)
         where TRandom : struct, IRandomBytesSource
     {
-        ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
+        ref var firstChar = ref MemoryMarshal.GetReference(input);
         foreach (ref var outputChar in output)
         {
-            var charPos = cache.NextUInt32((uint)allowedChars.Length);
+            var charPos = cache.NextUInt32((uint)input.Length);
             outputChar = Unsafe.Add(ref firstChar, charPos);
         }
     }
@@ -174,7 +174,7 @@ public static class RandomExtensions
         else
         {
             result = new('\0', length);
-            NextChars<RandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
+            Next<RandomBytesSource, char>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
         }
 
         return result;
@@ -204,7 +204,7 @@ public static class RandomExtensions
         ArgumentNullException.ThrowIfNull(random);
 
         if (!allowedChars.IsEmpty && !buffer.IsEmpty)
-            NextChars<RandomBytesSource>(random, allowedChars, buffer);
+            Next<RandomBytesSource, char>(random, allowedChars, buffer);
     }
 
     /// <summary>
@@ -231,7 +231,7 @@ public static class RandomExtensions
         else
         {
             result = new string('\0', length);
-            NextChars<CryptographicRandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
+            Next<CryptographicRandomBytesSource, char>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
         }
 
         return result;
@@ -261,7 +261,7 @@ public static class RandomExtensions
         ArgumentNullException.ThrowIfNull(random);
 
         if (!allowedChars.IsEmpty && !buffer.IsEmpty)
-            NextChars<CryptographicRandomBytesSource>(random, allowedChars, buffer);
+            Next<CryptographicRandomBytesSource, char>(random, allowedChars, buffer);
     }
 
     /// <summary>
