@@ -55,8 +55,8 @@ public static class RandomExtensions
     private ref struct CachedRandomNumberGenerator<TRandom>
         where TRandom : struct, IRandomBytesSource
     {
-        private TRandom randomBytesSource;
         private SpanReader<byte> reader;
+        private TRandom randomBytesSource;
 
         internal CachedRandomNumberGenerator(TRandom random, Span<byte> randomVector)
         {
