@@ -94,6 +94,7 @@ public static class RandomExtensions
         }
     }
 
+    [SkipLocalsInit]
     private static void NextChars<TRandom>(TRandom random, ReadOnlySpan<char> allowedChars, Span<char> buffer)
         where TRandom : struct, IRandomBytesSource
     {
@@ -322,11 +323,11 @@ public static class RandomExtensions
     /// <typeparam name="T">The blittable type.</typeparam>
     /// <returns>The randomly generated value.</returns>
     [SkipLocalsInit]
-    public static unsafe T Next<T>(this Random random)
+    public static T Next<T>(this Random random)
         where T : unmanaged
     {
         Unsafe.SkipInit(out T result);
-        random.NextBytes(new Span<byte>(&result, sizeof(T)));
+        random.NextBytes(Span.AsBytes(ref result));
         return result;
     }
 
