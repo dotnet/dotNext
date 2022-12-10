@@ -95,11 +95,11 @@ public static class RandomExtensions
     }
 
     [SkipLocalsInit]
-    private static void Next<TRandom, T>(TRandom random, ReadOnlySpan<T> allowedChars, Span<T> buffer)
+    private static void Next<TRandom, T>(TRandom random, ReadOnlySpan<T> allowedInput, Span<T> buffer)
         where TRandom : struct, IRandomBytesSource
     {
         Debug.Assert(!buffer.IsEmpty);
-        Debug.Assert(!allowedChars.IsEmpty);
+        Debug.Assert(!allowedInput.IsEmpty);
 
         var randomBufLength = buffer.Length << 2;
         using MemoryRental<byte> bytes = (uint)randomBufLength <= (uint)MemoryRental<byte>.StackallocThreshold
@@ -107,46 +107,47 @@ public static class RandomExtensions
             : new MemoryRental<byte>(randomBufLength);
         random.GetBytes(bytes.Span);
 
-        if (BitOperations.IsPow2(allowedChars.Length))
+        if (BitOperations.IsPow2(allowedInput.Length))
         {
             // optimized branch, we can avoid modulo operation at all and have an unbiased version
-            Next(bytes.Span, allowedChars, buffer);
+            FastPath(
+                ref MemoryMarshal.GetReference(bytes.Span),
+                ref MemoryMarshal.GetReference(allowedInput),
+                (uint)allowedInput.Length - 1U, // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
+                buffer);
         }
         else
         {
             var cache = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
-            Next(ref cache, allowedChars, buffer);
+            NextCore(
+                ref cache,
+                ref MemoryMarshal.GetReference(allowedInput),
+                (uint)allowedInput.Length,
+                buffer);
         }
 
         if (CleanupInternalBuffer)
             bytes.Span.Clear();
-    }
 
-    private static void Next<T>(ReadOnlySpan<byte> randomVector, ReadOnlySpan<T> input, Span<T> output)
-    {
-        Debug.Assert(BitOperations.IsPow2(input.Length));
-        Debug.Assert(randomVector.Length == output.Length * sizeof(uint));
-
-        // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
-        var moduloOperand = (uint)(input.Length - 1);
-
-        ref var firstChar = ref MemoryMarshal.GetReference(input);
-        foreach (ref var outputChar in output)
+        static void FastPath(ref byte randomVectorPtr, ref T inputPtr, uint moduloOperand, Span<T> output)
         {
-            var charPos = BitConverter.ToUInt32(randomVector) & moduloOperand;
-            outputChar = Unsafe.Add(ref firstChar, charPos);
-            randomVector = randomVector.Slice(sizeof(uint));
+            Debug.Assert(BitOperations.IsPow2(moduloOperand + 1));
+
+            foreach (ref var outputPtr in output)
+            {
+                var offset = Unsafe.ReadUnaligned<uint>(ref randomVectorPtr) & moduloOperand;
+                outputPtr = Unsafe.Add(ref inputPtr, offset);
+                randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, sizeof(uint));
+            }
         }
-    }
 
-    private static void Next<TRandom, T>(scoped ref CachedRandomNumberGenerator<TRandom> cache, ReadOnlySpan<T> input, Span<T> output)
-        where TRandom : struct, IRandomBytesSource
-    {
-        ref var firstChar = ref MemoryMarshal.GetReference(input);
-        foreach (ref var outputChar in output)
+        static void NextCore(scoped ref CachedRandomNumberGenerator<TRandom> cache, ref T inputPtr, uint inputLength, Span<T> output)
         {
-            var charPos = cache.NextUInt32((uint)input.Length);
-            outputChar = Unsafe.Add(ref firstChar, charPos);
+            foreach (ref var outputChar in output)
+            {
+                var offset = cache.NextUInt32(inputLength);
+                outputChar = Unsafe.Add(ref inputPtr, offset);
+            }
         }
     }
 
@@ -173,8 +174,7 @@ public static class RandomExtensions
         }
         else
         {
-            result = new('\0', length);
-            Next<RandomBytesSource, char>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
+            Next<RandomBytesSource, char>(random, allowedChars, AllocString(length, out result));
         }
 
         return result;
@@ -230,12 +230,15 @@ public static class RandomExtensions
         }
         else
         {
-            result = new string('\0', length);
-            Next<CryptographicRandomBytesSource, char>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
+            Next<CryptographicRandomBytesSource, char>(random, allowedChars, AllocString(length, out result));
         }
 
         return result;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static Span<char> AllocString(int length, out string result)
+        => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in (result = new('\0', length)).GetPinnableReference()), length);
 
     /// <summary>
     /// Generates random string of the given length.
