@@ -31,7 +31,7 @@ public static class RandomExtensions
         private readonly Random random;
 
         internal RandomBytesSource(Random random)
-            => this.random = random ?? throw new ArgumentNullException(nameof(random));
+            => this.random = random;
 
         void IRandomBytesSource.GetBytes(Span<byte> bytes) => random.NextBytes(bytes);
 
@@ -44,7 +44,7 @@ public static class RandomExtensions
         private readonly RandomNumberGenerator random;
 
         internal CryptographicRandomBytesSource(RandomNumberGenerator random)
-            => this.random = random ?? throw new ArgumentNullException(nameof(random));
+            => this.random = random;
 
         void IRandomBytesSource.GetBytes(Span<byte> bytes) => random.GetBytes(bytes);
 
@@ -159,7 +159,25 @@ public static class RandomExtensions
     /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
-        => NextString<RandomBytesSource>(random, allowedChars, length);
+    {
+        ArgumentNullException.ThrowIfNull(random);
+
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        string result;
+        if (length is 0 || allowedChars.IsEmpty)
+        {
+            result = string.Empty;
+        }
+        else
+        {
+            result = new('\0', length);
+            NextChars<RandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Generates random string of the given length.
@@ -182,6 +200,8 @@ public static class RandomExtensions
     /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     public static void NextChars(this Random random, ReadOnlySpan<char> allowedChars, Span<char> buffer)
     {
+        ArgumentNullException.ThrowIfNull(random);
+
         if (!allowedChars.IsEmpty && !buffer.IsEmpty)
             NextChars<RandomBytesSource>(random, allowedChars, buffer);
     }
@@ -196,26 +216,21 @@ public static class RandomExtensions
     /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
-        => NextString<CryptographicRandomBytesSource>(random, allowedChars, length);
-
-    private static string NextString<TRandom>(TRandom random, ReadOnlySpan<char> allowedChars, int length)
-        where TRandom : struct, IRandomBytesSource
     {
-        string result;
-        switch (length)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(length));
-            case 0:
-                result = string.Empty;
-                break;
-            default:
-                if (allowedChars.IsEmpty)
-                    goto case 0;
+        ArgumentNullException.ThrowIfNull(random);
 
-                result = new('\0', length);
-                NextChars(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
-                break;
+        if (length < 0)
+            throw new ArgumentOutOfRangeException(nameof(length));
+
+        string result;
+        if (length is 0 || allowedChars.IsEmpty)
+        {
+            result = string.Empty;
+        }
+        else
+        {
+            result = new string('\0', length);
+            NextChars<CryptographicRandomBytesSource>(random, allowedChars, MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length));
         }
 
         return result;
@@ -242,6 +257,8 @@ public static class RandomExtensions
     /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
     public static void NextChars(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, Span<char> buffer)
     {
+        ArgumentNullException.ThrowIfNull(random);
+
         if (!allowedChars.IsEmpty && !buffer.IsEmpty)
             NextChars<CryptographicRandomBytesSource>(random, allowedChars, buffer);
     }
