@@ -110,7 +110,7 @@ public static class RandomExtensions
         else
         {
             var cachedRng = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
-            NextCharsCore(ref cachedRng, allowedChars, buffer);
+            NextChars(ref cachedRng, allowedChars, buffer);
         }
     }
 
@@ -131,7 +131,7 @@ public static class RandomExtensions
         }
     }
 
-    private static void NextCharsCore<TRandom>(scoped ref CachedRandomNumberGenerator<TRandom> rng, ReadOnlySpan<char> allowedChars, Span<char> output)
+    private static void NextChars<TRandom>(scoped ref CachedRandomNumberGenerator<TRandom> rng, ReadOnlySpan<char> allowedChars, Span<char> output)
         where TRandom : struct, IRandomBytesSource
     {
         ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
