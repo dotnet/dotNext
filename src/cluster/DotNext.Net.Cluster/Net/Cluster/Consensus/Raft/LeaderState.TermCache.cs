@@ -37,7 +37,7 @@ internal partial class LeaderState<TMember>
             if (parent is null)
             {
                 root = node = new(index, term);
-                addCount += 1;
+                addCount = 1;
             }
             else
             {
