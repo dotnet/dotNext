@@ -215,6 +215,10 @@ internal partial class LeaderState<TMember>
             {
                 SetException(e);
             }
+            finally
+            {
+                awaiter = default; // help GC
+            }
         }
     }
 
