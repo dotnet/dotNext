@@ -55,11 +55,13 @@ public static class RandomExtensions
     private ref struct CachedRandomNumberGenerator<TRandom>
         where TRandom : struct, IRandomBytesSource
     {
+        private readonly ulong maxValue;
         private SpanReader<byte> reader;
         private TRandom randomBytesSource;
 
-        internal CachedRandomNumberGenerator(TRandom random, Span<byte> randomVector)
+        internal CachedRandomNumberGenerator(TRandom random, Span<byte> randomVector, uint maxValue)
         {
+            this.maxValue = maxValue;
             randomBytesSource = random;
             reader = new(randomVector);
         }
@@ -76,21 +78,22 @@ public static class RandomExtensions
             return result;
         }
 
-        internal uint NextUInt32(uint maxValue)
+        internal nuint NextOffset()
         {
             // Algorithm: https://arxiv.org/pdf/1805.10941.pdf
-            var m = (ulong)NextUInt32() * maxValue;
+            var m = NextUInt32() * maxValue;
             var low = (uint)m;
 
             if (low < maxValue)
             {
                 for (var t = unchecked(~maxValue + 1U) % maxValue; low < t; low = (uint)m)
                 {
-                    m = (ulong)NextUInt32() * maxValue;
+                    m = NextUInt32() * maxValue;
                 }
             }
 
-            return (uint)(m >> 32);
+            // only lower 32 bit contains useful information, cast to int32 or int64 is safe
+            return (nuint)(m >> 32);
         }
     }
 
@@ -107,46 +110,44 @@ public static class RandomExtensions
             : new MemoryRental<byte>(randomBufLength);
         random.GetBytes(bytes.Span);
 
-        if (BitOperations.IsPow2(allowedInput.Length))
+        var allowedInputLength = (uint)allowedInput.Length;
+        if (BitOperations.IsPow2(allowedInputLength))
         {
             // optimized branch, we can avoid modulo operation at all and have an unbiased version
             FastPath(
                 ref MemoryMarshal.GetReference(bytes.Span),
                 ref MemoryMarshal.GetReference(allowedInput),
-                (uint)allowedInput.Length - 1U, // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
+                allowedInputLength - 1U, // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
                 buffer);
         }
         else
         {
-            var cache = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span);
+            var cache = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span, allowedInputLength);
             NextCore(
                 ref cache,
                 ref MemoryMarshal.GetReference(allowedInput),
-                (uint)allowedInput.Length,
                 buffer);
         }
 
         if (CleanupInternalBuffer)
             bytes.Span.Clear();
 
-        static void FastPath(ref byte randomVectorPtr, ref T inputPtr, uint moduloOperand, Span<T> output)
+        static void FastPath(ref byte randomVectorPtr, ref T inputPtr, nuint moduloOperand, Span<T> output)
         {
             Debug.Assert(BitOperations.IsPow2(moduloOperand + 1));
 
             foreach (ref var outputPtr in output)
             {
-                var offset = Unsafe.ReadUnaligned<uint>(ref randomVectorPtr) & moduloOperand;
-                outputPtr = Unsafe.Add(ref inputPtr, offset);
+                outputPtr = Unsafe.Add(ref inputPtr, Unsafe.ReadUnaligned<uint>(ref randomVectorPtr) & moduloOperand);
                 randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, sizeof(uint));
             }
         }
 
-        static void NextCore(scoped ref CachedRandomNumberGenerator<TRandom> cache, ref T inputPtr, uint inputLength, Span<T> output)
+        static void NextCore(scoped ref CachedRandomNumberGenerator<TRandom> cache, ref T inputPtr, Span<T> output)
         {
             foreach (ref var outputChar in output)
             {
-                var offset = cache.NextUInt32(inputLength);
-                outputChar = Unsafe.Add(ref inputPtr, offset);
+                outputChar = Unsafe.Add(ref inputPtr, cache.NextOffset());
             }
         }
     }
