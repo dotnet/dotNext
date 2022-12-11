@@ -393,7 +393,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host1.StopAsync();
 
             static IFailureDetector CreateFailureDetector(IRaftClusterMember member)
-                => new PhiAccrualFailureDetector() { Threshold = 7D };
+                => new PhiAccrualFailureDetector() { Threshold = 3D };
         }
 
         [Fact]
