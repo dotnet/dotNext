@@ -30,7 +30,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
         (leaseTokenSource = new()).Cancel();
-        precedingTermCache = new(MaxTermCacheSize);
         this.maxLease = maxLease;
         leaseTimer = new(OnLeaseExpired, new WeakReference<LeaderState<TMember>>(this), InfiniteTimeSpan, InfiniteTimeSpan);
 
@@ -70,7 +69,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
 
                 // try to get term from the cache to avoid touching audit trail for each member
-                if (!precedingTermCache.TryGetValue(precedingIndex, out precedingTerm))
+                if (!precedingTermCache.TryGet(precedingIndex, out precedingTerm))
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
@@ -80,11 +79,13 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         responsePipe.Complete();
 
-        // clear cache
-        if (precedingTermCache.Count > MaxTermCacheSize)
-            precedingTermCache.Clear();
+        // Clear cache:
+        // 1. Best case: remove all entries from the cache up to the minimal observed index (those entries will never be requested)
+        // 2. Worst case: cleanup the entire cache because one of the members too far behind of the leader (perhaps, it's unavailable)
+        if (precedingTermCache.ApproximatedCount < MaxTermCacheSize)
+            precedingTermCache.RemovePriorTo(minPrecedingIndex);
         else
-            precedingTermCache.RemoveHead(minPrecedingIndex);
+            precedingTermCache.Clear();
 
         // update lease if the cluster contains only one local node
         if (leaseRenewalThreshold is 1)
@@ -246,6 +247,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicationEvent.Dispose();
 
             failureDetector?.Clear();
+            precedingTermCache.Clear();
         }
 
         base.Dispose(disposing);
