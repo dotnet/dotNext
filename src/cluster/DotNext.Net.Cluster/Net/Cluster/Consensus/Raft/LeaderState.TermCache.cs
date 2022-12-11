@@ -34,28 +34,24 @@ internal partial class LeaderState<TMember>
             }
 
             TermCacheNode node;
-            if (parent is null)
+            switch (parent?.Index.CompareTo(index))
             {
-                root = node = new(index, term);
-                addCount = 1;
-            }
-            else
-            {
-                switch (index.CompareTo(parent.Index))
-                {
-                    case < 0:
-                        parent.Left = node = new(index, term) { Parent = parent };
-                        addCount += 1;
-                        break;
-                    case > 0:
-                        parent.Right = node = new(index, term) { Parent = parent };
-                        addCount += 1;
-                        break;
-                    case 0:
-                        Debug.Assert(term == parent.Term);
-                        node = parent;
-                        break;
-                }
+                case null:
+                    root = node = new(index, term);
+                    addCount = 1;
+                    break;
+                case > 0:
+                    parent.Left = node = new(index, term) { Parent = parent };
+                    addCount += 1;
+                    break;
+                case < 0:
+                    parent.Right = node = new(index, term) { Parent = parent };
+                    addCount += 1;
+                    break;
+                case 0:
+                    Debug.Assert(term == parent.Term);
+                    node = parent;
+                    break;
             }
 
             Splay(node);
