@@ -163,6 +163,8 @@ internal partial class LeaderState<TMember>
 
     private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
     {
+        private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
+
         internal ReplicationWorkItem(Replicator replicator)
             : base(replicator, TaskCreationOptions.RunContinuationsAsynchronously)
         {
@@ -182,11 +184,28 @@ internal partial class LeaderState<TMember>
         internal static TMember? GetReplicatedMember(Task<Result<bool>> task)
             => (task.AsyncState as Replicator)?.Member;
 
-        async void IThreadPoolWorkItem.Execute()
+        private void OnCompleted() => Complete(ref awaiter);
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            var awaiter = AsyncState.ReplicateAsync().ConfigureAwait(false).GetAwaiter();
+
+            if (awaiter.IsCompleted)
+            {
+                Complete(ref awaiter);
+            }
+            else
+            {
+                this.awaiter = awaiter;
+                awaiter.UnsafeOnCompleted(OnCompleted);
+            }
+        }
+
+        private void Complete(ref ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter)
         {
             try
             {
-                SetResult(await AsyncState.ReplicateAsync().ConfigureAwait(false));
+                SetResult(awaiter.GetResult());
             }
             catch (OperationCanceledException e)
             {
