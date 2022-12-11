@@ -134,6 +134,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             {
                 Logger.LogError(e, ExceptionMessages.UnexpectedError);
             }
+            finally
+            {
+                task.Dispose();
+            }
 
             // report unavailable cluster member
             if ((failureDetector?.IsAlive(member) ?? true) is false)

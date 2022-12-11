@@ -920,8 +920,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 if (readyForTransition)
                 {
                     var newState = new CandidateState<TMember>(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false));
-                    state = newState;
-                    followerState.Dispose();
+                    await UpdateStateAsync(newState).ConfigureAwait(false);
 
                     // vote for self
                     newState.StartVoting(electionTimeout, auditTrail);
@@ -965,8 +964,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     FailureDetectorFactory = FailureDetectorFactory,
                 };
 
-                state = newState;
-                candidateState.Dispose();
+                await UpdateStateAsync(newState).ConfigureAwait(false);
 
                 Leader = newLeader;
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
