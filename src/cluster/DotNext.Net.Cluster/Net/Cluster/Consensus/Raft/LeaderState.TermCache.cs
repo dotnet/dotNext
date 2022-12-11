@@ -108,6 +108,7 @@ internal partial class LeaderState<TMember>
             return result;
         }
 
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
         private void RotateRight(TermCacheNode node)
         {
             Debug.Assert(node.Left is not null);
@@ -125,7 +126,7 @@ internal partial class LeaderState<TMember>
                 case { Parent: null }:
                     root = y;
                     break;
-                case { IsRightNode: true }:
+                case { IsRight: true }:
                     node.Parent.Right = y;
                     break;
                 default:
@@ -137,6 +138,7 @@ internal partial class LeaderState<TMember>
             node.Parent = y;
         }
 
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
         private void RotateLeft(TermCacheNode node)
         {
             Debug.Assert(node.Right is not null);
@@ -154,7 +156,7 @@ internal partial class LeaderState<TMember>
                 case { Parent: null }:
                     root = y;
                     break;
-                case { IsLeftNode: true }:
+                case { IsLeft: true }:
                     node.Parent.Left = y;
                     break;
                 default:
@@ -166,29 +168,30 @@ internal partial class LeaderState<TMember>
             node.Parent = y;
         }
 
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
         private void Splay(TermCacheNode node)
         {
             while (node.Parent is not null)
             {
                 switch (node)
                 {
-                    case { Parent: { Parent: null } }:
-                        if (node.IsLeftNode)
-                            RotateRight(node.Parent); // zig rotation
-                        else
-                            RotateLeft(node.Parent); // zag rotation
+                    case { IsLeft: true, Parent: { IsRoot: true } }:
+                        RotateRight(node.Parent); // zig rotation
                         break;
-                    case { IsLeftNode: true, Parent: { IsLeftNode: true } }:
+                    case { IsLeft: false, Parent: { IsRoot: true } }:
+                        RotateLeft(node.Parent); // zag rotation
+                        break;
+                    case { IsLeft: true, Parent: { IsLeft: true } }:
                         // zig-zig rotation
                         RotateRight(node.Parent.Parent);
                         RotateRight(node.Parent);
                         break;
-                    case { IsRightNode: true, Parent: { IsRightNode: true } }:
+                    case { IsRight: true, Parent: { IsRight: true } }:
                         // zag-zag rotation
                         RotateLeft(node.Parent.Parent);
                         RotateLeft(node.Parent);
                         break;
-                    case { IsRightNode: true, Parent: { IsLeftNode: true } }:
+                    case { IsRight: true, Parent: { IsLeft: true } }:
                         // zig-zag rotation
                         RotateLeft(node.Parent);
                         RotateRight(node.Parent);
@@ -215,10 +218,13 @@ internal partial class LeaderState<TMember>
         }
 
         [MemberNotNullWhen(true, nameof(Parent))]
-        internal bool IsLeftNode => Parent?.Left == this;
+        internal bool IsLeft => Parent?.Left == this;
 
         [MemberNotNullWhen(true, nameof(Parent))]
-        internal bool IsRightNode => Parent?.Right == this;
+        internal bool IsRight => Parent?.Right == this;
+
+        [MemberNotNullWhen(false, nameof(Parent))]
+        internal bool IsRoot => Parent is null;
     }
 
     private TermCache precedingTermCache;
