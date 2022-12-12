@@ -330,6 +330,20 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         }
 
         static string BuildString(MemoryChunk? first, int length)
-            => length > 0 ? string.Create(length, first, FillChars) : string.Empty;
+        {
+            string result;
+
+            if (length is 0)
+            {
+                result = string.Empty;
+            }
+            else
+            {
+                result = new('\0', length);
+                FillChars(CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length), first);
+            }
+
+            return result;
+        }
     }
 }
