@@ -55,13 +55,11 @@ public static class RandomExtensions
     private ref struct CachedRandomNumberGenerator<TRandom>
         where TRandom : struct, IRandomBytesSource
     {
-        private readonly ulong maxValue;
         private SpanReader<uint> reader;
         private TRandom randomBytesSource;
 
-        internal CachedRandomNumberGenerator(TRandom random, Span<uint> randomVector, uint maxValue)
+        internal CachedRandomNumberGenerator(TRandom random, Span<uint> randomVector)
         {
-            this.maxValue = maxValue;
             randomBytesSource = random;
             reader = new(randomVector);
         }
@@ -82,22 +80,34 @@ public static class RandomExtensions
             return result;
         }
 
-        internal nuint NextOffset()
+        // This method is a hot path inside of a loop, but it contains a loop as well
+        // which is very unlikely to be executed. The caller method is not inlined by JIT
+        // because it has a loop. It is reasonable to force inlining of this method to avoid
+        // costs associated with regular (non-inlined) call
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal nuint NextOffset(uint maxValue)
         {
             // Algorithm: https://arxiv.org/pdf/1805.10941.pdf
-            var m = NextUInt32() * maxValue;
-            var low = (uint)m;
+            ulong m = (ulong)NextUInt32() * maxValue;
 
-            if (low < maxValue)
+            if ((uint)m < maxValue)
             {
-                for (var t = unchecked(~maxValue + 1U) % maxValue; low < t; low = (uint)m)
-                {
-                    m = NextUInt32() * maxValue;
-                }
+                uint t = unchecked(~maxValue + 1U) % maxValue;
+
+                while ((uint)m < t)
+                    m = (ulong)NextUInt32() * maxValue;
             }
 
             // only lower 32 bit contains useful information, cast to int32 or int64 is safe
             return (nuint)(m >> 32);
+        }
+
+        internal void Randomize<T>(ReadOnlySpan<T> input, Span<T> output)
+        {
+            foreach (ref var outputChar in output)
+            {
+                outputChar = Unsafe.Add(ref MemoryMarshal.GetReference(input), NextOffset((uint)input.Length));
+            }
         }
     }
 
@@ -114,44 +124,31 @@ public static class RandomExtensions
             : new MemoryRental<uint>(buffer.Length);
         random.GetBytes(MemoryMarshal.AsBytes(randomVectorBuffer.Span));
 
-        var allowedInputLength = (uint)allowedInput.Length;
-        if (BitOperations.IsPow2(allowedInputLength))
+        if (BitOperations.IsPow2(allowedInput.Length))
         {
             // optimized branch, we can avoid modulo operation at all and have an unbiased version
             FastPath(
                 ref MemoryMarshal.GetReference(randomVectorBuffer.Span),
                 ref MemoryMarshal.GetReference(allowedInput),
-                allowedInputLength - 1U, // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
+                (uint)allowedInput.Length - 1U, // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
                 buffer);
         }
         else
         {
-            var cache = new CachedRandomNumberGenerator<TRandom>(random, randomVectorBuffer.Span, allowedInputLength);
-            NextCore(
-                ref cache,
-                ref MemoryMarshal.GetReference(allowedInput),
-                buffer);
+            new CachedRandomNumberGenerator<TRandom>(random, randomVectorBuffer.Span).Randomize(allowedInput, buffer);
         }
 
         if (CleanupInternalBuffer)
             randomVectorBuffer.Span.Clear();
 
-        static void FastPath(ref uint randomVectorPtr, ref T inputPtr, nuint moduloOperand, Span<T> output)
+        static void FastPath(ref uint randomVectorPtr, ref T inputPtr, uint moduloOperand, Span<T> output)
         {
-            Debug.Assert(BitOperations.IsPow2(moduloOperand + 1));
+            Debug.Assert(BitOperations.IsPow2(moduloOperand + 1U));
 
             foreach (ref var outputPtr in output)
             {
                 outputPtr = Unsafe.Add(ref inputPtr, randomVectorPtr & moduloOperand);
                 randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, 1);
-            }
-        }
-
-        static void NextCore(scoped ref CachedRandomNumberGenerator<TRandom> cache, ref T inputPtr, Span<T> output)
-        {
-            foreach (ref var outputChar in output)
-            {
-                outputChar = Unsafe.Add(ref inputPtr, cache.NextOffset());
             }
         }
     }
