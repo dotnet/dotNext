@@ -56,24 +56,28 @@ public static class RandomExtensions
         where TRandom : struct, IRandomBytesSource
     {
         private readonly ulong maxValue;
-        private SpanReader<byte> reader;
+        private SpanReader<uint> reader;
         private TRandom randomBytesSource;
 
-        internal CachedRandomNumberGenerator(TRandom random, Span<byte> randomVector, uint maxValue)
+        internal CachedRandomNumberGenerator(TRandom random, Span<uint> randomVector, uint maxValue)
         {
             this.maxValue = maxValue;
             randomBytesSource = random;
             reader = new(randomVector);
         }
 
+        private void RefreshVector()
+        {
+            reader.Reset();
+            var bytes = MemoryMarshal.AsBytes(reader.Span);
+            randomBytesSource.GetBytes(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(bytes), bytes.Length));
+        }
+
         private uint NextUInt32()
         {
             uint result;
             while (!reader.TryRead(out result))
-            {
-                reader.Reset();
-                randomBytesSource.GetBytes(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(reader.Span), reader.RemainingCount));
-            }
+                RefreshVector();
 
             return result;
         }
@@ -104,25 +108,25 @@ public static class RandomExtensions
         Debug.Assert(!buffer.IsEmpty);
         Debug.Assert(!allowedInput.IsEmpty);
 
-        var randomBufLength = buffer.Length << 2;
-        using MemoryRental<byte> bytes = (uint)randomBufLength <= (uint)MemoryRental<byte>.StackallocThreshold
-            ? stackalloc byte[randomBufLength]
-            : new MemoryRental<byte>(randomBufLength);
-        random.GetBytes(bytes.Span);
+        // alloc vector of uint instead of bytes to preserve memory alignment
+        using MemoryRental<uint> randomVectorBuffer = (uint)buffer.Length <= (uint)MemoryRental<uint>.StackallocThreshold
+            ? stackalloc uint[buffer.Length]
+            : new MemoryRental<uint>(buffer.Length);
+        random.GetBytes(MemoryMarshal.AsBytes(randomVectorBuffer.Span));
 
         var allowedInputLength = (uint)allowedInput.Length;
         if (BitOperations.IsPow2(allowedInputLength))
         {
             // optimized branch, we can avoid modulo operation at all and have an unbiased version
             FastPath(
-                ref MemoryMarshal.GetReference(bytes.Span),
+                ref MemoryMarshal.GetReference(randomVectorBuffer.Span),
                 ref MemoryMarshal.GetReference(allowedInput),
                 allowedInputLength - 1U, // x % 2^n == x & (2^n - 1) and we know that Length == 2^n
                 buffer);
         }
         else
         {
-            var cache = new CachedRandomNumberGenerator<TRandom>(random, bytes.Span, allowedInputLength);
+            var cache = new CachedRandomNumberGenerator<TRandom>(random, randomVectorBuffer.Span, allowedInputLength);
             NextCore(
                 ref cache,
                 ref MemoryMarshal.GetReference(allowedInput),
@@ -130,16 +134,16 @@ public static class RandomExtensions
         }
 
         if (CleanupInternalBuffer)
-            bytes.Span.Clear();
+            randomVectorBuffer.Span.Clear();
 
-        static void FastPath(ref byte randomVectorPtr, ref T inputPtr, nuint moduloOperand, Span<T> output)
+        static void FastPath(ref uint randomVectorPtr, ref T inputPtr, nuint moduloOperand, Span<T> output)
         {
             Debug.Assert(BitOperations.IsPow2(moduloOperand + 1));
 
             foreach (ref var outputPtr in output)
             {
-                outputPtr = Unsafe.Add(ref inputPtr, Unsafe.ReadUnaligned<uint>(ref randomVectorPtr) & moduloOperand);
-                randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, sizeof(uint));
+                outputPtr = Unsafe.Add(ref inputPtr, randomVectorPtr & moduloOperand);
+                randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, 1);
             }
         }
 
