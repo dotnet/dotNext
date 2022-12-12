@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace DotNext;
 
-using Buffers;
+using UInt32LocalBuffer = Buffers.MemoryRental<uint>;
 
 /// <summary>
 /// Provides random data generation.
@@ -55,35 +55,34 @@ public static class RandomExtensions
     private ref struct CachedRandomNumberGenerator<TRandom>
         where TRandom : struct, IRandomBytesSource
     {
-        private SpanReader<uint> reader;
+        private readonly Span<uint> randomBuffer;
+        private uint position; // reading position within random vector
         private TRandom randomBytesSource;
 
-        internal CachedRandomNumberGenerator(TRandom random, Span<uint> randomVector)
+        internal CachedRandomNumberGenerator(TRandom random, Span<uint> randomBuffer)
         {
-            randomBytesSource = random;
-            reader = new(randomVector);
-        }
+            Debug.Assert(!randomBuffer.IsEmpty);
 
-        private void RefreshVector()
-        {
-            reader.Reset();
-            var bytes = MemoryMarshal.AsBytes(reader.Span);
-            randomBytesSource.GetBytes(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(bytes), bytes.Length));
+            randomBytesSource = random;
+            this.randomBuffer = randomBuffer;
+            position = 0U;
         }
 
         private uint NextUInt32()
         {
-            uint result;
-            while (!reader.TryRead(out result))
-                RefreshVector();
+            if (position >= (uint)randomBuffer.Length)
+            {
+                position = 0;
+                randomBytesSource.GetBytes(MemoryMarshal.AsBytes(randomBuffer));
+            }
 
-            return result;
+            return Unsafe.Add(ref MemoryMarshal.GetReference(randomBuffer), position++);
         }
 
         // This method is a hot path inside of a loop, but it contains a loop as well
         // which is very unlikely to be executed. The caller method is not inlined by JIT
-        // because it has a loop. It is reasonable to force inlining of this method to avoid
-        // costs associated with regular (non-inlined) call
+        // because of loop. It is reasonable to force inlining of this method to avoid
+        // overhead of regular (non-inlined) call
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal nuint NextOffset(uint maxValue)
         {
@@ -119,9 +118,9 @@ public static class RandomExtensions
         Debug.Assert(!allowedInput.IsEmpty);
 
         // alloc vector of uint instead of bytes to preserve memory alignment
-        using MemoryRental<uint> randomVectorBuffer = (uint)buffer.Length <= (uint)MemoryRental<uint>.StackallocThreshold
+        using UInt32LocalBuffer randomVectorBuffer = (uint)buffer.Length <= (uint)UInt32LocalBuffer.StackallocThreshold
             ? stackalloc uint[buffer.Length]
-            : new MemoryRental<uint>(buffer.Length);
+            : new UInt32LocalBuffer(buffer.Length);
         random.GetBytes(MemoryMarshal.AsBytes(randomVectorBuffer.Span));
 
         if (BitOperations.IsPow2(allowedInput.Length))
