@@ -320,12 +320,11 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         {
             Debug.Assert(typeof(T) == typeof(char));
 
-            ReadOnlySpan<T> input;
-            for (var offset = 0; chunk is not null; offset += input.Length, chunk = chunk.Next)
+            for (ReadOnlySpan<T> input; chunk is not null; output = output.Slice(input.Length), chunk = chunk.Next)
             {
                 input = chunk.WrittenMemory.Span;
                 ref var firstChar = ref Unsafe.As<T, char>(ref GetReference(input));
-                CreateReadOnlySpan<char>(ref firstChar, input.Length).CopyTo(output.Slice(offset));
+                CreateReadOnlySpan<char>(ref firstChar, input.Length).CopyTo(output);
             }
         }
 
