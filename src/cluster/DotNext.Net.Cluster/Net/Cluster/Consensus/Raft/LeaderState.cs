@@ -73,7 +73,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
-                responsePipe.Add(QueueReplication(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token)));
+                responsePipe.Add(QueueReplication(new Replicator(auditTrail, activeConfig, proposedConfig, member, commitIndex, term, precedingIndex, precedingTerm, Logger, token), currentIndex));
             }
         }
 
