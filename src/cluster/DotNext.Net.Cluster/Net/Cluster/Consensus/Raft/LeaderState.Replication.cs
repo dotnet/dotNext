@@ -73,18 +73,18 @@ internal partial class LeaderState<TMember>
                 if (result.Value)
                 {
                     logger.ReplicationSuccessful(Member.EndPoint, Member.NextIndex);
-                    Member.NextIndex.VolatileWrite(replicationIndex + 1L);
-                    Member.ConfigurationFingerprint.VolatileWrite(fingerprint);
+                    Member.NextIndex = replicationIndex + 1L;
+                    Member.ConfigurationFingerprint = fingerprint;
                     result = result with { Value = replicatedWithCurrentTerm };
                 }
                 else
                 {
                     Member.ConfigurationFingerprint = 0L;
+                    var nextIndex = Member.NextIndex;
+                    if (nextIndex > 0L)
+                        Member.NextIndex = --nextIndex;
 
-                    unsafe
-                    {
-                        logger.ReplicationFailed(Member.EndPoint, Member.NextIndex.UpdateAndGet(&DecrementIndex));
-                    }
+                    logger.ReplicationFailed(Member.EndPoint, nextIndex);
                 }
 
                 SetResult(result);
@@ -101,8 +101,6 @@ internal partial class LeaderState<TMember>
             {
                 replicationAwaiter = default;
             }
-
-            static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
         }
 
         private (IClusterConfiguration, bool) GetConfiguration()
