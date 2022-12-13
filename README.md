@@ -46,10 +46,10 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-06-2022
+Release Date: 12-13-2022
 
 <a href="https://www.nuget.org/packages/dotnext/4.8.1">DotNext 4.8.1</a>
-* Improved quality of randomly generated strings by `RandomExtensions.NextString` extension methods ([138](https://github.com/dotnet/dotNext/issues/138))
+* Improved quality and performance of random string generator exposed as `RandomExtensions.NextString` extension methods ([138](https://github.com/dotnet/dotNext/issues/138))
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.8.1">DotNext.Metaprogramming 4.8.1</a>
