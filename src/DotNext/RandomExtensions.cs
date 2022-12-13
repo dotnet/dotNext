@@ -79,26 +79,28 @@ public static class RandomExtensions
             return Unsafe.Add(ref MemoryMarshal.GetReference(randomBuffer), position++);
         }
 
-        // This method is a hot path inside of a loop, but it contains a loop as well
-        // which is very unlikely to be executed. The caller method is not inlined by JIT
-        // because of loop. It is reasonable to force inlining of this method to avoid
-        // overhead of regular (non-inlined) call
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal nuint NextOffset(uint maxValue)
         {
             // Algorithm: https://arxiv.org/pdf/1805.10941.pdf
             ulong m = (ulong)NextUInt32() * maxValue;
 
             if ((uint)m < maxValue)
-            {
-                uint t = unchecked(~maxValue + 1U) % maxValue;
-
-                while ((uint)m < t)
-                    m = (ulong)NextUInt32() * maxValue;
-            }
+                m = Reject(m, maxValue);
 
             // only lower 32 bit contains useful information, cast to int32 or int64 is safe
             return (nuint)(m >> 32);
+        }
+
+        // this is very unlikely execution path that prevents inlining when placed to NextOffset directly because of loop
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ulong Reject(ulong m, uint maxValue)
+        {
+            uint t = unchecked(~maxValue + 1U) % maxValue;
+
+            while ((uint)m < t)
+                m = (ulong)NextUInt32() * maxValue;
+
+            return m;
         }
 
         internal void Randomize<T>(ReadOnlySpan<T> input, Span<T> output)
