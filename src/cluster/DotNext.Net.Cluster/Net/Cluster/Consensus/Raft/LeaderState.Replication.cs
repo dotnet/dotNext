@@ -56,7 +56,7 @@ internal partial class LeaderState<TMember>
 
         internal ValueTask<Result<bool>> ReplicateAsync()
         {
-            logger.ReplicationStarted(Member.EndPoint, currentIndex);
+            logger.ReplicationStarted(Member.EndPoint, Member.NextIndex);
             return currentIndex >= Member.NextIndex ?
                 auditTrail.ReadAsync(this, Member.NextIndex, token) :
                 ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token);
