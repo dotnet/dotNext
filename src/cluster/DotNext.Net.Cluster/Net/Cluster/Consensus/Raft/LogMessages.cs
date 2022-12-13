@@ -311,7 +311,7 @@ internal static partial class LogMessages
 
     [LoggerMessage(
         EventIdOffset + 37,
-        LogLevel.Information,
+        LogLevel.Warning,
         "Unresponsive cluster member {RemoteEndPoint} detected",
         EventName = EventIdPrefix + "." + nameof(UnresponsiveMemberDetected)
     )]
