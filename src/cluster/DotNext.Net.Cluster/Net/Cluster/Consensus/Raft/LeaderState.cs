@@ -140,7 +140,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             }
 
             // report unavailable cluster member
-            if ((failureDetector?.IsAlive(member) ?? true) is false)
+            if (failureDetector is not null && failureDetector.IsAlive(member) is false)
                 UnavailableMemberDetected(member, LeadershipToken);
         }
 
