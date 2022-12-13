@@ -268,7 +268,7 @@ public partial class RaftCluster<TMember>
                 if (!result.Value && result.Term > term)
                     return false;
             }
-            while (rounds > 0 && currentIndex >= member.NextIndex);
+            while (--rounds > 0 && currentIndex >= member.NextIndex);
 
             // ensure that previous configuration has been committed
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
