@@ -110,7 +110,7 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 12,
         LogLevel.Debug,
-        "Replication of member {Member} started from log index {EntryIndex}",
+        "Replication of member {Member} started at log index {EntryIndex}",
         EventName = EventIdPrefix + "." + nameof(ReplicationStarted)
     )]
     public static partial void ReplicationStarted(this ILogger logger, EndPoint member, long entryIndex);
@@ -118,15 +118,15 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 13,
         LogLevel.Debug,
-        "Replication of {Member} contains {LogEntries} entries. Preceding entry has index {PrevLogIndex} and term {PrevLogTerm}",
+        "Replication of {Member} contains {LogEntries} entries. Preceding entry has index {PrevLogIndex} and term {PrevLogTerm}. Local fingerprint is {LocalFingerprint}, remote is {RemoteFingerprint}, apply {ApplyConfig}",
         EventName = EventIdPrefix + "." + nameof(ReplicaSize)
     )]
-    public static partial void ReplicaSize(this ILogger logger, EndPoint? member, int logEntries, long prevLogIndex, long prevLogTerm);
+    public static partial void ReplicaSize(this ILogger logger, EndPoint member, int logEntries, long prevLogIndex, long prevLogTerm, long localFingerprint, long remoteFingerprint, bool applyConfig);
 
     [LoggerMessage(
         EventIdOffset + 14,
         LogLevel.Debug,
-        "Member {Member} is replicated successfully starting from entry {EntryIndex}",
+        "Member {Member} is replicated successfully starting from index {EntryIndex}",
         EventName = EventIdPrefix + "." + nameof(ReplicationSuccessful)
     )]
     public static partial void ReplicationSuccessful(this ILogger logger, EndPoint member, long entryIndex);
@@ -150,7 +150,7 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 17,
         LogLevel.Debug,
-        "All changes started from {EntryIndex} are committed. The number of committed entries is {LogEntries}",
+        "All changes at index {EntryIndex} are committed. The number of committed entries is {LogEntries}",
         EventName = EventIdPrefix + "." + nameof(CommitSuccessful)
     )]
     public static partial void CommitSuccessful(this ILogger logger, long entryIndex, long logEntries);
@@ -158,7 +158,7 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 18,
         LogLevel.Information,
-        "Installing snapshot with {EntryIndex} index of the last included log entry",
+        "Installing snapshot at index {EntryIndex}",
         EventName = EventIdPrefix + "." + nameof(InstallingSnapshot)
     )]
     public static partial void InstallingSnapshot(this ILogger logger, long entryIndex);
@@ -316,4 +316,11 @@ internal static partial class LogMessages
         EventName = EventIdPrefix + "." + nameof(UnresponsiveMemberDetected)
     )]
     public static partial void UnresponsiveMemberDetected(this ILogger logger, EndPoint remoteEndPoint);
+
+    [LoggerMessage(
+        EventIdOffset + 38,
+        LogLevel.Debug,
+        "Incoming configuration with {RemoteFingerprint} fingerprint from leader. Local fingerprint is {LocalFingerprint}, apply {ApplyConfig}"
+    )]
+    public static partial void IncomingConfiguration(this ILogger logger, long localFingerprint, long remoteFingerprint, bool applyConfig);
 }

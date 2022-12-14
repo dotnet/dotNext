@@ -49,7 +49,6 @@ internal partial class LeaderState<TMember>
             this.term = term;
             this.logger = logger;
             this.token = token;
-            fingerprint = (proposedConfig ?? activeConfig).Fingerprint;
         }
 
         internal ValueTask<Result<bool>> ReplicateAsync(long currentIndex)
@@ -106,7 +105,8 @@ internal partial class LeaderState<TMember>
         private (IClusterConfiguration, bool) GetConfiguration()
         {
             bool applyConfig;
-            IClusterConfiguration configuration;
+            var configuration = proposedConfig ?? activeConfig;
+            fingerprint = configuration.Fingerprint;
 
             if (Member.ConfigurationFingerprint == fingerprint)
             {
@@ -116,7 +116,6 @@ internal partial class LeaderState<TMember>
             else
             {
                 applyConfig = false;
-                configuration = proposedConfig ?? activeConfig;
             }
 
             return (configuration, applyConfig);
@@ -129,13 +128,12 @@ internal partial class LeaderState<TMember>
             if (snapshotIndex.HasValue)
             {
                 logger.InstallingSnapshot(replicationIndex = snapshotIndex.GetValueOrDefault());
-                fingerprint = 0L;
                 replicationAwaiter = Member.InstallSnapshotAsync(term, entries[0], replicationIndex, token).ConfigureAwait(false).GetAwaiter();
             }
             else
             {
-                logger.ReplicaSize(Member.EndPoint, entries.Count, precedingIndex, precedingTerm);
                 var (config, applyConfig) = GetConfiguration();
+                logger.ReplicaSize(Member.EndPoint, entries.Count, precedingIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, applyConfig);
                 replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, config, applyConfig, token).ConfigureAwait(false).GetAwaiter();
                 replicationIndex = precedingIndex + entries.Count;
             }

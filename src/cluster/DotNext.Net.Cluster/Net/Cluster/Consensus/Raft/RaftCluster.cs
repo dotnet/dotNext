@@ -576,6 +576,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                     // process configuration
                     var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
+                    Logger.IncomingConfiguration(fingerprint, config.Fingerprint, applyConfig);
                     switch ((config.Fingerprint == fingerprint, applyConfig))
                     {
                         case (true, true):
