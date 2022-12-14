@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 12-13-2022
+# 12-14-2022
 <a href="https://www.nuget.org/packages/dotnext/4.8.1">DotNext 4.8.1</a>
 * Improved quality and performance of random string generator exposed as `RandomExtensions.NextString` extension methods ([138](https://github.com/dotnet/dotNext/issues/138))
 * Updated dependencies
@@ -24,6 +24,7 @@ Release Notes
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.1">DotNext.Net.Cluster 4.8.1</a>
 * Fixed [139](https://github.com/dotnet/dotNext/issues/139)
+* Fixed calculation of Phi performed by Phi Accrual Failure Detector. The bug leads to false positive detection
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.1">DotNext.AspNetCore.Cluster 4.8.1</a>
