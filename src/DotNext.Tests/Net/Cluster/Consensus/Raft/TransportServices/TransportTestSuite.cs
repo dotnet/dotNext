@@ -540,7 +540,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host2.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
             Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host3.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
 
-            False(host1.LeadershipToken.IsCancellationRequested);
             foreach (var member in host1.Members)
             {
                 var status = member.Status;

@@ -314,8 +314,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
             await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host2).Leader.EndPoint, EndPointFormatter.UriEndPointComparer);
-            Equal(GetLocalClusterView(host1).Leader.EndPoint, GetLocalClusterView(host3).Leader.EndPoint, EndPointFormatter.UriEndPointComparer);
+            Equal(GetLocalClusterView(host1).Leader.EndPoint, (await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
+            Equal(GetLocalClusterView(host1).Leader.EndPoint, (await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
 
             foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
             {
