@@ -91,6 +91,14 @@ public readonly struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
     public double ElapsedMilliseconds => ((double)ElapsedTicks / Frequency) * 1_000D;
 
     /// <summary>
+    /// Gets a difference between two timestamps, in milliseconds.
+    /// </summary>
+    /// <param name="past">The timestamp in the past.</param>
+    /// <returns>The number of milliseconds since <paramref name="past"/>.</returns>
+    public double ElapsedSince(Timestamp past)
+        => ((double)((ticks - past.ticks)) / Frequency) * 1_000D;
+
+    /// <summary>
     /// Gets <see cref="TimeSpan"/> representing the given timestamp.
     /// </summary>
     /// <remarks>
