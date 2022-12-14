@@ -379,7 +379,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: CreateFailureDetector);
             await host3.StartAsync();
-            GetLocalClusterView(host3).PeerGone += peerGoneHandler;
 
             // Ensure that host1 became a leader. Without this restriction, it's not possible to add new nodes
             Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
