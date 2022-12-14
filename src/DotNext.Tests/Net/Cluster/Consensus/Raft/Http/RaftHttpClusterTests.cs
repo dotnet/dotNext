@@ -360,24 +360,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 {"metadata:nodeName", "node3"}
             };
 
-            using var host1 = CreateHost<Startup>(3262, config1, failureDetectorFactory: CreateFailureDetector);
-            await host1.StartAsync();
-            True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
-
-            // two nodes in frozen state
-            using var host2 = CreateHost<Startup>(3263, config2, failureDetectorFactory: CreateFailureDetector);
-            await host2.StartAsync();
-
-            using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: CreateFailureDetector);
-            await host3.StartAsync();
-
-            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
             var memberGoneTask = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-            GetLocalClusterView(host1).PeerGone += (mesh, args) =>
+            Action<IPeerMesh, PeerEventArgs> peerGoneHandler = (mesh, args) =>
             {
                 if (args.PeerAddress is UriEndPoint { Uri: { Port: 3264 } })
                     memberGoneTask.TrySetResult();
             };
+
+            using var host1 = CreateHost<Startup>(3262, config1, failureDetectorFactory: CreateFailureDetector);
+            await host1.StartAsync();
+            True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+            GetLocalClusterView(host1).PeerGone += peerGoneHandler;
+
+            // two nodes in frozen state
+            using var host2 = CreateHost<Startup>(3263, config2, failureDetectorFactory: CreateFailureDetector);
+            await host2.StartAsync();
+            GetLocalClusterView(host2).PeerGone += peerGoneHandler;
+
+            using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: CreateFailureDetector);
+            await host3.StartAsync();
+            GetLocalClusterView(host3).PeerGone += peerGoneHandler;
 
             // add two nodes to the cluster
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -385,8 +387,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
             await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
-
-            False(GetLocalClusterView(host1).LeadershipToken.IsCancellationRequested);
 
             // stop member and wait on its removal
             await host3.StopAsync();
