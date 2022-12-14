@@ -3,6 +3,8 @@ using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Timestamp = Diagnostics.Timestamp;
+
 [ExcludeFromCodeCoverage]
 public abstract class RaftTest : Test
 {
@@ -26,7 +28,9 @@ public abstract class RaftTest : Test
     internal static async Task<EndPoint> AssertLeadershipAsync(IEqualityComparer<EndPoint> comparer, params IRaftCluster[] nodes)
     {
         EndPoint ep = null;
+        var startTime = new Timestamp();
 
+    restart:
         foreach (var n in nodes)
         {
             var leader = await n.WaitForLeaderAsync(DefaultTimeout);
@@ -36,9 +40,17 @@ public abstract class RaftTest : Test
             {
                 ep = leader.EndPoint;
             }
+            else if (comparer.Equals(ep, leader.EndPoint))
+            {
+                continue;
+            }
+            else if (startTime.Elapsed < DefaultTimeout)
+            {
+                goto restart;
+            }
             else
             {
-                Equal(ep, leader.EndPoint, comparer);
+                Fail("Leader was not elected in timely manner");
             }
         }
 
