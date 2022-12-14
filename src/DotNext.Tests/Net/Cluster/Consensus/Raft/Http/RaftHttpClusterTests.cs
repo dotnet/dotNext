@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     [ExcludeFromCodeCoverage]
     [Collection(TestCollections.Raft)]
-    public sealed class RaftHttpClusterTests : Test
+    public sealed class RaftHttpClusterTests : RaftTest
     {
         private sealed class LeaderTracker : LeaderChangedEvent, IClusterMemberLifetime
         {
@@ -127,13 +127,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host1.StopAsync();
         }
 
-        private static async ValueTask<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token)
-        {
-            var result = new StreamMessage(new MemoryStream(), false, message.Name, message.Type);
-            await result.LoadFromAsync(message, token);
-            return result;
-        }
-
         [Theory]
         [InlineData("")]
         [InlineData("/protocol/path")]
@@ -199,6 +192,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             await host1.StopAsync();
             await host2.StopAsync();
+
+            static async ValueTask<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token)
+            {
+                var result = new StreamMessage(new MemoryStream(), false, message.Name, message.Type);
+                await result.LoadFromAsync(message, token);
+                return result;
+            }
         }
 
         [Fact]
@@ -314,8 +314,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
             await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-            Equal(GetLocalClusterView(host1).Leader.EndPoint, (await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
-            Equal(GetLocalClusterView(host1).Leader.EndPoint, (await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
+            await AssertLeadershipAsync(
+                EndPointFormatter.UriEndPointComparer,
+                GetLocalClusterView(host1),
+                GetLocalClusterView(host2),
+                GetLocalClusterView(host3));
 
             foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
             {
@@ -518,19 +521,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress));
                 await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
-                var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
-                var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
-                Equal(leader1.EndPoint, leader2.EndPoint, EndPointFormatter.UriEndPointComparer);
-                Equal(leader1.EndPoint, leader3.EndPoint, EndPointFormatter.UriEndPointComparer);
-
-                foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
-                {
-                    if (member.IsRemote)
-                    {
-                        NotEmpty(await member.GetMetadataAsync());
-                    }
-                }
+                await AssertLeadershipAsync(EndPointFormatter.UriEndPointComparer,
+                    GetLocalClusterView(host1),
+                    GetLocalClusterView(host2),
+                    GetLocalClusterView(host3));
 
                 await host3.StopAsync();
                 await host2.StopAsync();
@@ -549,19 +543,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 using var host3 = CreateHost<Startup>(3264, config3);
                 await host3.StartAsync();
 
-                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
-                var leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
-                var leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
-                Equal(leader1.EndPoint, leader2.EndPoint, EndPointFormatter.UriEndPointComparer);
-                Equal(leader1.EndPoint, leader3.EndPoint, EndPointFormatter.UriEndPointComparer);
-
-                foreach (var member in GetLocalClusterView(host1).As<IRaftCluster>().Members)
-                {
-                    if (member.IsRemote)
-                    {
-                        NotEmpty(await member.GetMetadataAsync());
-                    }
-                }
+                await AssertLeadershipAsync(
+                    EndPointFormatter.UriEndPointComparer,
+                    GetLocalClusterView(host1),
+                    GetLocalClusterView(host2),
+                    GetLocalClusterView(host3));
 
                 await host3.StopAsync();
                 await host2.StopAsync();
@@ -625,13 +611,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberId, GetLocalClusterView(host3).LocalMemberAddress);
                 await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-                var leader1 = await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
-                leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
-                leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
-                Equal(leader1.EndPoint, leader2.EndPoint, EndPointFormatter.UriEndPointComparer);
-                Equal(leader1.EndPoint, leader3.EndPoint, EndPointFormatter.UriEndPointComparer);
-                False(GetLocalClusterView(host1).LeadershipToken.IsCancellationRequested);
-                oldLeader = leader1.EndPoint;
+                oldLeader = await AssertLeadershipAsync(
+                    EndPointFormatter.UriEndPointComparer,
+                    GetLocalClusterView(host1),
+                    GetLocalClusterView(host2),
+                    GetLocalClusterView(host3));
 
                 // stop the leader
                 await host1.StopAsync();
