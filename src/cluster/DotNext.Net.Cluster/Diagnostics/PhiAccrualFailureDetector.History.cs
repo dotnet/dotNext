@@ -55,7 +55,7 @@ public partial class PhiAccrualFailureDetector
         private HeartbeatHistorySnapshot(Timestamp ts, HeartbeatHistorySnapshot previous)
             : base(ts, previous.MaxSampleSize)
         {
-            value = ts.ElapsedSince(currentTs);
+            value = ts.ElapsedSince(previous.currentTs);
             intervalSum = previous.intervalSum;
             squaredIntervalSum = previous.squaredIntervalSum;
 
