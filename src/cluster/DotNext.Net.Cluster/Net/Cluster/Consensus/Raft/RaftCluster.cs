@@ -459,10 +459,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             transitionCancellation.Cancel(false);
             await CancelPendingRequestsAsync().ConfigureAwait(false);
             electionEvent.TrySetCanceled();
+            LocalMemberGone();
             using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
                 await MoveToStandbyState().ConfigureAwait(false);
             }
+        }
+
+        void LocalMemberGone()
+        {
+            var localMember = TryGetLocalMember();
+            if (localMember is not null)
+                OnMemberRemoved(localMember);
         }
     }
 
