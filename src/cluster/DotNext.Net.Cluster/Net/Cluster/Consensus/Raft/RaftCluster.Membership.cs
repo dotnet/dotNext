@@ -263,12 +263,12 @@ public partial class RaftCluster<TMember>
                 var term = Term;
 
                 // do replication
-                var result = await new LeaderState<TMember>.Replicator(auditTrail, ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync().ConfigureAwait(false);
+                var result = await new LeaderState<TMember>.Replicator(auditTrail, ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, member, commitIndex, term, precedingIndex, precedingTerm, Logger, token).ReplicateAsync(currentIndex).ConfigureAwait(false);
 
                 if (!result.Value && result.Term > term)
                     return false;
             }
-            while (rounds > 0 && currentIndex >= member.NextIndex);
+            while (--rounds > 0 && currentIndex >= member.NextIndex);
 
             // ensure that previous configuration has been committed
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);

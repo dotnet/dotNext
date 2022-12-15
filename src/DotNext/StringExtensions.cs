@@ -1,7 +1,7 @@
-using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
 
@@ -12,14 +12,6 @@ using StringTemplate = Buffers.MemoryTemplate<char>;
 /// </summary>
 public static class StringExtensions
 {
-    private static readonly SpanAction<char, string> CopyAndReverse = CreateReversedString;
-
-    private static void CreateReversedString(Span<char> output, string origin)
-    {
-        origin.CopyTo(output);
-        output.Reverse();
-    }
-
     /// <summary>
     /// Returns alternative string if first string argument
     /// is <see langword="null"/> or empty.
@@ -42,10 +34,16 @@ public static class StringExtensions
     /// </summary>
     /// <param name="str">The string to reverse.</param>
     /// <returns>The string in inverse order of characters.</returns>
-    public static string Reverse(this string str)
+    [return: NotNullIfNotNull(nameof(str))]
+    public static string? Reverse(this string? str)
     {
-        var length = str.Length;
-        return length > 0 ? string.Create(length, str, CopyAndReverse) : string.Empty;
+        if (str is { Length: > 0 })
+        {
+            str = new(str);
+            CreateSpan(ref Unsafe.AsRef(in str.GetPinnableReference()), str.Length).Reverse();
+        }
+
+        return str;
     }
 
     /// <summary>

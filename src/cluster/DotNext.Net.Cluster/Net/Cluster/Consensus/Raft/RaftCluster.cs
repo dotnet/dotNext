@@ -459,10 +459,18 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             transitionCancellation.Cancel(false);
             await CancelPendingRequestsAsync().ConfigureAwait(false);
             electionEvent.TrySetCanceled();
+            LocalMemberGone();
             using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
                 await MoveToStandbyState().ConfigureAwait(false);
             }
+        }
+
+        void LocalMemberGone()
+        {
+            var localMember = TryGetLocalMember();
+            if (localMember is not null)
+                OnMemberRemoved(localMember);
         }
     }
 
@@ -576,6 +584,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                     // process configuration
                     var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
+                    Logger.IncomingConfiguration(fingerprint, config.Fingerprint, applyConfig);
                     switch ((config.Fingerprint == fingerprint, applyConfig))
                     {
                         case (true, true):
@@ -920,8 +929,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 if (readyForTransition)
                 {
                     var newState = new CandidateState<TMember>(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false));
-                    state = newState;
-                    followerState.Dispose();
+                    await UpdateStateAsync(newState).ConfigureAwait(false);
 
                     // vote for self
                     newState.StartVoting(electionTimeout, auditTrail);
@@ -965,8 +973,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     FailureDetectorFactory = FailureDetectorFactory,
                 };
 
-                state = newState;
-                candidateState.Dispose();
+                await UpdateStateAsync(newState).ConfigureAwait(false);
 
                 Leader = newLeader;
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);

@@ -11,7 +11,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
 {
     private const string StateFileName = "writer.state";
     private readonly IChannelWriter<T> writer;
-    private readonly FileCreationOptions fileOptions;
+    private readonly FileStreamFactory fileFactory;
     private AsyncLock writeLock;
     private Partition? writeTopic;
     private ChannelCursor cursor;
@@ -20,8 +20,16 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
     {
         writeLock = singleWriter ? default : AsyncLock.Exclusive();
         this.writer = writer;
-        fileOptions = new FileCreationOptions(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous | FileOptions.WriteThrough, initialSize);
-        cursor = new ChannelCursor(writer.Location, StateFileName);
+        fileFactory = new()
+        {
+            Mode = FileMode.OpenOrCreate,
+            Access = FileAccess.ReadWrite,
+            Share = FileShare.Read,
+            Optimization = FileOptions.Asynchronous | FileOptions.WriteThrough,
+            InitialSize = initialSize,
+        };
+
+        cursor = new(writer.Location, StateFileName);
     }
 
     public long Position => cursor.Position;
@@ -34,7 +42,7 @@ internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInf
         => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : ValueTask.FromResult(true);
 
     [MemberNotNull(nameof(writeTopic))]
-    private void GetOrCreatePartition() => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
+    private void GetOrCreatePartition() => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileFactory, false);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public override async ValueTask WriteAsync(T item, CancellationToken token)

@@ -56,7 +56,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     }
 
     private readonly IReadBuffer buffer;
-    private readonly FileCreationOptions fileOptions;
+    private readonly FileStreamFactory fileFactory;
     private readonly IChannelReader<T> reader;
     private readonly IncrementingEventCounter? readRate;
     private readonly bool reliableEnumeration;
@@ -78,8 +78,15 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             buffer = new MultipleReadersBuffer();
         }
 
-        fileOptions = new FileCreationOptions(FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.Asynchronous | FileOptions.SequentialScan);
-        cursor = new ChannelCursor(reader.Location, StateFileName);
+        fileFactory = new()
+        {
+            Mode = FileMode.Open,
+            Access = FileAccess.Read,
+            Share = FileShare.ReadWrite,
+            Optimization = FileOptions.Asynchronous | FileOptions.SequentialScan,
+        };
+
+        cursor = new(reader.Location, StateFileName);
         this.readRate = readRate;
         this.reliableEnumeration = reliableEnumeration;
     }
@@ -93,7 +100,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     public override int Count => checked((int)(reader.WrittenCount - Position));
 
     [MemberNotNull(nameof(readTopic))]
-    private void GetOrCreatePartition() => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
+    private void GetOrCreatePartition() => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileFactory, true);
 
     public override bool TryRead([MaybeNullWhen(false)] out T item)
     {

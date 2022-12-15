@@ -143,5 +143,15 @@ namespace DotNext.Buffers
             Equal(13, writer.CopyTo(buffer, ref position));
             Equal(Enumerable.Range(19, 13), buffer.Take(13));
         }
+
+        [Fact]
+        public static void BuildString()
+        {
+            using var writer = new SparseBufferWriter<char>();
+            writer.Write("Hello, ".AsMemory(), copyMemory: false);
+            writer.Write("world!".AsMemory(), copyMemory: false);
+
+            Equal("Hello, world!", writer.ToString());
+        }
     }
 }

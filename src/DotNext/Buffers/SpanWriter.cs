@@ -48,10 +48,14 @@ public ref struct SpanWriter<T>
     {
         get
         {
-            if (position >= span.Length)
-                throw new InvalidOperationException();
+            if ((uint)position >= (uint)span.Length)
+                ThrowInvalidOperationException();
 
             return ref Unsafe.Add(ref MemoryMarshal.GetReference(span), position);
+
+            [DoesNotReturn]
+            [StackTraceHidden]
+            static void ThrowInvalidOperationException() => throw new InvalidOperationException();
         }
     }
 
@@ -77,7 +81,7 @@ public ref struct SpanWriter<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
     public void Advance(int count)
     {
-        if (count < 0 || position > span.Length - count)
+        if ((uint)count > (uint)FreeCapacity)
             ThrowCountOutOfRangeException();
 
         position += count;
@@ -151,13 +155,13 @@ public ref struct SpanWriter<T>
     /// </returns>
     public bool TryAdd(T item)
     {
-        var newLength = position + 1;
-        if ((uint)newLength > (uint)span.Length)
-            return false;
+        if ((uint)position < (uint)span.Length)
+        {
+            Unsafe.Add(ref MemoryMarshal.GetReference(span), position++) = item;
+            return true;
+        }
 
-        Unsafe.Add(ref MemoryMarshal.GetReference(span), position) = item;
-        position = newLength;
-        return true;
+        return false;
     }
 
     /// <summary>
@@ -189,7 +193,9 @@ public ref struct SpanWriter<T>
         var newLength = position + count;
         if ((uint)newLength <= (uint)span.Length)
         {
-            segment = span.Slice(position, count);
+            segment = MemoryMarshal.CreateSpan(
+                ref Unsafe.Add(ref MemoryMarshal.GetReference(span), position),
+                count);
             position = newLength;
             return true;
         }
@@ -220,6 +226,11 @@ public ref struct SpanWriter<T>
     [StackTraceHidden]
     private static void ThrowCountOutOfRangeException() => throw new ArgumentOutOfRangeException("count");
 
+    // TODO: Replace with ArgumentNullException.ThrowIfNull in .NET 8
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowArgumentNullException() => throw new ArgumentNullException("action");
+
     /// <summary>
     /// Writes a portion of data.
     /// </summary>
@@ -233,10 +244,11 @@ public ref struct SpanWriter<T>
     public unsafe void Write<TArg>(delegate*<TArg, Span<T>, void> action, TArg arg, int count)
     {
         if (action is null)
-            throw new ArgumentNullException(nameof(action));
+            ThrowArgumentNullException();
 
         if (!TrySlide(count, out var buffer))
             ThrowInternalBufferOverflowException();
+
         action(arg, buffer);
     }
 
@@ -252,14 +264,13 @@ public ref struct SpanWriter<T>
     public unsafe bool TryWrite<TArg>(delegate*<TArg, Span<T>, out int, bool> action, TArg arg)
     {
         if (action is null)
-            throw new ArgumentNullException(nameof(action));
+            ThrowArgumentNullException();
 
-        bool result;
+        if (!action(arg, RemainingSpan, out var writtenCount))
+            return false;
 
-        if (result = action(arg, RemainingSpan, out var writtenCount))
-            position += writtenCount;
-
-        return result;
+        position += writtenCount;
+        return true;
     }
 
     /// <summary>

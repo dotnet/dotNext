@@ -1,6 +1,35 @@
 Release Notes
 ====
 
+# 12-15-2022
+<a href="https://www.nuget.org/packages/dotnext/4.8.1">DotNext 4.8.1</a>
+* Improved quality and performance of random string generator exposed as `RandomExtensions.NextString` extension methods ([138](https://github.com/dotnet/dotNext/issues/138))
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.8.1">DotNext.Metaprogramming 4.8.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.8.1">DotNext.Reflection 4.8.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.8.1">DotNext.Unsafe 4.8.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.1">DotNext.Threading 4.8.1</a>
+* Fixed critical bug [136](https://github.com/dotnet/dotNext/issues/136) that prevents reentrant reads from persistent channel
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.8.1">DotNext.IO 4.8.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.1">DotNext.Net.Cluster 4.8.1</a>
+* Fixed [139](https://github.com/dotnet/dotNext/issues/139)
+* Fixed calculation of Phi performed by Phi Accrual Failure Detector. The bug leads to false positive detection
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.1">DotNext.AspNetCore.Cluster 4.8.1</a>
+* Updated dependencies
+
 # 12-06-2022
 <a href="https://www.nuget.org/packages/dotnext/4.8.0">DotNext 4.8.0</a>
 * Added **scoped** keyword to necessary buffer types and extension methods for better compatibility with C# 11
