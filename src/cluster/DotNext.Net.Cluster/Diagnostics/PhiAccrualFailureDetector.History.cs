@@ -123,6 +123,8 @@ public partial class PhiAccrualFailureDetector
             var meanMillis = Mean + acceptableHeartbeatPause.TotalMilliseconds;
             var deviationMillis = Math.Max(StdDeviation, minStdDeviation.TotalMilliseconds);
 
+            Debug.Assert(double.IsNaN(deviationMillis) is false);
+
             var y = (intervalMillis - meanMillis) / deviationMillis;
             var e = Math.Exp(-y * (1.5976D + (0.070566D * Squared(y))));
 
