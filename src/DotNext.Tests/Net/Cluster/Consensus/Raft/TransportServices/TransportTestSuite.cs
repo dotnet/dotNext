@@ -513,8 +513,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             await using var host3 = clusterFactory(3269, false);
             await host3.StartAsync();
 
-            await listener1.Result.WaitAsync(DefaultTimeout);
-            Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
+            await listener1.Task.WaitAsync(DefaultTimeout);
+            Equal(host1.LocalMemberAddress, listener1.Task.Result.EndPoint);
 
             NotNull(host1.Leader);
 

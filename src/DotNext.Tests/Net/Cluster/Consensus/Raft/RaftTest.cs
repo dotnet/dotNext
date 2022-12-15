@@ -9,20 +9,18 @@ using Timestamp = Diagnostics.Timestamp;
 public abstract class RaftTest : Test
 {
     [ExcludeFromCodeCoverage]
-    private protected class LeaderChangedEvent
+    private protected class LeaderChangedEvent : TaskCompletionSource<IClusterMember>
     {
-        private TaskCompletionSource<IClusterMember> source = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal LeaderChangedEvent()
+            : base(TaskCreationOptions.RunContinuationsAsynchronously)
+        {
+        }
 
         internal void OnLeaderChanged(ICluster sender, IClusterMember leader)
         {
-            if (leader is null)
-                return;
-            source.TrySetResult(leader);
+            if (leader is not null)
+                TrySetResult(leader);
         }
-
-        internal Task<IClusterMember> Result => source.Task;
-
-        internal void Reset() => source = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     internal static async Task<EndPoint> AssertLeadershipAsync(IEqualityComparer<EndPoint> comparer, params IRaftCluster[] nodes)

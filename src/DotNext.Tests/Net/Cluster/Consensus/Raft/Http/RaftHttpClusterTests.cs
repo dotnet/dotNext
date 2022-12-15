@@ -88,8 +88,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var host3 = CreateHost<Startup>(3264, config3);
             await host3.StartAsync();
 
-            await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+            await listener.Task.WaitAsync(DefaultTimeout);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             // add two nodes to the cluster
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -160,8 +160,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
 
-            await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+            await listener.Task.WaitAsync(DefaultTimeout);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
             await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
@@ -232,8 +232,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var host2 = CreateHost<Startup>(3263, config2);
             await host2.StartAsync();
 
-            await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+            await listener.Task.WaitAsync(DefaultTimeout);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
             await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
@@ -304,8 +304,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var host3 = CreateHost<Startup>(3264, config3);
             await host3.StartAsync();
 
-            await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+            await listener.Task.WaitAsync(DefaultTimeout);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             // add two nodes to the cluster
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
@@ -438,8 +438,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             using var host3 = CreateHost<Startup>(3264, config3);
             await host3.StartAsync();
 
-            await listener.Result.WaitAsync(DefaultTimeout);
-            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Result.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+            await listener.Task.WaitAsync(DefaultTimeout);
+            Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
 
             // add two nodes to the cluster
             True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberId, GetLocalClusterView(host2).LocalMemberAddress));
