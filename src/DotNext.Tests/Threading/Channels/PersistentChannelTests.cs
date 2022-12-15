@@ -3,6 +3,7 @@ using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels
 {
+    using static Collections.Generic.Sequence;
     using static IO.StreamExtensions;
 
     [ExcludeFromCodeCoverage]
@@ -121,17 +122,15 @@ namespace DotNext.Threading.Channels
             }
         }
 
-        private static Task Produce(ChannelWriter<decimal> writer) => Produce(writer, 0M, 500M);
-
-        private static async Task Produce(ChannelWriter<decimal> writer, decimal start, decimal count)
+        private static async Task Produce(ChannelWriter<decimal> writer, decimal startInclusive, decimal endExclusive)
         {
-            for (decimal i = start; i < count; i++)
+            for (decimal i = startInclusive; i < endExclusive; i++)
                 await writer.WriteAsync(i);
         }
 
-        private static async Task Consume(ChannelReader<decimal> reader)
+        private static async Task Consume(ChannelReader<decimal> reader, decimal startInclusive, decimal endExclusive)
         {
-            for (decimal i = 0M; i < 500M; i++)
+            for (decimal i = startInclusive; i < endExclusive; i++)
                 Equal(i, await reader.ReadAsync());
         }
 
@@ -149,8 +148,8 @@ namespace DotNext.Threading.Channels
         public static async Task ProduceConsumeConcurrently(long initialSize)
         {
             using var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, PartitionCapacity = 100, InitialPartitionSize = initialSize });
-            var consumer = Consume(channel.Reader);
-            var producer = Produce(channel.Writer);
+            var consumer = Consume(channel.Reader, 0M, 500M);
+            var producer = Produce(channel.Writer, 0M, 500M);
             await Task.WhenAll(consumer, producer);
         }
 
@@ -225,6 +224,74 @@ namespace DotNext.Threading.Channels
                 Equal(g3, enumerator.Current);
 
                 False(await enumerator.MoveNextAsync());
+            }
+        }
+
+        [Fact]
+        public static async Task RegressionIssue136()
+        {
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+            { Location = path, PartitionCapacity = 3 }))
+            {
+                await Produce(channel.Writer, 0M, 30M);
+            }
+
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+            { Location = path, PartitionCapacity = 3 }))
+            {
+                await Produce(channel.Writer, 30M, 60M);
+            }
+
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+            { Location = path, PartitionCapacity = 3 }))
+            {
+                channel.Writer.Complete();
+                await Consume(channel.Reader);
+            }
+
+            static async Task Produce(ChannelWriter<decimal> writer, decimal start, decimal end)
+            {
+                for (decimal i = start; i < end; i++)
+                {
+                    await writer.WriteAsync(i);
+                }
+            }
+
+            static async Task Consume(ChannelReader<decimal> reader)
+            {
+                var array = await reader.ReadAllAsync().ToArrayAsync();
+                Equal(60, array.Length);
+
+                for (var i = 0; i < array.Length; i++)
+                    Equal(new decimal(i), array[i]);
+            }
+        }
+
+        [Fact]
+        public static async Task ReentrantConsumption()
+        {
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            await ProduceTestSet(path, 0M, 1000M);
+            await ProduceTestSet(path, 1000M, 2000M);
+            await ProduceTestSet(path, 2000M, 3000M);
+
+            await ConsumeTestSet(path, 0M, 3000M);
+
+            static async Task ProduceTestSet(string path, decimal startInclusive, decimal endExclusive)
+            {
+                using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { Location = path }))
+                {
+                    await Produce(channel.Writer, startInclusive, endExclusive);
+                }
+            }
+
+            static async Task ConsumeTestSet(string path, decimal startInclusive, decimal endExclusive)
+            {
+                using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { Location = path }))
+                {
+                    await Consume(channel.Reader, startInclusive, endExclusive);
+                }
             }
         }
     }

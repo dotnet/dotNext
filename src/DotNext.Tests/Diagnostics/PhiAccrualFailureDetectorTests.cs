@@ -16,6 +16,17 @@ namespace DotNext.Diagnostics
         }
 
         [Fact]
+        public static void PhiNaNRegression()
+        {
+            var detector = new PhiAccrualFailureDetector();
+            detector.ReportHeartbeat(new(TimeSpan.Parse("02:50:45.1408563")));
+            detector.ReportHeartbeat(new(TimeSpan.Parse("02:50:45.9669910")));
+            detector.ReportHeartbeat(new(TimeSpan.Parse("02:50:46.7933090")));
+            var v = detector.GetValue(new(TimeSpan.Parse("02:50:47.7933090")));
+            False(double.IsNaN(v));
+        }
+
+        [Fact]
         public static void MainTest()
         {
             var detector = new PhiAccrualFailureDetector();

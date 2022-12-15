@@ -16,22 +16,23 @@ namespace DotNext
             Equal("b", "b".IfNullOrEmpty("a"));
         }
 
-        [Fact]
-        public static void RandomStringTest()
+        [Theory]
+        [InlineData("abcd123456789", 6)]
+        [InlineData("abcd123456789", 7)]
+        [InlineData("0123456789ABCDEF", 12)] // allowedChars.Length is pow of 2
+        public static void RandomStringTest(string allowedChars, int length)
         {
-            const string AllowedChars = "abcd123456789";
-
-            var str = Random.Shared.NextString(AllowedChars, 6);
-            Equal(6, str.Length);
+            var str = Random.Shared.NextString(allowedChars, length);
+            Equal(length, str.Length);
             foreach (var ch in str)
-                True(AllowedChars.Contains(ch));
+                True(allowedChars.Contains(ch));
 
             using (var generator = RandomNumberGenerator.Create())
             {
-                str = generator.NextString(AllowedChars, 7);
-                Equal(7, str.Length);
+                str = generator.NextString(allowedChars, length);
+                Equal(length, str.Length);
                 foreach (var ch in str)
-                    AllowedChars.Contains(ch);
+                    allowedChars.Contains(ch);
             }
         }
 

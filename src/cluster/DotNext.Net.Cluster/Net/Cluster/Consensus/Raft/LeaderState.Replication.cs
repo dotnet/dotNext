@@ -22,7 +22,7 @@ internal partial class LeaderState<TMember>
         private readonly CancellationToken token;
 
         // state
-        private long currentIndex, fingerprint;
+        private long replicationIndex, fingerprint;
         private bool replicatedWithCurrentTerm;
         private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
 
@@ -33,7 +33,6 @@ internal partial class LeaderState<TMember>
             IClusterConfiguration? proposedConfig,
             TMember member,
             long commitIndex,
-            long currentIndex,
             long term,
             long precedingIndex,
             long precedingTerm,
@@ -47,18 +46,19 @@ internal partial class LeaderState<TMember>
             this.precedingIndex = precedingIndex;
             this.precedingTerm = precedingTerm;
             this.commitIndex = commitIndex;
-            this.currentIndex = currentIndex;
             this.term = term;
             this.logger = logger;
             this.token = token;
-            fingerprint = (proposedConfig ?? activeConfig).Fingerprint;
         }
 
-        internal ValueTask<Result<bool>> ReplicateAsync()
+        internal ValueTask<Result<bool>> ReplicateAsync(long currentIndex)
         {
-            logger.ReplicationStarted(Member.EndPoint, currentIndex);
-            return currentIndex >= Member.NextIndex ?
-                auditTrail.ReadAsync(this, Member.NextIndex, token) :
+            var startIndex = precedingIndex + 1L;
+            Debug.Assert(startIndex == Member.NextIndex);
+
+            logger.ReplicationStarted(Member.EndPoint, startIndex);
+            return currentIndex >= startIndex ?
+                auditTrail.ReadAsync(this, startIndex, token) :
                 ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token);
         }
 
@@ -72,18 +72,18 @@ internal partial class LeaderState<TMember>
                 if (result.Value)
                 {
                     logger.ReplicationSuccessful(Member.EndPoint, Member.NextIndex);
-                    Member.NextIndex.VolatileWrite(currentIndex + 1);
-                    Member.ConfigurationFingerprint.VolatileWrite(fingerprint);
+                    Member.NextIndex = replicationIndex + 1L;
+                    Member.ConfigurationFingerprint = fingerprint;
                     result = result with { Value = replicatedWithCurrentTerm };
                 }
                 else
                 {
                     Member.ConfigurationFingerprint = 0L;
+                    var nextIndex = Member.NextIndex;
+                    if (nextIndex > 0L)
+                        Member.NextIndex = --nextIndex;
 
-                    unsafe
-                    {
-                        logger.ReplicationFailed(Member.EndPoint, Member.NextIndex.UpdateAndGet(&DecrementIndex));
-                    }
+                    logger.ReplicationFailed(Member.EndPoint, nextIndex);
                 }
 
                 SetResult(result);
@@ -100,14 +100,13 @@ internal partial class LeaderState<TMember>
             {
                 replicationAwaiter = default;
             }
-
-            static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
         }
 
         private (IClusterConfiguration, bool) GetConfiguration()
         {
             bool applyConfig;
-            IClusterConfiguration configuration;
+            var configuration = proposedConfig ?? activeConfig;
+            fingerprint = configuration.Fingerprint;
 
             if (Member.ConfigurationFingerprint == fingerprint)
             {
@@ -117,7 +116,6 @@ internal partial class LeaderState<TMember>
             else
             {
                 applyConfig = false;
-                configuration = proposedConfig ?? activeConfig;
             }
 
             return (configuration, applyConfig);
@@ -129,15 +127,15 @@ internal partial class LeaderState<TMember>
         {
             if (snapshotIndex.HasValue)
             {
-                logger.InstallingSnapshot(currentIndex = snapshotIndex.GetValueOrDefault());
-                fingerprint = 0L;
-                replicationAwaiter = Member.InstallSnapshotAsync(term, entries[0], currentIndex, token).ConfigureAwait(false).GetAwaiter();
+                logger.InstallingSnapshot(replicationIndex = snapshotIndex.GetValueOrDefault());
+                replicationAwaiter = Member.InstallSnapshotAsync(term, entries[0], replicationIndex, token).ConfigureAwait(false).GetAwaiter();
             }
             else
             {
-                logger.ReplicaSize(Member.EndPoint, entries.Count, precedingIndex, precedingTerm);
                 var (config, applyConfig) = GetConfiguration();
+                logger.ReplicaSize(Member.EndPoint, entries.Count, precedingIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, applyConfig);
                 replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, config, applyConfig, token).ConfigureAwait(false).GetAwaiter();
+                replicationIndex = precedingIndex + entries.Count;
             }
 
             replicatedWithCurrentTerm = ContainsTerm(entries, term);
@@ -163,10 +161,15 @@ internal partial class LeaderState<TMember>
 
     private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
     {
-        internal ReplicationWorkItem(Replicator replicator)
+        private readonly long currentIndex;
+        private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
+
+        internal ReplicationWorkItem(Replicator replicator, long currentIndex)
             : base(replicator, TaskCreationOptions.RunContinuationsAsynchronously)
         {
             Debug.Assert(replicator is not null);
+
+            this.currentIndex = currentIndex;
         }
 
         private Replicator AsyncState
@@ -182,11 +185,28 @@ internal partial class LeaderState<TMember>
         internal static TMember? GetReplicatedMember(Task<Result<bool>> task)
             => (task.AsyncState as Replicator)?.Member;
 
-        async void IThreadPoolWorkItem.Execute()
+        private void OnCompleted() => Complete(ref awaiter);
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            var awaiter = AsyncState.ReplicateAsync(currentIndex).ConfigureAwait(false).GetAwaiter();
+
+            if (awaiter.IsCompleted)
+            {
+                Complete(ref awaiter);
+            }
+            else
+            {
+                this.awaiter = awaiter;
+                awaiter.UnsafeOnCompleted(OnCompleted);
+            }
+        }
+
+        private void Complete(ref ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter)
         {
             try
             {
-                SetResult(await AsyncState.ReplicateAsync().ConfigureAwait(false));
+                SetResult(awaiter.GetResult());
             }
             catch (OperationCanceledException e)
             {
@@ -195,6 +215,10 @@ internal partial class LeaderState<TMember>
             catch (Exception e)
             {
                 SetException(e);
+            }
+            finally
+            {
+                awaiter = default; // help GC
             }
         }
     }
@@ -288,9 +312,9 @@ internal partial class LeaderState<TMember>
         return result;
     }
 
-    private static Task<Result<bool>> QueueReplication(Replicator replicator)
+    private static Task<Result<bool>> QueueReplication(Replicator replicator, long currentIndex)
     {
-        var workItem = new ReplicationWorkItem(replicator);
+        var workItem = new ReplicationWorkItem(replicator, currentIndex);
         ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
         return workItem.Task;
     }

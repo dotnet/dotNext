@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     using IClusterConfiguration = Membership.IClusterConfiguration;
 
     [ExcludeFromCodeCoverage]
-    public abstract class TransportTestSuite : Test
+    public abstract class TransportTestSuite : RaftTest
     {
         private sealed class BufferedClusterConfiguration : BinaryTransferObject, IClusterConfiguration
         {
@@ -479,13 +479,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress);
                 await host3.Readiness.WaitAsync(DefaultTimeout);
 
-                var leader1 = await host1.WaitForLeaderAsync(DefaultTimeout);
-                leader2 = await host2.WaitForLeaderAsync(DefaultTimeout);
-                leader3 = await host3.WaitForLeaderAsync(DefaultTimeout);
-                Equal(leader1.EndPoint, leader2.EndPoint);
-                Equal(leader1.EndPoint, leader3.EndPoint);
-                False(host1.LeadershipToken.IsCancellationRequested);
-                oldLeader = leader1.EndPoint;
+                oldLeader = await AssertLeadershipAsync(EqualityComparer<EndPoint>.Default, host1, host2, host3);
 
                 // stop the leader
                 await host1.StopAsync();
@@ -519,8 +513,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             await using var host3 = clusterFactory(3269, false);
             await host3.StartAsync();
 
-            await listener1.Result.WaitAsync(DefaultTimeout);
-            Equal(host1.LocalMemberAddress, listener1.Result.Result.EndPoint);
+            await listener1.Task.WaitAsync(DefaultTimeout);
+            Equal(host1.LocalMemberAddress, listener1.Task.Result.EndPoint);
 
             NotNull(host1.Leader);
 
@@ -537,8 +531,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             True(await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress));
             await host3.Readiness.WaitAsync(DefaultTimeout);
 
-            Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host2.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
-            Equal((await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint, (await host3.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
+            await AssertLeadershipAsync(EqualityComparer<EndPoint>.Default, host1, host2, host3);
+
+            foreach (var member in host1.Members)
+            {
+                var status = member.Status;
+                if (status is not ClusterMemberStatus.Available)
+                    Fail($"Member {member.EndPoint} has unexpected status {status}");
+            }
 
             await host3.StopAsync();
             await host2.StopAsync();

@@ -48,10 +48,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         remove => memberStatusChanged -= value;
     }
 
-    private void ChangeStatus(ClusterMemberStatus newState)
-        => IClusterMember.OnMemberStatusChanged(this, ref status, newState, memberStatusChanged);
-
-    internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
+    internal void Touch() => Status = ClusterMemberStatus.Available;
 
     private async Task<TResult> SendAsync<TResult, TMessage>(TMessage message, CancellationToken token)
         where TMessage : HttpMessage, IHttpMessageReader<TResult>
@@ -90,8 +87,9 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, tokenWithTimeout)
                 .ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            ChangeStatus(ClusterMemberStatus.Available);
-            return await message.ParseResponse(response, tokenWithTimeout).ConfigureAwait(false);
+            var result = await message.ParseResponse(response, tokenWithTimeout).ConfigureAwait(false);
+            Touch();
+            return result;
         }
         catch (HttpRequestException e)
         {
@@ -121,13 +119,13 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             request.Dispose();
             Metrics?.ReportResponseTime(timeStamp.Elapsed);
         }
-    }
 
-    private MemberUnavailableException MemberUnavailable(Exception e)
-    {
-        context.Logger.MemberUnavailable(EndPoint, e);
-        ChangeStatus(ClusterMemberStatus.Unavailable);
-        return new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+        MemberUnavailableException MemberUnavailable(Exception e)
+        {
+            context.Logger.MemberUnavailable(EndPoint, e);
+            Status = ClusterMemberStatus.Unavailable;
+            return new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+        }
     }
 
     ValueTask IRaftClusterMember.CancelPendingRequestsAsync()
@@ -200,7 +198,11 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     public bool IsRemote => Id != context.LocalMember;
 
-    ClusterMemberStatus IClusterMember.Status => IsRemote ? status.Value : ClusterMemberStatus.Available;
+    public ClusterMemberStatus Status
+    {
+        get => IsRemote ? status.Value : ClusterMemberStatus.Available;
+        private set => IClusterMember.OnMemberStatusChanged(this, ref status, value, memberStatusChanged);
+    }
 
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
         => SendAsync<TResponse, CustomMessage<TResponse>>(new(context.LocalMember, message, responseReader) { RespectLeadership = respectLeadership }, token);
