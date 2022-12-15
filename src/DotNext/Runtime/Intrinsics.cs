@@ -424,24 +424,6 @@ public static class Intrinsics
     public static unsafe void Copy<T>(scoped in T source, out T destination, nuint count)
         where T : unmanaged
     {
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
-
-        Copy(in source, out destination, (nuint)count);
-    }
-
-    /// <summary>
-    /// Copies the specified number of elements from source address to the destination address.
-    /// </summary>
-    /// <param name="source">The address of the bytes to copy.</param>
-    /// <param name="destination">The target address.</param>
-    /// <param name="count">The number of elements to copy.</param>
-    /// <typeparam name="T">The type of the element.</typeparam>
-    [CLSCompliant(false)]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void Copy<T>(in T source, out T destination, nuint count)
-        where T : unmanaged
-    {
         Unsafe.SkipInit(out destination);
         Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nuint)count * (nuint)sizeof(T)));
     }
