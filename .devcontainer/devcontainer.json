@@ -1,11 +1,10 @@
 {
   "name": "C# (.NET)",
+  "image": "mcr.microsoft.com/vscode/devcontainers/dotnet:0-6.0",
   "build": {
     "dockerfile": "Dockerfile",
     "args": {
       "VARIANT": "6.0",
-      "INSTALL_NODE": "false",
-      "INSTALL_AZURE_CLI": "false"
     }
   },
 
