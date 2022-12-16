@@ -1,16 +1,11 @@
 {
   "name": "C# (.NET)",
   "image": "mcr.microsoft.com/vscode/devcontainers/dotnet:0-6.0",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "args": {
-      "VARIANT": "6.0",
-    }
-  },
 
   // Set *default* container specific settings.json values on container create.
   "settings": {
-    "terminal.integrated.shell.linux": "/bin/bash"
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "dotnet-test-explorer.testProjectPath": "**/*Tests.@(csproj)"
   },
 
   // Add the IDs of extensions you want installed when the container is created.
