@@ -134,7 +134,7 @@ internal partial class LeaderState<TMember>
             Debug.Assert(snapshot.IsSnapshot);
 
             logger.InstallingSnapshot(replicationIndex = snapshotIndex);
-            replicationAwaiter = Member.InstallSnapshotAsync(term, snapshot, replicationIndex, token).ConfigureAwait(false).GetAwaiter();
+            replicationAwaiter = Member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
             fingerprint = Member.ConfigurationFingerprint; // keep local version unchanged
             replicatedWithCurrentTerm = snapshot.Term == term;
         }
