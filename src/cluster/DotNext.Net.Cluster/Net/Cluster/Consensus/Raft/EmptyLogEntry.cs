@@ -11,29 +11,25 @@ using IO.Log;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct EmptyLogEntry : IRaftLogEntry
 {
-    private readonly bool isSnapshot;
-
-    internal EmptyLogEntry(long term, bool snapshot)
-    {
-        Term = term;
-        Timestamp = DateTimeOffset.UtcNow;
-        isSnapshot = snapshot;
-    }
-
     /// <summary>
     /// Initializes a new empty log entry.
     /// </summary>
     /// <param name="term">The term value.</param>
     public EmptyLogEntry(long term)
-        : this(term, false)
     {
+        Term = term;
+        Timestamp = DateTimeOffset.UtcNow;
     }
 
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
 
-    /// <inheritdoc/>
-    bool ILogEntry.IsSnapshot => isSnapshot;
+    /// <inheritdoc cref="ILogEntry.IsSnapshot"/>
+    public bool IsSnapshot
+    {
+        get;
+        internal init;
+    }
 
     /// <inheritdoc/>
     long? IDataTransferObject.Length => 0L;

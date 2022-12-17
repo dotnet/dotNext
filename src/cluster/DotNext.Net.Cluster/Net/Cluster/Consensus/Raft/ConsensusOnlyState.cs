@@ -43,15 +43,15 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
                 EmptyLogEntry result;
                 if (offset >= 0L)
                 {
-                    result = new EmptyLogEntry(terms[index + offset], false);
+                    result = new(terms[index + offset]);
                 }
                 else if (index is 0)
                 {
-                    result = new EmptyLogEntry(snapshotTerm, true);
+                    result = new(snapshotTerm) { IsSnapshot = true };
                 }
                 else
                 {
-                    result = new EmptyLogEntry(terms[index - 1L], false);
+                    result = new(terms[index - 1L]);
                 }
 
                 return result;
@@ -66,9 +66,9 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         public IEnumerator<EmptyLogEntry> GetEnumerator()
         {
             if (offset < 0)
-                yield return new EmptyLogEntry(snapshotTerm, true);
+                yield return new(snapshotTerm) { IsSnapshot = true };
             for (var i = 0L; i < count + offset; i++)
-                yield return new EmptyLogEntry(terms[i], false);
+                yield return new(terms[i]);
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
