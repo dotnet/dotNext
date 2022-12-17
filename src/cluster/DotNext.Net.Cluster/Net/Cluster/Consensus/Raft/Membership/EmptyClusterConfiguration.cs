@@ -14,8 +14,5 @@ internal readonly struct EmptyClusterConfiguration : IClusterConfiguration
         => IDataTransferObject.Empty.WriteToAsync(writer, token);
 
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
-    {
-        memory = ReadOnlyMemory<byte>.Empty;
-        return true;
-    }
+        => IDataTransferObject.Empty.TryGetMemory(out memory);
 }
