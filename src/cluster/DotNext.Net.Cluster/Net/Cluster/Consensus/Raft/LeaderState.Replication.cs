@@ -8,20 +8,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Membership;
 using Threading;
+using IDataTransferObject = IO.IDataTransferObject;
 
 internal partial class LeaderState<TMember>
 {
-    internal sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
+    internal sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration
     {
         private readonly IClusterConfiguration configuration;
-        private readonly bool applyConfig;
         internal readonly TMember Member;
         private readonly long commitIndex, precedingTerm, term;
         private readonly ILogger logger;
 
         // state
-        private long replicationIndex, fingerprint;
-        private bool replicatedWithCurrentTerm;
+        private long replicationIndex; // reuse as precedingIndex
+        private long fingerprint;
+        private bool replicatedWithCurrentTerm; // reuse as applyConfig
         private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
 
         // TODO: Replace with required init properties in the next version of C#
@@ -47,8 +48,11 @@ internal partial class LeaderState<TMember>
 
             if (member.ConfigurationFingerprint == fingerprint)
             {
-                applyConfig = activeConfig.Fingerprint == fingerprint;
-                configuration = IClusterConfiguration.CreateEmpty(fingerprint);
+                // This branch is a hot path because configuration changes rarely.
+                // It is reasonable to prevent allocation of empty configuration every time.
+                // To do that, instance of Replicator serves as empty configuration
+                replicatedWithCurrentTerm = activeConfig.Fingerprint == fingerprint;
+                configuration = this;
             }
         }
 
@@ -109,36 +113,63 @@ internal partial class LeaderState<TMember>
         {
             if (snapshotIndex.HasValue)
             {
-                logger.InstallingSnapshot(replicationIndex = snapshotIndex.GetValueOrDefault());
-                replicationAwaiter = Member.InstallSnapshotAsync(term, entries[0], replicationIndex, token).ConfigureAwait(false).GetAwaiter();
-                fingerprint = 0L;
+                ReplicateSnapshot(entries[0], snapshotIndex.GetValueOrDefault(), token);
             }
             else
             {
-                logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, applyConfig);
-                replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
-                replicationIndex += entries.Count;
+                ReplicateEntries<TEntry, TList>(entries, token);
             }
 
-            replicatedWithCurrentTerm = ContainsTerm(entries, term);
             if (replicationAwaiter.IsCompleted)
                 Complete();
             else
                 replicationAwaiter.OnCompleted(Complete);
 
             return new(Task);
-
-            static bool ContainsTerm(TList list, long term)
-            {
-                for (var i = 0; i < list.Count; i++)
-                {
-                    if (list[i].Term == term)
-                        return true;
-                }
-
-                return false;
-            }
         }
+
+        private void ReplicateSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            where TSnapshot : notnull, IRaftLogEntry
+        {
+            Debug.Assert(snapshot.IsSnapshot);
+
+            logger.InstallingSnapshot(replicationIndex = snapshotIndex);
+            replicationAwaiter = Member.InstallSnapshotAsync(term, snapshot, replicationIndex, token).ConfigureAwait(false).GetAwaiter();
+            fingerprint = Member.ConfigurationFingerprint; // keep local version unchanged
+            replicatedWithCurrentTerm = snapshot.Term == term;
+        }
+
+        private void ReplicateEntries<TEntry, TList>(TList entries, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+            where TList : notnull, IReadOnlyList<TEntry>
+        {
+            logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, replicatedWithCurrentTerm);
+            replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, replicatedWithCurrentTerm, token).ConfigureAwait(false).GetAwaiter();
+            replicationIndex += entries.Count;
+
+            for (var i = 0; i < entries.Count; i++)
+            {
+                if (entries[i].Term == term)
+                {
+                    replicatedWithCurrentTerm = true;
+                    return;
+                }
+            }
+
+            replicatedWithCurrentTerm = false;
+        }
+
+        long IClusterConfiguration.Fingerprint => fingerprint;
+
+        long IClusterConfiguration.Length => 0L;
+
+        bool IDataTransferObject.IsReusable => true;
+
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => IDataTransferObject.Empty.WriteToAsync(writer, token);
+
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            => IDataTransferObject.Empty.TryGetMemory(out memory);
     }
 
     private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
