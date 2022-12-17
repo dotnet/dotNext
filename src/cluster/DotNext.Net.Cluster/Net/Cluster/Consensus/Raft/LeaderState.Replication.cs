@@ -16,7 +16,7 @@ internal partial class LeaderState<TMember>
         private readonly IClusterConfiguration configuration;
         private readonly bool applyConfig;
         internal readonly TMember Member;
-        private readonly long commitIndex, precedingIndex, precedingTerm, term;
+        private readonly long commitIndex, precedingTerm, term;
         private readonly ILogger logger;
 
         // state
@@ -36,7 +36,7 @@ internal partial class LeaderState<TMember>
             ILogger logger)
         {
             Member = member;
-            this.precedingIndex = precedingIndex;
+            replicationIndex = precedingIndex;
             this.precedingTerm = precedingTerm;
             this.commitIndex = commitIndex;
             this.term = term;
@@ -54,7 +54,7 @@ internal partial class LeaderState<TMember>
 
         internal ValueTask<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
         {
-            var startIndex = precedingIndex + 1L;
+            var startIndex = replicationIndex + 1L;
             Debug.Assert(startIndex == Member.NextIndex);
 
             logger.ReplicationStarted(Member.EndPoint, startIndex);
@@ -115,9 +115,9 @@ internal partial class LeaderState<TMember>
             }
             else
             {
-                logger.ReplicaSize(Member.EndPoint, entries.Count, precedingIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, applyConfig);
-                replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
-                replicationIndex = precedingIndex + entries.Count;
+                logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, applyConfig);
+                replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
+                replicationIndex += entries.Count;
             }
 
             replicatedWithCurrentTerm = ContainsTerm(entries, term);
@@ -143,13 +143,14 @@ internal partial class LeaderState<TMember>
 
     private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
     {
+        private readonly Replicator replicator;
         private readonly long currentIndex;
         private readonly IAuditTrail<IRaftLogEntry> auditTrail;
         private readonly CancellationToken token;
         private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
 
         internal ReplicationWorkItem(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
-            : base(replicator, TaskCreationOptions.RunContinuationsAsynchronously)
+            : base(replicator.Member, TaskCreationOptions.RunContinuationsAsynchronously)
         {
             Debug.Assert(replicator is not null);
             Debug.Assert(auditTrail is not null);
@@ -157,26 +158,17 @@ internal partial class LeaderState<TMember>
             this.currentIndex = currentIndex;
             this.auditTrail = auditTrail;
             this.token = token;
-        }
-
-        private Replicator AsyncState
-        {
-            get
-            {
-                Debug.Assert(Task.AsyncState is Replicator);
-
-                return Unsafe.As<Replicator>(Task.AsyncState);
-            }
+            this.replicator = replicator;
         }
 
         internal static TMember? GetReplicatedMember(Task<Result<bool>> task)
-            => (task.AsyncState as Replicator)?.Member;
+            => task.AsyncState as TMember;
 
         private void OnCompleted() => Complete(ref awaiter);
 
         void IThreadPoolWorkItem.Execute()
         {
-            var awaiter = AsyncState.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
+            var awaiter = replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
 
             if (awaiter.IsCompleted)
             {
