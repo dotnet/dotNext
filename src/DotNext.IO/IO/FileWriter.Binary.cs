@@ -68,7 +68,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         Write(in value);
     }
 
-    async ValueTask WriteLargeValueAsync<T>(T value, CancellationToken token)
+    private async ValueTask WriteLargeValueAsync<T>(T value, CancellationToken token)
         where T : unmanaged
     {
         // rare case, T is very large and doesn't fit the buffer

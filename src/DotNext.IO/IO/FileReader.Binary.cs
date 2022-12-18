@@ -288,6 +288,7 @@ public partial class FileReader : IAsyncBinaryReader
         return result;
     }
 
+    [RequiresPreviewFeatures]
     private T ParseFast<T>()
         where T : notnull, IBinaryFormattable<T>
     {
@@ -300,6 +301,7 @@ public partial class FileReader : IAsyncBinaryReader
         return result;
     }
 
+    [RequiresPreviewFeatures]
     private async ValueTask<T> ParseSlowAsync<T>(CancellationToken token)
         where T : notnull, IBinaryFormattable<T>
     {
