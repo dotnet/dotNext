@@ -1,10 +1,12 @@
+using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 internal partial class Client : RaftClusterMember
 {
-    private sealed class InstallSnapshotRequest : Request<Result<bool>>
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct InstallSnapshotRequest : IClientExchange<Result<bool>>
     {
         private readonly ILocalMember localMember;
         private readonly IRaftLogEntry snapshot;
@@ -22,13 +24,13 @@ internal partial class Client : RaftClusterMember
             this.snapshotIndex = snapshotIndex;
         }
 
-        private protected override ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask IClientExchange<Result<bool>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer, token);
 
-        private protected override ValueTask<Result<bool>> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadResultAsync(token);
     }
 
     private protected sealed override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        => RequestAsync(new InstallSnapshotRequest(localMember, term, snapshot, snapshotIndex), token);
+        => RequestAsync<InstallSnapshotRequest, Result<bool>>(new(localMember, term, snapshot, snapshotIndex), token);
 }

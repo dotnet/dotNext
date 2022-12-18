@@ -1,15 +1,14 @@
+using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using IClusterConfiguration = Membership.IClusterConfiguration;
 
 internal partial class Client : RaftClusterMember
 {
-    private sealed class AppendEntriesRequest<TEntry, TList> : Request<Result<bool>>
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct AppendEntriesExchange<TEntry, TList> : IClientExchange<Result<bool>>
         where TEntry : notnull, IRaftLogEntry
         where TList : notnull, IReadOnlyList<TEntry>
     {
@@ -19,7 +18,7 @@ internal partial class Client : RaftClusterMember
         private readonly IClusterConfiguration config;
         private readonly bool applyConfig;
 
-        internal AppendEntriesRequest(ILocalMember localMember, long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig)
+        internal AppendEntriesExchange(ILocalMember localMember, long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig)
         {
             Debug.Assert(localMember is not null);
             Debug.Assert(config is not null);
@@ -34,13 +33,13 @@ internal partial class Client : RaftClusterMember
             this.applyConfig = applyConfig;
         }
 
-        private protected override ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask IClientExchange<Result<bool>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token);
 
-        private protected override ValueTask<Result<bool>> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadResultAsync(token);
     }
 
     private protected sealed override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-        => RequestAsync(new AppendEntriesRequest<TEntry, TList>(localMember, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig), token);
+        => RequestAsync<AppendEntriesExchange<TEntry, TList>, Result<bool>>(new(localMember, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig), token);
 }

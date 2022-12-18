@@ -1,12 +1,9 @@
 using System.Net;
-using System.Runtime.CompilerServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Threading;
 using Timestamp = Diagnostics.Timestamp;
-using IClusterConfiguration = Membership.IClusterConfiguration;
 
 internal abstract partial class Client : RaftClusterMember
 {
@@ -17,110 +14,12 @@ internal abstract partial class Client : RaftClusterMember
         Memory<byte> Buffer { get; }
     }
 
-    // combine request/reply state machine with request arguments to reduce multiple allocations
-    // and boxing operation that will happen on every request
-    private abstract class Request<TResponse> : IAsyncStateMachine
+    // this interface helps to inline async request/response parsing pipeline to RequestAsync method
+    private interface IClientExchange<TResponse>
     {
-        private const uint InitialState = 0U;
-        private const uint RequestState = 1U;
-        private uint state;
-        private ProtocolStream? protocol;
-        private Memory<byte> buffer;
-        private CancellationToken token;
-        private AsyncValueTaskMethodBuilder<TResponse> builder;
-        private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter requestAwaiter;
-        private ConfiguredValueTaskAwaitable<TResponse>.ConfiguredValueTaskAwaiter responseAwaiter;
+        ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
-        void IAsyncStateMachine.MoveNext()
-        {
-            try
-            {
-                MoveNext(this);
-            }
-            catch (Exception e)
-            {
-                builder.SetException(e);
-                Cleanup();
-            }
-        }
-
-        private static void MoveNext(Request<TResponse> stateMachine)
-        {
-            Debug.Assert(stateMachine.protocol is not null);
-
-            switch (stateMachine.state)
-            {
-                case InitialState:
-                    stateMachine.requestAwaiter = stateMachine.GetRequestAwaiter();
-                    stateMachine.state = RequestState;
-                    if (stateMachine.requestAwaiter.IsCompleted)
-                        goto case RequestState;
-                    stateMachine.builder.AwaitOnCompleted(ref stateMachine.requestAwaiter, ref stateMachine);
-                    break;
-                case RequestState:
-                    GetResultAndClear(ref stateMachine.requestAwaiter);
-                    stateMachine.protocol.Reset(); // prepare stream to read response
-
-                    stateMachine.responseAwaiter = stateMachine.GetResponseAwaiter();
-                    stateMachine.state = RequestState + 1U;
-                    if (stateMachine.responseAwaiter.IsCompleted)
-                        goto case default;
-                    stateMachine.builder.AwaitOnCompleted(ref stateMachine.responseAwaiter, ref stateMachine);
-                    break;
-                default:
-                    stateMachine.builder.SetResult(stateMachine.responseAwaiter.GetResult());
-                    stateMachine.Cleanup();
-                    break;
-            }
-
-            static void GetResultAndClear(ref ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
-            {
-                awaiter.GetResult();
-                awaiter = default;
-            }
-        }
-
-        private void Cleanup()
-        {
-            protocol = default;
-            buffer = default;
-            token = default;
-            requestAwaiter = default;
-            responseAwaiter = default;
-        }
-
-        private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter GetRequestAwaiter()
-        {
-            Debug.Assert(protocol is not null);
-
-            return RequestAsync(protocol, buffer, token).ConfigureAwait(false).GetAwaiter();
-        }
-
-        private protected abstract ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
-
-        private ConfiguredValueTaskAwaitable<TResponse>.ConfiguredValueTaskAwaiter GetResponseAwaiter()
-        {
-            Debug.Assert(protocol is not null);
-
-            return ResponseAsync(protocol, buffer, token).ConfigureAwait(false).GetAwaiter();
-        }
-
-        private protected abstract ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
-
-        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
-            => builder.SetStateMachine(stateMachine);
-
-        internal ValueTask<TResponse> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            this.protocol = protocol;
-            this.buffer = buffer;
-            this.token = token;
-
-            builder = AsyncValueTaskMethodBuilder<TResponse>.Create();
-            var stateMachine = this;
-            builder.Start(ref stateMachine);
-            return builder.Task;
-        }
+        ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
     }
 
     private readonly AsyncExclusiveLock accessLock;
@@ -142,7 +41,8 @@ internal abstract partial class Client : RaftClusterMember
 
     private protected abstract ValueTask<IConnectionContext> ConnectAsync(CancellationToken token);
 
-    private async Task<TResponse> RequestAsync<TResponse>(Request<TResponse> request, CancellationToken token)
+    private async Task<TResponse> RequestAsync<TExchange, TResponse>(TExchange exchange, CancellationToken token)
+        where TExchange : notnull, IClientExchange<TResponse>
     {
         ThrowIfDisposed();
 
@@ -159,7 +59,9 @@ internal abstract partial class Client : RaftClusterMember
             context ??= await ConnectAsync(requestDurationTracker.Token).ConfigureAwait(false);
 
             context.Protocol.Reset();
-            var result = await request.ExecuteAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            await exchange.RequestAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            context.Protocol.Reset();
+            var result = await exchange.ResponseAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
             Touch();
             return result;
         }
