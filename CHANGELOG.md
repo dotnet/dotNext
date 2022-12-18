@@ -1,6 +1,18 @@
 Release Notes
 ====
 
+# 12-19-2022
+<a href="https://www.nuget.org/packages/dotnext.io/4.8.2">DotNext.IO 4.8.2</a>
+* Reduced memory allocations caused by instances of `FileReader` and `FileWriter` classes
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.2">DotNext.Net.Cluster 4.8.2</a>
+* Optimized memory allocations produced by persistent WAL and Raft algorithm implementation
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.2">DotNext.AspNetCore.Cluster 4.8.2</a>
+* Updated dependencies
+
 # 12-15-2022
 <a href="https://www.nuget.org/packages/dotnext/4.8.1">DotNext 4.8.1</a>
 * Improved quality and performance of random string generator exposed as `RandomExtensions.NextString` extension methods ([138](https://github.com/dotnet/dotNext/issues/138))
