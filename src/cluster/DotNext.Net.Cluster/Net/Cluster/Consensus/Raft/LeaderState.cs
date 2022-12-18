@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
@@ -46,7 +47,9 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         init;
     }
 
-    private async Task<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    // no need to allocate state machine for every round of heartbeats
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         long commitIndex = auditTrail.LastCommittedEntryIndex,
             currentIndex = auditTrail.LastUncommittedEntryIndex,
