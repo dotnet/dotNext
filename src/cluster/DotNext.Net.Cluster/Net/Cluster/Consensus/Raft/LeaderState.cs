@@ -97,54 +97,13 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             leaseRenewalThreshold = (leaseRenewalThreshold >> 1) + 1;
 
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
-        await foreach (var task in responsePipe.ConfigureAwait(false))
+        while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
         {
-            var member = ReplicationWorkItem.GetReplicatedMember(task);
-            Debug.Assert(member is not null);
-            Debug.Assert(task.IsCompleted);
-
-            try
+            while (responsePipe.TryRead(out var response))
             {
-                var result = task.GetAwaiter().GetResult();
-                failureDetector?.ReportHeartbeat(member);
-                term = Math.Max(term, result.Term);
-                quorum++;
-
-                if (result.Value)
-                {
-                    if (--leaseRenewalThreshold is 0)
-                        RenewLease(startTime);
-
-                    commitQuorum++;
-                }
-                else
-                {
-                    commitQuorum--;
-                }
+                if (!ProcessMemberResponse(startTime, response, ref term, ref quorum, ref commitQuorum, ref leaseRenewalThreshold))
+                    return false;
             }
-            catch (MemberUnavailableException)
-            {
-                quorum -= 1;
-                commitQuorum -= 1;
-            }
-            catch (OperationCanceledException)
-            {
-                // leading was canceled
-                Metrics?.ReportBroadcastTime(startTime.Elapsed);
-                return false;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, ExceptionMessages.UnexpectedError);
-            }
-            finally
-            {
-                task.Dispose();
-            }
-
-            // report unavailable cluster member
-            if (failureDetector is not null && failureDetector.IsAlive(member) is false)
-                UnavailableMemberDetected(member, LeadershipToken);
         }
 
         Metrics?.ReportBroadcastTime(startTime.Elapsed);
@@ -172,6 +131,58 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         // it is partitioned network with absolute majority, not possible to have more than one leader
         MoveToFollowerState(randomizeTimeout: false, term);
         return false;
+    }
+
+    private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
+    {
+        var member = ReplicationWorkItem.GetReplicatedMember(response);
+        Debug.Assert(member is not null);
+        Debug.Assert(response.IsCompleted);
+
+        try
+        {
+            var result = response.GetAwaiter().GetResult();
+            failureDetector?.ReportHeartbeat(member);
+            term = Math.Max(term, result.Term);
+            quorum++;
+
+            if (result.Value)
+            {
+                if (--leaseRenewalThreshold is 0)
+                    RenewLease(startTime);
+
+                commitQuorum++;
+            }
+            else
+            {
+                commitQuorum--;
+            }
+        }
+        catch (MemberUnavailableException)
+        {
+            quorum -= 1;
+            commitQuorum -= 1;
+        }
+        catch (OperationCanceledException)
+        {
+            // leading was canceled
+            Metrics?.ReportBroadcastTime(startTime.Elapsed);
+            return false;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, ExceptionMessages.UnexpectedError);
+        }
+        finally
+        {
+            response.Dispose();
+        }
+
+        // report unavailable cluster member
+        if (failureDetector is not null && failureDetector.IsAlive(member) is false)
+            UnavailableMemberDetected(member, LeadershipToken);
+
+        return true;
     }
 
     private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
