@@ -9,6 +9,13 @@ internal interface IRaftStateMachine
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
     void UpdateLeaderStickiness();
+
+    internal interface IWeakCallerStateIdentity
+    {
+        bool IsValid(object? state);
+
+        void Clear();
+    }
 }
 
 internal interface IRaftStateMachine<TMember> : IRaftStateMachine
@@ -18,11 +25,11 @@ internal interface IRaftStateMachine<TMember> : IRaftStateMachine
 
     IReadOnlyCollection<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
-    void MoveToFollowerState(WeakReference callerState, bool randomizeTimeout, long? newTerm);
+    void MoveToFollowerState(IWeakCallerStateIdentity callerState, bool randomizeTimeout, long? newTerm);
 
-    void MoveToCandidateState(WeakReference callerState);
+    void MoveToCandidateState(IWeakCallerStateIdentity callerState);
 
-    void MoveToLeaderState(WeakReference callerState, TMember leader);
+    void MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader);
 
-    void UnavailableMemberDetected(WeakReference callerState, TMember member, CancellationToken token);
+    void UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, CancellationToken token);
 }
