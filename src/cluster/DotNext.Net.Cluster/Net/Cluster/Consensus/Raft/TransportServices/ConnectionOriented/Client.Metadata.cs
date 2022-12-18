@@ -2,11 +2,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 internal partial class Client : RaftClusterMember
 {
-    private sealed class MetadataRequest : IClientExchange<IReadOnlyDictionary<string, string>>
+    private sealed class MetadataExchange : IClientExchange<IReadOnlyDictionary<string, string>>
     {
-        internal static readonly MetadataRequest Instance = new();
+        internal static readonly MetadataExchange Instance = new();
 
-        private MetadataRequest()
+        private MetadataExchange()
         {
         }
 
@@ -18,5 +18,5 @@ internal partial class Client : RaftClusterMember
     }
 
     private protected sealed override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
-        => RequestAsync<MetadataRequest, IReadOnlyDictionary<string, string>>(MetadataRequest.Instance, token);
+        => RequestAsync<MetadataExchange, IReadOnlyDictionary<string, string>>(MetadataExchange.Instance, token);
 }

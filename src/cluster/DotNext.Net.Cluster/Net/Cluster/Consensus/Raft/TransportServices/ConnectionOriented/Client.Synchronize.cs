@@ -5,11 +5,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 internal partial class Client : RaftClusterMember
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct SynchronizeRequest : IClientExchange<long?>
+    private readonly struct SynchronizeExchange : IClientExchange<long?>
     {
         private readonly long commitIndex;
 
-        internal SynchronizeRequest(long commitIndex) => this.commitIndex = commitIndex;
+        internal SynchronizeExchange(long commitIndex) => this.commitIndex = commitIndex;
 
         ValueTask IClientExchange<long?>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteSynchronizeRequestAsync(commitIndex, token);
@@ -19,5 +19,5 @@ internal partial class Client : RaftClusterMember
     }
 
     private protected sealed override Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
-        => RequestAsync<SynchronizeRequest, long?>(new(commitIndex), token);
+        => RequestAsync<SynchronizeExchange, long?>(new(commitIndex), token);
 }

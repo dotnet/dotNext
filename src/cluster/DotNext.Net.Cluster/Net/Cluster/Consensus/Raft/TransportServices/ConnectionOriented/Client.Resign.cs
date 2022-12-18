@@ -2,11 +2,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 internal partial class Client : RaftClusterMember
 {
-    private sealed class ResignRequest : IClientExchange<bool>
+    private sealed class ResignExchange : IClientExchange<bool>
     {
-        internal static readonly ResignRequest Instance = new();
+        internal static readonly ResignExchange Instance = new();
 
-        private ResignRequest()
+        private ResignExchange()
         {
         }
 
@@ -18,5 +18,5 @@ internal partial class Client : RaftClusterMember
     }
 
     private protected sealed override Task<bool> ResignAsync(CancellationToken token)
-        => RequestAsync<ResignRequest, bool>(ResignRequest.Instance, token);
+        => RequestAsync<ResignExchange, bool>(ResignExchange.Instance, token);
 }

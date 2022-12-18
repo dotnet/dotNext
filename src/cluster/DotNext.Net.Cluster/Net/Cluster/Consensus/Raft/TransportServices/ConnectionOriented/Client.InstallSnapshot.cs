@@ -6,13 +6,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 internal partial class Client : RaftClusterMember
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct InstallSnapshotRequest : IClientExchange<Result<bool>>
+    private readonly struct InstallSnapshotExchange : IClientExchange<Result<bool>>
     {
         private readonly ILocalMember localMember;
         private readonly IRaftLogEntry snapshot;
         private readonly long term, snapshotIndex;
 
-        internal InstallSnapshotRequest(ILocalMember localMember, long term, IRaftLogEntry snapshot, long snapshotIndex)
+        internal InstallSnapshotExchange(ILocalMember localMember, long term, IRaftLogEntry snapshot, long snapshotIndex)
         {
             Debug.Assert(localMember is not null);
             Debug.Assert(snapshot is not null);
@@ -32,5 +32,5 @@ internal partial class Client : RaftClusterMember
     }
 
     private protected sealed override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        => RequestAsync<InstallSnapshotRequest, Result<bool>>(new(localMember, term, snapshot, snapshotIndex), token);
+        => RequestAsync<InstallSnapshotExchange, Result<bool>>(new(localMember, term, snapshot, snapshotIndex), token);
 }

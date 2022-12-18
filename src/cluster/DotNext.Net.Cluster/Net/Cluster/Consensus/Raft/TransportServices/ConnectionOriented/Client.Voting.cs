@@ -7,12 +7,12 @@ internal partial class Client : RaftClusterMember
 {
     // TODO: Change to required init properties in C# 11
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct VoteRequest : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
+    private readonly struct VoteExchange : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
     {
         private readonly ILocalMember localMember;
         private readonly long term, lastLogIndex, lastLogTerm;
 
-        internal VoteRequest(ILocalMember localMember, long term, long lastLogIndex, long lastLogTerm)
+        internal VoteExchange(ILocalMember localMember, long term, long lastLogIndex, long lastLogTerm)
         {
             Debug.Assert(localMember is not null);
 
@@ -36,8 +36,8 @@ internal partial class Client : RaftClusterMember
     }
 
     private protected sealed override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => RequestAsync<VoteRequest, Result<bool>>(new(localMember, term, lastLogIndex, lastLogTerm), token);
+        => RequestAsync<VoteExchange, Result<bool>>(new(localMember, term, lastLogIndex, lastLogTerm), token);
 
     private protected sealed override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => RequestAsync<VoteRequest, Result<PreVoteResult>>(new(localMember, term, lastLogIndex, lastLogTerm), token);
+        => RequestAsync<VoteExchange, Result<PreVoteResult>>(new(localMember, term, lastLogIndex, lastLogTerm), token);
 }
