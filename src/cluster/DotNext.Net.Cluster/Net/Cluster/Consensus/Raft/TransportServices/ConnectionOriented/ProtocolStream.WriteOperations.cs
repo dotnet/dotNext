@@ -219,9 +219,7 @@ internal partial class ProtocolStream
     }
 
     public sealed override Task FlushAsync(CancellationToken token)
-    {
-        return bufferEnd > 0 ? FlushCoreAsync(token) : Task.CompletedTask;
-    }
+        => bufferEnd > 0 ? FlushCoreAsync(token) : Task.CompletedTask;
 
     internal void WriteFinalFrame()
     {
