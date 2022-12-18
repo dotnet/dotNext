@@ -224,27 +224,27 @@ public partial class PersistentState
             return cachedEntry.Content.IsEmpty
                 ? ValueTask.CompletedTask
                 : removeFromMemory
-                ? PersistAndDeleteAsync(cachedEntry.Content.Memory)
-                : PersistAsync(cachedEntry.Content.Memory);
+                ? PersistAndDeleteAsync(cachedEntry.Content.Memory, index, offset)
+                : PersistAsync(cachedEntry.Content.Memory, offset);
+        }
 
-            [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-            async ValueTask PersistAsync(ReadOnlyMemory<byte> content)
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        private async ValueTask PersistAsync(ReadOnlyMemory<byte> content, long offset)
+        {
+            await SetWritePositionAsync(offset).ConfigureAwait(false);
+            await writer.WriteAsync(content).ConfigureAwait(false);
+        }
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        private async ValueTask PersistAndDeleteAsync(ReadOnlyMemory<byte> content, int index, long offset)
+        {
+            try
             {
-                await SetWritePositionAsync(offset).ConfigureAwait(false);
-                await writer.WriteAsync(content).ConfigureAwait(false);
+                await PersistAsync(content, offset).ConfigureAwait(false);
             }
-
-            [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-            async ValueTask PersistAndDeleteAsync(ReadOnlyMemory<byte> content)
+            finally
             {
-                try
-                {
-                    await PersistAsync(content).ConfigureAwait(false);
-                }
-                finally
-                {
-                    entryCache[index].Dispose();
-                }
+                entryCache[index].Dispose();
             }
         }
 

@@ -58,17 +58,18 @@ public partial class FileReader : IAsyncBinaryReader
         }
         else
         {
-            result = ReadSlowAsync();
+            result = ReadSlowAsync<T>(token);
         }
 
         return result;
+    }
 
-        async ValueTask<T> ReadSlowAsync()
-        {
-            using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
-            await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-            return MemoryMarshal.Read<T>(buffer.Span);
-        }
+    private async ValueTask<T> ReadSlowAsync<T>(CancellationToken token)
+        where T : unmanaged
+    {
+        using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
+        await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+        return MemoryMarshal.Read<T>(buffer.Span);
     }
 
     private int Read7BitEncodedInt()
@@ -272,7 +273,7 @@ public partial class FileReader : IAsyncBinaryReader
         {
             try
             {
-                result = new(Parse());
+                result = new(ParseFast<T>());
             }
             catch (Exception e)
             {
@@ -281,29 +282,30 @@ public partial class FileReader : IAsyncBinaryReader
         }
         else
         {
-            result = ParseSlowAsync();
+            result = ParseSlowAsync<T>(token);
         }
 
         return result;
+    }
 
-        T Parse()
-        {
-            Debug.Assert(BufferLength >= T.Size);
+    private T ParseFast<T>()
+        where T : notnull, IBinaryFormattable<T>
+    {
+        Debug.Assert(BufferLength >= T.Size);
 
-            var reader = new SpanReader<byte>(BufferSpan.Slice(0, T.Size));
-            var result = T.Parse(ref reader);
-            Consume(reader.ConsumedCount);
-            length -= reader.ConsumedCount;
-            return result;
-        }
+        var reader = new SpanReader<byte>(BufferSpan.Slice(0, T.Size));
+        var result = T.Parse(ref reader);
+        Consume(reader.ConsumedCount);
+        length -= reader.ConsumedCount;
+        return result;
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<T> ParseSlowAsync()
-        {
-            using var buffer = MemoryAllocator.Allocate<byte>(T.Size, exactSize: true);
-            await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-            return IBinaryFormattable<T>.Parse(buffer.Span);
-        }
+    private async ValueTask<T> ParseSlowAsync<T>(CancellationToken token)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        using var buffer = MemoryAllocator.Allocate<byte>(T.Size, exactSize: true);
+        await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+        return IBinaryFormattable<T>.Parse(buffer.Span);
     }
 
     /// <summary>

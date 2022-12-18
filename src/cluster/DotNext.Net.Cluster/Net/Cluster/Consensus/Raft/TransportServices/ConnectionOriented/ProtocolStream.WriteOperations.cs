@@ -212,15 +212,15 @@ internal partial class ProtocolStream
         Write(new ReadOnlySpan<byte>(buffer, offset, count));
     }
 
+    private async Task FlushCoreAsync(CancellationToken token)
+    {
+        await WriteToTransportAsync(buffer.Memory.Slice(0, bufferEnd), token).ConfigureAwait(false);
+        bufferStart = bufferEnd = 0;
+    }
+
     public sealed override Task FlushAsync(CancellationToken token)
     {
-        return bufferEnd > 0 ? FlushCoreAsync() : Task.CompletedTask;
-
-        async Task FlushCoreAsync()
-        {
-            await WriteToTransportAsync(buffer.Memory.Slice(0, bufferEnd), token).ConfigureAwait(false);
-            bufferStart = bufferEnd = 0;
-        }
+        return bufferEnd > 0 ? FlushCoreAsync(token) : Task.CompletedTask;
     }
 
     internal void WriteFinalFrame()

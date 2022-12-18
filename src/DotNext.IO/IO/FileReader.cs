@@ -143,6 +143,7 @@ public partial class FileReader : Disposable
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public async ValueTask<bool> ReadAsync(CancellationToken token = default)
     {
         ThrowIfDisposed();
@@ -215,34 +216,34 @@ public partial class FileReader : Disposable
             return new(0);
 
         return HasBufferedData || output.Length < buffer.Length
-            ? ReadBufferedAsync()
-            : ReadDirectAsync();
+            ? ReadBufferedAsync(output, token)
+            : ReadDirectAsync(output, token);
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<int> ReadDirectAsync()
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
+    {
+        var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
+        fileOffset += count;
+        return count;
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<int> ReadBufferedAsync(Memory<byte> output, CancellationToken token)
+    {
+        var result = 0;
+
+        for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
         {
-            var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
-            fileOffset += count;
-            return count;
+            if (!HasBufferedData && !await ReadAsync(token).ConfigureAwait(false))
+                break;
+
+            BufferSpan.CopyTo(output.Span, out writtenCount);
+            result += writtenCount;
+            Consume(writtenCount);
         }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<int> ReadBufferedAsync()
-        {
-            var result = 0;
-
-            for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
-            {
-                if (!HasBufferedData && !await ReadAsync(token).ConfigureAwait(false))
-                    break;
-
-                BufferSpan.CopyTo(output.Span, out writtenCount);
-                result += writtenCount;
-                Consume(writtenCount);
-            }
-
-            return result;
-        }
+        return result;
     }
 
     /// <summary>

@@ -434,31 +434,148 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         // otherwise - write lock which doesn't block background compaction
         return compaction switch
         {
-            CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(),
-            CompactionMode.Foreground => CommitAndCompactInParallelAsync(),
-            CompactionMode.Incremental => CommitAndCompactIncrementallyAsync(),
-            _ => CommitWithoutCompactionAsync(),
+            CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(endIndex, token),
+            CompactionMode.Foreground => CommitAndCompactInParallelAsync(endIndex, token),
+            CompactionMode.Incremental => CommitAndCompactIncrementallyAsync(endIndex, token),
+            _ => CommitWithoutCompactionAsync(endIndex, token),
         };
+    }
 
-        async ValueTask<long> CommitAndCompactSequentiallyAsync()
+    private async ValueTask<long> CommitAndCompactSequentiallyAsync(long? endIndex, CancellationToken token)
+    {
+        Partition? removedHead;
+        long count;
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        var session = sessionManager.Take();
+        try
         {
-            Partition? removedHead;
-            long count;
-            await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
-            var session = sessionManager.Take();
+            count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
+            if (count <= 0L)
+                return 0L;
+
+            LastCommittedEntryIndex = commitIndex;
+            await ApplyAsync(session, token).ConfigureAwait(false);
+            InternalStateScope scope;
+            if (IsCompactionRequired(commitIndex))
+            {
+                await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
+                removedHead = DetachPartitions(commitIndex);
+                scope = InternalStateScope.IndexesAndSnapshot;
+            }
+            else
+            {
+                removedHead = null;
+                scope = InternalStateScope.Indexes;
+            }
+
+            await PersistInternalStateAsync(scope).ConfigureAwait(false);
+        }
+        finally
+        {
+            sessionManager.Return(session);
+            syncRoot.Release(LockType.ExclusiveLock);
+        }
+
+        OnCommit(count);
+        DeletePartitions(removedHead);
+        return count;
+    }
+
+    private async ValueTask<long> CommitWithoutCompactionAsync(long? endIndex, CancellationToken token)
+    {
+        long count;
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        var session = sessionManager.Take();
+        try
+        {
+            count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
+            if (count <= 0L)
+                return 0L;
+
+            LastCommittedEntryIndex = commitIndex;
+            await ApplyAsync(session, token).ConfigureAwait(false);
+            await PersistInternalStateAsync(InternalStateScope.Indexes).ConfigureAwait(false);
+        }
+        finally
+        {
+            sessionManager.Return(session);
+            syncRoot.Release(LockType.ExclusiveLock);
+        }
+
+        OnCommit(count);
+        return count;
+    }
+
+    private async ValueTask<long> CommitAndCompactInParallelAsync(long? endIndex, CancellationToken token)
+    {
+        Partition? removedHead;
+        long count;
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        var session = sessionManager.Take();
+        try
+        {
+            count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
+            if (count <= 0L)
+                return 0L;
+
+            var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
+            LastCommittedEntryIndex = commitIndex;
+
+            var compactionTask = compactionIndex > 0L
+                ? Task.Run(() => ForceParallelCompactionAsync(compactionIndex, token))
+                : Task.CompletedTask;
+
             try
             {
-                count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                if (count <= 0L)
-                    return 0L;
-
-                LastCommittedEntryIndex = commitIndex;
                 await ApplyAsync(session, token).ConfigureAwait(false);
-                InternalStateScope scope;
-                if (IsCompactionRequired(commitIndex))
+            }
+            finally
+            {
+                await compactionTask.ConfigureAwait(false);
+                removedHead = DetachPartitions(compactionIndex);
+            }
+
+            await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
+        }
+        finally
+        {
+            sessionManager.Return(session);
+            syncRoot.Release(LockType.ExclusiveLock);
+        }
+
+        OnCommit(count);
+        DeletePartitions(removedHead);
+        return count;
+    }
+
+    private async ValueTask<long> CommitAndCompactIncrementallyAsync(long? endIndex, CancellationToken token)
+    {
+        Partition? removedHead;
+        long count;
+        await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
+        var session = sessionManager.Take();
+        try
+        {
+            count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
+            if (count <= 0L)
+                return 0L;
+
+            var compactionIndex = LastAppliedEntryIndex;
+            LastCommittedEntryIndex = commitIndex;
+            var compactionTask = compactionIndex > 0L
+                ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+                : Task.FromResult(false);
+            InternalStateScope scope;
+
+            try
+            {
+                await ApplyAsync(session, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (await compactionTask.ConfigureAwait(false))
                 {
-                    await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
-                    removedHead = DetachPartitions(commitIndex);
+                    removedHead = DetachPartitions(compactionIndex);
                     scope = InternalStateScope.IndexesAndSnapshot;
                 }
                 else
@@ -466,136 +583,19 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                     removedHead = null;
                     scope = InternalStateScope.Indexes;
                 }
-
-                await PersistInternalStateAsync(scope).ConfigureAwait(false);
-            }
-            finally
-            {
-                sessionManager.Return(session);
-                syncRoot.Release(LockType.ExclusiveLock);
             }
 
-            OnCommit(count);
-            DeletePartitions(removedHead);
-            return count;
+            await PersistInternalStateAsync(scope).ConfigureAwait(false);
         }
-
-        async ValueTask<long> CommitWithoutCompactionAsync()
+        finally
         {
-            long count;
-            await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
-            var session = sessionManager.Take();
-            try
-            {
-                count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                if (count <= 0L)
-                    return 0L;
-
-                LastCommittedEntryIndex = commitIndex;
-                await ApplyAsync(session, token).ConfigureAwait(false);
-                await PersistInternalStateAsync(InternalStateScope.Indexes).ConfigureAwait(false);
-            }
-            finally
-            {
-                sessionManager.Return(session);
-                syncRoot.Release(LockType.ExclusiveLock);
-            }
-
-            OnCommit(count);
-            return count;
+            sessionManager.Return(session);
+            syncRoot.Release(LockType.ExclusiveLock);
         }
 
-        async ValueTask<long> CommitAndCompactInParallelAsync()
-        {
-            Partition? removedHead;
-            long count;
-            await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
-            var session = sessionManager.Take();
-            try
-            {
-                count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                if (count <= 0L)
-                    return 0L;
-
-                var compactionIndex = Math.Min(LastCommittedEntryIndex, SnapshotInfo.Index + count);
-                LastCommittedEntryIndex = commitIndex;
-
-                var compactionTask = compactionIndex > 0L
-                    ? Task.Run(() => ForceParallelCompactionAsync(compactionIndex, token))
-                    : Task.CompletedTask;
-
-                try
-                {
-                    await ApplyAsync(session, token).ConfigureAwait(false);
-                }
-                finally
-                {
-                    await compactionTask.ConfigureAwait(false);
-                    removedHead = DetachPartitions(compactionIndex);
-                }
-
-                await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
-            }
-            finally
-            {
-                sessionManager.Return(session);
-                syncRoot.Release(LockType.ExclusiveLock);
-            }
-
-            OnCommit(count);
-            DeletePartitions(removedHead);
-            return count;
-        }
-
-        async ValueTask<long> CommitAndCompactIncrementallyAsync()
-        {
-            Partition? removedHead;
-            long count;
-            await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
-            var session = sessionManager.Take();
-            try
-            {
-                count = GetCommitIndexAndCount(in endIndex, out var commitIndex);
-                if (count <= 0L)
-                    return 0L;
-
-                var compactionIndex = LastAppliedEntryIndex;
-                LastCommittedEntryIndex = commitIndex;
-                var compactionTask = compactionIndex > 0L
-                    ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
-                    : Task.FromResult(false);
-                InternalStateScope scope;
-
-                try
-                {
-                    await ApplyAsync(session, token).ConfigureAwait(false);
-                }
-                finally
-                {
-                    if (await compactionTask.ConfigureAwait(false))
-                    {
-                        removedHead = DetachPartitions(compactionIndex);
-                        scope = InternalStateScope.IndexesAndSnapshot;
-                    }
-                    else
-                    {
-                        removedHead = null;
-                        scope = InternalStateScope.Indexes;
-                    }
-                }
-
-                await PersistInternalStateAsync(scope).ConfigureAwait(false);
-            }
-            finally
-            {
-                sessionManager.Return(session);
-                syncRoot.Release(LockType.ExclusiveLock);
-            }
-
-            OnCommit(count);
-            DeletePartitions(removedHead);
-            return count;
-        }
+        OnCommit(count);
+        DeletePartitions(removedHead);
+        return count;
     }
 
     private async ValueTask ForceSequentialCompactionAsync(int sessionId, long upperBoundIndex, CancellationToken token)

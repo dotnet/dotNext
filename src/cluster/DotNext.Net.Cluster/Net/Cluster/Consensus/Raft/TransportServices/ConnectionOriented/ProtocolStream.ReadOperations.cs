@@ -37,16 +37,16 @@ internal partial class ProtocolStream
             bufferStart = 0;
         }
 
-        return BufferizeSlowAsync();
+        return BufferizeSlowAsync(count, token);
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask BufferizeSlowAsync()
-        {
-            Debug.Assert(bufferEnd < this.buffer.Length);
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask BufferizeSlowAsync(int count, CancellationToken token)
+    {
+        Debug.Assert(bufferEnd < this.buffer.Length);
 
-            var buffer = this.buffer.Memory.Slice(bufferEnd);
-            bufferEnd += await ReadFromTransportAsync(count, buffer, token).ConfigureAwait(false);
-        }
+        var buffer = this.buffer.Memory.Slice(bufferEnd);
+        bufferEnd += await ReadFromTransportAsync(count, buffer, token).ConfigureAwait(false);
     }
 
     private async ValueTask<T> ReadAsync<T>(int count, IntPtr decoder, CancellationToken token)
