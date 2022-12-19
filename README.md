@@ -48,6 +48,10 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 12-19-2022
 
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.2">DotNext.Threading 4.8.2</a>
+* Optimized memory allocations produced by instances of `TaskCompletionPipe<T>` class
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.io/4.8.2">DotNext.IO 4.8.2</a>
 * Reduced memory allocations caused by instances of `FileReader` and `FileWriter` classes
 * Updated dependencies
