@@ -5,5 +5,9 @@ namespace DotNext.Threading.Tasks.Pooling;
 internal interface IPooledManualResetCompletionSource<TCallback> : IValueTaskSource
     where TCallback : MulticastDelegate
 {
-    ref TCallback? OnConsumed { get; }
+    TCallback? OnConsumed
+    {
+        get;
+        set;
+    }
 }

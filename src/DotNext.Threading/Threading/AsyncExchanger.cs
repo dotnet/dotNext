@@ -45,7 +45,11 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             return false;
         }
 
-        ref Action<ExchangePoint>? IPooledManualResetCompletionSource<Action<ExchangePoint>>.OnConsumed => ref consumedCallback;
+        Action<ExchangePoint>? IPooledManualResetCompletionSource<Action<ExchangePoint>>.OnConsumed
+        {
+            get => consumedCallback;
+            set => consumedCallback = value;
+        }
     }
 
     private readonly TaskCompletionSource disposeTask;

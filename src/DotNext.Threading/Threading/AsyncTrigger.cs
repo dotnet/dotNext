@@ -248,7 +248,6 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
 
     private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
     {
-        private Action<WaitNode>? consumedCallback;
         internal ITransition? Transition;
 
         protected override void AfterConsumed() => AfterConsumed(this);
@@ -259,7 +258,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             base.ResetCore();
         }
 
-        ref Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed => ref consumedCallback;
+        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
     }
 
     [StructLayout(LayoutKind.Auto)]
