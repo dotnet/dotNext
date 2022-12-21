@@ -26,7 +26,6 @@ internal abstract class HttpMessage
     private protected static readonly ValueParser<int> Int32Parser = int.TryParse;
     private static readonly ValueParser<ClusterMemberId> ClusterMemberIdParser = ClusterMemberId.TryParse;
     private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
-    private static readonly Random RequestIdGenerator = new();
 
     internal readonly string Id;
     internal readonly ClusterMemberId Sender;
@@ -36,7 +35,7 @@ internal abstract class HttpMessage
     {
         Sender = sender;
         MessageType = messageType;
-        Id = RequestIdGenerator.NextString(RequestIdAllowedChars, RequestIdLength);
+        Id = Random.Shared.NextString(RequestIdAllowedChars, RequestIdLength);
     }
 
     private protected HttpMessage(HeadersReader<StringValues> headers)
