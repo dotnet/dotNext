@@ -10,7 +10,8 @@ using IO;
 
 internal abstract class HttpMessage
 {
-    private const string RequestIdAllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*-+=~";
+    // Perf: length = 64 which is a power of 2 (see RandomExtensions.NextString impl)
+    private const string RequestIdAllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@";
     private const int RequestIdLength = 32;
 
     // request - represents ID of sender node
