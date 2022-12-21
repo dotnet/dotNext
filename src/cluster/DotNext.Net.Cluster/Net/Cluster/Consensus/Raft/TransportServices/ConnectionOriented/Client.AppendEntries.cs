@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -8,6 +9,7 @@ using IClusterConfiguration = Membership.IClusterConfiguration;
 internal partial class Client : RaftClusterMember
 {
     [StructLayout(LayoutKind.Auto)]
+    [RequiresPreviewFeatures]
     private readonly struct AppendEntriesExchange<TEntry, TList> : IClientExchange<Result<bool>>
         where TEntry : notnull, IRaftLogEntry
         where TList : notnull, IReadOnlyList<TEntry>
@@ -36,10 +38,11 @@ internal partial class Client : RaftClusterMember
         ValueTask IClientExchange<Result<bool>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token);
 
-        ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        static ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadResultAsync(token);
     }
 
+    [RequiresPreviewFeatures]
     private protected sealed override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         => RequestAsync<AppendEntriesExchange<TEntry, TList>, Result<bool>>(new(localMember, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig), token);
 }

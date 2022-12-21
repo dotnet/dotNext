@@ -1,4 +1,5 @@
 using System.Net;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
@@ -15,11 +16,12 @@ internal abstract partial class Client : RaftClusterMember
     }
 
     // this interface helps to inline async request/response parsing pipeline to RequestAsync method
+    [RequiresPreviewFeatures]
     private interface IClientExchange<TResponse>
     {
         ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
-        ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
+        static abstract ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
     }
 
     private readonly AsyncExclusiveLock accessLock;
@@ -41,6 +43,7 @@ internal abstract partial class Client : RaftClusterMember
 
     private protected abstract ValueTask<IConnectionContext> ConnectAsync(CancellationToken token);
 
+    [RequiresPreviewFeatures]
     private async Task<TResponse> RequestAsync<TExchange, TResponse>(TExchange exchange, CancellationToken token)
         where TExchange : notnull, IClientExchange<TResponse>
     {
@@ -61,7 +64,7 @@ internal abstract partial class Client : RaftClusterMember
             context.Protocol.Reset();
             await exchange.RequestAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
             context.Protocol.Reset();
-            var result = await exchange.ResponseAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            var result = await TExchange.ResponseAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
             Touch();
             return result;
         }
