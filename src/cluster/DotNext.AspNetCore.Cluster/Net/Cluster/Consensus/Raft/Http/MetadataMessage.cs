@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -13,13 +12,8 @@ internal sealed class MetadataMessage : HttpMessage, IHttpMessageReader<MemberMe
     {
     }
 
-    private MetadataMessage(HeadersReader<StringValues> headers)
-        : base(headers)
-    {
-    }
-
     internal MetadataMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue)
+        : base(request.Headers)
     {
     }
 

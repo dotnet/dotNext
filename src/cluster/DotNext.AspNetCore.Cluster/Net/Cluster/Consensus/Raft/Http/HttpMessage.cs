@@ -3,6 +3,7 @@ using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
+using HttpHeaders = System.Net.Http.Headers.HttpHeaders;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -27,6 +28,9 @@ internal abstract class HttpMessage
     private protected static readonly ValueParser<int> Int32Parser = int.TryParse;
     private static readonly ValueParser<ClusterMemberId> ClusterMemberIdParser = ClusterMemberId.TryParse;
     private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
+    private static readonly ValueParser<string> StringParser = ParseString;
+
+    private protected delegate bool ValueParser<T>(string str, [MaybeNullWhen(false)] out T value);
 
     internal readonly string Id;
     internal readonly ClusterMemberId Sender;
@@ -39,11 +43,11 @@ internal abstract class HttpMessage
         Id = Random.Shared.NextString(RequestIdAllowedChars, RequestIdLength);
     }
 
-    private protected HttpMessage(HeadersReader<StringValues> headers)
+    private protected HttpMessage(IDictionary<string, StringValues> headers)
     {
-        Sender = ParseHeader(NodeIdHeader, headers, ClusterMemberIdParser);
+        Sender = ParseHeader(headers, NodeIdHeader, ClusterMemberIdParser);
         MessageType = GetMessageType(headers);
-        Id = ParseHeader(RequestIdHeader, headers);
+        Id = ParseHeader(headers, RequestIdHeader);
     }
 
     /// <summary>
@@ -53,10 +57,11 @@ internal abstract class HttpMessage
     internal virtual bool IsMemberUnavailable(HttpStatusCode? code)
         => code is null or HttpStatusCode.InternalServerError;
 
-    private static string GetMessageType(HeadersReader<StringValues> headers) =>
-        ParseHeader(MessageTypeHeader, headers);
+    private static string GetMessageType(IDictionary<string, StringValues> headers)
+        => ParseHeader(headers, MessageTypeHeader);
 
-    internal static string GetMessageType(HttpRequest request) => GetMessageType(request.Headers.TryGetValue);
+    internal static string GetMessageType(HttpRequest request)
+        => GetMessageType(request.Headers);
 
     internal virtual void PrepareRequest(HttpRequestMessage request)
     {
@@ -90,42 +95,72 @@ internal abstract class HttpMessage
         return response.WriteAsync(Enum.GetName<T>(result) ?? string.Empty, token);
     }
 
-    private protected static T ParseHeader<THeaders, T>(string headerName, HeadersReader<THeaders> reader, ValueParser<T> parser)
-        where THeaders : IEnumerable<string>
+    private static bool ParseString(string input, [MaybeNullWhen(false)] out string output)
     {
-        if (reader(headerName, out var headers))
-        {
-            foreach (var header in headers)
-            {
-                if (parser(header, out var result))
-                    return result;
-            }
-        }
-
-        throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
-    }
-
-    private protected static T? ParseHeaderAsNullable<THeaders, T>(string headerName, HeadersReader<THeaders> reader, ValueParser<T> parser)
-        where THeaders : IEnumerable<string>
-        where T : struct
-    {
-        if (reader(headerName, out var headers))
-        {
-            foreach (var header in headers)
-            {
-                if (parser(header, out var result))
-                    return result;
-            }
-        }
-
-        return null;
-    }
-
-    private protected static string ParseHeader<THeaders>(string headerName, HeadersReader<THeaders> reader)
-        where THeaders : IEnumerable<string>
-        => ParseHeader(headerName, reader, static (string str, [MaybeNullWhen(false)] out string value) =>
-    {
-        value = str;
+        output = input;
         return true;
-    });
+    }
+
+    // we have two versions of this method to avoid allocations caused by StringValues.GetEnumerator()
+    private static Optional<T> ParseHeaderCore<T>(IDictionary<string, StringValues>? headers, string headerName, ValueParser<T> parser)
+        where T : notnull
+    {
+        if (headers is not null && headers.TryGetValue(headerName, out var values))
+        {
+            foreach (var header in values)
+            {
+                if (parser(header, out var result))
+                    return result;
+            }
+        }
+
+        return Optional<T>.None;
+    }
+
+    private protected static T ParseHeader<T>(IDictionary<string, StringValues>? headers, string headerName, ValueParser<T> parser)
+        where T : notnull
+    {
+        var result = ParseHeaderCore(headers, headerName, parser);
+        return result.HasValue
+            ? result.OrDefault()!
+            : throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
+    }
+
+    private protected static T? ParseHeaderAsNullable<T>(IDictionary<string, StringValues>? headers, string headerName, ValueParser<T> parser)
+        where T : struct
+        => ParseHeaderCore(headers, headerName, parser).OrNull();
+
+    private protected static string ParseHeader(IDictionary<string, StringValues>? headers, string headerName)
+        => ParseHeader(headers, headerName, StringParser);
+
+    private static Optional<T> ParseHeaderCore<T>(HttpHeaders? headers, string headerName, ValueParser<T> parser)
+        where T : notnull
+    {
+        if (headers is not null && headers.TryGetValues(headerName, out var values))
+        {
+            foreach (var header in values)
+            {
+                if (parser(header, out var result))
+                    return result;
+            }
+        }
+
+        return Optional<T>.None;
+    }
+
+    private protected static T ParseHeader<T>(HttpHeaders? headers, string headerName, ValueParser<T> parser)
+        where T : notnull
+    {
+        var result = ParseHeaderCore(headers, headerName, parser);
+        return result.HasValue
+            ? result.OrDefault()!
+            : throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
+    }
+
+    private protected static T? ParseHeaderAsNullable<T>(HttpHeaders? headers, string headerName, ValueParser<T> parser)
+        where T : struct
+        => ParseHeaderCore(headers, headerName, parser).OrNull();
+
+    private protected static string ParseHeader(HttpHeaders? headers, string headerName)
+        => ParseHeader(headers, headerName, StringParser);
 }

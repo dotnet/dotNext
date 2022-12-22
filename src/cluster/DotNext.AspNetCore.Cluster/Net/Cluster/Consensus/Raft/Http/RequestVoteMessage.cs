@@ -20,15 +20,15 @@ internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<R
         LastLogTerm = lastLogTerm;
     }
 
-    private RequestVoteMessage(HeadersReader<StringValues> headers)
+    private RequestVoteMessage(IDictionary<string, StringValues> headers)
         : base(headers)
     {
-        LastLogIndex = ParseHeader(RecordIndexHeader, headers, Int64Parser);
-        LastLogTerm = ParseHeader(RecordTermHeader, headers, Int64Parser);
+        LastLogIndex = ParseHeader(headers, RecordIndexHeader, Int64Parser);
+        LastLogTerm = ParseHeader(headers, RecordTermHeader, Int64Parser);
     }
 
     internal RequestVoteMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue)
+        : this(request.Headers)
     {
     }
 

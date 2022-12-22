@@ -18,15 +18,15 @@ internal sealed class PreVoteMessage : RaftHttpMessage, IHttpMessageReader<Resul
         LastLogTerm = lastLogTerm;
     }
 
-    private PreVoteMessage(HeadersReader<StringValues> headers)
+    private PreVoteMessage(IDictionary<string, StringValues> headers)
         : base(headers)
     {
-        LastLogIndex = ParseHeader(RequestVoteMessage.RecordIndexHeader, headers, Int64Parser);
-        LastLogTerm = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
+        LastLogIndex = ParseHeader(headers, RequestVoteMessage.RecordIndexHeader, Int64Parser);
+        LastLogTerm = ParseHeader(headers, RequestVoteMessage.RecordTermHeader, Int64Parser);
     }
 
     internal PreVoteMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue)
+        : this(request.Headers)
     {
     }
 

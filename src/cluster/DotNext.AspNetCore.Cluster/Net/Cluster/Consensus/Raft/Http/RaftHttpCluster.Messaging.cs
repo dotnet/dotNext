@@ -331,42 +331,25 @@ internal partial class RaftHttpCluster : IOutputChannel
     {
         context.Features.Set(duplicationDetector);
 
-        Task result;
-
         // process request
-        switch (HttpMessage.GetMessageType(context.Request))
+        return HttpMessage.GetMessageType(context.Request) switch
         {
-            case RequestVoteMessage.MessageType:
-                result = VoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
-                break;
-            case PreVoteMessage.MessageType:
-                result = PreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted);
-                break;
-            case ResignMessage.MessageType:
-                result = ResignAsync(new ResignMessage(context.Request), context.Response, context.RequestAborted);
-                break;
-            case MetadataMessage.MessageType:
-                result = GetMetadataAsync(new MetadataMessage(context.Request), context.Response, context.RequestAborted);
-                break;
-            case AppendEntriesMessage.MessageType:
-                result = AppendEntriesAsync(context.Request, context.Response, context.RequestAborted);
-                break;
-            case CustomMessage.MessageType:
-                result = ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted);
-                break;
-            case InstallSnapshotMessage.MessageType:
-                result = InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
-                break;
-            case SynchronizeMessage.MessageType:
-                result = SynchronizeAsync(new SynchronizeMessage(context.Request), context.Response, context.RequestAborted);
-                break;
-            default:
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                result = Task.CompletedTask;
-                break;
-        }
+            RequestVoteMessage.MessageType => VoteAsync(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted),
+            PreVoteMessage.MessageType => PreVoteAsync(new PreVoteMessage(context.Request), context.Response, context.RequestAborted),
+            ResignMessage.MessageType => ResignAsync(new ResignMessage(context.Request), context.Response, context.RequestAborted),
+            MetadataMessage.MessageType => GetMetadataAsync(new MetadataMessage(context.Request), context.Response, context.RequestAborted),
+            AppendEntriesMessage.MessageType => AppendEntriesAsync(context.Request, context.Response, context.RequestAborted),
+            CustomMessage.MessageType => ReceiveMessageAsync(new CustomMessage(context.Request), context.Response, context.RequestAborted),
+            InstallSnapshotMessage.MessageType => InstallSnapshotAsync(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted),
+            SynchronizeMessage.MessageType => SynchronizeAsync(new SynchronizeMessage(context.Request), context.Response, context.RequestAborted),
+            _ => BadRequest(context),
+        };
 
-        return result;
+        static Task BadRequest(HttpContext context)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            return Task.CompletedTask;
+        }
     }
 
     private bool TryGetTimeout(Type messageType, out TimeSpan timeout)

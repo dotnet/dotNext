@@ -105,16 +105,16 @@ internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpM
     {
     }
 
-    private CustomMessage(HeadersReader<StringValues> headers, Stream body, ContentType contentType, long? length)
+    private CustomMessage(IDictionary<string, StringValues> headers, Stream body, ContentType contentType, long? length)
         : base(headers)
     {
-        Mode = ParseHeader(DeliveryModeHeader, headers, DeliveryModeParser);
-        RespectLeadership = ParseHeader(RespectLeadershipHeader, headers, BooleanParser);
-        Message = new InboundMessageContent(body, ParseHeader(MessageNameHeader, headers), contentType, length);
+        Mode = ParseHeader(headers, DeliveryModeHeader, DeliveryModeParser);
+        RespectLeadership = ParseHeader(headers, RespectLeadershipHeader, BooleanParser);
+        Message = new InboundMessageContent(body, ParseHeader(headers, MessageNameHeader), contentType, length);
     }
 
     internal CustomMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue, request.Body, new ContentType(request.ContentType ?? MediaTypeNames.Application.Octet), request.ContentLength)
+        : this(request.Headers, request.Body, new ContentType(request.ContentType ?? MediaTypeNames.Application.Octet), request.ContentLength)
     {
     }
 
@@ -148,7 +148,7 @@ internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpM
     private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
     {
         var contentType = response.Content.Headers.ContentType?.ToString();
-        var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
+        var name = ParseHeader(response.Headers, MessageNameHeader);
         var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
         try
         {

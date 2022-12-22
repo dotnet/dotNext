@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -12,13 +11,8 @@ internal sealed class ResignMessage : HttpMessage, IHttpMessageReader<bool>, IHt
     {
     }
 
-    private ResignMessage(HeadersReader<StringValues> headers)
-        : base(headers)
-    {
-    }
-
     internal ResignMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue)
+        : base(request.Headers)
     {
     }
 

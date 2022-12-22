@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Net;
@@ -44,16 +43,9 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         internal MultipartLogEntry(MultipartSection section)
             : base(section.Body, true)
         {
-            HeadersReader<StringValues> headers = GetHeaders(section).TryGetValue;
-            Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
-            Timestamp = ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser);
-            CommandId = ParseHeaderAsNullable(CommandIdHeader, headers, Int32Parser);
-
-            static IReadOnlyDictionary<string, StringValues> GetHeaders(MultipartSection section)
-            {
-                IReadOnlyDictionary<string, StringValues>? headers = section.Headers;
-                return headers ?? ImmutableDictionary<string, StringValues>.Empty;
-            }
+            Term = ParseHeader(section.Headers, RequestVoteMessage.RecordTermHeader, Int64Parser);
+            Timestamp = ParseHeader(section.Headers, HeaderNames.LastModified, Rfc1123Parser);
+            CommandId = ParseHeaderAsNullable(section.Headers, CommandIdHeader, Int32Parser);
         }
 
         public int? CommandId { get; }
@@ -253,20 +245,20 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         ApplyConfiguration = applyConfig;
     }
 
-    private AppendEntriesMessage(HeadersReader<StringValues> headers, out long entriesCount)
+    private AppendEntriesMessage(IDictionary<string, StringValues> headers, out long entriesCount)
         : base(headers)
     {
-        PrevLogIndex = ParseHeader(PrecedingRecordIndexHeader, headers, Int64Parser);
-        PrevLogTerm = ParseHeader(PrecedingRecordTermHeader, headers, Int64Parser);
-        CommitIndex = ParseHeader(CommitIndexHeader, headers, Int64Parser);
-        entriesCount = ParseHeader(CountHeader, headers, Int64Parser);
-        ConfigurationFingerprint = ParseHeader(ConfigurationFingerprintHeader, headers, Int64Parser);
-        ConfigurationLength = ParseHeader(ConfigurationLengthHeader, headers, Int64Parser);
-        ApplyConfiguration = ParseHeader(ConfigurationCommitHeader, headers, BooleanParser);
+        PrevLogIndex = ParseHeader(headers, PrecedingRecordIndexHeader, Int64Parser);
+        PrevLogTerm = ParseHeader(headers, PrecedingRecordTermHeader, Int64Parser);
+        CommitIndex = ParseHeader(headers, CommitIndexHeader, Int64Parser);
+        entriesCount = ParseHeader(headers, CountHeader, Int64Parser);
+        ConfigurationFingerprint = ParseHeader(headers, ConfigurationFingerprintHeader, Int64Parser);
+        ConfigurationLength = ParseHeader(headers, ConfigurationLengthHeader, Int64Parser);
+        ApplyConfiguration = ParseHeader(headers, ConfigurationCommitHeader, BooleanParser);
     }
 
     internal AppendEntriesMessage(HttpRequest request, out Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, out ILogEntryProducer<IRaftLogEntry> entries)
-        : this(request.Headers.TryGetValue, out var entriesCount)
+        : this(request.Headers, out var entriesCount)
     {
         entries = CreateReader(request, entriesCount);
         configurationReader = request.BodyReader.ReadBlockAsync;
@@ -274,6 +266,8 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
 
     private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
     {
+        var result = EmptyProducer;
+
         if (count is 0L || !AspNetMediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
         {
             // jump to empty set of log entries
@@ -281,14 +275,14 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         else if (StringSegment.Equals(mediaType.MediaType, MediaTypeNames.Application.Octet, StringComparison.OrdinalIgnoreCase))
         {
             // log entries encoded as efficient binary stream
-            return new OctetStreamLogEntriesReader(request.BodyReader, count);
+            result = new OctetStreamLogEntriesReader(request.BodyReader, count);
         }
         else if (HeaderUtils.RemoveQuotes(mediaType.Boundary) is { Length: > 0 } boundary)
         {
-            return new MultipartLogEntriesReader(boundary.ToString(), request.Body, count);
+            result = new MultipartLogEntriesReader(boundary.ToString(), request.Body, count);
         }
 
-        return EmptyProducer;
+        return result;
     }
 
     internal override void PrepareRequest(HttpRequestMessage request)

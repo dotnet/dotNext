@@ -20,10 +20,10 @@ internal abstract class RaftHttpMessage : HttpMessage
     private protected RaftHttpMessage(string messageType, in ClusterMemberId sender, long term)
         : base(messageType, sender) => ConsensusTerm = term;
 
-    private protected RaftHttpMessage(HeadersReader<StringValues> headers)
+    private protected RaftHttpMessage(IDictionary<string, StringValues> headers)
         : base(headers)
     {
-        ConsensusTerm = ParseHeader(TermHeader, headers, Int64Parser);
+        ConsensusTerm = ParseHeader(headers, TermHeader, Int64Parser);
     }
 
     internal sealed override bool IsMemberUnavailable(HttpStatusCode? code) => true;
@@ -40,7 +40,7 @@ internal abstract class RaftHttpMessage : HttpMessage
     private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
     {
         var result = await HttpMessage.ParseBoolResponse(response, token).ConfigureAwait(false);
-        var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
+        var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
         return new(term, result);
     }
 
@@ -48,7 +48,7 @@ internal abstract class RaftHttpMessage : HttpMessage
         where T : struct, Enum
     {
         var result = await HttpMessage.ParseEnumResponse<T>(response, token).ConfigureAwait(false);
-        var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
+        var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
         return new(term, result);
     }
 

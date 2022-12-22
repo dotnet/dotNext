@@ -79,20 +79,20 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
         Snapshot = snapshot;
     }
 
-    private InstallSnapshotMessage(HeadersReader<StringValues> headers, PipeReader body, long? length)
+    private InstallSnapshotMessage(IDictionary<string, StringValues> headers, PipeReader body, long? length)
         : base(headers)
     {
-        Index = ParseHeader(SnapshotIndexHeader, headers, Int64Parser);
+        Index = ParseHeader(headers, SnapshotIndexHeader, Int64Parser);
         Snapshot = new ReceivedSnapshot(body)
         {
-            Term = ParseHeader(SnapshotTermHeader, headers, Int64Parser),
-            Timestamp = ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser),
+            Term = ParseHeader(headers, SnapshotTermHeader, Int64Parser),
+            Timestamp = ParseHeader(headers, HeaderNames.LastModified, Rfc1123Parser),
             Length = length,
         };
     }
 
     internal InstallSnapshotMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue, request.BodyReader, request.ContentLength)
+        : this(request.Headers, request.BodyReader, request.ContentLength)
     {
     }
 

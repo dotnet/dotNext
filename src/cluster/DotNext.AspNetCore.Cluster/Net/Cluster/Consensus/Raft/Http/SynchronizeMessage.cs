@@ -21,12 +21,12 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
         : base(MessageType, in sender)
         => CommitIndex = commitIndex;
 
-    private SynchronizeMessage(HeadersReader<StringValues> headers)
+    private SynchronizeMessage(IDictionary<string, StringValues> headers)
         : base(headers)
-        => CommitIndex = ParseHeader(CommitIndexHeader, headers, Int64Parser);
+        => CommitIndex = ParseHeader(headers, CommitIndexHeader, Int64Parser);
 
     internal SynchronizeMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue)
+        : this(request.Headers)
     {
     }
 
