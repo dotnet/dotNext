@@ -195,64 +195,66 @@ internal partial class RaftHttpCluster : IOutputChannel
             await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
     }
 
-    private async Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
+    private Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
     {
         var sender = TryGetMember(message.Sender);
 
+        Task result;
         if (sender is null)
         {
             response.StatusCode = StatusCodes.Status404NotFound;
+            result = Task.CompletedTask;
         }
         else if (!message.RespectLeadership)
         {
-            await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
+            result = ReceiveMessageAsync(sender, message, response, token);
         }
         else if (LeadershipToken is { IsCancellationRequested: false } lt)
         {
-            var tokenSource = token.LinkTo(lt);
-            try
-            {
-                await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-            }
-            finally
-            {
-                tokenSource?.Dispose();
-            }
+            result = ReceiveMessageAsync(sender, message, response, lt, token);
         }
         else
         {
             response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+            result = Task.CompletedTask;
         }
 
         sender?.Touch();
+        return result;
+    }
+
+    private async Task ReceiveMessageAsync(RaftClusterMember sender, CustomMessage message, HttpResponse response, CancellationToken leadershipToken, CancellationToken token)
+    {
+        var tokenSource = token.LinkTo(leadershipToken);
+        try
+        {
+            await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+        }
+        finally
+        {
+            tokenSource?.Dispose();
+        }
     }
 
     private Task ReceiveMessageAsync(RaftClusterMember sender, CustomMessage message, HttpResponse response, CancellationToken token)
     {
-        Task result;
-
-        switch (message.Mode)
+        return message.Mode switch
         {
-            case CustomMessage.DeliveryMode.RequestReply:
-                result = ReceiveMessageAsync(sender, message, messageHandlers, response, token);
-                break;
-            case CustomMessage.DeliveryMode.OneWay:
-                result = ReceiveOneWayMessageAsync(sender, message, messageHandlers, true, response, token);
-                break;
-            case CustomMessage.DeliveryMode.OneWayNoAck:
-                result = ReceiveOneWayMessageAsync(sender, message, messageHandlers, false, response, token);
-                break;
-            default:
-                response.StatusCode = StatusCodes.Status400BadRequest;
-                result = Task.CompletedTask;
-                break;
-        }
+            CustomMessage.DeliveryMode.RequestReply => ReceiveMessageAsync(sender, message, messageHandlers, response, token),
+            CustomMessage.DeliveryMode.OneWay => ReceiveOneWayMessageAsync(sender, message, messageHandlers, reliable: true, response, token),
+            CustomMessage.DeliveryMode.OneWayNoAck => ReceiveOneWayMessageAsync(sender, message, messageHandlers, reliable: false, response, token),
+            _ => BadRequest(response),
+        };
 
-        return result;
+        static Task BadRequest(HttpResponse response)
+        {
+            response.StatusCode = StatusCodes.Status400BadRequest;
+            return Task.CompletedTask;
+        }
     }
 
     private async Task VoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
