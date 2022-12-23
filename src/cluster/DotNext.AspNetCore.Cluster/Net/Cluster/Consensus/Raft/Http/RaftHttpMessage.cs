@@ -17,8 +17,8 @@ internal abstract class RaftHttpMessage : HttpMessage
 
     internal readonly long ConsensusTerm;
 
-    private protected RaftHttpMessage(string messageType, in ClusterMemberId sender, long term)
-        : base(messageType, sender) => ConsensusTerm = term;
+    private protected RaftHttpMessage(in ClusterMemberId sender, long term)
+        : base(sender) => ConsensusTerm = term;
 
     private protected RaftHttpMessage(IDictionary<string, StringValues> headers)
         : base(headers)
@@ -26,13 +26,14 @@ internal abstract class RaftHttpMessage : HttpMessage
         ConsensusTerm = ParseHeader(headers, TermHeader, Int64Parser);
     }
 
-    internal sealed override bool IsMemberUnavailable(HttpStatusCode? code) => true;
-
-    internal override void PrepareRequest(HttpRequestMessage request)
+    protected new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
         base.PrepareRequest(request);
     }
+
+    // serves as a default implementation of IHttpMessage.IsMemberUnavailable
+    public static new bool IsMemberUnavailable(HttpStatusCode? code) => true;
 
     private static bool TryParseRfc1123FormattedDateTime(string input, out DateTimeOffset result)
         => HeaderUtils.TryParseDate(input, out result);

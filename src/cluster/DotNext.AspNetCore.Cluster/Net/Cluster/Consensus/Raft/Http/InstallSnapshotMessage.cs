@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Net;
+using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -10,9 +11,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 using IO;
 using static IO.Pipelines.PipeExtensions;
 
-internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>
+internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Result<bool>>
 {
-    internal new const string MessageType = "InstallSnapshot";
+    internal const string MessageType = "InstallSnapshot";
     private const string SnapshotIndexHeader = "X-Raft-Snapshot-Index";
     private const string SnapshotTermHeader = "X-Raft-Snapshot-Term";
 
@@ -73,7 +74,7 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
     internal readonly long Index;
 
     internal InstallSnapshotMessage(in ClusterMemberId sender, long term, long index, IRaftLogEntry snapshot)
-        : base(MessageType, sender, term)
+        : base(sender, term)
     {
         Index = index;
         Snapshot = snapshot;
@@ -96,7 +97,7 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
     {
     }
 
-    internal override void PrepareRequest(HttpRequestMessage request)
+    public new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(SnapshotIndexHeader, Index.ToString(InvariantCulture));
         request.Headers.Add(SnapshotTermHeader, Snapshot.Term.ToString(InvariantCulture));
@@ -104,7 +105,10 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
         base.PrepareRequest(request);
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
+    Task<Result<bool>> IHttpMessage<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
+
+    [RequiresPreviewFeatures]
+    static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);
 }

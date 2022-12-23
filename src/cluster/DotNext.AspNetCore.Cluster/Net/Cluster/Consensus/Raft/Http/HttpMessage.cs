@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -30,46 +31,42 @@ internal abstract class HttpMessage
     private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
     private static readonly ValueParser<string> StringParser = ParseString;
 
-    private protected delegate bool ValueParser<T>(string str, [MaybeNullWhen(false)] out T value);
+    private protected delegate bool ValueParser<T>(string str, [MaybeNullWhen(false)] out T value)
+        where T : notnull;
 
     internal readonly string Id;
     internal readonly ClusterMemberId Sender;
-    internal readonly string MessageType;
 
-    private protected HttpMessage(string messageType, in ClusterMemberId sender)
+    private protected HttpMessage(in ClusterMemberId sender)
     {
         Sender = sender;
-        MessageType = messageType;
         Id = Random.Shared.NextString(RequestIdAllowedChars, RequestIdLength);
     }
 
     private protected HttpMessage(IDictionary<string, StringValues> headers)
     {
         Sender = ParseHeader(headers, NodeIdHeader, ClusterMemberIdParser);
-        MessageType = GetMessageType(headers);
         Id = ParseHeader(headers, RequestIdHeader);
     }
 
-    /// <summary>
-    /// Interprets <see cref="HttpRequestException"/> produced by HTTP client.
-    /// </summary>
-    /// <returns><see langword="true"/> to handle the response as <see cref="MemberUnavailableException"/>.</returns>
-    internal virtual bool IsMemberUnavailable(HttpStatusCode? code)
-        => code is null or HttpStatusCode.InternalServerError;
-
-    private static string GetMessageType(IDictionary<string, StringValues> headers)
-        => ParseHeader(headers, MessageTypeHeader);
-
     internal static string GetMessageType(HttpRequest request)
-        => GetMessageType(request.Headers);
+        => ParseHeader(request.Headers, MessageTypeHeader);
 
-    internal virtual void PrepareRequest(HttpRequestMessage request)
+    [RequiresPreviewFeatures]
+    internal static void SetMessageType<TMessage>(HttpRequestMessage request)
+        where TMessage : class, IHttpMessage
+        => request.Headers.Add(MessageTypeHeader, TMessage.MessageType);
+
+    protected void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(NodeIdHeader, Sender.ToString());
-        request.Headers.Add(MessageTypeHeader, MessageType);
         request.Headers.Add(RequestIdHeader, Id);
         request.Method = HttpMethod.Post;
     }
+
+    // serves as a default implementation of IHttpMessage.IsMemberUnavailable
+    public static bool IsMemberUnavailable(HttpStatusCode? code)
+        => code is null or HttpStatusCode.InternalServerError;
 
     private protected static async Task<bool> ParseBoolResponseAsync(HttpResponseMessage response, CancellationToken token)
         => bool.TryParse(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false), out var result)

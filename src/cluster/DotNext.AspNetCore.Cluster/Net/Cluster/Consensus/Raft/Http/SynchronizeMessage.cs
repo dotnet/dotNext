@@ -1,9 +1,9 @@
 using System.Net.Mime;
+using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Buffers.Binary.BinaryPrimitives;
 using static System.Globalization.CultureInfo;
-using PipeWriter = System.IO.Pipelines.PipeWriter;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -11,15 +11,15 @@ using Buffers;
 using IO.Pipelines;
 using static IO.StreamExtensions;
 
-internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?>
+internal sealed class SynchronizeMessage : HttpMessage, IHttpMessage<long?>
 {
-    internal new const string MessageType = "Synchronize";
+    internal const string MessageType = "Synchronize";
     private const string CommitIndexHeader = "X-Raft-Commit-Index";
 
     internal readonly long CommitIndex;
 
     internal SynchronizeMessage(in ClusterMemberId sender, long commitIndex)
-        : base(MessageType, in sender)
+        : base(in sender)
         => CommitIndex = commitIndex;
 
     private SynchronizeMessage(IDictionary<string, StringValues> headers)
@@ -31,13 +31,13 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
     {
     }
 
-    internal override void PrepareRequest(HttpRequestMessage request)
+    public new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
         base.PrepareRequest(request);
     }
 
-    Task<long?> IHttpMessageReader<long?>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
+    Task<long?> IHttpMessage<long?>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
     {
         return response.Content.Headers.ContentLength is sizeof(long)
             ? ParseAsync(response.Content, token)
@@ -54,6 +54,9 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
             }
         }
     }
+
+    [RequiresPreviewFeatures]
+    static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, long? commitIndex, CancellationToken token)
     {

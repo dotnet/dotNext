@@ -1,14 +1,15 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.Versioning;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-internal sealed class MetadataMessage : HttpMessage, IHttpMessageReader<MemberMetadata>
+internal sealed class MetadataMessage : HttpMessage, IHttpMessage<MemberMetadata>
 {
-    internal new const string MessageType = "Metadata";
+    internal const string MessageType = "Metadata";
 
     internal MetadataMessage(in ClusterMemberId sender)
-        : base(MessageType, sender)
+        : base(sender)
     {
     }
 
@@ -17,12 +18,28 @@ internal sealed class MetadataMessage : HttpMessage, IHttpMessageReader<MemberMe
     {
     }
 
-    async Task<MemberMetadata> IHttpMessageReader<MemberMetadata>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
+    Task<MemberMetadata> IHttpMessage<MemberMetadata>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
     {
-        var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
-        await using (stream.ConfigureAwait(false))
-            return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, MemberMetadata.TypeInfo, token).ConfigureAwait(false) ?? new MemberMetadata();
+        return ParseAsync(response.Content, token);
+
+        static async Task<MemberMetadata> ParseAsync(HttpContent content, CancellationToken token)
+        {
+            var stream = await content.ReadAsStreamAsync(token).ConfigureAwait(false);
+            try
+            {
+                return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, MemberMetadata.TypeInfo, token).ConfigureAwait(false) ?? new MemberMetadata();
+            }
+            finally
+            {
+                await stream.DisposeAsync().ConfigureAwait(false);
+            }
+        }
     }
+
+    void IHttpMessage.PrepareRequest(HttpRequestMessage request) => PrepareRequest(request);
+
+    [RequiresPreviewFeatures]
+    static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, MemberMetadata metadata, CancellationToken token)
     {

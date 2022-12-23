@@ -4,7 +4,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>preview</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
     <Features>nullablePublicOnly</Features>

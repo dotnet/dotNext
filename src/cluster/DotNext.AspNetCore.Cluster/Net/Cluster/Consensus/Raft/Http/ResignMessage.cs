@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Runtime.Versioning;
+using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-internal sealed class ResignMessage : HttpMessage, IHttpMessageReader<bool>
+internal sealed class ResignMessage : HttpMessage, IHttpMessage<bool>
 {
-    internal new const string MessageType = "Resign";
+    internal const string MessageType = "Resign";
 
     internal ResignMessage(in ClusterMemberId sender)
-        : base(MessageType, sender)
+        : base(sender)
     {
     }
 
@@ -16,7 +17,12 @@ internal sealed class ResignMessage : HttpMessage, IHttpMessageReader<bool>
     {
     }
 
-    Task<bool> IHttpMessageReader<bool>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
+    Task<bool> IHttpMessage<bool>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
+
+    [RequiresPreviewFeatures]
+    static string IHttpMessage.MessageType => MessageType;
+
+    void IHttpMessage.PrepareRequest(HttpRequestMessage request) => PrepareRequest(request);
 
     internal static new Task SaveResponseAsync(HttpResponse response, bool result, CancellationToken token) => HttpMessage.SaveResponseAsync(response, result, token);
 }

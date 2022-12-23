@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
@@ -25,10 +26,10 @@ using static IO.Pipelines.PipeExtensions;
 using EncodingContext = Text.EncodingContext;
 using LogEntryMetadata = TransportServices.LogEntryMetadata;
 
-internal class AppendEntriesMessage : RaftHttpMessage
+internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 {
     private static readonly ILogEntryProducer<IRaftLogEntry> EmptyProducer = new LogEntryProducer<IRaftLogEntry>();
-    internal new const string MessageType = "AppendEntries";
+    internal const string MessageType = "AppendEntries";
     private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
     private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
     private const string CommitIndexHeader = "X-Raft-Commit-Index";
@@ -235,7 +236,7 @@ internal class AppendEntriesMessage : RaftHttpMessage
     internal readonly bool ApplyConfiguration;
 
     private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, long fingerprint, long configurationLength, bool applyConfig)
-        : base(MessageType, sender, term)
+        : base(sender, term)
     {
         PrevLogIndex = prevLogIndex;
         PrevLogTerm = prevLogTerm;
@@ -285,7 +286,7 @@ internal class AppendEntriesMessage : RaftHttpMessage
         return result;
     }
 
-    internal override void PrepareRequest(HttpRequestMessage request)
+    public new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
         request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
@@ -296,10 +297,13 @@ internal class AppendEntriesMessage : RaftHttpMessage
         base.PrepareRequest(request);
     }
 
+    [RequiresPreviewFeatures]
+    static string IHttpMessage.MessageType => MessageType;
+
     internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);
 }
 
-internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessageReader<Result<bool>>
+internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessage<Result<bool>>
     where TEntry : IRaftLogEntry
     where TList : IReadOnlyList<TEntry>
 {
@@ -507,7 +511,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
     internal bool UseOptimizedTransfer { private get; init; }
 
-    internal override void PrepareRequest(HttpRequestMessage request)
+    public new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(CountHeader, entries.Count.ToString(InvariantCulture));
         request.Content = CreateContentProvider();
@@ -522,5 +526,5 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         return configuration.Length.GetValueOrDefault() > 0L ? new ConfigurationWriter(configuration) : null;
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
+    Task<Result<bool>> IHttpMessage<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 }
