@@ -2,7 +2,7 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-internal sealed class ResignMessage : HttpMessage, IHttpMessageReader<bool>, IHttpMessageWriter<bool>
+internal sealed class ResignMessage : HttpMessage, IHttpMessageReader<bool>
 {
     internal new const string MessageType = "Resign";
 
@@ -16,7 +16,7 @@ internal sealed class ResignMessage : HttpMessage, IHttpMessageReader<bool>, IHt
     {
     }
 
-    Task<bool> IHttpMessageReader<bool>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
+    Task<bool> IHttpMessageReader<bool>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 
-    public new Task SaveResponse(HttpResponse response, bool result, CancellationToken token) => HttpMessage.SaveResponse(response, result, token);
+    internal static new Task SaveResponseAsync(HttpResponse response, bool result, CancellationToken token) => HttpMessage.SaveResponseAsync(response, result, token);
 }

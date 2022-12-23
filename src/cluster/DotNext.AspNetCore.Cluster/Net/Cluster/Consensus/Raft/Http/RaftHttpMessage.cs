@@ -37,31 +37,31 @@ internal abstract class RaftHttpMessage : HttpMessage
     private static bool TryParseRfc1123FormattedDateTime(string input, out DateTimeOffset result)
         => HeaderUtils.TryParseDate(input, out result);
 
-    private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
+    private protected static new async Task<Result<bool>> ParseBoolResponseAsync(HttpResponseMessage response, CancellationToken token)
     {
-        var result = await HttpMessage.ParseBoolResponse(response, token).ConfigureAwait(false);
+        var result = await HttpMessage.ParseBoolResponseAsync(response, token).ConfigureAwait(false);
         var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
         return new(term, result);
     }
 
-    private protected static new async Task<Result<T>> ParseEnumResponse<T>(HttpResponseMessage response, CancellationToken token)
+    private protected static new async Task<Result<T>> ParseEnumResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
         where T : struct, Enum
     {
-        var result = await HttpMessage.ParseEnumResponse<T>(response, token).ConfigureAwait(false);
+        var result = await HttpMessage.ParseEnumResponseAsync<T>(response, token).ConfigureAwait(false);
         var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
         return new(term, result);
     }
 
-    private protected static Task SaveResponse(HttpResponse response, in Result<bool> result, CancellationToken token)
+    private protected static Task SaveResponseAsync(HttpResponse response, in Result<bool> result, CancellationToken token)
     {
         response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return HttpMessage.SaveResponse(response, result.Value, token);
+        return HttpMessage.SaveResponseAsync(response, result.Value, token);
     }
 
-    private protected static Task SaveResponse<T>(HttpResponse response, in Result<T> result, CancellationToken token)
+    private protected static Task SaveResponseAsync<T>(HttpResponse response, in Result<T> result, CancellationToken token)
         where T : struct, Enum
     {
         response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return HttpMessage.SaveResponse(response, result.Value, token);
+        return HttpMessage.SaveResponseAsync(response, result.Value, token);
     }
 }

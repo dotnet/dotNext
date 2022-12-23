@@ -87,7 +87,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             response = await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, tokenWithTimeout)
                 .ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            var result = await message.ParseResponse(response, tokenWithTimeout).ConfigureAwait(false);
+            var result = await message.ParseResponseAsync(response, tokenWithTimeout).ConfigureAwait(false);
             Touch();
             return result;
         }

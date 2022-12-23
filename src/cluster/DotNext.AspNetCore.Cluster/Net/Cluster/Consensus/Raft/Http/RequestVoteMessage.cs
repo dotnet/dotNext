@@ -4,7 +4,7 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
+internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>
 {
     internal const string RecordIndexHeader = "X-Raft-Record-Index";
     internal const string RecordTermHeader = "X-Raft-Record-Term";
@@ -39,7 +39,7 @@ internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessageReader<R
         base.PrepareRequest(request);
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
+    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 
-    public Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);
 }

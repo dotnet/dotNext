@@ -11,7 +11,7 @@ using Buffers;
 using IO.Pipelines;
 using static IO.StreamExtensions;
 
-internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?>, IHttpMessageWriter<long?>
+internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?>
 {
     internal new const string MessageType = "Synchronize";
     private const string CommitIndexHeader = "X-Raft-Commit-Index";
@@ -37,7 +37,7 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
         base.PrepareRequest(request);
     }
 
-    Task<long?> IHttpMessageReader<long?>.ParseResponse(HttpResponseMessage response, CancellationToken token)
+    Task<long?> IHttpMessageReader<long?>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
     {
         return response.Content.Headers.ContentLength is sizeof(long)
             ? ParseAsync(response.Content, token)
@@ -55,7 +55,7 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
         }
     }
 
-    public Task SaveResponse(HttpResponse response, long? commitIndex, CancellationToken token)
+    internal static Task SaveResponseAsync(HttpResponse response, long? commitIndex, CancellationToken token)
     {
         Task result;
 
@@ -64,7 +64,7 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
         if (commitIndex.HasValue)
         {
             response.ContentLength = sizeof(long);
-            result = SaveResponseAsync(response, commitIndex.GetValueOrDefault(), token);
+            result = SaveAsync(response, commitIndex.GetValueOrDefault(), token);
         }
         else
         {
@@ -74,7 +74,7 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
 
         return result;
 
-        static async Task SaveResponseAsync(HttpResponse response, long commitIndex, CancellationToken token)
+        static async Task SaveAsync(HttpResponse response, long commitIndex, CancellationToken token)
         {
             await response.StartAsync(token).ConfigureAwait(false);
             var result = await response.BodyWriter.WriteInt64Async(commitIndex, littleEndian: true, token).ConfigureAwait(false);

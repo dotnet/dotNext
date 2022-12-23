@@ -192,7 +192,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         if (task is null)
             response.StatusCode = StatusCodes.Status501NotImplemented;
         else
-            await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
+            await CustomMessage.SaveResponseAsync(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
     }
 
     private Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
@@ -260,34 +260,38 @@ internal partial class RaftHttpCluster : IOutputChannel
     private async Task VoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
     {
         var sender = TryGetMember(request.Sender);
+
+        Result<bool> result;
         if (sender is null)
         {
-            await request.SaveResponse(response, new Result<bool>(Term, false), token).ConfigureAwait(false);
+            result = new(Term, false);
         }
         else
         {
-            await request.SaveResponse(response, await VoteAsync(request.Sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
             sender.Touch();
+            result = await VoteAsync(request.Sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false);
         }
+
+        await RequestVoteMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
     }
 
     private async Task PreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
     {
         TryGetMember(request.Sender)?.Touch();
-        await request.SaveResponse(response, await PreVoteAsync(request.Sender, request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
+        await PreVoteMessage.SaveResponseAsync(response, await PreVoteAsync(request.Sender, request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
     }
 
     private async Task ResignAsync(ResignMessage request, HttpResponse response, CancellationToken token)
     {
         var sender = TryGetMember(request.Sender);
-        await request.SaveResponse(response, await ResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
+        await ResignMessage.SaveResponseAsync(response, await ResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
         sender?.Touch();
     }
 
     private Task GetMetadataAsync(MetadataMessage request, HttpResponse response, CancellationToken token)
     {
         var sender = TryGetMember(request.Sender);
-        var result = request.SaveResponse(response, metadata, token);
+        var result = MetadataMessage.SaveResponseAsync(response, metadata, token);
         sender?.Touch();
         return result;
     }
@@ -309,7 +313,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         await using (entries.ConfigureAwait(false))
         {
             var result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, configuration, message.ApplyConfiguration, token).ConfigureAwait(false);
-            await message.SaveResponse(response, result, token).ConfigureAwait(false);
+            await AppendEntriesMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
         }
     }
 
@@ -318,7 +322,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         TryGetMember(message.Sender)?.Touch();
 
         var result = await InstallSnapshotAsync(message.Sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false);
-        await message.SaveResponse(response, result, token).ConfigureAwait(false);
+        await InstallSnapshotMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
     }
 
     private async Task SynchronizeAsync(SynchronizeMessage message, HttpResponse response, CancellationToken token)
@@ -326,7 +330,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         TryGetMember(message.Sender)?.Touch();
 
         var result = await SynchronizeAsync(message.CommitIndex, token).ConfigureAwait(false);
-        await message.SaveResponse(response, result, token).ConfigureAwait(false);
+        await SynchronizeMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
     }
 
     internal Task ProcessRequest(HttpContext context)

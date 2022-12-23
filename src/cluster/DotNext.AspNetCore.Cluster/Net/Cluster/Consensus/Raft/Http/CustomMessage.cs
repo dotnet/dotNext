@@ -13,7 +13,7 @@ using Messaging;
 using Runtime.Serialization;
 using static IO.Pipelines.ResultExtensions;
 
-internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage?>
+internal class CustomMessage : HttpMessage, IHttpMessageReader<IMessage?>
 {
     // request - represents custom message name
     private const string MessageNameHeader = "X-Raft-Message-Name";
@@ -126,7 +126,7 @@ internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpM
         base.PrepareRequest(request);
     }
 
-    internal static async Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
+    internal static async Task SaveResponseAsync(HttpResponse response, IMessage message, CancellationToken token)
     {
         response.StatusCode = StatusCodes.Status200OK;
         response.ContentType = message.Type.ToString();
@@ -138,14 +138,11 @@ internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpM
         result.ThrowIfCancellationRequested(token);
     }
 
-    Task IHttpMessageWriter<IMessage>.SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
-        => SaveResponse(response, message, token);
-
     // do not parse response because this is one-way message
-    Task<IMessage?> IHttpMessageReader<IMessage?>.ParseResponse(HttpResponseMessage response, CancellationToken token)
+    Task<IMessage?> IHttpMessageReader<IMessage?>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
         => token.IsCancellationRequested ? Task.FromCanceled<IMessage?>(token) : Task.FromResult<IMessage?>(null);
 
-    private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
+    private protected static async Task<T> ParseResponseAsync<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
     {
         var contentType = response.Content.Headers.ContentType?.ToString();
         var name = ParseHeader(response.Headers, MessageNameHeader);
@@ -161,7 +158,7 @@ internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpM
     }
 
     [RequiresPreviewFeatures]
-    private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, CancellationToken token)
+    private protected static async Task<T> ParseResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
         where T : notnull, ISerializable<T>
     {
         var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
@@ -183,8 +180,8 @@ internal sealed class CustomMessage<T> : CustomMessage, IHttpMessageReader<T>
     internal CustomMessage(in ClusterMemberId sender, IMessage message, MessageReader<T> reader)
         : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
 
-    Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
-        => ParseResponse<T>(response, reader, token);
+    Task<T> IHttpMessageReader<T>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
+        => ParseResponseAsync<T>(response, reader, token);
 }
 
 [RequiresPreviewFeatures]
@@ -196,6 +193,6 @@ internal sealed class CustomSerializableMessage<T> : CustomMessage, IHttpMessage
     {
     }
 
-    Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
-        => ParseResponse<T>(response, token);
+    Task<T> IHttpMessageReader<T>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
+        => ParseResponseAsync<T>(response, token);
 }

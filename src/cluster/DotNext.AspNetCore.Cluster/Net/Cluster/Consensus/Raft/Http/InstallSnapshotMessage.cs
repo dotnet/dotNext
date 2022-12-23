@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 using IO;
 using static IO.Pipelines.PipeExtensions;
 
-internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
+internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>
 {
     internal new const string MessageType = "InstallSnapshot";
     private const string SnapshotIndexHeader = "X-Raft-Snapshot-Index";
@@ -104,7 +104,7 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
         base.PrepareRequest(request);
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
+    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 
-    public Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);
 }

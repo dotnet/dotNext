@@ -25,7 +25,7 @@ using static IO.Pipelines.PipeExtensions;
 using EncodingContext = Text.EncodingContext;
 using LogEntryMetadata = TransportServices.LogEntryMetadata;
 
-internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
+internal class AppendEntriesMessage : RaftHttpMessage
 {
     private static readonly ILogEntryProducer<IRaftLogEntry> EmptyProducer = new LogEntryProducer<IRaftLogEntry>();
     internal new const string MessageType = "AppendEntries";
@@ -296,7 +296,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         base.PrepareRequest(request);
     }
 
-    public Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);
 }
 
 internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessageReader<Result<bool>>
@@ -522,5 +522,5 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         return configuration.Length.GetValueOrDefault() > 0L ? new ConfigurationWriter(configuration) : null;
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
+    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 }
