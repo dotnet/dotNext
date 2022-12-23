@@ -35,5 +35,5 @@ internal partial class Client : RaftClusterMember
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        => RequestAsync<InstallSnapshotExchange, Result<bool>>(new(localMember, term, snapshot, snapshotIndex), token);
+        => RequestAsync<Result<bool>, InstallSnapshotExchange>(new(localMember, term, snapshot, snapshotIndex), token);
 }

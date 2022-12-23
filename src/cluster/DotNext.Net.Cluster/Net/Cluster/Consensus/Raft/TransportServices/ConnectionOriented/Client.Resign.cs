@@ -22,5 +22,5 @@ internal partial class Client : RaftClusterMember
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<bool> ResignAsync(CancellationToken token)
-        => RequestAsync<ResignExchange, bool>(ResignExchange.Instance, token);
+        => RequestAsync<bool, ResignExchange>(ResignExchange.Instance, token);
 }

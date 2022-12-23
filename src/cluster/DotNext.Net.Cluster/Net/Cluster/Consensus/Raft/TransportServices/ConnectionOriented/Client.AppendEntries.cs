@@ -44,5 +44,5 @@ internal partial class Client : RaftClusterMember
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-        => RequestAsync<AppendEntriesExchange<TEntry, TList>, Result<bool>>(new(localMember, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig), token);
+        => RequestAsync<Result<bool>, AppendEntriesExchange<TEntry, TList>>(new(localMember, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig), token);
 }

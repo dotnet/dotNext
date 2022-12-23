@@ -22,5 +22,5 @@ internal partial class Client : RaftClusterMember
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
-        => RequestAsync<MetadataExchange, IReadOnlyDictionary<string, string>>(MetadataExchange.Instance, token);
+        => RequestAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(MetadataExchange.Instance, token);
 }

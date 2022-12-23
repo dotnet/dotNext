@@ -22,5 +22,5 @@ internal partial class Client : RaftClusterMember
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
-        => RequestAsync<SynchronizeExchange, long?>(new(commitIndex), token);
+        => RequestAsync<long?, SynchronizeExchange>(new(commitIndex), token);
 }

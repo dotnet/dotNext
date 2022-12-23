@@ -39,9 +39,9 @@ internal partial class Client : RaftClusterMember
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => RequestAsync<VoteExchange, Result<bool>>(new(localMember, term, lastLogIndex, lastLogTerm), token);
+        => RequestAsync<Result<bool>, VoteExchange>(new(localMember, term, lastLogIndex, lastLogTerm), token);
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => RequestAsync<VoteExchange, Result<PreVoteResult>>(new(localMember, term, lastLogIndex, lastLogTerm), token);
+        => RequestAsync<Result<PreVoteResult>, VoteExchange>(new(localMember, term, lastLogIndex, lastLogTerm), token);
 }

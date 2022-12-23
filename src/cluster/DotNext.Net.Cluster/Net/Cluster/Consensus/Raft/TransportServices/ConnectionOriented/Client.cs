@@ -44,7 +44,7 @@ internal abstract partial class Client : RaftClusterMember
     private protected abstract ValueTask<IConnectionContext> ConnectAsync(CancellationToken token);
 
     [RequiresPreviewFeatures]
-    private async Task<TResponse> RequestAsync<TExchange, TResponse>(TExchange exchange, CancellationToken token)
+    private async Task<TResponse> RequestAsync<TResponse, TExchange>(TExchange exchange, CancellationToken token)
         where TExchange : notnull, IClientExchange<TResponse>
     {
         ThrowIfDisposed();
