@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Buffers.Binary.BinaryPrimitives;
 using static System.Globalization.CultureInfo;
+using PipeWriter = System.IO.Pipelines.PipeWriter;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -36,11 +37,15 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
         base.PrepareRequest(request);
     }
 
-    async Task<long?> IHttpMessageReader<long?>.ParseResponse(HttpResponseMessage response, CancellationToken token)
+    Task<long?> IHttpMessageReader<long?>.ParseResponse(HttpResponseMessage response, CancellationToken token)
     {
-        if (response.Content.Headers.ContentLength == sizeof(long))
+        return response.Content.Headers.ContentLength is sizeof(long)
+            ? ParseAsync(response.Content, token)
+            : Task.FromResult<long?>(null);
+
+        static async Task<long?> ParseAsync(HttpContent content, CancellationToken token)
         {
-            var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
+            var stream = await content.ReadAsStreamAsync(token).ConfigureAwait(false);
             await using (stream.ConfigureAwait(false))
             {
                 using var buffer = MemoryAllocator.Allocate<byte>(sizeof(long), exactSize: true);
@@ -48,20 +53,31 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessageReader<long?
                 return ReadInt64LittleEndian(buffer.Span);
             }
         }
-
-        return null;
     }
 
-    public async Task SaveResponse(HttpResponse response, long? commitIndex, CancellationToken token)
+    public Task SaveResponse(HttpResponse response, long? commitIndex, CancellationToken token)
     {
+        Task result;
+
         response.StatusCode = StatusCodes.Status200OK;
+        response.ContentType = MediaTypeNames.Application.Octet;
         if (commitIndex.HasValue)
         {
             response.ContentLength = sizeof(long);
-            response.ContentType = MediaTypeNames.Application.Octet;
+            result = SaveResponseAsync(response, commitIndex.GetValueOrDefault(), token);
+        }
+        else
+        {
+            response.ContentLength = 0L;
+            result = Task.CompletedTask;
+        }
 
+        return result;
+
+        static async Task SaveResponseAsync(HttpResponse response, long commitIndex, CancellationToken token)
+        {
             await response.StartAsync(token).ConfigureAwait(false);
-            var result = await response.BodyWriter.WriteInt64Async(commitIndex.GetValueOrDefault(), true, token).ConfigureAwait(false);
+            var result = await response.BodyWriter.WriteInt64Async(commitIndex, littleEndian: true, token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(token);
         }
     }
