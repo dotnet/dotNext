@@ -46,21 +46,18 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-19-2022
+Release Date: 12-23-2022
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.8.2">DotNext.Threading 4.8.2</a>
-* Optimized memory allocations produced by instances of `TaskCompletionPipe<T>` class
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.3">DotNext.Threading 4.8.3</a>
+* Smallish performance improvements of async locks
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.8.2">DotNext.IO 4.8.2</a>
-* Reduced memory allocations caused by instances of `FileReader` and `FileWriter` classes
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.3">DotNext.Net.Cluster 4.8.3</a>
+* TCP/UDP Raft transport: optimized memory allocations
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.2">DotNext.Net.Cluster 4.8.2</a>
-* Optimized memory allocations produced by persistent WAL and Raft algorithm implementation
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.2">DotNext.AspNetCore.Cluster 4.8.2</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.3">DotNext.AspNetCore.Cluster 4.8.3</a>
+* HTTP transport: optimized memory allocations
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

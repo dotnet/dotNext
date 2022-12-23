@@ -1,6 +1,19 @@
 Release Notes
 ====
 
+# 12-23-2022
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.3">DotNext.Threading 4.8.3</a>
+* Smallish performance improvements of async locks
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.3">DotNext.Net.Cluster 4.8.3</a>
+* TCP/UDP Raft transport: optimized memory allocations
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.3">DotNext.AspNetCore.Cluster 4.8.3</a>
+* HTTP transport: optimized memory allocations
+* Updated dependencies
+
 # 12-19-2022
 <a href="https://www.nuget.org/packages/dotnext.threading/4.8.2">DotNext.Threading 4.8.2</a>
 * Optimized memory allocations produced by instances of `TaskCompletionPipe<T>` class
