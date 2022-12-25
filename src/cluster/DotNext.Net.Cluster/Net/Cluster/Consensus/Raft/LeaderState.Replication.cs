@@ -174,10 +174,10 @@ internal partial class LeaderState<TMember>
 
     private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
     {
-        private readonly Replicator replicator;
         private readonly long currentIndex;
-        private readonly IAuditTrail<IRaftLogEntry> auditTrail;
-        private readonly CancellationToken token;
+        private CancellationToken token;
+        private IAuditTrail<IRaftLogEntry>? auditTrail;
+        private Replicator? replicator;
         private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
 
         internal ReplicationWorkItem(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
@@ -199,6 +199,18 @@ internal partial class LeaderState<TMember>
 
         void IThreadPoolWorkItem.Execute()
         {
+            var replicator = this.replicator;
+            var auditTrail = this.auditTrail;
+            var token = this.token;
+
+            Debug.Assert(replicator is not null);
+            Debug.Assert(auditTrail is not null);
+
+            // help GC
+            this.replicator = null;
+            this.auditTrail = null;
+            this.token = default;
+
             var awaiter = replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
 
             if (awaiter.IsCompleted)
