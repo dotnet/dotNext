@@ -5,6 +5,18 @@ namespace DotNext.Threading;
 
 public static partial class AsyncDelegate
 {
+    private static void QueueUserWorkItem(IThreadPoolWorkItem workItem, bool preferLocal)
+    {
+        Debug.Assert(workItem is not null);
+
+        var scheduler = TaskScheduler.Current;
+
+        if (ReferenceEquals(scheduler, TaskScheduler.Default))
+            ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal);
+        else
+            Task.Factory.StartNew(static workItem => { Debug.Assert(workItem is IThreadPoolWorkItem); Unsafe.As<IThreadPoolWorkItem>(workItem).Execute(); }, workItem);
+    }
+
     /// <summary>
     /// Enqueues invocation of the delegate to the thread pool.
     /// </summary>
@@ -35,7 +47,7 @@ public static partial class AsyncDelegate
             ? new AsyncWorkItem<TArgs, TResult>(args, function, runContinuationsAsynchronously, state) { Token = token }
             : new AsyncContextfulWorkItem<TArgs, TResult>(args, function, runContinuationsAsynchronously, state, context) { Token = token };
 
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal);
+        QueueUserWorkItem(workItem, preferLocal);
         return workItem.Task;
     }
 
