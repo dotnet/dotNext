@@ -86,5 +86,25 @@ namespace DotNext.Threading
                 await ThrowsAsync<ArithmeticException>(Func.Constant(result));
             }
         }
+
+        [Fact]
+        public static async Task EnqueueToThreadPool()
+        {
+            using var tokenSource = new CancellationTokenSource();
+            var task = AsyncDelegate.EnqueueToThreadPool(Sum, (40, 2), token: tokenSource.Token);
+            Null(task.AsyncState);
+
+            Equal(42, await task);
+
+            task = AsyncDelegate.EnqueueToThreadPool(Sum, (60, 10), state: "Hello, world!", token: tokenSource.Token);
+            Equal("Hello, world!", task.AsyncState);
+            Equal(70, await task);
+
+            static ValueTask<int> Sum(ref (int, int) args, CancellationToken token)
+            {
+                True(token.CanBeCanceled);
+                return new(args.Item1 + args.Item2);
+            }
+        }
     }
 }

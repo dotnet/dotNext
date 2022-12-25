@@ -1,4 +1,4 @@
-using System.Reflection;
+using Missing = System.Reflection.Missing;
 
 namespace DotNext.Threading;
 
@@ -14,7 +14,7 @@ using ExceptionAggregator = Runtime.ExceptionServices.ExceptionAggregator;
 /// with full support of async/await feature.
 /// </remarks>
 /// <seealso href="https://github.com/dotnet/runtime/issues/16312">BeginInvoke throws NotSupportedException</seealso>
-public static class AsyncDelegate
+public static partial class AsyncDelegate
 {
     private sealed unsafe class InvocationWorkItem<TDelegate, TContext>
         where TDelegate : MulticastDelegate
