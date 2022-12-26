@@ -119,7 +119,10 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
                     Debug.Assert(workItem is IThreadPoolWorkItem);
                     Unsafe.As<IThreadPoolWorkItem>(workItem).Execute();
                 },
-                container);
+                container,
+                CancellationToken.None,
+                TaskCreationOptions.PreferFairness,
+                scheduler);
         }
     }
 }

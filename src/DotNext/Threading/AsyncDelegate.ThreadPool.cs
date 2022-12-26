@@ -23,7 +23,10 @@ public static partial class AsyncDelegate
                     Debug.Assert(workItem is IThreadPoolWorkItem);
                     Unsafe.As<IThreadPoolWorkItem>(workItem).Execute();
                 },
-                workItem);
+                workItem,
+                CancellationToken.None,
+                TaskCreationOptions.PreferFairness,
+                scheduler);
         }
     }
 
