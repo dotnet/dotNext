@@ -12,9 +12,19 @@ public static partial class AsyncDelegate
         var scheduler = TaskScheduler.Current;
 
         if (ReferenceEquals(scheduler, TaskScheduler.Default))
+        {
             ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal);
+        }
         else
-            Task.Factory.StartNew(static workItem => { Debug.Assert(workItem is IThreadPoolWorkItem); Unsafe.As<IThreadPoolWorkItem>(workItem).Execute(); }, workItem);
+        {
+            Task.Factory.StartNew(
+                static workItem =>
+                {
+                    Debug.Assert(workItem is IThreadPoolWorkItem);
+                    Unsafe.As<IThreadPoolWorkItem>(workItem).Execute();
+                },
+                workItem);
+        }
     }
 
     /// <summary>
