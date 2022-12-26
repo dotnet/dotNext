@@ -34,5 +34,21 @@ namespace DotNext.Runtime.CompilerServices
                 await Task.Yield();
             }
         }
+
+        [Fact]
+        public static async void CancellationOfSpawnedMethod()
+        {
+            var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId, new(true));
+            await Task.WhenAny(task);
+            True(task.IsCanceled);
+
+            [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+            static async Task CheckThreadId(int callerThreadId, CancellationToken token)
+            {
+                NotEqual(callerThreadId, Thread.CurrentThread.ManagedThreadId);
+
+                await Task.Delay(DefaultTimeout, token);
+            }
+        }
     }
 }
