@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -9,6 +10,7 @@ namespace DotNext.Net.Cluster.Discovery.HyParView;
 using Buffers;
 using Collections.Generic;
 using Collections.Specialized;
+using Runtime.CompilerServices;
 using static Threading.LinkedTokenSourceFactory;
 
 /// <summary>
@@ -371,23 +373,11 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
             // notify all neighbors from active view
             foreach (var peer in activeView)
             {
-                responses.Add(Task.Run(
-                    async () =>
-                    {
-                        await DisconnectAsync(peer, false, token).ConfigureAwait(false);
-                        await DisconnectAsync(peer).ConfigureAwait(false);
-                    },
-                    token));
+                responses.Add(DisconnectOnStopAsync(peer, token));
             }
 
             // destroy all peers from passive view
-            responses.Add(Task.Run(
-                async () =>
-                {
-                    foreach (var peer in passiveView)
-                        await DestroyAsync(peer).ConfigureAwait(false);
-                },
-                token));
+            responses.Add(DisconnectPassiveView(token));
 
             await Task.WhenAll(responses).ConfigureAwait(false);
         }
@@ -397,6 +387,20 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
             passiveView = ImmutableHashSet<EndPoint>.Empty;
             responses?.Dispose();
         }
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task DisconnectOnStopAsync(EndPoint peer, CancellationToken token)
+    {
+        await DisconnectAsync(peer, isAlive: false, token).ConfigureAwait(false);
+        await DisconnectAsync(peer).ConfigureAwait(false);
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task DisconnectPassiveView(CancellationToken token)
+    {
+        foreach (var peer in passiveView)
+            await DestroyAsync(peer).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
