@@ -6,6 +6,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
+using Runtime.CompilerServices;
 using static Threading.AtomicInt64;
 
 /// <summary>
@@ -323,13 +324,13 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             count = GetCommitIndexAndCount(ref commitIndex);
             LastCommittedEntryIndex = commitIndex;
             var commitTask = count > 0L
-                ? Task.Run<Partition?>(compaction switch
+                ? compaction switch
                 {
-                    CompactionMode.Sequential => CommitAndCompactSequentiallyAsync,
-                    CompactionMode.Foreground => CommitAndCompactInParallelAsync,
-                    CompactionMode.Incremental => CommitAndCompactIncrementallyAsync,
-                    _ => CommitWithoutCompactionAsync,
-                })
+                    CompactionMode.Sequential => CommitAndCompactSequentiallyAsync(session, commitIndex, token),
+                    CompactionMode.Foreground => CommitAndCompactInParallelAsync(session, count, token),
+                    CompactionMode.Incremental => CommitAndCompactIncrementallyAsync(session, token),
+                    _ => CommitWithoutCompactionAsync(session, token),
+                }
                 : Task.FromResult<Partition?>(null);
 
             // append log entries on this thread
@@ -361,71 +362,75 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         DeletePartitions(removedHead);
         error?.Throw();
         return count;
+    }
 
-        async Task<Partition?> CommitAndCompactSequentiallyAsync()
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private async Task<Partition?> CommitAndCompactSequentiallyAsync(int session, long commitIndex, CancellationToken token)
+    {
+        Partition? removedHead;
+        await ApplyAsync(session, token).ConfigureAwait(false);
+        if (IsCompactionRequired(commitIndex))
         {
-            Partition? removedHead;
+            await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
+            removedHead = DetachPartitions(commitIndex);
+        }
+        else
+        {
+            removedHead = null;
+        }
+
+        return removedHead;
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private async Task<Partition?> CommitWithoutCompactionAsync(int session, CancellationToken token)
+    {
+        await ApplyAsync(session, token).ConfigureAwait(false);
+        return null;
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private async Task<Partition?> CommitAndCompactInParallelAsync(int session, long count, CancellationToken token)
+    {
+        var compactionIndex = Math.Min(LastAppliedEntryIndex, SnapshotInfo.Index + count);
+
+        var compactionTask = compactionIndex > 0L
+            ? ForceParallelCompactionAsync(compactionIndex, token)
+            : Task.CompletedTask;
+
+        try
+        {
             await ApplyAsync(session, token).ConfigureAwait(false);
-            if (IsCompactionRequired(commitIndex))
-            {
-                await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
-                removedHead = DetachPartitions(commitIndex);
-            }
-            else
-            {
-                removedHead = null;
-            }
-
-            return removedHead;
+        }
+        finally
+        {
+            await compactionTask.ConfigureAwait(false);
         }
 
-        async Task<Partition?> CommitWithoutCompactionAsync()
+        return DetachPartitions(compactionIndex);
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private async Task<Partition?> CommitAndCompactIncrementallyAsync(int session, CancellationToken token)
+    {
+        Partition? removedHead;
+        var compactionIndex = LastAppliedEntryIndex;
+        var compactionTask = compactionIndex > 0L
+            ? ForceIncrementalCompactionAsync(compactionIndex, token)
+            : Task.FromResult(false);
+
+        try
         {
             await ApplyAsync(session, token).ConfigureAwait(false);
-            return null;
         }
-
-        async Task<Partition?> CommitAndCompactInParallelAsync()
+        finally
         {
-            var compactionIndex = Math.Min(LastAppliedEntryIndex, SnapshotInfo.Index + count);
-
-            var compactionTask = compactionIndex > 0L
-                ? Task.Run(() => ForceParallelCompactionAsync(compactionIndex, token))
-                : Task.CompletedTask;
-
-            try
-            {
-                await ApplyAsync(session, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                await compactionTask.ConfigureAwait(false);
-            }
-
-            return DetachPartitions(compactionIndex);
+            removedHead = await compactionTask.ConfigureAwait(false)
+                ? DetachPartitions(compactionIndex)
+                : null;
         }
 
-        async Task<Partition?> CommitAndCompactIncrementallyAsync()
-        {
-            Partition? removedHead;
-            var compactionIndex = LastAppliedEntryIndex;
-            var compactionTask = compactionIndex > 0L
-                ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
-                : Task.FromResult(false);
-
-            try
-            {
-                await ApplyAsync(session, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                removedHead = await compactionTask.ConfigureAwait(false)
-                    ? DetachPartitions(compactionIndex)
-                    : null;
-            }
-
-            return removedHead;
-        }
+        return removedHead;
     }
 
     private protected sealed override ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -522,7 +527,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             LastCommittedEntryIndex = commitIndex;
 
             var compactionTask = compactionIndex > 0L
-                ? Task.Run(() => ForceParallelCompactionAsync(compactionIndex, token))
+                ? ForceParallelCompactionAsync(compactionIndex, token)
                 : Task.CompletedTask;
 
             try
@@ -563,7 +568,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             var compactionIndex = LastAppliedEntryIndex;
             LastCommittedEntryIndex = commitIndex;
             var compactionTask = compactionIndex > 0L
-                ? Task.Run(() => ForceIncrementalCompactionAsync(compactionIndex, token))
+                ? ForceIncrementalCompactionAsync(compactionIndex, token)
                 : Task.FromResult(false);
             InternalStateScope scope;
 
@@ -607,6 +612,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         UpdateSnapshotInfo(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
     }
 
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task ForceParallelCompactionAsync(long upperBoundIndex, CancellationToken token)
     {
         var builder = CreateSnapshotBuilder();
@@ -625,6 +631,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         }
     }
 
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
     private async Task<bool> ForceIncrementalCompactionAsync(long upperBoundIndex, CancellationToken token)
     {
         var session = sessionManager.Take();
