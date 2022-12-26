@@ -1,6 +1,9 @@
-﻿namespace DotNext.Net.Cluster.Consensus.Raft;
+﻿using System.Runtime.CompilerServices;
+
+namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
+using Runtime.CompilerServices;
 using Threading.Tasks;
 
 internal sealed class CandidateState<TMember> : RaftState<TMember>
@@ -89,11 +92,9 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         votingCancellation.CancelAfter(timeout);
         votingTask = EndVoting(voters.GetConsumer());
 
+        [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
         static async Task<(TMember, long, VotingResult)> VoteAsync(TMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
-            // unblock the caller
-            await Task.Yield();
-
             var lastIndex = auditTrail.LastUncommittedEntryIndex;
             var lastTerm = await auditTrail.GetTermAsync(lastIndex, token).ConfigureAwait(false);
             VotingResult result;

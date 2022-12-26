@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Membership;
+using Runtime.CompilerServices;
 using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
 using Timestamp = Diagnostics.Timestamp;
@@ -185,10 +186,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         return true;
     }
 
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         using var cancellationSource = token.LinkTo(LeadershipToken);
-        await Task.Yield(); // unblock the caller
 
         var forced = false;
         for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset())
