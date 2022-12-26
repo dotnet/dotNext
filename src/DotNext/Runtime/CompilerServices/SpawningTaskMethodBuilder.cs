@@ -232,6 +232,9 @@ public struct SpawningAsyncTaskMethodBuilder<TResult> : ISpawningAsyncTaskMethod
         internal StateMachineContainer(ref TStateMachine stateMachine)
             : base(ref stateMachine)
         {
+            // ensure that internal builder has initialized task to avoid race condition
+            // between Task returned immediately after Start and SetResult in a different thread
+            GC.KeepAlive(Builder.Task);
         }
 
         protected override bool IsCompleted => Builder.Task.IsCompleted;
@@ -344,6 +347,9 @@ public struct SpawningAsyncTaskMethodBuilder : ISpawningAsyncTaskMethodBuilder<A
         internal StateMachineContainer(ref TStateMachine stateMachine)
             : base(ref stateMachine)
         {
+            // ensure that internal builder has initialized task to avoid race condition
+            // between Task returned immediately after Start and SetResult in a different thread
+            GC.KeepAlive(Builder.Task);
         }
 
         protected override bool IsCompleted => Builder.Task.IsCompleted;
