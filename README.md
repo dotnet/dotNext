@@ -65,8 +65,13 @@ Release Date: 12-23-2022
 * Smallish performance improvements of async locks
 * Updated dependencies
 
+<a href="https://www.nuget.org/packages/dotnext.io/4.9.0">DotNext.IO 4.9.0</a>
+* Use `ValueTask` caching for hot execution paths
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.9.0">DotNext.Net.Cluster 4.9.0</a>
-* TCP/UDP Raft transport: optimized memory allocations
+* Reduced memory allocation caused by WAL and TCP/UDP transports
+* Reduced managed heap fragmentation
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.9.0">DotNext.AspNetCore.Cluster 4.9.0</a>
