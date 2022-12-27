@@ -15,7 +15,7 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
 
         protected StateMachineContainer() => context = ExecutionContext.Capture();
 
-        protected abstract void MoveNextWithoutContext();
+        protected abstract void MoveNext();
 
         protected abstract bool IsCompleted { get; }
 
@@ -29,14 +29,14 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
                 {
                     Debug.Assert(stateMachine is StateMachineContainer);
 
-                    Unsafe.As<StateMachineContainer>(stateMachine).MoveNextWithoutContext();
+                    Unsafe.As<StateMachineContainer>(stateMachine).MoveNext();
                 },
                 this);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private Action CreateAction()
-            => context is null ? MoveNextWithoutContext : MoveNextWithContext;
+            => context is null ? MoveNext : MoveNextWithContext;
 
         internal Action MoveNextAction => moveNextAction ??= CreateAction();
 
@@ -51,7 +51,7 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
         void IThreadPoolWorkItem.Execute()
         {
             if (context is null)
-                MoveNextWithoutContext();
+                MoveNext();
             else
                 MoveNextWithContext();
         }
@@ -65,7 +65,7 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
         protected StateMachineContainer(ref TStateMachine stateMachine)
             => this.stateMachine = stateMachine;
 
-        protected sealed override void MoveNextWithoutContext()
+        protected sealed override void MoveNext()
         {
             Debug.Assert(IsCompleted is false);
 
