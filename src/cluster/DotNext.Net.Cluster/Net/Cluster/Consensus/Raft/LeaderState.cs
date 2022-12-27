@@ -136,8 +136,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
     private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
-        Debug.Assert(response is { IsCompleted: true, AsyncState: TMember });
-        var member = (TMember)response.AsyncState;
+        var member = ReplicationWorkItem.GetReplicatedMember(response);
 
         try
         {

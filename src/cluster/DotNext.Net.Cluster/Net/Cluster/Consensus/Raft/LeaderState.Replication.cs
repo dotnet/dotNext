@@ -172,6 +172,83 @@ internal partial class LeaderState<TMember>
             => IDataTransferObject.Empty.TryGetMemory(out memory);
     }
 
+    private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
+    {
+        private readonly long currentIndex;
+        private CancellationToken token;
+        private IAuditTrail<IRaftLogEntry>? auditTrail;
+        private Replicator? replicator;
+        private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
+
+        internal ReplicationWorkItem(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
+            : base(replicator.Member, TaskCreationOptions.RunContinuationsAsynchronously)
+        {
+            Debug.Assert(replicator is not null);
+            Debug.Assert(auditTrail is not null);
+
+            this.currentIndex = currentIndex;
+            this.auditTrail = auditTrail;
+            this.token = token;
+            this.replicator = replicator;
+        }
+
+        internal static TMember GetReplicatedMember(Task<Result<bool>> task)
+        {
+            Debug.Assert(task is { IsCompleted: true, AsyncState: TMember });
+
+            return (TMember)task.AsyncState;
+        }
+
+        private void OnCompleted() => Complete(ref awaiter);
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            var replicator = this.replicator;
+            var auditTrail = this.auditTrail;
+            var token = this.token;
+
+            Debug.Assert(replicator is not null);
+            Debug.Assert(auditTrail is not null);
+
+            // help GC
+            this.replicator = null;
+            this.auditTrail = null;
+            this.token = default;
+
+            var awaiter = replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
+
+            if (awaiter.IsCompleted)
+            {
+                Complete(ref awaiter);
+            }
+            else
+            {
+                this.awaiter = awaiter;
+                awaiter.UnsafeOnCompleted(OnCompleted);
+            }
+        }
+
+        private void Complete(ref ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter)
+        {
+            try
+            {
+                SetResult(awaiter.GetResult());
+            }
+            catch (OperationCanceledException e)
+            {
+                SetCanceled(e.CancellationToken);
+            }
+            catch (Exception e)
+            {
+                SetException(e);
+            }
+            finally
+            {
+                awaiter = default; // help GC
+            }
+        }
+    }
+
     private sealed class ReplicationCallback : TaskCompletionSource
     {
         private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent;
@@ -263,15 +340,8 @@ internal partial class LeaderState<TMember>
 
     private static Task<Result<bool>> QueueReplication(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
     {
-        return AsyncDelegate.EnqueueToThreadPool(
-            static (ref (Replicator, IAuditTrail<IRaftLogEntry>, long) args, CancellationToken token) =>
-            {
-                return args.Item1.ReplicateAsync(args.Item2, args.Item3, token);
-            },
-            (replicator, auditTrail, currentIndex),
-            continueOnCapturedContext: false,
-            runContinuationsAsynchronously: false,
-            state: replicator.Member,
-            token: token);
+        var workItem = new ReplicationWorkItem(replicator, auditTrail, currentIndex, token);
+        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
+        return workItem.Task;
     }
 }
