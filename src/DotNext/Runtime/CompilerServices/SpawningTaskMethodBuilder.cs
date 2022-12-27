@@ -4,10 +4,12 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
-internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
+// TODO: Mark this type as file-local in C# 11
+[StructLayout(LayoutKind.Auto)]
+internal struct SpawningAsyncTaskMethodBuilderCore<TAsyncTaskBuilder>
     where TAsyncTaskBuilder : struct
 {
-    protected abstract class StateMachineContainer : IThreadPoolWorkItem
+    internal abstract class StateMachineContainer : IThreadPoolWorkItem
     {
         internal TAsyncTaskBuilder Builder;
         private ExecutionContext? context;
@@ -57,19 +59,17 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
         }
     }
 
-    protected abstract class StateMachineContainer<TStateMachine> : StateMachineContainer
+    internal abstract class StateMachineContainer<TStateMachine> : StateMachineContainer
         where TStateMachine : notnull, IAsyncStateMachine
     {
-        private TStateMachine stateMachine;
-
-        protected StateMachineContainer(ref TStateMachine stateMachine)
-            => this.stateMachine = stateMachine;
+        internal TStateMachine? StateMachine;
 
         protected sealed override void MoveNext()
         {
             Debug.Assert(IsCompleted is false);
+            Debug.Assert(StateMachine is not null);
 
-            stateMachine.MoveNext();
+            StateMachine.MoveNext();
 
             if (IsCompleted)
                 Cleanup();
@@ -77,39 +77,65 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
 
         private new void Cleanup()
         {
-            stateMachine = default!;
+            StateMachine = default;
             base.Cleanup();
         }
     }
 
-    protected StateMachineContainer<TStateMachine> GetContainer<TStateMachine>(ref TStateMachine stateMachine)
-        where TStateMachine : notnull, IAsyncStateMachine;
+    private StateMachineContainer? container;
+
+    internal readonly ref TAsyncTaskBuilder Builder
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get
+        {
+            Debug.Assert(container is not null);
+
+            return ref container.Builder;
+        }
+    }
+
+    private TContainer GetContainer<TStateMachine, TContainer>(ref TStateMachine stateMachine)
+        where TStateMachine : notnull, IAsyncStateMachine
+        where TContainer : StateMachineContainer<TStateMachine>, new()
+    {
+        if (container is not TContainer result)
+        {
+            result = new();
+
+            // modify builder first before storing state machine
+            container = result;
+            result.StateMachine = stateMachine;
+        }
+
+        return result;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static void AwaitOnCompleted<TBuilder, TAwaiter, TStateMachine>(ref TBuilder builder, ref TAwaiter awaiter, ref TStateMachine stateMachine)
-        where TBuilder : struct, ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
+    internal void AwaitOnCompleted<TAwaiter, TStateMachine, TContainer>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
         where TAwaiter : notnull, INotifyCompletion
         where TStateMachine : notnull, IAsyncStateMachine
-        => awaiter.OnCompleted(builder.GetContainer(ref stateMachine).MoveNextAction);
+        where TContainer : StateMachineContainer<TStateMachine>, new()
+        => awaiter.OnCompleted(GetContainer<TStateMachine, TContainer>(ref stateMachine).MoveNextAction);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static void AwaitUnsafeOnCompleted<TBuilder, TAwaiter, TStateMachine>(ref TBuilder builder, ref TAwaiter awaiter, ref TStateMachine stateMachine)
-        where TBuilder : struct, ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
+    internal void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine, TContainer>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
         where TAwaiter : notnull, ICriticalNotifyCompletion
         where TStateMachine : notnull, IAsyncStateMachine
-        => awaiter.UnsafeOnCompleted(builder.GetContainer(ref stateMachine).MoveNextAction);
+        where TContainer : StateMachineContainer<TStateMachine>, new()
+        => awaiter.UnsafeOnCompleted(GetContainer<TStateMachine, TContainer>(ref stateMachine).MoveNextAction);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static void Start<TBuilder, TStateMachine>(ref TBuilder builder, ref TStateMachine stateMachine)
-        where TBuilder : struct, ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
+    internal void Start<TStateMachine, TContainer>(ref TStateMachine stateMachine)
         where TStateMachine : notnull, IAsyncStateMachine
+        where TContainer : StateMachineContainer<TStateMachine>, new()
     {
-        var container = builder.GetContainer(ref stateMachine);
+        IThreadPoolWorkItem workItem = GetContainer<TStateMachine, TContainer>(ref stateMachine);
         var scheduler = TaskScheduler.Current;
 
         if (ReferenceEquals(scheduler, TaskScheduler.Default))
         {
-            ThreadPool.UnsafeQueueUserWorkItem(container, preferLocal: false);
+            ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
         }
         else
         {
@@ -119,7 +145,7 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
                     Debug.Assert(workItem is IThreadPoolWorkItem);
                     Unsafe.As<IThreadPoolWorkItem>(workItem).Execute();
                 },
-                container,
+                workItem,
                 CancellationToken.None,
                 TaskCreationOptions.PreferFairness,
                 scheduler);
@@ -137,9 +163,9 @@ internal interface ISpawningAsyncTaskMethodBuilder<TAsyncTaskBuilder>
 /// </remarks>
 /// <typeparam name="TResult">The type of the value to be returned by asynchronous method.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SpawningAsyncTaskMethodBuilder<TResult> : ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>
+public struct SpawningAsyncTaskMethodBuilder<TResult>
 {
-    private ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>.StateMachineContainer? container;
+    private SpawningAsyncTaskMethodBuilderCore<AsyncTaskMethodBuilder<TResult>> core;
 
     /// <summary>
     /// Initializes a new builder.
@@ -154,7 +180,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult> : ISpawningAsyncTaskMethod
     /// <param name="stateMachine">The state machine instance, passed by reference.</param>
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : notnull, IAsyncStateMachine
-        => ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>.Start(ref this, ref stateMachine);
+        => core.Start<TStateMachine, StateMachineContainer<TStateMachine>>(ref stateMachine);
 
     /// <summary>
     /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
@@ -166,7 +192,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult> : ISpawningAsyncTaskMethod
     public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
         where TAwaiter : notnull, INotifyCompletion
         where TStateMachine : notnull, IAsyncStateMachine
-        => ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>.AwaitOnCompleted(ref this, ref awaiter, ref stateMachine);
+        => core.Start<TStateMachine, StateMachineContainer<TStateMachine>>(ref stateMachine);
 
     /// <summary>
     /// Schedules the specified state machine to be pushed forward when the specified awaiter completes;
@@ -179,7 +205,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult> : ISpawningAsyncTaskMethod
     public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
         where TAwaiter : notnull, ICriticalNotifyCompletion
         where TStateMachine : notnull, IAsyncStateMachine
-        => ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>.AwaitUnsafeOnCompleted(ref this, ref awaiter, ref stateMachine);
+        => core.Start<TStateMachine, StateMachineContainer<TStateMachine>>(ref stateMachine);
 
     /// <summary>
     /// Associates the builder with the state machine it represents.
@@ -190,50 +216,29 @@ public struct SpawningAsyncTaskMethodBuilder<TResult> : ISpawningAsyncTaskMethod
         // This method is not used by C# compiler
     }
 
-    /// <inheritdoc />
-    ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>.StateMachineContainer<TStateMachine> ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>.GetContainer<TStateMachine>(ref TStateMachine stateMachine)
-    {
-        if (container is not StateMachineContainer<TStateMachine> result)
-        {
-            result = new(ref stateMachine);
-            container = result;
-        }
-
-        return result;
-    }
-
     /// <summary>
     /// Completes asynchronous operation successfully.
     /// </summary>
     /// <param name="result">The result to be returned by the asynchronous method associated with this builder.</param>
     public void SetResult(TResult result)
-        => container?.Builder.SetResult(result);
+        => core.Builder.SetResult(result);
 
     /// <summary>
     /// Completes asynchronous operation unsuccessfully.
     /// </summary>
     /// <param name="e">The exception to be thrown by the asynchronous method associated with this builder.</param>
     public void SetException(Exception e)
-        => container?.Builder.SetException(e);
+        => core.Builder.SetException(e);
 
     /// <summary>
     /// Gets the task representing the builder's asynchronous operation.
     /// </summary>
-    public Task<TResult> Task
-    {
-        get
-        {
-            Debug.Assert(container is not null);
+    public Task<TResult> Task => core.Builder.Task;
 
-            return container.Builder.Task;
-        }
-    }
-
-    private sealed class StateMachineContainer<TStateMachine> : ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder<TResult>>.StateMachineContainer<TStateMachine>
+    private sealed class StateMachineContainer<TStateMachine> : SpawningAsyncTaskMethodBuilderCore<AsyncTaskMethodBuilder<TResult>>.StateMachineContainer<TStateMachine>
         where TStateMachine : notnull, IAsyncStateMachine
     {
-        internal StateMachineContainer(ref TStateMachine stateMachine)
-            : base(ref stateMachine)
+        public StateMachineContainer()
         {
             // ensure that internal builder has initialized task to avoid race condition
             // between Task returned immediately after Start and SetResult in a different thread
@@ -253,9 +258,9 @@ public struct SpawningAsyncTaskMethodBuilder<TResult> : ISpawningAsyncTaskMethod
 /// less memory.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public struct SpawningAsyncTaskMethodBuilder : ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>
+public struct SpawningAsyncTaskMethodBuilder
 {
-    private ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>.StateMachineContainer? container;
+    private SpawningAsyncTaskMethodBuilderCore<AsyncTaskMethodBuilder> core;
 
     /// <summary>
     /// Initializes a new builder.
@@ -270,7 +275,7 @@ public struct SpawningAsyncTaskMethodBuilder : ISpawningAsyncTaskMethodBuilder<A
     /// <param name="stateMachine">The state machine instance, passed by reference.</param>
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : notnull, IAsyncStateMachine
-        => ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>.Start(ref this, ref stateMachine);
+        => core.Start<TStateMachine, StateMachineContainer<TStateMachine>>(ref stateMachine);
 
     /// <summary>
     /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
@@ -282,7 +287,7 @@ public struct SpawningAsyncTaskMethodBuilder : ISpawningAsyncTaskMethodBuilder<A
     public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
         where TAwaiter : notnull, INotifyCompletion
         where TStateMachine : notnull, IAsyncStateMachine
-        => ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>.AwaitOnCompleted(ref this, ref awaiter, ref stateMachine);
+        => core.AwaitOnCompleted<TAwaiter, TStateMachine, StateMachineContainer<TStateMachine>>(ref awaiter, ref stateMachine);
 
     /// <summary>
     /// Schedules the specified state machine to be pushed forward when the specified awaiter completes;
@@ -295,7 +300,7 @@ public struct SpawningAsyncTaskMethodBuilder : ISpawningAsyncTaskMethodBuilder<A
     public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
         where TAwaiter : notnull, ICriticalNotifyCompletion
         where TStateMachine : notnull, IAsyncStateMachine
-        => ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>.AwaitUnsafeOnCompleted(ref this, ref awaiter, ref stateMachine);
+        => core.AwaitUnsafeOnCompleted<TAwaiter, TStateMachine, StateMachineContainer<TStateMachine>>(ref awaiter, ref stateMachine);
 
     /// <summary>
     /// Associates the builder with the state machine it represents.
@@ -306,49 +311,28 @@ public struct SpawningAsyncTaskMethodBuilder : ISpawningAsyncTaskMethodBuilder<A
         // This method is not used by C# compiler
     }
 
-    /// <inheritdoc />
-    ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>.StateMachineContainer<TStateMachine> ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>.GetContainer<TStateMachine>(ref TStateMachine stateMachine)
-    {
-        if (container is not StateMachineContainer<TStateMachine> result)
-        {
-            result = new(ref stateMachine);
-            container = result;
-        }
-
-        return result;
-    }
-
     /// <summary>
     /// Completes asynchronous operation successfully.
     /// </summary>
     public void SetResult()
-        => container?.Builder.SetResult();
+        => core.Builder.SetResult();
 
     /// <summary>
     /// Completes asynchronous operation unsuccessfully.
     /// </summary>
     /// <param name="e">The exception to be thrown by the asynchronous method associated with this builder.</param>
     public void SetException(Exception e)
-        => container?.Builder.SetException(e);
+        => core.Builder.SetException(e);
 
     /// <summary>
     /// Gets the task representing the builder's asynchronous operation.
     /// </summary>
-    public Task Task
-    {
-        get
-        {
-            Debug.Assert(container is not null);
+    public Task Task => core.Builder.Task;
 
-            return container.Builder.Task;
-        }
-    }
-
-    private sealed class StateMachineContainer<TStateMachine> : ISpawningAsyncTaskMethodBuilder<AsyncTaskMethodBuilder>.StateMachineContainer<TStateMachine>
+    private sealed class StateMachineContainer<TStateMachine> : SpawningAsyncTaskMethodBuilderCore<AsyncTaskMethodBuilder>.StateMachineContainer<TStateMachine>
         where TStateMachine : notnull, IAsyncStateMachine
     {
-        internal StateMachineContainer(ref TStateMachine stateMachine)
-            : base(ref stateMachine)
+        public StateMachineContainer()
         {
             // ensure that internal builder has initialized task to avoid race condition
             // between Task returned immediately after Start and SetResult in a different thread
