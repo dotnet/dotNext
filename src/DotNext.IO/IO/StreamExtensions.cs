@@ -783,13 +783,14 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<MemoryOwner<char>> ReadStringAsync(this Stream stream, int length, Encoding encoding, MemoryAllocator<char>? allocator, CancellationToken token = default)
     {
         if (length < 0)
             throw new ArgumentOutOfRangeException(nameof(length));
 
         MemoryOwner<char> result;
-        if (length == 0)
+        if (length is 0)
         {
             result = default;
         }
@@ -911,12 +912,13 @@ public static partial class StreamExtensions
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public static async ValueTask ReadBlockAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
     {
         for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
         {
             bytesRead = await stream.ReadAsync(output.Slice(offset, size), token).ConfigureAwait(false);
-            if (bytesRead == 0)
+            if (bytesRead is 0)
                 throw new EndOfStreamException();
         }
     }
@@ -932,6 +934,7 @@ public static partial class StreamExtensions
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
@@ -959,6 +962,7 @@ public static partial class StreamExtensions
     /// <returns>The value deserialized from the stream.</returns>
     /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
         where T : unmanaged
     {
@@ -966,6 +970,7 @@ public static partial class StreamExtensions
         return MemoryMarshal.Read<T>(buffer.Span);
     }
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     internal static async ValueTask<TOutput> ReadAsync<TInput, TOutput, TConverter>(this Stream stream, TConverter converter, Memory<byte> buffer, CancellationToken token = default)
         where TInput : unmanaged
         where TOutput : unmanaged
@@ -984,6 +989,7 @@ public static partial class StreamExtensions
     /// <returns>The value deserialized from the stream.</returns>
     /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<T> ReadAsync<T>(this Stream stream, CancellationToken token = default)
         where T : unmanaged
     {
@@ -1242,6 +1248,7 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="minimumSize"/> is greater than the length of <paramref name="buffer"/>.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<int> ReadAtLeastAsync(this Stream stream, int minimumSize, Memory<byte> buffer, CancellationToken token = default)
     {
         if ((uint)minimumSize > (uint)buffer.Length)
