@@ -934,7 +934,7 @@ public static partial class StreamExtensions
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);

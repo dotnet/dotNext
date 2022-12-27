@@ -56,6 +56,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
     private protected sealed override long LastTerm => lastTerm.VolatileRead();
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<long?> ApplyAsync(int sessionId, long startIndex, CancellationToken token)
     {
         var commitIndex = LastCommittedEntryIndex;
@@ -97,6 +98,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     private ValueTask<long?> ApplyAsync(int sessionId, CancellationToken token)
         => ApplyAsync(sessionId, LastAppliedEntryIndex + 1L, token);
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private protected sealed override async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
     {
         Partition? removedHead;

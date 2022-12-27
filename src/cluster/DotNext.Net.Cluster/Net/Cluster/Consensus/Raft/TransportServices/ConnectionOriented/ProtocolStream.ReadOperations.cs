@@ -49,6 +49,7 @@ internal partial class ProtocolStream
         bufferEnd += await ReadFromTransportAsync(count, buffer, token).ConfigureAwait(false);
     }
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<T> ReadAsync<T>(int count, IntPtr decoder, CancellationToken token)
     {
         await BufferizeAsync(count, token).ConfigureAwait(false);

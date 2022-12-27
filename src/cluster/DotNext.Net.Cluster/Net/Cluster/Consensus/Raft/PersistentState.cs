@@ -254,6 +254,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
 
     // unbuffered read
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<TResult> ReadUnbufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
     {
         await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
@@ -270,6 +271,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     // buffered read
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<TResult> ReadBufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
     {
         Debug.Assert(bufferingConsumer is not null);
@@ -335,11 +337,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
         else if (supplier.RemainingCount is 1L)
         {
-            result = AppendCachedAsync(writeThrough: true);
+            result = AppendCachedAsync(supplier, startIndex, writeThrough: true, skipCommitted, token);
         }
         else if ((supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) != 0)
         {
-            result = AppendCachedAsync(writeThrough: false);
+            result = AppendCachedAsync(supplier, startIndex, writeThrough: false, skipCommitted, token);
         }
         else
         {
@@ -351,43 +353,45 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         writeCounter?.Invoke(supplier.RemainingCount);
         return result;
+    }
 
-        async ValueTask AppendCachedAsync(bool writeThrough)
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask AppendCachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool writeThrough, bool skipCommitted, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
+        for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
-            for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
+            var currentEntry = supplier.Current;
+
+            if (currentEntry.IsSnapshot)
+                throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
+
+            if (startIndex > state.CommitIndex)
             {
-                var currentEntry = supplier.Current;
+                GetOrCreatePartition(startIndex, ref partition);
 
-                if (currentEntry.IsSnapshot)
-                    throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
-
-                if (startIndex > state.CommitIndex)
+                var cachedEntry = new CachedLogEntry
                 {
-                    GetOrCreatePartition(startIndex, ref partition);
+                    Content = await currentEntry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false),
+                    Term = currentEntry.Term,
+                    CommandId = currentEntry.CommandId,
+                    Timestamp = currentEntry.Timestamp,
+                    PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.SkipBuffer : CachedLogEntryPersistenceMode.CopyToBuffer,
+                };
 
-                    var cachedEntry = new CachedLogEntry
-                    {
-                        Content = await currentEntry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false),
-                        Term = currentEntry.Term,
-                        CommandId = currentEntry.CommandId,
-                        Timestamp = currentEntry.Timestamp,
-                        PersistenceMode = writeThrough ? CachedLogEntryPersistenceMode.SkipBuffer : CachedLogEntryPersistenceMode.CopyToBuffer,
-                    };
+                await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);
 
-                    await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);
-
-                    // flush if last entry is added to the partition or the last entry is consumed from the iterator
-                    if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
-                        await partition.FlushAsync(token).ConfigureAwait(false);
-                }
-                else if (!skipCommitted)
-                {
-                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-                }
+                // flush if last entry is added to the partition or the last entry is consumed from the iterator
+                if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                    await partition.FlushAsync(token).ConfigureAwait(false);
             }
-
-            state.LastIndex = startIndex - 1L;
+            else if (!skipCommitted)
+            {
+                throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+            }
         }
+
+        state.LastIndex = startIndex - 1L;
     }
 
     private async Task AppendUncachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
