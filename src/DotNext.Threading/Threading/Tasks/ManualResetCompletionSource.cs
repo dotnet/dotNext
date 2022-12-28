@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
 
 namespace DotNext.Threading.Tasks;
@@ -425,4 +425,9 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
         return result;
     }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private protected static void InvalidSourceStateDetected()
+        => throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 }
