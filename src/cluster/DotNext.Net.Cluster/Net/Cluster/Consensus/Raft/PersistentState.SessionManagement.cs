@@ -77,7 +77,7 @@ public partial class PersistentState
 
             // slow path - enumerate over all slots in search of available ID
             repeat_search:
-            for (sessionId = 0; sessionId < tokens.Length; sessionId++)
+            for (sessionId = 0U; sessionId < (uint)tokens.Length; sessionId++)
             {
                 if (Unsafe.Add(ref first, sessionId).TrueToFalse())
                     goto exit;
