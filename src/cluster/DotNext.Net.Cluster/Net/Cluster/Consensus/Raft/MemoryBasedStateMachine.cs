@@ -184,60 +184,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         }
 
         return result;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        long ComputeUpperBoundIndex(long count)
-        {
-            count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
-            return checked((recordsPerPartition * count) + snapshotIndex);
-        }
-
-        async ValueTask ForceBackgroundCompactionAsync(long count, CancellationToken token)
-        {
-            Partition? removedHead;
-
-            using (var builder = CreateSnapshotBuilder())
-            {
-                var upperBoundIndex = 0L;
-
-                // initialize builder with log entries (read-only)
-                await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
-                var session = sessionManager.Take();
-                try
-                {
-                    // check compaction range again because snapshot index can be modified by snapshot installation method
-                    upperBoundIndex = ComputeUpperBoundIndex(count);
-                    if (!IsCompactionRequired(upperBoundIndex))
-                        return;
-
-                    // construct snapshot (read-only operation)
-                    await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
-                }
-                finally
-                {
-                    sessionManager.Return(session);
-                    syncRoot.Release(LockType.WeakReadLock);
-                }
-
-                // rewrite snapshot as well as remove log entries (write access required)
-                await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
-                try
-                {
-                    // Persist snapshot (cannot be canceled to avoid inconsistency)
-                    UpdateSnapshotInfo(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
-                    await PersistInternalStateAsync(InternalStateScope.Snapshot).ConfigureAwait(false);
-
-                    // Remove squashed partitions
-                    removedHead = DetachPartitions(upperBoundIndex);
-                }
-                finally
-                {
-                    syncRoot.Release(LockType.CompactionLock);
-                }
-            }
-
-            DeletePartitions(removedHead);
-        }
     }
 
     private protected sealed override async ValueTask InstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
@@ -663,6 +609,60 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         }
 
         return false;
+    }
+
+    private async ValueTask ForceBackgroundCompactionAsync(long count, CancellationToken token)
+    {
+        Partition? removedHead;
+
+        using (var builder = CreateSnapshotBuilder())
+        {
+            var upperBoundIndex = 0L;
+
+            // initialize builder with log entries (read-only)
+            await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
+            var session = sessionManager.Take();
+            try
+            {
+                // check compaction range again because snapshot index can be modified by snapshot installation method
+                upperBoundIndex = ComputeUpperBoundIndex(count);
+                if (!IsCompactionRequired(upperBoundIndex))
+                    return;
+
+                // construct snapshot (read-only operation)
+                await BuildSnapshotAsync(session, upperBoundIndex, builder, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                sessionManager.Return(session);
+                syncRoot.Release(LockType.WeakReadLock);
+            }
+
+            // rewrite snapshot as well as remove log entries (write access required)
+            await syncRoot.AcquireAsync(LockType.CompactionLock, token).ConfigureAwait(false);
+            try
+            {
+                // Persist snapshot (cannot be canceled to avoid inconsistency)
+                UpdateSnapshotInfo(await builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
+                await PersistInternalStateAsync(InternalStateScope.Snapshot).ConfigureAwait(false);
+
+                // Remove squashed partitions
+                removedHead = DetachPartitions(upperBoundIndex);
+            }
+            finally
+            {
+                syncRoot.Release(LockType.CompactionLock);
+            }
+        }
+
+        DeletePartitions(removedHead);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        long ComputeUpperBoundIndex(long count)
+        {
+            count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
+            return checked((recordsPerPartition * count) + snapshotIndex);
+        }
     }
 
     /// <summary>
