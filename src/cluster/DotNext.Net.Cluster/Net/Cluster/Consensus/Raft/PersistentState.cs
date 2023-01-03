@@ -468,13 +468,15 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             ? CommitAsync(new long?(commitIndex), token)
             : commitIndex < startIndex && parallelIO
             ? AppendAndCommitAsync(entries, startIndex, skipCommitted, commitIndex, token)
-            : AppendAndCommitSlowAsync();
+            : AppendAndCommitSlowAsync(entries, startIndex, skipCommitted, commitIndex, token);
+    }
 
-        async ValueTask<long> AppendAndCommitSlowAsync()
-        {
-            await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
-            return await CommitAsync(new long?(commitIndex), token).ConfigureAwait(false);
-        }
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<long> AppendAndCommitSlowAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+    {
+        await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+        return await CommitAsync(new long?(commitIndex), token).ConfigureAwait(false);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
