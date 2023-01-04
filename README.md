@@ -63,6 +63,7 @@ Release Date: 12-23-2022
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.9.0">DotNext.Threading 4.9.0</a>
 * Smallish performance improvements of async locks
+* Fixed upgrade lock acquisition using `AsyncLock` value type
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.9.0">DotNext.IO 4.9.0</a>
