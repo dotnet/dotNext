@@ -204,11 +204,14 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
             case Type.Exclusive:
                 task = As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token);
                 break;
-            case Type.ReadLock or Type.Upgrade:
+            case Type.ReadLock:
                 task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token);
                 break;
             case Type.WriteLock:
                 task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token);
+                break;
+            case Type.Upgrade:
+                task = As<AsyncReaderWriterLock>(lockedObject).UpgradeToWriteLockAsync(timeout, token);
                 break;
             case Type.Semaphore:
                 task = CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token));
