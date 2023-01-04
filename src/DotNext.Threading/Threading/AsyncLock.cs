@@ -76,8 +76,7 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
                 case Type.Semaphore:
                     As<SemaphoreSlim>(lockedObject).Release(1);
                     break;
-                case Type.Strong:
-                case Type.Weak:
+                case Type.Strong or Type.Weak:
                     As<AsyncSharedLock>(lockedObject).Release();
                     break;
             }
@@ -205,8 +204,7 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
             case Type.Exclusive:
                 task = As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token);
                 break;
-            case Type.ReadLock:
-            case Type.Upgrade:
+            case Type.ReadLock or Type.Upgrade:
                 task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token);
                 break;
             case Type.WriteLock:
