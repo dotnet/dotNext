@@ -14,16 +14,14 @@ public static class Func
         internal static readonly Func<TInput, TOutput> Value = Converter.Identity<TInput, TOutput>;
     }
 
-    private static class IsNullFunc<T>
-        where T : class
+    private static class IsNullFunc
     {
-        internal static readonly Func<T, bool> Value = ObjectExtensions.IsNull;
+        internal static readonly Func<object?, bool> Value = ObjectExtensions.IsNull;
     }
 
-    private static class IsNotNullFunc<T>
-        where T : class
+    private static class IsNotNullFunc
     {
-        internal static readonly Func<T, bool> Value = ObjectExtensions.IsNotNull;
+        internal static readonly Func<object?, bool> Value = ObjectExtensions.IsNotNull;
     }
 
     private static class TypeChecker<T>
@@ -48,7 +46,7 @@ public static class Func
     /// </remarks>
     public static Func<T, bool> IsNull<T>()
         where T : class
-        => IsNullFunc<T>.Value;
+        => IsNullFunc.Value;
 
     /// <summary>
     /// Returns predicate checking that input argument
@@ -61,7 +59,7 @@ public static class Func
     /// </remarks>
     public static Func<T, bool> IsNotNull<T>()
         where T : class
-        => IsNotNullFunc<T>.Value;
+        => IsNotNullFunc.Value;
 
     /// <summary>
     /// The function which returns input argument
