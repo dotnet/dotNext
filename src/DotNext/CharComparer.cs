@@ -36,7 +36,7 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
     /// <param name="comparisonType">The comparison type.</param>
     /// <returns><see langword="true"/> if both characters are equal; otherwise, <see langword="false"/>.</returns>
     public static bool Equals(char x, char y, StringComparison comparisonType)
-        => MemoryExtensions.Equals(CreateReadOnlySpan(ref x, 1), CreateReadOnlySpan(ref y, 1), comparisonType);
+        => CreateReadOnlySpan(ref x, 1).Equals(CreateReadOnlySpan(ref y, 1), comparisonType);
 
     /// <summary>
     /// Compares two characters and returns an indication of their relative sort order.
@@ -54,7 +54,7 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
     /// <param name="comparisonType">The comparison type.</param>
     /// <returns>A number indicating relative sort order of the characters.</returns>
     public static int Compare(char x, char y, StringComparison comparisonType)
-        => MemoryExtensions.CompareTo(CreateReadOnlySpan(ref x, 1), CreateReadOnlySpan(ref y, 1), comparisonType);
+        => CreateReadOnlySpan(ref x, 1).CompareTo(CreateReadOnlySpan(ref y, 1), comparisonType);
 
     /// <summary>
     /// Gets the hash code for the specified character.
@@ -70,7 +70,7 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
     /// <param name="comparisonType">The comparison type.</param>
     /// <returns>A hash code of the character.</returns>
     public static int GetHashCode(char ch, StringComparison comparisonType)
-        => string.GetHashCode(CreateSpan(ref ch, 1), comparisonType);
+        => string.GetHashCode(CreateReadOnlySpan(ref ch, 1), comparisonType);
 
     /// <summary>
     /// Converts <see cref="StringComparison"/> to <see cref="CharComparer"/>.
