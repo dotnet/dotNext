@@ -298,21 +298,6 @@ public partial class RaftCluster
         public sealed override IPEndPoint HostEndPoint { get; }
 
         /// <summary>
-        /// Gets the address of the local member visible to other members.
-        /// </summary>
-        /// <remarks>
-        /// This property is useful when local member hosted in a container (Windows, LXC or Docker)
-        /// because <see cref="HostEndPoint"/> may return <see cref="IPAddress.Any"/> or
-        /// <see cref="IPAddress.IPv6Any"/>.
-        /// </remarks>
-        [AllowNull]
-        public new IPEndPoint PublicEndPoint
-        {
-            get => base.PublicEndPoint as IPEndPoint ?? HostEndPoint;
-            set => base.PublicEndPoint = value;
-        }
-
-        /// <summary>
         /// Gets or sets the maximum number of parallel requests that can be handled simultaneously.
         /// </summary>
         /// <remarks>
