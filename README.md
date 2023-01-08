@@ -73,6 +73,7 @@ Release Date: 12-23-2022
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.9.0">DotNext.Net.Cluster 4.9.0</a>
 * Reduced memory allocation caused by WAL and TCP/UDP transports
 * Reduced managed heap fragmentation
+* Added support of [DNS](https://learn.microsoft.com/en-us/dotnet/api/system.net.dnsendpoint) and [Unix Domain Socket](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.unixdomainsocketendpoint) addresses of cluster nodes for better compatibility with containers
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.9.0">DotNext.AspNetCore.Cluster 4.9.0</a>
