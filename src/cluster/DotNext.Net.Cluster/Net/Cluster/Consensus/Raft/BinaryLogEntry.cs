@@ -61,7 +61,7 @@ public struct BinaryLogEntry<T> : IBinaryLogEntry
     readonly long? IDataTransferObject.Length => T.Size;
 
     /// <inheritdoc />
-    readonly MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
     {
         var buffer = allocator.Invoke(T.Size, exactSize: true);
         var writer = new SpanWriter<byte>(buffer.Span);
