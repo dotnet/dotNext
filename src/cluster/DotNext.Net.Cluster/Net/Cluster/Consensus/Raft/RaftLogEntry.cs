@@ -12,33 +12,27 @@ using IO.Log;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct RaftLogEntry : IBinaryLogEntry
 {
-    private readonly long term;
     private readonly ReadOnlyMemory<byte> content;
-    private readonly int? commandId;
 
     /// <summary>
     /// Initializes a new Raft log entry.
     /// </summary>
     public RaftLogEntry()
     {
-        Timestamp = DateTimeOffset.UtcNow;
-        content = default;
-        term = default;
-        commandId = default;
     }
 
     /// <summary>
     /// Gets the timestamp of this log entry.
     /// </summary>
-    public DateTimeOffset Timestamp { get; }
+    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets Term value associated with this log entry.
     /// </summary>
     public long Term
     {
-        get => term;
-        init => term = value;
+        get;
+        init;
     }
 
     /// <summary>
@@ -55,8 +49,8 @@ public readonly struct RaftLogEntry : IBinaryLogEntry
     /// </summary>
     public int? CommandId
     {
-        get => commandId;
-        init => commandId = value;
+        get;
+        init;
     }
 
     /// <inheritdoc />

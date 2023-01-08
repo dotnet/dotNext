@@ -16,18 +16,11 @@ using IO.Log;
 public struct BinaryLogEntry<T> : IBinaryLogEntry
     where T : struct, IBinaryFormattable<T>
 {
-    private readonly long term;
-    private readonly int? commandId;
-
     /// <summary>
     /// Initializes a new binary log entry.
     /// </summary>
     public BinaryLogEntry()
     {
-        Timestamp = DateTimeOffset.UtcNow;
-        Content = default;
-        term = default;
-        commandId = default;
     }
 
     /// <summary>
@@ -38,15 +31,15 @@ public struct BinaryLogEntry<T> : IBinaryLogEntry
     /// <summary>
     /// Gets the timestamp of this log entry.
     /// </summary>
-    public readonly DateTimeOffset Timestamp { get; }
+    public readonly DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets Term value associated with this log entry.
     /// </summary>
     public long Term
     {
-        readonly get => term;
-        init => term = value;
+        readonly get;
+        init;
     }
 
     /// <summary>
@@ -54,8 +47,8 @@ public struct BinaryLogEntry<T> : IBinaryLogEntry
     /// </summary>
     public int? CommandId
     {
-        readonly get => commandId;
-        init => commandId = value;
+        readonly get;
+        init;
     }
 
     /// <inheritdoc />
