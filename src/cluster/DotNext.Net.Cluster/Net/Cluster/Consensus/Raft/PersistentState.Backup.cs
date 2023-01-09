@@ -24,12 +24,21 @@ public partial class PersistentState
             {
                 var entry = archive.CreateEntry(file.Name, backupCompression);
                 entry.LastWriteTime = file.LastWriteTime;
-                var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, true);
-                var destination = entry.Open();
-                await using (source.ConfigureAwait(false))
-                await using (destination.ConfigureAwait(false))
+                FileStream? source = null;
+                Stream? destination = null;
+                try
                 {
+                    source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, useAsync: true);
+                    destination = entry.Open();
                     await source.CopyToAsync(destination, token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    if (source is not null)
+                        await source.DisposeAsync().ConfigureAwait(false);
+
+                    if (destination is not null)
+                        await destination.DisposeAsync().ConfigureAwait(false);
                 }
             }
 
