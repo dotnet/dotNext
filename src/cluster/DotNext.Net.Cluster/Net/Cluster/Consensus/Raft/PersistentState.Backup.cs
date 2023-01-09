@@ -1,6 +1,9 @@
 using System.IO.Compression;
+using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
+
+using FileReader = IO.FileReader;
 
 public partial class PersistentState
 {
@@ -19,23 +22,25 @@ public partial class PersistentState
         await syncRoot.AcquireAsync(LockType.StrongReadLock, token).ConfigureAwait(false);
         try
         {
-            archive = new(output, ZipArchiveMode.Create, true);
+            archive = new(output, ZipArchiveMode.Create, leaveOpen: true);
             foreach (var file in Location.EnumerateFiles())
             {
                 var entry = archive.CreateEntry(file.Name, backupCompression);
                 entry.LastWriteTime = file.LastWriteTime;
-                FileStream? source = null;
+                SafeFileHandle? sourceHandle = null;
+                FileReader? source = null;
                 Stream? destination = null;
                 try
                 {
-                    source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, useAsync: true);
+                    sourceHandle = File.OpenHandle(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.Asynchronous | FileOptions.SequentialScan);
+                    source = new(sourceHandle, bufferSize: 8096);
                     destination = entry.Open();
                     await source.CopyToAsync(destination, token).ConfigureAwait(false);
                 }
                 finally
                 {
-                    if (source is not null)
-                        await source.DisposeAsync().ConfigureAwait(false);
+                    source?.Dispose();
+                    sourceHandle?.Dispose();
 
                     if (destination is not null)
                         await destination.DisposeAsync().ConfigureAwait(false);
