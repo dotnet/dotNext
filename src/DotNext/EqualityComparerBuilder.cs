@@ -249,5 +249,11 @@ public readonly struct EqualityComparerBuilder<T>
     /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public IEqualityComparer<T> Build()
-        => typeof(T).IsPrimitive ? EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
+    {
+        var t = typeof(T);
+
+        return t.IsPrimitive || t.IsEnum || t.IsOneOf(typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset))
+            ? EqualityComparer<T>.Default
+            : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
+    }
 }
