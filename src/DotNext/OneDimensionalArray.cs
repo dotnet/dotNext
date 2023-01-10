@@ -95,12 +95,12 @@ public static class OneDimensionalArray
     /// <returns>A modified array with inserted element.</returns>
     public static T[] Insert<T>(this T[] array, T element, long index)
     {
-        var length = array.LongLength;
+        var length = Intrinsics.GetLength(array);
         if ((ulong)index > (ulong)length)
             throw new ArgumentOutOfRangeException(nameof(index));
 
         T[] result;
-        if (Intrinsics.GetLength(array) == 0)
+        if (length is 0)
         {
             result = new[] { element };
         }
@@ -140,7 +140,7 @@ public static class OneDimensionalArray
         if ((ulong)index >= (ulong)length)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        if (length == 1)
+        if (length is 1)
             return Array.Empty<T>();
 
         var newStore = new T[length - 1];
