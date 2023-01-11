@@ -15,6 +15,7 @@ public static partial class Sequence
     /// <summary>
     /// Computes hash code for the sequence of objects.
     /// </summary>
+    /// <typeparam name="T">Type of the elements in the sequence.</typeparam>
     /// <param name="sequence">The sequence of elements.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>The hash code computed from each element in the sequence.</returns>
