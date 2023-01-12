@@ -225,8 +225,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         ThrowIfDisposed();
         for (MemoryChunk? current = first; current is not null; current = current.Next)
         {
-            var buffer = current.WrittenMemory.Span;
-            consumer.Invoke(buffer);
+            consumer.Invoke(current.WrittenMemory.Span);
         }
     }
 
