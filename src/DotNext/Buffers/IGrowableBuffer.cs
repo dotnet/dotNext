@@ -84,7 +84,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <param name="output">The memory block to be modified.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-    int CopyTo(scoped Span<T> output);
+    int CopyTo(Span<T> output);
 
     /// <summary>
     /// Clears the contents of the writer.

@@ -256,7 +256,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <param name="output">The memory block to be modified.</param>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-    public int CopyTo(scoped Span<T> output)
+    public int CopyTo(Span<T> output)
     {
         ThrowIfDisposed();
         var total = 0;
