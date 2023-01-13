@@ -220,20 +220,20 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
     /// Completes asynchronous operation successfully.
     /// </summary>
     /// <param name="result">The result to be returned by the asynchronous method associated with this builder.</param>
-    public void SetResult(TResult result)
+    public readonly void SetResult(TResult result)
         => core.Builder.SetResult(result);
 
     /// <summary>
     /// Completes asynchronous operation unsuccessfully.
     /// </summary>
     /// <param name="e">The exception to be thrown by the asynchronous method associated with this builder.</param>
-    public void SetException(Exception e)
+    public readonly void SetException(Exception e)
         => core.Builder.SetException(e);
 
     /// <summary>
     /// Gets the task representing the builder's asynchronous operation.
     /// </summary>
-    public Task<TResult> Task => core.Builder.Task;
+    public readonly Task<TResult> Task => core.Builder.Task;
 
     private sealed class StateMachineContainer<TStateMachine> : SpawningAsyncTaskMethodBuilderCore<AsyncTaskMethodBuilder<TResult>>.StateMachineContainer<TStateMachine>
         where TStateMachine : notnull, IAsyncStateMachine
@@ -314,20 +314,20 @@ public struct SpawningAsyncTaskMethodBuilder
     /// <summary>
     /// Completes asynchronous operation successfully.
     /// </summary>
-    public void SetResult()
+    public readonly void SetResult()
         => core.Builder.SetResult();
 
     /// <summary>
     /// Completes asynchronous operation unsuccessfully.
     /// </summary>
     /// <param name="e">The exception to be thrown by the asynchronous method associated with this builder.</param>
-    public void SetException(Exception e)
+    public readonly void SetException(Exception e)
         => core.Builder.SetException(e);
 
     /// <summary>
     /// Gets the task representing the builder's asynchronous operation.
     /// </summary>
-    public Task Task => core.Builder.Task;
+    public readonly Task Task => core.Builder.Task;
 
     private sealed class StateMachineContainer<TStateMachine> : SpawningAsyncTaskMethodBuilderCore<AsyncTaskMethodBuilder>.StateMachineContainer<TStateMachine>
         where TStateMachine : notnull, IAsyncStateMachine
