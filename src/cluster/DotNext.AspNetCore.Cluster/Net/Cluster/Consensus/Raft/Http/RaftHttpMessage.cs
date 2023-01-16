@@ -17,51 +17,52 @@ internal abstract class RaftHttpMessage : HttpMessage
 
     internal readonly long ConsensusTerm;
 
-    private protected RaftHttpMessage(string messageType, in ClusterMemberId sender, long term)
-        : base(messageType, sender) => ConsensusTerm = term;
+    private protected RaftHttpMessage(in ClusterMemberId sender, long term)
+        : base(sender) => ConsensusTerm = term;
 
-    private protected RaftHttpMessage(HeadersReader<StringValues> headers)
+    private protected RaftHttpMessage(IDictionary<string, StringValues> headers)
         : base(headers)
     {
-        ConsensusTerm = ParseHeader(TermHeader, headers, Int64Parser);
+        ConsensusTerm = ParseHeader(headers, TermHeader, Int64Parser);
     }
 
-    internal sealed override bool IsMemberUnavailable(HttpStatusCode? code) => true;
-
-    internal override void PrepareRequest(HttpRequestMessage request)
+    protected new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
         base.PrepareRequest(request);
     }
 
+    // serves as a default implementation of IHttpMessage.IsMemberUnavailable
+    public static new bool IsMemberUnavailable(HttpStatusCode? code) => true;
+
     private static bool TryParseRfc1123FormattedDateTime(string input, out DateTimeOffset result)
         => HeaderUtils.TryParseDate(input, out result);
 
-    private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response, CancellationToken token)
+    private protected static new async Task<Result<bool>> ParseBoolResponseAsync(HttpResponseMessage response, CancellationToken token)
     {
-        var result = await HttpMessage.ParseBoolResponse(response, token).ConfigureAwait(false);
-        var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
+        var result = await HttpMessage.ParseBoolResponseAsync(response, token).ConfigureAwait(false);
+        var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
         return new(term, result);
     }
 
-    private protected static new async Task<Result<T>> ParseEnumResponse<T>(HttpResponseMessage response, CancellationToken token)
+    private protected static new async Task<Result<T>> ParseEnumResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
         where T : struct, Enum
     {
-        var result = await HttpMessage.ParseEnumResponse<T>(response, token).ConfigureAwait(false);
-        var term = ParseHeader<IEnumerable<string>, long>(TermHeader, response.Headers.TryGetValues, Int64Parser);
+        var result = await HttpMessage.ParseEnumResponseAsync<T>(response, token).ConfigureAwait(false);
+        var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
         return new(term, result);
     }
 
-    private protected static Task SaveResponse(HttpResponse response, in Result<bool> result, CancellationToken token)
+    private protected static Task SaveResponseAsync(HttpResponse response, in Result<bool> result, CancellationToken token)
     {
         response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return HttpMessage.SaveResponse(response, result.Value, token);
+        return HttpMessage.SaveResponseAsync(response, result.Value, token);
     }
 
-    private protected static Task SaveResponse<T>(HttpResponse response, in Result<T> result, CancellationToken token)
+    private protected static Task SaveResponseAsync<T>(HttpResponse response, in Result<T> result, CancellationToken token)
         where T : struct, Enum
     {
         response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return HttpMessage.SaveResponse(response, result.Value, token);
+        return HttpMessage.SaveResponseAsync(response, result.Value, token);
     }
 }

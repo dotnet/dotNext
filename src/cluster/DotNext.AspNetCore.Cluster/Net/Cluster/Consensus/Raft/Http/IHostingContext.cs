@@ -18,5 +18,5 @@ internal interface IHostingContext
 
     // allows to override default HTTP timeout for specific kind of messages
     bool TryGetTimeout<TMessage>(out TimeSpan timeout)
-        where TMessage : HttpMessage;
+        where TMessage : class, IHttpMessage;
 }

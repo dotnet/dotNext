@@ -88,7 +88,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     void IGrowableBuffer<T>.Clear() => Clear();
 
     /// <inheritdoc />
-    int IGrowableBuffer<T>.CopyTo(scoped Span<T> output)
+    int IGrowableBuffer<T>.CopyTo(Span<T> output)
     {
         WrittenMemory.Span.CopyTo(output, out var writtenCount);
         return writtenCount;

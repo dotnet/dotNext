@@ -158,21 +158,19 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
     /// <inheritdoc/>
     protected sealed override ValueTask ApplyAsync(CancellationToken token = default)
+        => proposed.IsEmpty ? ValueTask.CompletedTask : ApplyProposedAsync(token);
+
+    private async ValueTask ApplyProposedAsync(CancellationToken token)
     {
-        return proposed.IsEmpty ? ValueTask.CompletedTask : ApplyProposedAsync();
+        await proposed.CopyToAsync(active, token).ConfigureAwait(false);
+        await CompareAsync(activeCache, proposedCache, token).ConfigureAwait(false);
+        activeCache = proposedCache;
 
-        async ValueTask ApplyProposedAsync()
-        {
-            await proposed.CopyToAsync(active, token).ConfigureAwait(false);
-            await CompareAsync(activeCache, proposedCache, token).ConfigureAwait(false);
-            activeCache = proposedCache;
+        proposed.Clear();
+        proposedCache = proposedCache.Clear();
 
-            proposed.Clear();
-            proposedCache = proposedCache.Clear();
-
-            Interlocked.MemoryBarrierProcessWide();
-            OnActivated();
-        }
+        Interlocked.MemoryBarrierProcessWide();
+        OnActivated();
     }
 
     /// <inheritdoc/>

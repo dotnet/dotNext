@@ -1,9 +1,11 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
+using Runtime.CompilerServices;
 using static Threading.AtomicInt64;
 
 /// <summary>
@@ -54,6 +56,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
     private protected sealed override long LastTerm => lastTerm.VolatileRead();
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<long?> ApplyAsync(int sessionId, long startIndex, CancellationToken token)
     {
         var commitIndex = LastCommittedEntryIndex;
@@ -95,6 +98,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     private ValueTask<long?> ApplyAsync(int sessionId, CancellationToken token)
         => ApplyAsync(sessionId, LastAppliedEntryIndex + 1L, token);
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private protected sealed override async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
     {
         Partition? removedHead;
@@ -150,7 +154,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
             count = GetCommitIndexAndCount(ref commitIndex);
             LastCommittedEntryIndex = commitIndex;
             var commitTask = count > 0L
-                ? Task.Run<Partition?>(CommitAsync)
+                ? ApplyAndRemovePartitionsAsync(session, token)
                 : Task.FromResult<Partition?>(null);
 
             // append log entries on this thread
@@ -182,12 +186,13 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         DeletePartitions(removedHead);
         error?.Throw();
         return count;
+    }
 
-        async Task<Partition?> CommitAsync()
-        {
-            var removalIndex = await ApplyAsync(session, token).ConfigureAwait(false);
-            return removalIndex.HasValue ? DetachPartitions(removalIndex.GetValueOrDefault()) : null;
-        }
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private async Task<Partition?> ApplyAndRemovePartitionsAsync(int session, CancellationToken token)
+    {
+        var removalIndex = await ApplyAsync(session, token).ConfigureAwait(false);
+        return removalIndex.HasValue ? DetachPartitions(removalIndex.GetValueOrDefault()) : null;
     }
 
     /// <summary>

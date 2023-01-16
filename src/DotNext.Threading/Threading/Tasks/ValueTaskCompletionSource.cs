@@ -247,7 +247,12 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask CreateTask(TimeSpan timeout, CancellationToken token)
-        => PrepareTask(timeout, token) ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+    {
+        if (!PrepareTask(timeout, token))
+            InvalidSourceStateDetected();
+
+        return new(this, version);
+    }
 
     /// <inheritdoc />
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
@@ -301,7 +306,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     public TaskCompletionSource CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
         if (!PrepareTask(timeout, token))
-            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+            InvalidSourceStateDetected();
 
         var source = new LinkedTaskCompletionSource(userData);
         source.LinkTo(this, version);

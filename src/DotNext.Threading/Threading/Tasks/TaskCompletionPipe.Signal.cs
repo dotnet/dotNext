@@ -15,7 +15,11 @@ public partial class TaskCompletionPipe<T>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        ref Action<Signal>? IPooledManualResetCompletionSource<Action<Signal>>.OnConsumed => ref completionCallback;
+        Action<Signal>? IPooledManualResetCompletionSource<Action<Signal>>.OnConsumed
+        {
+            get => completionCallback;
+            set => completionCallback = value;
+        }
     }
 
     private ValueTaskPool<bool, Signal, Action<Signal>> pool;

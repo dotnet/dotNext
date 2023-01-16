@@ -126,6 +126,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// </remarks>
     public long WritePosition => fileOffset + bufferOffset;
 
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask FlushCoreAsync(CancellationToken token)
     {
         await RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token).ConfigureAwait(false);

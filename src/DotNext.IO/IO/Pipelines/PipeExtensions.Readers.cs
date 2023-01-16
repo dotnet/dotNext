@@ -536,7 +536,7 @@ public static partial class PipeExtensions
         return ReadBlockSlowAsync(reader, output, token);
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask ReadBlockSlowAsync(PipeReader reader, Memory<byte> output, CancellationToken token)
+        static async ValueTask ReadBlockSlowAsync(PipeReader reader, Memory<byte> output, CancellationToken token)
             => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
     }
 
@@ -550,6 +550,7 @@ public static partial class PipeExtensions
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this PipeReader reader, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
         var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);

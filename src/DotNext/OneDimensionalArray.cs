@@ -95,12 +95,12 @@ public static class OneDimensionalArray
     /// <returns>A modified array with inserted element.</returns>
     public static T[] Insert<T>(this T[] array, T element, long index)
     {
-        var length = array.LongLength;
+        var length = Intrinsics.GetLength(array);
         if ((ulong)index > (ulong)length)
             throw new ArgumentOutOfRangeException(nameof(index));
 
         T[] result;
-        if (Intrinsics.GetLength(array) == 0)
+        if (length is 0)
         {
             result = new[] { element };
         }
@@ -140,7 +140,7 @@ public static class OneDimensionalArray
         if ((ulong)index >= (ulong)length)
             throw new ArgumentOutOfRangeException(nameof(index));
 
-        if (length == 1)
+        if (length is 1)
             return Array.Empty<T>();
 
         var newStore = new T[length - 1];
@@ -339,19 +339,7 @@ public static class OneDimensionalArray
     /// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
     public static unsafe bool BitwiseEquals<T>(this T[]? first, T[]? second)
         where T : unmanaged
-    {
-        if (first is null || second is null)
-            return ReferenceEquals(first, second);
-
-        var firstLength = Intrinsics.GetLength(first);
-        if (firstLength != Intrinsics.GetLength(second))
-            return false;
-
-        if (firstLength is 0)
-            return true;
-
-        return Intrinsics.EqualsUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked((nuint)firstLength * (nuint)sizeof(T)));
-    }
+        => Span.BitwiseEquals(new ReadOnlySpan<T>(first), new ReadOnlySpan<T>(second));
 
     /// <summary>
     /// Computes bitwise hash code for the array content.
@@ -362,23 +350,7 @@ public static class OneDimensionalArray
     /// <returns>32-bit hash code of the array content.</returns>
     public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
         where T : unmanaged
-    {
-        var length = (nuint)Intrinsics.GetLength(array);
-        return length > 0 ? Intrinsics.GetHashCode32Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * (nuint)sizeof(T)), salted) : 0;
-    }
-
-    private static unsafe void BitwiseHashCode<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<int>
-    {
-        var length = (nuint)Intrinsics.GetLength(array);
-
-        if (length > 0)
-            Intrinsics.GetHashCode32Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * (nuint)sizeof(T)));
-
-        if (salted)
-            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
-    }
+        => Span.BitwiseHashCode(new ReadOnlySpan<T>(array), salted);
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
@@ -391,11 +363,7 @@ public static class OneDimensionalArray
     /// <returns>32-bit hash code of the array content.</returns>
     public static int BitwiseHashCode<T>(this T[] array, int hash, Func<int, int, int> hashFunction, bool salted = true)
         where T : unmanaged
-    {
-        var fn = new Accumulator<int, int>(hashFunction, hash);
-        BitwiseHashCode(array, ref fn, salted);
-        return fn.Invoke();
-    }
+        => Span.BitwiseHashCode(new ReadOnlySpan<T>(array), hash, hashFunction, salted);
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
@@ -409,24 +377,7 @@ public static class OneDimensionalArray
     public static int BitwiseHashCode<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
         where THashFunction : struct, IConsumer<int>, ISupplier<int>
-    {
-        var hash = new THashFunction();
-        BitwiseHashCode(array, ref hash, salted);
-        return hash.Invoke();
-    }
-
-    private static unsafe void BitwiseHashCode64<T, THashFunction>(T[] array, ref THashFunction hashFunction, bool salted)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<long>
-    {
-        var length = (nuint)Intrinsics.GetLength(array);
-
-        if (length > 0)
-            Intrinsics.GetHashCode64Unaligned(ref hashFunction, ref As<T, byte>(ref GetArrayDataReference(array)), checked(length * (nuint)sizeof(T)));
-
-        if (salted)
-            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
-    }
+        => Span.BitwiseHashCode<T, THashFunction>(new ReadOnlySpan<T>(array), salted);
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
@@ -439,11 +390,7 @@ public static class OneDimensionalArray
     /// <returns>64-bit hash code of the array content.</returns>
     public static long BitwiseHashCode64<T>(this T[] array, long hash, Func<long, long, long> hashFunction, bool salted = true)
         where T : unmanaged
-    {
-        var fn = new Accumulator<long, long>(hashFunction, hash);
-        BitwiseHashCode64(array, ref fn, salted);
-        return fn.Invoke();
-    }
+        => Span.BitwiseHashCode64(new ReadOnlySpan<T>(array), hash, hashFunction, salted);
 
     /// <summary>
     /// Computes bitwise hash code for the array content using custom hash function.
@@ -457,11 +404,7 @@ public static class OneDimensionalArray
     public static long BitwiseHashCode64<T, THashFunction>(this T[] array, bool salted = true)
         where T : unmanaged
         where THashFunction : struct, IConsumer<long>, ISupplier<long>
-    {
-        var hash = new THashFunction();
-        BitwiseHashCode64(array, ref hash, salted);
-        return hash.Invoke();
-    }
+        => Span.BitwiseHashCode64<T, THashFunction>(new ReadOnlySpan<T>(array), salted);
 
     /// <summary>
     /// Computes bitwise hash code for the array content.
@@ -472,10 +415,7 @@ public static class OneDimensionalArray
     /// <returns>64-bit hash code of the array content.</returns>
     public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
         where T : unmanaged
-    {
-        var length = Intrinsics.GetLength(array);
-        return length > 0 ? Intrinsics.GetHashCode64Unaligned(ref As<T, byte>(ref GetArrayDataReference(array)), checked((nuint)length * (nuint)sizeof(T)), salted) : 0L;
-    }
+        => Span.BitwiseHashCode64(new ReadOnlySpan<T>(array), salted);
 
     private sealed class ArrayEqualityComparer
     {
@@ -539,18 +479,5 @@ public static class OneDimensionalArray
     /// <returns>Comparison result.</returns>
     public static unsafe int BitwiseCompare<T>(this T[]? first, T[]? second)
         where T : unmanaged
-    {
-        if (first.IsNullOrEmpty())
-            return second.IsNullOrEmpty() ? 0 : -1;
-
-        if (second.IsNullOrEmpty())
-            return 1;
-
-        var firstLength = Intrinsics.GetLength(first);
-        var cmp = firstLength.CompareTo(Intrinsics.GetLength(second));
-        if (cmp == 0)
-            cmp = Intrinsics.CompareUnaligned(ref As<T, byte>(ref GetArrayDataReference(first)), ref As<T, byte>(ref GetArrayDataReference(second)), checked((nuint)firstLength * (nuint)sizeof(T)));
-
-        return cmp;
-    }
+        => Span.BitwiseCompare(new ReadOnlySpan<T>(first), new ReadOnlySpan<T>(second));
 }

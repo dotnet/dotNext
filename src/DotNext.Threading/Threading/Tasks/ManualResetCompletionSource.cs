@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
 
 namespace DotNext.Threading.Tasks;
@@ -12,8 +12,6 @@ namespace DotNext.Threading.Tasks;
 [SuppressMessage("Usage", "CA1001", Justification = "CTS is disposed automatically when passing through lifecycle of the completion source")]
 public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 {
-    private static readonly ContextCallback ContinuationInvoker = InvokeContinuation;
-
     private readonly Action<object?, CancellationToken> cancellationCallback;
     private readonly bool runContinuationsAsynchronously, isConsumptionCallbackProvided;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
@@ -50,7 +48,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             lock (SyncRoot)
             {
-                if (status is ManualResetCompletionSourceStatus.Activated && Unsafe.Unbox<short>(expectedVersion) == version)
+                if (status is ManualResetCompletionSourceStatus.Activated && (short)expectedVersion == version)
                 {
                     if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
@@ -117,10 +115,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         switch (capturedContext)
         {
-            case null:
-                if (!runAsynchronously)
-                    goto default;
-
+            case null when runAsynchronously:
                 if (flowExecutionContext)
                     ThreadPool.QueueUserWorkItem(continuation, state, preferLocal: true);
                 else
@@ -153,23 +148,27 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously, flowExecutionContext);
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void InvokeContinuation(object? source)
-    {
-        Debug.Assert(source is ManualResetCompletionSource);
-
-        Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore(flowExecutionContext: true);
-    }
-
     private protected void InvokeContinuation()
     {
         var contextCopy = context;
         context = null;
 
         if (contextCopy is null)
+        {
             InvokeContinuationCore(flowExecutionContext: false);
+        }
         else
-            ExecutionContext.Run(contextCopy, ContinuationInvoker, this);
+        {
+            ExecutionContext.Run(
+                contextCopy,
+                static source =>
+                {
+                    Debug.Assert(source is ManualResetCompletionSource);
+
+                    Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore(flowExecutionContext: true);
+                },
+                this);
+        }
     }
 
     private protected virtual void ResetCore()
@@ -425,4 +424,9 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
         return result;
     }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private protected static void InvalidSourceStateDetected()
+        => throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 }

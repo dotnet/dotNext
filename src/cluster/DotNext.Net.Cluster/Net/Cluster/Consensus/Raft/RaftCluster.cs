@@ -882,13 +882,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine<TMember>.MoveToFollowerState(WeakReference callerState, bool randomizeTimeout, long? newTerm)
+    async void IRaftStateMachine<TMember>.MoveToFollowerState(IRaftStateMachine.IWeakCallerStateIdentity callerState, bool randomizeTimeout, long? newTerm)
     {
         var lockHolder = default(AsyncLock.Holder);
         try
         {
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder && ReferenceEquals(callerState.Target, state))
+            if (lockHolder && callerState.IsValid(state))
             {
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout(random);
@@ -904,11 +904,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         finally
         {
             lockHolder.Dispose();
+            callerState.Clear();
         }
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine<TMember>.MoveToCandidateState(WeakReference callerState)
+    async void IRaftStateMachine<TMember>.MoveToCandidateState(IRaftStateMachine.IWeakCallerStateIdentity callerState)
     {
         var lockHolder = default(AsyncLock.Holder);
         try
@@ -916,7 +917,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             var currentTerm = auditTrail.Term;
             var readyForTransition = await PreVoteAsync(currentTerm).ConfigureAwait(false);
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
-            if (lockHolder && state is FollowerState<TMember> { IsExpired: true } followerState && ReferenceEquals(followerState, callerState.Target))
+            if (lockHolder && state is FollowerState<TMember> { IsExpired: true } followerState && callerState.IsValid(followerState))
             {
                 Logger.TransitionToCandidateStateStarted(Term);
 
@@ -952,11 +953,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         finally
         {
             lockHolder.Dispose();
+            callerState.Clear();
         }
     }
 
     /// <inheritdoc />
-    async void IRaftStateMachine<TMember>.MoveToLeaderState(WeakReference callerState, TMember newLeader)
+    async void IRaftStateMachine<TMember>.MoveToLeaderState(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember newLeader)
     {
         var lockHolder = default(AsyncLock.Holder);
 
@@ -965,7 +967,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             Logger.TransitionToLeaderStateStarted(Term);
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             long currentTerm;
-            if (lockHolder && state is CandidateState<TMember> candidateState && ReferenceEquals(callerState.Target, candidateState) && candidateState.Term == (currentTerm = auditTrail.Term))
+            if (lockHolder && state is CandidateState<TMember> candidateState && callerState.IsValid(candidateState) && candidateState.Term == (currentTerm = auditTrail.Term))
             {
                 var newState = new LeaderState<TMember>(this, allowPartitioning, currentTerm, LeaderLeaseDuration)
                 {
@@ -991,6 +993,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         finally
         {
             lockHolder.Dispose();
+            callerState.Clear();
         }
     }
 
@@ -1008,10 +1011,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
 
     /// <inheritdoc />
-    async void IRaftStateMachine<TMember>.UnavailableMemberDetected(WeakReference callerState, TMember member, CancellationToken token)
+    async void IRaftStateMachine<TMember>.UnavailableMemberDetected(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember member, CancellationToken token)
     {
         // check state to drop old notifications (double-check pattern)
-        if (ReferenceEquals(callerState.Target, state) && membershipState.FalseToTrue())
+        if (callerState.IsValid(state) && membershipState.FalseToTrue())
         {
             try
             {
@@ -1027,6 +1030,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 membershipState.Value = false;
             }
         }
+
+        callerState.Clear();
     }
 
     /// <summary>

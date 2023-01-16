@@ -1,19 +1,27 @@
 using System.Net;
-using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Threading;
 using Timestamp = Diagnostics.Timestamp;
-using IClusterConfiguration = Membership.IClusterConfiguration;
 
-internal abstract class Client : RaftClusterMember
+internal abstract partial class Client : RaftClusterMember
 {
     private protected interface IConnectionContext : IDisposable, IAsyncDisposable
     {
         ProtocolStream Protocol { get; }
 
         Memory<byte> Buffer { get; }
+    }
+
+    // this interface helps to inline async request/response parsing pipeline to RequestAsync method
+    [RequiresPreviewFeatures]
+    private interface IClientExchange<TResponse>
+    {
+        ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
+
+        static abstract ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
     }
 
     private readonly AsyncExclusiveLock accessLock;
@@ -35,7 +43,9 @@ internal abstract class Client : RaftClusterMember
 
     private protected abstract ValueTask<IConnectionContext> ConnectAsync(CancellationToken token);
 
-    private async Task<TResponse> RequestAsync<TResponse>(Func<ProtocolStream, Memory<byte>, CancellationToken, ValueTask<TResponse>> request, CancellationToken token)
+    [RequiresPreviewFeatures]
+    private async Task<TResponse> RequestAsync<TResponse, TExchange>(TExchange exchange, CancellationToken token)
+        where TExchange : notnull, IClientExchange<TResponse>
     {
         ThrowIfDisposed();
 
@@ -52,7 +62,9 @@ internal abstract class Client : RaftClusterMember
             context ??= await ConnectAsync(requestDurationTracker.Token).ConfigureAwait(false);
 
             context.Protocol.Reset();
-            var result = await request(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            await exchange.RequestAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            context.Protocol.Reset();
+            var result = await TExchange.ResponseAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
             Touch();
             return result;
         }
@@ -80,97 +92,6 @@ internal abstract class Client : RaftClusterMember
 
             Metrics?.ReportResponseTime(timeStamp.Elapsed);
             requestDurationTracker.Dispose();
-        }
-    }
-
-    private protected sealed override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadResultAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected sealed override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<PreVoteResult>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadPreVoteResultAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected sealed override Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<long?> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteSynchronizeRequestAsync(commitIndex, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadNullableInt64Async(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected sealed override Task<IReadOnlyDictionary<string, string>> GetMetadataAsync(CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        static async ValueTask<IReadOnlyDictionary<string, string>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteMetadataRequestAsync(token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadMetadataResponseAsync(buffer, token).ConfigureAwait(false);
-        }
-    }
-
-    private protected sealed override Task<bool> ResignAsync(CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        static async ValueTask<bool> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteResignRequestAsync(token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadBoolAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected sealed override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadResultAsync(token).ConfigureAwait(false);
-        }
-    }
-
-    private protected sealed override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-    {
-        return RequestAsync(ExecuteAsync, token);
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<Result<bool>> ExecuteAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        {
-            await protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token).ConfigureAwait(false);
-            protocol.Reset();
-            return await protocol.ReadResultAsync(token).ConfigureAwait(false);
         }
     }
 

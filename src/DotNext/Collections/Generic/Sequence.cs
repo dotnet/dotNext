@@ -15,18 +15,19 @@ public static partial class Sequence
     /// <summary>
     /// Computes hash code for the sequence of objects.
     /// </summary>
+    /// <typeparam name="T">Type of the elements in the sequence.</typeparam>
     /// <param name="sequence">The sequence of elements.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>The hash code computed from each element in the sequence.</returns>
-    public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
+    public static int SequenceHashCode<T>(this IEnumerable<T> sequence, bool salted = true)
     {
         const int hashSalt = -1521134295;
-        var hashCode = sequence.Aggregate(-910176598, static (hash, obj) => (hash * hashSalt) + obj?.GetHashCode() ?? 0);
+        var hashCode = sequence.Aggregate(-910176598, static (hash, obj) => (hash * hashSalt) + (obj is null ? 0 : EqualityComparer<T>.Default.GetHashCode(obj)));
         return salted ? (hashCode * hashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
     }
 
-    internal static bool SequenceEqual(IEnumerable<object>? first, IEnumerable<object>? second)
-        => first is null || second is null ? ReferenceEquals(first, second) : Enumerable.SequenceEqual(first, second);
+    internal static bool SequenceEqual<T>(IEnumerable<T>? first, IEnumerable<T>? second)
+        => first is null ? second is null : second is not null && Enumerable.SequenceEqual(first, second);
 
     /// <summary>
     /// Applies specified action to each collection element.

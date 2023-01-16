@@ -1,9 +1,9 @@
 using System.Buffers;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
@@ -26,10 +26,10 @@ using static IO.Pipelines.PipeExtensions;
 using EncodingContext = Text.EncodingContext;
 using LogEntryMetadata = TransportServices.LogEntryMetadata;
 
-internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
+internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
 {
     private static readonly ILogEntryProducer<IRaftLogEntry> EmptyProducer = new LogEntryProducer<IRaftLogEntry>();
-    internal new const string MessageType = "AppendEntries";
+    internal const string MessageType = "AppendEntries";
     private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
     private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
     private const string CommitIndexHeader = "X-Raft-Commit-Index";
@@ -44,16 +44,9 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         internal MultipartLogEntry(MultipartSection section)
             : base(section.Body, true)
         {
-            HeadersReader<StringValues> headers = GetHeaders(section).TryGetValue;
-            Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
-            Timestamp = ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser);
-            CommandId = ParseHeaderAsNullable(CommandIdHeader, headers, Int32Parser);
-
-            static IReadOnlyDictionary<string, StringValues> GetHeaders(MultipartSection section)
-            {
-                IReadOnlyDictionary<string, StringValues>? headers = section.Headers;
-                return headers ?? ImmutableDictionary<string, StringValues>.Empty;
-            }
+            Term = ParseHeader(section.Headers, RequestVoteMessage.RecordTermHeader, Int64Parser);
+            Timestamp = ParseHeader(section.Headers, HeaderNames.LastModified, Rfc1123Parser);
+            CommandId = ParseHeaderAsNullable(section.Headers, CommandIdHeader, Int32Parser);
         }
 
         public int? CommandId { get; }
@@ -243,7 +236,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
     internal readonly bool ApplyConfiguration;
 
     private protected AppendEntriesMessage(in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, long fingerprint, long configurationLength, bool applyConfig)
-        : base(MessageType, sender, term)
+        : base(sender, term)
     {
         PrevLogIndex = prevLogIndex;
         PrevLogTerm = prevLogTerm;
@@ -253,20 +246,20 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         ApplyConfiguration = applyConfig;
     }
 
-    private AppendEntriesMessage(HeadersReader<StringValues> headers, out long entriesCount)
+    private AppendEntriesMessage(IDictionary<string, StringValues> headers, out long entriesCount)
         : base(headers)
     {
-        PrevLogIndex = ParseHeader(PrecedingRecordIndexHeader, headers, Int64Parser);
-        PrevLogTerm = ParseHeader(PrecedingRecordTermHeader, headers, Int64Parser);
-        CommitIndex = ParseHeader(CommitIndexHeader, headers, Int64Parser);
-        entriesCount = ParseHeader(CountHeader, headers, Int64Parser);
-        ConfigurationFingerprint = ParseHeader(ConfigurationFingerprintHeader, headers, Int64Parser);
-        ConfigurationLength = ParseHeader(ConfigurationLengthHeader, headers, Int64Parser);
-        ApplyConfiguration = ParseHeader(ConfigurationCommitHeader, headers, BooleanParser);
+        PrevLogIndex = ParseHeader(headers, PrecedingRecordIndexHeader, Int64Parser);
+        PrevLogTerm = ParseHeader(headers, PrecedingRecordTermHeader, Int64Parser);
+        CommitIndex = ParseHeader(headers, CommitIndexHeader, Int64Parser);
+        entriesCount = ParseHeader(headers, CountHeader, Int64Parser);
+        ConfigurationFingerprint = ParseHeader(headers, ConfigurationFingerprintHeader, Int64Parser);
+        ConfigurationLength = ParseHeader(headers, ConfigurationLengthHeader, Int64Parser);
+        ApplyConfiguration = ParseHeader(headers, ConfigurationCommitHeader, BooleanParser);
     }
 
     internal AppendEntriesMessage(HttpRequest request, out Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, out ILogEntryProducer<IRaftLogEntry> entries)
-        : this(request.Headers.TryGetValue, out var entriesCount)
+        : this(request.Headers, out var entriesCount)
     {
         entries = CreateReader(request, entriesCount);
         configurationReader = request.BodyReader.ReadBlockAsync;
@@ -274,6 +267,8 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
 
     private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)
     {
+        var result = EmptyProducer;
+
         if (count is 0L || !AspNetMediaTypeHeaderValue.TryParse(request.ContentType, out var mediaType))
         {
             // jump to empty set of log entries
@@ -281,17 +276,17 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         else if (StringSegment.Equals(mediaType.MediaType, MediaTypeNames.Application.Octet, StringComparison.OrdinalIgnoreCase))
         {
             // log entries encoded as efficient binary stream
-            return new OctetStreamLogEntriesReader(request.BodyReader, count);
+            result = new OctetStreamLogEntriesReader(request.BodyReader, count);
         }
         else if (HeaderUtils.RemoveQuotes(mediaType.Boundary) is { Length: > 0 } boundary)
         {
-            return new MultipartLogEntriesReader(boundary.ToString(), request.Body, count);
+            result = new MultipartLogEntriesReader(boundary.ToString(), request.Body, count);
         }
 
-        return EmptyProducer;
+        return result;
     }
 
-    internal override void PrepareRequest(HttpRequestMessage request)
+    public new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
         request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
@@ -302,10 +297,13 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result
         base.PrepareRequest(request);
     }
 
-    public Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    [RequiresPreviewFeatures]
+    static string IHttpMessage.MessageType => MessageType;
+
+    internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);
 }
 
-internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessageReader<Result<bool>>
+internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessage<Result<bool>>
     where TEntry : IRaftLogEntry
     where TList : IReadOnlyList<TEntry>
 {
@@ -513,7 +511,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
     internal bool UseOptimizedTransfer { private get; init; }
 
-    internal override void PrepareRequest(HttpRequestMessage request)
+    public new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(CountHeader, entries.Count.ToString(InvariantCulture));
         request.Content = CreateContentProvider();
@@ -528,5 +526,5 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         return configuration.Length.GetValueOrDefault() > 0L ? new ConfigurationWriter(configuration) : null;
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
+    Task<Result<bool>> IHttpMessage<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 }

@@ -63,37 +63,91 @@ public readonly struct EqualityComparerBuilder<T>
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    private static PropertyInfo? GetDefaultEqualityComparer(Type target)
+        => typeof(EqualityComparer<>)
+                .MakeGenericType(target)
+                .GetProperty(nameof(EqualityComparer<int>.Default), PublicStaticFlags);
+
+    private static FieldInfo? HashSaltField => typeof(RandomExtensions).GetField(nameof(RandomExtensions.BitwiseHashSalt), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
+
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression EqualsMethodForValueType(MemberExpression first, MemberExpression second)
     {
-        var method = typeof(BitwiseComparer<>)
-            .MakeGenericType(first.Type)
-            .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
-            ?.MakeGenericMethod(second.Type);
+        MethodInfo? method;
+        if (first.Type.IsUnmanaged())
+        {
+            method = typeof(BitwiseComparer<>)
+                .MakeGenericType(first.Type)
+                .GetMethod(nameof(BitwiseComparer<int>.Equals), PublicStaticFlags)
+                ?.MakeGenericMethod(second.Type);
+
+            Debug.Assert(method is not null);
+            return Expression.Call(method, first, second);
+        }
+
+        var defaultProperty = GetDefaultEqualityComparer(first.Type);
+        Debug.Assert(defaultProperty is not null);
+
+        method = defaultProperty
+            .DeclaringType
+            ?.GetMethod(nameof(EqualityComparer<int>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
         Debug.Assert(method is not null);
-        return Expression.Call(method, first, second);
+        return Expression.Call(Expression.Property(null, defaultProperty), method, first, second);
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    private static MethodCallExpression HashCodeMethodForValueType(Expression expr, ConstantExpression salted)
+    private static Expression HashCodeMethodForValueType(Expression expr, ConstantExpression salted)
     {
-        var method = typeof(BitwiseComparer<>)
-            .MakeGenericType(expr.Type)
-            .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), 0, new[] { expr.Type.MakeByRefType(), typeof(bool) });
+        MethodInfo? method;
 
-        Debug.Assert(method is not null);
-        return Expression.Call(method, expr, salted);
+        if (expr.Type.IsUnmanaged())
+        {
+            method = typeof(BitwiseComparer<>)
+                .MakeGenericType(expr.Type)
+                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), 0, new[] { expr.Type.MakeByRefType(), typeof(bool) });
+
+            Debug.Assert(method is not null);
+            expr = Expression.Call(method, expr, salted);
+        }
+        else
+        {
+            var defaultProperty = GetDefaultEqualityComparer(expr.Type);
+            Debug.Assert(defaultProperty is not null);
+
+            method = method = defaultProperty
+                .DeclaringType
+                ?.GetMethod(nameof(EqualityComparer<int>.GetHashCode), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+            Debug.Assert(method is not null);
+            expr = Expression.Call(Expression.Property(null, defaultProperty), method, expr);
+            expr = Expression.ExclusiveOr(
+                expr,
+                Expression.Condition(salted, Expression.Field(null, HashSaltField!), Expression.Constant(0), typeof(int)));
+        }
+
+        return expr;
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
     {
-        var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
-        return itemType.IsValueType ?
-            typeof(OneDimensionalArray)
+        if (itemType.IsUnmanaged())
+        {
+            var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
+            return typeof(OneDimensionalArray)
                     .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), 1, PublicStaticFlags, null, new[] { arrayType, arrayType }, null)!
-                    .MakeGenericMethod(itemType)
-            : new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Seq.SequenceEqual).Method;
+                    .MakeGenericMethod(itemType);
+        }
+
+        if (itemType.IsValueType)
+        {
+            return typeof(Seq)
+                .GetMethod(nameof(Seq.SequenceEqual), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)!
+                .MakeGenericMethod(itemType);
+        }
+
+        return new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Seq.SequenceEqual).Method;
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
@@ -107,16 +161,16 @@ public readonly struct EqualityComparerBuilder<T>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
     {
-        var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
-        var result = itemType.IsValueType ?
-              typeof(OneDimensionalArray)
+        if (itemType.IsUnmanaged())
+        {
+            var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
+            return typeof(OneDimensionalArray)
                       .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, new[] { arrayType, typeof(bool) }, null)!
-                      .MakeGenericMethod(itemType) :
-              typeof(Seq)
-                      .GetMethod(nameof(Seq.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
+                      .MakeGenericMethod(itemType);
+        }
 
-        Debug.Assert(result is not null);
-        return result;
+        return typeof(Seq).GetMethod(nameof(Seq.SequenceHashCode), PublicStaticFlags)!
+            .MakeGenericMethod(itemType);
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
@@ -250,5 +304,11 @@ public readonly struct EqualityComparerBuilder<T>
     /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public IEqualityComparer<T> Build()
-        => typeof(T).IsPrimitive ? EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
+    {
+        var t = typeof(T);
+
+        return t.IsPrimitive || t.IsEnum || t.IsOneOf(typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset))
+            ? EqualityComparer<T>.Default
+            : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
+    }
 }

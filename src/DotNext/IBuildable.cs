@@ -9,8 +9,8 @@ namespace DotNext;
 /// <typeparam name="TBuilder">The type of the builder.</typeparam>
 [RequiresPreviewFeatures]
 public interface IBuildable<out TSelf, out TBuilder>
-    where TSelf : IBuildable<TSelf, TBuilder>
-    where TBuilder : ISupplier<TSelf>, IResettable
+    where TSelf : notnull, IBuildable<TSelf, TBuilder>
+    where TBuilder : notnull, ISupplier<TSelf>, IResettable
 {
     /// <summary>
     /// Creates a new builder for type <typeparamref name="TSelf"/>.

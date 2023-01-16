@@ -279,27 +279,27 @@ public partial class PersistentState
 
         internal void Invalidate() => version.IncrementAndGet();
 
-        internal ValueTask SetWritePositionAsync(long value, CancellationToken token = default)
+        internal ValueTask SetWritePositionAsync(long position, CancellationToken token = default)
         {
             var result = ValueTask.CompletedTask;
 
             if (!writer.HasBufferedData)
             {
-                writer.FilePosition = value;
+                writer.FilePosition = position;
             }
-            else if (value != writer.FilePosition)
+            else if (position != writer.FilePosition)
             {
-                result = FlushAndSetPositionAsync(value, token);
+                result = FlushAndSetPositionAsync(position, token);
             }
 
             return result;
+        }
 
-            [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-            async ValueTask FlushAndSetPositionAsync(long value, CancellationToken token)
-            {
-                await FlushAsync(token).ConfigureAwait(false);
-                writer.FilePosition = value;
-            }
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        private async ValueTask FlushAndSetPositionAsync(long position, CancellationToken token)
+        {
+            await FlushAsync(token).ConfigureAwait(false);
+            writer.FilePosition = position;
         }
 
         public virtual ValueTask FlushAsync(CancellationToken token = default)
@@ -319,11 +319,11 @@ public partial class PersistentState
         {
             Debug.Assert(sessionId >= 0 && sessionId < readers.Length);
 
-            var result = GetReader();
+            ref var result = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
 
             if (result is null)
             {
-                GetReader() = result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version.VolatileRead());
+                result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version.VolatileRead());
             }
             else
             {
@@ -331,10 +331,6 @@ public partial class PersistentState
             }
 
             return result;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            ref VersionedFileReader? GetReader()
-                => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
         }
 
         protected override void Dispose(bool disposing)

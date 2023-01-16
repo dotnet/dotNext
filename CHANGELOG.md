@@ -1,6 +1,68 @@
 Release Notes
 ====
 
+# 01-16-2023
+<a href="https://www.nuget.org/packages/dotnext/4.9.0">DotNext 4.9.0</a>
+* Introduced `SpawningAsyncTaskMethodBuilder` that can be used in combination with [AsyncMethodBuilderAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncmethodbuilderattribute) to force execution of async method in parallel with the current flow
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.9.0">DotNext.Metaprogramming 4.9.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.9.0">DotNext.Reflection 4.9.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.9.0">DotNext.Unsafe 4.9.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.9.0">DotNext.Threading 4.9.0</a>
+* Smallish performance improvements of async locks
+* Fixed upgrade lock acquisition using `AsyncLock` value type
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.9.0">DotNext.IO 4.9.0</a>
+* Use `ValueTask` caching for hot execution paths
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.9.0">DotNext.Net.Cluster 4.9.0</a>
+* Reduced memory allocation caused by WAL and TCP/UDP transports
+* Reduced managed heap fragmentation
+* Added support of [DNS](https://learn.microsoft.com/en-us/dotnet/api/system.net.dnsendpoint) and [Unix Domain Socket](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.unixdomainsocketendpoint) addresses of cluster nodes for better compatibility with containers
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.9.0">DotNext.AspNetCore.Cluster 4.9.0</a>
+* HTTP transport: optimized memory allocations
+* Updated dependencies
+
+# 12-23-2022
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.3">DotNext.Threading 4.8.3</a>
+* Smallish performance improvements of async locks
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.3">DotNext.Net.Cluster 4.8.3</a>
+* TCP/UDP Raft transport: optimized memory allocations
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.3">DotNext.AspNetCore.Cluster 4.8.3</a>
+* HTTP transport: optimized memory allocations
+* Updated dependencies
+
+# 12-19-2022
+<a href="https://www.nuget.org/packages/dotnext.threading/4.8.2">DotNext.Threading 4.8.2</a>
+* Optimized memory allocations produced by instances of `TaskCompletionPipe<T>` class
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.8.2">DotNext.IO 4.8.2</a>
+* Reduced memory allocations caused by instances of `FileReader` and `FileWriter` classes
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.2">DotNext.Net.Cluster 4.8.2</a>
+* Optimized memory allocations produced by persistent WAL and Raft algorithm implementation
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.2">DotNext.AspNetCore.Cluster 4.8.2</a>
+* Updated dependencies
+
 # 12-15-2022
 <a href="https://www.nuget.org/packages/dotnext/4.8.1">DotNext 4.8.1</a>
 * Improved quality and performance of random string generator exposed as `RandomExtensions.NextString` extension methods ([138](https://github.com/dotnet/dotNext/issues/138))

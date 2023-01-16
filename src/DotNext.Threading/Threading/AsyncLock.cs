@@ -45,6 +45,9 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
 
         internal Holder(object lockedObject, Type type)
         {
+            Debug.Assert(lockedObject is not null);
+            Debug.Assert(type is not Type.None);
+
             this.lockedObject = lockedObject;
             this.type = type;
         }
@@ -76,8 +79,7 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
                 case Type.Semaphore:
                     As<SemaphoreSlim>(lockedObject).Release(1);
                     break;
-                case Type.Strong:
-                case Type.Weak:
+                case Type.Strong or Type.Weak:
                     As<AsyncSharedLock>(lockedObject).Release();
                     break;
             }
@@ -99,6 +101,9 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
 
     private AsyncLock(object lockedObject, Type type, bool owner)
     {
+        Debug.Assert(lockedObject is not null);
+        Debug.Assert(type is not Type.None);
+
         this.lockedObject = lockedObject;
         this.type = type;
         this.owner = owner;
@@ -125,14 +130,18 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// </summary>
     /// <param name="lock">The lock object to be wrapped.</param>
     /// <returns>Exclusive asynchronous lock.</returns>
-    public static AsyncLock Exclusive(AsyncExclusiveLock @lock) => new(@lock ?? throw new ArgumentNullException(nameof(@lock)), Type.Exclusive, false);
+    /// <exception cref="ArgumentNullException"><paramref name="lock"/> is <see langword="null"/>.</exception>
+    public static AsyncLock Exclusive(AsyncExclusiveLock @lock)
+        => new(@lock ?? throw new ArgumentNullException(nameof(@lock)), Type.Exclusive, false);
 
     /// <summary>
     /// Wraps semaphore instance into the unified representation of the lock.
     /// </summary>
     /// <param name="semaphore">The semaphore to wrap into lock object.</param>
     /// <returns>The lock representing semaphore.</returns>
-    public static AsyncLock Semaphore(SemaphoreSlim semaphore) => new(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
+    /// <exception cref="ArgumentNullException"><paramref name="semaphore"/> is <see langword="null"/>.</exception>
+    public static AsyncLock Semaphore(SemaphoreSlim semaphore)
+        => new(semaphore ?? throw new ArgumentNullException(nameof(semaphore)), Type.Semaphore, false);
 
     /// <summary>
     /// Creates semaphore-based lock but doesn't acquire the lock.
@@ -143,13 +152,15 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// <param name="initialCount">The initial number of requests for the semaphore that can be granted concurrently.</param>
     /// <param name="maxCount">The maximum number of requests for the semaphore that can be granted concurrently.</param>
     /// <returns>The lock representing semaphore.</returns>
-    public static AsyncLock Semaphore(int initialCount, int maxCount) => new(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
+    public static AsyncLock Semaphore(int initialCount, int maxCount)
+        => new(new SemaphoreSlim(initialCount, maxCount), Type.Semaphore, true);
 
     /// <summary>
     /// Creates read lock but doesn't acquire it.
     /// </summary>
     /// <param name="rwLock">Read/write lock source.</param>
     /// <returns>Reader lock.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="rwLock"/> is <see langword="null"/>.</exception>
     public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock)
         => new(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.ReadLock, false);
 
@@ -162,6 +173,7 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// otherwise, <see langword="false"/>.
     /// </param>
     /// <returns>Write-only lock.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="rwLock"/> is <see langword="null"/>.</exception>
     public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock, bool upgrade = false)
         => new(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), upgrade ? Type.Upgrade : Type.WriteLock, false);
 
@@ -170,14 +182,18 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// </summary>
     /// <param name="lock">The shared lock instance.</param>
     /// <returns>Exclusive lock.</returns>
-    public static AsyncLock Exclusive(AsyncSharedLock @lock) => new(@lock, Type.Strong, false);
+    /// <exception cref="ArgumentNullException"><paramref name="lock"/> is <see langword="null"/>.</exception>
+    public static AsyncLock Exclusive(AsyncSharedLock @lock)
+        => new(@lock ?? throw new ArgumentNullException(nameof(@lock)), Type.Strong, false);
 
     /// <summary>
     /// Creates weak lock but doesn't acquire it.
     /// </summary>
     /// <param name="lock">The shared lock instance.</param>
     /// <returns>Weak lock.</returns>
-    public static AsyncLock Weak(AsyncSharedLock @lock) => new(@lock, Type.Weak, false);
+    /// <exception cref="ArgumentNullException"><paramref name="lock"/> is <see langword="null"/>.</exception>
+    public static AsyncLock Weak(AsyncSharedLock @lock)
+        => new(@lock ?? throw new ArgumentNullException(nameof(@lock)), Type.Weak, false);
 
     /// <summary>
     /// Acquires the lock asynchronously.
@@ -206,11 +222,13 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
                 task = As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token);
                 break;
             case Type.ReadLock:
-            case Type.Upgrade:
                 task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token);
                 break;
             case Type.WriteLock:
                 task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token);
+                break;
+            case Type.Upgrade:
+                task = As<AsyncReaderWriterLock>(lockedObject).UpgradeToWriteLockAsync(timeout, token);
                 break;
             case Type.Semaphore:
                 task = CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token));

@@ -294,6 +294,6 @@ public static class MemoryTemplate
     /// <param name="template">The string template.</param>
     /// <param name="output">The text writer used to write rendered template.</param>
     /// <param name="replacement">An array of actual values used to replace placeholders.</param>
-    public static unsafe void Render(this in MemoryTemplate<char> template, TextWriter output, params string[] replacement)
+    public static void Render(this in MemoryTemplate<char> template, TextWriter output, params string[] replacement)
         => template.Render(new TextRenderer(output, replacement));
 }

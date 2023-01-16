@@ -50,28 +50,30 @@ public partial class FileWriter : IAsyncBinaryWriter
         }
         else if (buffer.Length >= Unsafe.SizeOf<T>())
         {
-            result = WriteSmallValueAsync();
+            result = WriteSmallValueAsync(value, token);
         }
         else
         {
-            result = WriteLargeValueAsync();
+            result = WriteLargeValueAsync(value, token);
         }
 
         return result;
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask WriteSmallValueAsync()
-        {
-            await FlushCoreAsync(token).ConfigureAwait(false);
-            Write(in value);
-        }
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask WriteSmallValueAsync<T>(T value, CancellationToken token)
+        where T : unmanaged
+    {
+        await FlushCoreAsync(token).ConfigureAwait(false);
+        Write(in value);
+    }
 
-        async ValueTask WriteLargeValueAsync()
-        {
-            // rare case, T is very large and doesn't fit the buffer
-            using var buffer = Span.AsReadOnlyBytes(in value).Copy();
-            await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
-        }
+    private async ValueTask WriteLargeValueAsync<T>(T value, CancellationToken token)
+        where T : unmanaged
+    {
+        // rare case, T is very large and doesn't fit the buffer
+        using var buffer = Span.AsReadOnlyBytes(in value).Copy();
+        await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
     private void Write7BitEncodedInt(int value)
@@ -332,16 +334,16 @@ public partial class FileWriter : IAsyncBinaryWriter
         }
         else
         {
-            result = WriteSlowAsync();
+            result = WriteSlowAsync(writer, arg, token);
         }
 
         return result;
+    }
 
-        async ValueTask WriteSlowAsync()
-        {
-            await FlushCoreAsync(token).ConfigureAwait(false);
-            writer(arg, this);
-        }
+    private async ValueTask WriteSlowAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
+    {
+        await FlushCoreAsync(token).ConfigureAwait(false);
+        writer(arg, this);
     }
 
     /// <inheritdoc />

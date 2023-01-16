@@ -1,5 +1,6 @@
 ﻿using System.IO.Pipelines;
 using System.Net;
+using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -10,9 +11,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 using IO;
 using static IO.Pipelines.PipeExtensions;
 
-internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
+internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Result<bool>>
 {
-    internal new const string MessageType = "InstallSnapshot";
+    internal const string MessageType = "InstallSnapshot";
     private const string SnapshotIndexHeader = "X-Raft-Snapshot-Index";
     private const string SnapshotTermHeader = "X-Raft-Snapshot-Term";
 
@@ -73,30 +74,30 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
     internal readonly long Index;
 
     internal InstallSnapshotMessage(in ClusterMemberId sender, long term, long index, IRaftLogEntry snapshot)
-        : base(MessageType, sender, term)
+        : base(sender, term)
     {
         Index = index;
         Snapshot = snapshot;
     }
 
-    private InstallSnapshotMessage(HeadersReader<StringValues> headers, PipeReader body, long? length)
+    private InstallSnapshotMessage(IDictionary<string, StringValues> headers, PipeReader body, long? length)
         : base(headers)
     {
-        Index = ParseHeader(SnapshotIndexHeader, headers, Int64Parser);
+        Index = ParseHeader(headers, SnapshotIndexHeader, Int64Parser);
         Snapshot = new ReceivedSnapshot(body)
         {
-            Term = ParseHeader(SnapshotTermHeader, headers, Int64Parser),
-            Timestamp = ParseHeader(HeaderNames.LastModified, headers, Rfc1123Parser),
+            Term = ParseHeader(headers, SnapshotTermHeader, Int64Parser),
+            Timestamp = ParseHeader(headers, HeaderNames.LastModified, Rfc1123Parser),
             Length = length,
         };
     }
 
     internal InstallSnapshotMessage(HttpRequest request)
-        : this(request.Headers.TryGetValue, request.BodyReader, request.ContentLength)
+        : this(request.Headers, request.BodyReader, request.ContentLength)
     {
     }
 
-    internal override void PrepareRequest(HttpRequestMessage request)
+    public new void PrepareRequest(HttpRequestMessage request)
     {
         request.Headers.Add(SnapshotIndexHeader, Index.ToString(InvariantCulture));
         request.Headers.Add(SnapshotTermHeader, Snapshot.Term.ToString(InvariantCulture));
@@ -104,7 +105,10 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageRead
         base.PrepareRequest(request);
     }
 
-    Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response, token);
+    Task<Result<bool>> IHttpMessage<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 
-    public Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    [RequiresPreviewFeatures]
+    static string IHttpMessage.MessageType => MessageType;
+
+    internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);
 }

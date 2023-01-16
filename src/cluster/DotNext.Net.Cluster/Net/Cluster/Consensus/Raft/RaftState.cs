@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -29,29 +30,76 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
 
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 
-    private abstract class StateTransition : WeakReference
+    // holds weak reference to the state that was an initiator of the work item
+    private abstract class StateTransitionWorkItem : IRaftStateMachine.IWeakCallerStateIdentity, IThreadPoolWorkItem
     {
-        private protected StateTransition(RaftState<TMember> currentState)
-            : base(currentState)
+        private const nint ZeroHandle = 0;
+        private volatile nint handle;
+
+        private protected StateTransitionWorkItem(RaftState<TMember> state)
+            => handle = (nint)GCHandle.Alloc(state, GCHandleType.Weak);
+
+        private RaftState<TMember>? Target
         {
+            get
+            {
+                var handle = this.handle;
+
+                var target = handle != ZeroHandle
+                    ? GCHandle.FromIntPtr(handle).Target as RaftState<TMember>
+                    : null;
+
+                GC.KeepAlive(this); // to prevent finalization of the work item
+                return target;
+            }
         }
+
+        public bool IsValid(object? state) => ReferenceEquals(Target, state);
+
+        private void ClearCore()
+        {
+            var handle = Interlocked.Exchange(ref this.handle, ZeroHandle);
+
+            if (handle != ZeroHandle)
+                GCHandle.FromIntPtr(handle).Free();
+        }
+
+        public void Clear()
+        {
+            ClearCore();
+            GC.SuppressFinalize(this);
+        }
+
+        private protected abstract void Execute(RaftState<TMember> currentState);
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            var currentState = Target;
+
+            // reference is dead, release GC handle ASAP
+            if (currentState is null)
+                Clear();
+            else
+                Execute(currentState);
+        }
+
+        // Likely never be executed because all consumers call Clear() explicitly.
+        // However, we want to prevent handle leaks in case of bugs
+        ~StateTransitionWorkItem() => ClearCore();
     }
 
-    private sealed class TransitionToCandidateState : StateTransition, IThreadPoolWorkItem
+    private sealed class TransitionToCandidateState : StateTransitionWorkItem
     {
         internal TransitionToCandidateState(RaftState<TMember> currentState)
             : base(currentState)
         {
         }
 
-        void IThreadPoolWorkItem.Execute()
-        {
-            if (Target is RaftState<TMember> currentState)
-                currentState.stateMachine.MoveToCandidateState(this);
-        }
+        private protected override void Execute(RaftState<TMember> currentState)
+            => currentState.stateMachine.MoveToCandidateState(this);
     }
 
-    private sealed class TransitionToFollowerState : StateTransition, IThreadPoolWorkItem
+    private sealed class TransitionToFollowerState : StateTransitionWorkItem
     {
         private readonly bool randomizeTimeout;
         private readonly long? newTerm;
@@ -63,14 +111,11 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             this.newTerm = newTerm;
         }
 
-        void IThreadPoolWorkItem.Execute()
-        {
-            if (Target is RaftState<TMember> currentState)
-                currentState.stateMachine.MoveToFollowerState(this, randomizeTimeout, newTerm);
-        }
+        private protected override void Execute(RaftState<TMember> currentState)
+            => currentState.stateMachine.MoveToFollowerState(this, randomizeTimeout, newTerm);
     }
 
-    private sealed class TransitionToLeaderState : StateTransition, IThreadPoolWorkItem
+    private sealed class TransitionToLeaderState : StateTransitionWorkItem
     {
         private readonly TMember leader;
 
@@ -78,14 +123,11 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             : base(currentState)
             => this.leader = leader;
 
-        void IThreadPoolWorkItem.Execute()
-        {
-            if (Target is RaftState<TMember> currentState)
-                currentState.stateMachine.MoveToLeaderState(this, leader);
-        }
+        private protected override void Execute(RaftState<TMember> currentState)
+            => currentState.stateMachine.MoveToLeaderState(this, leader);
     }
 
-    private sealed class UnavailableMemberNotification : StateTransition, IThreadPoolWorkItem
+    private sealed class UnavailableMemberNotification : StateTransitionWorkItem
     {
         private readonly TMember member;
         private readonly CancellationToken token;
@@ -97,10 +139,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             this.token = token;
         }
 
-        void IThreadPoolWorkItem.Execute()
-        {
-            if (Target is RaftState<TMember> currentState)
-                currentState.stateMachine.UnavailableMemberDetected(this, member, token);
-        }
+        private protected override void Execute(RaftState<TMember> currentState)
+            => currentState.stateMachine.UnavailableMemberDetected(this, member, token);
     }
 }

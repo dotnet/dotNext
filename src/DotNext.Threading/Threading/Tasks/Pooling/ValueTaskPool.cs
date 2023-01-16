@@ -16,7 +16,7 @@ internal struct ValueTaskPool<T, TNode, TCallback>
     where TNode : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<TCallback>, new()
     where TCallback : MulticastDelegate
 {
-    private readonly long maximumRetained; // zero when no limitations
+    private readonly long maximumRetained;
     private readonly TCallback backToPool;
     private TNode? first;
     private long count;
@@ -29,7 +29,7 @@ internal struct ValueTaskPool<T, TNode, TCallback>
         this.backToPool = backToPool;
         first = null;
         count = 0;
-        this.maximumRetained = maximumRetained.GetValueOrDefault(0L);
+        this.maximumRetained = maximumRetained ?? long.MaxValue;
     }
 
     internal void Return(TNode node)
@@ -37,24 +37,20 @@ internal struct ValueTaskPool<T, TNode, TCallback>
         Debug.Assert(node is not null);
         Debug.Assert(backToPool.Target is not null);
         Debug.Assert(Monitor.IsEntered(backToPool.Target));
+        Debug.Assert(count is 0L || first is not null);
 
         if (!node.TryReset(out _))
-            goto exit;
+            return;
 
         node.OnConsumed = null;
 
-        if (maximumRetained > 0L && count >= maximumRetained)
-            goto exit;
-
-        Debug.Assert(count == 0L || first is not null);
-
-        first?.Prepend(node);
-        first = node;
-        count++;
-        Debug.Assert(count > 0L);
-
-    exit:
-        return;
+        if (count < maximumRetained)
+        {
+            first?.Prepend(node);
+            first = node;
+            count++;
+            Debug.Assert(count > 0L);
+        }
     }
 
     internal TNode Get()
@@ -77,7 +73,7 @@ internal struct ValueTaskPool<T, TNode, TCallback>
             count--;
 
             Debug.Assert(count >= 0L);
-            Debug.Assert(count == 0L || first is not null);
+            Debug.Assert(count is 0L || first is not null);
         }
 
         result.OnConsumed = backToPool;

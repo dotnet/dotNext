@@ -1,13 +1,24 @@
-using Microsoft.AspNetCore.Http;
+using System.Runtime.Versioning;
+using HttpStatusCode = System.Net.HttpStatusCode;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
-internal interface IHttpMessageReader<TContent>
+internal interface IHttpMessage
 {
-    Task<TContent> ParseResponse(HttpResponseMessage response, CancellationToken token);
+    [RequiresPreviewFeatures]
+    static abstract string MessageType { get; }
+
+    void PrepareRequest(HttpRequestMessage request);
+
+    /// <summary>
+    /// Interprets <see cref="HttpRequestException"/> produced by HTTP client.
+    /// </summary>
+    /// <returns><see langword="true"/> to handle the response as <see cref="MemberUnavailableException"/>.</returns>
+    [RequiresPreviewFeatures]
+    static abstract bool IsMemberUnavailable(HttpStatusCode? code);
 }
 
-internal interface IHttpMessageWriter<in TContent>
+internal interface IHttpMessage<TResponse> : IHttpMessage
 {
-    Task SaveResponse(HttpResponse response, TContent result, CancellationToken token);
+    Task<TResponse> ParseResponseAsync(HttpResponseMessage response, CancellationToken token);
 }

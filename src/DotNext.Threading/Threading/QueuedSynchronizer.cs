@@ -161,11 +161,9 @@ public class QueuedSynchronizer : Disposable
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
     {
-        private Action<DefaultWaitNode>? consumedCallback;
-
         protected sealed override void AfterConsumed() => AfterConsumed(this);
 
-        ref Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed => ref consumedCallback;
+        Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed { get; set; }
     }
 
     private protected interface ILockManager

@@ -8,27 +8,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Membership;
 using Threading;
+using IDataTransferObject = IO.IDataTransferObject;
 
 internal partial class LeaderState<TMember>
 {
-    internal sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>
+    internal sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration
     {
-        private readonly IAuditTrail<IRaftLogEntry> auditTrail;
-        private readonly IClusterConfiguration activeConfig;
-        private readonly IClusterConfiguration? proposedConfig;
+        private readonly IClusterConfiguration configuration;
         internal readonly TMember Member;
-        private readonly long commitIndex, precedingIndex, precedingTerm, term;
+        private readonly long commitIndex, precedingTerm, term;
         private readonly ILogger logger;
-        private readonly CancellationToken token;
 
         // state
-        private long replicationIndex, fingerprint;
-        private bool replicatedWithCurrentTerm;
+        private long replicationIndex; // reuse as precedingIndex
+        private long fingerprint;
+        private bool replicatedWithCurrentTerm; // reuse as applyConfig
         private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
 
         // TODO: Replace with required init properties in the next version of C#
         internal Replicator(
-            IAuditTrail<IRaftLogEntry> auditTrail,
             IClusterConfiguration activeConfig,
             IClusterConfiguration? proposedConfig,
             TMember member,
@@ -36,24 +34,31 @@ internal partial class LeaderState<TMember>
             long term,
             long precedingIndex,
             long precedingTerm,
-            ILogger logger,
-            CancellationToken token)
+            ILogger logger)
         {
-            this.auditTrail = auditTrail;
-            this.activeConfig = activeConfig;
-            this.proposedConfig = proposedConfig;
             Member = member;
-            this.precedingIndex = precedingIndex;
+            replicationIndex = precedingIndex;
             this.precedingTerm = precedingTerm;
             this.commitIndex = commitIndex;
             this.term = term;
             this.logger = logger;
-            this.token = token;
+
+            configuration = proposedConfig ?? activeConfig;
+            fingerprint = configuration.Fingerprint;
+
+            if (member.ConfigurationFingerprint == fingerprint)
+            {
+                // This branch is a hot path because configuration changes rarely.
+                // It is reasonable to prevent allocation of empty configuration every time.
+                // To do that, instance of Replicator serves as empty configuration
+                replicatedWithCurrentTerm = activeConfig.Fingerprint == fingerprint;
+                configuration = this;
+            }
         }
 
-        internal ValueTask<Result<bool>> ReplicateAsync(long currentIndex)
+        internal ValueTask<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
         {
-            var startIndex = precedingIndex + 1L;
+            var startIndex = replicationIndex + 1L;
             Debug.Assert(startIndex == Member.NextIndex);
 
             logger.ReplicationStarted(Member.EndPoint, startIndex);
@@ -102,94 +107,115 @@ internal partial class LeaderState<TMember>
             }
         }
 
-        private (IClusterConfiguration, bool) GetConfiguration()
-        {
-            bool applyConfig;
-            var configuration = proposedConfig ?? activeConfig;
-            fingerprint = configuration.Fingerprint;
-
-            if (Member.ConfigurationFingerprint == fingerprint)
-            {
-                applyConfig = activeConfig.Fingerprint == fingerprint;
-                configuration = IClusterConfiguration.CreateEmpty(fingerprint);
-            }
-            else
-            {
-                applyConfig = false;
-            }
-
-            return (configuration, applyConfig);
-        }
-
         public ValueTask<Result<bool>> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
             where TList : notnull, IReadOnlyList<TEntry>
         {
             if (snapshotIndex.HasValue)
             {
-                logger.InstallingSnapshot(replicationIndex = snapshotIndex.GetValueOrDefault());
-                replicationAwaiter = Member.InstallSnapshotAsync(term, entries[0], replicationIndex, token).ConfigureAwait(false).GetAwaiter();
+                ReplicateSnapshot(entries[0], snapshotIndex.GetValueOrDefault(), token);
             }
             else
             {
-                var (config, applyConfig) = GetConfiguration();
-                logger.ReplicaSize(Member.EndPoint, entries.Count, precedingIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, applyConfig);
-                replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, config, applyConfig, token).ConfigureAwait(false).GetAwaiter();
-                replicationIndex = precedingIndex + entries.Count;
+                ReplicateEntries<TEntry, TList>(entries, token);
             }
 
-            replicatedWithCurrentTerm = ContainsTerm(entries, term);
             if (replicationAwaiter.IsCompleted)
                 Complete();
             else
                 replicationAwaiter.OnCompleted(Complete);
 
             return new(Task);
-
-            static bool ContainsTerm(TList list, long term)
-            {
-                for (var i = 0; i < list.Count; i++)
-                {
-                    if (list[i].Term == term)
-                        return true;
-                }
-
-                return false;
-            }
         }
+
+        private void ReplicateSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            where TSnapshot : notnull, IRaftLogEntry
+        {
+            Debug.Assert(snapshot.IsSnapshot);
+
+            logger.InstallingSnapshot(replicationIndex = snapshotIndex);
+            replicationAwaiter = Member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
+            fingerprint = Member.ConfigurationFingerprint; // keep local version unchanged
+            replicatedWithCurrentTerm = snapshot.Term == term;
+        }
+
+        private void ReplicateEntries<TEntry, TList>(TList entries, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+            where TList : notnull, IReadOnlyList<TEntry>
+        {
+            logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, Member.ConfigurationFingerprint, fingerprint, replicatedWithCurrentTerm);
+            replicationAwaiter = Member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, replicatedWithCurrentTerm, token).ConfigureAwait(false).GetAwaiter();
+            replicationIndex += entries.Count;
+
+            for (var i = 0; i < entries.Count; i++)
+            {
+                if (entries[i].Term == term)
+                {
+                    replicatedWithCurrentTerm = true;
+                    return;
+                }
+            }
+
+            replicatedWithCurrentTerm = false;
+        }
+
+        long IClusterConfiguration.Fingerprint => fingerprint;
+
+        long IClusterConfiguration.Length => 0L;
+
+        bool IDataTransferObject.IsReusable => true;
+
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => IDataTransferObject.Empty.WriteToAsync(writer, token);
+
+        bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+            => IDataTransferObject.Empty.TryGetMemory(out memory);
     }
 
     private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
     {
         private readonly long currentIndex;
+        private CancellationToken token;
+        private IAuditTrail<IRaftLogEntry>? auditTrail;
+        private Replicator? replicator;
         private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
 
-        internal ReplicationWorkItem(Replicator replicator, long currentIndex)
-            : base(replicator, TaskCreationOptions.RunContinuationsAsynchronously)
+        internal ReplicationWorkItem(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
+            : base(replicator.Member, TaskCreationOptions.RunContinuationsAsynchronously)
         {
             Debug.Assert(replicator is not null);
+            Debug.Assert(auditTrail is not null);
 
             this.currentIndex = currentIndex;
+            this.auditTrail = auditTrail;
+            this.token = token;
+            this.replicator = replicator;
         }
 
-        private Replicator AsyncState
+        internal static TMember GetReplicatedMember(Task<Result<bool>> task)
         {
-            get
-            {
-                Debug.Assert(Task.AsyncState is Replicator);
+            Debug.Assert(task is { IsCompleted: true, AsyncState: TMember });
 
-                return Unsafe.As<Replicator>(Task.AsyncState);
-            }
+            return (TMember)task.AsyncState;
         }
-
-        internal static TMember? GetReplicatedMember(Task<Result<bool>> task)
-            => (task.AsyncState as Replicator)?.Member;
 
         private void OnCompleted() => Complete(ref awaiter);
 
         void IThreadPoolWorkItem.Execute()
         {
-            var awaiter = AsyncState.ReplicateAsync(currentIndex).ConfigureAwait(false).GetAwaiter();
+            var replicator = this.replicator;
+            var auditTrail = this.auditTrail;
+            var token = this.token;
+
+            Debug.Assert(replicator is not null);
+            Debug.Assert(auditTrail is not null);
+
+            // help GC
+            this.replicator = null;
+            this.auditTrail = null;
+            this.token = default;
+
+            var awaiter = replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
 
             if (awaiter.IsCompleted)
             {
@@ -312,9 +338,9 @@ internal partial class LeaderState<TMember>
         return result;
     }
 
-    private static Task<Result<bool>> QueueReplication(Replicator replicator, long currentIndex)
+    private static Task<Result<bool>> QueueReplication(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
     {
-        var workItem = new ReplicationWorkItem(replicator, currentIndex);
+        var workItem = new ReplicationWorkItem(replicator, auditTrail, currentIndex, token);
         ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
         return workItem.Task;
     }

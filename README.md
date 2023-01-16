@@ -46,34 +46,38 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-15-2022
+Release Date: 01-16-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.8.1">DotNext 4.8.1</a>
-* Improved quality and performance of random string generator exposed as `RandomExtensions.NextString` extension methods ([138](https://github.com/dotnet/dotNext/issues/138))
+<a href="https://www.nuget.org/packages/dotnext/4.9.0">DotNext 4.9.0</a>
+* Introduced `SpawningAsyncTaskMethodBuilder` that can be used in combination with [AsyncMethodBuilderAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncmethodbuilderattribute) to force execution of async method in parallel with the current flow
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.8.1">DotNext.Metaprogramming 4.8.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.9.0">DotNext.Metaprogramming 4.9.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.8.1">DotNext.Reflection 4.8.1</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/4.9.0">DotNext.Reflection 4.9.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.8.1">DotNext.Unsafe 4.8.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.9.0">DotNext.Unsafe 4.9.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.8.1">DotNext.Threading 4.8.1</a>
-* Fixed critical bug [136](https://github.com/dotnet/dotNext/issues/136) that prevents reentrant reads from persistent channel
+<a href="https://www.nuget.org/packages/dotnext.threading/4.9.0">DotNext.Threading 4.9.0</a>
+* Smallish performance improvements of async locks
+* Fixed upgrade lock acquisition using `AsyncLock` value type
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.8.1">DotNext.IO 4.8.1</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.9.0">DotNext.IO 4.9.0</a>
+* Use `ValueTask` caching for hot execution paths
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.8.1">DotNext.Net.Cluster 4.8.1</a>
-* Fixed [139](https://github.com/dotnet/dotNext/issues/139)
-* Fixed calculation of Phi performed by Phi Accrual Failure Detector. The bug leads to false positive detection
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.9.0">DotNext.Net.Cluster 4.9.0</a>
+* Reduced memory allocation caused by WAL and TCP/UDP transports
+* Reduced managed heap fragmentation
+* Added support of [DNS](https://learn.microsoft.com/en-us/dotnet/api/system.net.dnsendpoint) and [Unix Domain Socket](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.unixdomainsocketendpoint) addresses of cluster nodes for better compatibility with containers
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.8.1">DotNext.AspNetCore.Cluster 4.8.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.9.0">DotNext.AspNetCore.Cluster 4.9.0</a>
+* HTTP transport: optimized memory allocations
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
