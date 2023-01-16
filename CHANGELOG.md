@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 01-10-2023
+# 01-16-2023
 <a href="https://www.nuget.org/packages/dotnext/4.9.0">DotNext 4.9.0</a>
 * Introduced `SpawningAsyncTaskMethodBuilder` that can be used in combination with [AsyncMethodBuilderAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncmethodbuilderattribute) to force execution of async method in parallel with the current flow
 * Updated dependencies
