@@ -94,6 +94,9 @@ transport implemented by .NEXT library.</p>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_Metrics">RaftCluster.NodeConfiguration.Metrics</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_PublicEndPoint">RaftCluster.NodeConfiguration.PublicEndPoint</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_ConfigurationStorage">RaftCluster.NodeConfiguration.ConfigurationStorage</a>
     </div>
     <div>
@@ -208,46 +211,10 @@ transport implemented by .NEXT library.</p>
   <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_NodeConfiguration_HostEndPoint">RaftCluster.NodeConfiguration.HostEndPoint</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_PublicEndPoint.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.PublicEndPoint%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L308">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_PublicEndPoint_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.PublicEndPoint*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_PublicEndPoint" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.PublicEndPoint">PublicEndPoint</h4>
-  <div class="markdown level1 summary"><p>Gets the address of the local member visible to other members.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IPEndPoint PublicEndPoint { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.ipendpoint">IPEndPoint</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_PublicEndPoint_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This property is useful when local member hosted in a container (Windows, LXC or Docker)
-because <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_HostEndPoint">HostEndPoint</a> may return <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.ipaddress.any">Any</a> or
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.ipaddress.ipv6any">IPv6Any</a>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_ServerBacklog.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.ServerBacklog%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L322">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L307">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_ServerBacklog_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.ServerBacklog*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_ServerBacklog" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.ServerBacklog">ServerBacklog</h4>
@@ -281,7 +248,7 @@ because <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.Bui
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_TimeToLive.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.TimeToLive%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L331">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.Configuration.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_TimeToLive_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.TimeToLive*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_BuiltInTransportConfiguration_TimeToLive" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.BuiltInTransportConfiguration.TimeToLive">TimeToLive</h4>

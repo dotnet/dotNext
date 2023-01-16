@@ -539,19 +539,19 @@ uses the value returned by <see cref="!:Path.GetTempPath"></see>.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_scoped_System_Byte_output_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(scoped%2CSystem.Byte%2Coutput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_DotNext_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(DotNext.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L742">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
-  <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_scoped_System_Byte_output_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(scoped,System.Byte,output)">CopyTo(scoped, Byte, output)</h4>
+  <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_DotNext_Span_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(DotNext.Span{System.Byte})">CopyTo(Span&lt;Byte&gt;)</h4>
   <div class="markdown level1 summary"><p>Drains buffered content to the memory block synchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int CopyTo(scoped Span, byte, output)</code></pre>
+    <pre><code class="lang-csharp hljs">public int CopyTo(Span&lt;byte&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -564,19 +564,10 @@ uses the value returned by <see cref="!:Path.GetTempPath"></see>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">scoped</span></td>
-        <td><span class="parametername">Span</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a></td>
-        <td><span class="parametername"></span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="xref">output</span></td>
-        <td><span class="parametername"></span></td>
-        <td></td>
+        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The memory block used as a destination for copy operation.</p>
+</td>
       </tr>
     </tbody>
   </table>

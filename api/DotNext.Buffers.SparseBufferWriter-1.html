@@ -448,7 +448,7 @@ property remains unchanged between invocations of read-only operations.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Clear%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L278">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L277">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Clear_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Clear*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Clear" data-uid="DotNext.Buffers.SparseBufferWriter`1.Clear">Clear()</h4>
@@ -461,19 +461,19 @@ property remains unchanged between invocations of read-only operations.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo_scoped__0_output_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo(scoped%2C%600%2Coutput)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo_DotNext_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo(DotNext.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L259">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L258">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
-  <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_scoped__0_output_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo(scoped,`0,output)">CopyTo(scoped, T, output)</h4>
+  <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_DotNext_Span__0__" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo(DotNext.Span{`0})">CopyTo(Span&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Copies the contents of this builder to the specified memory block.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int CopyTo(scoped Span, T, output)</code></pre>
+    <pre><code class="lang-csharp hljs">public int CopyTo(Span&lt;T&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -486,19 +486,10 @@ property remains unchanged between invocations of read-only operations.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">scoped</span></td>
-        <td><span class="parametername">Span</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername"></span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="xref">output</span></td>
-        <td><span class="parametername"></span></td>
-        <td></td>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The memory block to be modified.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -790,7 +781,7 @@ and advances the position.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo__1_System_Buffers_ReadOnlySpanAction__0___0____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo%60%601(System.Buffers.ReadOnlySpanAction%7B%600%2C%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L250">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L249">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo__1_System_Buffers_ReadOnlySpanAction__0___0____0_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo``1(System.Buffers.ReadOnlySpanAction{`0,``0},``0)">CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;T, TArg&gt;, TArg)</h4>
@@ -846,7 +837,7 @@ and advances the position.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L301">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L300">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -1024,7 +1015,7 @@ and advances the position.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L315">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L314">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_ToString_" data-uid="DotNext.Buffers.SparseBufferWriter`1.ToString*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_ToString" data-uid="DotNext.Buffers.SparseBufferWriter`1.ToString">ToString()</h4>
@@ -1222,7 +1213,7 @@ and advances the position.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyToAsync__1___0_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.DotNext%23Buffers%23IGrowableBuffer%7BT%7D%23CopyToAsync%60%601(%60%600%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L234">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L233">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyToAsync_" data-uid="DotNext.Buffers.SparseBufferWriter`1.DotNext#Buffers#IGrowableBuffer{T}#CopyToAsync*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyToAsync__1___0_CancellationToken_" data-uid="DotNext.Buffers.SparseBufferWriter`1.DotNext#Buffers#IGrowableBuffer{T}#CopyToAsync``1(``0,CancellationToken)">IGrowableBuffer&lt;T&gt;.CopyToAsync&lt;TConsumer&gt;(TConsumer, CancellationToken)</h4>
@@ -1323,7 +1314,7 @@ and advances the position.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SparseBufferWriter_1_DotNext_ISupplier_System_Buffers_ReadOnlySequence_T___Invoke.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.DotNext%23ISupplier%7BSystem%23Buffers%23ReadOnlySequence%7BT%7D%7D%23Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L286">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L285">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_DotNext_ISupplier_System_Buffers_ReadOnlySequence_T___Invoke_" data-uid="DotNext.Buffers.SparseBufferWriter`1.DotNext#ISupplier{System#Buffers#ReadOnlySequence{T}}#Invoke*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_DotNext_ISupplier_System_Buffers_ReadOnlySequence_T___Invoke" data-uid="DotNext.Buffers.SparseBufferWriter`1.DotNext#ISupplier{System#Buffers#ReadOnlySequence{T}}#Invoke">ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;.Invoke()</h4>
