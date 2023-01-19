@@ -1,91 +1,87 @@
-using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Timestamp = Diagnostics.Timestamp;
-
 internal partial class LeaderState<TMember>
 {
-    private sealed class LeaderLease : ILeaderLease
+    private sealed class LeaderLease : CancellationTokenSource, ILeaderLease
     {
-        private readonly TimeSpan maxLease;
-        private Timestamp createdAt; // volatile
+        private readonly CancellationToken cachedToken; // cached to avoid ObjectDisposedException
 
-        internal LeaderLease(Timestamp startTime, TimeSpan maxLease, CancellationToken leaseToken)
+        internal LeaderLease() => cachedToken = Token;
+
+        CancellationToken ILeaderLease.Token => cachedToken;
+
+        bool ILeaderLease.IsExpired => IsCancellationRequested;
+    }
+
+    private sealed class ExpiredLease : ILeaderLease
+    {
+        internal static readonly ExpiredLease Instance = new();
+
+        private ExpiredLease()
         {
-            createdAt = startTime;
-            this.maxLease = maxLease;
-            Token = leaseToken;
         }
 
-        internal bool TryReset(Timestamp startTime, out TimeSpan remainingTime)
-        {
-            Timestamp.VolatileWrite(ref createdAt, startTime);
-            return (remainingTime = maxLease - startTime.Elapsed) > TimeSpan.Zero;
-        }
+        CancellationToken ILeaderLease.Token => new(canceled: true);
 
-        public bool IsExpired => Timestamp.VolatileRead(ref createdAt).Elapsed >= maxLease;
-
-        public CancellationToken Token { get; }
+        bool ILeaderLease.IsExpired => true;
     }
 
     private readonly TimeSpan maxLease;
-    private readonly Timer leaseTimer;
-    private CancellationTokenSource leaseTokenSource;
-    private volatile LeaderLease? lease;
+    private volatile ILeaderLease? lease; // null if disposed, ExpiredLease, or LeaderLease
 
-    private object SyncRoot => timerCancellation;
-
-    private void RenewLease(Timestamp startTime)
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
+    private void RenewLease(TimeSpan elapsed)
     {
-        if (TryReset(out var leaseTime) && leaseTimer.Change(leaseTime, InfiniteTimeSpan))
+        var currentLease = lease;
+
+        // lease is expired, create a new lease
+        switch (currentLease)
         {
-            var tokenSourceToDispose = default(IDisposable);
-            Monitor.Enter(SyncRoot);
-            try
-            {
-                if (leaseTokenSource.IsCancellationRequested)
-                {
-                    tokenSourceToDispose = leaseTokenSource;
-                    leaseTokenSource = CancellationTokenSource.CreateLinkedTokenSource(LeadershipToken);
-                    lease = new(startTime, maxLease, leaseTokenSource.Token);
-                }
-            }
-            finally
-            {
-                Monitor.Exit(SyncRoot);
-                tokenSourceToDispose?.Dispose();
-            }
+            case null: // lease is destroyed, just leave the method
+                break;
+            case { IsExpired: true }:
+                goto default;
+            case LeaderLease resettable: // reuse existing instance of CTS, if possible
+                if (!resettable.TryReset())
+                    goto default;
+
+                resettable.CancelAfter(maxLease - elapsed);
+                break;
+            default:
+                if (elapsed < maxLease)
+                    Renew(maxLease - elapsed);
+
+                break;
         }
 
-        bool TryReset(out TimeSpan leaseTime)
+        void Renew(TimeSpan leaseTime)
         {
-            LeaderLease? lease = this.lease;
-
-            if (lease is null)
+            var newLease = new LeaderLease();
+            if (ReferenceEquals(currentLease, Interlocked.CompareExchange(ref lease, newLease, currentLease)))
             {
-                Debug.Assert(leaseTokenSource.IsCancellationRequested);
-
-                leaseTime = maxLease;
-                return true;
+                (currentLease as LeaderLease)?.Dispose();
+                newLease.CancelAfter(leaseTime);
             }
-
-            return lease.TryReset(startTime, out leaseTime);
+            else
+            {
+                newLease.Dispose();
+            }
         }
     }
 
-    private void OnLeaseExpired()
+    private void DestroyLease()
     {
-        if (Monitor.TryEnter(SyncRoot))
+        if (Interlocked.Exchange(ref lease, null) is LeaderLease disposable)
         {
             try
             {
-                leaseTokenSource.Cancel();
+                disposable.Cancel(throwOnFirstException: false);
             }
             finally
             {
-                Monitor.Exit(SyncRoot);
+                disposable.Dispose();
             }
         }
     }
