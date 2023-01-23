@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -6,15 +5,19 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Runtime.Versioning;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
-public static partial class BufferHelpers
+/// <summary>
+/// Provides endianness conversion methods optimized for the conversion of a multiple elements
+/// in contrast to <see cref="BinaryPrimitives"/> class focused on scalar values.
+/// </summary>
+public static class Endianness
 {
     [RequiresPreviewFeatures]
     private interface IEndianessTransformation<T>
         where T : unmanaged
     {
-        public static abstract T ReverseEndianess(T value);
+        public static abstract T ReverseEndianness(T value);
 
         public static abstract Vector128<T> LoadAsVector128(ReadOnlySpan<T> buffer);
 
@@ -27,29 +30,8 @@ public static partial class BufferHelpers
         Vector128<byte> ReorderMask { get; }
     }
 
-    /// <summary>
-    /// Attempts to read typed sequence of elements from the binary sequence.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements to read.</typeparam>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The output buffer.</param>
-    /// <returns><see langword="true"/> if <paramref name="reader"/> has enough elements to read; otherwise, <see langword="false"/>.</returns>
-    public static unsafe bool TryRead<T>(this ref SequenceReader<byte> reader, scoped Span<T> buffer)
-        where T : unmanaged
-    {
-        for (int count, offset = 0, maxLength = Array.MaxLength / sizeof(T); (uint)offset < (uint)buffer.Length; offset += count)
-        {
-            count = buffer.Length > maxLength ? maxLength : buffer.Length - offset;
-
-            if (!reader.TryCopyTo(MemoryMarshal.AsBytes(buffer.Slice(offset, count))))
-                return false;
-        }
-
-        return true;
-    }
-
     [RequiresPreviewFeatures]
-    private static unsafe void ReverseEndianess<T, TTransformation>(Span<T> buffer, TTransformation transformation)
+    private static unsafe void ReverseEndianness<T, TTransformation>(Span<T> buffer, TTransformation transformation)
         where T : unmanaged
         where TTransformation : struct, IEndianessTransformation<T>
     {
@@ -75,62 +57,62 @@ public static partial class BufferHelpers
 
         // software fallback
         foreach (ref var item in buffer)
-            item = TTransformation.ReverseEndianess(item);
+            item = TTransformation.ReverseEndianness(item);
     }
 
     [RequiresPreviewFeatures]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void ReverseEndianess<T, TTransformation>(Span<T> buffer)
+    private static void ReverseEndianness<T, TTransformation>(Span<T> buffer)
         where T : unmanaged
         where TTransformation : struct, IEndianessTransformation<T>
-        => ReverseEndianess(buffer, new TTransformation());
+        => ReverseEndianness(buffer, new TTransformation());
 
 #pragma warning disable CA2252  // TODO: Remove in .NET 7
 
     /// <summary>
-    /// Reverse endianess of 16-bit signed integers in-place.
+    /// Reverse endianness of 16-bit signed integers in-place.
     /// </summary>
     /// <param name="buffer">The buffer to modify.</param>
-    public static void ReverseEndianess(this Span<short> buffer)
-        => ReverseEndianess<ushort, UInt16Transformation>(MemoryMarshal.Cast<short, ushort>(buffer));
+    public static void ReverseEndianness(this Span<short> buffer)
+        => ReverseEndianness<ushort, UInt16Transformation>(MemoryMarshal.Cast<short, ushort>(buffer));
 
     /// <summary>
-    /// Reverse endianess of 16-bit unsigned integers in-place.
+    /// Reverse endianness of 16-bit unsigned integers in-place.
     /// </summary>
     /// <param name="buffer">The buffer to modify.</param>
     [CLSCompliant(false)]
-    public static void ReverseEndianess(this Span<ushort> buffer)
-        => ReverseEndianess<ushort, UInt16Transformation>(buffer);
+    public static void ReverseEndianness(this Span<ushort> buffer)
+        => ReverseEndianness<ushort, UInt16Transformation>(buffer);
 
     /// <summary>
-    /// Reverse endianess of 32-bit signed integers in-place.
+    /// Reverse endianness of 32-bit signed integers in-place.
     /// </summary>
     /// <param name="buffer">The buffer to modify.</param>
-    public static void ReverseEndianess(this Span<int> buffer)
-        => ReverseEndianess<uint, UInt32Transformation>(MemoryMarshal.Cast<int, uint>(buffer));
+    public static void ReverseEndianness(this Span<int> buffer)
+        => ReverseEndianness<uint, UInt32Transformation>(MemoryMarshal.Cast<int, uint>(buffer));
 
     /// <summary>
-    /// Reverse endianess of 32-bit unsigned integers in-place.
-    /// </summary>
-    /// <param name="buffer">The buffer to modify.</param>
-    [CLSCompliant(false)]
-    public static void ReverseEndianess(this Span<uint> buffer)
-        => ReverseEndianess<uint, UInt32Transformation>(buffer);
-
-    /// <summary>
-    /// Reverse endianess of 64-bit signed integers in-place.
-    /// </summary>
-    /// <param name="buffer">The buffer to modify.</param>
-    public static void ReverseEndianess(this Span<long> buffer)
-        => ReverseEndianess<ulong, UInt64Transformation>(MemoryMarshal.Cast<long, ulong>(buffer));
-
-    /// <summary>
-    /// Reverse endianess of 64-bit unsigned integers in-place.
+    /// Reverse endianness of 32-bit unsigned integers in-place.
     /// </summary>
     /// <param name="buffer">The buffer to modify.</param>
     [CLSCompliant(false)]
-    public static void ReverseEndianess(this Span<ulong> buffer)
-        => ReverseEndianess<ulong, UInt64Transformation>(buffer);
+    public static void ReverseEndianness(this Span<uint> buffer)
+        => ReverseEndianness<uint, UInt32Transformation>(buffer);
+
+    /// <summary>
+    /// Reverse endianness of 64-bit signed integers in-place.
+    /// </summary>
+    /// <param name="buffer">The buffer to modify.</param>
+    public static void ReverseEndianness(this Span<long> buffer)
+        => ReverseEndianness<ulong, UInt64Transformation>(MemoryMarshal.Cast<long, ulong>(buffer));
+
+    /// <summary>
+    /// Reverse endianness of 64-bit unsigned integers in-place.
+    /// </summary>
+    /// <param name="buffer">The buffer to modify.</param>
+    [CLSCompliant(false)]
+    public static void ReverseEndianness(this Span<ulong> buffer)
+        => ReverseEndianness<ulong, UInt64Transformation>(buffer);
 
 #pragma warning restore CA2252
     [RequiresPreviewFeatures]
@@ -157,7 +139,7 @@ public static partial class BufferHelpers
 
         public Vector128<byte> ReorderMask { get; }
 
-        static ushort IEndianessTransformation<ushort>.ReverseEndianess(ushort value) => BinaryPrimitives.ReverseEndianness(value);
+        static ushort IEndianessTransformation<ushort>.ReverseEndianness(ushort value) => BinaryPrimitives.ReverseEndianness(value);
 
         static unsafe Vector128<ushort> IEndianessTransformation<ushort>.LoadAsVector128(ReadOnlySpan<ushort> buffer)
         {
@@ -216,7 +198,7 @@ public static partial class BufferHelpers
 
         public Vector128<byte> ReorderMask { get; }
 
-        static uint IEndianessTransformation<uint>.ReverseEndianess(uint value) => BinaryPrimitives.ReverseEndianness(value);
+        static uint IEndianessTransformation<uint>.ReverseEndianness(uint value) => BinaryPrimitives.ReverseEndianness(value);
 
         static unsafe Vector128<uint> IEndianessTransformation<uint>.LoadAsVector128(ReadOnlySpan<uint> buffer)
         {
@@ -275,7 +257,7 @@ public static partial class BufferHelpers
 
         public Vector128<byte> ReorderMask { get; }
 
-        static ulong IEndianessTransformation<ulong>.ReverseEndianess(ulong value) => BinaryPrimitives.ReverseEndianness(value);
+        static ulong IEndianessTransformation<ulong>.ReverseEndianness(ulong value) => BinaryPrimitives.ReverseEndianness(value);
 
         static unsafe Vector128<ulong> IEndianessTransformation<ulong>.LoadAsVector128(ReadOnlySpan<ulong> buffer)
         {
