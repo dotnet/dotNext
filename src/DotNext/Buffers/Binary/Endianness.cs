@@ -51,7 +51,7 @@ public static class Endianness
             {
                 TTransformation.StoreAsVector128(
                         buffer,
-                        Avx2.Shuffle(TTransformation.LoadAsVector128(buffer).AsByte(), transformation.ReorderMask).As<byte, T>());
+                        Ssse3.Shuffle(TTransformation.LoadAsVector128(buffer).AsByte(), transformation.ReorderMask).As<byte, T>());
             }
         }
 
