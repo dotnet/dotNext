@@ -20,7 +20,8 @@ namespace DotNext.Buffers
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
             var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(MemoryMarshal.AsBytes<short>(actual).ToArray()));
-            True(BitConverter.IsLittleEndian ? reader.TryReadBigEndian(actual) : reader.TryReadLittleEndian(actual));
+            True(reader.TryRead<short>(actual));
+            BufferHelpers.ReverseEndianess(actual);
             Equal(expected, actual);
         }
 
@@ -36,7 +37,8 @@ namespace DotNext.Buffers
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
             var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(MemoryMarshal.AsBytes<int>(actual).ToArray()));
-            True(BitConverter.IsLittleEndian ? reader.TryReadBigEndian(actual) : reader.TryReadLittleEndian(actual));
+            True(reader.TryRead<int>(actual));
+            BufferHelpers.ReverseEndianess(actual);
             Equal(expected, actual);
         }
 
@@ -52,7 +54,8 @@ namespace DotNext.Buffers
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
             var reader = new SequenceReader<byte>(new ReadOnlySequence<byte>(MemoryMarshal.AsBytes<long>(actual).ToArray()));
-            True(BitConverter.IsLittleEndian ? reader.TryReadBigEndian(actual) : reader.TryReadLittleEndian(actual));
+            True(reader.TryRead<long>(actual));
+            BufferHelpers.ReverseEndianess(actual);
             Equal(expected, actual);
         }
 

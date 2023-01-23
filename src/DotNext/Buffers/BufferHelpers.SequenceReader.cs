@@ -27,15 +27,21 @@ public static partial class BufferHelpers
         Vector128<byte> ReorderMask { get; }
     }
 
-    private static unsafe bool TryRead<T>(ref SequenceReader<byte> reader, scoped Span<T> output)
+    /// <summary>
+    /// Attempts to read typed sequence of elements from the binary sequence.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements to read.</typeparam>
+    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
+    /// <param name="buffer">The output buffer.</param>
+    /// <returns><see langword="true"/> if <paramref name="reader"/> has enough elements to read; otherwise, <see langword="false"/>.</returns>
+    public static unsafe bool TryRead<T>(this ref SequenceReader<byte> reader, scoped Span<T> buffer)
         where T : unmanaged
     {
-        var maxLength = Array.MaxLength / sizeof(T);
-        for (int count; !output.IsEmpty; output = output.Slice(count))
+        for (int count, offset = 0, maxLength = Array.MaxLength / sizeof(T); (uint)offset < (uint)buffer.Length; offset += count)
         {
-            count = output.Length > maxLength ? maxLength : output.Length;
+            count = buffer.Length > maxLength ? maxLength : buffer.Length - offset;
 
-            if (!reader.TryCopyTo(MemoryMarshal.AsBytes(output.Slice(0, count))))
+            if (!reader.TryCopyTo(MemoryMarshal.AsBytes(buffer.Slice(offset, count))))
                 return false;
         }
 
@@ -126,150 +132,7 @@ public static partial class BufferHelpers
     public static void ReverseEndianess(this Span<ulong> buffer)
         => ReverseEndianess<ulong, UInt64Transformation>(buffer);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [RequiresPreviewFeatures]
-    private static bool TryRead<T, TTransformation>(ref SequenceReader<byte> reader, scoped Span<T> buffer, bool isLittleEndian)
-        where T : unmanaged
-        where TTransformation : struct, IEndianessTransformation<T>
-    {
-        if (!TryRead(ref reader, buffer))
-            return false;
-
-        // slow path, need to reverse endianess
-        if (BitConverter.IsLittleEndian != isLittleEndian)
-            ReverseEndianess<T, TTransformation>(buffer);
-
-        return true;
-    }
-
-    /// <summary>
-    /// Tries to read a sequence of little-endian 16-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadLittleEndian(this ref SequenceReader<byte> reader, scoped Span<short> buffer)
-        => TryRead<ushort, UInt16Transformation>(ref reader, MemoryMarshal.Cast<short, ushort>(buffer), isLittleEndian: true);
-
-    /// <summary>
-    /// Tries to read a sequence of big-endian 16-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, scoped Span<short> buffer)
-        => TryRead<ushort, UInt16Transformation>(ref reader, MemoryMarshal.Cast<short, ushort>(buffer), isLittleEndian: false);
-
-    /// <summary>
-    /// Tries to read a sequence of little-endian 16-bit unsigned integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    [CLSCompliant(false)]
-    public static bool TryReadLittleEndian(this ref SequenceReader<byte> reader, scoped Span<ushort> buffer)
-        => TryRead<ushort, UInt16Transformation>(ref reader, buffer, isLittleEndian: true);
-
-    /// <summary>
-    /// Tries to read a sequence of big-endian 16-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    [CLSCompliant(false)]
-    public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, scoped Span<ushort> buffer)
-        => TryRead<ushort, UInt16Transformation>(ref reader, buffer, isLittleEndian: false);
-
-    /// <summary>
-    /// Tries to read a sequence of little-endian 32-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadLittleEndian(this ref SequenceReader<byte> reader, scoped Span<int> buffer)
-        => TryRead<uint, UInt32Transformation>(ref reader, MemoryMarshal.Cast<int, uint>(buffer), isLittleEndian: true);
-
-    /// <summary>
-    /// Tries to read a sequence of big-endian 32-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, scoped Span<int> buffer)
-        => TryRead<uint, UInt32Transformation>(ref reader, MemoryMarshal.Cast<int, uint>(buffer), isLittleEndian: false);
-
-    /// <summary>
-    /// Tries to read a sequence of little-endian 32-bit unsigned integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    [CLSCompliant(false)]
-    public static bool TryReadLittleEndian(this ref SequenceReader<byte> reader, scoped Span<uint> buffer)
-        => TryRead<uint, UInt32Transformation>(ref reader, buffer, isLittleEndian: true);
-
-    /// <summary>
-    /// Tries to read a sequence of big-endian 32-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    [CLSCompliant(false)]
-    public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, scoped Span<uint> buffer)
-        => TryRead<uint, UInt32Transformation>(ref reader, buffer, isLittleEndian: false);
-
-    /// <summary>
-    /// Tries to read a sequence of little-endian 64-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadLittleEndian(this ref SequenceReader<byte> reader, scoped Span<long> buffer)
-        => TryRead<ulong, UInt64Transformation>(ref reader, MemoryMarshal.Cast<long, ulong>(buffer), isLittleEndian: true);
-
-    /// <summary>
-    /// Tries to read a sequence of big-endian 64-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, scoped Span<long> buffer)
-        => TryRead<ulong, UInt64Transformation>(ref reader, MemoryMarshal.Cast<long, ulong>(buffer), isLittleEndian: false);
-
-    /// <summary>
-    /// Tries to read a sequence of little-endian 64-bit unsigned integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    [CLSCompliant(false)]
-    public static bool TryReadLittleEndian(this ref SequenceReader<byte> reader, scoped Span<ulong> buffer)
-        => TryRead<ulong, UInt64Transformation>(ref reader, buffer, isLittleEndian: true);
-
-    /// <summary>
-    /// Tries to read a sequence of big-endian 64-bit signed integers, reorder bytes
-    /// in-place if necessary.
-    /// </summary>
-    /// <param name="reader">The byte sequence reader instance from which the values are to be read.</param>
-    /// <param name="buffer">The buffer of values to be modified.</param>
-    /// <returns><see langword="true"/> if <paramref name="buffer"/> has decoded values; otherwise, <see langword="false"/>.</returns>
-    [CLSCompliant(false)]
-    public static bool TryReadBigEndian(this ref SequenceReader<byte> reader, scoped Span<ulong> buffer)
-        => TryRead<ulong, UInt64Transformation>(ref reader, buffer, isLittleEndian: false);
-
 #pragma warning restore CA2252
-
     [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
     private readonly struct UInt16Transformation : IEndianessTransformation<ushort>
