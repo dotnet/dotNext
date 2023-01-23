@@ -14,7 +14,7 @@ namespace DotNext.Buffers.Binary;
 public static class Endianness
 {
     [RequiresPreviewFeatures]
-    private interface IEndianessTransformation<T>
+    private interface IEndiannessTransformation<T>
         where T : unmanaged
     {
         public static abstract T ReverseEndianness(T value);
@@ -33,7 +33,7 @@ public static class Endianness
     [RequiresPreviewFeatures]
     private static unsafe void ReverseEndianness<T, TTransformation>(Span<T> buffer, TTransformation transformation)
         where T : unmanaged
-        where TTransformation : struct, IEndianessTransformation<T>
+        where TTransformation : struct, IEndiannessTransformation<T>
     {
         if (Ssse3.IsSupported)
         {
@@ -64,7 +64,7 @@ public static class Endianness
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ReverseEndianness<T, TTransformation>(Span<T> buffer)
         where T : unmanaged
-        where TTransformation : struct, IEndianessTransformation<T>
+        where TTransformation : struct, IEndiannessTransformation<T>
         => ReverseEndianness(buffer, new TTransformation());
 
 #pragma warning disable CA2252  // TODO: Remove in .NET 7
@@ -117,7 +117,7 @@ public static class Endianness
 #pragma warning restore CA2252
     [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct UInt16Transformation : IEndianessTransformation<ushort>
+    private readonly struct UInt16Transformation : IEndiannessTransformation<ushort>
     {
         public UInt16Transformation() => ReorderMask = Vector128.Create(
                 (byte)1,
@@ -139,9 +139,9 @@ public static class Endianness
 
         public Vector128<byte> ReorderMask { get; }
 
-        static ushort IEndianessTransformation<ushort>.ReverseEndianness(ushort value) => BinaryPrimitives.ReverseEndianness(value);
+        static ushort IEndiannessTransformation<ushort>.ReverseEndianness(ushort value) => BinaryPrimitives.ReverseEndianness(value);
 
-        static unsafe Vector128<ushort> IEndianessTransformation<ushort>.LoadAsVector128(ReadOnlySpan<ushort> buffer)
+        static unsafe Vector128<ushort> IEndiannessTransformation<ushort>.LoadAsVector128(ReadOnlySpan<ushort> buffer)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -149,7 +149,7 @@ public static class Endianness
             }
         }
 
-        static unsafe void IEndianessTransformation<ushort>.StoreAsVector128(Span<ushort> buffer, Vector128<ushort> items)
+        static unsafe void IEndiannessTransformation<ushort>.StoreAsVector128(Span<ushort> buffer, Vector128<ushort> items)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -157,7 +157,7 @@ public static class Endianness
             }
         }
 
-        static unsafe Vector256<ushort> IEndianessTransformation<ushort>.LoadAsVector256(ReadOnlySpan<ushort> buffer)
+        static unsafe Vector256<ushort> IEndiannessTransformation<ushort>.LoadAsVector256(ReadOnlySpan<ushort> buffer)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -165,7 +165,7 @@ public static class Endianness
             }
         }
 
-        static unsafe void IEndianessTransformation<ushort>.StoreAsVector256(Span<ushort> buffer, Vector256<ushort> items)
+        static unsafe void IEndiannessTransformation<ushort>.StoreAsVector256(Span<ushort> buffer, Vector256<ushort> items)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -176,7 +176,7 @@ public static class Endianness
 
     [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct UInt32Transformation : IEndianessTransformation<uint>
+    private readonly struct UInt32Transformation : IEndiannessTransformation<uint>
     {
         public UInt32Transformation() => ReorderMask = Vector128.Create(
                 (byte)3,
@@ -198,9 +198,9 @@ public static class Endianness
 
         public Vector128<byte> ReorderMask { get; }
 
-        static uint IEndianessTransformation<uint>.ReverseEndianness(uint value) => BinaryPrimitives.ReverseEndianness(value);
+        static uint IEndiannessTransformation<uint>.ReverseEndianness(uint value) => BinaryPrimitives.ReverseEndianness(value);
 
-        static unsafe Vector128<uint> IEndianessTransformation<uint>.LoadAsVector128(ReadOnlySpan<uint> buffer)
+        static unsafe Vector128<uint> IEndiannessTransformation<uint>.LoadAsVector128(ReadOnlySpan<uint> buffer)
         {
             fixed (uint* ptr = buffer)
             {
@@ -208,7 +208,7 @@ public static class Endianness
             }
         }
 
-        static unsafe void IEndianessTransformation<uint>.StoreAsVector128(Span<uint> buffer, Vector128<uint> items)
+        static unsafe void IEndiannessTransformation<uint>.StoreAsVector128(Span<uint> buffer, Vector128<uint> items)
         {
             fixed (uint* ptr = buffer)
             {
@@ -216,7 +216,7 @@ public static class Endianness
             }
         }
 
-        static unsafe Vector256<uint> IEndianessTransformation<uint>.LoadAsVector256(ReadOnlySpan<uint> buffer)
+        static unsafe Vector256<uint> IEndiannessTransformation<uint>.LoadAsVector256(ReadOnlySpan<uint> buffer)
         {
             fixed (uint* ptr = buffer)
             {
@@ -224,7 +224,7 @@ public static class Endianness
             }
         }
 
-        static unsafe void IEndianessTransformation<uint>.StoreAsVector256(Span<uint> buffer, Vector256<uint> items)
+        static unsafe void IEndiannessTransformation<uint>.StoreAsVector256(Span<uint> buffer, Vector256<uint> items)
         {
             fixed (uint* ptr = buffer)
             {
@@ -235,7 +235,7 @@ public static class Endianness
 
     [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct UInt64Transformation : IEndianessTransformation<ulong>
+    private readonly struct UInt64Transformation : IEndiannessTransformation<ulong>
     {
         public UInt64Transformation() => ReorderMask = Vector128.Create(
                 (byte)7,
@@ -257,9 +257,9 @@ public static class Endianness
 
         public Vector128<byte> ReorderMask { get; }
 
-        static ulong IEndianessTransformation<ulong>.ReverseEndianness(ulong value) => BinaryPrimitives.ReverseEndianness(value);
+        static ulong IEndiannessTransformation<ulong>.ReverseEndianness(ulong value) => BinaryPrimitives.ReverseEndianness(value);
 
-        static unsafe Vector128<ulong> IEndianessTransformation<ulong>.LoadAsVector128(ReadOnlySpan<ulong> buffer)
+        static unsafe Vector128<ulong> IEndiannessTransformation<ulong>.LoadAsVector128(ReadOnlySpan<ulong> buffer)
         {
             fixed (ulong* ptr = buffer)
             {
@@ -267,7 +267,7 @@ public static class Endianness
             }
         }
 
-        static unsafe void IEndianessTransformation<ulong>.StoreAsVector128(Span<ulong> buffer, Vector128<ulong> items)
+        static unsafe void IEndiannessTransformation<ulong>.StoreAsVector128(Span<ulong> buffer, Vector128<ulong> items)
         {
             fixed (ulong* ptr = buffer)
             {
@@ -275,7 +275,7 @@ public static class Endianness
             }
         }
 
-        static unsafe Vector256<ulong> IEndianessTransformation<ulong>.LoadAsVector256(ReadOnlySpan<ulong> buffer)
+        static unsafe Vector256<ulong> IEndiannessTransformation<ulong>.LoadAsVector256(ReadOnlySpan<ulong> buffer)
         {
             fixed (ulong* ptr = buffer)
             {
@@ -283,7 +283,7 @@ public static class Endianness
             }
         }
 
-        static unsafe void IEndianessTransformation<ulong>.StoreAsVector256(Span<ulong> buffer, Vector256<ulong> items)
+        static unsafe void IEndiannessTransformation<ulong>.StoreAsVector256(Span<ulong> buffer, Vector256<ulong> items)
         {
             fixed (ulong* ptr = buffer)
             {
