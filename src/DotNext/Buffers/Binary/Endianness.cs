@@ -65,7 +65,20 @@ public static class Endianness
     private static void ReverseEndianness<T, TTransformation>(Span<T> buffer)
         where T : unmanaged
         where TTransformation : struct, IEndiannessTransformation<T>
-        => ReverseEndianness(buffer, new TTransformation());
+    {
+        switch (buffer.Length)
+        {
+            case 0:
+                break;
+            case 1:
+                ref var item = ref buffer[0];
+                item = TTransformation.ReverseEndianness(item);
+                break;
+            default:
+                ReverseEndianness(buffer, new TTransformation());
+                break;
+        }
+    }
 
 #pragma warning disable CA2252  // TODO: Remove in .NET 7
 
