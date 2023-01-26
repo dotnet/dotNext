@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Buffers.Binary
 {
     [ExcludeFromCodeCoverage]
-    public sealed class SequenceReaderExtensionsTests : Test
+    public sealed class BinaryTransformationsTests : Test
     {
         [Theory]
         [InlineData(4)]
