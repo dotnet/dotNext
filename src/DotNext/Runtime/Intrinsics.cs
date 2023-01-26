@@ -997,11 +997,21 @@ public static class Intrinsics
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static TTo ReinterpretCast<TFrom, TTo>(TFrom input)
+    internal static TOutput ReinterpretCast<TInput, TOutput>(TInput input)
     {
-        Debug.Assert(Unsafe.SizeOf<TFrom>() == Unsafe.SizeOf<TTo>());
+        Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>());
 
-        return Unsafe.As<TFrom, TTo>(ref input);
+        return Unsafe.As<TInput, TOutput>(ref input);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static Span<TOutput> ReinterpretCast<TInput, TOutput>(Span<TInput> input)
+        where TInput : unmanaged
+        where TOutput : unmanaged
+    {
+        Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>());
+
+        return MemoryMarshal.CreateSpan(ref Unsafe.As<TInput, TOutput>(ref MemoryMarshal.GetReference(input)), input.Length);
     }
 
     /// <summary>

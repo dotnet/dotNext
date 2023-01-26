@@ -7,6 +7,8 @@ using System.Runtime.Versioning;
 
 namespace DotNext.Buffers.Binary;
 
+using Intrinsics = Runtime.Intrinsics;
+
 public static partial class BinaryTransformations
 {
     [RequiresPreviewFeatures]
@@ -75,7 +77,7 @@ public static partial class BinaryTransformations
     /// </summary>
     /// <param name="buffer">The buffer to modify.</param>
     public static void ReverseEndianness(this Span<short> buffer)
-        => ReverseEndianness<ushort, UInt16Transformation>(MemoryMarshal.Cast<short, ushort>(buffer));
+        => ReverseEndianness<ushort, UInt16Transformation>(Intrinsics.ReinterpretCast<short, ushort>(buffer));
 
     /// <summary>
     /// Reverse endianness of 16-bit unsigned integers in-place.
@@ -90,7 +92,7 @@ public static partial class BinaryTransformations
     /// </summary>
     /// <param name="buffer">The buffer to modify.</param>
     public static void ReverseEndianness(this Span<int> buffer)
-        => ReverseEndianness<uint, UInt32Transformation>(MemoryMarshal.Cast<int, uint>(buffer));
+        => ReverseEndianness<uint, UInt32Transformation>(Intrinsics.ReinterpretCast<int, uint>(buffer));
 
     /// <summary>
     /// Reverse endianness of 32-bit unsigned integers in-place.
@@ -105,7 +107,7 @@ public static partial class BinaryTransformations
     /// </summary>
     /// <param name="buffer">The buffer to modify.</param>
     public static void ReverseEndianness(this Span<long> buffer)
-        => ReverseEndianness<ulong, UInt64Transformation>(MemoryMarshal.Cast<long, ulong>(buffer));
+        => ReverseEndianness<ulong, UInt64Transformation>(Intrinsics.ReinterpretCast<long, ulong>(buffer));
 
     /// <summary>
     /// Reverse endianness of 64-bit unsigned integers in-place.
