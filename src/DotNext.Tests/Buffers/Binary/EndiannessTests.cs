@@ -19,7 +19,7 @@ namespace DotNext.Buffers.Binary
 
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
-            Endianness.ReverseEndianness(actual);
+            BinaryTransformations.ReverseEndianness(actual);
             Equal(expected, actual);
 
             static void ReverseEndianessSlow(Span<short> values)
@@ -40,7 +40,7 @@ namespace DotNext.Buffers.Binary
 
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
-            Endianness.ReverseEndianness(actual);
+            BinaryTransformations.ReverseEndianness(actual);
             Equal(expected, actual);
 
             static void ReverseEndianessSlow(Span<ushort> values)
@@ -61,7 +61,7 @@ namespace DotNext.Buffers.Binary
 
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
-            Endianness.ReverseEndianness(actual);
+            BinaryTransformations.ReverseEndianness(actual);
             Equal(expected, actual);
 
             static void ReverseEndianessSlow(Span<int> values)
@@ -82,7 +82,7 @@ namespace DotNext.Buffers.Binary
 
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
-            Endianness.ReverseEndianness(actual);
+            BinaryTransformations.ReverseEndianness(actual);
             Equal(expected, actual);
 
             static void ReverseEndianessSlow(Span<uint> values)
@@ -103,7 +103,7 @@ namespace DotNext.Buffers.Binary
 
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
-            Endianness.ReverseEndianness(actual);
+            BinaryTransformations.ReverseEndianness(actual);
             Equal(expected, actual);
 
             static void ReverseEndianessSlow(Span<long> values)
@@ -124,7 +124,7 @@ namespace DotNext.Buffers.Binary
 
             var actual = expected.ToArray();
             ReverseEndianessSlow(actual);
-            Endianness.ReverseEndianness(actual);
+            BinaryTransformations.ReverseEndianness(actual);
             Equal(expected, actual);
 
             static void ReverseEndianessSlow(Span<ulong> values)
