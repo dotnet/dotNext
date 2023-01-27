@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -13,6 +14,7 @@ namespace DotNext.Runtime;
 /// <summary>
 /// Represents highly optimized runtime intrinsic methods.
 /// </summary>
+[EditorBrowsable(EditorBrowsableState.Advanced)]
 public static class Intrinsics
 {
     [StructLayout(LayoutKind.Auto)]
@@ -78,6 +80,7 @@ public static class Intrinsics
     /// <typeparam name="T">The type for which default value should be obtained.</typeparam>
     /// <returns>The default value of type <typeparamref name="T"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("Use default keyword in C# instead")]
     public static T? DefaultOf<T>() => default;
 
     /// <summary>
@@ -317,6 +320,7 @@ public static class Intrinsics
     /// <param name="index">The index of the array element.</param>
     /// <returns>The reference to the array element with restricted mutability.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete]
     public static ref readonly TBase GetReadonlyRef<T, TBase>(this T[] array, nint index)
         where T : class, TBase
     {
@@ -333,11 +337,14 @@ public static class Intrinsics
     /// <param name="value">The managed pointer to check.</param>
     /// <typeparam name="T">The type of the managed pointer.</typeparam>
     /// <exception cref="NullReferenceException"><paramref name="value"/> pointer is <see langword="null"/>.</exception>
-    [StackTraceHidden]
     public static void ThrowIfNull<T>(scoped in T value)
     {
         if (Unsafe.IsNullRef(ref Unsafe.AsRef(in value)))
-            throw new NullReferenceException();
+            Throw();
+
+        [StackTraceHidden]
+        [DoesNotReturn]
+        static void Throw() => throw new NullReferenceException();
     }
 
     /// <summary>

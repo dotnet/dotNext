@@ -22,7 +22,7 @@ public static partial class Type<[DynamicallyAccessedMembers(DynamicallyAccessed
     /// <summary>
     /// Returns default value for this type.
     /// </summary>
-    public static T? Default => Intrinsics.DefaultOf<T>();
+    public static T? Default => default;
 
     /// <summary>
     /// Provides smart hash code computation.
