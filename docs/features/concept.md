@@ -1,6 +1,9 @@
 Concept Types
 ====
-[Concept Types](https://github.com/dotnet/csharplang/issues/110) is a proposed feature of C# and not yet implemented (at least in C# 9.0). DotNext Reflection library allows to use this feature in the current version of C#.
+[Concept Types](https://github.com/dotnet/csharplang/issues/110) is a proposed feature of C# and not yet implemented (at least in C# 11). DotNext Reflection library allows to use this feature in the current version of C#.
+
+> [!IMPORTANT]
+> `DotNext.Reflection` library doesn't receive new features anymore and will be deprecated soon. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
 
 If you are not familiar with type classes then read these articles first:
 * [Type Classes](https://www.haskell.org/tutorial/classes.html) in Haskell programming language
