@@ -316,7 +316,7 @@ sealed class Startup
 
 This redirection can be transparent to actual client if you use reverse proxy server such as NGINX. Reverse proxy can automatically handle the redirection without returning control to the client.
 
-It is possible to change default behavior of redirection where _301 Moved Permanently_ status code is used. You can pass custom implementation into the optional parameter of `RedirectToLeader` method.
+It is possible to change default behavior of redirection where _307 Temporary Redirect_ status code is used. You can pass custom implementation into the optional parameter of `RedirectToLeader` method.
 
 The following example demonstrates how to return _404 Not Found_ and location of Leader node as its body.
 
