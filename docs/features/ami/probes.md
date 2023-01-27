@@ -1,6 +1,6 @@
 Kubernetes Probes
 ====
-[Kubernetes probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) is another opt-in feature of AMI. The application may implement [DotNext.Diagnostics.IApplicationStatusProvider] interface and register implementation in AMI host.
+[Kubernetes probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes) is another opt-in feature of AMI. The application may implement [IApplicationStatusProvider](xref:DotNext.Diagnostics.IApplicationStatusProvider) interface and register implementation in AMI host.
 
 ```csharp
 using DotNext.Diagnostics;
