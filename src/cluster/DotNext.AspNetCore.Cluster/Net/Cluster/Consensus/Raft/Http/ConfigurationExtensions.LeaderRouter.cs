@@ -86,7 +86,7 @@ public static partial class ConfigurationExtensions
     /// </summary>
     /// <remarks>
     /// If the current node is not the leader then request will be
-    /// redirected automatically to the leader node with 302 (Moved Permanently).
+    /// redirected automatically to the leader node with 307 (Temporary Redirect preserve method).
     /// If there are no consensus then the request will be failed with 503 (Service Unavailable).
     /// You can override redirection behavior using custom <paramref name="redirection"/>.
     /// <paramref name="applicationPortHint"/> used to highlight the real port of the application endpoints in the cluster.
