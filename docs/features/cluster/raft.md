@@ -51,6 +51,8 @@ The node can be started in two modes:
 
 The node is started using `StartAsync` method of [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1) class doesn't mean that the node is ready to serve client requests. To ensure that the node is bootstrapped correctly, use _Readiness Probe_. The probe is provided through `Readiness` property of [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) interface.
 
+Another way of cluster bootstrapping is to pre-populate a list of cluster members with 3 or more cluster members and start them in parallel. In this case, **Cold start** mode is unnecessary.
+
 # Cluster Configuration Management
 Raft supports cluster configuration management out-of-the-box. Cluster configuration is a set of cluster members consistently stored on the nodes. The leader node is responsible for processing amendments of the configuration and replicating the modified configuration to follower nodes. Thus, a list of cluster members is always in consistent state.
 
@@ -68,11 +70,14 @@ It's not possible to remove or add multiple members at a time. Instead, you need
 * _In-memory_ storage that stores configuration in the memory. Restarting the node leads to configuration loss
 * _Persistent_ storage that stores configuration in the file system
 
+> [!WARNING]
+> In-memory configuration storage is not recommended for production use. In case of node failures, the configuration will not survive the node restart.
+
 When a new node is added, it passes through warmup procedure. The leader node attempts to replicate as much as possible log entries to the added node. The number of rounds for catch up can be configured by `WarmupRounds` configuration property. When the leader node decided that the new node is in sync then it adds the address of that node to the proposed configuration. When the proposed configuration becomes the active configuration, readiness probe of the added node turning into the signaled state.
 
 # Network Transport
 .NEXT supports the following network transports:
-* HTTP 1.1, HTTP 2.0 and HTTP 3.0
+* HTTP 1.1, HTTP 2.0, and HTTP 3.0
 * TCP transport
 * UDP transport
 * Generic transport on top of [ASP.NET Core Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) abstractions. See [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.CustomTransportConfiguration) class for more information.
@@ -115,7 +120,7 @@ The configuration of the local node depends on chosen network transport. [NodeCo
 
 By default, all transport bindings for Raft use in-memory configuration storage.
 
-Cluster configuration management is represented by the following methods declared in [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class:
+Cluster configuration management is represented by the following methods declared in [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class or [IRaftHttpCluster](xref:DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster) interface (in case of HTTP transport working on top of ASP.NET Core infrastructure):
 * `AddMemberAsync` to add and catch up a new node
 * `RemoveMemberAsync` to remove the existing node
 
@@ -169,7 +174,7 @@ Note that `JoinCluster` method should be called after `ConfigureWebHost`. Otherw
 
 `UseConsensusProtocolHandler` method should be called before registration of any authentication/authorization middleware.
 
-`UsePersistentConfigurationStorage` allows to configure a persistent storage for the cluster configuration. Additionally, you can use `UseInMemoryConfigurationStorage` method and keep the configuration in the memory. However, it's not recommended for production use.
+`UsePersistentConfigurationStorage` allows to configure a persistent storage for the cluster configuration. Additionally, you can use `UseInMemoryConfigurationStorage` method and keep the configuration in the memory.
 
 ### Dependency Injection
 The application may request the following services from ASP.NET Core DI container:
