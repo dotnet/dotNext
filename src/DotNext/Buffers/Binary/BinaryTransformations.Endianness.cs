@@ -12,7 +12,7 @@ using Intrinsics = Runtime.Intrinsics;
 public static partial class BinaryTransformations
 {
     [RequiresPreviewFeatures]
-    private interface IEndiannessTransformation<T> : ITransformation<T>
+    private interface IEndiannessTransformation<T>
         where T : unmanaged
     {
         public static abstract T ReverseEndianness(T value);
@@ -21,7 +21,7 @@ public static partial class BinaryTransformations
     }
 
     [RequiresPreviewFeatures]
-    private static unsafe void ReverseEndianness<T, TTransformation>(Span<T> buffer, TTransformation transformation)
+    private static void ReverseEndianness<T, TTransformation>(Span<T> buffer, TTransformation transformation)
         where T : unmanaged
         where TTransformation : struct, IEndiannessTransformation<T>
     {
@@ -31,17 +31,17 @@ public static partial class BinaryTransformations
             {
                 for (var reorderMask256 = Vector256.Create(transformation.ReorderMask, transformation.ReorderMask); buffer.Length >= Vector256<T>.Count; buffer = buffer.Slice(Vector256<T>.Count))
                 {
-                    TTransformation.StoreAsVector256(
-                        buffer,
-                        Avx2.Shuffle(TTransformation.LoadAsVector256(buffer).AsByte(), reorderMask256).As<byte, T>());
+                    var vector = LoadAsVector256<T>(buffer);
+                    vector = Avx2.Shuffle(vector.AsByte(), reorderMask256).As<byte, T>();
+                    StoreAsVector256(vector, buffer);
                 }
             }
 
-            for (; buffer.Length >= Vector128<T>.Count; buffer = buffer.Slice(Vector128<T>.Count))
+            for (Vector128<T> vector; buffer.Length >= Vector128<T>.Count; buffer = buffer.Slice(Vector128<T>.Count))
             {
-                TTransformation.StoreAsVector128(
-                        buffer,
-                        Ssse3.Shuffle(TTransformation.LoadAsVector128(buffer).AsByte(), transformation.ReorderMask).As<byte, T>());
+                vector = LoadAsVector128<T>(buffer);
+                vector = Ssse3.Shuffle(vector.AsByte(), transformation.ReorderMask).As<byte, T>();
+                StoreAsVector128(vector, buffer);
             }
         }
 
@@ -143,38 +143,6 @@ public static partial class BinaryTransformations
         public Vector128<byte> ReorderMask { get; }
 
         static ushort IEndiannessTransformation<ushort>.ReverseEndianness(ushort value) => BinaryPrimitives.ReverseEndianness(value);
-
-        static unsafe Vector128<ushort> ITransformation<ushort>.LoadAsVector128(ReadOnlySpan<ushort> buffer)
-        {
-            fixed (ushort* ptr = buffer)
-            {
-                return Ssse3.LoadVector128(ptr);
-            }
-        }
-
-        static unsafe void ITransformation<ushort>.StoreAsVector128(Span<ushort> buffer, Vector128<ushort> items)
-        {
-            fixed (ushort* ptr = buffer)
-            {
-                Ssse3.Store(ptr, items);
-            }
-        }
-
-        static unsafe Vector256<ushort> ITransformation<ushort>.LoadAsVector256(ReadOnlySpan<ushort> buffer)
-        {
-            fixed (ushort* ptr = buffer)
-            {
-                return Avx2.LoadVector256(ptr);
-            }
-        }
-
-        static unsafe void ITransformation<ushort>.StoreAsVector256(Span<ushort> buffer, Vector256<ushort> items)
-        {
-            fixed (ushort* ptr = buffer)
-            {
-                Avx2.Store(ptr, items);
-            }
-        }
     }
 
     [RequiresPreviewFeatures]
@@ -202,38 +170,6 @@ public static partial class BinaryTransformations
         public Vector128<byte> ReorderMask { get; }
 
         static uint IEndiannessTransformation<uint>.ReverseEndianness(uint value) => BinaryPrimitives.ReverseEndianness(value);
-
-        static unsafe Vector128<uint> ITransformation<uint>.LoadAsVector128(ReadOnlySpan<uint> buffer)
-        {
-            fixed (uint* ptr = buffer)
-            {
-                return Ssse3.LoadVector128(ptr);
-            }
-        }
-
-        static unsafe void ITransformation<uint>.StoreAsVector128(Span<uint> buffer, Vector128<uint> items)
-        {
-            fixed (uint* ptr = buffer)
-            {
-                Ssse3.Store(ptr, items);
-            }
-        }
-
-        static unsafe Vector256<uint> ITransformation<uint>.LoadAsVector256(ReadOnlySpan<uint> buffer)
-        {
-            fixed (uint* ptr = buffer)
-            {
-                return Avx2.LoadVector256(ptr);
-            }
-        }
-
-        static unsafe void ITransformation<uint>.StoreAsVector256(Span<uint> buffer, Vector256<uint> items)
-        {
-            fixed (uint* ptr = buffer)
-            {
-                Avx2.Store(ptr, items);
-            }
-        }
     }
 
     [RequiresPreviewFeatures]
@@ -261,37 +197,5 @@ public static partial class BinaryTransformations
         public Vector128<byte> ReorderMask { get; }
 
         static ulong IEndiannessTransformation<ulong>.ReverseEndianness(ulong value) => BinaryPrimitives.ReverseEndianness(value);
-
-        static unsafe Vector128<ulong> ITransformation<ulong>.LoadAsVector128(ReadOnlySpan<ulong> buffer)
-        {
-            fixed (ulong* ptr = buffer)
-            {
-                return Ssse3.LoadVector128(ptr);
-            }
-        }
-
-        static unsafe void ITransformation<ulong>.StoreAsVector128(Span<ulong> buffer, Vector128<ulong> items)
-        {
-            fixed (ulong* ptr = buffer)
-            {
-                Ssse3.Store(ptr, items);
-            }
-        }
-
-        static unsafe Vector256<ulong> ITransformation<ulong>.LoadAsVector256(ReadOnlySpan<ulong> buffer)
-        {
-            fixed (ulong* ptr = buffer)
-            {
-                return Avx2.LoadVector256(ptr);
-            }
-        }
-
-        static unsafe void ITransformation<ulong>.StoreAsVector256(Span<ulong> buffer, Vector256<ulong> items)
-        {
-            fixed (ulong* ptr = buffer)
-            {
-                Avx2.Store(ptr, items);
-            }
-        }
     }
 }
