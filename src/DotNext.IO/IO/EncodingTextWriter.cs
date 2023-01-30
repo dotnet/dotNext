@@ -57,6 +57,9 @@ internal sealed class EncodingTextWriter<TWriter> : TextBufferWriter<byte, TWrit
             case string str:
                 Write(str.AsSpan());
                 break;
+            case StringBuilder sb:
+                Write(sb);
+                break;
             case ISpanFormattable formattable:
                 WriteFormattable(formattable);
                 break;
