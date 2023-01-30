@@ -126,7 +126,7 @@ public static partial class BinaryTransformations
 
             Transform<TTransformation>(
                 ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(values)),
-                count);
+                count * sizeof(T));
         }
     }
 
@@ -180,7 +180,7 @@ public static partial class BinaryTransformations
             Transform<TTransformation>(
                 ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in MemoryMarshal.GetReference(x))),
                 ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)),
-                count);
+                count * sizeof(T));
         }
     }
 

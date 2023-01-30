@@ -224,23 +224,23 @@ namespace DotNext.Buffers.Binary
         [InlineData(3)]
         public static void BitwiseXor(int size)
         {
-            var x = new byte[size];
-            Random.Shared.NextBytes(x);
+            var x = new uint[size];
+            Random.Shared.NextBytes(MemoryMarshal.AsBytes<uint>(x));
 
-            var y = new byte[size];
-            Random.Shared.NextBytes(y);
+            var y = new uint[size];
+            Random.Shared.NextBytes(MemoryMarshal.AsBytes<uint>(y));
 
             var expected = BitwiseXorSlow(x, y);
-            BinaryTransformations.BitwiseXor<byte>(x, y);
+            BinaryTransformations.BitwiseXor<uint>(x, y);
             Equal(expected, y);
 
-            static byte[] BitwiseXorSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
+            static uint[] BitwiseXorSlow(ReadOnlySpan<uint> x, ReadOnlySpan<uint> y)
             {
                 Equal(x.Length, y.Length);
-                var result = new byte[x.Length];
+                var result = new uint[x.Length];
 
                 for (var i = 0; i < x.Length; i++)
-                    result[i] = (byte)(x[i] ^ y[i]);
+                    result[i] = x[i] ^ y[i];
 
                 return result;
             }
@@ -252,19 +252,19 @@ namespace DotNext.Buffers.Binary
         [InlineData(3)]
         public static void OnesComplement(int size)
         {
-            var x = new byte[size];
-            Random.Shared.NextBytes(x);
+            var x = new uint[size];
+            Random.Shared.NextBytes(MemoryMarshal.AsBytes<uint>(x));
 
             var expected = OnesComplementSlow(x);
-            BinaryTransformations.OnesComplement<byte>(x);
+            BinaryTransformations.OnesComplement<uint>(x);
             Equal(expected, x);
 
-            static byte[] OnesComplementSlow(ReadOnlySpan<byte> x)
+            static uint[] OnesComplementSlow(ReadOnlySpan<uint> x)
             {
-                var result = new byte[x.Length];
+                var result = new uint[x.Length];
 
                 for (var i = 0; i < x.Length; i++)
-                    result[i] = (byte)(~x[i]);
+                    result[i] = ~x[i];
 
                 return result;
             }
