@@ -116,8 +116,8 @@ public static partial class BinaryTransformations
     [CLSCompliant(false)]
     public static void ReverseEndianness(this Span<ulong> buffer)
         => ReverseEndianness<ulong, UInt64Transformation>(buffer);
-
 #pragma warning restore CA2252
+
     [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
     private readonly struct UInt16Transformation : IEndiannessTransformation<ushort>
