@@ -133,5 +133,89 @@ namespace DotNext.Buffers.Binary
                     item = BinaryPrimitives.ReverseEndianness(item);
             }
         }
+
+        [Theory]
+        [InlineData(32 + 16 + 3)]
+        [InlineData(32 + 3)]
+        [InlineData(3)]
+        public static void BitwiseAnd(int size)
+        {
+            var x = new byte[size];
+            Random.Shared.NextBytes(x);
+
+            var y = new byte[size];
+            Random.Shared.NextBytes(y);
+
+            var expected = BitwiseAndSlow(x, y);
+            BinaryTransformations.BitwiseAnd<byte>(x, y);
+            Equal(expected, y);
+
+            static byte[] BitwiseAndSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
+            {
+                Equal(x.Length, y.Length);
+                var result = new byte[x.Length];
+
+                for (var i = 0; i < x.Length; i++)
+                    result[i] = (byte)(x[i] & y[i]);
+
+                return result;
+            }
+        }
+
+        [Theory]
+        [InlineData(32 + 16 + 3)]
+        [InlineData(32 + 3)]
+        [InlineData(3)]
+        public static void BitwiseOr(int size)
+        {
+            var x = new byte[size];
+            Random.Shared.NextBytes(x);
+
+            var y = new byte[size];
+            Random.Shared.NextBytes(y);
+
+            var expected = BitwiseOrSlow(x, y);
+            BinaryTransformations.BitwiseOr<byte>(x, y);
+            Equal(expected, y);
+
+            static byte[] BitwiseOrSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
+            {
+                Equal(x.Length, y.Length);
+                var result = new byte[x.Length];
+
+                for (var i = 0; i < x.Length; i++)
+                    result[i] = (byte)(x[i] | y[i]);
+
+                return result;
+            }
+        }
+
+        [Theory]
+        [InlineData(32 + 16 + 3)]
+        [InlineData(32 + 3)]
+        [InlineData(3)]
+        public static void BitwiseXor(int size)
+        {
+            var x = new byte[size];
+            Random.Shared.NextBytes(x);
+
+            var y = new byte[size];
+            Random.Shared.NextBytes(y);
+
+            var expected = BitwiseXorSlow(x, y);
+            BinaryTransformations.BitwiseXor<byte>(x, y);
+            Equal(expected, y);
+
+            static byte[] BitwiseXorSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
+            {
+                Equal(x.Length, y.Length);
+                var result = new byte[x.Length];
+
+                for (var i = 0; i < x.Length; i++)
+                    result[i] = (byte)(x[i] ^ y[i]);
+
+                return result;
+            }
+        }
     }
 }
