@@ -46,38 +46,32 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 01-16-2023
+Release Date: 01-30-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.9.0">DotNext 4.9.0</a>
-* Introduced `SpawningAsyncTaskMethodBuilder` that can be used in combination with [AsyncMethodBuilderAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncmethodbuilderattribute) to force execution of async method in parallel with the current flow
+Starting from this release, `DotNext.Reflection` library is not published on regular basis, but only on-demand. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
+
+<a href="https://www.nuget.org/packages/dotnext/4.10.0">DotNext 4.10.0</a>
+* Added API discussed and proposed in [143](https://github.com/dotnet/dotNext/issues/143). The requested features are implemented as `DotNext.Buffers.Binary.BinaryTransformation` class.
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.10.0">DotNext.Metaprogramming 4.10.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.9.0">DotNext.Metaprogramming 4.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.10.0">DotNext.Unsafe 4.10.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/4.9.0">DotNext.Reflection 4.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/4.10.0">DotNext.Threading 4.10.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.9.0">DotNext.Unsafe 4.9.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/4.9.0">DotNext.Threading 4.9.0</a>
-* Smallish performance improvements of async locks
-* Fixed upgrade lock acquisition using `AsyncLock` value type
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.io/4.9.0">DotNext.IO 4.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.10.0">DotNext.IO 4.10.0</a>
 * Use `ValueTask` caching for hot execution paths
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.9.0">DotNext.Net.Cluster 4.9.0</a>
-* Reduced memory allocation caused by WAL and TCP/UDP transports
-* Reduced managed heap fragmentation
-* Added support of [DNS](https://learn.microsoft.com/en-us/dotnet/api/system.net.dnsendpoint) and [Unix Domain Socket](https://learn.microsoft.com/en-us/dotnet/api/system.net.sockets.unixdomainsocketendpoint) addresses of cluster nodes for better compatibility with containers
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.10.0">DotNext.Net.Cluster 4.10.0</a>
+* Fixed [146](https://github.com/dotnet/dotNext/issues/146)
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.9.0">DotNext.AspNetCore.Cluster 4.9.0</a>
-* HTTP transport: optimized memory allocations
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.10.0">DotNext.AspNetCore.Cluster 4.9.0</a>
+* Fixed [146](https://github.com/dotnet/dotNext/issues/146)
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
