@@ -320,7 +320,7 @@ public static class Intrinsics
     /// <param name="index">The index of the array element.</param>
     /// <returns>The reference to the array element with restricted mutability.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Obsolete]
+    [Obsolete("Can be replaced with regular indexer applied to the array and ObjectExtensions.As<T>() method")]
     public static ref readonly TBase GetReadonlyRef<T, TBase>(this T[] array, nint index)
         where T : class, TBase
     {
