@@ -12,7 +12,7 @@ using Intrinsics = Runtime.Intrinsics;
 public static partial class BinaryTransformations
 {
     [RequiresPreviewFeatures]
-    private interface IEndiannessTransformation<T> : IBinaryTransformation<T>
+    private interface IEndiannessTransformation<T> : ITransformation<T>
         where T : unmanaged
     {
         public static abstract T ReverseEndianness(T value);
@@ -144,7 +144,7 @@ public static partial class BinaryTransformations
 
         static ushort IEndiannessTransformation<ushort>.ReverseEndianness(ushort value) => BinaryPrimitives.ReverseEndianness(value);
 
-        static unsafe Vector128<ushort> IBinaryTransformation<ushort>.LoadAsVector128(ReadOnlySpan<ushort> buffer)
+        static unsafe Vector128<ushort> ITransformation<ushort>.LoadAsVector128(ReadOnlySpan<ushort> buffer)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -152,7 +152,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe void IBinaryTransformation<ushort>.StoreAsVector128(Span<ushort> buffer, Vector128<ushort> items)
+        static unsafe void ITransformation<ushort>.StoreAsVector128(Span<ushort> buffer, Vector128<ushort> items)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -160,7 +160,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe Vector256<ushort> IBinaryTransformation<ushort>.LoadAsVector256(ReadOnlySpan<ushort> buffer)
+        static unsafe Vector256<ushort> ITransformation<ushort>.LoadAsVector256(ReadOnlySpan<ushort> buffer)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -168,7 +168,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe void IBinaryTransformation<ushort>.StoreAsVector256(Span<ushort> buffer, Vector256<ushort> items)
+        static unsafe void ITransformation<ushort>.StoreAsVector256(Span<ushort> buffer, Vector256<ushort> items)
         {
             fixed (ushort* ptr = buffer)
             {
@@ -203,7 +203,7 @@ public static partial class BinaryTransformations
 
         static uint IEndiannessTransformation<uint>.ReverseEndianness(uint value) => BinaryPrimitives.ReverseEndianness(value);
 
-        static unsafe Vector128<uint> IBinaryTransformation<uint>.LoadAsVector128(ReadOnlySpan<uint> buffer)
+        static unsafe Vector128<uint> ITransformation<uint>.LoadAsVector128(ReadOnlySpan<uint> buffer)
         {
             fixed (uint* ptr = buffer)
             {
@@ -211,7 +211,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe void IBinaryTransformation<uint>.StoreAsVector128(Span<uint> buffer, Vector128<uint> items)
+        static unsafe void ITransformation<uint>.StoreAsVector128(Span<uint> buffer, Vector128<uint> items)
         {
             fixed (uint* ptr = buffer)
             {
@@ -219,7 +219,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe Vector256<uint> IBinaryTransformation<uint>.LoadAsVector256(ReadOnlySpan<uint> buffer)
+        static unsafe Vector256<uint> ITransformation<uint>.LoadAsVector256(ReadOnlySpan<uint> buffer)
         {
             fixed (uint* ptr = buffer)
             {
@@ -227,7 +227,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe void IBinaryTransformation<uint>.StoreAsVector256(Span<uint> buffer, Vector256<uint> items)
+        static unsafe void ITransformation<uint>.StoreAsVector256(Span<uint> buffer, Vector256<uint> items)
         {
             fixed (uint* ptr = buffer)
             {
@@ -262,7 +262,7 @@ public static partial class BinaryTransformations
 
         static ulong IEndiannessTransformation<ulong>.ReverseEndianness(ulong value) => BinaryPrimitives.ReverseEndianness(value);
 
-        static unsafe Vector128<ulong> IBinaryTransformation<ulong>.LoadAsVector128(ReadOnlySpan<ulong> buffer)
+        static unsafe Vector128<ulong> ITransformation<ulong>.LoadAsVector128(ReadOnlySpan<ulong> buffer)
         {
             fixed (ulong* ptr = buffer)
             {
@@ -270,7 +270,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe void IBinaryTransformation<ulong>.StoreAsVector128(Span<ulong> buffer, Vector128<ulong> items)
+        static unsafe void ITransformation<ulong>.StoreAsVector128(Span<ulong> buffer, Vector128<ulong> items)
         {
             fixed (ulong* ptr = buffer)
             {
@@ -278,7 +278,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe Vector256<ulong> IBinaryTransformation<ulong>.LoadAsVector256(ReadOnlySpan<ulong> buffer)
+        static unsafe Vector256<ulong> ITransformation<ulong>.LoadAsVector256(ReadOnlySpan<ulong> buffer)
         {
             fixed (ulong* ptr = buffer)
             {
@@ -286,7 +286,7 @@ public static partial class BinaryTransformations
             }
         }
 
-        static unsafe void IBinaryTransformation<ulong>.StoreAsVector256(Span<ulong> buffer, Vector256<ulong> items)
+        static unsafe void ITransformation<ulong>.StoreAsVector256(Span<ulong> buffer, Vector256<ulong> items)
         {
             fixed (ulong* ptr = buffer)
             {

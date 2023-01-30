@@ -9,7 +9,7 @@ namespace DotNext.Buffers.Binary;
 public static partial class BinaryTransformations
 {
     [RequiresPreviewFeatures]
-    private interface IBinaryTransformation<T>
+    private interface ITransformation<T>
         where T : unmanaged
     {
         public static abstract Vector128<T> LoadAsVector128(ReadOnlySpan<T> buffer);
