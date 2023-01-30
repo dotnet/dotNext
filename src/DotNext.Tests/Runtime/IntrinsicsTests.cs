@@ -117,6 +117,7 @@ namespace DotNext.Runtime
         }
 
         [Fact]
+        [Obsolete]
         public static void ReadonlyRef2()
         {
             var array = new[] { "a", "b", "c" };
