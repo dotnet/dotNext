@@ -12,11 +12,9 @@ using Intrinsics = Runtime.Intrinsics;
 public static partial class BinaryTransformations
 {
     [RequiresPreviewFeatures]
-    private interface IEndiannessTransformation<T>
+    private interface IEndiannessTransformation<T> : IUnaryTransformation<T>
         where T : unmanaged
     {
-        public static abstract T ReverseEndianness(T value);
-
         Vector128<byte> ReorderMask { get; }
     }
 
@@ -31,23 +29,23 @@ public static partial class BinaryTransformations
             {
                 for (var reorderMask256 = Vector256.Create(transformation.ReorderMask, transformation.ReorderMask); buffer.Length >= Vector256<T>.Count; buffer = buffer.Slice(Vector256<T>.Count))
                 {
-                    var vector = LoadAsVector256<T>(buffer);
+                    var vector = LoadVector256<T>(buffer);
                     vector = Avx2.Shuffle(vector.AsByte(), reorderMask256).As<byte, T>();
-                    StoreAsVector256(vector, buffer);
+                    StoreVector256(vector, buffer);
                 }
             }
 
             for (Vector128<T> vector; buffer.Length >= Vector128<T>.Count; buffer = buffer.Slice(Vector128<T>.Count))
             {
-                vector = LoadAsVector128<T>(buffer);
+                vector = LoadVector128<T>(buffer);
                 vector = Ssse3.Shuffle(vector.AsByte(), transformation.ReorderMask).As<byte, T>();
-                StoreAsVector128(vector, buffer);
+                StoreVector128(vector, buffer);
             }
         }
 
         // software fallback
         foreach (ref var item in buffer)
-            item = TTransformation.ReverseEndianness(item);
+            item = TTransformation.Transform(item);
     }
 
     [RequiresPreviewFeatures]
@@ -62,7 +60,7 @@ public static partial class BinaryTransformations
                 break;
             case 1:
                 ref var item = ref buffer[0];
-                item = TTransformation.ReverseEndianness(item);
+                item = TTransformation.Transform(item);
                 break;
             default:
                 ReverseEndianness(buffer, new TTransformation());
@@ -142,7 +140,7 @@ public static partial class BinaryTransformations
 
         public Vector128<byte> ReorderMask { get; }
 
-        static ushort IEndiannessTransformation<ushort>.ReverseEndianness(ushort value) => BinaryPrimitives.ReverseEndianness(value);
+        static ushort IUnaryTransformation<ushort>.Transform(ushort value) => BinaryPrimitives.ReverseEndianness(value);
     }
 
     [RequiresPreviewFeatures]
@@ -169,7 +167,7 @@ public static partial class BinaryTransformations
 
         public Vector128<byte> ReorderMask { get; }
 
-        static uint IEndiannessTransformation<uint>.ReverseEndianness(uint value) => BinaryPrimitives.ReverseEndianness(value);
+        static uint IUnaryTransformation<uint>.Transform(uint value) => BinaryPrimitives.ReverseEndianness(value);
     }
 
     [RequiresPreviewFeatures]
@@ -196,6 +194,6 @@ public static partial class BinaryTransformations
 
         public Vector128<byte> ReorderMask { get; }
 
-        static ulong IEndiannessTransformation<ulong>.ReverseEndianness(ulong value) => BinaryPrimitives.ReverseEndianness(value);
+        static ulong IUnaryTransformation<ulong>.Transform(ulong value) => BinaryPrimitives.ReverseEndianness(value);
     }
 }

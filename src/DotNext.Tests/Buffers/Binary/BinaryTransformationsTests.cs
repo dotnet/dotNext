@@ -166,6 +166,34 @@ namespace DotNext.Buffers.Binary
         [InlineData(32 + 16 + 3)]
         [InlineData(32 + 3)]
         [InlineData(3)]
+        public static void BitwiseAndNot(int size)
+        {
+            var x = new byte[size];
+            Random.Shared.NextBytes(x);
+
+            var y = new byte[size];
+            Random.Shared.NextBytes(y);
+
+            var expected = BitwiseAndNotSlow(x, y);
+            BinaryTransformations.AndNot<byte>(x, y);
+            Equal(expected, y);
+
+            static byte[] BitwiseAndNotSlow(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
+            {
+                Equal(x.Length, y.Length);
+                var result = new byte[x.Length];
+
+                for (var i = 0; i < x.Length; i++)
+                    result[i] = (byte)(x[i] & ~y[i]);
+
+                return result;
+            }
+        }
+
+        [Theory]
+        [InlineData(32 + 16 + 3)]
+        [InlineData(32 + 3)]
+        [InlineData(3)]
         public static void BitwiseOr(int size)
         {
             var x = new byte[size];
@@ -213,6 +241,30 @@ namespace DotNext.Buffers.Binary
 
                 for (var i = 0; i < x.Length; i++)
                     result[i] = (byte)(x[i] ^ y[i]);
+
+                return result;
+            }
+        }
+
+        [Theory]
+        [InlineData(32 + 16 + 3)]
+        [InlineData(32 + 3)]
+        [InlineData(3)]
+        public static void OnesComplement(int size)
+        {
+            var x = new byte[size];
+            Random.Shared.NextBytes(x);
+
+            var expected = OnesComplementSlow(x);
+            BinaryTransformations.OnesComplement<byte>(x);
+            Equal(expected, x);
+
+            static byte[] OnesComplementSlow(ReadOnlySpan<byte> x)
+            {
+                var result = new byte[x.Length];
+
+                for (var i = 0; i < x.Length; i++)
+                    result[i] = (byte)(~x[i]);
 
                 return result;
             }
