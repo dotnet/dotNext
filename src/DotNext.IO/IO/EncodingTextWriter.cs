@@ -50,25 +50,6 @@ internal sealed class EncodingTextWriter<TWriter> : TextBufferWriter<byte, TWrit
 
     public override void Write(ulong value) => WriteFormattable(value);
 
-    public override void Write(object? value)
-    {
-        switch (value)
-        {
-            case string str:
-                Write(str.AsSpan());
-                break;
-            case StringBuilder sb:
-                Write(sb);
-                break;
-            case ISpanFormattable formattable:
-                WriteFormattable(formattable);
-                break;
-            case IFormattable formattable:
-                Write(formattable.ToString(format: null, formatProvider: FormatProvider).AsSpan());
-                break;
-            case not null:
-                Write(value.ToString().AsSpan());
-                break;
-        }
-    }
+    private protected override void Write(ISpanFormattable formattable)
+        => WriteFormattable(formattable);
 }

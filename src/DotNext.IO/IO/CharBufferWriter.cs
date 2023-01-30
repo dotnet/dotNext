@@ -51,24 +51,8 @@ internal sealed unsafe class CharBufferWriter<TWriter> : TextBufferWriter<char, 
     public override void Write(ulong value)
         => writer.WriteFormattable(value, provider: FormatProvider);
 
-    public override void Write(object? value)
-    {
-        switch (value)
-        {
-            case string str:
-                writer.Write(str);
-                break;
-            case ISpanFormattable formattable:
-                writer.WriteFormattable(formattable, provider: FormatProvider);
-                break;
-            case IFormattable formattable:
-                writer.Write(formattable.ToString(format: null, formatProvider: FormatProvider));
-                break;
-            case not null:
-                writer.Write(value.ToString());
-                break;
-        }
-    }
+    private protected override void Write(ISpanFormattable formattable)
+        => writer.WriteFormattable(formattable, provider: FormatProvider);
 
     public override string ToString()
         => writer is ArrayBufferWriter<char> buffer ? buffer.BuildString() : writer.ToString() ?? string.Empty;
