@@ -574,6 +574,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     public override Task FlushAsync(CancellationToken token)
         => FlushAsync(flushToDisk: false, token).AsTask();
 
+    [MemberNotNull(nameof(streamForFlush))]
     private void FlushToDisk()
     {
         Debug.Assert(fileBackend is not null);
