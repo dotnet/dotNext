@@ -298,7 +298,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
-                PersistBuffer();
+                PersistBuffer(flushToDisk: false);
                 buffer = allocator.Invoke(sizeHint, exactSize: false);
                 allocationCounter?.WriteMetric(buffer.Length);
                 result = buffer.Memory.Slice(0, sizeHint);
@@ -348,7 +348,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
     [MemberNotNull(nameof(fileBackend))]
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask PersistBufferAsync(CancellationToken token)
+    private async ValueTask PersistBufferAsync(bool flushToDisk, CancellationToken token)
     {
         Debug.Assert(HasBufferedData);
         EnsureBackingStore();
@@ -356,10 +356,13 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         buffer.Dispose();
         filePosition += position;
         position = 0;
+
+        if (flushToDisk)
+            FlushToDisk();
     }
 
     [MemberNotNull(nameof(fileBackend))]
-    private void PersistBuffer()
+    private void PersistBuffer(bool flushToDisk)
     {
         Debug.Assert(HasBufferedData);
         EnsureBackingStore();
@@ -367,6 +370,9 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         buffer.Dispose();
         filePosition += position;
         position = 0;
+
+        if (flushToDisk)
+            FlushToDisk();
     }
 
     /// <inheritdoc/>
@@ -385,32 +391,32 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 goto default;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
-                return PersistExistingBufferAsync();
+                return PersistExistingBufferAsync(buffer, token);
             case MemoryEvaluationResult.PersistAll:
-                return PersistAllAsync();
+                return PersistAllAsync(buffer, token);
         }
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask PersistExistingBufferAsync()
-        {
-            await PersistBufferAsync(token).ConfigureAwait(false);
-            this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
-            allocationCounter?.WriteMetric(this.buffer.Length);
-            buffer.CopyTo(this.buffer.Memory);
-            position = buffer.Length;
-        }
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask PersistExistingBufferAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    {
+        await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
+        this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
+        allocationCounter?.WriteMetric(this.buffer.Length);
+        buffer.CopyTo(this.buffer.Memory);
+        position = buffer.Length;
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask PersistAllAsync()
-        {
-            if (HasBufferedData)
-                await PersistBufferAsync(token).ConfigureAwait(false);
-            else
-                EnsureBackingStore();
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask PersistAllAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    {
+        if (HasBufferedData)
+            await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
+        else
+            EnsureBackingStore();
 
-            await RandomAccess.WriteAsync(fileBackend, buffer, filePosition, token).ConfigureAwait(false);
-            filePosition += buffer.Length;
-        }
+        await RandomAccess.WriteAsync(fileBackend, buffer, filePosition, token).ConfigureAwait(false);
+        filePosition += buffer.Length;
     }
 
     /// <inheritdoc/>
@@ -427,7 +433,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
-                PersistBuffer();
+                PersistBuffer(flushToDisk: false);
                 this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
                 allocationCounter?.WriteMetric(this.buffer.Length);
                 buffer.CopyTo(this.buffer.Span);
@@ -435,7 +441,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 break;
             case MemoryEvaluationResult.PersistAll:
                 if (HasBufferedData)
-                    PersistBuffer();
+                    PersistBuffer(flushToDisk: false);
                 else
                     EnsureBackingStore();
 
@@ -515,13 +521,17 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <param name="flushToDisk"><see langword="true"/> to synchronize a file's in-core state with storage device; otherwise, <see langword="false"/>.</param>
     public void Flush(bool flushToDisk)
     {
-        if (fileBackend is not null)
+        if (fileBackend is null)
         {
-            if (HasBufferedData)
-                PersistBuffer();
-
-            if (flushToDisk)
-                FlushToDisk();
+            // jump to exit
+        }
+        else if (HasBufferedData)
+        {
+            PersistBuffer(flushToDisk);
+        }
+        else if (flushToDisk)
+        {
+            FlushToDisk();
         }
     }
 
@@ -536,37 +546,28 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     public ValueTask FlushAsync(bool flushToDisk, CancellationToken token = default)
     {
         var result = ValueTask.CompletedTask;
-        if (fileBackend is not null)
-        {
-            switch ((flushToDisk, HasBufferedData))
-            {
-                case (true, false):
-                    try
-                    {
-                        FlushToDisk();
-                    }
-                    catch (Exception e)
-                    {
-                        result = ValueTask.FromException(e);
-                    }
 
-                    break;
-                case (false, true):
-                    result = PersistBufferAsync(token);
-                    break;
-                case (true, true):
-                    result = PersistAndFlushToDiskAsync();
-                    break;
+        if (fileBackend is null)
+        {
+            // jump to exit
+        }
+        else if (HasBufferedData)
+        {
+            result = PersistBufferAsync(flushToDisk, token);
+        }
+        else if (flushToDisk)
+        {
+            try
+            {
+                FlushToDisk();
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
             }
         }
 
         return result;
-
-        async ValueTask PersistAndFlushToDiskAsync()
-        {
-            await PersistBufferAsync(token).ConfigureAwait(false);
-            FlushToDisk();
-        }
     }
 
     /// <inheritdoc/>
@@ -820,7 +821,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             return new BufferedMemoryManager(this, range);
 
         if (HasBufferedData)
-            PersistBuffer();
+            PersistBuffer(flushToDisk: false);
 
         var (offset, length) = GetOffsetAndLength(range, filePosition);
         if (offset < 0L || length < 0L)
@@ -874,7 +875,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             return new BufferedMemoryManager(this, range);
 
         if (HasBufferedData)
-            await PersistBufferAsync(token).ConfigureAwait(false);
+            await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
 
         var (offset, length) = GetOffsetAndLength(range, filePosition);
         if (offset < 0L || length < 0L)
