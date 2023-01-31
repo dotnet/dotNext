@@ -63,14 +63,14 @@ Starting from this release, `DotNext.Reflection` library is not published on reg
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.10.0">DotNext.IO 4.10.0</a>
-* Use `ValueTask` caching for hot execution paths
+* Optimized memory allocations caused by `FileBufferingWriter` class
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.10.0">DotNext.Net.Cluster 4.10.0</a>
 * Fixed [146](https://github.com/dotnet/dotNext/issues/146)
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.10.0">DotNext.AspNetCore.Cluster 4.9.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.10.0">DotNext.AspNetCore.Cluster 4.10.0</a>
 * Fixed [146](https://github.com/dotnet/dotNext/issues/146)
 * Updated dependencies
 
