@@ -24,6 +24,7 @@ public static partial class BinaryTransformations
         public static abstract T Transform(T x, T y);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vector128<T> LoadVector128<T>(ref T input)
         where T : unmanaged
         => Unsafe.ReadUnaligned<Vector128<T>>(ref Unsafe.As<T, byte>(ref input));
