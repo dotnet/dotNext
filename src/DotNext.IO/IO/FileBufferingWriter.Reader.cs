@@ -109,8 +109,14 @@ public partial class FileBufferingWriter
 
         public override async ValueTask DisposeAsync()
         {
-            await source.DisposeAsync().ConfigureAwait(false);
-            await base.DisposeAsync().ConfigureAwait(false);
+            try
+            {
+                await source.DisposeAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                await base.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 
