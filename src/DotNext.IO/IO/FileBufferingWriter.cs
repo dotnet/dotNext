@@ -235,7 +235,8 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
     private bool IsReading => reader?.Target is not null;
 
-    private ReadSession EnterReadMode(object obj)
+    [MemberNotNull(nameof(reader))]
+    private ReadSession EnterReadMode(IDisposable obj)
     {
         WeakReference refHolder;
         if (reader is null)
