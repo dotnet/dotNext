@@ -149,16 +149,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         PersistAll,
     }
 
-    private static readonly Action<Task, object?> Continuation;
-
-    static FileBufferingWriter()
-    {
-        Continuation = OnCompleted;
-
-        static void OnCompleted(Task task, object? state)
-            => task.ConfigureAwait(false).GetAwaiter().GetResult();
-    }
-
     private readonly BackingFileProvider fileProvider;
     private readonly int memoryThreshold;
     private readonly MemoryAllocator<byte>? allocator;
@@ -480,7 +470,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
             // attach state only if it's necessary
             if (state is not null)
-                task = task.ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
+                task = task.ContinueWith(static (task, state) => task.ConfigureAwait(false).GetAwaiter().GetResult(), state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
 
             if (callback is not null)
             {
