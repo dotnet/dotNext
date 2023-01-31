@@ -68,6 +68,8 @@ Starting from this release, `DotNext.Reflection` library is not published on reg
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.10.0">DotNext.Net.Cluster 4.10.0</a>
 * Fixed [146](https://github.com/dotnet/dotNext/issues/146)
+* Fixed [147](https://github.com/dotnet/dotNext/issues/147)
+* Reduced memory allocations caused by the implementation of the leader lease
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.10.0">DotNext.AspNetCore.Cluster 4.10.0</a>
