@@ -80,7 +80,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected abstract void CompleteAsCanceled(CancellationToken token);
 
-    private protected static object? CaptureContext()
+    private static object? CaptureContext()
     {
         object? context = SynchronizationContext.Current;
         if (context is null || context.GetType() == typeof(SynchronizationContext))
@@ -326,7 +326,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
     {
-        var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) == 0 ? null : CaptureContext();
+        var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is 0 ? null : CaptureContext();
         OnCompleted(capturedContext, continuation, state, token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) != 0);
     }
 
