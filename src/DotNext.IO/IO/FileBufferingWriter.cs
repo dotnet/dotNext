@@ -340,21 +340,25 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     private async ValueTask PersistBufferAsync(bool flushToDisk, CancellationToken token)
     {
         Debug.Assert(HasBufferedData);
+
         EnsureBackingStore();
         await RandomAccess.WriteAsync(fileBackend, buffer.Memory.Slice(0, position), filePosition, token).ConfigureAwait(false);
-        filePosition += position;
-        position = 0;
-
-        if (flushToDisk)
-            FlushToDisk();
+        AdjustFilePosition(flushToDisk);
     }
 
     [MemberNotNull(nameof(fileBackend))]
     private void PersistBuffer(bool flushToDisk)
     {
         Debug.Assert(HasBufferedData);
+
         EnsureBackingStore();
         RandomAccess.Write(fileBackend, buffer.Span.Slice(0, position), filePosition);
+        AdjustFilePosition(flushToDisk);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void AdjustFilePosition(bool flushToDisk)
+    {
         filePosition += position;
         position = 0;
 
