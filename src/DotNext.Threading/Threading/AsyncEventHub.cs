@@ -40,7 +40,7 @@ public partial class AsyncEventHub
         {
             Debug.Assert(task.AsyncState is int);
 
-            return Unsafe.Unbox<int>(task.AsyncState);
+            return (int)task.AsyncState;
         }
     }
 
