@@ -6,7 +6,7 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Runtime | .NET 6.0.11 (6.0.1122.52304), X64 RyuJIT AVX2 |
+| Runtime | .NET 6.0.13 (6.0.1322.58009), X64 RyuJIT AVX2 |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 22.04.1 |
@@ -151,12 +151,12 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.
 
-|                                        Method |     Mean |     Error |    StdDev |    Gen 0 |    Gen 1 |    Gen 2 | Allocated |
-|---------------------------------------------- |---------:|----------:|----------:|---------:|---------:|---------:|----------:|
-|       'FileBufferingWriter, synchronous mode' | 1.079 ms | 0.0208 ms | 0.0364 ms | 248.0469 | 248.0469 | 248.0469 |      1 MB |
-|      'FileBufferingWriter, asynchronous mode' | 1.380 ms | 0.0276 ms | 0.0295 ms | 126.9531 | 111.3281 | 111.3281 |      1 MB |
-| 'FileBufferingWriteStream, synchronouse mode' | 4.141 ms | 0.0317 ms | 0.0297 ms | 476.5625 | 359.3750 | 273.4375 |      2 MB |
-| 'FileBufferingWriteStream, asynchronous mode' | 5.092 ms | 0.0557 ms | 0.0521 ms | 453.1250 | 367.1875 | 257.8125 |      2 MB |
+|                                        Method |       Mean |    Error |   StdDev |     Gen0 |     Gen1 |     Gen2 | Allocated |
+|---------------------------------------------- |-----------:|---------:|---------:|---------:|---------:|---------:|----------:|
+|       'FileBufferingWriter, synchronous mode' |   923.6 us | 18.14 us | 22.94 us | 250.0000 | 249.0234 | 249.0234 |      1 MB |
+|      'FileBufferingWriter, asynchronous mode' | 1,295.6 us | 24.41 us | 47.61 us | 126.9531 | 126.9531 | 126.9531 |      1 MB |
+| 'FileBufferingWriteStream, synchronouse mode' | 3,838.8 us | 67.96 us | 63.57 us | 488.2813 | 359.3750 | 277.3438 |   1.88 MB |
+| 'FileBufferingWriteStream, asynchronous mode' | 4,899.2 us | 31.68 us | 28.09 us | 468.7500 | 359.3750 | 265.6250 |   1.88 MB |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
 
