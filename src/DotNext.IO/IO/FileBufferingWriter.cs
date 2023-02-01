@@ -290,8 +290,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
                 PersistBuffer(flushToDisk: false);
-                buffer = allocator.Invoke(sizeHint, exactSize: false);
-                allocationCounter?.WriteMetric(buffer.Length);
                 result = buffer.Memory.Slice(0, sizeHint);
                 break;
             default:
@@ -344,7 +342,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         Debug.Assert(HasBufferedData);
         EnsureBackingStore();
         await RandomAccess.WriteAsync(fileBackend, buffer.Memory.Slice(0, position), filePosition, token).ConfigureAwait(false);
-        buffer.Dispose();
         filePosition += position;
         position = 0;
 
@@ -358,7 +355,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         Debug.Assert(HasBufferedData);
         EnsureBackingStore();
         RandomAccess.Write(fileBackend, buffer.Span.Slice(0, position), filePosition);
-        buffer.Dispose();
         filePosition += position;
         position = 0;
 
@@ -392,8 +388,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     private async ValueTask PersistExistingBufferAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
     {
         await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
-        this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
-        allocationCounter?.WriteMetric(this.buffer.Length);
         buffer.CopyTo(this.buffer.Memory);
         position = buffer.Length;
     }
@@ -425,8 +419,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
                 PersistBuffer(flushToDisk: false);
-                this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
-                allocationCounter?.WriteMetric(this.buffer.Length);
                 buffer.CopyTo(this.buffer.Span);
                 position = buffer.Length;
                 break;
