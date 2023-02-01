@@ -186,9 +186,9 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// Resets the state of the source.
     /// </summary>
     /// <remarks>
-    /// This methods acts as a barried for completion.
+    /// This methods acts as a barrier for completion.
     /// It means that calling of this method guarantees that the task
-    /// cannot be completed by previously linked timeout or cancellation token.
+    /// cannot be completed by the previously linked timeout or cancellation token.
     /// </remarks>
     /// <returns>The version of the incompleted task.</returns>
     public short Reset()
