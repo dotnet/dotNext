@@ -199,7 +199,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         {
             buffer = allocator.Invoke(options.InitialCapacity, exactSize: false);
             if (buffer.Length > memoryThreshold)
-                memoryThreshold = buffer.Length < int.MaxValue ? buffer.Length + 1 : int.MaxValue;
+                memoryThreshold = buffer.Length < Array.MaxLength ? buffer.Length + 1 : Array.MaxLength;
         }
 
         this.memoryThreshold = memoryThreshold;
