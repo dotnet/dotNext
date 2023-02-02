@@ -155,9 +155,8 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     private readonly EventCounter? allocationCounter;
     private MemoryOwner<byte> buffer;
     private int position;
-    private string? fileName;
     private SafeFileHandle? fileBackend;
-    private FileStream? streamForFlush;
+    private object? streamForFlushOrFileName; // null, or FileStream, or string
     private long filePosition;
 
     // If null or .Target is null then there is no active readers.
@@ -261,12 +260,16 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
+        ClearCore();
+    }
+
+    private void ClearCore()
+    {
         buffer.Dispose();
-        streamForFlush?.Dispose();
-        streamForFlush = null;
+        (streamForFlushOrFileName as FileStream)?.Dispose();
+        streamForFlushOrFileName = null;
         fileBackend?.Dispose();
         fileBackend = null;
-        fileName = null;
         filePosition = 0L;
         position = 0;
     }
@@ -439,7 +442,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     }
 
     [MemberNotNull(nameof(fileBackend))]
-    private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileHandle(position, out fileName);
+    private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileHandle(position, out Unsafe.As<object?, string?>(ref streamForFlushOrFileName));
 
     /// <inheritdoc/>
     public override void Write(byte[] buffer, int offset, int count)
@@ -561,12 +564,15 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     public override Task FlushAsync(CancellationToken token)
         => FlushAsync(flushToDisk: false, token).AsTask();
 
-    [MemberNotNull(nameof(streamForFlush))]
+    [MemberNotNull(nameof(streamForFlushOrFileName))]
     private void FlushToDisk()
     {
         Debug.Assert(fileBackend is not null);
 
-        (streamForFlush ??= new(fileBackend, FileAccess.Write, bufferSize: 1)).Flush(flushToDisk: true);
+        if (streamForFlushOrFileName is not FileStream fs)
+            streamForFlushOrFileName = fs = new(fileBackend, FileAccess.Write, bufferSize: 1);
+
+        fs.Flush(flushToDisk: true);
     }
 
     /// <inheritdoc/>
@@ -937,16 +943,29 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <returns><see langword="true"/> if whole content is in memory and available without allocation of <see cref="MemoryManager{T}"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetWrittenContent(out ReadOnlyMemory<byte> content, [NotNullWhen(false)] out string? fileName)
     {
-        if (this.fileName is null)
+        Debug.Assert(this.streamForFlushOrFileName is null or string or FileStream);
+
+        if ((fileName = FileName) is null)
         {
             content = buffer.Memory.Slice(0, position);
-            fileName = null;
             return true;
         }
 
         content = default;
-        fileName = this.fileName;
         return false;
+    }
+
+    private string? FileName
+    {
+        get
+        {
+            Debug.Assert(streamForFlushOrFileName is null or string or FileStream);
+
+            var result = streamForFlushOrFileName;
+            return result is FileStream fs
+                ? fs.Name
+                : Unsafe.As<string>(result);
+        }
     }
 
     /// <inheritdoc/>
@@ -958,12 +977,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (disposing)
         {
-            streamForFlush?.Dispose();
-            streamForFlush = null;
-            fileBackend?.Dispose();
-            fileBackend = null;
-            fileName = null;
-            buffer.Dispose();
+            ClearCore();
             reader = null;
         }
 
