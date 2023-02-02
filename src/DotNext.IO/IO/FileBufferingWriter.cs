@@ -46,7 +46,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         internal NativeMemoryManager(FileBufferingWriter writer, int length)
         {
-            Debug.Assert(length <= int.MaxValue);
+            Debug.Assert(length > 0);
             Debug.Assert(writer.fileBackend is not null);
 
             this.length = length;
@@ -56,7 +56,12 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             Debug.Assert(writer.IsReading);
         }
 
-        internal void SetLength(int value) => length = value;
+        internal void SetLength(int value)
+        {
+            Debug.Assert(value > 0);
+
+            length = value;
+        }
 
         private void ThrowIfDisposed()
         {
@@ -792,6 +797,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
         if (fileBackend is null)
             return new BufferedMemoryManager(this, range);
 
@@ -799,12 +805,16 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             PersistBuffer(flushToDisk: false);
 
         var (offset, length) = GetOffsetAndLength(range, fileBackend.Position);
-        if (offset < 0L || length < 0L)
-            throw new ArgumentOutOfRangeException(nameof(range));
-        if (length == 0L && offset == 0L)
-            return new BufferedMemoryManager();
-        if (length > int.MaxValue)
-            throw new InsufficientMemoryException();
+        switch ((offset, length))
+        {
+            case ( < 0L, _):
+            case (_, < 0L):
+                throw new ArgumentOutOfRangeException(nameof(range));
+            case (0L, 0L):
+                return new BufferedMemoryManager();
+            case (_, > int.MaxValue):
+                throw new InsufficientMemoryException();
+        }
 
         var result = new NativeMemoryManager(this, unchecked((int)length));
         try
@@ -846,6 +856,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
         if (fileBackend is null)
             return new BufferedMemoryManager(this, range);
 
@@ -853,12 +864,16 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
 
         var (offset, length) = GetOffsetAndLength(range, fileBackend.Position);
-        if (offset < 0L || length < 0L)
-            throw new ArgumentOutOfRangeException(nameof(range));
-        if (length == 0L && offset == 0L)
-            return new BufferedMemoryManager();
-        if (length > int.MaxValue)
-            throw new InsufficientMemoryException();
+        switch ((offset, length))
+        {
+            case ( < 0L, _):
+            case (_, < 0L):
+                throw new ArgumentOutOfRangeException(nameof(range));
+            case (0L, 0L):
+                return new BufferedMemoryManager();
+            case (_, > int.MaxValue):
+                throw new InsufficientMemoryException();
+        }
 
         var result = new NativeMemoryManager(this, unchecked((int)length));
         try
