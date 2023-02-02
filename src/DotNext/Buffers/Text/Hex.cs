@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 
 namespace DotNext.Buffers.Text;
@@ -43,5 +44,19 @@ public static partial class Hex
         [DoesNotReturn]
         [StackTraceHidden]
         static void ThrowFormatException(int ch) => throw new FormatException(ExceptionMessages.InvalidHexInput((char)ch));
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct Tuple64
+    {
+        internal readonly uint Low;
+        internal readonly uint High;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct Tuple128
+    {
+        internal readonly ulong Low;
+        internal readonly ulong High;
     }
 }

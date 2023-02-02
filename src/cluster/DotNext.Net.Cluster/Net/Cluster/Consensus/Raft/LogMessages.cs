@@ -142,7 +142,7 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 16,
         LogLevel.Debug,
-        "Unable to commit local changes. Quorum is {Quorum}, last committed entry is {CommitIndex}",
+        "Local changes are not committed. Quorum is {Quorum}, last committed entry is {CommitIndex}",
         EventName = EventIdPrefix + "." + nameof(CommitFailed)
     )]
     public static partial void CommitFailed(this ILogger logger, int quorum, long commitIndex);

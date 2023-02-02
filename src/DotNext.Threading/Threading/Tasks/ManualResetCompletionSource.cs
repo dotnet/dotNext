@@ -80,7 +80,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected abstract void CompleteAsCanceled(CancellationToken token);
 
-    private protected static object? CaptureContext()
+    private static object? CaptureContext()
     {
         object? context = SynchronizationContext.Current;
         if (context is null || context.GetType() == typeof(SynchronizationContext))
@@ -186,9 +186,9 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// Resets the state of the source.
     /// </summary>
     /// <remarks>
-    /// This methods acts as a barried for completion.
+    /// This methods acts as a barrier for completion.
     /// It means that calling of this method guarantees that the task
-    /// cannot be completed by previously linked timeout or cancellation token.
+    /// cannot be completed by the previously linked timeout or cancellation token.
     /// </remarks>
     /// <returns>The version of the incompleted task.</returns>
     public short Reset()
@@ -326,7 +326,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
     {
-        var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) == 0 ? null : CaptureContext();
+        var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is 0 ? null : CaptureContext();
         OnCompleted(capturedContext, continuation, state, token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) != 0);
     }
 

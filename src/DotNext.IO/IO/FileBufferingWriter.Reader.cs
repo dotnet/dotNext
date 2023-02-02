@@ -109,8 +109,14 @@ public partial class FileBufferingWriter
 
         public override async ValueTask DisposeAsync()
         {
-            await source.DisposeAsync().ConfigureAwait(false);
-            await base.DisposeAsync().ConfigureAwait(false);
+            try
+            {
+                await source.DisposeAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                await base.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 
@@ -119,9 +125,10 @@ public partial class FileBufferingWriter
         const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
         const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
 
-        return fileName is null
+        // reuse the same handle when opening file for read
+        return fileBackend is null
             ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
-            : new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
+            : new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 
     /// <summary>

@@ -494,5 +494,16 @@ namespace DotNext
 
             static string Constant(string value, Missing arg1, Missing arg2, Missing arg3, Missing arg4, Missing arg5, Missing arg6) => value;
         }
+
+        [Fact]
+        public static unsafe void CreateSpanAction()
+        {
+            const string expected = "Hello, world!";
+            var fn = DelegateHelpers.CreateDelegate<char, string>(&FillChars);
+            Equal(expected, string.Create(expected.Length, expected, fn));
+
+            static void FillChars(Span<char> dest, string source)
+                => source.CopyTo(dest);
+        }
     }
 }

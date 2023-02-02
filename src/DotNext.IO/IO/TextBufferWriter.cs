@@ -113,7 +113,29 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
         return result;
     }
 
-    public override abstract void Write(object? value);
+    private protected abstract void Write(ISpanFormattable formattable);
+
+    public sealed override void Write(object? value)
+    {
+        switch (value)
+        {
+            case string str:
+                Write(str.AsSpan());
+                break;
+            case StringBuilder sb:
+                Write(sb);
+                break;
+            case ISpanFormattable formattable:
+                Write(formattable);
+                break;
+            case IFormattable formattable:
+                Write(formattable.ToString(format: null, formatProvider: FormatProvider).AsSpan());
+                break;
+            case not null:
+                Write(value.ToString().AsSpan());
+                break;
+        }
+    }
 
     public sealed override void WriteLine(object? value)
     {

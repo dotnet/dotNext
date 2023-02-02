@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
@@ -47,7 +46,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         internal NativeMemoryManager(FileBufferingWriter writer, int length)
         {
-            Debug.Assert(length <= int.MaxValue);
+            Debug.Assert(length > 0);
             Debug.Assert(writer.fileBackend is not null);
 
             this.length = length;
@@ -57,7 +56,12 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             Debug.Assert(writer.IsReading);
         }
 
-        internal void SetLength(int value) => length = value;
+        internal void SetLength(int value)
+        {
+            Debug.Assert(value > 0);
+
+            length = value;
+        }
 
         private void ThrowIfDisposed()
         {
@@ -149,26 +153,13 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         PersistAll,
     }
 
-    private static readonly Action<Task, object?> Continuation;
-
-    static FileBufferingWriter()
-    {
-        Continuation = OnCompleted;
-
-        static void OnCompleted(Task task, object? state)
-            => task.ConfigureAwait(false).GetAwaiter().GetResult();
-    }
-
     private readonly BackingFileProvider fileProvider;
     private readonly int memoryThreshold;
     private readonly MemoryAllocator<byte>? allocator;
     private readonly EventCounter? allocationCounter;
     private MemoryOwner<byte> buffer;
     private int position;
-    private string? fileName;
-    private SafeFileHandle? fileBackend;
-    private FileStream? streamForFlush;
-    private long filePosition;
+    private FileStream? fileBackend;
 
     // If null or .Target is null then there is no active readers.
     // Weak reference allows to track leaked readers when Dispose() was not called on them
@@ -209,7 +200,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         {
             buffer = allocator.Invoke(options.InitialCapacity, exactSize: false);
             if (buffer.Length > memoryThreshold)
-                memoryThreshold = buffer.Length < int.MaxValue ? buffer.Length + 1 : int.MaxValue;
+                memoryThreshold = buffer.Length < Array.MaxLength ? buffer.Length + 1 : Array.MaxLength;
         }
 
         this.memoryThreshold = memoryThreshold;
@@ -234,7 +225,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     }
 
     /// <inheritdoc/>
-    public override long Length => position + filePosition;
+    public override long Length => position + (fileBackend?.Position ?? 0L);
 
     /// <inheritdoc />
     long IGrowableBuffer<byte>.WrittenCount => Length;
@@ -245,7 +236,8 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
     private bool IsReading => reader?.Target is not null;
 
-    private ReadSession EnterReadMode(object obj)
+    [MemberNotNull(nameof(reader))]
+    private ReadSession EnterReadMode(IDisposable obj)
     {
         WeakReference refHolder;
         if (reader is null)
@@ -270,13 +262,14 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
+        ClearCore();
+    }
+
+    private void ClearCore()
+    {
         buffer.Dispose();
-        streamForFlush?.Dispose();
-        streamForFlush = null;
         fileBackend?.Dispose();
         fileBackend = null;
-        fileName = null;
-        filePosition = 0L;
         position = 0;
     }
 
@@ -298,9 +291,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
-                PersistBuffer();
-                buffer = allocator.Invoke(sizeHint, exactSize: false);
-                allocationCounter?.WriteMetric(buffer.Length);
+                PersistBuffer(flushToDisk: false);
                 result = buffer.Memory.Slice(0, sizeHint);
                 break;
             default:
@@ -348,25 +339,31 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
     [MemberNotNull(nameof(fileBackend))]
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask PersistBufferAsync(CancellationToken token)
+    private async ValueTask PersistBufferAsync(bool flushToDisk, CancellationToken token)
     {
         Debug.Assert(HasBufferedData);
+
         EnsureBackingStore();
-        await RandomAccess.WriteAsync(fileBackend, buffer.Memory.Slice(0, position), filePosition, token).ConfigureAwait(false);
-        buffer.Dispose();
-        filePosition += position;
+        await RandomAccess.WriteAsync(fileBackend.SafeFileHandle, buffer.Memory.Slice(0, position), fileBackend.Position, token).ConfigureAwait(false);
+
+        fileBackend.Position += position;
         position = 0;
+        if (flushToDisk)
+            fileBackend.Flush(flushToDisk: true);
     }
 
     [MemberNotNull(nameof(fileBackend))]
-    private void PersistBuffer()
+    private void PersistBuffer(bool flushToDisk)
     {
         Debug.Assert(HasBufferedData);
+
         EnsureBackingStore();
-        RandomAccess.Write(fileBackend, buffer.Span.Slice(0, position), filePosition);
-        buffer.Dispose();
-        filePosition += position;
+        RandomAccess.Write(fileBackend.SafeFileHandle, buffer.Span.Slice(0, position), fileBackend.Position);
+
+        fileBackend.Position += position;
         position = 0;
+        if (flushToDisk)
+            fileBackend.Flush(flushToDisk: true);
     }
 
     /// <inheritdoc/>
@@ -385,32 +382,30 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 goto default;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
-                return PersistExistingBufferAsync();
+                return PersistExistingBufferAsync(buffer, token);
             case MemoryEvaluationResult.PersistAll:
-                return PersistAllAsync();
+                return PersistAllAsync(buffer, token);
         }
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask PersistExistingBufferAsync()
-        {
-            await PersistBufferAsync(token).ConfigureAwait(false);
-            this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
-            allocationCounter?.WriteMetric(this.buffer.Length);
-            buffer.CopyTo(this.buffer.Memory);
-            position = buffer.Length;
-        }
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask PersistExistingBufferAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    {
+        await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
+        buffer.CopyTo(this.buffer.Memory);
+        position = buffer.Length;
+    }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask PersistAllAsync()
-        {
-            if (HasBufferedData)
-                await PersistBufferAsync(token).ConfigureAwait(false);
-            else
-                EnsureBackingStore();
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask PersistAllAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    {
+        if (HasBufferedData)
+            await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
+        else
+            EnsureBackingStore();
 
-            await RandomAccess.WriteAsync(fileBackend, buffer, filePosition, token).ConfigureAwait(false);
-            filePosition += buffer.Length;
-        }
+        await RandomAccess.WriteAsync(fileBackend.SafeFileHandle, buffer, fileBackend.Position, token).ConfigureAwait(false);
+        fileBackend.Position += buffer.Length;
     }
 
     /// <inheritdoc/>
@@ -427,26 +422,24 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 Debug.Assert(HasBufferedData);
-                PersistBuffer();
-                this.buffer = allocator.Invoke(buffer.Length, exactSize: false);
-                allocationCounter?.WriteMetric(this.buffer.Length);
+                PersistBuffer(flushToDisk: false);
                 buffer.CopyTo(this.buffer.Span);
                 position = buffer.Length;
                 break;
             case MemoryEvaluationResult.PersistAll:
                 if (HasBufferedData)
-                    PersistBuffer();
+                    PersistBuffer(flushToDisk: false);
                 else
                     EnsureBackingStore();
 
-                RandomAccess.Write(fileBackend, buffer, filePosition);
-                filePosition += buffer.Length;
+                RandomAccess.Write(fileBackend.SafeFileHandle, buffer, fileBackend.Position);
+                fileBackend.Position += buffer.Length;
                 break;
         }
     }
 
     [MemberNotNull(nameof(fileBackend))]
-    private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileHandle(position, out fileName);
+    private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileHandle(position);
 
     /// <inheritdoc/>
     public override void Write(byte[] buffer, int offset, int count)
@@ -474,7 +467,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
             // attach state only if it's necessary
             if (state is not null)
-                task = task.ContinueWith(Continuation, state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
+                task = task.ContinueWith(static (task, state) => task.ConfigureAwait(false).GetAwaiter().GetResult(), state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
 
             if (callback is not null)
             {
@@ -515,13 +508,17 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <param name="flushToDisk"><see langword="true"/> to synchronize a file's in-core state with storage device; otherwise, <see langword="false"/>.</param>
     public void Flush(bool flushToDisk)
     {
-        if (fileBackend is not null)
+        if (fileBackend is null)
         {
-            if (HasBufferedData)
-                PersistBuffer();
-
-            if (flushToDisk)
-                FlushToDisk();
+            // jump to exit
+        }
+        else if (HasBufferedData)
+        {
+            PersistBuffer(flushToDisk);
+        }
+        else if (flushToDisk)
+        {
+            fileBackend.Flush(flushToDisk: true);
         }
     }
 
@@ -536,49 +533,33 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     public ValueTask FlushAsync(bool flushToDisk, CancellationToken token = default)
     {
         var result = ValueTask.CompletedTask;
-        if (fileBackend is not null)
-        {
-            switch ((flushToDisk, HasBufferedData))
-            {
-                case (true, false):
-                    try
-                    {
-                        FlushToDisk();
-                    }
-                    catch (Exception e)
-                    {
-                        result = ValueTask.FromException(e);
-                    }
 
-                    break;
-                case (false, true):
-                    result = PersistBufferAsync(token);
-                    break;
-                case (true, true):
-                    result = PersistAndFlushToDiskAsync();
-                    break;
+        if (fileBackend is null)
+        {
+            // jump to exit
+        }
+        else if (HasBufferedData)
+        {
+            result = PersistBufferAsync(flushToDisk, token);
+        }
+        else if (flushToDisk)
+        {
+            try
+            {
+                fileBackend.Flush(flushToDisk: true);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
             }
         }
 
         return result;
-
-        async ValueTask PersistAndFlushToDiskAsync()
-        {
-            await PersistBufferAsync(token).ConfigureAwait(false);
-            FlushToDisk();
-        }
     }
 
     /// <inheritdoc/>
     public override Task FlushAsync(CancellationToken token)
         => FlushAsync(flushToDisk: false, token).AsTask();
-
-    private void FlushToDisk()
-    {
-        Debug.Assert(fileBackend is not null);
-
-        (streamForFlush ??= new(fileBackend, FileAccess.Write, bufferSize: 1)).Flush(flushToDisk: true);
-    }
 
     /// <inheritdoc/>
     public override int ReadByte()
@@ -631,7 +612,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         {
             using var buffer = allocator.Invoke(bufferSize, exactSize: false);
             int count;
-            for (long offset = 0L; (count = await RandomAccess.ReadAsync(fileBackend, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
+            for (long offset = 0L; (count = await RandomAccess.ReadAsync(fileBackend.SafeFileHandle, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
                 await consumer.Invoke(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
         }
 
@@ -658,7 +639,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         {
             using var buffer = allocator.Invoke(bufferSize, exactSize: false);
             int count;
-            for (long offset = 0L; (count = RandomAccess.Read(fileBackend, buffer.Span, offset)) > 0; offset += count, token.ThrowIfCancellationRequested())
+            for (long offset = 0L; (count = RandomAccess.Read(fileBackend.SafeFileHandle, buffer.Span, offset)) > 0; offset += count, token.ThrowIfCancellationRequested())
                 consumer.Invoke(buffer.Span.Slice(0, count));
         }
 
@@ -748,7 +729,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         if (fileBackend is not null)
         {
-            totalBytes = RandomAccess.Read(fileBackend, output, 0L);
+            totalBytes = RandomAccess.Read(fileBackend.SafeFileHandle, output, 0L);
             output = output.Slice(totalBytes);
         }
 
@@ -777,7 +758,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         if (fileBackend is not null)
         {
-            totalBytes = await RandomAccess.ReadAsync(fileBackend, output, 0L).ConfigureAwait(false);
+            totalBytes = await RandomAccess.ReadAsync(fileBackend.SafeFileHandle, output, 0L).ConfigureAwait(false);
             output = output.Slice(totalBytes);
         }
 
@@ -816,24 +797,29 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
         if (fileBackend is null)
             return new BufferedMemoryManager(this, range);
 
         if (HasBufferedData)
-            PersistBuffer();
+            PersistBuffer(flushToDisk: false);
 
-        var (offset, length) = GetOffsetAndLength(range, filePosition);
-        if (offset < 0L || length < 0L)
-            throw new ArgumentOutOfRangeException(nameof(range));
-        if (length == 0L && offset == 0L)
-            return new BufferedMemoryManager();
-        if (length > int.MaxValue)
-            throw new InsufficientMemoryException();
+        var (offset, length) = GetOffsetAndLength(range, fileBackend.Position);
+        switch ((offset, length))
+        {
+            case ( < 0L, _):
+            case (_, < 0L):
+                throw new ArgumentOutOfRangeException(nameof(range));
+            case (0L, 0L):
+                return new BufferedMemoryManager();
+            case (_, > int.MaxValue):
+                throw new InsufficientMemoryException();
+        }
 
         var result = new NativeMemoryManager(this, unchecked((int)length));
         try
         {
-            result.SetLength(RandomAccess.Read(fileBackend, result.GetSpan(), offset));
+            result.SetLength(RandomAccess.Read(fileBackend.SafeFileHandle, result.GetSpan(), offset));
         }
         catch
         {
@@ -870,24 +856,29 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
+
         if (fileBackend is null)
             return new BufferedMemoryManager(this, range);
 
         if (HasBufferedData)
-            await PersistBufferAsync(token).ConfigureAwait(false);
+            await PersistBufferAsync(flushToDisk: false, token).ConfigureAwait(false);
 
-        var (offset, length) = GetOffsetAndLength(range, filePosition);
-        if (offset < 0L || length < 0L)
-            throw new ArgumentOutOfRangeException(nameof(range));
-        if (length == 0L && offset == 0L)
-            return new BufferedMemoryManager();
-        if (length > int.MaxValue)
-            throw new InsufficientMemoryException();
+        var (offset, length) = GetOffsetAndLength(range, fileBackend.Position);
+        switch ((offset, length))
+        {
+            case ( < 0L, _):
+            case (_, < 0L):
+                throw new ArgumentOutOfRangeException(nameof(range));
+            case (0L, 0L):
+                return new BufferedMemoryManager();
+            case (_, > int.MaxValue):
+                throw new InsufficientMemoryException();
+        }
 
         var result = new NativeMemoryManager(this, unchecked((int)length));
         try
         {
-            result.SetLength(await RandomAccess.ReadAsync(fileBackend, result.Memory, offset, token).ConfigureAwait(false));
+            result.SetLength(await RandomAccess.ReadAsync(fileBackend.SafeFileHandle, result.Memory, offset, token).ConfigureAwait(false));
         }
         catch
         {
@@ -948,15 +939,13 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <returns><see langword="true"/> if whole content is in memory and available without allocation of <see cref="MemoryManager{T}"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetWrittenContent(out ReadOnlyMemory<byte> content, [NotNullWhen(false)] out string? fileName)
     {
-        if (this.fileName is null)
+        if ((fileName = fileBackend?.Name) is null)
         {
             content = buffer.Memory.Slice(0, position);
-            fileName = null;
             return true;
         }
 
         content = default;
-        fileName = this.fileName;
         return false;
     }
 
@@ -969,12 +958,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (disposing)
         {
-            streamForFlush?.Dispose();
-            streamForFlush = null;
-            fileBackend?.Dispose();
-            fileBackend = null;
-            fileName = null;
-            buffer.Dispose();
+            ClearCore();
             reader = null;
         }
 

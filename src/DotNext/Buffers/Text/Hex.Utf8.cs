@@ -41,10 +41,7 @@ public static partial class Hex
 
                 do
                 {
-                    var lowNibbles = Vector256.Create(
-                        Vector128.CreateScalarUnsafe(ReadUnaligned<ulong>(ref bytePtr)),
-                        Vector128.CreateScalarUnsafe(ReadUnaligned<ulong>(ref Add(ref bytePtr, sizeof(ulong)))))
-                        .AsByte();
+                    var lowNibbles = Fetch(ref bytePtr);
                     var highNibbles = Avx2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
 
                     // combine high nibbles and low nibbles, then do table lookup
@@ -52,16 +49,25 @@ public static partial class Hex
                     result = Avx2.And(result, lowNibbleMask);
                     result = Avx2.Shuffle(nibbles256, result);
 
-                    fixed (byte* ptr = &charPtr)
-                    {
-                        Avx2.Store(ptr, result);
-                    }
+                    // save vector back to memory block
+                    Unsafe.WriteUnaligned(ref charPtr, result);
 
                     bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
                     charPtr = ref Add(ref charPtr, charsCountPerIteration);
                     offset -= bytesCountPerIteration;
                 }
                 while (offset >= bytesCountPerIteration);
+
+                // load 16 bytes to the vector
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                static Vector256<byte> Fetch(ref byte bytePtr)
+                {
+                    var tmp = ReadUnaligned<Tuple128>(ref bytePtr);
+
+                    return Vector256.Create(
+                        Vector128.CreateScalarUnsafe(tmp.Low),
+                        Vector128.CreateScalarUnsafe(tmp.High)).AsByte();
+                }
             }
 
             // encode 8 bytes at a time using 128-bit vector (SSSE3 only intructions)
@@ -81,10 +87,8 @@ public static partial class Hex
                     result = Sse2.And(result, lowNibbleMask);
                     result = Ssse3.Shuffle(nibbles, result);
 
-                    fixed (byte* ptr = &charPtr)
-                    {
-                        Sse2.Store(ptr, result);
-                    }
+                    // save vector back to memory block
+                    Unsafe.WriteUnaligned(ref charPtr, result);
 
                     bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
                     charPtr = ref Add(ref charPtr, charsCountPerIteration);

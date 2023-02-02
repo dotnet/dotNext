@@ -31,15 +31,8 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
-        (leaseTokenSource = new()).Cancel();
         this.maxLease = maxLease;
-        leaseTimer = new(OnLeaseExpired, new WeakReference<LeaderState<TMember>>(this), InfiniteTimeSpan, InfiniteTimeSpan);
-
-        static void OnLeaseExpired(object? state)
-        {
-            if ((state as WeakReference<LeaderState<TMember>>)?.TryGetTarget(out var leader) ?? false)
-                leader.OnLeaseExpired();
-        }
+        lease = ExpiredLease.Instance;
     }
 
     internal ILeaderStateMetrics? Metrics
@@ -93,7 +86,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         // update lease if the cluster contains only one local node
         if (leaseRenewalThreshold is 1)
-            RenewLease(startTime);
+            RenewLease(startTime.Elapsed);
         else
             leaseRenewalThreshold = (leaseRenewalThreshold >> 1) + 1;
 
@@ -148,7 +141,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             if (result.Value)
             {
                 if (--leaseRenewalThreshold is 0)
-                    RenewLease(startTime);
+                    RenewLease(startTime.Elapsed);
 
                 commitQuorum++;
             }
@@ -235,7 +228,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         {
             timerCancellation.Cancel(false);
             replicationEvent.CancelSuspendedCallers(LeadershipToken);
-            await leaseTimer.DisposeAsync().ConfigureAwait(false);
             await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false); // may throw OperationCanceledException
         }
         catch (Exception e)
@@ -255,9 +247,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             timerCancellation.Dispose();
             heartbeatTask = null;
 
-            lease = null;
-            leaseTimer.Dispose();
-            leaseTokenSource.Dispose();
+            DestroyLease();
 
             // cancel replication queue
             replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));

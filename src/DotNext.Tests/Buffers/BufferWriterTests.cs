@@ -119,19 +119,28 @@ namespace DotNext.Buffers
             }
         }
 
-        public static IEnumerable<object[]> ByteWriters()
+        [Fact]
+        public static void EncodeAsString()
         {
-            yield return new object[] { new PooledBufferWriter<byte> { BufferAllocator = MemoryPool<byte>.Shared.ToAllocator() }, Encoding.UTF32 };
-            yield return new object[] { new PooledArrayBufferWriter<byte>(), Encoding.UTF8 };
-        }
-
-        [Theory]
-        [MemberData(nameof(ByteWriters))]
-        public static void EncodeAsString(BufferWriter<byte> writer, Encoding encoding)
-        {
-            var encodingContext = new EncodingContext(encoding, true);
-            using (writer)
+            using (var writer = new PooledBufferWriter<byte> { BufferAllocator = MemoryPool<byte>.Shared.ToAllocator() })
             {
+                EncodeDecode(writer, Encoding.UTF8);
+            }
+
+            using (var writer = new PooledArrayBufferWriter<byte>())
+            {
+                EncodeDecode(writer, Encoding.UTF32);
+            }
+
+            using (var writer = new IO.FileBufferingWriter())
+            {
+                EncodeDecode(writer, Encoding.UTF8);
+            }
+
+            static void EncodeDecode<TBuffer>(TBuffer writer, Encoding encoding)
+                where TBuffer : class, IBufferWriter<byte>, IDisposable, IGrowableBuffer<byte>
+            {
+                var encodingContext = new EncodingContext(encoding, true);
                 var g = Guid.NewGuid();
                 var bi = new BigInteger(RandomBytes(64));
                 var dt = DateTime.Now;
@@ -159,11 +168,12 @@ namespace DotNext.Buffers
                 writer.WriteFormattable(bi, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
 
                 var decodingContext = new DecodingContext(encoding, true);
-                var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+                True(writer.TryGetWrittenContent(out var writtenMemory));
+                var reader = IAsyncBinaryReader.Create(writtenMemory);
                 Equal(42L, reader.Parse<long>(static (c, p) => long.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
                 Equal(12UL, reader.Parse<ulong>(static (c, p) => ulong.Parse(c, provider: p), LengthFormat.PlainLittleEndian, in decodingContext, provider: InvariantCulture));
                 Equal(34, reader.Parse<int>(static (c, p) => int.Parse(c, provider: p), LengthFormat.PlainBigEndian, in decodingContext, provider: InvariantCulture));
-                Equal(78U, reader.Parse<uint>(static(c, p) => uint.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
+                Equal(78U, reader.Parse<uint>(static (c, p) => uint.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
                 Equal(90, reader.Parse<short>(static (c, p) => short.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
                 Equal("C", reader.ReadString(LengthFormat.Plain, in decodingContext));
                 Equal(12, reader.Parse<ushort>(static (c, p) => ushort.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
