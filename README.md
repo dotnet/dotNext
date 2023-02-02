@@ -46,9 +46,9 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 01-30-2023
+Release Date: 02-02-2023
 
-Starting from this release, `DotNext.Reflection` library is not published on regular basis, but only on-demand. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
+Starting from the current release, `DotNext.Reflection` library is no longer published on regular basis. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
 
 <a href="https://www.nuget.org/packages/dotnext/4.10.0">DotNext 4.10.0</a>
 * Added API discussed and proposed in [143](https://github.com/dotnet/dotNext/issues/143). The requested features are implemented as `DotNext.Buffers.Binary.BinaryTransformations` class.

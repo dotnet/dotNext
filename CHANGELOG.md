@@ -1,6 +1,35 @@
 Release Notes
 ====
 
+# 02-02-2023
+Starting from the current release, `DotNext.Reflection` library is no longer published on regular basis. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
+
+<a href="https://www.nuget.org/packages/dotnext/4.10.0">DotNext 4.10.0</a>
+* Added API discussed and proposed in [143](https://github.com/dotnet/dotNext/issues/143). The requested features are implemented as `DotNext.Buffers.Binary.BinaryTransformations` class.
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.10.0">DotNext.Metaprogramming 4.10.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.10.0">DotNext.Unsafe 4.10.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.10.0">DotNext.Threading 4.10.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.10.0">DotNext.IO 4.10.0</a>
+* Optimized memory allocations caused by `FileBufferingWriter` class
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.10.0">DotNext.Net.Cluster 4.10.0</a>
+* Fixed [146](https://github.com/dotnet/dotNext/issues/146)
+* Fixed [147](https://github.com/dotnet/dotNext/issues/147)
+* Reduced memory allocations caused by the implementation of the leader lease
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.10.0">DotNext.AspNetCore.Cluster 4.10.0</a>
+* Fixed [146](https://github.com/dotnet/dotNext/issues/146)
+* Updated dependencies
+
 # 01-16-2023
 <a href="https://www.nuget.org/packages/dotnext/4.9.0">DotNext 4.9.0</a>
 * Introduced `SpawningAsyncTaskMethodBuilder` that can be used in combination with [AsyncMethodBuilderAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asyncmethodbuilderattribute) to force execution of async method in parallel with the current flow
