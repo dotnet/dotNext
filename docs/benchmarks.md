@@ -151,12 +151,12 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.
 
-|                                        Method |       Mean |    Error |   StdDev |     Gen0 |     Gen1 |     Gen2 | Allocated |
-|---------------------------------------------- |-----------:|---------:|---------:|---------:|---------:|---------:|----------:|
-|       'FileBufferingWriter, synchronous mode' |   923.6 us | 18.14 us | 22.94 us | 250.0000 | 249.0234 | 249.0234 |      1 MB |
-|      'FileBufferingWriter, asynchronous mode' | 1,295.6 us | 24.41 us | 47.61 us | 126.9531 | 126.9531 | 126.9531 |      1 MB |
-| 'FileBufferingWriteStream, synchronouse mode' | 3,838.8 us | 67.96 us | 63.57 us | 488.2813 | 359.3750 | 277.3438 |   1.88 MB |
-| 'FileBufferingWriteStream, asynchronous mode' | 4,899.2 us | 31.68 us | 28.09 us | 468.7500 | 359.3750 | 265.6250 |   1.88 MB |
+|                                        Method |     Mean |     Error |    StdDev |   Median |     Gen0 |     Gen1 |     Gen2 | Allocated |
+|---------------------------------------------- |---------:|----------:|----------:|---------:|---------:|---------:|---------:|----------:|
+|       'FileBufferingWriter, synchronous mode' | 1.003 ms | 0.0185 ms | 0.0164 ms | 1.005 ms | 248.0469 | 248.0469 | 248.0469 |      1 MB |
+|      'FileBufferingWriter, asynchronous mode' | 2.035 ms | 0.0399 ms | 0.0750 ms | 2.036 ms |  62.5000 |  62.5000 |  62.5000 |      1 MB |
+| 'FileBufferingWriteStream, synchronouse mode' | 4.075 ms | 0.0784 ms | 0.0805 ms | 4.065 ms | 484.3750 | 351.5625 | 273.4375 |   1.88 MB |
+| 'FileBufferingWriteStream, asynchronous mode' | 5.592 ms | 0.2027 ms | 0.5751 ms | 5.278 ms | 476.5625 | 375.0000 | 273.4375 |   1.88 MB |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
 
