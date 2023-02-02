@@ -1,5 +1,3 @@
-using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
-
 namespace DotNext.IO;
 
 public partial class FileBufferingWriter
