@@ -124,15 +124,12 @@ public partial class FileBufferingWriter
 
     private Stream GetWrittenContentAsStream(bool useAsyncIO)
     {
-        if (fileBackend is null)
-            return StreamSource.AsStream(buffer.Memory.Slice(0, position));
-
         const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
         const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
 
         // reuse the same handle when opening file for read
-        return OperatingSystem.IsWindows() && useAsyncIO == fileBackend.SafeFileHandle.IsAsync
-            ? new FileStream(new SafeFileHandle(fileBackend.SafeFileHandle.DangerousGetHandle(), ownsHandle: false), FileAccess.Read, fileProvider.BufferSize, useAsyncIO)
+        return fileBackend is null
+            ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
             : new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 
