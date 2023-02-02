@@ -51,7 +51,7 @@ Release Date: 01-30-2023
 Starting from this release, `DotNext.Reflection` library is not published on regular basis, but only on-demand. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
 
 <a href="https://www.nuget.org/packages/dotnext/4.10.0">DotNext 4.10.0</a>
-* Added API discussed and proposed in [143](https://github.com/dotnet/dotNext/issues/143). The requested features are implemented as `DotNext.Buffers.Binary.BinaryTransformation` class.
+* Added API discussed and proposed in [143](https://github.com/dotnet/dotNext/issues/143). The requested features are implemented as `DotNext.Buffers.Binary.BinaryTransformations` class.
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.10.0">DotNext.Metaprogramming 4.10.0</a>
 * Updated dependencies
