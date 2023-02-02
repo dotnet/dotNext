@@ -718,7 +718,7 @@ or <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extens
   </table>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_ConfigurationExtensions_RedirectToLeader_Microsoft_AspNetCore_Builder_IApplicationBuilder_Microsoft_AspNetCore_Http_PathString_System_Nullable_System_Int32__System_Nullable_DotNext_Func_Microsoft_AspNetCore_Http_HttpResponse_Uri_Task____remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>If the current node is not the leader then request will be
-redirected automatically to the leader node with 302 (Moved Permanently).
+redirected automatically to the leader node with 307 (Temporary Redirect preserve method).
 If there are no consensus then the request will be failed with 503 (Service Unavailable).
 You can override redirection behavior using custom <code data-dev-comment-type="paramref" class="paramref">redirection</code>.
 <code data-dev-comment-type="paramref" class="paramref">applicationPortHint</code> used to highlight the real port of the application endpoints in the cluster.

@@ -73,7 +73,7 @@
 <tbody>
 <tr>
 <td>Runtime</td>
-<td>.NET 6.0.11 (6.0.1122.52304), X64 RyuJIT AVX2</td>
+<td>.NET 6.0.13 (6.0.1322.58009), X64 RyuJIT AVX2</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -816,18 +816,20 @@ dotnet run -c Bench
 <th style="text-align: right;">Mean</th>
 <th style="text-align: right;">Error</th>
 <th style="text-align: right;">StdDev</th>
-<th style="text-align: right;">Gen 0</th>
-<th style="text-align: right;">Gen 1</th>
-<th style="text-align: right;">Gen 2</th>
+<th style="text-align: right;">Median</th>
+<th style="text-align: right;">Gen0</th>
+<th style="text-align: right;">Gen1</th>
+<th style="text-align: right;">Gen2</th>
 <th style="text-align: right;">Allocated</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>'FileBufferingWriter, synchronous mode'</td>
-<td style="text-align: right;">1.079 ms</td>
-<td style="text-align: right;">0.0208 ms</td>
-<td style="text-align: right;">0.0364 ms</td>
+<td style="text-align: right;">1.003 ms</td>
+<td style="text-align: right;">0.0185 ms</td>
+<td style="text-align: right;">0.0164 ms</td>
+<td style="text-align: right;">1.005 ms</td>
 <td style="text-align: right;">248.0469</td>
 <td style="text-align: right;">248.0469</td>
 <td style="text-align: right;">248.0469</td>
@@ -835,33 +837,36 @@ dotnet run -c Bench
 </tr>
 <tr>
 <td>'FileBufferingWriter, asynchronous mode'</td>
-<td style="text-align: right;">1.380 ms</td>
-<td style="text-align: right;">0.0276 ms</td>
-<td style="text-align: right;">0.0295 ms</td>
-<td style="text-align: right;">126.9531</td>
-<td style="text-align: right;">111.3281</td>
-<td style="text-align: right;">111.3281</td>
+<td style="text-align: right;">2.035 ms</td>
+<td style="text-align: right;">0.0399 ms</td>
+<td style="text-align: right;">0.0750 ms</td>
+<td style="text-align: right;">2.036 ms</td>
+<td style="text-align: right;">62.5000</td>
+<td style="text-align: right;">62.5000</td>
+<td style="text-align: right;">62.5000</td>
 <td style="text-align: right;">1 MB</td>
 </tr>
 <tr>
 <td>'FileBufferingWriteStream, synchronouse mode'</td>
-<td style="text-align: right;">4.141 ms</td>
-<td style="text-align: right;">0.0317 ms</td>
-<td style="text-align: right;">0.0297 ms</td>
-<td style="text-align: right;">476.5625</td>
-<td style="text-align: right;">359.3750</td>
+<td style="text-align: right;">4.075 ms</td>
+<td style="text-align: right;">0.0784 ms</td>
+<td style="text-align: right;">0.0805 ms</td>
+<td style="text-align: right;">4.065 ms</td>
+<td style="text-align: right;">484.3750</td>
+<td style="text-align: right;">351.5625</td>
 <td style="text-align: right;">273.4375</td>
-<td style="text-align: right;">2 MB</td>
+<td style="text-align: right;">1.88 MB</td>
 </tr>
 <tr>
 <td>'FileBufferingWriteStream, asynchronous mode'</td>
-<td style="text-align: right;">5.092 ms</td>
-<td style="text-align: right;">0.0557 ms</td>
-<td style="text-align: right;">0.0521 ms</td>
-<td style="text-align: right;">453.1250</td>
-<td style="text-align: right;">367.1875</td>
-<td style="text-align: right;">257.8125</td>
-<td style="text-align: right;">2 MB</td>
+<td style="text-align: right;">5.592 ms</td>
+<td style="text-align: right;">0.2027 ms</td>
+<td style="text-align: right;">0.5751 ms</td>
+<td style="text-align: right;">5.278 ms</td>
+<td style="text-align: right;">476.5625</td>
+<td style="text-align: right;">375.0000</td>
+<td style="text-align: right;">273.4375</td>
+<td style="text-align: right;">1.88 MB</td>
 </tr>
 </tbody>
 </table>

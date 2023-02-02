@@ -112,6 +112,7 @@ of the latest committed write. For instance, if the client performs <em>Write</e
 <li><strong>Announcement</strong> means that the starting node must be announced through the leader, added to the cluster configuration and committed by the majority of nodes. In that case the node is started in <em>Standby</em> mode and waits until it will be added to the configuration by leader node and replicated to the that node</li>
 </ul>
 <p>The node is started using <code>StartAsync</code> method of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a> class doesn't mean that the node is ready to serve client requests. To ensure that the node is bootstrapped correctly, use <em>Readiness Probe</em>. The probe is provided through <code>Readiness</code> property of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> interface.</p>
+<p>Another way of cluster bootstrapping is to pre-populate a list of cluster members with 3 or more cluster members and start them in parallel. In this case, <strong>Cold start</strong> mode is unnecessary.</p>
 <h1 id="cluster-configuration-management">Cluster Configuration Management</h1>
 <p>Raft supports cluster configuration management out-of-the-box. Cluster configuration is a set of cluster members consistently stored on the nodes. The leader node is responsible for processing amendments of the configuration and replicating the modified configuration to follower nodes. Thus, a list of cluster members is always in consistent state.</p>
 <p>The configuration can be in two states:</p>
@@ -130,11 +131,15 @@ of the latest committed write. For instance, if the client performs <em>Write</e
 <li><em>In-memory</em> storage that stores configuration in the memory. Restarting the node leads to configuration loss</li>
 <li><em>Persistent</em> storage that stores configuration in the file system</li>
 </ul>
+<div class="WARNING">
+<h5>Warning</h5>
+<p>In-memory configuration storage is not recommended for production use. In case of node failures, the configuration will not survive the node restart.</p>
+</div>
 <p>When a new node is added, it passes through warmup procedure. The leader node attempts to replicate as much as possible log entries to the added node. The number of rounds for catch up can be configured by <code>WarmupRounds</code> configuration property. When the leader node decided that the new node is in sync then it adds the address of that node to the proposed configuration. When the proposed configuration becomes the active configuration, readiness probe of the added node turning into the signaled state.</p>
 <h1 id="network-transport">Network Transport</h1>
 <p>.NEXT supports the following network transports:</p>
 <ul>
-<li>HTTP 1.1, HTTP 2.0 and HTTP 3.0</li>
+<li>HTTP 1.1, HTTP 2.0, and HTTP 3.0</li>
 <li>TCP transport</li>
 <li>UDP transport</li>
 <li>Generic transport on top of <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections">ASP.NET Core Connections</a> abstractions. See <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.CustomTransportConfiguration.html">CustomTransportConfiguration</a> class for more information.</li>
@@ -254,7 +259,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 </tbody>
 </table>
 <p>By default, all transport bindings for Raft use in-memory configuration storage.</p>
-<p>Cluster configuration management is represented by the following methods declared in <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class:</p>
+<p>Cluster configuration management is represented by the following methods declared in <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class or <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster.html">IRaftHttpCluster</a> interface (in case of HTTP transport working on top of ASP.NET Core infrastructure):</p>
 <ul>
 <li><code>AddMemberAsync</code> to add and catch up a new node</li>
 <li><code>RemoveMemberAsync</code> to remove the existing node</li>
@@ -302,7 +307,7 @@ IHost host = new HostBuilder()
 <p>Note that <code>JoinCluster</code> method should be called after <code>ConfigureWebHost</code>. Otherwise, the behavior of this method is undefined.</p>
 <p><code>JoinCluster</code> method has overloads that allow to specify custom configuration section containing the configuration of the local node.</p>
 <p><code>UseConsensusProtocolHandler</code> method should be called before registration of any authentication/authorization middleware.</p>
-<p><code>UsePersistentConfigurationStorage</code> allows to configure a persistent storage for the cluster configuration. Additionally, you can use <code>UseInMemoryConfigurationStorage</code> method and keep the configuration in the memory. However, it's not recommended for production use.</p>
+<p><code>UsePersistentConfigurationStorage</code> allows to configure a persistent storage for the cluster configuration. Additionally, you can use <code>UseInMemoryConfigurationStorage</code> method and keep the configuration in the memory.</p>
 <h3 id="dependency-injection">Dependency Injection</h3>
 <p>The application may request the following services from ASP.NET Core DI container:</p>
 <ul>
@@ -527,7 +532,7 @@ sealed class Startup
 }
 </code></pre>
 <p>This redirection can be transparent to actual client if you use reverse proxy server such as NGINX. Reverse proxy can automatically handle the redirection without returning control to the client.</p>
-<p>It is possible to change default behavior of redirection where <em>301 Moved Permanently</em> status code is used. You can pass custom implementation into the optional parameter of <code>RedirectToLeader</code> method.</p>
+<p>It is possible to change default behavior of redirection where <em>307 Temporary Redirect</em> status code is used. You can pass custom implementation into the optional parameter of <code>RedirectToLeader</code> method.</p>
 <p>The following example demonstrates how to return <em>404 Not Found</em> and location of Leader node as its body.</p>
 <pre><code class="lang-csharp">private static Task CustomRedirection(HttpResponse response, Uri leaderUri)
 {
