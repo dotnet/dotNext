@@ -807,7 +807,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         var (offset, length) = GetOffsetAndLength(range, fileBackend.Position);
         switch ((offset, length))
         {
-            case ( < 0L, _):
+            case (< 0L, _):
             case (_, < 0L):
                 throw new ArgumentOutOfRangeException(nameof(range));
             case (0L, 0L):
@@ -866,7 +866,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         var (offset, length) = GetOffsetAndLength(range, fileBackend.Position);
         switch ((offset, length))
         {
-            case ( < 0L, _):
+            case (< 0L, _):
             case (_, < 0L):
                 throw new ArgumentOutOfRangeException(nameof(range));
             case (0L, 0L):
