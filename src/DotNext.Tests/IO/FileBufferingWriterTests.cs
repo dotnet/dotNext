@@ -422,8 +422,16 @@ namespace DotNext.IO
             };
             using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
             await JsonSerializer.SerializeAsync(writer, dict);
-            await using var source = await writer.GetWrittenContentAsStreamAsync();
-            Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source));
+            await using (var source = await writer.GetWrittenContentAsStreamAsync())
+            {
+                Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source));
+            }
+
+            // reuse reader stream
+            await using (var source = await writer.GetWrittenContentAsStreamAsync())
+            {
+                Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source));
+            }
         }
 
         [Theory]

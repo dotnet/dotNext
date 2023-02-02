@@ -1,3 +1,5 @@
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
+
 namespace DotNext.IO;
 
 public partial class FileBufferingWriter
@@ -122,12 +124,16 @@ public partial class FileBufferingWriter
 
     private Stream GetWrittenContentAsStream(bool useAsyncIO)
     {
+        if (fileBackend is null)
+            return StreamSource.AsStream(buffer.Memory.Slice(0, position));
+
         const FileOptions withAsyncIO = FileOptions.Asynchronous | FileOptions.SequentialScan;
         const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
 
-        return FileName is { Length: > 0 } fileName
-            ? new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO)
-            : StreamSource.AsStream(buffer.Memory.Slice(0, position));
+        // reuse the same handle when opening file for read
+        return OperatingSystem.IsWindows() && useAsyncIO == fileBackend.SafeFileHandle.IsAsync
+            ? new FileStream(new SafeFileHandle(fileBackend.SafeFileHandle.DangerousGetHandle(), ownsHandle: false), FileAccess.Read, fileProvider.BufferSize, useAsyncIO)
+            : new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 
     /// <summary>
