@@ -111,12 +111,8 @@ public readonly ref partial struct UserDataStorage
 
     private readonly object source;
 
-    internal UserDataStorage(object source) => this.source = source switch
-    {
-        null => throw new ArgumentNullException(nameof(UserDataStorage.source)),
-        IContainer support => support.Source,
-        _ => source,
-    };
+    internal UserDataStorage(object source)
+        => this.source = (source as IContainer)?.Source ?? source ?? throw new ArgumentNullException(nameof(UserDataStorage.source));
 
     /// <summary>
     /// Gets a value indicating that this storage is valid.
