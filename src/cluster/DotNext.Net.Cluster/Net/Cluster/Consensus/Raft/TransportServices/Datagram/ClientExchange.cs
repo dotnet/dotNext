@@ -6,16 +6,24 @@ internal interface IClientExchange<out T> : ISupplier<CancellationToken, T>, IEx
     where T : Task
 {
     ClusterMemberId Sender { set; }
+
+    string Name { get; }
 }
 
 internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExchange<Task<T>>
 {
+    private readonly string name;
     private protected ClusterMemberId sender;
 
-    private protected ClientExchange()
+    private protected ClientExchange(string name)
         : base(TaskCreationOptions.RunContinuationsAsynchronously)
     {
+        Debug.Assert(name is { Length: > 0 });
+
+        this.name = name;
     }
+
+    string IClientExchange<Task<T>>.Name => name;
 
     Task<T> ISupplier<CancellationToken, Task<T>>.Invoke(CancellationToken token) => Task;
 
@@ -53,7 +61,8 @@ internal abstract class ClientExchange : ClientExchange<Result<bool>>
 {
     private protected readonly long currentTerm;
 
-    private protected ClientExchange(long term) => currentTerm = term;
+    private protected ClientExchange(string name, long term)
+        : base(name) => currentTerm = term;
 
     public sealed override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {

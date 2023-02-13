@@ -54,7 +54,7 @@ internal sealed class ExchangePeer : RaftClusterMember
         }
         finally
         {
-            Metrics?.ReportResponseTime(timeStamp.Elapsed);
+            Metrics?.ReportResponseTime(timeStamp.Elapsed, exchange.Name, EndPoint);
             timeoutSource.Dispose();
             if (exchange is IAsyncDisposable disposable)
                 await disposable.DisposeAsync().ConfigureAwait(false);

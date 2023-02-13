@@ -22,6 +22,8 @@ internal abstract partial class Client : RaftClusterMember
         ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
         static abstract ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
+
+        static abstract string Name { get; }
     }
 
     private readonly AsyncExclusiveLock accessLock;
@@ -90,7 +92,7 @@ internal abstract partial class Client : RaftClusterMember
             if (lockTaken)
                 accessLock.Release();
 
-            Metrics?.ReportResponseTime(timeStamp.Elapsed);
+            Metrics?.ReportResponseTime(timeStamp.Elapsed, TExchange.Name, EndPoint);
             requestDurationTracker.Dispose();
         }
     }

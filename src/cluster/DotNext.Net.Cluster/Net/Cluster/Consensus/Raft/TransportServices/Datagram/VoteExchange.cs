@@ -4,10 +4,12 @@ using Buffers;
 
 internal sealed class VoteExchange : ClientExchange
 {
+    private const string Name = "Vote";
+
     private readonly long lastLogIndex, lastLogTerm;
 
     internal VoteExchange(long term, long lastLogIndex, long lastLogTerm)
-        : base(term)
+        : base(Name, term)
     {
         this.lastLogIndex = lastLogIndex;
         this.lastLogTerm = lastLogTerm;

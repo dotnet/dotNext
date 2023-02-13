@@ -7,6 +7,8 @@ internal partial class Client : RaftClusterMember
     [RequiresPreviewFeatures]
     private sealed class MetadataExchange : IClientExchange<IReadOnlyDictionary<string, string>>
     {
+        private const string Name = "Metadata";
+
         internal static readonly MetadataExchange Instance = new();
 
         private MetadataExchange()
@@ -18,6 +20,8 @@ internal partial class Client : RaftClusterMember
 
         static ValueTask<IReadOnlyDictionary<string, string>> IClientExchange<IReadOnlyDictionary<string, string>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadMetadataResponseAsync(buffer, token);
+
+        static string IClientExchange<IReadOnlyDictionary<string, string>>.Name => Name;
     }
 
     [RequiresPreviewFeatures]

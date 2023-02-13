@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -18,6 +19,8 @@ internal interface IFollowerStateMetrics
 /// </summary>
 public class MetricsCollector : ILeaderStateMetrics, IFollowerStateMetrics
 {
+    private readonly object? broadcastTimeMeter, candidateStateMeter, followerStateMeter, leaderStateMeter, heartbeatMeter;
+
     /// <summary>
     /// Reports about broadcast time.
     /// </summary>
@@ -32,62 +35,138 @@ public class MetricsCollector : ILeaderStateMetrics, IFollowerStateMetrics
     /// <summary>
     /// Sets counter that allows to track the broadcast time.
     /// </summary>
+    [Obsolete("Use BroadcastTimeMeter property instead")]
     public EventCounter? BroadcastTimeCounter
     {
-        private get;
-        init;
+        init => broadcastTimeMeter = value;
+    }
+
+    /// <summary>
+    /// Sets a meter that allows to track the broadcast time.
+    /// </summary>
+    [CLSCompliant(false)]
+    public Histogram<double> BroadcastTimeMeter
+    {
+        init => broadcastTimeMeter = value;
     }
 
     /// <inheritdoc />
     void ILeaderStateMetrics.ReportBroadcastTime(TimeSpan value)
     {
-        BroadcastTimeCounter?.WriteMetric(value.TotalMilliseconds);
-        ReportBroadcastTime(value);
+        switch (broadcastTimeMeter)
+        {
+            case Histogram<double> { Enabled: true } histogram:
+                histogram.Record(value.TotalMilliseconds);
+                goto default;
+            case EventCounter counter:
+                counter.WriteMetric(value.TotalMilliseconds);
+                goto default;
+            default:
+                ReportBroadcastTime(value);
+                break;
+        }
     }
 
     /// <summary>
     /// Reports that node becomes a candidate.
     /// </summary>
     public virtual void MovedToCandidateState()
-        => CandidateStateCounter?.Increment();
+    {
+        switch (candidateStateMeter)
+        {
+            case Counter<int> { Enabled: true } counter:
+                counter.Add(1);
+                break;
+            case IncrementingEventCounter counter:
+                counter.Increment();
+                break;
+        }
+    }
 
     /// <summary>
     /// Sets counter that allows to track the number of transitions to candidate state.
     /// </summary>
+    [Obsolete("Use CandidateStateMeter property instead.")]
     public IncrementingEventCounter? CandidateStateCounter
     {
-        private get;
-        init;
+        init => candidateStateMeter = value;
+    }
+
+    /// <summary>
+    /// Sets a meter that allows to track the number of transitions to candidate state.
+    /// </summary>
+    [CLSCompliant(false)]
+    public Counter<int> CandidateStateMeter
+    {
+        init => candidateStateMeter = value;
     }
 
     /// <summary>
     /// Reports that node becomes a follower.
     /// </summary>
     public virtual void MovedToFollowerState()
-        => FollowerStateCounter?.Increment();
+    {
+        switch (followerStateMeter)
+        {
+            case Counter<int> { Enabled: true } counter:
+                counter.Add(1);
+                break;
+            case IncrementingEventCounter counter:
+                counter.Increment();
+                break;
+        }
+    }
 
     /// <summary>
     /// Sets counter that allows to track the number of transitions to follower state.
     /// </summary>
+    [Obsolete("Use FollowerStateMeter property instead.")]
     public IncrementingEventCounter? FollowerStateCounter
     {
-        private get;
-        init;
+        init => followerStateMeter = value;
+    }
+
+    /// <summary>
+    /// Sets a meter that allows to track the number of transitions to follower state.
+    /// </summary>
+    [CLSCompliant(false)]
+    public Counter<int> FollowerStateMeter
+    {
+        init => followerStateMeter = value;
     }
 
     /// <summary>
     /// Reports that node becomes a leader.
     /// </summary>
     public virtual void MovedToLeaderState()
-        => LeaderStateCounter?.Increment();
+    {
+        switch (leaderStateMeter)
+        {
+            case Counter<int> { Enabled: true } counter:
+                counter.Add(1);
+                break;
+            case IncrementingEventCounter counter:
+                counter.Increment();
+                break;
+        }
+    }
 
     /// <summary>
     /// Sets counter that allows to track the number of transitions to leader state.
     /// </summary>
+    [Obsolete("Use LeaderStateMeter property instead.")]
     public IncrementingEventCounter? LeaderStateCounter
     {
-        private get;
-        init;
+        init => leaderStateMeter = value;
+    }
+
+    /// <summary>
+    /// Sets a meter that allows to track the number of transitions to leader state.
+    /// </summary>
+    [CLSCompliant(false)]
+    public Counter<int>? LeaderStateMeter
+    {
+        init => leaderStateMeter = value;
     }
 
     /// <summary>
@@ -100,16 +179,35 @@ public class MetricsCollector : ILeaderStateMetrics, IFollowerStateMetrics
     /// <summary>
     /// Sets counter that allows to track the number of received hearbeats from leader state.
     /// </summary>
+    [Obsolete("Use HeartbeatMeter property instead.")]
     public IncrementingEventCounter? HeartbeatCounter
     {
-        private get;
-        init;
+        init => heartbeatMeter = value;
+    }
+
+    /// <summary>
+    /// Sets a meter that allows to track the number of received hearbeats from leader state.
+    /// </summary>
+    [CLSCompliant(false)]
+    public Counter<int> HeartbeatMeter
+    {
+        init => heartbeatMeter = value;
     }
 
     /// <inheritdoc />
     void IFollowerStateMetrics.ReportHeartbeat()
     {
-        HeartbeatCounter?.Increment();
-        ReportHeartbeat();
+        switch (heartbeatMeter)
+        {
+            case Counter<int> { Enabled: true } counter:
+                counter.Add(1);
+                goto default;
+            case IncrementingEventCounter counter:
+                counter.Increment();
+                goto default;
+            default:
+                ReportHeartbeat();
+                break;
+        }
     }
 }

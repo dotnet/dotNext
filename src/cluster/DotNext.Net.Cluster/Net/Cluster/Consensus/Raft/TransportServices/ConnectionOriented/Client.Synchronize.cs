@@ -9,6 +9,8 @@ internal partial class Client : RaftClusterMember
     [RequiresPreviewFeatures]
     private readonly struct SynchronizeExchange : IClientExchange<long?>
     {
+        private const string Name = "Synchronize";
+
         private readonly long commitIndex;
 
         internal SynchronizeExchange(long commitIndex) => this.commitIndex = commitIndex;
@@ -18,6 +20,8 @@ internal partial class Client : RaftClusterMember
 
         static ValueTask<long?> IClientExchange<long?>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadNullableInt64Async(token);
+
+        static string IClientExchange<long?>.Name => Name;
     }
 
     [RequiresPreviewFeatures]

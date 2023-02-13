@@ -119,7 +119,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             response?.Content?.Dispose();
             response?.Dispose();
             request.Dispose();
-            Metrics?.ReportResponseTime(timeStamp.Elapsed);
+            Metrics?.ReportResponseTime(timeStamp.Elapsed, TMessage.MessageType, EndPoint);
         }
 
         MemberUnavailableException MemberUnavailable(Exception e)

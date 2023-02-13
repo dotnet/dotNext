@@ -7,6 +7,8 @@ internal partial class Client : RaftClusterMember
     [RequiresPreviewFeatures]
     private sealed class ResignExchange : IClientExchange<bool>
     {
+        private const string Name = "Resign";
+
         internal static readonly ResignExchange Instance = new();
 
         private ResignExchange()
@@ -18,6 +20,8 @@ internal partial class Client : RaftClusterMember
 
         static ValueTask<bool> IClientExchange<bool>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadBoolAsync(token);
+
+        static string IClientExchange<bool>.Name => Name;
     }
 
     [RequiresPreviewFeatures]

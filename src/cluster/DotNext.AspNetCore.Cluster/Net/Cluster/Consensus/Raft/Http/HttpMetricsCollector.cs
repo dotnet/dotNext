@@ -1,4 +1,6 @@
+using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
+using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -14,27 +16,55 @@ using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 /// </remarks>
 public class HttpMetricsCollector : MetricsCollector, IClientMetricsCollector
 {
-    /// <summary>
-    /// Reports about HTTP response time.
-    /// </summary>
-    /// <param name="value">The response time.</param>
+    private const string MessageTypeTag = "MessageType";
+    private const string NodeAddress = "NodeAddress";
+
+    private object? responseTimeMeter;
+
+    /// <inheritdoc cref="IClientMetricsCollector.ReportResponseTime(TimeSpan)"/>
+    [Obsolete("Override ReportResponseTime(TimeSpan, string, EndPoint) method instead")]
     public virtual void ReportResponseTime(TimeSpan value)
+        => ReportResponseTime(value, "undefined", new DnsEndPoint("undefined", 0));
+
+    /// <inheritdoc cref="IClientMetricsCollector.ReportResponseTime(TimeSpan, string, EndPoint)"/>
+    public virtual void ReportResponseTime(TimeSpan value, string requestTag, EndPoint address)
     {
     }
 
     /// <inheritdoc/>
-    void IClientMetricsCollector.ReportResponseTime(TimeSpan value)
+    void IClientMetricsCollector.ReportResponseTime(TimeSpan value, string requestTag, EndPoint address)
     {
-        ResponseTimeCounter?.WriteMetric(value.TotalMilliseconds);
-        ReportResponseTime(value);
+        switch (responseTimeMeter)
+        {
+            case Histogram<double> { Enabled: true } histogram:
+                histogram.Record(value.TotalMilliseconds, new(MessageTypeTag, requestTag), new(NodeAddress, address));
+                goto default;
+            case EventCounter counter:
+                counter.WriteMetric(value.TotalMilliseconds);
+                goto default;
+            default:
+                ReportResponseTime(value, requestTag, address);
+                break;
+        }
     }
 
     /// <summary>
     /// Gets or sets counter that allows to count response time from every cluster node.
     /// </summary>
+    [Obsolete("Use ResponseTimeMeter property instead.")]
     public EventCounter? ResponseTimeCounter
     {
-        get;
-        set;
+        get => responseTimeMeter as EventCounter;
+        set => responseTimeMeter = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a meter that allows to count response time from every cluster node.
+    /// </summary>
+    [CLSCompliant(false)]
+    public Histogram<double>? ResponseTimeMeter
+    {
+        get => responseTimeMeter as Histogram<double>;
+        set => responseTimeMeter = value;
     }
 }

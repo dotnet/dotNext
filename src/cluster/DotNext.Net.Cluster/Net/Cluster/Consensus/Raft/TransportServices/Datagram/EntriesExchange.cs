@@ -9,6 +9,8 @@ using static IO.Pipelines.PipeExtensions;
 
 internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDisposable
 {
+    private const string Name = "AppendEntries";
+
     /*
         Message flow:
         1.REQ(None) Announce number of entries, prevLogIndex, prevLogTerm etc.
@@ -28,6 +30,7 @@ internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDi
     private readonly EmptyClusterConfiguration? configuration;
 
     internal EntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, EmptyClusterConfiguration? configState, PipeOptions? options = null)
+        : base(Name)
     {
         pipe = new Pipe(options ?? PipeOptions.Default);
         this.term = term;

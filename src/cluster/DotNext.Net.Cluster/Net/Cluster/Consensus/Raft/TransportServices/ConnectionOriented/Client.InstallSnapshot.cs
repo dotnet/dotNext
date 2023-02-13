@@ -10,6 +10,8 @@ internal partial class Client : RaftClusterMember
     [RequiresPreviewFeatures]
     private readonly struct InstallSnapshotExchange : IClientExchange<Result<bool>>
     {
+        private const string Name = "InstallSnapshot";
+
         private readonly ILocalMember localMember;
         private readonly IRaftLogEntry snapshot;
         private readonly long term, snapshotIndex;
@@ -31,6 +33,8 @@ internal partial class Client : RaftClusterMember
 
         static ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadResultAsync(token);
+
+        static string IClientExchange<Result<bool>>.Name => Name;
     }
 
     [RequiresPreviewFeatures]

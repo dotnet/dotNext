@@ -9,11 +9,14 @@ using IClusterConfiguration = Membership.IClusterConfiguration;
 
 internal sealed class ConfigurationExchange : ClientExchange<bool>, IAsyncDisposable
 {
+    private const string Name = "Configuration";
+
     private readonly Pipe pipe;
     private readonly IClusterConfiguration configuration;
     private Task? transmission;
 
     internal ConfigurationExchange(IClusterConfiguration configuration, PipeOptions? options = null)
+        : base(Name)
     {
         this.configuration = configuration;
         pipe = new Pipe(options ?? PipeOptions.Default);

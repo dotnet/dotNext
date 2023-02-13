@@ -7,9 +7,11 @@ using Buffers;
 
 internal sealed class SynchronizeExchange : ClientExchange<long?>
 {
+    private const string Name = "Synchronize";
     private readonly long commitIndex;
 
-    internal SynchronizeExchange(long commitIndex) => this.commitIndex = commitIndex;
+    internal SynchronizeExchange(long commitIndex)
+        : base(Name) => this.commitIndex = commitIndex;
 
     public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {
