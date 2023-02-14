@@ -9,7 +9,7 @@ internal interface IChannelReader<T> : IChannel, IDisposable
     private const string OutputTypeMeterAttribute = "dotnext.threading.channels.persistentchannel.output";
 
     private protected static void SetTags(ref TagList tags)
-        => tags.Add(OutputTypeMeterAttribute, typeof(T).FullName);
+        => tags.Add(OutputTypeMeterAttribute, typeof(T).Name);
 
     long WrittenCount { get; }
 

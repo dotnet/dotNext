@@ -31,7 +31,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// </summary>
     private protected BufferWriter()
     {
-        measurementTags = new() { { ElementTypeMeterAttribute, typeof(T).FullName } };
+        measurementTags = new() { { ElementTypeMeterAttribute, typeof(T).Name } };
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     {
         init
         {
-            value.Add(ElementTypeMeterAttribute, typeof(T).FullName);
+            value.Add(ElementTypeMeterAttribute, typeof(T).Name);
             measurementTags = value;
         }
     }

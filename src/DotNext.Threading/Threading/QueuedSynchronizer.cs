@@ -207,7 +207,7 @@ public class QueuedSynchronizer : Disposable
     private protected QueuedSynchronizer()
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        measurementTags = new() { { LockTypeMeterAttribute, GetType().FullName } };
+        measurementTags = new() { { LockTypeMeterAttribute, GetType().Name } };
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ public class QueuedSynchronizer : Disposable
     {
         init
         {
-            value.Add(LockTypeMeterAttribute, GetType().FullName);
+            value.Add(LockTypeMeterAttribute, GetType().Name);
             measurementTags = value;
         }
     }
