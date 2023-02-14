@@ -16,8 +16,8 @@ using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 /// </remarks>
 public class HttpMetricsCollector : MetricsCollector, IClientMetricsCollector
 {
-    private const string MessageTypeTag = "MessageType";
-    private const string NodeAddress = "NodeAddress";
+    private const string MessageTypeTag = "dotnext.raft.rpc.method";
+    private const string NodeAddress = "http.url";
 
     private object? responseTimeMeter;
 
