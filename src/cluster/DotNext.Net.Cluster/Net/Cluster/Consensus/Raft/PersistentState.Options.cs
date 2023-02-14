@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.IO.Compression;
 
@@ -23,6 +24,8 @@ public partial class PersistentState
         IncrementingEventCounter? LockContentionCounter { get; }
 
         EventCounter? LockDurationCounter { get; }
+
+        TagList MeasurementTags { get; }
     }
 
     /// <summary>
@@ -174,6 +177,7 @@ public partial class PersistentState
         /// <summary>
         /// Gets or sets lock contention counter.
         /// </summary>
+        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
         public IncrementingEventCounter? LockContentionCounter
         {
             get;
@@ -183,6 +187,7 @@ public partial class PersistentState
         /// <summary>
         /// Gets or sets lock duration counter.
         /// </summary>
+        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
         public EventCounter? LockDurationCounter
         {
             get;
@@ -192,6 +197,7 @@ public partial class PersistentState
         /// <summary>
         /// Gets or sets the counter used to measure the number of retrieved log entries.
         /// </summary>
+        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
         public IncrementingEventCounter? ReadCounter
         {
             get;
@@ -201,6 +207,7 @@ public partial class PersistentState
         /// <summary>
         /// Gets or sets the counter used to measure the number of written log entries.
         /// </summary>
+        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
         public IncrementingEventCounter? WriteCounter
         {
             get;
@@ -210,7 +217,18 @@ public partial class PersistentState
         /// <summary>
         /// Gets or sets the counter used to measure the number of committed log entries.
         /// </summary>
+        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
         public IncrementingEventCounter? CommitCounter
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets a list of tags to be associated with each measurement.
+        /// </summary>
+        [CLSCompliant(false)]
+        public TagList MeasurementTags
         {
             get;
             set;

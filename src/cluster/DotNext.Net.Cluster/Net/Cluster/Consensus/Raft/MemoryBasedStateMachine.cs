@@ -1,7 +1,8 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -36,6 +37,8 @@ using static Threading.AtomicInt64;
 /// </remarks>
 public abstract partial class MemoryBasedStateMachine : PersistentState
 {
+    private static readonly Counter<long> CompactionRateMeter = MeterRoot.CreateCounter<long>("CompactionRate", unit: RecordsUOM);
+
     private readonly CompactionMode compaction;
     private readonly bool replayOnInitialize, evictOnCommit;
     private readonly int snapshotBufferSize;
@@ -63,7 +66,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         // with concurrent compaction, we will release cached log entries according to partition lifetime
         evictOnCommit = compaction is not CompactionMode.Incremental && configuration.CacheEvictionPolicy is LogEntryCacheEvictionPolicy.OnCommit;
+#pragma warning disable CS0618
         compactionCounter = ToDelegate(configuration.CompactionCounter);
+#pragma warning restore CS0618
 
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode, initialSize: configuration.InitialPartitionSize);
     }
@@ -109,7 +114,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         }
 
         // update counter
-        compactionCounter?.Invoke(upperBoundIndex - SnapshotInfo.Index);
+        var count = upperBoundIndex - SnapshotInfo.Index;
+        compactionCounter?.Invoke(count);
+        CompactionRateMeter.Add(count, measurementTags);
     }
 
     private bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, [NotNullWhen(true)] ref Partition? partition)
@@ -604,7 +611,11 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             incrementalBuilder.Builder.RefreshTimestamp();
             UpdateSnapshotInfo(await incrementalBuilder.Builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
-            compactionCounter?.Invoke(upperBoundIndex - SnapshotInfo.Index);
+
+            var count = upperBoundIndex - SnapshotInfo.Index;
+            compactionCounter?.Invoke(count);
+            CompactionRateMeter.Add(count, measurementTags);
+
             return true;
         }
 

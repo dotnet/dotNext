@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -493,7 +494,10 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         buffer.CopyTo(newBuffer, 0);
         ReleaseBuffer();
         buffer = newBuffer;
+#pragma warning disable CS0618
         AllocationCounter?.WriteMetric(newBuffer.LongLength);
+#pragma warning restore CS0618
+        PooledArrayBufferWriter.AllocationMeter.Record(newBuffer.LongLength, measurementTags);
     }
 
     /// <inheritdoc />
@@ -501,11 +505,25 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     {
         if (disposing)
         {
+#pragma warning disable CS0618
             BufferSizeCallback?.Invoke(buffer.Length);
+#pragma warning restore CS0618
             ReleaseBuffer();
             buffer = Array.Empty<T>();
         }
 
         base.Dispose(disposing);
+    }
+}
+
+// TODO: Convert to file-local class in C# 11
+internal static class PooledArrayBufferWriter
+{
+    internal static readonly Histogram<long> AllocationMeter;
+
+    static PooledArrayBufferWriter()
+    {
+        var meter = new Meter("DotNext.Buffers.PooledArrayBuffer");
+        AllocationMeter = meter.CreateHistogram<long>("capacity", unit: "elements");
     }
 }

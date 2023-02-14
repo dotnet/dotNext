@@ -1,24 +1,29 @@
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Net;
 using Microsoft.Extensions.Logging;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
 using Membership;
+using Metrics;
 using Threading;
 using TransportServices;
-using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
 /// <summary>
 /// Represents Raft cluster member that is accessible through the network.
 /// </summary>
 public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 {
+    private protected static readonly Histogram<double> ResponseTimeMeter = Raft.Metrics.Instrumentation.ClientSide.CreateHistogram<double>("responseTime", unit: "ms");
+
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
     private readonly IClientMetricsCollector? metrics;
     private protected readonly ILocalMember localMember;
     private readonly TimeSpan requestTimeout;
     internal readonly ClusterMemberId Id;
+    private protected readonly KeyValuePair<string, object?> cachedRemoteAddressAttribute;
     private volatile IReadOnlyDictionary<string, string>? metadataCache;
     private AtomicEnum<ClusterMemberStatus> status;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
@@ -34,8 +39,10 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
         status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
         Id = id;
         requestTimeout = TimeSpan.FromSeconds(30);
+        cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString());
     }
 
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
     internal IClientMetricsCollector? Metrics
     {
         get => metrics;

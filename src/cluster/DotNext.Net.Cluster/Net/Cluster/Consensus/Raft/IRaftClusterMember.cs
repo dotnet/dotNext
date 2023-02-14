@@ -8,6 +8,16 @@ using Membership;
 public interface IRaftClusterMember : IClusterMember
 {
     /// <summary>
+    /// Represents metrics attribute containing the address of the local node.
+    /// </summary>
+    protected const string RemoteAddressMeterAttributeName = "dotnext.raft.client.address";
+
+    /// <summary>
+    /// Represents metrics attribute containing Raft message type.
+    /// </summary>
+    protected const string MessageTypeAttributeName = "dotnext.raft.client.message";
+
+    /// <summary>
     /// Requests vote from the member.
     /// </summary>
     /// <param name="term">Term value maintained by local cluster member.</param>

@@ -1,7 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
-using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -100,7 +100,9 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             }
         }
 
-        Metrics?.ReportBroadcastTime(startTime.Elapsed);
+        var broadcastTime = startTime.ElapsedMilliseconds;
+        Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
+        LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
 
         if (term <= currentTerm && (quorum > 0 || allowPartitioning))
         {
@@ -158,7 +160,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         catch (OperationCanceledException)
         {
             // leading was canceled
-            Metrics?.ReportBroadcastTime(startTime.Elapsed);
+            var broadcastTime = startTime.ElapsedMilliseconds;
+            Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
+            LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
+
             return false;
         }
         catch (Exception e)
@@ -259,4 +264,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         base.Dispose(disposing);
     }
+}
+
+internal static class LeaderState
+{
+    internal static readonly Histogram<double> BroadcastTimeMeter = Metrics.Instrumentation.ServerSide.CreateHistogram<double>("broadcastTime", unit: "ms");
+    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitionToLeaderStateRate");
 }

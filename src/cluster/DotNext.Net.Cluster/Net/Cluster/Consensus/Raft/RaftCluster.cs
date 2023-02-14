@@ -31,8 +31,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly Random random;
     private readonly TaskCompletionSource readinessProbe;
     private readonly bool standbyNode;
-    private ClusterMemberId localMemberId;
 
+    /// <summary>
+    /// Represents a tags to be attached to each performance measurement.
+    /// </summary>
+    [CLSCompliant(false)]
+    protected TagList measurementTags;
+
+    private ClusterMemberId localMemberId;
     private AsyncLock transitionSync;  // used to synchronize state transitions
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
@@ -105,6 +111,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc />
     void IRaftStateMachine.UpdateLeaderStickiness() => Timestamp.Refresh(ref lastUpdated);
 
+    /// <inheritdoc />
+    ref readonly TagList IRaftStateMachine.MeasurementTags => ref measurementTags;
+
     /// <summary>
     /// Gets election timeout used by the local member.
     /// </summary>
@@ -167,6 +176,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Establishes metrics collector.
     /// </summary>
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
     public MetricsCollector? Metrics
     {
         protected get;
@@ -291,7 +301,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         async ValueTask UnfreezeCoreAsync()
         {
+#pragma warning disable CS0618
             var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
+#pragma warning restore CS0618
             await UpdateStateAsync(newState).ConfigureAwait(false);
             newState.StartServing(ElectionTimeout, LifecycleToken);
             readinessProbe.TrySetResult();
@@ -366,7 +378,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 // ensure that we trying to update the same state
                 if (TryGetLocalMember() is not null && ReferenceEquals(state, standbyState))
                 {
+#pragma warning disable CS0618
                     var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
+#pragma warning restore CS0618
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     newState.StartServing(ElectionTimeout, LifecycleToken);
                     return true;
@@ -495,10 +509,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 followerState.Refresh();
                 break;
             case LeaderState<TMember> or CandidateState<TMember>:
+#pragma warning disable CS0618
                 var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
+#pragma warning restore CS0618
                 await UpdateStateAsync(newState).ConfigureAwait(false);
                 newState.StartServing(ElectionTimeout, LifecycleToken);
+#pragma warning disable CS0618
                 Metrics?.MovedToFollowerState();
+#pragma warning restore CS0618
+                FollowerState.TransitionRateMeter.Add(1, measurementTags);
                 break;
         }
 
@@ -744,7 +763,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             }
             else if (state is StandbyState<TMember>)
             {
+#pragma warning disable CS0618
                 Metrics?.ReportHeartbeat();
+#pragma warning restore CS0618
+                FollowerState.HeartbeatRateMeter.Add(1, measurementTags);
             }
             else
             {
@@ -784,7 +806,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                 if (ReferenceEquals(state, leaderState))
                 {
+#pragma warning disable CS0618
                     var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
+#pragma warning restore CS0618
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     Leader = null;
                     newState.StartServing(ElectionTimeout, LifecycleToken);
@@ -934,7 +958,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                     // vote for self
                     newState.StartVoting(electionTimeout, auditTrail);
+#pragma warning disable CS0618
                     Metrics?.MovedToCandidateState();
+#pragma warning restore CS0618
+                    CandidateState.TransitionRateMeter.Add(1, measurementTags);
                     Logger.TransitionToCandidateStateCompleted(Term);
                 }
                 else
@@ -971,7 +998,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 var newState = new LeaderState<TMember>(this, allowPartitioning, currentTerm, LeaderLeaseDuration)
                 {
+#pragma warning disable CS0618
                     Metrics = Metrics,
+#pragma warning restore CS0618
                     FailureDetectorFactory = FailureDetectorFactory,
                 };
 
@@ -981,7 +1010,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
                 newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
 
+#pragma warning disable CS0618
                 Metrics?.MovedToLeaderState();
+#pragma warning restore CS0618
+                LeaderState.TransitionRateMeter.Add(1, measurementTags);
                 Logger.TransitionToLeaderStateCompleted(Term);
             }
         }

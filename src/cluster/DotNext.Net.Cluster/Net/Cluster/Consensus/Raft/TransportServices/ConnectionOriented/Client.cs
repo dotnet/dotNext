@@ -92,7 +92,15 @@ internal abstract partial class Client : RaftClusterMember
             if (lockTaken)
                 accessLock.Release();
 
-            Metrics?.ReportResponseTime(timeStamp.Elapsed, TExchange.Name, EndPoint);
+            var responseTime = timeStamp.ElapsedMilliseconds;
+#pragma warning disable CS0618
+            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
+#pragma warning restore CS0618
+            ResponseTimeMeter.Record(
+                responseTime,
+                new(IRaftClusterMember.MessageTypeAttributeName, TExchange.Name),
+                cachedRemoteAddressAttribute);
+
             requestDurationTracker.Dispose();
         }
     }

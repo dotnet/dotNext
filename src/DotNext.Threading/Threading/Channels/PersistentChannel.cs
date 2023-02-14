@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Threading.Channels;
 
@@ -21,6 +22,7 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     private readonly DirectoryInfo location;
     private readonly IncrementingEventCounter? writeRate;
     private readonly TaskCompletionSource completionTask;
+    private readonly TagList measurementTags;
 
     /// <summary>
     /// Initializes a new persistent channel with the specified options.
@@ -34,12 +36,21 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
         if (!location.Exists)
             location.Create();
         var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter, options.InitialPartitionSize);
+#pragma warning disable CS0618
         var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReliableEnumeration, options.ReadRateCounter);
+#pragma warning restore CS0618
         Reader = reader;
         Writer = writer;
         readTrigger = new AsyncCounter(writer.Position - reader.Position);
+#pragma warning disable CS0618
         writeRate = options.WriteRateCounter;
+#pragma warning restore CS0618
+
         completionTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        measurementTags = options.MeasurementTags;
+        IChannel.SetTags(ref measurementTags, location.FullName);
+        IChannelWriter<TInput>.SetTags(ref measurementTags);
+        IChannelReader<TOutput>.SetTags(ref measurementTags);
     }
 
     /// <summary>
@@ -73,10 +84,14 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     DirectoryInfo IChannel.Location => location;
 
     /// <inheritdoc />
+    ref readonly TagList IChannel.MeasurementTags => ref measurementTags;
+
+    /// <inheritdoc />
     void IChannelWriter<TInput>.MessageReady()
     {
         readTrigger.Signal();
         writeRate?.Increment();
+        IChannel.WriteRateMeter.Add(1, measurementTags);
     }
 
     /// <inheritdoc />

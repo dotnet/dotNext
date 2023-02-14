@@ -9,6 +9,11 @@ using Replication;
 public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IRaftClusterMember>
 {
     /// <summary>
+    /// Represents metrics attribute containing the address of the local node.
+    /// </summary>
+    protected const string LocalAddressMeterAttributeName = "dotnext.raft.server.address";
+
+    /// <summary>
     /// Gets term number used by Raft algorithm to check the consistency of the cluster.
     /// </summary>
     long Term => AuditTrail.Term;
@@ -26,6 +31,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <summary>
     /// Establishes metrics collector.
     /// </summary>
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
     MetricsCollector Metrics { init; }
 
     /// <summary>

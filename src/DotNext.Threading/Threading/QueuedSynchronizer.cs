@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -117,8 +118,8 @@ public class QueuedSynchronizer : Disposable
 
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
     {
+        private readonly WeakReference<QueuedSynchronizer?> owner = new(target: null, trackResurrection: false);
         private Timestamp createdAt;
-        private Action<double>? lockDurationCounter;
         private bool throwOnTimeout;
 
         // stores information about suspended caller for debugging purposes
@@ -130,7 +131,7 @@ public class QueuedSynchronizer : Disposable
 
         private protected override void ResetCore()
         {
-            lockDurationCounter = null;
+            owner.SetTarget(target: null);
             CallerInfo = null;
             base.ResetCore();
         }
@@ -138,23 +139,29 @@ public class QueuedSynchronizer : Disposable
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        internal void Initialize(bool throwOnTimeout, Action<double>? lockDurationCounter, object? callerInfo)
+        internal void Initialize(QueuedSynchronizer owner, bool throwOnTimeout)
         {
+            Debug.Assert(owner is not null);
+
             this.throwOnTimeout = throwOnTimeout;
-            this.lockDurationCounter = lockDurationCounter;
-            CallerInfo = callerInfo;
+            this.owner.SetTarget(owner);
+            CallerInfo = owner.callerInfo?.Capture();
             createdAt = new();
         }
 
         protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
 
-        private void ReportLockDuration()
-            => lockDurationCounter?.Invoke(createdAt.ElapsedMilliseconds);
-
         private protected static void AfterConsumed<T>(T node)
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
         {
-            node.ReportLockDuration();
+            // report lock duration
+            if (node.owner.TryGetTarget(out var owner))
+            {
+                var duration = node.createdAt.ElapsedMilliseconds;
+                owner.lockDurationCounter?.Invoke(duration);
+                LockDurationMeter.Record(duration, owner.measurementTags);
+            }
+
             node.As<IPooledManualResetCompletionSource<Action<T>>>().OnConsumed?.Invoke(node);
         }
     }
@@ -179,15 +186,41 @@ public class QueuedSynchronizer : Disposable
         void InitializeNode(TNode node);
     }
 
+    private const string LockTypeMeterAttribute = "dotnext.threading.asynclock.type";
+    private static readonly Counter<int> LockContentionMeter;
+    private static readonly Histogram<double> LockDurationMeter;
+
     private readonly Action<double>? contentionCounter, lockDurationCounter;
+    private readonly TagList measurementTags;
     private readonly TaskCompletionSource disposeTask;
     private CallerInformationStorage? callerInfo;
     private protected LinkedValueTaskCompletionSource<bool>? first;
     private LinkedValueTaskCompletionSource<bool>? last;
 
+    static QueuedSynchronizer()
+    {
+        var meter = new Meter("DotNext.Threading.AsyncLock");
+        LockContentionMeter = meter.CreateCounter<int>("lock-contention");
+        LockDurationMeter = meter.CreateHistogram<double>("lock-duration", unit: "ms");
+    }
+
     private protected QueuedSynchronizer()
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        measurementTags = new() { { LockTypeMeterAttribute, GetType().FullName } };
+    }
+
+    /// <summary>
+    /// Sets a list of tags to be associated with each measurement.
+    /// </summary>
+    [CLSCompliant(false)]
+    public TagList MeasurementTags
+    {
+        init
+        {
+            value.Add(LockTypeMeterAttribute, GetType().FullName);
+            measurementTags = value;
+        }
     }
 
     private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node)
@@ -257,17 +290,19 @@ public class QueuedSynchronizer : Disposable
     /// <summary>
     /// Sets counter for lock contention.
     /// </summary>
-    public IncrementingEventCounter LockContentionCounter
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
+    public IncrementingEventCounter? LockContentionCounter
     {
-        init => contentionCounter = (value ?? throw new ArgumentNullException(nameof(value))).Increment;
+        init => contentionCounter = value is not null ? value.Increment : null;
     }
 
     /// <summary>
     /// Sets counter of lock duration, in milliseconds.
     /// </summary>
-    public EventCounter LockDurationCounter
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
+    public EventCounter? LockDurationCounter
     {
-        init => lockDurationCounter = (value ?? throw new ArgumentNullException(nameof(value))).WriteMetric;
+        init => lockDurationCounter = value is not null ? value.WriteMetric : null;
     }
 
     private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
@@ -286,7 +321,7 @@ public class QueuedSynchronizer : Disposable
         return isFirst;
     }
 
-    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout, object? callerInfo)
+    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -294,7 +329,7 @@ public class QueuedSynchronizer : Disposable
 
         var node = pool.Get();
         manager.InitializeNode(node);
-        node.Initialize(throwOnTimeout, lockDurationCounter, callerInfo);
+        node.Initialize(this, throwOnTimeout);
 
         if (last is null)
         {
@@ -306,7 +341,8 @@ public class QueuedSynchronizer : Disposable
             last = node;
         }
 
-        contentionCounter?.Invoke(1L);
+        contentionCounter?.Invoke(1D);
+        LockContentionMeter.Add(1, measurementTags);
         return node;
     }
 
@@ -383,8 +419,6 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        var callerInfo = this.callerInfo?.Capture();
-
         ValueTaskFactory result;
 
         if (IsDisposingOrDisposed)
@@ -401,7 +435,7 @@ public class QueuedSynchronizer : Disposable
         }
         else
         {
-            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout, callerInfo));
+            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout));
         }
 
         return result;

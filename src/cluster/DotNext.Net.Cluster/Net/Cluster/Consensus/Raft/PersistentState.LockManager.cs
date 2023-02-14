@@ -177,10 +177,11 @@ public partial class PersistentState
             : base(new(configuration.ConcurrencyLevel), configuration.ConcurrencyLevel + 2) // + write lock + compaction lock
         {
             // setup metrics
-            if (configuration.LockContentionCounter is not null)
-                LockContentionCounter = configuration.LockContentionCounter;
-            if (configuration.LockDurationCounter is not null)
-                LockDurationCounter = configuration.LockDurationCounter;
+            MeasurementTags = configuration.MeasurementTags;
+#pragma warning disable CS0618
+            LockContentionCounter = configuration.LockContentionCounter;
+            LockDurationCounter = configuration.LockDurationCounter;
+#pragma warning restore CS0618
         }
 
         internal ValueTask AcquireAsync(LockType type, CancellationToken token = default)

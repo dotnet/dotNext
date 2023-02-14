@@ -16,6 +16,9 @@ using Seq = Collections.Generic.Sequence;
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}")]
 public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
 {
+    private const string ElementTypeMeterAttribute = "dotnext.buffers.element";
+
+    private protected readonly TagList measurementTags;
     private readonly object? diagObj;
 
     /// <summary>
@@ -28,12 +31,14 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// </summary>
     private protected BufferWriter()
     {
+        measurementTags = new() { { ElementTypeMeterAttribute, typeof(T).FullName } };
     }
 
     /// <summary>
     /// Sets the counter used to report allocation of internal buffer.
     /// </summary>
     [DisallowNull]
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
     public EventCounter? AllocationCounter
     {
         private protected get => diagObj as EventCounter;
@@ -42,13 +47,27 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
 
     /// <summary>
     /// Sets the callback used internally to report actual size
-    /// of allocated buffer.
+    /// of the allocated buffer.
     /// </summary>
     [DisallowNull]
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
     public Action<int>? BufferSizeCallback
     {
         private protected get => diagObj as Action<int>;
         init => diagObj = value;
+    }
+
+    /// <summary>
+    /// Sets a list of tags to be associated with each measurement.
+    /// </summary>
+    [CLSCompliant(false)]
+    public virtual TagList MeasurementTags
+    {
+        init
+        {
+            value.Add(ElementTypeMeterAttribute, typeof(T).FullName);
+            measurementTags = value;
+        }
     }
 
     /// <summary>

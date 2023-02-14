@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.Metrics;
+using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -72,6 +73,7 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         Logger.TimeoutReset();
         refreshEvent.Set();
         Metrics?.ReportHeartbeat();
+        FollowerState.HeartbeatRateMeter.Add(1, MeasurementTags);
     }
 
     protected override async ValueTask DisposeAsyncCore()
@@ -118,4 +120,10 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
 
         public void Dispose() => state?.ResumeTracking();
     }
+}
+
+internal static class FollowerState
+{
+    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitionToFollowerStateRate");
+    internal static readonly Counter<int> HeartbeatRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("incomingHeartbeatsRate");
 }

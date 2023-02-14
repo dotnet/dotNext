@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.Metrics;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -144,4 +145,9 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
 
         base.Dispose(disposing);
     }
+}
+
+internal static class CandidateState
+{
+    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitionToCandidateStateRate");
 }

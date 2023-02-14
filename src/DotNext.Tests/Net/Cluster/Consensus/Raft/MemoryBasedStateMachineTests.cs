@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Net;
 using System.Reflection;
@@ -883,6 +884,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IncrementingEventCounter PersistentState.IAsyncLockSettings.LockContentionCounter => null;
 
             EventCounter PersistentState.IAsyncLockSettings.LockDurationCounter => null;
+
+            TagList PersistentState.IAsyncLockSettings.MeasurementTags => default;
         }
 
         [Fact]

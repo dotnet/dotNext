@@ -351,22 +351,6 @@ namespace DotNext.Buffers
             Equal(random2, writer.WrittenMemory.Span.Slice(1).ToArray());
         }
 
-        private sealed class AllocationEventCounter
-        {
-            internal int Value;
-
-            internal void WriteMetric(int value) => this.Value = value;
-        }
-
-        [Fact]
-        public static void BufferSizeCallback()
-        {
-            var counter = new AllocationEventCounter();
-            using (var writer = new PooledArrayBufferWriter<byte> { BufferSizeCallback = counter.WriteMetric })
-                writer.Write(new byte[] { 1, 2, 3 });
-            True(counter.Value >= 3);
-        }
-
         [Fact]
         public static void RemoveTailElements()
         {

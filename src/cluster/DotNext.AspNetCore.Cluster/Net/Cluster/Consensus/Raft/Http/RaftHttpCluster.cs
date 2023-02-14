@@ -41,7 +41,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IPersistentState? auditTrail = null,
         IClusterConfigurationStorage<UriEndPoint>? configStorage = null,
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
+#pragma warning disable CS0618
         MetricsCollector? metrics = null,
+#pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null,
         Func<IRaftClusterMember, IFailureDetector>? failureDetectorFactory = null)
         : this(config, messageHandlers, loggerFactory.CreateLogger<RaftHttpCluster>(), configurator, auditTrail, configStorage, httpHandlerFactory, metrics, announcer)
@@ -57,7 +59,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IPersistentState? auditTrail = null,
         IClusterConfigurationStorage<UriEndPoint>? configStorage = null,
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
+#pragma warning disable CS0618
         MetricsCollector? metrics = null,
+#pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null)
         : base(config.CurrentValue)
     {
@@ -87,8 +91,14 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         ConfigurationStorage = configStorage ?? new InMemoryClusterConfigurationStorage();
         this.httpHandlerFactory = httpHandlerFactory;
         Logger = logger;
+#pragma warning disable CS0618
         Metrics = metrics;
+#pragma warning restore CS0618
         this.announcer = announcer;
+        measurementTags = new()
+        {
+            { IRaftCluster.LocalAddressMeterAttributeName, localNode.ToString() },
+        };
 
         // track changes in configuration, do not track membership
         configurationTracker = config.OnChange(ConfigurationChanged);
@@ -105,7 +115,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         var result = new RaftClusterMember(this, address, in id)
         {
             Timeout = requestTimeout,
+#pragma warning disable CS0618
             Metrics = Metrics as IClientMetricsCollector,
+#pragma warning restore CS0618
         };
 
         result.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;

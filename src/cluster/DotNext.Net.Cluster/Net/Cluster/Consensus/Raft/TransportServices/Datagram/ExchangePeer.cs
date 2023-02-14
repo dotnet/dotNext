@@ -54,7 +54,15 @@ internal sealed class ExchangePeer : RaftClusterMember
         }
         finally
         {
-            Metrics?.ReportResponseTime(timeStamp.Elapsed, exchange.Name, EndPoint);
+            var responseTime = timeStamp.ElapsedMilliseconds;
+#pragma warning disable CS0618
+            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
+#pragma warning restore CS0618
+            ResponseTimeMeter.Record(
+                responseTime,
+                new(IRaftClusterMember.MessageTypeAttributeName, exchange.Name),
+                cachedRemoteAddressAttribute);
+
             timeoutSource.Dispose();
             if (exchange is IAsyncDisposable disposable)
                 await disposable.DisposeAsync().ConfigureAwait(false);

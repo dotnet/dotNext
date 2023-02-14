@@ -26,8 +26,7 @@ internal sealed class Startup
         services.AddOptions()
             .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
             .AddSingleton<IInputChannel, TestMessageHandler>()
-            .AddSingleton<IInputChannel, Mailbox>()
-            .AddSingleton<MetricsCollector, TestMetricsCollector>();
+            .AddSingleton<IInputChannel, Mailbox>();
 
         if (configuration[PersistentConfigurationPath] is { Length: > 0 } configPath)
             services.UsePersistentConfigurationStorage(configPath);

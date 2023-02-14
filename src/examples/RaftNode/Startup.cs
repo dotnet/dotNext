@@ -54,7 +54,6 @@ internal sealed class Startup
         var path = configuration[SimplePersistentState.LogLocation];
         if (!string.IsNullOrWhiteSpace(path))
         {
-            services.AddSingleton<AppEventSource>();
             services.UsePersistenceEngine<ISupplier<long>, SimplePersistentState>()
                 .AddSingleton<IHostedService, DataModifier>();
         }

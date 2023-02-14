@@ -106,6 +106,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     {
         var result = buffer.TryRead(out item);
         readRate?.Increment();
+        IChannel.ReadRateMeter.Add(1, reader.MeasurementTags);
         return result;
     }
 
@@ -134,6 +135,8 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         }
 
         readRate?.Increment();
+        IChannel.ReadRateMeter.Add(1, reader.MeasurementTags);
+
         return result;
     }
 
@@ -254,6 +257,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             {
                 await reader.EndReadAsync(offset).ConfigureAwait(false);
                 reader.readRate?.Increment();
+                IChannel.ReadRateMeter.Add(1, reader.reader.MeasurementTags);
                 dryRun = false;
             }
 

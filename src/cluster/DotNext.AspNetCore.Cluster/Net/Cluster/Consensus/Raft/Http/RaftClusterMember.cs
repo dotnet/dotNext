@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.Metrics;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Connections;
@@ -16,6 +17,8 @@ using Timestamp = Diagnostics.Timestamp;
 
 internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, ISubscriber
 {
+    private static readonly Histogram<double> ResponseTimeMeter;
+
     internal const string DefaultProtocolPath = "/cluster-consensus/raft";
     private const string UserAgent = "Raft.NET";
 
@@ -23,11 +26,20 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private readonly IHostingContext context;
     internal readonly ClusterMemberId Id;
     internal readonly UriEndPoint EndPoint;
+    private readonly KeyValuePair<string, object?> cachedRemoteAddressAttribute;
     private AtomicEnum<ClusterMemberStatus> status;
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private long nextIndex, fingerprint;
+
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
     internal IClientMetricsCollector? Metrics;
+
+    static RaftClusterMember()
+    {
+        var meter = new Meter("DotNext.Net.Cluster.Consensus.Raft.Client");
+        ResponseTimeMeter = meter.CreateHistogram<double>("responseTime", unit: "ms");
+    }
 
     internal RaftClusterMember(IHostingContext context, UriEndPoint remoteMember, in ClusterMemberId id)
         : base(remoteMember.Uri, context.CreateHttpHandler(), true)
@@ -35,6 +47,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         this.context = context;
         status = new(ClusterMemberStatus.Unknown);
         EndPoint = remoteMember;
+        cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, remoteMember.ToString());
         Id = id;
         resourcePath = remoteMember.Uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped) is { Length: > 0 }
             ? null
@@ -119,7 +132,15 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             response?.Content?.Dispose();
             response?.Dispose();
             request.Dispose();
-            Metrics?.ReportResponseTime(timeStamp.Elapsed, TMessage.MessageType, EndPoint);
+
+            var responseTime = timeStamp.ElapsedMilliseconds;
+#pragma warning disable CS0618
+            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
+#pragma warning restore CS0618
+            ResponseTimeMeter.Record(
+                responseTime,
+                new(IRaftClusterMember.MessageTypeAttributeName, TMessage.MessageType),
+                cachedRemoteAddressAttribute);
         }
 
         MemberUnavailableException MemberUnavailable(Exception e)

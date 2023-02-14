@@ -46,6 +46,7 @@ public partial class RaftCluster
         /// <summary>
         /// Gets or sets metrics collector.
         /// </summary>
+        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
         public MetricsCollector? Metrics
         {
             get;
@@ -209,7 +210,9 @@ public partial class RaftCluster
         /// </summary>
         public ClusterMemberId? Id { get; set; }
 
+#pragma warning disable CS0618
         internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
+#pragma warning restore CS0618
 
         internal abstract IServer CreateServer(ILocalMember localMember);
     }
@@ -273,8 +276,10 @@ public partial class RaftCluster
         /// <inheritdoc />
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
+#pragma warning disable CS0618
         internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
+#pragma warning restore CS0618
 
         internal override GenericServer CreateServer(ILocalMember localMember)
             => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory) { ReceiveTimeout = RequestTimeout };
@@ -435,6 +440,7 @@ public partial class RaftCluster
             return client;
         }
 
+#pragma warning disable CS0618
         internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, CreateClient)
             {
@@ -442,6 +448,7 @@ public partial class RaftCluster
                 Metrics = metrics,
                 PipeConfig = PipeConfig,
             };
+#pragma warning restore CS0618
 
         internal override UdpServer CreateServer(ILocalMember localMember)
         {
@@ -532,6 +539,7 @@ public partial class RaftCluster
             set => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
+#pragma warning disable CS0618
         internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
             => new(localMember, endPoint, id, MemoryAllocator)
             {
@@ -543,6 +551,7 @@ public partial class RaftCluster
                 ConnectTimeout = ConnectTimeout,
                 Metrics = metrics,
             };
+#pragma warning restore CS0618
 
         internal override TcpServer CreateServer(ILocalMember localMember)
             => new(HostEndPoint, ServerBacklog, localMember, MemoryAllocator, LoggerFactory)

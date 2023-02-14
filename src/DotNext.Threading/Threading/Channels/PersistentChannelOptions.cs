@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Tracing;
+﻿using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
@@ -67,6 +68,7 @@ public sealed class PersistentChannelOptions : ChannelOptions
     /// <summary>
     /// Specifies counter for write operations.
     /// </summary>
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
     public IncrementingEventCounter? WriteRateCounter
     {
         get;
@@ -76,7 +78,18 @@ public sealed class PersistentChannelOptions : ChannelOptions
     /// <summary>
     /// Specifiies counter for read operations.
     /// </summary>
+    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
     public IncrementingEventCounter? ReadRateCounter
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Gets or sets a list of tags to be associated with each measurement.
+    /// </summary>
+    [CLSCompliant(false)]
+    public TagList MeasurementTags
     {
         get;
         set;

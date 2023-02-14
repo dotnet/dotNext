@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -63,7 +64,9 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     private readonly ImmutableDictionary<string, string> metadata;
+#pragma warning disable CS0618
     private readonly Func<ILocalMember, EndPoint, ClusterMemberId, IClientMetricsCollector?, RaftClusterMember> clientFactory;
+#pragma warning restore CS0618
     private readonly Func<ILocalMember, IServer> serverFactory;
     private readonly MemoryAllocator<byte>? allocator;
     private readonly ClusterMemberAnnouncer<EndPoint>? announcer;
@@ -81,7 +84,9 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     public RaftCluster(NodeConfiguration configuration)
         : base(configuration)
     {
+#pragma warning disable CS0618
         Metrics = configuration.Metrics;
+#pragma warning restore CS0618
         metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
         clientFactory = configuration.CreateClient;
         serverFactory = configuration.CreateServer;
@@ -94,6 +99,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         pollingLoopTask = Task.CompletedTask;
         cachedConfig = new();
         configurationEvents = Channel.CreateUnbounded<ClusterConfigurationEvent<EndPoint>>(new() { SingleWriter = true, SingleReader = true });
+        measurementTags = new()
+        {
+            { IRaftCluster.LocalAddressMeterAttributeName, LocalMemberAddress.ToString() },
+        };
     }
 
     /// <summary>
@@ -171,7 +180,9 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     private RaftClusterMember CreateMember(ClusterMemberId id, EndPoint address)
+#pragma warning disable CS0618
         => clientFactory.Invoke(this, address, id, Metrics as IClientMetricsCollector);
+#pragma warning restore CS0618
 
     /// <summary>
     /// Announces a new member in the cluster.

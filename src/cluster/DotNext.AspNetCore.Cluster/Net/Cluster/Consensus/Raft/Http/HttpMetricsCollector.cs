@@ -1,6 +1,4 @@
-using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
-using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -14,57 +12,27 @@ using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 /// You need to register singleton service of type <see cref="MetricsCollector"/>
 /// to collect metrics produced by Raft node.
 /// </remarks>
+[Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
 public class HttpMetricsCollector : MetricsCollector, IClientMetricsCollector
 {
-    private const string MessageTypeTag = "dotnext.raft.rpc.method";
-    private const string NodeAddress = "http.url";
-
-    private object? responseTimeMeter;
-
     /// <inheritdoc cref="IClientMetricsCollector.ReportResponseTime(TimeSpan)"/>
-    [Obsolete("Override ReportResponseTime(TimeSpan, string, EndPoint) method instead")]
     public virtual void ReportResponseTime(TimeSpan value)
-        => ReportResponseTime(value, "undefined", new DnsEndPoint("undefined", 0));
-
-    /// <inheritdoc cref="IClientMetricsCollector.ReportResponseTime(TimeSpan, string, EndPoint)"/>
-    public virtual void ReportResponseTime(TimeSpan value, string requestTag, EndPoint address)
     {
     }
 
     /// <inheritdoc/>
-    void IClientMetricsCollector.ReportResponseTime(TimeSpan value, string requestTag, EndPoint address)
+    void IClientMetricsCollector.ReportResponseTime(TimeSpan value)
     {
-        switch (responseTimeMeter)
-        {
-            case Histogram<double> { Enabled: true } histogram:
-                histogram.Record(value.TotalMilliseconds, new(MessageTypeTag, requestTag), new(NodeAddress, address));
-                goto default;
-            case EventCounter counter:
-                counter.WriteMetric(value.TotalMilliseconds);
-                goto default;
-            default:
-                ReportResponseTime(value, requestTag, address);
-                break;
-        }
+        ResponseTimeCounter?.WriteMetric(value.TotalMilliseconds);
+        ReportResponseTime(value);
     }
 
     /// <summary>
     /// Gets or sets counter that allows to count response time from every cluster node.
     /// </summary>
-    [Obsolete("Use ResponseTimeMeter property instead.")]
     public EventCounter? ResponseTimeCounter
     {
-        get => responseTimeMeter as EventCounter;
-        set => responseTimeMeter = value;
-    }
-
-    /// <summary>
-    /// Gets or sets a meter that allows to count response time from every cluster node.
-    /// </summary>
-    [CLSCompliant(false)]
-    public Histogram<double>? ResponseTimeMeter
-    {
-        get => responseTimeMeter as Histogram<double>;
-        set => responseTimeMeter = value;
+        get;
+        set;
     }
 }

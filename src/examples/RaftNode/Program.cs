@@ -68,7 +68,7 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     var modifier = default(DataModifier?);
     if (!string.IsNullOrEmpty(persistentStorage))
     {
-        var state = new SimplePersistentState(persistentStorage, new AppEventSource());
+        var state = new SimplePersistentState(persistentStorage);
         cluster.AuditTrail = state;
         modifier = new DataModifier(cluster, state);
     }
