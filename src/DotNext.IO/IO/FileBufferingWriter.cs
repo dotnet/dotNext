@@ -159,7 +159,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     static FileBufferingWriter()
     {
         var meter = new Meter("DotNext.Buffers.FileBufferingWriter");
-        AllocationMeter = meter.CreateHistogram<int>("bufferSize", unit: "B");
+        AllocationMeter = meter.CreateHistogram<int>("buffer-size", unit: "B", "In-Memory Buffer Size");
     }
 
     private readonly TagList measurementTags;

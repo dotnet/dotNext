@@ -38,9 +38,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     static PersistentState()
     {
         var meter = new Meter("DotNext.IO.WriteAheadLog");
-        ReadRateMeter = meter.CreateCounter<long>("records-read-count");
-        WriteRateMeter = meter.CreateCounter<long>("records-write-count");
-        CommitRateMeter = meter.CreateCounter<long>("records-commit-count");
+        ReadRateMeter = meter.CreateCounter<long>("entries-read-count", description: "Number of Log Entries Read");
+        WriteRateMeter = meter.CreateCounter<long>("entries-write-count", description: "Number of Log Entries Written");
+        CommitRateMeter = meter.CreateCounter<long>("entries-commit-count", description: "Number of Log Entries Comiitted");
     }
 
     private protected PersistentState(DirectoryInfo path, int recordsPerPartition, Options configuration)

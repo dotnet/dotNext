@@ -200,8 +200,8 @@ public class QueuedSynchronizer : Disposable
     static QueuedSynchronizer()
     {
         var meter = new Meter("DotNext.Threading.AsyncLock");
-        LockContentionMeter = meter.CreateCounter<int>("async-lock-contention-count");
-        LockDurationMeter = meter.CreateHistogram<double>("async-lock-duration", unit: "ms");
+        LockContentionMeter = meter.CreateCounter<int>("async-lock-contention-count", description: "Async Lock Contention");
+        LockDurationMeter = meter.CreateHistogram<double>("async-lock-duration", unit: "ms", description: "Async Lock Duration");
     }
 
     private protected QueuedSynchronizer()

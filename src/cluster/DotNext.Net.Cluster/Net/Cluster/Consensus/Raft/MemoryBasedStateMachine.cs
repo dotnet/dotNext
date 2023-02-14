@@ -37,7 +37,7 @@ using static Threading.AtomicInt64;
 /// </remarks>
 public abstract partial class MemoryBasedStateMachine : PersistentState
 {
-    private static readonly Counter<long> CompactionRateMeter = MeterRoot.CreateCounter<long>("records-compaction-count");
+    private static readonly Counter<long> CompactionRateMeter = MeterRoot.CreateCounter<long>("entries-compaction-count", description: "Number of Squashed Log Entries");
 
     private readonly CompactionMode compaction;
     private readonly bool replayOnInitialize, evictOnCommit;
