@@ -16,7 +16,7 @@ using TransportServices;
 /// </summary>
 public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 {
-    private protected static readonly Histogram<double> ResponseTimeMeter = Raft.Metrics.Instrumentation.ClientSide.CreateHistogram<double>("responseTime", unit: "ms");
+    private protected static readonly Histogram<double> ResponseTimeMeter = Raft.Metrics.Instrumentation.ClientSide.CreateHistogram<double>("response-time", unit: "ms");
 
     [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
     private readonly IClientMetricsCollector? metrics;

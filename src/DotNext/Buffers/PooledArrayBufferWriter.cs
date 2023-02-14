@@ -524,6 +524,6 @@ internal static class PooledArrayBufferWriter
     static PooledArrayBufferWriter()
     {
         var meter = new Meter("DotNext.Buffers.PooledArrayBuffer");
-        AllocationMeter = meter.CreateHistogram<long>("capacity", unit: "elements");
+        AllocationMeter = meter.CreateHistogram<long>("capacity", unit: "items");
     }
 }

@@ -38,7 +38,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     static RaftClusterMember()
     {
         var meter = new Meter("DotNext.Net.Cluster.Consensus.Raft.Client");
-        ResponseTimeMeter = meter.CreateHistogram<double>("responseTime", unit: "ms");
+        ResponseTimeMeter = meter.CreateHistogram<double>("response-time", unit: "ms");
     }
 
     internal RaftClusterMember(IHostingContext context, UriEndPoint remoteMember, in ClusterMemberId id)

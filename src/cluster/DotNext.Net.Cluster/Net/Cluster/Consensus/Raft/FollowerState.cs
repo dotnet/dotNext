@@ -124,6 +124,6 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
 
 internal static class FollowerState
 {
-    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitionToFollowerStateRate");
-    internal static readonly Counter<int> HeartbeatRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("incomingHeartbeatsRate");
+    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-follower-count");
+    internal static readonly Counter<int> HeartbeatRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("incoming-heartbeats-count");
 }

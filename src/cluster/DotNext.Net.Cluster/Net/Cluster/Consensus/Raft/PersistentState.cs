@@ -20,8 +20,6 @@ using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 /// <seealso cref="DiskBasedStateMachine"/>
 public abstract partial class PersistentState : Disposable, IPersistentState
 {
-    private protected const string RecordsUOM = "records";
-
     private static readonly Counter<long> ReadRateMeter, WriteRateMeter, CommitRateMeter;
 
     private protected readonly TagList measurementTags;
@@ -40,9 +38,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     static PersistentState()
     {
         var meter = new Meter("DotNext.IO.WriteAheadLog");
-        ReadRateMeter = meter.CreateCounter<long>("ReadRate", unit: RecordsUOM);
-        WriteRateMeter = meter.CreateCounter<long>("WriteRate", unit: RecordsUOM);
-        CommitRateMeter = meter.CreateCounter<long>("CommitRate", unit: RecordsUOM);
+        ReadRateMeter = meter.CreateCounter<long>("records-read-count");
+        WriteRateMeter = meter.CreateCounter<long>("records-write-count");
+        CommitRateMeter = meter.CreateCounter<long>("records-commit-count");
     }
 
     private protected PersistentState(DirectoryInfo path, int recordsPerPartition, Options configuration)

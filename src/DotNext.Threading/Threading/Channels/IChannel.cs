@@ -15,8 +15,8 @@ internal interface IChannel
     static IChannel()
     {
         var meter = new Meter("DotNext.Threading.Channels.PersistentChannel");
-        ReadRateMeter = meter.CreateCounter<int>("ReadRate");
-        WriteRateMeter = meter.CreateCounter<int>("WriteRate");
+        ReadRateMeter = meter.CreateCounter<int>("messages-read-count");
+        WriteRateMeter = meter.CreateCounter<int>("messages-write-count");
     }
 
     private protected static void SetTags(ref TagList tags, string path)

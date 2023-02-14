@@ -149,5 +149,5 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
 
 internal static class CandidateState
 {
-    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitionToCandidateStateRate");
+    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-candidate-count");
 }
