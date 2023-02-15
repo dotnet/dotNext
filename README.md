@@ -69,6 +69,7 @@ Starting from the current release, `DotNext.Reflection` library is no longer pub
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.11.0">DotNext.Net.Cluster 4.10.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
+* Fixed [151](https://github.com/dotnet/dotNext/issues/151)
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.11.0">DotNext.AspNetCore.Cluster 4.11.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
