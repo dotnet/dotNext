@@ -28,7 +28,7 @@ public readonly struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>
     public T Value
     {
         get;
-        init;
+        init; // TODO: Change to required init in C# 11
     }
 
     /// <inheritdoc />
