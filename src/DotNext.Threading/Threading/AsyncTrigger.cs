@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -217,6 +218,100 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token = default)
         => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : SignalAndWait(resumeAll, throwOnEmptyQueue, zeroTimeout: false).CreateVoidTask(token);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory Wait<TCondition>(TCondition condition, bool zeroTimeout)
+        where TCondition : notnull, ISupplier<bool>
+        => condition.Invoke() ? new(true) : Wait(zeroTimeout);
+
+    /// <summary>
+    /// Suspends the caller until this event is set.
+    /// </summary>
+    /// <remarks>
+    /// If given predicate returns true then caller will not be suspended.
+    /// </remarks>
+    /// <typeparam name="TCondition">The type of predicate parameter.</typeparam>
+    /// <param name="condition">Additional condition that must be checked before suspension.</param>
+    /// <param name="timeout">The number of time to wait before this event is set.</param>
+    /// <param name="token">The token that can be used to cancel waiting operation.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public ValueTask<bool> SpinWaitAsync<TCondition>(TCondition condition, TimeSpan timeout, CancellationToken token = default)
+        where TCondition : notnull, ISupplier<bool>
+    {
+        ValueTask<bool> task;
+        if (condition is null)
+        {
+            task = ValueTask.FromException<bool>(new ArgumentNullException(nameof(condition)));
+        }
+        else if (ValidateTimeoutAndToken(timeout, token, out task))
+        {
+            task = SpinWaitCoreAsync(condition, new(timeout), token);
+        }
+
+        return task;
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<bool> SpinWaitCoreAsync<TCondition>(TCondition condition, Timeout timeout, CancellationToken token)
+        where TCondition : notnull, ISupplier<bool>
+    {
+        do
+        {
+            if (condition.Invoke())
+                return true;
+        }
+        while (timeout.RemainingTime.TryGetValue(out var remainingTime) && await Wait(condition, remainingTime == TimeSpan.Zero).CreateTask(remainingTime, token).ConfigureAwait(false));
+
+        return false;
+    }
+
+    /// <summary>
+    /// Suspends the caller until this event is set.
+    /// </summary>
+    /// <remarks>
+    /// If given predicate returns true then caller will not be suspended.
+    /// </remarks>
+    /// <typeparam name="TCondition">The type of predicate parameter.</typeparam>
+    /// <param name="condition">Additional condition that must be checked before suspension.</param>
+    /// <param name="token">The token that can be used to cancel waiting operation.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public ValueTask SpinWaitAsync<TCondition>(TCondition condition, CancellationToken token = default)
+        where TCondition : notnull, ISupplier<bool>
+    {
+        ValueTask task;
+
+        if (condition is null)
+        {
+            task = ValueTask.FromException(new ArgumentNullException(nameof(condition)));
+        }
+        else if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            task = SpinWaitCoreAsync(condition, token);
+        }
+
+        return task;
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask SpinWaitCoreAsync<TCondition>(TCondition condition, CancellationToken token)
+        where TCondition : notnull, ISupplier<bool>
+    {
+        while (!condition.Invoke())
+            await Wait(condition, zeroTimeout: false).CreateVoidTask(token).ConfigureAwait(false);
+    }
 }
 
 /// <summary>

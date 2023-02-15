@@ -188,6 +188,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
     {
         ValueTask<bool> task;
@@ -217,6 +218,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
     {
         ValueTask task;
@@ -259,6 +261,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
     {
         ValueTask<bool> task;
@@ -291,6 +294,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentNullException"><paramref name="condition"/> is <see langword="null"/>.</exception>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
     {
         ValueTask task;

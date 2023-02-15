@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -8,7 +9,6 @@ namespace DotNext.Threading
     {
         private sealed class State : StrongBox<int>
         {
-
         }
 
         [Fact]
@@ -99,6 +99,43 @@ namespace DotNext.Threading
             trigger.CancelSuspendedCallers(new(true));
 
             await ThrowsAsync<OperationCanceledException>(task2.AsTask);
+        }
+
+        private sealed class Countdown : ISupplier<bool>
+        {
+            private int counter;
+
+            bool ISupplier<bool>.Invoke() => counter++ > 2;
+        }
+
+        [Fact]
+        public static async Task SpinWaitAsync()
+        {
+            using var trigger = new AsyncTrigger();
+            var countdown = new Countdown();
+            var task = trigger.SpinWaitAsync(countdown).AsTask();
+            False(task.IsCompleted);
+
+            trigger.Signal();
+            False(task.IsCompleted);
+
+            trigger.Signal();
+            await task;
+        }
+
+        [Fact]
+        public static async Task SpinWaitAsync2()
+        {
+            using var trigger = new AsyncTrigger();
+            var countdown = new Countdown();
+            var task = trigger.SpinWaitAsync(countdown, InfiniteTimeSpan).AsTask();
+            False(task.IsCompleted);
+
+            trigger.Signal();
+            False(task.IsCompleted);
+
+            trigger.Signal();
+            True(await task);
         }
     }
 }
