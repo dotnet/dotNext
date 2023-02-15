@@ -3,7 +3,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Connections;
 using static System.Buffers.Binary.BinaryPrimitives;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster;
 
