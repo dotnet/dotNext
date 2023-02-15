@@ -56,7 +56,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Location = path;
         this.recordsPerPartition = recordsPerPartition;
         initialSize = configuration.InitialPartitionSize;
-        commitEvent = new(initialState: false);
+        commitEvent = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
         bufferManager = new(configuration);
         concurrentReads = configuration.MaxConcurrentReads;
         sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
@@ -64,7 +64,15 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             : new SlowSessionIdPool(concurrentReads);
         parallelIO = configuration.ParallelIO;
 
-        syncRoot = new(configuration);
+        syncRoot = new(configuration.MaxConcurrentReads)
+        {
+            MeasurementTags = configuration.MeasurementTags,
+#pragma warning disable CS0618
+            LockContentionCounter = configuration.LockContentionCounter,
+            LockDurationCounter = configuration.LockDurationCounter,
+#pragma warning restore CS0618
+        };
+
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
 
         // load all partitions from file system

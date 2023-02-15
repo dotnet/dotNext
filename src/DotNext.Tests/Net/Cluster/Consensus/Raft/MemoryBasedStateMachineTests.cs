@@ -877,21 +877,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private sealed class AsyncLockSettings : PersistentState.IAsyncLockSettings
-        {
-            public int ConcurrencyLevel => 10;
-
-            IncrementingEventCounter PersistentState.IAsyncLockSettings.LockContentionCounter => null;
-
-            EventCounter PersistentState.IAsyncLockSettings.LockDurationCounter => null;
-
-            TagList PersistentState.IAsyncLockSettings.MeasurementTags => default;
-        }
-
         [Fact]
         public static void ReadWriteConcurrently()
         {
-            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
@@ -902,7 +891,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Fact]
         public static void CombineCompactionAndWriteLock()
         {
-            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.CompactionLock).IsCompletedSuccessfully);
             False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
@@ -916,7 +905,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Fact]
         public static void StrongWeakLock()
         {
-            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.StrongReadLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
             False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);

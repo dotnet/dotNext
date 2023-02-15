@@ -17,17 +17,6 @@ public partial class PersistentState
         bool UseCaching { get; }
     }
 
-    internal interface IAsyncLockSettings
-    {
-        int ConcurrencyLevel { get; }
-
-        IncrementingEventCounter? LockContentionCounter { get; }
-
-        EventCounter? LockDurationCounter { get; }
-
-        TagList MeasurementTags { get; }
-    }
-
     /// <summary>
     /// Describes how the log interacts with underlying storage device.
     /// </summary>
@@ -52,7 +41,7 @@ public partial class PersistentState
     /// <summary>
     /// Represents configuration options of the persistent audit trail.
     /// </summary>
-    public class Options : IBufferManagerSettings, IAsyncLockSettings
+    public class Options : IBufferManagerSettings
     {
         private protected const int MinBufferSize = 128;
         private int bufferSize = 4096;
@@ -154,9 +143,6 @@ public partial class PersistentState
                 concurrencyLevel = value;
             }
         }
-
-        /// <inheritdoc />
-        int IAsyncLockSettings.ConcurrencyLevel => MaxConcurrentReads;
 
         /// <summary>
         /// Gets or sets compression level used

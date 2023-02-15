@@ -173,15 +173,9 @@ public partial class PersistentState
         private readonly ITransition[] acquisitions = { new WeakReadLockTransition(), new StrongReadLockTransition(), new WriteLockTransition(), new CompactionLockTransition(), new ExclusiveLockTransition() };
         private readonly Action<LockState>[] exits = { WeakReadLockTransition.Release, StrongReadLockTransition.Release, WriteLockTransition.Release, CompactionLockTransition.Release, ExclusiveLockTransition.Release };
 
-        internal LockManager(IAsyncLockSettings configuration)
-            : base(new(configuration.ConcurrencyLevel), configuration.ConcurrencyLevel + 2) // + write lock + compaction lock
+        internal LockManager(int concurrencyLevel)
+            : base(new(concurrencyLevel), concurrencyLevel + 2) // + write lock + compaction lock
         {
-            // setup metrics
-            MeasurementTags = configuration.MeasurementTags;
-#pragma warning disable CS0618
-            LockContentionCounter = configuration.LockContentionCounter;
-            LockDurationCounter = configuration.LockDurationCounter;
-#pragma warning restore CS0618
         }
 
         internal ValueTask AcquireAsync(LockType type, CancellationToken token = default)
