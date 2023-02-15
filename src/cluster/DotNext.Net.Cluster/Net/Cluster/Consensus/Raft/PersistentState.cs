@@ -9,8 +9,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Buffers;
 using Collections.Specialized;
 using IO.Log;
-using Replication;
 using static IO.DataTransferObject;
+using AsyncTrigger = Threading.AsyncTrigger;
 
 /// <summary>
 /// Represents general purpose persistent audit trail compatible with Raft algorithm.
@@ -22,7 +22,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private static readonly Counter<long> ReadRateMeter, WriteRateMeter, CommitRateMeter;
 
     private protected readonly TagList measurementTags;
-    private readonly CommitEvent commitEvent;
+    private readonly AsyncTrigger commitEvent;
     private protected readonly LockManager syncRoot;
     private readonly long initialSize;
     private protected readonly BufferManager bufferManager;
@@ -837,7 +837,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
     public ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
-        => commitEvent.WaitForCommitAsync(static (state, index) => index <= state.CommitIndex, state, index, token);
+        => commitEvent.SpinWaitAsync(new CommitChecker(state, index), token);
 
     private protected abstract ValueTask<long> CommitAsync(long? endIndex, CancellationToken token);
 
@@ -887,12 +887,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         Debug.Assert(count > 0L);
 
-        commitEvent.Set(true);
+        commitEvent.Signal(resumeAll: true);
         commitCounter?.Invoke(count);
         CommitRateMeter.Add(count, measurementTags);
     }
-
-    private bool IsConsistent => state.Term == LastTerm && state.CommitIndex == state.LastApplied;
 
     /// <summary>
     /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
@@ -907,8 +905,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         ThrowIfDisposed();
 
-        while (!IsConsistent)
-            await commitEvent.WaitAsync(static state => state.IsConsistent, this, token).ConfigureAwait(false);
+        for (var condition = new DelegatingSupplier<bool>(IsConsistent); !IsConsistent();)
+            await commitEvent.SpinWaitAsync(condition, token).ConfigureAwait(false);
+
+        bool IsConsistent() => state.Term == LastTerm && state.CommitIndex == state.LastApplied;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
