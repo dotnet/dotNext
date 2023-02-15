@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Threading;
-using static Replication.CommitEvent;
+using Replication;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
@@ -75,7 +75,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     private readonly AsyncReaderWriterLock syncRoot = new();
-    private readonly AsyncManualResetEvent commitEvent = new(false);
+    private readonly CommitEvent commitEvent = new();
     private long term, commitIndex, lastTerm, index;
 
     // boxed ClusterMemberId or null if there is not last vote stored

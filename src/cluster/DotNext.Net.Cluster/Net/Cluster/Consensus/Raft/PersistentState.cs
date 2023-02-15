@@ -11,7 +11,6 @@ using Collections.Specialized;
 using IO.Log;
 using Replication;
 using static IO.DataTransferObject;
-using AsyncManualResetEvent = Threading.AsyncManualResetEvent;
 
 /// <summary>
 /// Represents general purpose persistent audit trail compatible with Raft algorithm.
@@ -23,7 +22,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private static readonly Counter<long> ReadRateMeter, WriteRateMeter, CommitRateMeter;
 
     private protected readonly TagList measurementTags;
-    private readonly AsyncManualResetEvent commitEvent;
+    private readonly CommitEvent commitEvent;
     private protected readonly LockManager syncRoot;
     private readonly long initialSize;
     private protected readonly BufferManager bufferManager;
@@ -56,7 +55,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Location = path;
         this.recordsPerPartition = recordsPerPartition;
         initialSize = configuration.InitialPartitionSize;
-        commitEvent = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
+        commitEvent = new() { MeasurementTags = configuration.MeasurementTags };
         bufferManager = new(configuration);
         concurrentReads = configuration.MaxConcurrentReads;
         sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
