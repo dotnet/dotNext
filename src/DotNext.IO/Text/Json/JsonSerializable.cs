@@ -40,11 +40,7 @@ public readonly struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>
         ValueTask result;
         var buffer = writer.TryGetBufferWriter();
 
-        if (buffer is null)
-        {
-            result = writer.WriteAsync(Serialize, Value, token);
-        }
-        else
+        if (buffer is not null)
         {
             // fast path - synchronous serialization
             result = ValueTask.CompletedTask;
@@ -56,6 +52,14 @@ public readonly struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>
             {
                 result = ValueTask.FromException(e);
             }
+        }
+        else if (typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
+        {
+            result = new(JsonSerializer.SerializeAsync(Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream, Value, T.TypeInfo, cancellationToken: token));
+        }
+        else
+        {
+            result = writer.WriteAsync(Serialize, Value, token);
         }
 
         return result;
