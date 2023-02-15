@@ -55,7 +55,7 @@ public readonly struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>
         }
         else if (typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
         {
-            result = new(JsonSerializer.SerializeAsync(Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream, Value, T.TypeInfo, cancellationToken: token));
+            result = new(JsonSerializer.SerializeAsync(Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream, Value, T.TypeInfo, token));
         }
         else
         {
