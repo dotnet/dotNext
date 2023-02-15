@@ -50,8 +50,8 @@ Release Date: 02-02-2023
 
 Starting from the current release, `DotNext.Reflection` library is no longer published on regular basis. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
 
-<a href="https://www.nuget.org/packages/dotnext/4.10.0">DotNext 4.10.0</a>
-* Added API discussed and proposed in [143](https://github.com/dotnet/dotNext/issues/143). The requested features are implemented as `DotNext.Buffers.Binary.BinaryTransformations` class.
+<a href="https://www.nuget.org/packages/dotnext/4.11.0">DotNext 4.11.0</a>
+* Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.10.0">DotNext.Metaprogramming 4.10.0</a>
 * Updated dependencies
@@ -59,12 +59,13 @@ Starting from the current release, `DotNext.Reflection` library is no longer pub
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.11.0">DotNext.Unsafe 4.11.0</a>
 * Added methods to `Pointer<T>` data type for unaligned memory access
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.10.0">DotNext.Threading 4.10.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.threading/4.11.0">DotNext.Threading 4.11.0</a>
+* Added special methods to `AsyncTrigger` class to implement asynchronous _spin-wait_
+* Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.10.0">DotNext.IO 4.10.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.11.0">DotNext.IO 4.11.0</a>
 * Optimized memory allocations caused by `FileBufferingWriter` class
-* Updated dependencies
+* Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.11.0">DotNext.Net.Cluster 4.10.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
