@@ -70,7 +70,8 @@ public partial class PhiAccrualFailureDetector
                 else
                 {
                     backlog = previous.backlog;
-                    oldValue = backlog[remainingOffset = previous.remainingOffset + 1];
+                    oldValue = backlog[previous.remainingOffset];
+                    remainingOffset = previous.remainingOffset + 1;
                     this.previous = previous;
                 }
 
@@ -89,7 +90,7 @@ public partial class PhiAccrualFailureDetector
 
         private double[] GetBacklog(out double removedItem)
         {
-            var result = GC.AllocateUninitializedArray<double>(count - 1);
+            var result = GC.AllocateUninitializedArray<double>(MaxSampleSize - 1);
 
             var current = this;
             for (var index = result.Length - 1; current is not null && index >= 0; index--, current = current.previous)
