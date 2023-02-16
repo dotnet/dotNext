@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.IO;
 
@@ -11,7 +9,7 @@ using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<char>;
 /// in the form of the writer to <see cref="TextWriter"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct TextConsumer : IReadOnlySpanConsumer, IFlushable
+public readonly record struct TextConsumer : IReadOnlySpanConsumer, IFlushable, IEquatable<TextConsumer>
 {
     private readonly TextWriter output;
 
@@ -43,26 +41,6 @@ public readonly struct TextConsumer : IReadOnlySpanConsumer, IFlushable
         => token.IsCancellationRequested ? Task.FromCanceled(token) : output.FlushAsync();
 
     /// <summary>
-    /// Determines whether this object contains the same text writer as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same text writer as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(TextConsumer other) => ReferenceEquals(output, other.output);
-
-    /// <summary>
-    /// Determines whether this object contains the same text writer as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same text writer as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals([NotNullWhen(true)] object? other) => other is TextConsumer consumer && Equals(consumer);
-
-    /// <summary>
-    /// Gets the hash code representing identity of the stored text writer.
-    /// </summary>
-    /// <returns>The hash code representing identity of the stored text writer.</returns>
-    public override int GetHashCode() => RuntimeHelpers.GetHashCode(output);
-
-    /// <summary>
     /// Returns a string that represents the underlying writer.
     /// </summary>
     /// <returns>A string that represents the underlying writer.</returns>
@@ -75,22 +53,4 @@ public readonly struct TextConsumer : IReadOnlySpanConsumer, IFlushable
     /// <returns>The wrapped text writer.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     public static implicit operator TextConsumer(TextWriter output) => new(output);
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the same text writer.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the same text writer; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(TextConsumer x, TextConsumer y)
-        => x.Equals(y);
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the different text writers.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the different text writers; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(TextConsumer x, TextConsumer y)
-        => !x.Equals(y);
 }

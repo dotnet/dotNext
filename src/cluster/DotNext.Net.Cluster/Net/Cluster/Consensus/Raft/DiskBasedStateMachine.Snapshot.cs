@@ -19,56 +19,17 @@ public partial class DiskBasedStateMachine
     /// data (such as opened descriptors and other resources) associated with snapshot read operation.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    protected readonly struct SnapshotAccessToken : IEquatable<SnapshotAccessToken>
+    protected readonly record struct SnapshotAccessToken : IEquatable<SnapshotAccessToken>
     {
         private readonly int id;
 
         internal SnapshotAccessToken(int sessionId) => id = sessionId;
 
         /// <summary>
-        /// Determines whether the current token is equal to the specified token.
-        /// </summary>
-        /// <param name="other">The token to compare.</param>
-        /// <returns><see langword="true"/> if this token is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(SnapshotAccessToken other) => id == other.id;
-
-        /// <summary>
-        /// Determines whether the current token is equal to the specified token.
-        /// </summary>
-        /// <param name="other">The token to compare.</param>
-        /// <returns><see langword="true"/> if this token is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals([NotNullWhen(true)] object? other)
-            => other is SnapshotAccessToken token && Equals(token);
-
-        /// <summary>
         /// Converts the token to string for debugging purposes.
         /// </summary>
         /// <returns>A string that represent this token.</returns>
         public override string ToString() => id.ToString(InvariantCulture);
-
-        /// <summary>
-        /// Gets the hash code of this token.
-        /// </summary>
-        /// <returns>The hash code of this token.</returns>
-        public override int GetHashCode() => id;
-
-        /// <summary>
-        /// Determines whether the two tokens are equal.
-        /// </summary>
-        /// <param name="x">The first token to compare.</param>
-        /// <param name="y">The second token to compare.</param>
-        /// <returns><see langword="true"/> if <paramref name="x"/> is equal to <paramref name="y"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(SnapshotAccessToken x, SnapshotAccessToken y)
-            => x.Equals(y);
-
-        /// <summary>
-        /// Determines whether the two tokens are not equal.
-        /// </summary>
-        /// <param name="x">The first token to compare.</param>
-        /// <param name="y">The second token to compare.</param>
-        /// <returns><see langword="true"/> if <paramref name="x"/> is not equal to <paramref name="y"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(SnapshotAccessToken x, SnapshotAccessToken y)
-            => !x.Equals(y);
     }
 
     /// <summary>

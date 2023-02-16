@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext;
 
@@ -136,7 +134,7 @@ public readonly unsafe struct SupplierClosure<TContext, T1, T2, TResult> : ISupp
 /// <typeparam name="T2">The type of the second argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1, T2, TResult>, IEquatable<DelegatingSupplier<T1, T2, TResult>>
+public readonly record struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1, T2, TResult>, IEquatable<DelegatingSupplier<T1, T2, TResult>>
 {
     private readonly Func<T1, T2, TResult> func;
 
@@ -159,26 +157,8 @@ public readonly struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1, T2, T
     /// <inheritdoc />
     Func<T1, T2, TResult> IFunctional<Func<T1, T2, TResult>>.ToDelegate() => func;
 
-    /// <summary>
-    /// Determines whether this object contains the same delegate instance as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same delegate instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(DelegatingSupplier<T1, T2, TResult> other)
-        => ReferenceEquals(func, other.func);
-
-    /// <summary>
-    /// Determines whether this object contains the same delegate instance as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same delegate instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals([NotNullWhen(true)] object? other) => other is DelegatingSupplier<T1, T2, TResult> supplier && Equals(supplier);
-
-    /// <summary>
-    /// Gets the hash code representing identity of the stored delegate instance.
-    /// </summary>
-    /// <returns>The hash code representing identity of the stored delegate instance.</returns>
-    public override int GetHashCode() => RuntimeHelpers.GetHashCode(func);
+    /// <inheritdoc />
+    public override string? ToString() => func?.ToString();
 
     /// <summary>
     /// Wraps the delegate instance.
@@ -187,24 +167,6 @@ public readonly struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1, T2, T
     /// <returns>The supplier represented by the delegate.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
     public static implicit operator DelegatingSupplier<T1, T2, TResult>(Func<T1, T2, TResult> func) => new(func);
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the same delegate instance.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the same delegate instance; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(DelegatingSupplier<T1, T2, TResult> x, DelegatingSupplier<T1, T2, TResult> y)
-        => x.Equals(y);
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the different delegate instances.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the different delegate instances; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(DelegatingSupplier<T1, T2, TResult> x, DelegatingSupplier<T1, T2, TResult> y)
-        => !x.Equals(y);
 }
 
 [StructLayout(LayoutKind.Auto)]

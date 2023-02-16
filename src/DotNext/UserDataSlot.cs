@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext;
@@ -22,7 +21,7 @@ internal static class UserDataSlot
 /// </summary>
 /// <typeparam name="TValue">The type of the value stored in user data slot.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
+public readonly record struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
 {
     private static volatile int valueIndexCounter;
     internal static readonly int TypeIndex = UserDataSlot.Allocate();
@@ -49,47 +48,9 @@ public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
     public bool IsAllocated => valueIndex != 0;
 
     /// <summary>
-    /// Checks whether the two data slots are the same.
-    /// </summary>
-    /// <param name="other">Other data slot to check.</param>
-    /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-    public bool Equals(UserDataSlot<TValue> other) => valueIndex == other.valueIndex;
-
-    /// <summary>
-    /// Checks whether the two data slots are the same.
-    /// </summary>
-    /// <param name="other">Other data slot to check.</param>
-    /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-    public override bool Equals([NotNullWhen(true)] object? other) => other is UserDataSlot<TValue> slot && Equals(slot);
-
-    /// <summary>
-    /// Computes hash code for this data slot.
-    /// </summary>
-    /// <returns>Hash code.</returns>
-    public override int GetHashCode() => valueIndex;
-
-    /// <summary>
     /// Gets textual representation of this data slot
     /// useful for debugging.
     /// </summary>
     /// <returns>Textual representation of this data slot.</returns>
     public override string ToString() => UserDataSlot.ToString(TypeIndex, valueIndex);
-
-    /// <summary>
-    /// Checks whether the two data slots are the same.
-    /// </summary>
-    /// <param name="first">The first data slot to check.</param>
-    /// <param name="second">The second data slot to check.</param>
-    /// <returns><see langword="true"/> if both data slots identify the same data key.</returns>
-    public static bool operator ==(UserDataSlot<TValue> first, UserDataSlot<TValue> second)
-        => first.valueIndex == second.valueIndex;
-
-    /// <summary>
-    /// Checks whether the two data slots are not the same.
-    /// </summary>
-    /// <param name="first">The first data slot to check.</param>
-    /// <param name="second">The second data slot to check.</param>
-    /// <returns><see langword="false"/> if both data slots identify the same data key.</returns>
-    public static bool operator !=(UserDataSlot<TValue> first, UserDataSlot<TValue> second)
-        => first.valueIndex != second.valueIndex;
 }
