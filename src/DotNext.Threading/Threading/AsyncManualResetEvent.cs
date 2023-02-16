@@ -170,7 +170,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory Wait<T>(Predicate<T> condition, T arg, bool zeroTimeout)
-        => manager.Value || condition(arg) ? new(true) : Wait(zeroTimeout);
+        => manager.Value || condition(arg) ? new(true) : Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
 
     /// <summary>
     /// Suspends the caller until this event is set.
