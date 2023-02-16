@@ -161,7 +161,7 @@ public static class Optional
     /// <typeparam name="T">The reference type.</typeparam>
     /// <returns>The <see cref="Optional{T}"/> instance representing <see langword="null"/> value.</returns>
     public static Optional<T> Null<T>()
-        where T : class
+        where T : class?
         => new(null);
 
     private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)

@@ -24,7 +24,7 @@ public static class Predicate
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
     public static Predicate<T> IsNull<T>()
-        where T : class
+        where T : class?
         => ObjectExtensions.IsNull;
 
     /// <summary>
@@ -37,7 +37,7 @@ public static class Predicate
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
     public static Predicate<T> IsNotNull<T>()
-        where T : class
+        where T : class?
         => ObjectExtensions.IsNotNull;
 
     /// <summary>

@@ -706,7 +706,7 @@ public static partial class Span
     /// <param name="span">The span over elements.</param>
     /// <returns>The span pointing to the same memory as <paramref name="span"/>.</returns>
     public static ReadOnlySpan<TBase> Contravariance<T, TBase>(this ReadOnlySpan<T> span)
-        where T : class, TBase
-        where TBase : class
+        where T : class?, TBase
+        where TBase : class?
         => MemoryMarshal.CreateReadOnlySpan(ref As<T, TBase>(ref MemoryMarshal.GetReference(span)), span.Length);
 }

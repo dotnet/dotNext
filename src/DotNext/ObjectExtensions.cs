@@ -106,6 +106,6 @@ public static class ObjectExtensions
     /// <returns>The reinterpreted <paramref name="obj"/> reference.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T As<T>(this T obj)
-        where T : class
+        where T : class?
         => obj;
 }
