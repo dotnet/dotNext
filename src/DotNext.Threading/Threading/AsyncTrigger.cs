@@ -219,11 +219,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     public ValueTask SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token = default)
         => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : SignalAndWait(resumeAll, throwOnEmptyQueue, zeroTimeout: false).CreateVoidTask(token);
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait<TCondition>(TCondition condition, bool zeroTimeout)
-        where TCondition : notnull, ISupplier<bool>
-        => condition.Invoke() ? new(true) : Wait(zeroTimeout);
-
     /// <summary>
     /// Suspends the caller until this event is set.
     /// </summary>
@@ -259,7 +254,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             if (condition.Invoke())
                 return true;
         }
-        while (timeout.RemainingTime.TryGetValue(out var remainingTime) && await Wait(condition, remainingTime == TimeSpan.Zero).CreateTask(remainingTime, token).ConfigureAwait(false));
+        while (timeout.RemainingTime.TryGetValue(out var remainingTime) && await Wait(remainingTime == TimeSpan.Zero).CreateTask(remainingTime, token).ConfigureAwait(false));
 
         return false;
     }
@@ -287,7 +282,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         where TCondition : notnull, ISupplier<bool>
     {
         while (!condition.Invoke())
-            await Wait(condition, zeroTimeout: false).CreateVoidTask(token).ConfigureAwait(false);
+            await Wait(zeroTimeout: false).CreateVoidTask(token).ConfigureAwait(false);
     }
 }
 
