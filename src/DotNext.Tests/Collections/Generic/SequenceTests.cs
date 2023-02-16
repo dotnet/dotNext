@@ -209,17 +209,17 @@ namespace DotNext.Collections.Generic
             IEnumerable<int> collection = Array.Empty<int>();
             Null(collection.FirstOrNull());
             Equal(Optional<int>.None, collection.FirstOrNone());
-            Equal(Optional<int>.None, collection.FirstOrNone(Predicate.True<int>()));
+            Equal(Optional<int>.None, collection.FirstOrNone(Predicate.Constant<int>(true)));
 
             collection = new int[] { 42 };
             Equal(42, collection.FirstOrNull());
             Equal(42, collection.FirstOrNone());
-            Equal(42, collection.FirstOrNone(Predicate.True<int>()));
+            Equal(42, collection.FirstOrNone(Predicate.Constant<int>(true)));
 
             Equal('a', "ab".FirstOrNone());
             False(string.Empty.FirstOrNone().HasValue);
-            Equal('a', "ab".FirstOrNone(Predicate.True<char>()));
-            False(string.Empty.FirstOrNone(Predicate.True<char>()).HasValue);
+            Equal('a', "ab".FirstOrNone(Predicate.Constant<char>(true)));
+            False(string.Empty.FirstOrNone(Predicate.Constant<char>(true)).HasValue);
         }
 
         [Fact]
@@ -243,11 +243,11 @@ namespace DotNext.Collections.Generic
             var collection = Array.Empty<int>().ToAsyncEnumerable();
             Null(await collection.FirstOrNullAsync());
             Equal(Optional<int>.None, await collection.FirstOrNoneAsync());
-            Equal(Optional<int>.None, await collection.FirstOrNoneAsync(Predicate.True<int>()));
+            Equal(Optional<int>.None, await collection.FirstOrNoneAsync(Predicate.Constant<int>(true)));
             collection = new int[] { 42 }.ToAsyncEnumerable();
             Equal(42, await collection.FirstOrNullAsync());
             Equal(42, await collection.FirstOrNoneAsync());
-            Equal(42, await collection.FirstOrNoneAsync(Predicate.True<int>()));
+            Equal(42, await collection.FirstOrNoneAsync(Predicate.Constant<int>(true)));
         }
 
         [Fact]

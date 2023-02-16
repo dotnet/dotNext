@@ -14,7 +14,7 @@ namespace DotNext.Collections.Specialized
 
             list += static str => str.Length > 10;
             list += CheckLength;
-            list += Predicate.True<object>();
+            list += Predicate.Constant<object>(true);
             NotEmpty(list);
             False(list.IsEmpty);
             Equal(3, list.Count);
@@ -31,10 +31,10 @@ namespace DotNext.Collections.Specialized
             InvocationList<Predicate<string>> list = default;
             True(list.AsSpan().IsEmpty);
 
-            list += Predicate.True<string>();
-            Equal(Predicate.True<string>(), list.AsSpan()[0]);
+            list += Predicate.Constant<string>(true);
+            Same(Predicate.Constant<string>(true), list.AsSpan()[0]);
 
-            list += Predicate.False<object>();
+            list += Predicate.Constant<object>(false);
             Equal(2, list.AsSpan().Length);
         }
 
@@ -48,14 +48,14 @@ namespace DotNext.Collections.Specialized
                 throw new Xunit.Sdk.XunitException();
             }
 
-            list += Predicate.True<string>();
+            list += Predicate.Constant<string>(true);
 
             foreach (var d in list)
             {
-                Equal(Predicate.True<string>(), d);
+                Same(Predicate.Constant<string>(true), d);
             }
 
-            list += Predicate.False<object>();
+            list += Predicate.Constant<object>(false);
 
             var count = 0;
             foreach (var d in list)
@@ -63,10 +63,10 @@ namespace DotNext.Collections.Specialized
                 switch (count++)
                 {
                     case 0:
-                        Equal(Predicate.True<string>(), d);
+                        Same(Predicate.Constant<string>(true), d);
                         break;
                     case 1:
-                        Equal(Predicate.False<object>(), d);
+                        Same(Predicate.Constant<object>(false), d);
                         break;
                 }
             }
@@ -81,10 +81,10 @@ namespace DotNext.Collections.Specialized
 
             Null(list.SingleOrDefault());
 
-            list += Predicate.True<string>();
-            Equal(Predicate.True<string>(), list.SingleOrDefault());
+            list += Predicate.Constant<string>(true);
+            Same(Predicate.Constant<string>(true), list.SingleOrDefault());
 
-            list += Predicate.False<object>();
+            list += Predicate.Constant<object>(false);
             Equal(2, list.Count());
         }
 
@@ -95,10 +95,10 @@ namespace DotNext.Collections.Specialized
 
             Null(list.Combine());
 
-            list += Predicate.True<string>();
-            Equal(Predicate.True<string>(), list.Combine());
+            list += Predicate.Constant<string>(true);
+            Same(Predicate.Constant<string>(true), list.Combine());
 
-            list += Predicate.False<string>();
+            list += Predicate.Constant<string>(false);
             NotNull(list.Combine());
         }
     }

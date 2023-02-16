@@ -2,24 +2,11 @@ namespace DotNext.Threading.Tasks;
 
 using Generic;
 
-internal static class Continuation<T, TConstant>
-    where TConstant : Constant<T>, new()
-{
-    internal static readonly Func<Task<T>, object?, T> WhenFaulted = CompletedTask<T, TConstant>.WhenFaulted;
-    internal static readonly Func<Task<T>, T> WhenCanceled = CompletedTask<T, TConstant>.WhenCanceled;
-    internal static readonly Func<Task<T>, object?, T> WhenFaultedOrCanceled = CompletedTask<T, TConstant>.WhenFaultedOrCanceled;
-}
-
 /// <summary>
 /// Represents various continuations.
 /// </summary>
 public static class Continuation
 {
-    private static readonly Action<Task, object?> WhenFaultedOrCanceledAction = WhenFaultedOrCanceled;
-
-    private static void WhenFaultedOrCanceled(Task task, object? state)
-        => task.ConfigureAwait(false).GetAwaiter().GetResult();
-
     /// <summary>
     /// Allows to obtain original <see cref="Task"/> in its final state after <c>await</c> without
     /// throwing exception produced by this task.
@@ -53,7 +40,7 @@ public static class Continuation
     /// <returns>The task representing continuation.</returns>
     public static Task<T> OnFaulted<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
         where TConstant : Constant<T>, new()
-        => OnFaulted<T, TConstant>(task, Predicate.True<AggregateException>(), scheduler);
+        => OnFaulted<T, TConstant>(task, Predicate.Constant<AggregateException>(value: true), scheduler);
 
     /// <summary>
     /// Returns constant value if underlying task is failed with the exception that matches
@@ -75,7 +62,7 @@ public static class Continuation
         {
             TaskStatus.Faulted when filter(task.Exception!) => CompletedTask<T, TConstant>.Task,
             TaskStatus.RanToCompletion or TaskStatus.Canceled or TaskStatus.Faulted => task,
-            _ => task.ContinueWith(Continuation<T, TConstant>.WhenFaulted, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
+            _ => task.ContinueWith(CompletedTask<T, TConstant>.WhenFaulted, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
         };
 
     /// <summary>
@@ -92,7 +79,7 @@ public static class Continuation
     /// <returns>The task representing continuation.</returns>
     public static Task<T> OnFaultedOrCanceled<T, TConstant>(this Task<T> task, TaskScheduler? scheduler = null)
         where TConstant : Constant<T>, new()
-        => OnFaultedOrCanceled<T, TConstant>(task, Predicate.True<AggregateException>(), scheduler);
+        => OnFaultedOrCanceled<T, TConstant>(task, Predicate.Constant<AggregateException>(value: true), scheduler);
 
     /// <summary>
     /// Returns constant value if underlying task is canceled or failed with the exception that matches
@@ -120,7 +107,7 @@ public static class Continuation
             case TaskStatus.RanToCompletion or TaskStatus.Faulted:
                 break;
             default:
-                task = task.ContinueWith(Continuation<T, TConstant>.WhenFaultedOrCanceled, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
+                task = task.ContinueWith(CompletedTask<T, TConstant>.WhenFaultedOrCanceled, filter, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
                 break;
         }
 
@@ -145,7 +132,7 @@ public static class Continuation
         {
             TaskStatus.Canceled => CompletedTask<T, TConstant>.Task,
             TaskStatus.RanToCompletion or TaskStatus.Faulted => task,
-            _ => task.ContinueWith(Continuation<T, TConstant>.WhenCanceled, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
+            _ => task.ContinueWith(CompletedTask<T, TConstant>.WhenCanceled, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current),
         };
 
     internal static void OnCompleted(this Task task, AsyncCallback callback)
@@ -157,5 +144,10 @@ public static class Continuation
     }
 
     internal static Task AttachState(this Task task, object? state, CancellationToken token = default)
-        => task.ContinueWith(WhenFaultedOrCanceledAction, state, token, TaskContinuationOptions.None, TaskScheduler.Default);
+    {
+        return task.ContinueWith(WhenFaultedOrCanceled, state, token, TaskContinuationOptions.None, TaskScheduler.Default);
+
+        static void WhenFaultedOrCanceled(Task task, object? state)
+            => task.ConfigureAwait(false).GetAwaiter().GetResult();
+    }
 }

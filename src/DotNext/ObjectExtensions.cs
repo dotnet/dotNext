@@ -15,6 +15,10 @@ public static class ObjectExtensions
 
     internal static bool IsTypeOf<T>(object? obj) => obj is T;
 
+    internal static TOutput Identity<TInput, TOutput>(TInput input)
+        where TInput : TOutput
+        => input;
+
     /// <summary>
     /// Provides ad-hoc approach to associate some data with the object
     /// without modification of it.

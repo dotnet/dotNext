@@ -8,33 +8,12 @@ namespace DotNext;
 /// </summary>
 public static class Func
 {
-    private static class Id<TInput, TOutput>
-        where TInput : TOutput
-    {
-        internal static readonly Func<TInput, TOutput> Value = Converter.Identity<TInput, TOutput>;
-    }
-
-    private static class IsNullFunc
-    {
-        internal static readonly Func<object?, bool> Value = ObjectExtensions.IsNull;
-    }
-
-    private static class IsNotNullFunc
-    {
-        internal static readonly Func<object?, bool> Value = ObjectExtensions.IsNotNull;
-    }
-
-    private static class TypeChecker<T>
-    {
-        internal static readonly Func<object?, bool> Value = ObjectExtensions.IsTypeOf<T>;
-    }
-
     /// <summary>
     /// Gets a predicate that can be used to check whether the specified object is of specific type.
     /// </summary>
     /// <typeparam name="T">The target type.</typeparam>
     /// <returns>The predicate instance.</returns>
-    public static Func<object?, bool> IsTypeOf<T>() => TypeChecker<T>.Value;
+    public static Func<object?, bool> IsTypeOf<T>() => ObjectExtensions.IsTypeOf<T>;
 
     /// <summary>
     /// Returns predicate implementing nullability check.
@@ -46,7 +25,7 @@ public static class Func
     /// </remarks>
     public static Func<T, bool> IsNull<T>()
         where T : class
-        => IsNullFunc.Value;
+        => ObjectExtensions.IsNull;
 
     /// <summary>
     /// Returns predicate checking that input argument
@@ -59,7 +38,7 @@ public static class Func
     /// </remarks>
     public static Func<T, bool> IsNotNull<T>()
         where T : class
-        => IsNotNullFunc.Value;
+        => ObjectExtensions.IsNotNull;
 
     /// <summary>
     /// The function which returns input argument
@@ -73,7 +52,7 @@ public static class Func
     /// </remarks>
     public static Func<TInput, TOutput> Identity<TInput, TOutput>()
         where TInput : TOutput
-        => Id<TInput, TOutput>.Value;
+        => ObjectExtensions.Identity<TInput, TOutput>;
 
     /// <summary>
     /// The converter which returns input argument
@@ -86,8 +65,6 @@ public static class Func
     /// </remarks>
     public static Func<T, T> Identity<T>() => Identity<T, T>();
 
-    private static T Convert<T>(this object? obj) => (T)obj!;
-
     /// <summary>
     /// Constructs <see cref="Func{T}"/> returning the same
     /// instance each call.
@@ -96,7 +73,34 @@ public static class Func
     /// <typeparam name="T">The type of the object to be returned from the delegate.</typeparam>
     /// <returns>The delegate returning <paramref name="obj"/> each call.</returns>
     public static Func<T> Constant<T>(T obj)
-        => obj.Convert<T>;
+    {
+        // use cache for boolean values
+        if (typeof(T) == typeof(bool))
+            return Unsafe.As<Func<T>>(Constant(Unsafe.As<T, bool>(ref obj)));
+
+        // cache nulls
+        if (obj is null)
+            return Default!;
+
+        // slow path - allocates a new delegate
+        unsafe
+        {
+            return DelegateHelpers.CreateDelegate<object?, T>(&ConstantCore, obj);
+        }
+
+        static T ConstantCore(object? obj) => (T)obj!;
+
+        static T? Default() => default;
+    }
+
+    private static Func<bool> Constant(bool value)
+    {
+        return value ? True : False;
+
+        static bool True() => true;
+
+        static bool False() => false;
+    }
 
     /// <summary>
     /// Converts <see cref="Func{T, Boolean}"/> into predicate.

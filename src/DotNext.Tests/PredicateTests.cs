@@ -8,10 +8,15 @@ namespace DotNext
         [Fact]
         public static void PredefinedDelegatesTest()
         {
-            True(Predicate.True<string>().Invoke(""));
-            False(Predicate.False<int>().Invoke(0));
+            Same(Predicate.Constant<string>(true), Predicate.Constant<string>(true));
+            True(Predicate.Constant<string>(true).Invoke(""));
+            False(Predicate.Constant<int>(false).Invoke(0));
+
+            Same(Predicate.IsNull<string>(), Predicate.IsNull<string>());
             True(Predicate.IsNull<string>().Invoke(null));
             False(Predicate.IsNull<string>().Invoke(""));
+
+            Same(Predicate.IsNotNull<string>(), Predicate.IsNotNull<string>());
             False(Predicate.IsNotNull<string>().Invoke(null));
             True(Predicate.IsNotNull<string>().Invoke(""));
         }

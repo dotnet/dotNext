@@ -6,51 +6,12 @@
 /// </summary>
 public static class Predicate
 {
-    private static class TruePredicate<T>
-    {
-        internal static readonly Predicate<T> Value = AlwaysTrue;
-
-        private static bool AlwaysTrue(T value) => true;
-    }
-
-    private static class FalsePredicate<T>
-    {
-        internal static readonly Predicate<T> Value = AlwaysFalse;
-
-        private static bool AlwaysFalse(T value) => false;
-    }
-
-    private static class IsNullPredicate<T>
-        where T : class
-    {
-        internal static readonly Predicate<T> Value = ObjectExtensions.IsNull;
-    }
-
-    private static class IsNotNullPredicate<T>
-        where T : class
-    {
-        internal static readonly Predicate<T> Value = ObjectExtensions.IsNotNull;
-    }
-
-    private static class HasValuePredicate<T>
-        where T : struct
-    {
-        internal static readonly Predicate<T?> Value = HasValue;
-
-        private static bool HasValue(T? nullable) => nullable.HasValue;
-    }
-
-    private static class TypeChecker<T>
-    {
-        internal static readonly Predicate<object?> Value = ObjectExtensions.IsTypeOf<T>;
-    }
-
     /// <summary>
     /// Gets a predicate that can be used to check whether the specified object is of specific type.
     /// </summary>
     /// <typeparam name="T">The target type.</typeparam>
     /// <returns>The predicate instance.</returns>
-    public static Predicate<object?> IsTypeOf<T>() => TypeChecker<T>.Value;
+    public static Predicate<object?> IsTypeOf<T>() => ObjectExtensions.IsTypeOf<T>;
 
     /// <summary>
     /// Returns predicate implementing nullability check.
@@ -62,7 +23,7 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T> IsNull<T>()
         where T : class
-        => IsNullPredicate<T>.Value;
+        => ObjectExtensions.IsNull;
 
     /// <summary>
     /// Returns predicate checking that input argument
@@ -75,7 +36,7 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T> IsNotNull<T>()
         where T : class
-        => IsNotNullPredicate<T>.Value;
+        => ObjectExtensions.IsNotNull;
 
     /// <summary>
     /// Returns predicate checking that input argument of value type
@@ -88,7 +49,26 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T?> HasValue<T>()
         where T : struct
-        => HasValuePredicate<T>.Value;
+    {
+        return HasValueCore;
+
+        static bool HasValueCore(T? value) => value.HasValue;
+    }
+
+    /// <summary>
+    /// Returns a predicate which always returns the specified value.
+    /// </summary>
+    /// <typeparam name="T">The type of the input parameter.</typeparam>
+    /// <param name="value">The value to be returned by the predicate.</param>
+    /// <returns>A cached predicate always returning <paramref name="value"/>.</returns>
+    public static Predicate<T> Constant<T>(bool value)
+    {
+        return value ? True : False;
+
+        static bool True(T value) => true;
+
+        static bool False(T value) => false;
+    }
 
     /// <summary>
     /// Returns a predicate which always returns <see langword="true"/>.
@@ -98,7 +78,8 @@ public static class Predicate
     /// <remarks>
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
-    public static Predicate<T> True<T>() => TruePredicate<T>.Value;
+    [Obsolete("Use Constant method instead.")]
+    public static Predicate<T> True<T>() => Constant<T>(value: true);
 
     /// <summary>
     /// Returns a predicate which always returns <see langword="false"/>.
@@ -108,7 +89,8 @@ public static class Predicate
     /// <remarks>
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
-    public static Predicate<T> False<T>() => FalsePredicate<T>.Value;
+    [Obsolete("Use Constant method instead.")]
+    public static Predicate<T> False<T>() => Constant<T>(value: false);
 
     /// <summary>
     /// Represents predicate as type <see cref="Func{T,Boolean}"/>.

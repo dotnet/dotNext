@@ -195,7 +195,12 @@ namespace DotNext
         [Fact]
         public static void ConstantProvider()
         {
+            Same(Func.Constant<string>(null), Func.Constant<string>(null));
             Null(Func.Constant<string>(null).Invoke());
+
+            Same(Func.Constant(true), Func.Constant(true));
+            Same(Func.Constant(false), Func.Constant(false));
+
             Equal(42, Func.Constant<int>(42).Invoke());
             Equal("Hello, world", Func.Constant<string>("Hello, world").Invoke());
         }
