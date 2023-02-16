@@ -244,14 +244,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         where TCondition : notnull, ISupplier<bool>
     {
         ValueTask<bool> task;
-        if (condition is null)
-        {
-            task = ValueTask.FromException<bool>(new ArgumentNullException(nameof(condition)));
-        }
-        else if (ValidateTimeoutAndToken(timeout, token, out task))
-        {
+        if (ValidateTimeoutAndToken(timeout, token, out task))
             task = SpinWaitCoreAsync(condition, new(timeout), token);
-        }
 
         return task;
     }
@@ -286,24 +280,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public ValueTask SpinWaitAsync<TCondition>(TCondition condition, CancellationToken token = default)
         where TCondition : notnull, ISupplier<bool>
-    {
-        ValueTask task;
-
-        if (condition is null)
-        {
-            task = ValueTask.FromException(new ArgumentNullException(nameof(condition)));
-        }
-        else if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            task = SpinWaitCoreAsync(condition, token);
-        }
-
-        return task;
-    }
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : SpinWaitCoreAsync(condition, token);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask SpinWaitCoreAsync<TCondition>(TCondition condition, CancellationToken token)
