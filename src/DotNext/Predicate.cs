@@ -1,4 +1,6 @@
-﻿namespace DotNext;
+﻿using Debug = System.Diagnostics.Debug;
+
+namespace DotNext;
 
 /// <summary>
 /// Provides extension methods for type <see cref="Predicate{T}"/> and
@@ -120,7 +122,28 @@ public static class Predicate
     /// <typeparam name="T">Type of the predicate argument.</typeparam>
     /// <param name="predicate">The predicate to negate.</param>
     /// <returns>The predicate which negates evaluation result of the original predicate.</returns>
-    public static Predicate<T> Negate<T>(this Predicate<T> predicate) => predicate.Negate;
+    public static Predicate<T> Negate<T>(this Predicate<T> predicate)
+        => predicate is not null ? predicate.Negate : throw new ArgumentNullException(nameof(predicate));
+
+    private sealed class BinaryOperator<T>
+    {
+        private readonly Predicate<T> left, right;
+
+        internal BinaryOperator(Predicate<T> left, Predicate<T> right)
+        {
+            Debug.Assert(left is not null);
+            Debug.Assert(right is not null);
+
+            this.left = left;
+            this.right = right;
+        }
+
+        internal bool Or(T value) => left(value) || right(value);
+
+        internal bool And(T value) => left(value) && right(value);
+
+        internal bool Xor(T value) => left(value) ^ right(value);
+    }
 
     /// <summary>
     /// Returns a predicate which computes logical OR between
@@ -130,7 +153,13 @@ public static class Predicate
     /// <param name="left">The first predicate acting as logical OR operand.</param>
     /// <param name="right">The second predicate acting as logical OR operand.</param>
     /// <returns>The predicate which computes logical OR between results of two other predicates.</returns>
-    public static Predicate<T> Or<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) || right(input);
+    public static Predicate<T> Or<T>(this Predicate<T> left, Predicate<T> right)
+    {
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
+
+        return new BinaryOperator<T>(left, right).Or;
+    }
 
     /// <summary>
     /// Returns a predicate which computes logical AND between
@@ -140,7 +169,13 @@ public static class Predicate
     /// <param name="left">The first predicate acting as logical AND operand.</param>
     /// <param name="right">The second predicate acting as logical AND operand.</param>
     /// <returns>The predicate which computes logical AND between results of two other predicates.</returns>
-    public static Predicate<T> And<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) && right(input);
+    public static Predicate<T> And<T>(this Predicate<T> left, Predicate<T> right)
+    {
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
+
+        return new BinaryOperator<T>(left, right).And;
+    }
 
     /// <summary>
     /// Returns a predicate which computes logical XOR between
@@ -150,7 +185,13 @@ public static class Predicate
     /// <param name="left">The first predicate acting as logical XOR operand.</param>
     /// <param name="right">The second predicate acting as logical XOR operand.</param>
     /// <returns>The predicate which computes logical XOR between results of two other predicates.</returns>
-    public static Predicate<T> Xor<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) ^ right(input);
+    public static Predicate<T> Xor<T>(this Predicate<T> left, Predicate<T> right)
+    {
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
+
+        return new BinaryOperator<T>(left, right).Xor;
+    }
 
     /// <summary>
     /// Invokes predicate without throwing the exception.
