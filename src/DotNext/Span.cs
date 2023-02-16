@@ -545,6 +545,7 @@ public static partial class Span
     /// <param name="random">The source of random values.</param>
     public static void Shuffle<T>(this Span<T> span, Random random)
     {
+        // TODO: Remove in .NET 8: https://github.com/dotnet/runtime/issues/73864
         for (var i = span.Length - 1; i > 0; i--)
         {
             var randomIndex = random.Next(i + 1);

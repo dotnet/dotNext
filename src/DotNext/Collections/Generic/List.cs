@@ -345,6 +345,7 @@ public static class List
     /// <param name="random">The source of random values.</param>
     public static void Shuffle<T>(this IList<T> list, Random random)
     {
+        // TODO: Reuse https://github.com/dotnet/runtime/issues/73864
         switch (list)
         {
             case List<T> typedList:

@@ -116,6 +116,7 @@ public static class RandomExtensions
     private static void Next<TRandom, T>(TRandom random, ReadOnlySpan<T> allowedInput, Span<T> buffer)
         where TRandom : struct, IRandomBytesSource
     {
+        // TODO: Remove in .NET 8: https://github.com/dotnet/runtime/issues/73864
         Debug.Assert(!buffer.IsEmpty);
         Debug.Assert(!allowedInput.IsEmpty);
 
