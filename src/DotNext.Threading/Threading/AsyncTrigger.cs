@@ -222,7 +222,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private ValueTaskFactory Wait<TCondition>(TCondition condition, bool zeroTimeout)
         where TCondition : notnull, ISupplier<bool>
-        => condition.Invoke() ? new(true) : Wait(zeroTimeout);
+        => condition.Invoke() ? new(true) : Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
 
     /// <summary>
     /// Suspends the caller until this event is set.
