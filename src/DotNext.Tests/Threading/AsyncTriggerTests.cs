@@ -101,24 +101,24 @@ namespace DotNext.Threading
             await ThrowsAsync<OperationCanceledException>(task2.AsTask);
         }
 
-        private sealed class Countdown : ISupplier<bool>
+        private sealed class Condition : StrongBox<bool>, ISupplier<bool>
         {
-            private int counter;
-
-            bool ISupplier<bool>.Invoke() => counter++ > 2;
+            bool ISupplier<bool>.Invoke() => Value;
         }
 
         [Fact]
         public static async Task SpinWaitAsync()
         {
             using var trigger = new AsyncTrigger();
-            var countdown = new Countdown();
-            var task = trigger.SpinWaitAsync(countdown).AsTask();
+            var cond = new Condition();
+            var task = trigger.SpinWaitAsync(cond).AsTask();
             False(task.IsCompleted);
 
             trigger.Signal();
             False(task.IsCompleted);
 
+            cond.Value = true;
+            Thread.MemoryBarrier();
             trigger.Signal();
             await task;
         }
@@ -127,13 +127,15 @@ namespace DotNext.Threading
         public static async Task SpinWaitAsync2()
         {
             using var trigger = new AsyncTrigger();
-            var countdown = new Countdown();
-            var task = trigger.SpinWaitAsync(countdown, InfiniteTimeSpan).AsTask();
+            var cond = new Condition();
+            var task = trigger.SpinWaitAsync(cond, InfiniteTimeSpan).AsTask();
             False(task.IsCompleted);
 
             trigger.Signal();
             False(task.IsCompleted);
 
+            cond.Value = true;
+            Thread.MemoryBarrier();
             trigger.Signal();
             True(await task);
         }
