@@ -19,23 +19,22 @@ using PipeBinaryReader = IO.Pipelines.PipeBinaryReader;
 /// <typeparam name="T">JSON serializable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 [RequiresPreviewFeatures]
-public readonly struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>
+public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, ISupplier<T>
     where T : IJsonSerializable<T>
 {
     /// <summary>
-    /// Gets or sets JSON serializable object.
+    /// Represents JSON serializable object.
     /// </summary>
-    public T Value
-    {
-        get;
-        init; // TODO: Change to required init in C# 11
-    }
+    public T Value; // TODO: Change to required in C# 11
 
     /// <inheritdoc />
-    long? IDataTransferObject.Length => null;
+    readonly T ISupplier<T>.Invoke() => Value;
 
     /// <inheritdoc />
-    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+    readonly long? IDataTransferObject.Length => null;
+
+    /// <inheritdoc />
+    readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
         ValueTask result;
         var buffer = writer.TryGetBufferWriter();
@@ -174,4 +173,7 @@ public readonly struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>
             return new() { Value = JsonSerializer.Deserialize(ref jsonReader, T.TypeInfo)! };
         }
     }
+
+    /// <inheritdoc />
+    public override string? ToString() => Value?.ToString();
 }
