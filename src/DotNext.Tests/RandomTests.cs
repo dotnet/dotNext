@@ -14,7 +14,7 @@ namespace DotNext
 
             internal DummyRNG(long value) => number = BitConverter.GetBytes(value);
 
-            public override void GetBytes(byte[] data) => number.CopyTo(data, 0);
+            public override void GetBytes(byte[] data) => number.CopyTo(data.AsSpan());
         }
 
         [Fact]
@@ -38,6 +38,23 @@ namespace DotNext
         public static void RandomDouble(RandomNumberGenerator rng)
         {
             InRange(rng.NextDouble(), 0, 1 - double.Epsilon);
+        }
+
+        [Fact]
+        public static void MakeRandomGuids()
+        {
+            var buffer = new Guid[4];
+
+            Random.Shared.GetItems<Guid>(buffer);
+            All(buffer, static v => NotEqual(Guid.Empty, v));
+            Array.Clear(buffer);
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetItems<Guid>(buffer);
+            }
+
+            All(buffer, static v => NotEqual(Guid.Empty, v));
         }
     }
 }
