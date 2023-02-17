@@ -73,7 +73,7 @@ public static class RandomExtensions
             if (position >= (uint)randomBuffer.Length)
             {
                 position = 0;
-                randomBytesSource.GetBytes(MemoryMarshal.AsBytes(randomBuffer));
+                RandomVector(randomBytesSource, randomBuffer);
             }
 
             return Unsafe.Add(ref MemoryMarshal.GetReference(randomBuffer), position++);
@@ -150,17 +150,18 @@ public static class RandomExtensions
             foreach (ref var outputPtr in output)
             {
                 outputPtr = Unsafe.Add(ref inputPtr, randomVectorPtr & moduloOperand);
-                randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, 1);
+                randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, 1U);
             }
         }
+    }
 
-        static void RandomVector(TRandom random, Span<uint> values)
+    private static void RandomVector<TRandom>(TRandom random, Span<uint> values)
+        where TRandom : struct, IRandomBytesSource
+    {
+        for (int maxLength = Array.MaxLength / sizeof(uint), length; !values.IsEmpty; values = values.Slice(length))
         {
-            for (int maxLength = Array.MaxLength / sizeof(uint), length; !values.IsEmpty; values = values.Slice(length))
-            {
-                length = Math.Min(values.Length, maxLength);
-                random.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.As<uint, byte>(ref MemoryMarshal.GetReference(values)), length * sizeof(uint)));
-            }
+            length = Math.Min(values.Length, maxLength);
+            random.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.As<uint, byte>(ref MemoryMarshal.GetReference(values)), length * sizeof(uint)));
         }
     }
 
