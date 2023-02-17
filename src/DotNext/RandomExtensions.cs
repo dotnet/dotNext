@@ -124,7 +124,7 @@ public static class RandomExtensions
         using UInt32LocalBuffer randomVectorBuffer = (uint)buffer.Length <= (uint)UInt32LocalBuffer.StackallocThreshold
             ? stackalloc uint[buffer.Length]
             : new UInt32LocalBuffer(buffer.Length);
-        random.GetBytes(MemoryMarshal.AsBytes(randomVectorBuffer.Span));
+        RandomVector(random, randomVectorBuffer.Span);
 
         if (BitOperations.IsPow2(allowedInput.Length))
         {
@@ -151,6 +151,15 @@ public static class RandomExtensions
             {
                 outputPtr = Unsafe.Add(ref inputPtr, randomVectorPtr & moduloOperand);
                 randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, 1);
+            }
+        }
+
+        static void RandomVector(TRandom random, Span<uint> values)
+        {
+            for (int maxLength = Array.MaxLength / sizeof(uint), length; !values.IsEmpty; values = values.Slice(length))
+            {
+                length = Math.Min(values.Length, maxLength);
+                random.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.As<uint, byte>(ref MemoryMarshal.GetReference(values)), length * sizeof(uint)));
             }
         }
     }
