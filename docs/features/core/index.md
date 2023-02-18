@@ -67,25 +67,25 @@ Converter<string, int> lengthOf2 = lengthOf.ChangeType<Converter<string, int>>()
 ```
 
 ## Specialized delegate converters
-Conversion between mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2?view=netcore-3.0) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
+Conversion between mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
 
 ```csharp
 using DotNext;
 
-Predicate<string> isEmpty = str => str.Length == 0;
+Predicate<string> isEmpty = str => str is { Length: 0 };
 Func<string, bool> isEmptyFunc = isEmpty.AsFunc();
 Converter<string, bool> isEmptyConv = isEmpty.AsConverter();
 ```
 
 ## Predefined delegates
-Cached delegate instances for mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2?view=netcore-3.0) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
+Cached delegate instances for mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
 
 ```csharp
 using DotNext;
 
 Func<int, int> identity = Func.Identity<int>(); //identity delegate which returns input argument without any changes
-Predicate<string> truePredicate = Predicate.True<string>(); // predicate which always returns true
-Predicate<object> falsePredicate = Predicate.False<string>(); //predicate which always returns false
+Predicate<string> truePredicate = Predicate.Constant<string>(true); // predicate which always returns true
+Predicate<object> falsePredicate = Predicate.Constant<string>(false); //predicate which always returns false
 Predicate<string> nullCheck = Predicate.IsNull<string>(); //predicate checking whether the input argument is null
 Predicate<string> notNullCheck = Predicate.IsNotNull<string>(); //predicate checking whether the input argument is not null
 ```
@@ -125,8 +125,8 @@ Checks whether the given value is in specific range.
 ```csharp
 using DotNext;
 
-var b = 10.Between(5, 11, BoundType.Closed); //b == true
-b = 10.Between(0, 4); //b == false
+var b = 10.IsBetween(5, 11, BoundType.Closed); //b == true
+b = 10.IsBetween(0, 4); //b == false
 var i = 5.Clamp(4, 10); //i == 5
 i = 5.Clamp(6, 10); //i == 6
 i = 5.Clamp(0, 4); //i == 4
@@ -158,7 +158,7 @@ var array2 = new int[] { 1, 2, 3 };
 array2.BitwiseEquals(new [] {1, 2, 4});    //false
 ```
 
-## Functional iteration
+## Functional iterator
 Extension method `ForEach` allows to iterate over array elements and, optionally, modify array element.
 
 ```csharp
