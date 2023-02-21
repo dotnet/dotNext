@@ -95,7 +95,7 @@ public static class RandomExtensions
         [MethodImpl(MethodImplOptions.NoInlining)]
         private ulong Reject(ulong m, uint maxValue)
         {
-            uint t = unchecked(~maxValue + 1U) % maxValue;
+            uint t = unchecked(0U - maxValue) % maxValue;
 
             while ((uint)m < t)
                 m = (ulong)NextUInt32() * maxValue;
