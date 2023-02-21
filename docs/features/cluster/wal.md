@@ -107,7 +107,6 @@ The following methods allows to implement this scenario:
 * `AppendAsync` adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries
 * `DropAsync` removes the uncommitted entries from the log
 * `CommitAsync` marks appended entries as committed. Optionally, it can force log compaction
-* `EnsureConsistencyAsync` suspends the caller and waits until the last committed entry is from leader's term
 * `WaitForCommitAsync` waits for the specific or any commit
 * `CreateBackupAsync` creates backup of the log packed into ZIP archive
 * `ForceCompactionAsync` manually triggers log compaction. Has no effect if compaction mode other than _Background_
