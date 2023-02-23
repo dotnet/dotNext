@@ -36,32 +36,29 @@ namespace DotNext.Collections.Generic
             var view = new ReadOnlyCollectionView<string, int>(new[] { "1", "2", "3" }, new Converter<string, int>(int.Parse));
             Equal(3, view.Count);
             NotEmpty(view);
-            foreach (var value in view)
-                if (!value.IsBetween(0, 3, BoundType.Closed))
-                    throw new Exception();
+            All(view, static value => True(value.IsBetween(0, 3, BoundType.Closed)));
         }
 
         [Fact]
         public static void PeekRandomFromEmptyCollection()
         {
-            False(Array.Empty<int>().PeekRandom(new()).HasValue);
+            False(Array.Empty<int>().PeekRandom(Random.Shared).HasValue);
         }
 
         [Fact]
         public static void PeekRandomFromSingletonCollection()
         {
-            Equal(5, new int[] { 5 }.PeekRandom(new()));
+            Equal(5, new int[] { 5 }.PeekRandom(Random.Shared));
         }
 
         [Fact]
         public static void PeekRandomFromCollection()
         {
             IReadOnlyCollection<int> collection = new int[] { 10, 20, 30 };
-            for (var i = 0; i < 3; i++)
+            All(Enumerable.Range(0, collection.Count), i =>
             {
-                var item = collection.PeekRandom(Random.Shared);
-                True(item == 10 || item == 20 || item == 30);
-            }
+                True(collection.PeekRandom(Random.Shared).Value is 10 or 20 or 30);
+            });
         }
     }
 }

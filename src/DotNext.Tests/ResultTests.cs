@@ -72,7 +72,7 @@ namespace DotNext
         {
             var result = new Result<int>(10);
             if (result) { }
-            else throw new Xunit.Sdk.XunitException();
+            else Fail("Unexpected Result state");
             Equal(10, (int)result);
             Equal("10", result.ToString());
             Optional<int> opt = result;
@@ -89,7 +89,7 @@ namespace DotNext
         {
             var result = new Result<int, EnvironmentVariableTarget>(10);
             if (result) { }
-            else throw new Xunit.Sdk.XunitException();
+            else Fail("Unexpected Result state");
             Equal(10, (int)result);
             Equal("10", result.ToString());
             Optional<int> opt = result;

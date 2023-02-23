@@ -188,22 +188,11 @@ namespace DotNext.Buffers
             array[0] = 10;
             array[1] = 20;
             array[2] = 30;
-            var i = 0;
-            foreach (var item in array)
-                switch (i++)
-                {
-                    case 0:
-                        Equal(10, item);
-                        continue;
-                    case 1:
-                        Equal(20, item);
-                        continue;
-                    case 2:
-                        Equal(30, item);
-                        continue;
-                    default:
-                        throw new Exception();
-                }
+            Collection(
+                array.ToArray(),
+                Equal(10),
+                Equal(20),
+                Equal(30));
         }
 
         [Fact]
@@ -232,7 +221,7 @@ namespace DotNext.Buffers
             True(ms.TryGetBuffer(out var buffer));
             buffer.Array.ForEach((ref byte value, nint _) =>
             {
-                if (value == 1)
+                if (value is 1)
                     value = 20;
             });
             ms.Position = 0;
@@ -251,7 +240,7 @@ namespace DotNext.Buffers
             True(ms.TryGetBuffer(out var buffer));
             buffer.Array.ForEach((ref byte value, nint _) =>
             {
-                if (value == 1)
+                if (value is 1)
                     value = 20;
             });
             ms.Position = 0;

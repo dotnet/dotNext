@@ -14,10 +14,11 @@ namespace DotNext
                     var exceptionMessagesType = asm.GetType("DotNext.ExceptionMessages");
                     if (exceptionMessagesType is null)
                         continue;
-                    foreach (var property in exceptionMessagesType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static))
+
+                    All(exceptionMessagesType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static), static property =>
                     {
                         IsType<string>(property.GetValue(null));
-                    }
+                    });
                 }
             }
         }

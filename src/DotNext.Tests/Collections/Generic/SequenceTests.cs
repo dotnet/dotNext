@@ -279,7 +279,8 @@ namespace DotNext.Collections.Generic
                         Equal(30, item);
                         break;
                     default:
-                        throw new Xunit.Sdk.XunitException();
+                        Fail($"Unexpected element {item}");
+                        break;
                 }
             }
         }
@@ -302,7 +303,8 @@ namespace DotNext.Collections.Generic
                         Equal(30, enumerator.Current);
                         break;
                     default:
-                        throw new Xunit.Sdk.XunitException();
+                        Fail("Unexpected enumerator state");
+                        break;
                 }
             }
         }

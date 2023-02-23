@@ -252,11 +252,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             await Task.WhenAll(tasks);
 
-            foreach (var task in tasks)
+            All(tasks, static task =>
             {
                 True(task.Result.Value);
                 Equal(43L, task.Result.Term);
-            }
+            });
         }
 
         private protected async Task MetadataRequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory, bool smallAmountOfMetadata)

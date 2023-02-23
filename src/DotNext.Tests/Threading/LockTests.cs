@@ -11,11 +11,11 @@ namespace DotNext.Threading
             var @lock = default(Lock);
             False(@lock.TryAcquire(out var holder));
             if (holder)
-                throw new Exception();
+                Fail("Lock is acquired");
 
             holder = @lock.Acquire();
             if (holder)
-                throw new Exception();
+                Fail("Lock is acquired");
 
             Throws<TimeoutException>(() => @lock.Acquire(DefaultTimeout));
 

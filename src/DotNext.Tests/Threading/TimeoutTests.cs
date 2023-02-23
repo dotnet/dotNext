@@ -10,7 +10,7 @@ namespace DotNext.Threading
         {
             False(timeout.IsExpired);
             True(timeout.IsInfinite);
-            if (timeout) throw new Xunit.Sdk.XunitException();
+            if (timeout) Fail("Unexpected timeout value");
             Equal(InfiniteTimeSpan, timeout);
             Equal(InfiniteTimeSpan, timeout.RemainingTime);
 

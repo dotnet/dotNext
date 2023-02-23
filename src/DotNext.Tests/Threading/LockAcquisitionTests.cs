@@ -11,11 +11,11 @@ namespace DotNext.Threading
             var obj = new object();
             var holder1 = await obj.AcquireReadLockAsync(TimeSpan.Zero);
             if (holder1) { }
-            else throw new Exception();
+            else Fail("Lock is not acquired");
 
             var holder2 = await obj.AcquireReadLockAsync(TimeSpan.Zero);
             if (holder2) { }
-            else throw new Exception();
+            else Fail("Lock is not acquired");
 
             await ThrowsAsync<TimeoutException>(obj.AcquireWriteLockAsync(TimeSpan.Zero).AsTask);
             holder1.Dispose();
@@ -23,7 +23,7 @@ namespace DotNext.Threading
 
             holder1 = await obj.AcquireWriteLockAsync(TimeSpan.Zero);
             if (holder1) { }
-            else throw new Exception();
+            else Fail("Lock is not acquired");
             holder1.Dispose();
         }
 
@@ -33,7 +33,7 @@ namespace DotNext.Threading
             var obj = new object();
             var holder1 = await obj.AcquireLockAsync(TimeSpan.Zero);
             if (holder1) { }
-            else throw new Exception();
+            else Fail("Lock is not acquired");
 
             await ThrowsAsync<TimeoutException>(obj.AcquireLockAsync(TimeSpan.Zero).AsTask);
             holder1.Dispose();
@@ -45,11 +45,11 @@ namespace DotNext.Threading
             var obj = new object();
             var holder1 = obj.AcquireReadLock(DefaultTimeout);
             if (holder1) { }
-            else throw new Exception();
+            else Fail("Lock is not acquired");
 
             var holder2 = obj.AcquireReadLock(DefaultTimeout);
             if (holder2) { }
-            else throw new Exception();
+            else Fail("Lock is not acquired");
 
             Throws<LockRecursionException>(() => obj.AcquireWriteLock(TimeSpan.Zero));
             holder1.Dispose();
@@ -57,7 +57,7 @@ namespace DotNext.Threading
 
             holder1 = obj.AcquireWriteLock(TimeSpan.Zero);
             if (holder1) { }
-            else throw new Exception();
+            else Fail("Lock is not acquired");
             holder1.Dispose();
         }
 

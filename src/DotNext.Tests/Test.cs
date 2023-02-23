@@ -33,4 +33,10 @@ public abstract class Test : Assert
 
     private protected static ReadOnlySequence<T> ToReadOnlySequence<T>(ReadOnlyMemory<T> memory, int chunkSize)
         => Split(memory, chunkSize).ToReadOnlySequence();
+
+    private protected static Action<T> Equal<T>(T expected) => actual => Equal(expected, actual);
+
+    private protected static Action<T> Same<T>(T expected)
+        where T : class
+        => actual => Same(expected, actual);
 }

@@ -42,64 +42,16 @@ namespace DotNext.Collections.Specialized
         public static void Enumerator()
         {
             InvocationList<Predicate<string>> list = default;
-
-            foreach (var d in list)
-            {
-                throw new Xunit.Sdk.XunitException();
-            }
+            Empty(list);
 
             list += Predicate.Constant<string>(true);
-
-            foreach (var d in list)
-            {
-                Same(Predicate.Constant<string>(true), d);
-            }
+            Collection(list, Same(Predicate.Constant<string>(true)));
 
             list += Predicate.Constant<object>(false);
-
-            var count = 0;
-            foreach (var d in list)
-            {
-                switch (count++)
-                {
-                    case 0:
-                        Same(Predicate.Constant<string>(true), d);
-                        break;
-                    case 1:
-                        Same(Predicate.Constant<object>(false), d);
-                        break;
-                }
-            }
-
-            Equal(2, count);
-        }
-
-        [Fact]
-        public static void InterfaceEnumerator()
-        {
-            var list = InvocationList<Predicate<string>>.Empty;
-
-            Null(list.SingleOrDefault());
-
-            list += Predicate.Constant<string>(true);
-            Same(Predicate.Constant<string>(true), list.SingleOrDefault());
-
-            list += Predicate.Constant<object>(false);
-            Equal(2, list.Count());
-        }
-
-        [Fact]
-        public static void CombineDelegates()
-        {
-            var list = InvocationList<Predicate<string>>.Empty;
-
-            Null(list.Combine());
-
-            list += Predicate.Constant<string>(true);
-            Same(Predicate.Constant<string>(true), list.Combine());
-
-            list += Predicate.Constant<string>(false);
-            NotNull(list.Combine());
+            Collection(
+                list,
+                Same(Predicate.Constant<string>(true)),
+                Same<Predicate<string>>(Predicate.Constant<object>(false)));
         }
     }
 }

@@ -471,9 +471,9 @@ namespace DotNext.Runtime.InteropServices
             Equal(new IntPtr(42), ptr1);
             True(new IntPtr(42).ToPointer() == ptr1);
             if (ptr1) { }
-            else throw new Xunit.Sdk.XunitException();
+            else Fail("Unexpected zero pointer");
             ptr2 = default;
-            if (ptr2) throw new Xunit.Sdk.XunitException();
+            if (ptr2) Fail("Unexpected non-zero pointer");
 
             ptr1 += 2U;
             Equal(new IntPtr(50), ptr1);
