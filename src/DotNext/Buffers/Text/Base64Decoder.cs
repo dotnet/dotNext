@@ -16,7 +16,7 @@ namespace DotNext.Buffers.Text;
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"NeedMoreData = {{{nameof(NeedMoreData)}}}")]
-public partial struct Base64Decoder
+public partial struct Base64Decoder : IResettable
 {
     private const int DecodingBufferSize = 258;
 

@@ -12,7 +12,7 @@ namespace DotNext.Text;
 /// an independent copy of this context for separated async flow or thread.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EncodingContext : ICloneable
+public readonly struct EncodingContext : ICloneable, IResettable
 {
     private readonly Encoding encoding;
     private readonly Encoder? encoder;

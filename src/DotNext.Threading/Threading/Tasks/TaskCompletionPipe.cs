@@ -8,7 +8,7 @@ namespace DotNext.Threading.Tasks;
 /// Represents a pipe to process asynchronous tasks as they complete.
 /// </summary>
 /// <typeparam name="T">The type of the task.</typeparam>
-public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>
+public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     where T : Task
 {
     // Represents a number of scheduled tasks which can be greater than the number of enqueued tasks

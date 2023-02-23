@@ -18,7 +18,7 @@ namespace DotNext.Buffers.Text;
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"BufferedDataSize = {{{nameof(BufferedDataSize)}}}, BufferedData = {{{nameof(BufferedData)}}}")]
-public partial struct Base64Encoder
+public partial struct Base64Encoder : IResettable
 {
     /// <summary>
     /// Gets the maximum number of bytes that can be buffered by the encoder.

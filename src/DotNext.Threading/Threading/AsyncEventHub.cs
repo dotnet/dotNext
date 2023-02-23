@@ -11,7 +11,7 @@ using static Tasks.Conversion;
 /// Represents a collection of asynchronous events.
 /// </summary>
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
-public partial class AsyncEventHub
+public partial class AsyncEventHub : IResettable
 {
     private readonly object accessLock;
     private readonly TaskCompletionSource[] sources;

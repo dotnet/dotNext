@@ -18,7 +18,7 @@ using DecodingContext = Text.DecodingContext;
 /// <seealso cref="IAsyncBinaryReader.Create(ReadOnlySequence{byte})"/>
 /// <seealso cref="IAsyncBinaryReader.Create(ReadOnlyMemory{byte})"/>
 [StructLayout(LayoutKind.Auto)]
-public struct SequenceReader : IAsyncBinaryReader
+public struct SequenceReader : IAsyncBinaryReader, IResettable
 {
     private readonly ReadOnlySequence<byte> sequence;
     private SequencePosition position;
