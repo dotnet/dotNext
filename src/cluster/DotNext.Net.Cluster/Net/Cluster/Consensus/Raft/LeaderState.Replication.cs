@@ -249,41 +249,6 @@ internal partial class LeaderState<TMember>
         }
     }
 
-    private sealed class ReplicationCallback : TaskCompletionSource
-    {
-        private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent;
-
-        internal ReplicationCallback(in ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent)
-            => this.parent = parent;
-
-        internal void Invoke()
-        {
-            Debug.Assert(parent.IsCompleted);
-
-            try
-            {
-                parent.GetResult();
-                TrySetResult();
-            }
-            catch (ObjectDisposedException e)
-            {
-                TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
-            }
-            catch (OperationCanceledException e)
-            {
-                TrySetCanceled(e.CancellationToken);
-            }
-            catch (Exception e)
-            {
-                TrySetException(e);
-            }
-            finally
-            {
-                parent = default; // help GC
-            }
-        }
-    }
-
     private readonly AsyncAutoResetEvent replicationEvent = new(initialState: false);
 
     // We're using AsyncTrigger instead of TaskCompletionSource because adding a new completion
@@ -305,21 +270,19 @@ internal partial class LeaderState<TMember>
         try
         {
             // enqueue a new task representing completion callback
-            var replicationTask = replicationQueue.WaitAsync(token).ConfigureAwait(false).GetAwaiter();
+            var replicationTask = replicationQueue.WaitAsync(token);
 
             // resume heartbeat loop to force replication
             replicationEvent.Set();
 
             if (replicationTask.IsCompleted)
             {
-                replicationTask.GetResult();
+                replicationTask.GetAwaiter().GetResult();
                 result = Task.CompletedTask;
             }
             else
             {
-                var callback = new ReplicationCallback(replicationTask);
-                replicationTask.UnsafeOnCompleted(callback.Invoke);
-                result = callback.Task;
+                result = replicationTask.AsTask();
             }
         }
         catch (ObjectDisposedException e)
