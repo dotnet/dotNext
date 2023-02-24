@@ -275,7 +275,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     /// <inheritdoc />
     ValueTask<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
-        => new(Unsafe.As<Task<IClusterMember>>(WaitForLeaderAsync(timeout, token))); // TODO: Dirty hack but acceptable because there is no covariance with tasks
+        => new(WaitForLeaderAsync(timeout, token).Convert<TMember, IClusterMember>());
 
     private ValueTask UnfreezeAsync()
     {
