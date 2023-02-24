@@ -19,8 +19,8 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
     internal FollowerState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
-        refreshEvent = new(initialState: false);
-        suppressionEvent = new(initialState: true);
+        refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
+        suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
         trackerCancellation = new();
     }
 
