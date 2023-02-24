@@ -262,41 +262,23 @@ internal partial class LeaderState<TMember>
         return replicationEvent.WaitAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token);
     }
 
-    internal Task ForceReplicationAsync(CancellationToken token)
+    internal ValueTask ForceReplicationAsync(CancellationToken token)
     {
-        Task result;
+        ValueTask replicationTask;
         try
         {
             // enqueue a new task representing completion callback
-            var replicationTask = replicationQueue.WaitAsync(token);
+            replicationTask = replicationQueue.WaitAsync(token);
 
             // resume heartbeat loop to force replication
             replicationEvent.Set();
-
-            if (replicationTask.IsCompleted)
-            {
-                replicationTask.GetAwaiter().GetResult();
-                result = Task.CompletedTask;
-            }
-            else
-            {
-                result = replicationTask.AsTask();
-            }
         }
         catch (ObjectDisposedException e)
         {
-            result = Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
-        }
-        catch (OperationCanceledException e)
-        {
-            result = Task.FromCanceled(e.CancellationToken);
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException(e);
+            replicationTask = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
         }
 
-        return result;
+        return replicationTask;
     }
 
     private static Task<Result<bool>> QueueReplication(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)

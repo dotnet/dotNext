@@ -274,8 +274,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         => electionEvent.Task.WaitAsync(timeout, token);
 
     /// <inheritdoc />
-    Task<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
-        => Unsafe.As<Task<IClusterMember>>(WaitForLeaderAsync(timeout, token)); // TODO: Dirty hack but acceptable because there is no covariance with tasks
+    ValueTask<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
+        => new(Unsafe.As<Task<IClusterMember>>(WaitForLeaderAsync(timeout, token))); // TODO: Dirty hack but acceptable because there is no covariance with tasks
 
     private ValueTask UnfreezeAsync()
     {
@@ -867,6 +867,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public async ValueTask ApplyReadBarrierAsync(CancellationToken token = default)
     {
         for (; ; )
@@ -875,7 +876,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
             }
-            else if (Leader is TMember leader)
+            else if (Leader is { } leader)
             {
                 var commitIndex = await leader.SynchronizeAsync(auditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false);
                 if (commitIndex is null)
@@ -893,10 +894,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc/>
-    async Task<bool> ICluster.ResignAsync(CancellationToken token)
+    async ValueTask<bool> ICluster.ResignAsync(CancellationToken token)
     {
         return await ResignAsync(token).ConfigureAwait(false) ||
-            (Leader is TMember leader && await leader.ResignAsync(token).ConfigureAwait(false));
+            (Leader is { } leader && await leader.ResignAsync(token).ConfigureAwait(false));
     }
 
     private ValueTask MoveToStandbyState(bool resumable = true)
@@ -1073,10 +1074,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task ForceReplicationAsync(CancellationToken token = default)
+    public ValueTask ForceReplicationAsync(CancellationToken token = default)
         => state is LeaderState<TMember> leaderState
             ? leaderState.ForceReplicationAsync(token)
-            : Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+            : ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
     /// <summary>
     /// Appends a new log entry and ensures that it is replicated and committed.
@@ -1088,7 +1089,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async Task<bool> ReplicateAsync<TEntry>(TEntry entry, CancellationToken token)
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public async ValueTask<bool> ReplicateAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         ThrowIfDisposed();
