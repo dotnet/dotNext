@@ -8,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Membership;
 using Threading;
+using Timestamp = Diagnostics.Timestamp;
 using IDataTransferObject = IO.IDataTransferObject;
 
 internal partial class LeaderState<TMember>
@@ -254,8 +255,12 @@ internal partial class LeaderState<TMember>
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
 
-    private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
-        => replicationEvent.WaitAsync(period, token);
+    private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
+    {
+        // subtract heartbeat processing duration from heartbeat period for better stability
+        var delay = period - startTime.Elapsed;
+        return replicationEvent.WaitAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token);
+    }
 
     internal Task ForceReplicationAsync(CancellationToken token)
     {
