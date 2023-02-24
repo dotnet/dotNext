@@ -524,7 +524,7 @@ public class QueuedSynchronizer : Disposable
     [MethodImpl(MethodImplOptions.Synchronized)]
     protected override ValueTask DisposeAsyncCore()
     {
-        if (IsReadyToDispose)
+        if (this is { IsReadyToDispose: true, IsDisposed: false })
         {
             Dispose(true);
             return ValueTask.CompletedTask;
