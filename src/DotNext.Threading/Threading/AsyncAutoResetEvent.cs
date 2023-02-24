@@ -93,9 +93,18 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         return manager.TryReset();
     }
 
-    private void SetCore()
+    /// <summary>
+    /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public bool Set()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        ThrowIfDisposed();
+
+        if (manager.Value)
+            return false;
 
         for (LinkedValueTaskCompletionSource? current = first, next; ; current = next)
         {
@@ -111,22 +120,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
             if (RemoveAndSignal(current))
                 break;
         }
-    }
 
-    /// <summary>
-    /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
-    /// </summary>
-    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    public bool Set()
-    {
-        ThrowIfDisposed();
-
-        if (manager.Value)
-            return false;
-
-        SetCore();
         return true;
     }
 
