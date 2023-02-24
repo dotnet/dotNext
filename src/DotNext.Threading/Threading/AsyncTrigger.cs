@@ -424,6 +424,20 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <summary>
     /// Performs unconditional transition.
     /// </summary>
+    /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    public void Signal()
+    {
+        ThrowIfDisposed();
+        DrainWaitQueue();
+
+        if (IsDisposing && IsReadyToDispose)
+            Dispose(true);
+    }
+
+    /// <summary>
+    /// Performs unconditional transition.
+    /// </summary>
     /// <param name="transition">The transition action.</param>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
@@ -490,7 +504,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
-    /// <seealso cref="Signal"/>
+    /// <seealso cref="Signal()"/>
     public ValueTask<bool> WaitAsync(ITransition transition, TimeSpan timeout, CancellationToken token = default)
     {
         ValueTask<bool> task;
@@ -517,7 +531,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="transition"/> is <see langword="null"/>.</exception>
-    /// <seealso cref="Signal"/>
+    /// <seealso cref="Signal()"/>
     public ValueTask WaitAsync(ITransition transition, CancellationToken token = default)
     {
         ValueTask task;
