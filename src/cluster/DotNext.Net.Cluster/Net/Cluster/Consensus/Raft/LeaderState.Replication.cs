@@ -256,10 +256,7 @@ internal partial class LeaderState<TMember>
     // O(n) as worst case (underlying list of completion callbacks organized as List<T>
     // in combination with monitor lock for insertion)
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
-    private readonly AsyncTrigger replicationQueue = new();
-
-    private void DrainReplicationQueue()
-        => replicationQueue.Signal(resumeAll: true);
+    private readonly SingleProducerMultipleConsumersCoordinator replicationQueue = new();
 
     private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         => replicationEvent.WaitAsync(period, token);

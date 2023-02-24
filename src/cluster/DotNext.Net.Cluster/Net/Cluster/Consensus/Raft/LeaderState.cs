@@ -187,10 +187,12 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     {
         using var cancellationSource = token.LinkTo(LeadershipToken);
 
-        var forced = false;
         for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset())
         {
             var startTime = new Timestamp();
+
+            // do not resume suspended callers that came after the barrier, resume them in the next iteration
+            replicationQueue.SwitchValve();
 
             // we want to minimize GC intrusion during replication process
             // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
@@ -200,12 +202,12 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     break;
             }
 
-            if (forced)
-                DrainReplicationQueue();
+            // resume all suspended callers added to the queue concurrently before SwitchValve()
+            replicationQueue.Signal();
 
             // subtract heartbeat processing duration from heartbeat period for better stability
             var delay = period - startTime.Elapsed;
-            forced = await WaitForReplicationAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token).ConfigureAwait(false);
+            await WaitForReplicationAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token).ConfigureAwait(false);
         }
     }
 
