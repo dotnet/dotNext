@@ -249,14 +249,10 @@ internal partial class LeaderState<TMember>
         }
     }
 
-    private readonly AsyncAutoResetEvent replicationEvent = new(initialState: false);
+    private readonly AsyncAutoResetEvent replicationEvent;
 
-    // We're using AsyncTrigger instead of TaskCompletionSource because adding a new completion
-    // callback to AsyncTrigger is always O(1) in contrast to TaskCompletionSource which provides
-    // O(n) as worst case (underlying list of completion callbacks organized as List<T>
-    // in combination with monitor lock for insertion)
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
-    private readonly SingleProducerMultipleConsumersCoordinator replicationQueue = new();
+    private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
 
     private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
         => replicationEvent.WaitAsync(period, token);
