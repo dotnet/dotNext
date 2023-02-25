@@ -19,7 +19,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     // task management
     private Action<object?>? continuation;
-    private object? continuationState, capturedContext, completionData;
+    private object? continuationState, schedulingContext, completionData;
     private ExecutionContext? context;
     private protected short version;
     private volatile ManualResetCompletionSourceStatus status;
@@ -141,8 +141,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         var continuationState = this.continuationState;
         this.continuationState = null;
 
-        var capturedContext = this.capturedContext;
-        this.capturedContext = null;
+        var capturedContext = this.schedulingContext;
+        this.schedulingContext = null;
 
         if (continuation is not null)
             InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously, flowExecutionContext);
@@ -179,7 +179,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         status = ManualResetCompletionSourceStatus.WaitForActivation;
         context = null;
         continuation = null;
-        continuationState = capturedContext = completionData = null;
+        continuationState = schedulingContext = completionData = null;
     }
 
     /// <summary>
@@ -310,7 +310,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
             this.continuation = continuation;
             continuationState = state;
-            this.capturedContext = capturedContext;
+            this.schedulingContext = capturedContext;
             context = flowExecutionContext ? ExecutionContext.Capture() : null;
             goto exit;
         }
