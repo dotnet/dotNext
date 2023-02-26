@@ -188,8 +188,9 @@ public sealed class BinaryOperator<TOperand1, TOperand2, TResult> : Operator<Ope
     {
         var first = Expression.Parameter(typeof(TOperand1).MakeByRefType(), "first");
         var second = Expression.Parameter(typeof(TOperand2).MakeByRefType(), "second");
-        var expr = MakeBinary(op, first, second, out var overloaded);
-        return expr is null ? null : new BinaryOperator<TOperand1, TOperand2, TResult>(expr, op, overloaded);
+        return MakeBinary(op, first, second, out var overloaded) is { } expr
+            ? new BinaryOperator<TOperand1, TOperand2, TResult>(expr, op, overloaded)
+            : null;
     }
 
     private static BinaryOperator<TOperand1, TOperand2, TResult>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(TOperand1)).GetOrCreate(op);

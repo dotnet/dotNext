@@ -119,8 +119,8 @@ public static partial class StreamSource
     {
         if (flushAsync is null)
         {
-            return flush is null ?
-                Task.CompletedTask
+            return flush is null
+                ? Task.CompletedTask
                 : Task.Factory.StartNew(CreateTaskCallback(flush, arg), token, TaskCreationOptions.None, TaskScheduler.Current);
         }
 

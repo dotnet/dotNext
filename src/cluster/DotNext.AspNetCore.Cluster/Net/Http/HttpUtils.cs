@@ -7,10 +7,7 @@ namespace DotNext.Net.Http;
 internal static class HttpUtils
 {
     internal static Task WriteExceptionContent(HttpContext context)
-    {
-        var feature = context.Features.Get<IExceptionHandlerFeature>();
-        return feature is null ? Task.CompletedTask : context.Response.WriteAsync(feature.Error.ToString());
-    }
+        => context.Features.Get<IExceptionHandlerFeature>() is { } feature ? context.Response.WriteAsync(feature.Error.ToString()) : Task.CompletedTask;
 
     internal static void SetProtocolVersion(this HttpClient client, HttpProtocolVersion version)
     {

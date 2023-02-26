@@ -29,8 +29,5 @@ public partial struct UserDataStorage
     /// <returns>The copy of all custom data.</returns>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyDictionary<string, object> Capture()
-    {
-        var storage = GetStorage();
-        return storage is null ? Dictionary.Empty<string, object>() : storage.Dump();
-    }
+        => GetStorage()?.Dump() ?? Dictionary.Empty<string, object>();
 }

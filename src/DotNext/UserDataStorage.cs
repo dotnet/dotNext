@@ -146,8 +146,7 @@ public readonly ref partial struct UserDataStorage
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        return storage is null ? defaultValue : storage.Get(slot).Or(defaultValue);
+        return GetStorage() is { } storage ? storage.Get(slot).Or(defaultValue) : defaultValue;
     }
 
     /// <summary>
@@ -162,8 +161,7 @@ public readonly ref partial struct UserDataStorage
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        return storage is null ? default : storage.Get(slot).OrDefault();
+        return GetStorage() is { } storage ? storage.Get(slot).OrDefault() : default;
     }
 
     /// <summary>

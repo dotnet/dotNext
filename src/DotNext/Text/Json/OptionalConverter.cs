@@ -32,5 +32,5 @@ public sealed class OptionalConverter<[DynamicallyAccessedMembers(DynamicallyAcc
     /// <inheritdoc />
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
     public override Optional<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => new(reader.TokenType == JsonTokenType.Null ? default : JsonSerializer.Deserialize<T>(ref reader, options));
+        => new(reader.TokenType is JsonTokenType.Null ? default : JsonSerializer.Deserialize<T>(ref reader, options));
 }
