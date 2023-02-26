@@ -71,6 +71,7 @@ namespace DotNext.Threading
             await ThrowsAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true).AsTask);
         }
 
+        [Obsolete]
         private sealed class TestTransition : AsyncTrigger<StrongBox<int>>.ITransition
         {
             bool AsyncTrigger<StrongBox<int>>.ITransition.Test(StrongBox<int> state)
@@ -81,6 +82,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        [Obsolete]
         public static async Task Transitions()
         {
             using var trigger = new AsyncTrigger<StrongBox<int>>(new());

@@ -296,6 +296,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 /// concurrent flows.
 /// </summary>
 /// <typeparam name="TState">The type of the state used for coordination.</typeparam>
+[Obsolete("Use QueuedSynchronizer<T> instead.")]
 public class AsyncTrigger<TState> : QueuedSynchronizer
     where TState : class
 {
