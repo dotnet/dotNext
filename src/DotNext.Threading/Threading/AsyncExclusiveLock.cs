@@ -248,5 +248,5 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             Dispose(true);
     }
 
-    private protected sealed override bool IsReadyToDispose => manager.Value is false && first is null;
+    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && first is null;
 }
