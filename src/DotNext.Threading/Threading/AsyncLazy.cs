@@ -82,7 +82,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         }
         else if (factory is Func<CancellationToken, Task<T>> cancelableFactory)
         {
-            task = t = System.Threading.Tasks.Task.Run(() => cancelableFactory(token));
+            task = t = System.Threading.Tasks.Task.Run(CreateAsyncFunc(cancelableFactory, token));
 
             if (!resettable)
                 t.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(EraseFactory);
@@ -99,6 +99,10 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         }
 
         return t;
+
+        // avoid capture of 'this' reference
+        static Func<Task<T>> CreateAsyncFunc(Func<CancellationToken, Task<T>> cancelableFactory, CancellationToken token)
+            => () => cancelableFactory(token);
     }
 
     /// <summary>
