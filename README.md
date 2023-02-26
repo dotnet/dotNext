@@ -60,7 +60,9 @@ Starting from the current release, `DotNext.Reflection` library is no longer pub
 * Added methods to `Pointer<T>` data type for unaligned memory access
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.11.0">DotNext.Threading 4.11.0</a>
-* Added special methods to `AsyncTrigger` class to implement asynchronous _spin-wait_
+* Added special methods to [AsyncTrigger](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) class to implement asynchronous _spin-wait_
+* [AsyncTrigger&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.AsyncTrigger-1.html) is deprecated in favor of `QueuedSynchronizer<T>`
+* Introduced `QueuedSynchronizer<T>` class that provides low-level infrastructure for writing custom synchronization primitives
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.11.0">DotNext.IO 4.11.0</a>
