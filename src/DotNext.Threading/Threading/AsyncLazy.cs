@@ -24,10 +24,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// </summary>
     /// <param name="value">Already computed value.</param>
     public AsyncLazy(T value)
-    {
-        resettable = false;
-        task = System.Threading.Tasks.Task.FromResult(value);
-    }
+        => task = System.Threading.Tasks.Task.FromResult(value);
 
     /// <summary>
     /// Initializes a new instance of lazy value.
@@ -35,6 +32,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <param name="valueFactory">The function used to compute actual value.</param>
     /// <param name="resettable"><see langword="true"/> if previously computed value can be removed and computation executed again when it will be requested; <see langword="false"/> if value can be computed exactly once.</param>
     /// <exception cref="ArgumentException"><paramref name="valueFactory"/> is <see langword="null"/>.</exception>
+    [Obsolete("Use another constructor that accepts a factory with CancellationToken support.")]
     public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
     {
         factory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
@@ -53,10 +51,16 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         this.resettable = resettable;
     }
 
+    private void EraseFactory()
+    {
+        if (task is { IsCanceled: false })
+            factory = null;
+    }
+
     /// <summary>
     /// Gets a value that indicates whether a value has been computed.
     /// </summary>
-    public bool IsValueCreated => task is { IsCompleted: true, IsCanceled: false };
+    public bool IsValueCreated => task is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted };
 
     /// <summary>
     /// Gets value if it is already computed.
@@ -79,41 +83,22 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         else if (factory is Func<CancellationToken, Task<T>> cancelableFactory)
         {
             task = t = System.Threading.Tasks.Task.Run(() => cancelableFactory(token));
+
+            if (!resettable)
+                t.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(EraseFactory);
         }
         else
         {
             Debug.Assert(factory is Func<Task<T>>);
 
-            task = t = resettable
-                ? System.Threading.Tasks.Task.Run(Unsafe.As<Func<Task<T>>>(factory))
-                : System.Threading.Tasks.Task.Run(InvokeAndEraseFactoryAsync);
+            task = t = System.Threading.Tasks.Task.Run(Unsafe.As<Func<Task<T>>>(factory));
+            if (!resettable)
+                t.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(EraseFactory);
 
             t = t.WaitAsync(token);
         }
 
         return t;
-    }
-
-    private async Task<T> InvokeAndEraseFactoryAsync()
-    {
-        Debug.Assert(factory is Func<Task<T>>);
-
-        var canceled = false;
-
-        try
-        {
-            return await Unsafe.As<Func<Task<T>>>(factory).Invoke().ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            canceled = true;
-            throw;
-        }
-        finally
-        {
-            if (!canceled)
-                factory = null;
-        }
     }
 
     /// <summary>
@@ -124,17 +109,15 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// </remark>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Lazy representation of the value.</returns>
-    public Task<T> WithCancellation(CancellationToken token = default)
-    {
-        var t = task;
-        return t is { IsCanceled: false } ? t.WaitAsync(token) : GetOrStartAsync(token);
-    }
+    public Task<T> WithCancellation(CancellationToken token)
+        => task is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
 
     /// <summary>
     /// Gets task representing asynchronous computation of lazy value.
     /// </summary>
     /// <seealso cref="WithCancellation"/>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [Obsolete("Use WithCancellation(CancellationToken) method instead.")]
     public Task<T> Task => WithCancellation(CancellationToken.None);
 
     /// <summary>
@@ -144,19 +127,18 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Reset()
     {
-        if (resettable && (task is null or { IsCompleted: true }))
-        {
+        bool result;
+        if (result = resettable && task is null or { IsCompleted: true })
             task = null;
-            return true;
-        }
 
-        return false;
+        return result;
     }
 
     /// <summary>
     /// Gets awaiter for the asynchronous operation responsible for computing value.
     /// </summary>
     /// <returns>The task awaiter.</returns>
+    [Obsolete("Use WithCancellation(CancellationToken) method instead.")]
     public TaskAwaiter<T> GetAwaiter() => Task.GetAwaiter();
 
     /// <summary>
@@ -164,6 +146,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// </summary>
     /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
     /// <returns>An object used to await asynchronous lazy initialization.</returns>
+    [Obsolete("Use WithCancellation(CancellationToken) method instead.")]
     public ConfiguredTaskAwaitable<T> ConfigureAwait(bool continueOnCapturedContext)
         => Task.ConfigureAwait(continueOnCapturedContext);
 
@@ -171,14 +154,10 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// Returns textual representation of this object.
     /// </summary>
     /// <returns>The string representing this object.</returns>
-    public override string? ToString()
+    public override string? ToString() => task?.Status switch
     {
-        var task = this.task;
-        return task?.Status switch
-        {
-            null => NotAvailable,
-            TaskStatus.RanToCompletion => task.Result?.ToString(),
-            TaskStatus status => $"<{status}>",
-        };
-    }
+        null => NotAvailable,
+        TaskStatus.RanToCompletion => task.Result?.ToString(),
+        { } status => $"<{status}>",
+    };
 }
