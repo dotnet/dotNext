@@ -20,7 +20,7 @@ internal sealed class SingleProducerMultipleConsumersCoordinator : QueuedSynchro
     {
     }
 
-    protected override bool Test(uint unexpectedState) => unexpectedState != valve;
+    protected override bool CanAcquire(uint unexpectedState) => unexpectedState != valve;
 
     internal ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync(valve, token);

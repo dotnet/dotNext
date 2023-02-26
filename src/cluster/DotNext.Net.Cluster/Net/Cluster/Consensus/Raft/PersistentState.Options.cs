@@ -136,12 +136,9 @@ public partial class PersistentState
         public int MaxConcurrentReads
         {
             get => concurrencyLevel;
-            set
-            {
-                if (concurrencyLevel < 2)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                concurrencyLevel = value;
-            }
+
+            // see LockManager ctor for more explanation
+            set => concurrencyLevel = value is >= 2 and <= int.MaxValue - 2 ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>

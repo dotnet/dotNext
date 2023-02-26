@@ -397,13 +397,13 @@ public class QueuedSynchronizer : Disposable
         }
 
         internal ValueTaskFactory(bool result)
-            => this.taskOrSource = Task.FromResult<bool>(result);
+            => taskOrSource = Task.FromResult<bool>(result);
 
         internal ValueTaskFactory(Exception e)
         {
             Debug.Assert(e is not null);
 
-            this.taskOrSource = Task.FromException<bool>(e);
+            taskOrSource = Task.FromException<bool>(e);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -568,17 +568,31 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     }
 
     /// <summary>
-    /// Tests whether the lock state can be changed.
+    /// Tests whether the lock acquisition can be done successfully before calling <see cref="AcquireCore(TContext)"/>.
     /// </summary>
     /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
-    /// <returns><see langword="true"/> if transition is allowed; otherwise, <see langword="false"/>.</returns>
-    protected abstract bool Test(TContext context);
+    /// <returns><see langword="true"/> if acquisition is allowed; otherwise, <see langword="false"/>.</returns>
+    protected abstract bool CanAcquire(TContext context);
 
     /// <summary>
-    /// Modifies the internal state of the synchronization primitive.
+    /// Modifies the internal state according to acquisition semantics.
     /// </summary>
+    /// <remarks>
+    /// By default, this method does nothing.
+    /// </remarks>
     /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
-    protected virtual void Transit(TContext context)
+    protected virtual void AcquireCore(TContext context)
+    {
+    }
+
+    /// <summary>
+    /// Modifies the internal state according to release semantics.
+    /// </summary>
+    /// <remarks>
+    /// This method is called by <see cref="Release(TContext)"/> method.
+    /// </remarks>
+    /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
+    protected virtual void ReleaseCore(TContext context)
     {
     }
 
@@ -608,11 +622,11 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 continue;
             }
 
-            if (!Test(current.Context!))
+            if (!CanAcquire(current.Context!))
                 break;
 
             if (RemoveAndSignal(current))
-                Transit(current.Context!);
+                AcquireCore(current.Context!);
         }
     }
 
@@ -621,6 +635,10 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <summary>
     /// Implements release semantics: attempts to resume the suspended callers.
     /// </summary>
+    /// <remarks>
+    /// This method doesn't invoke <see cref="ReleaseCore(TContext)"/> method and trying to resume
+    /// suspended callers.
+    /// </remarks>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
     protected void Release()
@@ -635,17 +653,17 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <summary>
     /// Implements release semantics: attempts to resume the suspended callers.
     /// </summary>
-    /// <typeparam name="TAction">The type of the action implementing state transition logic.</typeparam>
-    /// <typeparam name="T">The type of the argument to be passed to <paramref name="transition"/>.</typeparam>
-    /// <param name="transition">The action that can be used to transform the internal state of this primitive.</param>
-    /// <param name="arg">The argument to be passed to <paramref name="transition"/>.</param>
+    /// <remarks>
+    /// This methods invokes <se cref="ReleaseCore(TContext)"/> to modify the internal state
+    /// before resuming all suspended callers.
+    /// </remarks>
+    /// <param name="context">The argument to be passed to <see cref="ReleaseCore(TContext)"/>.</param>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
-    protected void Release<TAction, T>(TAction transition, T arg)
-        where TAction : notnull, IConsumer<T>
+    protected void Release(TContext context)
     {
         ThrowIfDisposed();
-        transition.Invoke(arg);
+        ReleaseCore(context);
         DrainWaitQueue();
 
         if (IsDisposing && IsReadyToDispose)
@@ -656,10 +674,10 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// Implements acquire semantics: attempts to move this object to acquired state synchronously.
     /// </summary>
     /// <remarks>
-    /// This method invokes <see cref="Test(TContext)"/>, and if it returns <see langword="true"/>,
-    /// invokes <see cref="Transit(TContext)"/> to modify the internal state.
+    /// This method invokes <see cref="CanAcquire(TContext)"/>, and if it returns <see langword="true"/>,
+    /// invokes <see cref="AcquireCore(TContext)"/> to modify the internal state.
     /// </remarks>
-    /// <param name="context">The context to be passed to <see cref="Test(TContext)"/>.</param>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
     /// <returns><see langword="true"/> if this primitive is in acquired state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -676,7 +694,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         bool result;
 
-        if (result = Test(context))
+        if (result = CanAcquire(context))
         {
             for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
             {
@@ -691,7 +709,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 RemoveNode(current);
             }
 
-            Transit(context);
+            AcquireCore(context);
         }
 
     exit:
@@ -699,7 +717,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Acquire(TContext context, bool zeroTimeout)
+    private ValueTaskFactory AcquireCore(TContext context, bool zeroTimeout)
     {
         ValueTaskFactory result;
 
@@ -737,7 +755,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <summary>
     /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
     /// </summary>
-    /// <param name="context">The context to be passed to <see cref="Test(TContext)"/>.</param>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
     /// <param name="timeout">The time to wait for the acquisition.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if acquisition is successful; <see langword="false"/> if timeout occurred.</returns>
@@ -749,7 +767,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         if (ValidateTimeoutAndToken(timeout, token, out task))
         {
-            task = Acquire(context, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+            task = AcquireCore(context, timeout == TimeSpan.Zero).CreateTask(timeout, token);
         }
 
         return task;
@@ -758,11 +776,11 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <summary>
     /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
     /// </summary>
-    /// <param name="context">The context to be passed to <see cref="Test(TContext)"/>.</param>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire(context, zeroTimeout: false).CreateVoidTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : AcquireCore(context, zeroTimeout: false).CreateVoidTask(token);
 }

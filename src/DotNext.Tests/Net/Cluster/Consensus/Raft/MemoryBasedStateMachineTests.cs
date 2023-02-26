@@ -884,8 +884,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
-            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
-            False(manager.AcquireAsync(PersistentState.LockType.ExclusiveLock, TimeSpan.Zero).Result);
+            False(manager.TryAcquire(PersistentState.LockType.WriteLock));
+            False(manager.TryAcquire(PersistentState.LockType.ExclusiveLock));
         }
 
         [Fact]
@@ -894,9 +894,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.CompactionLock).IsCompletedSuccessfully);
-            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
-            False(manager.AcquireAsync(PersistentState.LockType.WeakReadLock, TimeSpan.Zero).Result);
-            False(manager.AcquireAsync(PersistentState.LockType.StrongReadLock, TimeSpan.Zero).Result);
+            False(manager.TryAcquire(PersistentState.LockType.WriteLock));
+            False(manager.TryAcquire(PersistentState.LockType.WeakReadLock));
+            False(manager.TryAcquire(PersistentState.LockType.StrongReadLock));
 
             manager.Release(PersistentState.LockType.ExclusiveLock);
             True(manager.AcquireAsync(PersistentState.LockType.ExclusiveLock).IsCompletedSuccessfully);
@@ -908,7 +908,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.StrongReadLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
-            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
+            False(manager.TryAcquire(PersistentState.LockType.WriteLock));
 
             manager.Release(PersistentState.LockType.StrongReadLock);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
