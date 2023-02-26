@@ -78,6 +78,50 @@ using (builder.AcquireWriteLockAsync(CancellationToken.None))
 
 For more information check extension methods inside of [AsyncLockAcquisition](xref:DotNext.Threading.LockAcquisition) class.
 
+# Custom synchronization primitive
+[QueuedSynchronizer&lt;TContext&gt;](xref:DotNext.Threading.QueuedSynchronizer-1) provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same [synchronization engine](xref:DotNext.Threading.QueuedSynchronizer) as other primitives shipped with the library: [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock), [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock), etc. The following example demonstrates how to write custom async-aware reader-writer lock:
+```csharp
+using DotNext.Threading;
+
+// bool indicates lock type:
+// false - read lock
+// true - write lock
+class MyExclusiveLock : QueuedSynchronizer<bool>
+{
+    // = 0 - no lock acquired
+    // > 0 - read lock
+    // < 0 - write lock
+    private int readersCount;
+
+    public MyExclusiveLock()
+        : base(null)
+    {
+    }
+
+    public ValueTask AcquireReadLockAsync(CancellationToken token)
+        => base.AcquireAsync(false, token);
+
+    public void ReleaseReadLock(CancellationToken token)
+        => base.Release(false);
+
+    public ValueTask AcquireWriteLockAsync(CancellationToken token)
+        => base.AcquireAsync(true, token);
+
+    public void ReleaseWriteLock()
+        => base.Release(true);
+
+    // write lock cannot be acquired if there is at least one read lock, or single write lock
+    protected override bool CanAcquire(bool writeLock)
+        => writeLock ? readersCount is 0 : readersCount >= 0;
+
+    protected override void AcquireCore(bool writeLock)
+        => readersCount = writeLock ? -1 : readersCount + 1;
+
+    protected override void ReleaseCore(bool writeLock)
+        => readersCount = writeLock ? 0 : readersCount - 1;
+}
+```
+
 # Diagnostics
 All synchronization primitives for asynchronous code mostly derive from [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) class that exposes a set of important diagnostics counters:
 * `LockContentionCounter` allows to measure a number of lock contentions detected in the specified time period
