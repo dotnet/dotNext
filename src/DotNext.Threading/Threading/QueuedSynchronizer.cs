@@ -17,182 +17,6 @@ using Timestamp = Diagnostics.Timestamp;
 /// </summary>
 public class QueuedSynchronizer : Disposable
 {
-    private enum ActivationStrategy : byte
-    {
-        Completed = 0,
-        Lazy,
-        Error,
-        Task,
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct ValueTaskFactory
-    {
-        private readonly ActivationStrategy status;
-        private readonly object? result;
-
-        internal ValueTaskFactory(Task task)
-        {
-            Debug.Assert(task is not null);
-
-            result = task;
-            status = ActivationStrategy.Task;
-        }
-
-        internal ValueTaskFactory(LinkedValueTaskCompletionSource<bool> source)
-        {
-            Debug.Assert(source is not null);
-
-            result = source;
-            status = ActivationStrategy.Lazy;
-        }
-
-        internal ValueTaskFactory(bool result)
-        {
-            this.result = result ? Sentinel.Instance : null;
-            status = ActivationStrategy.Completed;
-        }
-
-        internal ValueTaskFactory(Exception e)
-        {
-            Debug.Assert(e is not null);
-
-            result = e;
-            status = ActivationStrategy.Error;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token) => status switch
-        {
-            ActivationStrategy.Completed => ValueTask.CompletedTask,
-            ActivationStrategy.Task => new(Unsafe.As<Task>(result!)),
-            ActivationStrategy.Lazy => Unsafe.As<LinkedValueTaskCompletionSource<bool>>(result!).CreateVoidTask(timeout, token),
-            ActivationStrategy.Error => ValueTask.FromException(Unsafe.As<Exception>(result!)),
-            _ => ValueTask.FromException(new SwitchExpressionException()),
-        };
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask CreateVoidTask(CancellationToken token) => CreateVoidTask(InfiniteTimeSpan, token);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask<bool> CreateTask(TimeSpan timeout, CancellationToken token) => status switch
-        {
-            ActivationStrategy.Completed => new(result is not null),
-            ActivationStrategy.Task => new(Unsafe.As<Task<bool>>(result!)),
-            ActivationStrategy.Lazy => Unsafe.As<LinkedValueTaskCompletionSource<bool>>(result!).CreateTask(timeout, token),
-            ActivationStrategy.Error => ValueTask.FromException<bool>(Unsafe.As<Exception>(result!)),
-            _ => ValueTask.FromException<bool>(new SwitchExpressionException()),
-        };
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask<bool> CreateTask(CancellationToken token) => CreateTask(InfiniteTimeSpan, token);
-    }
-
-    private sealed class CallerInformationStorage : ThreadLocal<object?>
-    {
-        internal CallerInformationStorage()
-            : base(trackAllValues: false)
-        {
-        }
-
-        internal CallerInformationStorage(Func<object> callerInfoProvider)
-            : base(callerInfoProvider, trackAllValues: false)
-        {
-        }
-
-        internal object? Capture()
-        {
-            var result = Value;
-            if (result is null)
-            {
-                result = Activity.Current ?? Trace.CorrelationManager.LogicalOperationStack.Peek();
-            }
-            else
-            {
-                Value = null;
-            }
-
-            return result;
-        }
-    }
-
-    private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
-    {
-        private readonly WeakReference<QueuedSynchronizer?> owner = new(target: null, trackResurrection: false);
-        private Timestamp createdAt;
-        private bool throwOnTimeout;
-
-        // stores information about suspended caller for debugging purposes
-        internal object? CallerInfo
-        {
-            get;
-            private set;
-        }
-
-        private protected override void ResetCore()
-        {
-            owner.SetTarget(target: null);
-            CallerInfo = null;
-            base.ResetCore();
-        }
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal bool NeedsRemoval => CompletionData is null;
-
-        internal void Initialize(QueuedSynchronizer owner, bool throwOnTimeout)
-        {
-            Debug.Assert(owner is not null);
-
-            this.throwOnTimeout = throwOnTimeout;
-            Initialize(owner);
-        }
-
-        internal void Initialize(QueuedSynchronizer owner)
-        {
-            Debug.Assert(owner is not null);
-
-            this.owner.SetTarget(owner);
-            CallerInfo = owner.callerInfo?.Capture();
-            createdAt = new();
-        }
-
-        protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
-
-        private protected static void AfterConsumed<T>(T node)
-            where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
-        {
-            // report lock duration
-            if (node.owner.TryGetTarget(out var owner))
-            {
-                var duration = node.createdAt.ElapsedMilliseconds;
-                owner.lockDurationCounter?.Invoke(duration);
-                LockDurationMeter.Record(duration, owner.measurementTags);
-            }
-
-            node.As<IPooledManualResetCompletionSource<Action<T>>>().OnConsumed?.Invoke(node);
-        }
-    }
-
-    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
-    {
-        protected sealed override void AfterConsumed() => AfterConsumed(this);
-
-        Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed { get; set; }
-    }
-
-    private protected interface ILockManager
-    {
-        bool IsLockAllowed { get; }
-
-        void AcquireLock();
-    }
-
-    private protected interface ILockManager<in TNode> : ILockManager
-        where TNode : WaitNode
-    {
-        void InitializeNode(TNode node);
-    }
-
     private const string LockTypeMeterAttribute = "dotnext.threading.asynclock.type";
     private static readonly Counter<int> LockContentionMeter;
     private static readonly Histogram<double> LockDurationMeter;
@@ -398,6 +222,7 @@ public class QueuedSynchronizer : Disposable
         }
         else
         {
+            // Perf: caller overwrites the storage, so save CPU time instead of default init
             Unsafe.SkipInit(out result);
             return true;
         }
@@ -434,7 +259,7 @@ public class QueuedSynchronizer : Disposable
 
         if (IsDisposingOrDisposed)
         {
-            result = throwOnTimeout ? new(DisposedTask) : new(GetDisposedTask<bool>());
+            result = new(GetDisposedTask<bool>());
         }
         else if (TryAcquire(ref manager))
         {
@@ -549,6 +374,159 @@ public class QueuedSynchronizer : Disposable
     /// </summary>
     /// <returns>The task representing asynchronous result.</returns>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+
+    // this struct allows to avoid intersection of two monitor locks: the first one from QueuedSynchronizer
+    // and the second one from LinkedValueTaskCompletionSource<bool>
+    [StructLayout(LayoutKind.Auto)]
+    internal unsafe readonly ref struct ValueTaskFactory
+    {
+        private readonly object? taskOrSource; // Task<bool> or LinkedValueTaskCompletionSource<bool>
+
+        internal ValueTaskFactory(Task<bool> task)
+        {
+            Debug.Assert(task is { IsCompleted: true });
+
+            taskOrSource = task;
+        }
+
+        internal ValueTaskFactory(LinkedValueTaskCompletionSource<bool> source)
+        {
+            Debug.Assert(source is not null);
+
+            taskOrSource = source;
+        }
+
+        internal ValueTaskFactory(bool result)
+            => this.taskOrSource = Task.FromResult<bool>(result);
+
+        internal ValueTaskFactory(Exception e)
+        {
+            Debug.Assert(e is not null);
+
+            this.taskOrSource = Task.FromException<bool>(e);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token)
+            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateVoidTask(timeout, token) ?? new(Unsafe.As<Task>(taskOrSource!));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ValueTask CreateVoidTask(CancellationToken token)
+            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateVoidTask(InfiniteTimeSpan, token) ?? new(Unsafe.As<Task>(taskOrSource!));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ValueTask<bool> CreateTask(TimeSpan timeout, CancellationToken token)
+            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateTask(timeout, token) ?? new(Unsafe.As<Task<bool>>(taskOrSource!));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal ValueTask<bool> CreateTask(CancellationToken token)
+            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateTask(InfiniteTimeSpan, token) ?? new(Unsafe.As<Task<bool>>(taskOrSource!));
+    }
+
+    private sealed class CallerInformationStorage : ThreadLocal<object?>
+    {
+        internal CallerInformationStorage()
+            : base(trackAllValues: false)
+        {
+        }
+
+        internal CallerInformationStorage(Func<object> callerInfoProvider)
+            : base(callerInfoProvider, trackAllValues: false)
+        {
+        }
+
+        internal object? Capture()
+        {
+            var result = Value;
+            if (result is null)
+            {
+                result = Activity.Current ?? Trace.CorrelationManager.LogicalOperationStack.Peek();
+            }
+            else
+            {
+                Value = null;
+            }
+
+            return result;
+        }
+    }
+
+    private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
+    {
+        private readonly WeakReference<QueuedSynchronizer?> owner = new(target: null, trackResurrection: false);
+        private Timestamp createdAt;
+        private bool throwOnTimeout;
+
+        // stores information about suspended caller for debugging purposes
+        internal object? CallerInfo
+        {
+            get;
+            private set;
+        }
+
+        private protected override void ResetCore()
+        {
+            owner.SetTarget(target: null);
+            CallerInfo = null;
+            base.ResetCore();
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal bool NeedsRemoval => CompletionData is null;
+
+        internal void Initialize(QueuedSynchronizer owner, bool throwOnTimeout)
+        {
+            Debug.Assert(owner is not null);
+
+            this.throwOnTimeout = throwOnTimeout;
+            Initialize(owner);
+        }
+
+        internal void Initialize(QueuedSynchronizer owner)
+        {
+            Debug.Assert(owner is not null);
+
+            this.owner.SetTarget(owner);
+            CallerInfo = owner.callerInfo?.Capture();
+            createdAt = new();
+        }
+
+        protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
+
+        private protected static void AfterConsumed<T>(T node)
+            where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
+        {
+            // report lock duration
+            if (node.owner.TryGetTarget(out var owner))
+            {
+                var duration = node.createdAt.ElapsedMilliseconds;
+                owner.lockDurationCounter?.Invoke(duration);
+                LockDurationMeter.Record(duration, owner.measurementTags);
+            }
+
+            node.As<IPooledManualResetCompletionSource<Action<T>>>().OnConsumed?.Invoke(node);
+        }
+    }
+
+    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
+    {
+        protected sealed override void AfterConsumed() => AfterConsumed(this);
+
+        Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed { get; set; }
+    }
+
+    private protected interface ILockManager
+    {
+        bool IsLockAllowed { get; }
+
+        void AcquireLock();
+    }
+
+    private protected interface ILockManager<in TNode> : ILockManager
+        where TNode : WaitNode
+    {
+        void InitializeNode(TNode node);
+    }
 }
 
 /// <summary>
