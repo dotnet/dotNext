@@ -144,6 +144,13 @@ public class QueuedSynchronizer : Disposable
             Debug.Assert(owner is not null);
 
             this.throwOnTimeout = throwOnTimeout;
+            Initialize(owner);
+        }
+
+        internal void Initialize(QueuedSynchronizer owner)
+        {
+            Debug.Assert(owner is not null);
+
             this.owner.SetTarget(owner);
             CallerInfo = owner.callerInfo?.Capture();
             createdAt = new();
@@ -321,6 +328,22 @@ public class QueuedSynchronizer : Disposable
         return isFirst;
     }
 
+    private protected void EnqueueNode(WaitNode freshNode)
+    {
+        if (last is null)
+        {
+            first = last = freshNode;
+        }
+        else
+        {
+            last.Append(freshNode);
+            last = freshNode;
+        }
+
+        contentionCounter?.Invoke(1D);
+        LockContentionMeter.Add(1, measurementTags);
+    }
+
     private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
@@ -330,19 +353,7 @@ public class QueuedSynchronizer : Disposable
         var node = pool.Get();
         manager.InitializeNode(node);
         node.Initialize(this, throwOnTimeout);
-
-        if (last is null)
-        {
-            first = last = node;
-        }
-        else
-        {
-            last.Append(node);
-            last = node;
-        }
-
-        contentionCounter?.Invoke(1D);
-        LockContentionMeter.Add(1, measurementTags);
+        EnqueueNode(node);
         return node;
     }
 
@@ -538,4 +549,242 @@ public class QueuedSynchronizer : Disposable
     /// </summary>
     /// <returns>The task representing asynchronous result.</returns>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+}
+
+/// <summary>
+/// Provides low-level infrastructure for writing custom synchronization primitives.
+/// </summary>
+/// <typeparam name="TContext">The context to be associated with each suspended caller.</typeparam>
+public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
+{
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    {
+        internal TContext? Context;
+
+        protected override void AfterConsumed() => AfterConsumed(this);
+
+        private protected override void ResetCore()
+        {
+            Context = default;
+            base.ResetCore();
+        }
+
+        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
+    }
+
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
+
+    /// <summary>
+    /// Initializes a new synchronization primitive.
+    /// </summary>
+    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is not <see langword="null"/> and less than 1.</exception>
+    protected QueuedSynchronizer(int? concurrencyLevel)
+    {
+        pool = concurrencyLevel switch
+        {
+            null => new(OnCompleted),
+            { } value when value > 0 => new(OnCompleted, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(concurrencyLevel)),
+        };
+    }
+
+    /// <summary>
+    /// Tests whether the lock state can be changed.
+    /// </summary>
+    /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
+    /// <returns><see langword="true"/> if transition is allowed; otherwise, <see langword="false"/>.</returns>
+    protected abstract bool Test(TContext context);
+
+    /// <summary>
+    /// Modifies the internal state of the synchronization primitive.
+    /// </summary>
+    /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
+    protected virtual void Transit(TContext context)
+    {
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
+    private void OnCompleted(WaitNode node)
+    {
+        if (node.NeedsRemoval && RemoveNode(node))
+            DrainWaitQueue();
+
+        pool.Return(node);
+    }
+
+    private void DrainWaitQueue()
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(first is null or WaitNode);
+
+        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
+        {
+            Debug.Assert(current.Next is null or WaitNode);
+
+            next = Unsafe.As<WaitNode>(current.Next);
+
+            if (current.IsCompleted)
+            {
+                RemoveNode(current);
+                continue;
+            }
+
+            if (!Test(current.Context!))
+                break;
+
+            if (RemoveAndSignal(current))
+                Transit(current.Context!);
+        }
+    }
+
+    private protected sealed override bool IsReadyToDispose => first is null;
+
+    /// <summary>
+    /// Implements release semantics: attempts to resume the suspended callers.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    protected void Release()
+    {
+        ThrowIfDisposed();
+        DrainWaitQueue();
+
+        if (IsDisposing && IsReadyToDispose)
+            Dispose(true);
+    }
+
+    /// <summary>
+    /// Implements release semantics: attempts to resume the suspended callers.
+    /// </summary>
+    /// <typeparam name="TAction">The type of the action implementing state transition logic.</typeparam>
+    /// <typeparam name="T">The type of the argument to be passed to <paramref name="transition"/>.</typeparam>
+    /// <param name="transition">The action that can be used to transform the internal state of this primitive.</param>
+    /// <param name="arg">The argument to be passed to <paramref name="transition"/>.</param>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    protected void Release<TAction, T>(TAction transition, T arg)
+        where TAction : notnull, IConsumer<T>
+    {
+        ThrowIfDisposed();
+        transition.Invoke(arg);
+        DrainWaitQueue();
+
+        if (IsDisposing && IsReadyToDispose)
+            Dispose(true);
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state synchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method invokes <see cref="Test(TContext)"/>, and if it returns <see langword="true"/>,
+    /// invokes <see cref="Transit(TContext)"/> to modify the internal state.
+    /// </remarks>
+    /// <param name="context">The context to be passed to <see cref="Test(TContext)"/>.</param>
+    /// <returns><see langword="true"/> if this primitive is in acquired state; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    protected bool TryAcquire(TContext context)
+    {
+        ThrowIfDisposed();
+
+        return TryAcquireCore(context);
+    }
+
+    private bool TryAcquireCore(TContext context)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        bool result;
+
+        if (result = Test(context))
+        {
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+            {
+                next = current.Next;
+
+                if (!current.IsCompleted)
+                {
+                    result = false;
+                    goto exit;
+                }
+
+                RemoveNode(current);
+            }
+
+            Transit(context);
+        }
+
+    exit:
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private ValueTaskFactory Acquire(TContext context, bool zeroTimeout)
+    {
+        ValueTaskFactory result;
+
+        if (IsDisposingOrDisposed)
+        {
+            result = new(GetDisposedTask<bool>());
+        }
+        else if (TryAcquireCore(context))
+        {
+            result = new(true);
+        }
+        else if (zeroTimeout)
+        {
+            result = new(false);
+        }
+        else
+        {
+            result = new(EnqueueNode(context));
+        }
+
+        return result;
+    }
+
+    private WaitNode EnqueueNode(TContext context)
+    {
+        Debug.Assert(Monitor.IsEntered(this));
+
+        var node = pool.Get();
+        node.Context = context;
+        node.Initialize(this);
+        EnqueueNode(node);
+        return node;
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
+    /// </summary>
+    /// <param name="context">The context to be passed to <see cref="Test(TContext)"/>.</param>
+    /// <param name="timeout">The time to wait for the acquisition.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if acquisition is successful; <see langword="false"/> if timeout occurred.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected ValueTask<bool> AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
+    {
+        ValueTask<bool> task;
+
+        if (ValidateTimeoutAndToken(timeout, token, out task))
+        {
+            task = Acquire(context, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        }
+
+        return task;
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
+    /// </summary>
+    /// <param name="context">The context to be passed to <see cref="Test(TContext)"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected ValueTask AcquireAsync(TContext context, CancellationToken token)
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire(context, zeroTimeout: false).CreateVoidTask(token);
 }

@@ -16,14 +16,14 @@ public sealed class SingleProducerMultipleConsumersCoordinatorTests : Test
         var task3 = coordinator.WaitAsync().AsTask();
         var task4 = coordinator.WaitAsync().AsTask();
 
-        coordinator.Signal();
+        coordinator.Drain();
         await task1;
         await task2;
         False(task3.IsCompleted);
         False(task4.IsCompleted);
 
         coordinator.SwitchValve();
-        coordinator.Signal();
+        coordinator.Drain();
         await task3;
         await task4;
     }

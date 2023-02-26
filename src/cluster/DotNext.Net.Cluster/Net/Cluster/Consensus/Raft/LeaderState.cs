@@ -205,7 +205,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             }
 
             // resume all suspended callers added to the queue concurrently before SwitchValve()
-            replicationQueue.Signal();
+            replicationQueue.Drain();
 
             // wait for heartbeat timeout or forced replication
             await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);

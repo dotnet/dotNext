@@ -1,50 +1,29 @@
 namespace DotNext.Threading;
 
-internal sealed class SingleProducerMultipleConsumersCoordinator : AsyncTrigger<SingleProducerMultipleConsumersCoordinator.State>
+internal sealed class SingleProducerMultipleConsumersCoordinator : QueuedSynchronizer<uint>
 {
-    internal sealed new class State
+    private volatile uint valve; // 0 or 1
+
+    internal void SwitchValve()
     {
-        internal const uint ValveState0 = 0U;
-        internal const uint ValveState1 = 1U;
-
-        internal volatile uint Valve;
-
-        internal void SwitchValve()
+        uint currentState, newState = valve;
+        do
         {
-            uint currentState, newState = Valve;
-            do
-            {
-                currentState = newState;
-                newState = currentState ^ ValveState1;
-            }
-            while ((newState = Interlocked.CompareExchange(ref Valve, newState, currentState)) != currentState);
+            currentState = newState;
+            newState = currentState ^ 1U;
         }
-    }
-
-    private sealed class Transition : ITransition
-    {
-        private static readonly Transition State0 = new(State.ValveState0), State1 = new(State.ValveState1);
-
-        private readonly uint unexpectedState;
-
-        private Transition(uint barrierStatus) => unexpectedState = barrierStatus;
-
-        bool ITransition.Test(State state) => unexpectedState != state.Valve;
-
-        void ITransition.Transit(State state)
-        {
-        }
-
-        internal static Transition Get(uint state) => state is State.ValveState0 ? State0 : State1;
+        while ((newState = Interlocked.CompareExchange(ref valve, newState, currentState)) != currentState);
     }
 
     internal SingleProducerMultipleConsumersCoordinator()
-        : base(new State())
+        : base(concurrencyLevel: null)
     {
     }
 
-    internal void SwitchValve() => base.State.SwitchValve();
+    protected override bool Test(uint unexpectedState) => unexpectedState != valve;
 
     internal ValueTask WaitAsync(CancellationToken token = default)
-        => WaitAsync(Transition.Get(base.State.Valve), token);
+        => AcquireAsync(valve, token);
+
+    internal void Drain() => Release();
 }
