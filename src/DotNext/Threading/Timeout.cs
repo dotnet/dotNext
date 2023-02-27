@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -11,6 +10,11 @@ using Timestamp = Diagnostics.Timestamp;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct Timeout
 {
+    /// <summary>
+    /// Represents a number of ticks in <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.
+    /// </summary>
+    public const long InfiniteTicks = System.Threading.Timeout.Infinite * TimeSpan.TicksPerMillisecond;
+
     private readonly Timestamp created; // IsEmpty means infinite timeout
     private readonly TimeSpan timeout;
 
@@ -31,25 +35,24 @@ public readonly struct Timeout
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     public Timeout(TimeSpan timeout)
     {
-        if (timeout == InfiniteTimeSpan)
+        switch (timeout.Ticks)
         {
-            this = default;
-        }
-        else if (timeout < TimeSpan.Zero)
-        {
-            throw new ArgumentOutOfRangeException(nameof(timeout));
-        }
-        else
-        {
-            created = new();
-            this.timeout = timeout;
+            case InfiniteTicks:
+                this = default;
+                break;
+            case < 0L:
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+            default:
+                created = new();
+                this.timeout = timeout;
+                break;
         }
     }
 
     /// <summary>
     /// Gets value of this timeout.
     /// </summary>
-    public TimeSpan Value => IsInfinite ? InfiniteTimeSpan : timeout;
+    public TimeSpan Value => IsInfinite ? new(InfiniteTicks) : timeout;
 
     /// <summary>
     /// Determines whether this timeout is infinite.
@@ -78,9 +81,9 @@ public readonly struct Timeout
     {
         if (IsInfinite)
         {
-            remaining = InfiniteTimeSpan;
+            remaining = new(InfiniteTicks);
         }
-        else if ((remaining = timeout - created.Elapsed) < TimeSpan.Zero)
+        else if ((remaining = timeout - created.Elapsed) < default(TimeSpan))
         {
             throw new TimeoutException();
         }
@@ -97,8 +100,8 @@ public readonly struct Timeout
             TimeSpan result;
 
             return IsInfinite
-                ? InfiniteTimeSpan
-                : (result = timeout - created.Elapsed) >= TimeSpan.Zero
+                ? new(InfiniteTicks)
+                : (result = timeout - created.Elapsed) >= default(TimeSpan)
                 ? result
                 : null;
         }
