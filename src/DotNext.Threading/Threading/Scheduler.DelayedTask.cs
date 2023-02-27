@@ -106,6 +106,17 @@ public static partial class Scheduler
         }
     }
 
+    private sealed class ImmediateTask<TArgs> : DelayedTask
+    {
+        internal ImmediateTask(Func<TArgs, CancellationToken, ValueTask> callback, TArgs args, CancellationToken token)
+            : base(token)
+            => Task = callback(args, this.token).AsTask();
+
+        public override Task Task { get; }
+
+        private protected override void SetException(Exception e) => Debug.Fail("Should not be called");
+    }
+
     private sealed class DelayedTaskStateMachine<TArgs> : DelayedTask, IAsyncStateMachine
     {
         private readonly Func<TArgs, CancellationToken, ValueTask> callback;
@@ -213,6 +224,17 @@ public static partial class Scheduler
         /// <returns>An awaiter instance.</returns>
         public new ConfiguredTaskAwaitable<TResult> ConfigureAwait(bool continueOnCapturedContext)
             => Task.ConfigureAwait(continueOnCapturedContext);
+    }
+
+    private sealed class ImmediateTask<TArgs, TResult> : DelayedTask<TResult>
+    {
+        internal ImmediateTask(Func<TArgs, CancellationToken, ValueTask<TResult>> callback, TArgs args, CancellationToken token)
+            : base(token)
+            => Task = callback(args, this.token).AsTask();
+
+        public override Task<TResult> Task { get; }
+
+        private protected override void SetException(Exception e) => Debug.Fail("Should not be called");
     }
 
     private sealed class DelayedTaskStateMachine<TArgs, TResult> : DelayedTask<TResult>, IAsyncStateMachine

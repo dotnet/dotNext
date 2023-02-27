@@ -25,16 +25,20 @@ namespace DotNext.Threading
             True(task.Task.IsCanceled);
         }
 
-        [Fact]
-        public static async Task CompleteWithoutResult()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public static async Task CompleteWithoutResult(int delay)
         {
-            await Scheduler.ScheduleAsync(static (args, token) => ValueTask.CompletedTask, 42, TimeSpan.FromMilliseconds(1));
+            await Scheduler.ScheduleAsync(static (args, token) => ValueTask.CompletedTask, 42, TimeSpan.FromMilliseconds(delay));
         }
 
-        [Fact]
-        public static async Task CompleteWithResult()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        public static async Task CompleteWithResult(int delay)
         {
-            Equal(42, await Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(42), 42, TimeSpan.FromMilliseconds(1)));
+            Equal(42, await Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(42), 42, TimeSpan.FromMilliseconds(delay)));
         }
 
         [Fact]
