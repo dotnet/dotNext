@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
