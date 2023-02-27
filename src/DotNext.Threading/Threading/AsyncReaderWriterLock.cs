@@ -40,14 +40,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
         // number of acquired read locks
         private long readLocks; // volatile
-        private volatile bool writeLock;
+        private bool writeLock;
 
-        internal readonly bool WriteLock => writeLock;
+        internal readonly bool WriteLock => Volatile.Read(ref Unsafe.AsRef(in writeLock));
 
         internal void DowngradeFromWriteLock()
         {
             writeLock = false;
-            ReadLocks = 1L;
+            readLocks = 1L;
         }
 
         internal void ExitLock()
@@ -55,36 +55,32 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             if (writeLock)
             {
                 writeLock = false;
-                ReadLocks = 0L;
+                readLocks = 0L;
             }
             else
             {
-                readLocks.DecrementAndGet();
+                readLocks--;
             }
         }
 
-        internal long ReadLocks
-        {
-            readonly get => readLocks.VolatileRead();
-            private set => readLocks.VolatileWrite(value);
-        }
+        internal readonly long ReadLocks => readLocks.VolatileRead();
 
         internal readonly ulong Version => version.VolatileRead();
 
-        internal readonly bool IsWriteLockAllowed => !writeLock && ReadLocks == 0L;
+        internal readonly bool IsWriteLockAllowed => writeLock is false && readLocks is 0L;
 
-        internal readonly bool IsUpgradeToWriteLockAllowed => !writeLock && ReadLocks == 1L;
+        internal readonly bool IsUpgradeToWriteLockAllowed => writeLock is false && readLocks is 1L;
 
         internal void AcquireWriteLock()
         {
-            readLocks.VolatileWrite(0L);
+            readLocks = 0L;
             writeLock = true;
-            version.IncrementAndGet();
+            version++;
         }
 
         internal readonly bool IsReadLockAllowed => !writeLock;
 
-        internal void AcquireReadLock() => readLocks.IncrementAndGet();
+        internal void AcquireReadLock() => readLocks++;
     }
 
     [StructLayout(LayoutKind.Auto)]

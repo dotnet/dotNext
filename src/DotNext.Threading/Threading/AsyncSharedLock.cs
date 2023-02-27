@@ -37,35 +37,26 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
 
-        internal long RemainingLocks
-        {
-            readonly get => remainingLocks.VolatileRead();
-            private set => remainingLocks.VolatileWrite(value);
-        }
+        internal readonly long RemainingLocks => remainingLocks.VolatileRead();
 
-        internal readonly bool IsWeakLockAllowed => RemainingLocks > 0L;
+        internal readonly bool IsWeakLockAllowed => remainingLocks > 0L;
 
         internal void AcquireWeakLock() => remainingLocks.DecrementAndGet();
 
         internal void ExitLock()
         {
-            if (RemainingLocks < 0L)
-            {
-                RemainingLocks = ConcurrencyLevel;
-            }
-            else
-            {
-                remainingLocks.IncrementAndGet();
-            }
+            remainingLocks = remainingLocks < 0L
+                ? ConcurrencyLevel
+                : remainingLocks + 1L;
         }
 
-        internal readonly bool IsStrongLockHeld => RemainingLocks < 0L;
+        internal readonly bool IsStrongLockHeld => remainingLocks < 0L;
 
-        internal readonly bool IsStrongLockAllowed => RemainingLocks == ConcurrencyLevel;
+        internal readonly bool IsStrongLockAllowed => remainingLocks == ConcurrencyLevel;
 
-        internal void AcquireStrongLock() => RemainingLocks = ExclusiveMode;
+        internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
 
-        internal void Downgrade() => RemainingLocks = ConcurrencyLevel - 1L;
+        internal void Downgrade() => remainingLocks = ConcurrencyLevel - 1L;
     }
 
     [StructLayout(LayoutKind.Auto)]

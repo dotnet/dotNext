@@ -16,9 +16,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private struct LockManager : ILockManager<DefaultWaitNode>
     {
-        private volatile bool state;
+        private bool state;
 
         internal readonly bool Value => state;
+
+        internal readonly bool VolatileRead() => Volatile.Read(ref Unsafe.AsRef(in state));
 
         public readonly bool IsLockAllowed => !state;
 
@@ -68,7 +70,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Indicates that exclusive lock taken.
     /// </summary>
-    public bool IsLockHeld => manager.Value;
+    public bool IsLockHeld => manager.VolatileRead();
 
     /// <summary>
     /// Attempts to obtain exclusive lock synchronously without blocking caller thread.

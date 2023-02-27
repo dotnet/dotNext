@@ -16,22 +16,14 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [StructLayout(LayoutKind.Auto)]
     private struct StateManager : ILockManager<DefaultWaitNode>
     {
-        private AtomicBoolean state;
+        internal bool Value;
 
         internal StateManager(bool initialState)
-            => state = new(initialState);
+            => Value = initialState;
 
-        readonly bool ILockManager.IsLockAllowed => state.Value;
+        readonly bool ILockManager.IsLockAllowed => Value;
 
-        void ILockManager.AcquireLock() => state.Value = false;
-
-        internal bool TryReset() => state.TrueToFalse();
-
-        internal bool Value
-        {
-            readonly get => state.Value;
-            set => state.Value = value;
-        }
+        void ILockManager.AcquireLock() => Value = false;
 
         void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
@@ -79,7 +71,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => manager.Value;
+    public bool IsSet => Volatile.Read(ref manager.Value);
 
     /// <summary>
     /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.
@@ -90,7 +82,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public bool Reset()
     {
         ThrowIfDisposed();
-        return manager.TryReset();
+        return TryAcquire(ref manager);
     }
 
     /// <summary>
@@ -135,13 +127,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         where TResult : struct, IEquatable<TResult>
         => GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TryUnset()
-    {
-        ThrowIfDisposed();
-        return TryAcquire(ref manager);
-    }
-
     /// <summary>
     /// Turns caller into idle state until the current event is set.
     /// </summary>
@@ -163,7 +148,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
             case 0L:
                 try
                 {
-                    task = new(TryUnset());
+                    task = new(Reset());
                 }
                 catch (Exception e)
                 {

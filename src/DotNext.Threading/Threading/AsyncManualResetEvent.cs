@@ -14,20 +14,22 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     private struct StateManager : ILockManager<DefaultWaitNode>
     {
-        private AtomicBoolean state;
+        internal bool Value;
 
         internal StateManager(bool initialState)
-            => state = new(initialState);
+            => Value = initialState;
 
-        internal bool Value
+        internal bool TryReset()
         {
-            readonly get => state.Value;
-            set => state.Value = value;
+            var result = Value;
+
+            if (result)
+                Value = false;
+
+            return result;
         }
 
-        internal bool TryReset() => state.TrueToFalse();
-
-        readonly bool ILockManager.IsLockAllowed => state.Value;
+        readonly bool ILockManager.IsLockAllowed => Value;
 
         void ILockManager.AcquireLock()
         {
@@ -83,7 +85,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => manager.Value;
+    public bool IsSet => Volatile.Read(ref manager.Value);
 
     /// <summary>
     /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
@@ -154,7 +156,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default) => timeout.Ticks switch
     {
         < 0L and not Timeout.InfiniteTicks => ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout))),
-        0L => new(manager.Value),
+        0L => new(IsSet),
         _ => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait<ValueTask<bool>>().Invoke(timeout, token),
     };
 
