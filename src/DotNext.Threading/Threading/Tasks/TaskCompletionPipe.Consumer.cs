@@ -35,7 +35,7 @@ public static class TaskCompletionPipe
     {
         private static async IAsyncEnumerator<T> GetAsyncEnumerator(TaskCompletionPipe<Task<T>> pipe, CancellationToken token)
         {
-            while (await pipe.TryDequeue(out var task).CreateTask(token).ConfigureAwait(false))
+            while (await pipe.TryDequeue(out var task).Invoke(token).ConfigureAwait(false))
             {
                 if (task is not null)
                 {

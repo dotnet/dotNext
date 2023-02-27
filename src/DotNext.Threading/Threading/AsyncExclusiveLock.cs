@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
-using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous mutually exclusive lock.
@@ -83,8 +83,9 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Acquire(bool throwOnTimeout, bool zeroTimeout)
-        => Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
+    private ISupplier<TimeSpan, CancellationToken, TResult> Acquire<TResult>()
+        where TResult : struct, IEquatable<TResult>
+        => GetTaskFactory<DefaultWaitNode, LockManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -98,8 +99,30 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-            task = Acquire(throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        ValueTask<bool> task;
+
+        switch (timeout.Ticks)
+        {
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = new(TryAcquire());
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException<bool>(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled<bool>(token)
+                    : Acquire<ValueTask<bool>>().Invoke(timeout, token);
+                break;
+        }
 
         return task;
     }
@@ -117,8 +140,32 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
-            task = Acquire(throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
+        ValueTask task;
+
+        switch (timeout.Ticks)
+        {
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = TryAcquire()
+                        ? ValueTask.CompletedTask
+                        : ValueTask.FromException(new TimeoutException());
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled(token)
+                    : Acquire<ValueTask>().Invoke(timeout, token);
+                break;
+        }
 
         return task;
     }
@@ -133,13 +180,21 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire(throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<ValueTask>().Invoke(token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Steal(object? reason, bool throwOnTimeout, bool zeroTimeout)
+    private ISupplier<TimeSpan, CancellationToken, TResult> Steal<TResult>(object? reason)
+        where TResult : struct, IEquatable<TResult>
     {
         Interrupt(reason);
-        return Wait(ref manager, ref pool, throwOnTimeout, zeroTimeout);
+        return GetTaskFactory<DefaultWaitNode, LockManager, TResult>(ref manager, ref pool);
+    }
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool TrySteal(object? reason)
+    {
+        Interrupt(reason);
+        return TryAcquire(ref manager);
     }
 
     /// <summary>
@@ -160,10 +215,32 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> result))
-            result = Steal(reason, throwOnTimeout: false, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        ValueTask<bool> task;
 
-        return result;
+        switch (timeout.Ticks)
+        {
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = new(TrySteal(reason));
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException<bool>(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled<bool>(token)
+                    : Steal<ValueTask<bool>>(reason).Invoke(timeout, token);
+                break;
+        }
+
+        return task;
     }
 
     /// <summary>
@@ -185,8 +262,32 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
-            task = Steal(reason, throwOnTimeout: true, timeout == TimeSpan.Zero).CreateVoidTask(timeout, token);
+        ValueTask task;
+
+        switch (timeout.Ticks)
+        {
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = TrySteal(reason)
+                        ? ValueTask.CompletedTask
+                        : ValueTask.FromException(new TimeoutException());
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled(token)
+                    : Steal<ValueTask>(reason).Invoke(timeout, token);
+                break;
+        }
 
         return task;
     }
@@ -207,13 +308,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Steal(reason, throwOnTimeout: false, zeroTimeout: false).CreateVoidTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Steal<ValueTask>(reason).Invoke(token);
 
     private void DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        for (LinkedValueTaskCompletionSource? current = first, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
         {
             next = current.Next;
 

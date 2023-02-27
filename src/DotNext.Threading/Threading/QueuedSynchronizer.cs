@@ -4,7 +4,6 @@ using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -210,71 +209,44 @@ public class QueuedSynchronizer : Disposable
         return result;
     }
 
-    private protected static bool ValidateTimeoutAndToken(TimeSpan timeout, CancellationToken token, out ValueTask result)
-    {
-        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-        {
-            result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-        }
-        else if (token.IsCancellationRequested)
-        {
-            result = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            // Perf: caller overwrites the storage, so save CPU time instead of default init
-            Unsafe.SkipInit(out result);
-            return true;
-        }
-
-        return false;
-    }
-
-    internal static bool ValidateTimeoutAndToken(TimeSpan timeout, CancellationToken token, out ValueTask<bool> result)
-    {
-        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
-        {
-            result = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-        }
-        else if (token.IsCancellationRequested)
-        {
-            result = ValueTask.FromCanceled<bool>(token);
-        }
-        else
-        {
-            Unsafe.SkipInit(out result);
-            return true;
-        }
-
-        return false;
-    }
-
-    private protected ValueTaskFactory Wait<TNode, TLockManager>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool, bool throwOnTimeout, bool zeroTimeout)
+    private protected ISupplier<TimeSpan, CancellationToken, TResult> GetTaskFactory<TNode, TLockManager, TResult>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
+        where TResult : struct, IEquatable<TResult>
     {
         Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
 
-        ValueTaskFactory result;
+        return IsDisposingOrDisposed
+            ? GetDisposedTaskFactory<TResult>()
+            : TryAcquire(ref manager)
+            ? GetSuccessfulTaskFactory<TResult>()
+            : Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(EnqueueNode<TNode, TLockManager>(ref pool, ref manager, typeof(TResult) == typeof(ValueTask)));
+    }
 
-        if (IsDisposingOrDisposed)
-        {
-            result = new(GetDisposedTask<bool>());
-        }
-        else if (TryAcquire(ref manager))
-        {
-            result = new(true);
-        }
-        else if (zeroTimeout)
-        {
-            result = throwOnTimeout ? new(new TimeoutException()) : new(false);
-        }
-        else
-        {
-            result = new(EnqueueNode(ref pool, ref manager, throwOnTimeout));
-        }
+    // allocates but this is fine for this very uncommon situation
+    private protected ISupplier<TimeSpan, CancellationToken, TResult> GetDisposedTaskFactory<TResult>()
+        where TResult : struct, IEquatable<TResult>
+    {
+        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
 
-        return result;
+        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(new WrapperTaskFactory(GetDisposedTask<bool>()));
+    }
+
+    internal static ISupplier<TimeSpan, CancellationToken, TResult> GetSuccessfulTaskFactory<TResult>()
+        where TResult : struct, IEquatable<TResult>
+    {
+        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
+
+        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(SuccessfulTaskFactory.Instance);
+    }
+
+    internal static ISupplier<TimeSpan, CancellationToken, TResult> GetTimedOutTaskFactory<TResult>()
+        where TResult : struct, IEquatable<TResult>
+    {
+        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
+
+        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(TimedOutTaskFactory.Instance);
     }
 
     /// <summary>
@@ -375,52 +347,52 @@ public class QueuedSynchronizer : Disposable
     /// <returns>The task representing asynchronous result.</returns>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 
-    // this struct allows to avoid intersection of two monitor locks: the first one from QueuedSynchronizer
-    // and the second one from LinkedValueTaskCompletionSource<bool>
-    [StructLayout(LayoutKind.Auto)]
-    internal unsafe readonly ref struct ValueTaskFactory
+    private sealed class WrapperTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
     {
-        private readonly object? taskOrSource; // Task<bool> or LinkedValueTaskCompletionSource<bool>
+        private readonly Task<bool> task;
 
-        internal ValueTaskFactory(Task<bool> task)
+        internal WrapperTaskFactory(Task<bool> task)
         {
-            Debug.Assert(task is { IsCompleted: true });
+            Debug.Assert(task is not null);
 
-            taskOrSource = task;
+            this.task = task;
         }
 
-        internal ValueTaskFactory(LinkedValueTaskCompletionSource<bool> source)
-        {
-            Debug.Assert(source is not null);
+        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
+            => new(task);
 
-            taskOrSource = source;
+        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
+            => new(task);
+    }
+
+    private sealed class SuccessfulTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
+    {
+        internal static readonly SuccessfulTaskFactory Instance = new();
+
+        private SuccessfulTaskFactory()
+        {
         }
 
-        internal ValueTaskFactory(bool result)
-            => taskOrSource = Task.FromResult<bool>(result);
+        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
+            => new(true);
 
-        internal ValueTaskFactory(Exception e)
+        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
+            => ValueTask.CompletedTask;
+    }
+
+    private sealed class TimedOutTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
+    {
+        internal static readonly TimedOutTaskFactory Instance = new();
+
+        private TimedOutTaskFactory()
         {
-            Debug.Assert(e is not null);
-
-            taskOrSource = Task.FromException<bool>(e);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask CreateVoidTask(TimeSpan timeout, CancellationToken token)
-            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateVoidTask(timeout, token) ?? new(Unsafe.As<Task>(taskOrSource!));
+        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
+            => new(false);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask CreateVoidTask(CancellationToken token)
-            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateVoidTask(InfiniteTimeSpan, token) ?? new(Unsafe.As<Task>(taskOrSource!));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask<bool> CreateTask(TimeSpan timeout, CancellationToken token)
-            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateTask(timeout, token) ?? new(Unsafe.As<Task<bool>>(taskOrSource!));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal ValueTask<bool> CreateTask(CancellationToken token)
-            => (taskOrSource as LinkedValueTaskCompletionSource<bool>)?.CreateTask(InfiniteTimeSpan, token) ?? new(Unsafe.As<Task<bool>>(taskOrSource!));
+        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
+            => ValueTask.FromException(new TimeoutException());
     }
 
     private sealed class CallerInformationStorage : ThreadLocal<object?>
@@ -479,13 +451,6 @@ public class QueuedSynchronizer : Disposable
             Debug.Assert(owner is not null);
 
             this.throwOnTimeout = throwOnTimeout;
-            Initialize(owner);
-        }
-
-        internal void Initialize(QueuedSynchronizer owner)
-        {
-            Debug.Assert(owner is not null);
-
             this.owner.SetTarget(owner);
             CallerInfo = owner.callerInfo?.Capture();
             createdAt = new();
@@ -543,7 +508,9 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         private protected override void ResetCore()
         {
-            Context = default;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<TContext>())
+                Context = default;
+
             base.ResetCore();
         }
 
@@ -717,37 +684,25 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory AcquireCore(TContext context, bool zeroTimeout)
+    private ISupplier<TimeSpan, CancellationToken, TResult> AcquireCore<TResult>(TContext context)
+        where TResult : struct, IEquatable<TResult>
     {
-        ValueTaskFactory result;
+        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
 
-        if (IsDisposingOrDisposed)
-        {
-            result = new(GetDisposedTask<bool>());
-        }
-        else if (TryAcquireCore(context))
-        {
-            result = new(true);
-        }
-        else if (zeroTimeout)
-        {
-            result = new(false);
-        }
-        else
-        {
-            result = new(EnqueueNode(context));
-        }
-
-        return result;
+        return IsDisposingOrDisposed
+            ? GetDisposedTaskFactory<TResult>()
+            : TryAcquire(context)
+            ? GetSuccessfulTaskFactory<TResult>()
+            : Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(EnqueueNode(context, typeof(TResult) == typeof(ValueTask)));
     }
 
-    private WaitNode EnqueueNode(TContext context)
+    private WaitNode EnqueueNode(TContext context, bool throwOnTimeout)
     {
         Debug.Assert(Monitor.IsEntered(this));
 
         var node = pool.Get();
         node.Context = context;
-        node.Initialize(this);
+        node.Initialize(this, throwOnTimeout);
         EnqueueNode(node);
         return node;
     }
@@ -761,13 +716,73 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <returns><see langword="true"/> if acquisition is successful; <see langword="false"/> if timeout occurred.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    protected ValueTask<bool> AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
+    protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
         ValueTask<bool> task;
 
-        if (ValidateTimeoutAndToken(timeout, token, out task))
+        switch (timeout.Ticks)
         {
-            task = AcquireCore(context, timeout == TimeSpan.Zero).CreateTask(timeout, token);
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = new(TryAcquire(context));
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException<bool>(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled<bool>(token)
+                    : AcquireCore<ValueTask<bool>>(context).Invoke(timeout, token);
+                break;
+        }
+
+        return task;
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
+    /// </summary>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
+    /// <param name="timeout">The time to wait for the acquisition.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if acquisition is successful; <see langword="false"/> if timeout occurred.</returns>
+    /// <exception cref="TimeoutException">The operation cannot be completed within the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
+    {
+        ValueTask task;
+
+        switch (timeout.Ticks)
+        {
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = TryAcquire(context)
+                        ? ValueTask.CompletedTask
+                        : ValueTask.FromException(new TimeoutException());
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled(token)
+                    : AcquireCore<ValueTask>(context).Invoke(timeout, token);
+                break;
         }
 
         return task;
@@ -782,5 +797,5 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : AcquireCore(context, zeroTimeout: false).CreateVoidTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : AcquireCore<ValueTask>(context).Invoke(token);
 }

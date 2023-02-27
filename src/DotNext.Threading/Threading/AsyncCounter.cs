@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
-using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count becomes non zero.
@@ -170,7 +170,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         ThrowIfDisposed();
         manager.Increment(delta);
 
-        for (LinkedValueTaskCompletionSource? current = first, next; current is not null && manager.Value > 0L; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && manager.Value > 0L; current = next)
         {
             next = current.Next;
 
@@ -187,8 +187,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait(bool zeroTimeout)
-        => Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
+    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<TResult>()
+        where TResult : struct, IEquatable<TResult>
+        => GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -201,8 +202,30 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        ValueTask<bool> task;
+
+        switch (timeout.Ticks)
+        {
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = new(TryDecrement());
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException<bool>(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled<bool>(token)
+                    : Wait<ValueTask<bool>>().Invoke(timeout, token);
+                break;
+        }
 
         return task;
     }
@@ -216,7 +239,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait(zeroTimeout: false).CreateVoidTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait<ValueTask>().Invoke(token);
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

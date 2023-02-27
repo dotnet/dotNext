@@ -162,9 +162,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         => strongLock ? TryAcquire<StrongLockManager>() : TryAcquire<WeakLockManager>();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Acquire<TManager>(bool throwOnTimeout, bool zeroTimeout)
+    private ISupplier<TimeSpan, CancellationToken, TResult> Acquire<TManager, TResult>()
         where TManager : struct, ILockManager<WaitNode>
-        => Wait(ref Unsafe.As<State, TManager>(ref state), ref pool, throwOnTimeout, zeroTimeout);
+        where TResult : struct, IEquatable<TResult>
+        => GetTaskFactory<WaitNode, TManager, TResult>(ref Unsafe.As<State, TManager>(ref state), ref pool);
 
     /// <summary>
     /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -178,11 +179,32 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
+        ValueTask<bool> task;
+
+        switch (timeout.Ticks)
         {
-            task = (strongLock
-                ? Acquire<StrongLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero)
-                : Acquire<WeakLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero)).CreateTask(timeout, token);
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = new(TryAcquire(strongLock));
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException<bool>(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled<bool>(token)
+                    : (strongLock
+                    ? Acquire<StrongLockManager, ValueTask<bool>>()
+                    : Acquire<WeakLockManager, ValueTask<bool>>())
+                    .Invoke(timeout, token);
+                break;
         }
 
         return task;
@@ -201,11 +223,34 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
+        ValueTask task;
+
+        switch (timeout.Ticks)
         {
-            task = (strongLock
-                ? Acquire<StrongLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero)
-                : Acquire<WeakLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero)).CreateVoidTask(timeout, token);
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = TryAcquire(strongLock)
+                        ? ValueTask.CompletedTask
+                        : ValueTask.FromException(new TimeoutException());
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled(token)
+                    : (strongLock
+                    ? Acquire<StrongLockManager, ValueTask>()
+                    : Acquire<WeakLockManager, ValueTask>())
+                    .Invoke(timeout, token);
+                break;
         }
 
         return task;
@@ -223,8 +268,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         return token.IsCancellationRequested
             ? ValueTask.FromCanceled(token)
-            : (strongLock ? Acquire<StrongLockManager>(throwOnTimeout: false, zeroTimeout: false) : Acquire<WeakLockManager>(throwOnTimeout: false, zeroTimeout: false))
-            .CreateVoidTask(token);
+            : (strongLock
+            ? Acquire<StrongLockManager, ValueTask>()
+            : Acquire<WeakLockManager, ValueTask>())
+            .Invoke(token);
     }
 
     private void DrainWaitQueue()

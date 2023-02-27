@@ -120,24 +120,13 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public void Reset() => ResetCore()?.TrySetResultAndSentinelToAll(result: false);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    internal QueuedSynchronizer.ValueTaskFactory TryDequeue(out T? task)
+    internal ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> TryDequeue(out T? task)
     {
-        QueuedSynchronizer.ValueTaskFactory result;
-
-        if (TryDequeueCompletedTask(out task))
-        {
-            result = new(true);
-        }
-        else if (IsCompleted)
-        {
-            result = new(false);
-        }
-        else
-        {
-            result = new(EnqueueNode());
-        }
-
-        return result;
+        return TryDequeueCompletedTask(out task)
+            ? QueuedSynchronizer.GetSuccessfulTaskFactory<ValueTask<bool>>()
+            : IsCompleted
+            ? QueuedSynchronizer.GetTimedOutTaskFactory<ValueTask<bool>>()
+            : EnqueueNode();
     }
 
     /// <summary>
@@ -149,24 +138,13 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public bool TryRead([NotNullWhen(true)] out T? task) => TryDequeueCompletedTask(out task);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private QueuedSynchronizer.ValueTaskFactory Wait(bool zeroTimeout)
+    private ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> Wait()
     {
-        QueuedSynchronizer.ValueTaskFactory result;
-
-        if (firstTask is not null)
-        {
-            result = new(true);
-        }
-        else if (IsCompleted || zeroTimeout)
-        {
-            result = new(false);
-        }
-        else
-        {
-            result = new(EnqueueNode());
-        }
-
-        return result;
+        return firstTask is not null
+            ? QueuedSynchronizer.GetSuccessfulTaskFactory<ValueTask<bool>>()
+            : IsCompleted
+            ? QueuedSynchronizer.GetTimedOutTaskFactory<ValueTask<bool>>()
+            : EnqueueNode();
     }
 
     /// <summary>
@@ -176,13 +154,12 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
-    public ValueTask<bool> WaitToReadAsync(TimeSpan timeout, CancellationToken token = default)
+    public ValueTask<bool> WaitToReadAsync(TimeSpan timeout, CancellationToken token = default) => timeout.Ticks switch
     {
-        if (QueuedSynchronizer.ValidateTimeoutAndToken(timeout, token, out var task))
-            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
-
-        return task;
-    }
+        < 0L and not Timeout.InfiniteTicks => ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout))),
+        0L => new(false),
+        _ => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait().Invoke(timeout, token),
+    };
 
     /// <summary>
     /// Waits for the first completed task.
@@ -190,7 +167,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if data is available to read; otherwise, <see langword="false"/>.</returns>
     public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait(zeroTimeout: false).CreateTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait().Invoke(token);
 
     /// <summary>
     /// Gets the enumerator to get the completed tasks.
@@ -199,7 +176,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <returns>The enumerator over completed tasks.</returns>
     public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
     {
-        while (await TryDequeue(out var task).CreateTask(token).ConfigureAwait(false))
+        while (await TryDequeue(out var task).Invoke(token).ConfigureAwait(false))
         {
             if (task is not null)
             {

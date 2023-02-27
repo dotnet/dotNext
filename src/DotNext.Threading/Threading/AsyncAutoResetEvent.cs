@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
-using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="AutoResetEvent"/>.
@@ -106,7 +106,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         if (manager.Value)
             return false;
 
-        for (LinkedValueTaskCompletionSource? current = first, next; ; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = first, next; ; current = next)
         {
             if (current is null)
             {
@@ -131,8 +131,16 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait(bool zeroTimeout)
-        => Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
+    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<TResult>()
+        where TResult : struct, IEquatable<TResult>
+        => GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
+
+    [MethodImpl(MethodImplOptions.Synchronized)]
+    private bool TryUnset()
+    {
+        ThrowIfDisposed();
+        return TryAcquire(ref manager);
+    }
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -145,8 +153,30 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
+        ValueTask<bool> task;
+
+        switch (timeout.Ticks)
+        {
+            case < 0L and not Timeout.InfiniteTicks:
+                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    task = new(TryUnset());
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException<bool>(e);
+                }
+
+                break;
+            default:
+                task = token.IsCancellationRequested
+                    ? ValueTask.FromCanceled<bool>(token)
+                    : Wait<ValueTask<bool>>().Invoke(timeout, token);
+                break;
+        }
 
         return task;
     }
@@ -159,5 +189,5 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait(zeroTimeout: false).CreateVoidTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait<ValueTask>().Invoke(token);
 }

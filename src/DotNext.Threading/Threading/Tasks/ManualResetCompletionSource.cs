@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Threading.Timeout;
 using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
 
 namespace DotNext.Threading.Tasks;
@@ -342,7 +341,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (timeout == TimeSpan.Zero)
+        if (timeout == default)
         {
             CompleteAsTimedOut();
         }
@@ -359,7 +358,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected bool PrepareTask(TimeSpan timeout, CancellationToken token)
     {
-        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+        if (timeout.Ticks is < 0L and not Timeout.InfiniteTicks)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
         bool result;

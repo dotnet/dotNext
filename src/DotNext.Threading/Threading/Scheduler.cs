@@ -22,10 +22,9 @@ public static partial class Scheduler
     {
         ArgumentNullException.ThrowIfNull(callback);
 
-        if (delay < TimeSpan.Zero && delay != InfiniteTimeSpan)
-            throw new ArgumentOutOfRangeException(nameof(delay));
-
-        return DelayedTaskStateMachine<TArgs>.Start(callback, args, delay, token);
+        return delay is { Ticks: >= 0L or Timeout.InfiniteTicks }
+            ? DelayedTaskStateMachine<TArgs>.Start(callback, args, delay, token)
+            : throw new ArgumentOutOfRangeException(nameof(delay));
     }
 
     /// <summary>
@@ -44,9 +43,8 @@ public static partial class Scheduler
     {
         ArgumentNullException.ThrowIfNull(callback);
 
-        if (delay < TimeSpan.Zero && delay != InfiniteTimeSpan)
-            throw new ArgumentOutOfRangeException(nameof(delay));
-
-        return DelayedTaskStateMachine<TArgs, TResult>.Start(callback, args, delay, token);
+        return delay is { Ticks: >= 0L or Timeout.InfiniteTicks }
+            ? DelayedTaskStateMachine<TArgs, TResult>.Start(callback, args, delay, token)
+            : throw new ArgumentOutOfRangeException(nameof(delay));
     }
 }

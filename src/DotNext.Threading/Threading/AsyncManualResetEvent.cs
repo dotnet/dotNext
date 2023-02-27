@@ -138,8 +138,9 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     bool IAsyncEvent.Signal() => Set();
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait(bool zeroTimeout)
-        => Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
+    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<TResult>()
+        where TResult : struct, IEquatable<TResult>
+        => GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -150,13 +151,12 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default) => timeout.Ticks switch
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
-
-        return task;
-    }
+        < 0L and not Timeout.InfiniteTicks => ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout))),
+        0L => new(manager.Value),
+        _ => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait<ValueTask<bool>>().Invoke(timeout, token),
+    };
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -166,11 +166,12 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait(zeroTimeout: false).CreateVoidTask(token);
+        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait<ValueTask>().Invoke(token);
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait<T>(Predicate<T> condition, T arg, bool zeroTimeout)
-        => manager.Value || condition(arg) ? new(true) : Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
+    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<T, TResult>(Predicate<T> condition, T arg)
+        where TResult : struct, IEquatable<TResult>
+        => manager.Value || condition(arg) ? GetSuccessfulTaskFactory<TResult>() : GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -191,17 +192,13 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTask<bool> task;
-        if (condition is null)
-        {
-            task = ValueTask.FromException<bool>(new ArgumentNullException(nameof(condition)));
-        }
-        else if (ValidateTimeoutAndToken(timeout, token, out task))
-        {
-            task = Wait(condition, arg, timeout == TimeSpan.Zero).CreateTask(timeout, token);
-        }
-
-        return task;
+        return condition is null
+            ? ValueTask.FromException<bool>(new ArgumentNullException(nameof(condition)))
+            : timeout is { Ticks: < 0L and not Timeout.InfiniteTicks }
+            ? ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)))
+            : token.IsCancellationRequested
+            ? ValueTask.FromCanceled<bool>(token)
+            : Wait<T, ValueTask<bool>>(condition, arg).Invoke(timeout, token);
     }
 
     /// <summary>
@@ -221,27 +218,17 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
     {
-        ValueTask task;
-
-        if (condition is null)
-        {
-            task = ValueTask.FromException(new ArgumentNullException(nameof(condition)));
-        }
-        else if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            task = Wait(condition, arg, zeroTimeout: false).CreateVoidTask(token);
-        }
-
-        return task;
+        return condition is null
+            ? ValueTask.FromException(new ArgumentNullException(nameof(condition)))
+            : token.IsCancellationRequested
+            ? ValueTask.FromCanceled(token)
+            : Wait<T, ValueTask>(condition, arg).Invoke(token);
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, bool zeroTimeout)
-        => manager.Value || condition(arg1, arg2) ? new(true) : Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
+    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<T1, T2, TResult>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2)
+        where TResult : struct, IEquatable<TResult>
+        => manager.Value || condition(arg1, arg2) ? GetSuccessfulTaskFactory<TResult>() : GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Suspends the caller until this event is set.
@@ -264,18 +251,13 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTask<bool> task;
-
-        if (condition is null)
-        {
-            task = ValueTask.FromException<bool>(new ArgumentNullException(nameof(condition)));
-        }
-        else if (ValidateTimeoutAndToken(timeout, token, out task))
-        {
-            task = Wait(condition, arg1, arg2, timeout == TimeSpan.Zero).CreateTask(timeout, token);
-        }
-
-        return task;
+        return condition is null
+            ? ValueTask.FromException<bool>(new ArgumentNullException(nameof(condition)))
+            : timeout is { Ticks: < 0L and not Timeout.InfiniteTicks }
+            ? ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)))
+            : token.IsCancellationRequested
+            ? ValueTask.FromCanceled<bool>(token)
+            : Wait<T1, T2, ValueTask<bool>>(condition, arg1, arg2).Invoke(timeout, token);
     }
 
     /// <summary>
@@ -297,21 +279,10 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [Obsolete("Use AsyncTrigger class instead.")]
     public ValueTask WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
     {
-        ValueTask task;
-
-        if (condition is null)
-        {
-            task = ValueTask.FromException(new ArgumentNullException(nameof(condition)));
-        }
-        else if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-        }
-        else
-        {
-            task = Wait(condition, arg1, arg2, zeroTimeout: false).CreateVoidTask(token);
-        }
-
-        return task;
+        return condition is null
+            ? ValueTask.FromException(new ArgumentNullException(nameof(condition)))
+            : token.IsCancellationRequested
+            ? ValueTask.FromCanceled(token)
+            : Wait<T1, T2, ValueTask>(condition, arg1, arg2).Invoke(token);
     }
 }
