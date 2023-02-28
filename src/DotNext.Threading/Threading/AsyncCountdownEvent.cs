@@ -19,43 +19,24 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     [StructLayout(LayoutKind.Auto)]
     private struct StateManager : ILockManager<DefaultWaitNode>
     {
-        private long current, initial;
+        internal long Current, Initial;
 
         internal StateManager(long initialCount)
-            => current = initial = initialCount;
+            => Current = Initial = initialCount;
 
-        internal long Current
-        {
-            readonly get => current.VolatileRead();
-            set => current.VolatileWrite(value);
-        }
+        bool ILockManager.IsLockAllowed => Current is 0L;
 
-        internal readonly bool IsEmpty => Current is 0L;
+        internal void Increment(long value) => Current = checked(Current + value);
 
-        bool ILockManager.IsLockAllowed => IsEmpty;
+        internal bool Decrement(long value)
+            => (Current = Math.Max(0L, checked(Current - value))) is 0L;
 
-        internal long Initial
-        {
-            readonly get => initial.VolatileRead();
-            set => initial.VolatileWrite(value);
-        }
-
-        internal void Increment(long value) => current.AddAndGet(value);
-
-        internal unsafe bool Decrement(long value)
-        {
-            return current.AccumulateAndGet(value, &Accumulate) == 0L;
-
-            static long Accumulate(long current, long value)
-                => Math.Max(0L, current - value);
-        }
-
-        void ILockManager.AcquireLock()
+        readonly void ILockManager.AcquireLock()
         {
             // nothing to do here
         }
 
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
             // nothing to do here
         }
@@ -110,17 +91,17 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
     /// </summary>
-    public long InitialCount => manager.Initial;
+    public long InitialCount => manager.Initial.VolatileRead();
 
     /// <summary>
     /// Gets the number of remaining signals required to set the event.
     /// </summary>
-    public long CurrentCount => manager.Current;
+    public long CurrentCount => manager.Current.VolatileRead();
 
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => manager.IsEmpty;
+    public bool IsSet => CurrentCount is 0L;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
     internal bool TryAddCount(long signalCount, bool autoReset)
@@ -130,7 +111,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (signalCount < 0)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
-        if (manager.IsEmpty && !autoReset)
+        if (manager.Current is 0L && !autoReset)
             return false;
 
         manager.Increment(signalCount);
@@ -195,7 +176,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(count));
 
         // in signaled state
-        if (!manager.IsEmpty)
+        if (manager.Current is not 0L)
             return false;
 
         manager.Current = manager.Initial = count;
@@ -205,7 +186,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     [MethodImpl(MethodImplOptions.Synchronized)]
     private bool SignalCore(long signalCount, out LinkedValueTaskCompletionSource<bool>? head)
     {
-        if (manager.IsEmpty)
+        if (manager.Current is 0L)
             throw new InvalidOperationException();
 
         bool result;
@@ -336,7 +317,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default) => timeout.Ticks switch
     {
         < 0L and not Timeout.InfiniteTicks => ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout))),
-        0L => new(manager.IsEmpty),
+        0L => new(IsSet),
         _ => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait<ValueTask<bool>>().Invoke(timeout, token),
     };
 
