@@ -646,6 +646,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         if (first is null && CanAcquire(context))
         {
             AcquireCore(context);
+            return true;
         }
 
         return false;
