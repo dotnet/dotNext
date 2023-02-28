@@ -214,7 +214,7 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
 
-        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(new WrapperTaskFactory(GetDisposedTask<bool>()));
+        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(new ObjectDisposedException(this));
     }
 
     internal static ISupplier<TimeSpan, CancellationToken, TResult> GetSuccessfulTaskFactory<TResult>()
@@ -266,7 +266,7 @@ public class QueuedSynchronizer : Disposable
     [MethodImpl(MethodImplOptions.Synchronized)]
     private void NotifyObjectDisposed(Exception? reason = null)
     {
-        first?.TrySetExceptionAndSentinelToAll(reason ?? new ObjectDisposedException(GetType().Name));
+        first?.TrySetExceptionAndSentinelToAll(reason ?? new ObjectDisposedException(this));
         first = last = null;
     }
 
@@ -331,22 +331,18 @@ public class QueuedSynchronizer : Disposable
     /// <returns>The task representing asynchronous result.</returns>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 
-    private sealed class WrapperTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
+    private sealed class ObjectDisposedException : System.ObjectDisposedException, ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
     {
-        private readonly Task<bool> task;
-
-        internal WrapperTaskFactory(Task<bool> task)
+        internal ObjectDisposedException(QueuedSynchronizer synchronizer)
+            : base(synchronizer.GetType().Name)
         {
-            Debug.Assert(task is not null);
-
-            this.task = task;
         }
 
         ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
-            => new(task);
+            => ValueTask.FromException<bool>(this);
 
         ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
-            => new(task);
+            => ValueTask.FromException(this);
     }
 
     private sealed class SuccessfulTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>

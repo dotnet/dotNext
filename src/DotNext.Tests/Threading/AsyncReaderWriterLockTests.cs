@@ -120,7 +120,7 @@ namespace DotNext.Threading
             True(@lock.TryEnterReadLock());
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            await ThrowsAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
+            await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
             @lock.Release();
             await task;
         }
@@ -135,7 +135,7 @@ namespace DotNext.Threading
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
 
-            await ThrowsAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
+            await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
 
             @lock.Release();
             await acquisition1;

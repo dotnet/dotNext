@@ -7,10 +7,6 @@ namespace DotNext.Threading
     [ExcludeFromCodeCoverage]
     public sealed class AsyncTriggerTests : Test
     {
-        private sealed class State : StrongBox<int>
-        {
-        }
-
         [Fact]
         public static async Task UnicastSignal()
         {

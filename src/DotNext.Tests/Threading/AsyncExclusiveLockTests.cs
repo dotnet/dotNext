@@ -93,7 +93,7 @@ namespace DotNext.Threading
             True(@lock.TryAcquire());
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
+            await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace DotNext.Threading
             var l = new AsyncExclusiveLock();
             l.Dispose();
             var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
-            await ThrowsAsync<ObjectDisposedException>(result.AsTask);
+            await ThrowsAnyAsync<ObjectDisposedException>(result.AsTask);
         }
 
         [Fact]
