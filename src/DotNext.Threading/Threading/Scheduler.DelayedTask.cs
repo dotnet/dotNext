@@ -35,8 +35,7 @@ public static partial class Scheduler
         /// </summary>
         public void Cancel()
         {
-            var cts = Interlocked.Exchange(ref tokenSource, null);
-            if (cts is not null)
+            if (Interlocked.Exchange(ref tokenSource, null) is { } cts)
             {
                 try
                 {

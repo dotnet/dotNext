@@ -25,7 +25,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         void ILockManager.AcquireLock() => Value = false;
 
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
             // nothing to do here
         }

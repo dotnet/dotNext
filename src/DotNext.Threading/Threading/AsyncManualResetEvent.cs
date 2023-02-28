@@ -31,12 +31,12 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         readonly bool ILockManager.IsLockAllowed => Value;
 
-        void ILockManager.AcquireLock()
+        readonly void ILockManager.AcquireLock()
         {
             // nothing to do here
         }
 
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
             // nothing to do here
         }

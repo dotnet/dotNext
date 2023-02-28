@@ -209,14 +209,16 @@ internal abstract class UdpSocket : Socket, INetworkTransport
     {
         if (disposing)
         {
-            var tokenSource = Interlocked.Exchange(ref lifecycleControl, null);
-            try
+            if (Interlocked.Exchange(ref lifecycleControl, null) is { } tokenSource)
             {
-                tokenSource?.Cancel(false);
-            }
-            finally
-            {
-                tokenSource?.Dispose();
+                try
+                {
+                    tokenSource.Cancel(throwOnFirstException: false);
+                }
+                finally
+                {
+                    tokenSource.Dispose();
+                }
             }
         }
 

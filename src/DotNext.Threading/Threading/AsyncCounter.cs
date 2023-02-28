@@ -27,46 +27,26 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         internal StateManager(long initialValue)
             => state = initialValue;
 
-        internal readonly long Value => IntPtr.Size == sizeof(long) ? state : state.VolatileRead();
+        internal readonly long Value => state;
 
-        internal void Increment(long delta)
-        {
-            var newValue = checked(state + delta);
-            if (IntPtr.Size == sizeof(long))
-                state.VolatileWrite(newValue);
-            else
-                state = newValue;
-        }
+        internal readonly long VolatileRead() => state.VolatileRead();
 
-        internal void Decrement()
-        {
-            if (IntPtr.Size == sizeof(long))
-                state--;
-            else
-                state.DecrementAndGet();
-        }
+        internal void Increment(long delta) => state = checked(state + delta);
+
+        internal void Decrement() => state--;
 
         internal bool TryReset()
         {
-            bool result;
-            if (IntPtr.Size == sizeof(long))
-            {
-                result = state > 0L;
-                state = 0L;
-            }
-            else
-            {
-                result = Interlocked.Exchange(ref state, 0L) > 0L;
-            }
-
+            var result = state > 0L;
+            state = 0L;
             return result;
         }
 
-        bool ILockManager.IsLockAllowed => Value > 0L;
+        readonly bool ILockManager.IsLockAllowed => state > 0L;
 
         void ILockManager.AcquireLock() => Decrement();
 
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
             // nothing to do here
         }
@@ -117,7 +97,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     }
 
     /// <inheritdoc/>
-    bool IAsyncEvent.IsSet => manager.Value > 0L;
+    bool IAsyncEvent.IsSet => manager.VolatileRead() > 0L;
 
     /// <summary>
     /// Gets the counter value.
@@ -127,7 +107,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
     /// blocking.
     /// </remarks>
-    public long Value => manager.Value;
+    public long Value => manager.VolatileRead();
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.Synchronized)]
