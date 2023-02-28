@@ -184,28 +184,13 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        bool result;
-
-        if (result = manager.IsLockAllowed)
+        if (first is null && manager.IsLockAllowed)
         {
-            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
-            {
-                next = current.Next;
-
-                if (!current.IsCompleted)
-                {
-                    result = false;
-                    goto exit;
-                }
-
-                RemoveNode(current);
-            }
-
             manager.AcquireLock();
+            return true;
         }
 
-    exit:
-        return result;
+        return false;
     }
 
     private protected ISupplier<TimeSpan, CancellationToken, TResult> GetTaskFactory<TNode, TLockManager, TResult>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool)
@@ -658,28 +643,12 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         Debug.Assert(Monitor.IsEntered(this));
 
-        bool result;
-
-        if (result = CanAcquire(context))
+        if (first is null && CanAcquire(context))
         {
-            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
-            {
-                next = current.Next;
-
-                if (!current.IsCompleted)
-                {
-                    result = false;
-                    goto exit;
-                }
-
-                RemoveNode(current);
-            }
-
             AcquireCore(context);
         }
 
-    exit:
-        return result;
+        return false;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
@@ -690,7 +659,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         return IsDisposingOrDisposed
             ? GetDisposedTaskFactory<TResult>()
-            : TryAcquire(context)
+            : TryAcquireCore(context)
             ? GetSuccessfulTaskFactory<TResult>()
             : Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(EnqueueNode(context, typeof(TResult) == typeof(ValueTask)));
     }
