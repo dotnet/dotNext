@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -38,6 +40,8 @@ public class QueuedSynchronizer : Disposable
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         measurementTags = new() { { LockTypeMeterAttribute, GetType().Name } };
     }
+
+    private protected object SyncRoot => disposeTask;
 
     /// <summary>
     /// Sets a list of tags to be associated with each measurement.
@@ -87,17 +91,20 @@ public class QueuedSynchronizer : Disposable
             callerInfo.Value = information;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private IReadOnlyList<object?> GetSuspendedCallersCore()
     {
-        if (first is null)
-            return Array.Empty<Activity?>();
-
-        var list = new List<object?>();
-        for (LinkedValueTaskCompletionSource<bool>? current = first; current is not null; current = current.Next)
+        List<object?> list;
+        lock (SyncRoot)
         {
-            if (current is WaitNode node)
-                list.Add(node.CallerInfo);
+            if (first is null)
+                return Array.Empty<Activity?>();
+
+            list = new List<object?>();
+            for (LinkedValueTaskCompletionSource<bool>? current = first; current is not null; current = current.Next)
+            {
+                if (current is WaitNode node)
+                    list.Add(node.CallerInfo);
+            }
         }
 
         list.TrimExcess();
@@ -136,7 +143,7 @@ public class QueuedSynchronizer : Disposable
 
     private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         bool isFirst;
 
@@ -166,11 +173,11 @@ public class QueuedSynchronizer : Disposable
         LockContentionMeter.Add(1, measurementTags);
     }
 
-    private TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout)
+    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
         manager.InitializeNode(node);
@@ -182,7 +189,7 @@ public class QueuedSynchronizer : Disposable
     private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         if (first is null && manager.IsLockAllowed)
         {
@@ -193,44 +200,145 @@ public class QueuedSynchronizer : Disposable
         return false;
     }
 
-    private protected ISupplier<TimeSpan, CancellationToken, TResult> GetTaskFactory<TNode, TLockManager, TResult>(ref TLockManager manager, ref ValueTaskPool<bool, TNode, Action<TNode>> pool)
+    private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TOptions options)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
-        where TResult : struct, IEquatable<TResult>
+        where TOptions : struct, IAcquisitionOptions
     {
-        Debug.Assert(Monitor.IsEntered(this));
-        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
+        ValueTask task;
 
-        return IsDisposingOrDisposed
-            ? GetDisposedTaskFactory<TResult>()
-            : TryAcquire(ref manager)
-            ? GetSuccessfulTaskFactory<TResult>()
-            : Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(EnqueueNode<TNode, TLockManager>(ref pool, ref manager, typeof(TResult) == typeof(ValueTask)));
+        switch (options.Timeout.Ticks)
+        {
+            case Timeout.InfiniteTicks:
+                goto default;
+            case < 0L:
+                task = ValueTask.FromException(new ArgumentOutOfRangeException("timeout"));
+                break;
+            case 0L: // attempt to acquire synchronously
+                lock (SyncRoot)
+                {
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(DisposedTask);
+                        goto exit;
+                    }
+
+#pragma warning disable CA2252
+                    if (TOptions.InterruptionRequired)
+#pragma warning restore CA2252
+                        Interrupt(options.InterruptionReason);
+
+                    task = TryAcquire(ref manager)
+                        ? ValueTask.CompletedTask
+                        : ValueTask.FromException(new TimeoutException());
+                }
+
+                break;
+            default:
+                if (options.Token.IsCancellationRequested)
+                {
+                    task = ValueTask.FromCanceled(options.Token);
+                    goto exit;
+                }
+
+                ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
+                lock (SyncRoot)
+                {
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(DisposedTask);
+                        goto exit;
+                    }
+
+#pragma warning disable CA2252
+                    if (TOptions.InterruptionRequired)
+#pragma warning restore CA2252
+                        Interrupt(options.InterruptionReason);
+
+                    if (TryAcquire(ref manager))
+                    {
+                        task = ValueTask.CompletedTask;
+                        goto exit;
+                    }
+
+                    factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
+                }
+
+                task = factory.Invoke(options.Timeout, options.Token);
+                break;
+        }
+
+    exit:
+        return task;
     }
 
-    // allocates but this is fine for this very uncommon situation
-    private protected ISupplier<TimeSpan, CancellationToken, TResult> GetDisposedTaskFactory<TResult>()
-        where TResult : struct, IEquatable<TResult>
+    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TOptions options)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TLockManager : struct, ILockManager<TNode>
+        where TOptions : struct, IAcquisitionOptions
     {
-        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
+        ValueTask<bool> task;
 
-        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(new ObjectDisposedException(this));
-    }
+        switch (options.Timeout.Ticks)
+        {
+            case Timeout.InfiniteTicks:
+                goto default;
+            case < 0L:
+                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException("timeout"));
+                break;
+            case 0L: // attempt to acquire synchronously
+                lock (SyncRoot)
+                {
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(GetDisposedTask<bool>());
+                        goto exit;
+                    }
+#pragma warning disable CA2252
+                    if (TOptions.InterruptionRequired)
+#pragma warning restore CA2252
+                        Interrupt(options.InterruptionReason);
 
-    internal static ISupplier<TimeSpan, CancellationToken, TResult> GetSuccessfulTaskFactory<TResult>()
-        where TResult : struct, IEquatable<TResult>
-    {
-        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
+                    task = new(TryAcquire(ref manager));
+                }
 
-        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(SuccessfulTaskFactory.Instance);
-    }
+                break;
+            default:
+                if (options.Token.IsCancellationRequested)
+                {
+                    task = ValueTask.FromCanceled<bool>(options.Token);
+                    goto exit;
+                }
 
-    internal static ISupplier<TimeSpan, CancellationToken, TResult> GetTimedOutTaskFactory<TResult>()
-        where TResult : struct, IEquatable<TResult>
-    {
-        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
+                ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
+                lock (SyncRoot)
+                {
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(GetDisposedTask<bool>());
+                        goto exit;
+                    }
 
-        return Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(TimedOutTaskFactory.Instance);
+#pragma warning disable CA2252
+                    if (TOptions.InterruptionRequired)
+#pragma warning restore CA2252
+                        Interrupt(options.InterruptionReason);
+
+                    if (TryAcquire(ref manager))
+                    {
+                        task = new(true);
+                        goto exit;
+                    }
+
+                    factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
+                }
+
+                task = factory.Invoke(options.Timeout, options.Token);
+                break;
+        }
+
+    exit:
+        return task;
     }
 
     /// <summary>
@@ -239,16 +347,17 @@ public class QueuedSynchronizer : Disposable
     /// <param name="token">The canceled token.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void CancelSuspendedCallers(CancellationToken token)
     {
-        ThrowIfDisposed();
-
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        first?.TrySetCanceledAndSentinelToAll(token);
-        first = last = null;
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            first?.TrySetCanceledAndSentinelToAll(token);
+            first = last = null;
+        }
     }
 
     private protected static long ResumeAll(LinkedValueTaskCompletionSource<bool>? head)
@@ -256,23 +365,43 @@ public class QueuedSynchronizer : Disposable
 
     private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
-        Monitor.IsEntered(this);
+        Monitor.IsEntered(SyncRoot);
 
         var result = first;
         first = last = null;
         return result;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private void NotifyObjectDisposed(Exception? reason = null)
+    private protected LinkedValueTaskCompletionSource<bool>? DetachHead()
     {
-        first?.TrySetExceptionAndSentinelToAll(reason ?? new ObjectDisposedException(this));
-        first = last = null;
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
+
+        if (first is { } head)
+        {
+            RemoveNode(head);
+        }
+        else
+        {
+            head = null;
+        }
+
+        return head;
     }
 
-    private protected void Interrupt(object? reason)
+    private void NotifyObjectDisposed(Exception? reason = null)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        reason ??= new ObjectDisposedException(GetType().Name);
+
+        lock (SyncRoot)
+        {
+            first?.TrySetExceptionAndSentinelToAll(reason);
+            first = last = null;
+        }
+    }
+
+    private void Interrupt(object? reason)
+    {
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         first?.TrySetExceptionAndSentinelToAll(new PendingTaskInterruptedException { Reason = reason });
         first = last = null;
@@ -313,16 +442,24 @@ public class QueuedSynchronizer : Disposable
     private protected virtual bool IsReadyToDispose => true;
 
     /// <inheritdoc />
-    [MethodImpl(MethodImplOptions.Synchronized)]
     protected override ValueTask DisposeAsyncCore()
     {
-        if (this is { IsReadyToDispose: true, IsDisposed: false })
+        ValueTask result;
+
+        lock (SyncRoot)
         {
-            Dispose(true);
-            return ValueTask.CompletedTask;
+            if (this is { IsReadyToDispose: true, IsDisposed: false })
+            {
+                Dispose(true);
+                result = ValueTask.CompletedTask;
+            }
+            else
+            {
+                result = new(disposeTask.Task);
+            }
         }
 
-        return new(disposeTask.Task);
+        return result;
     }
 
     /// <summary>
@@ -330,50 +467,6 @@ public class QueuedSynchronizer : Disposable
     /// </summary>
     /// <returns>The task representing asynchronous result.</returns>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
-
-    private sealed class ObjectDisposedException : System.ObjectDisposedException, ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
-    {
-        internal ObjectDisposedException(QueuedSynchronizer synchronizer)
-            : base(synchronizer.GetType().Name)
-        {
-        }
-
-        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
-            => ValueTask.FromException<bool>(this);
-
-        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
-            => ValueTask.FromException(this);
-    }
-
-    private sealed class SuccessfulTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
-    {
-        internal static readonly SuccessfulTaskFactory Instance = new();
-
-        private SuccessfulTaskFactory()
-        {
-        }
-
-        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
-            => new(true);
-
-        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
-            => ValueTask.CompletedTask;
-    }
-
-    private sealed class TimedOutTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
-    {
-        internal static readonly TimedOutTaskFactory Instance = new();
-
-        private TimedOutTaskFactory()
-        {
-        }
-
-        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
-            => new(false);
-
-        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
-            => ValueTask.FromException(new TimeoutException());
-    }
 
     private sealed class CallerInformationStorage : ThreadLocal<object?>
     {
@@ -472,6 +565,94 @@ public class QueuedSynchronizer : Disposable
     {
         void InitializeNode(TNode node);
     }
+
+    /// <summary>
+    /// Represents acquisition options.
+    /// </summary>
+    private protected interface IAcquisitionOptions
+    {
+        CancellationToken Token { get; }
+
+        TimeSpan Timeout { get; }
+
+        object? InterruptionReason { get; }
+
+        [RequiresPreviewFeatures]
+        static abstract bool InterruptionRequired { get; }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private protected readonly struct CancellationTokenOnly : IAcquisitionOptions
+    {
+        internal CancellationTokenOnly(CancellationToken token) => Token = token;
+
+        public CancellationToken Token { get; }
+
+        [RequiresPreviewFeatures]
+        static bool IAcquisitionOptions.InterruptionRequired => false;
+
+        object? IAcquisitionOptions.InterruptionReason => null;
+
+        TimeSpan IAcquisitionOptions.Timeout => new(Timeout.InfiniteTicks);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private protected readonly struct TimeoutAndCancellationToken : IAcquisitionOptions
+    {
+        internal TimeoutAndCancellationToken(TimeSpan timeout, CancellationToken token)
+        {
+            Timeout = timeout;
+            Token = token;
+        }
+
+        public CancellationToken Token { get; }
+
+        public TimeSpan Timeout { get; }
+
+        [RequiresPreviewFeatures]
+        static bool IAcquisitionOptions.InterruptionRequired => false;
+
+        object? IAcquisitionOptions.InterruptionReason => null;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private protected readonly struct InterruptionReasonAndCancellationToken : IAcquisitionOptions
+    {
+        internal InterruptionReasonAndCancellationToken(object? reason, CancellationToken token)
+        {
+            InterruptionReason = reason;
+            Token = token;
+        }
+
+        public CancellationToken Token { get; }
+
+        public object? InterruptionReason { get; }
+
+        [RequiresPreviewFeatures]
+        static bool IAcquisitionOptions.InterruptionRequired => true;
+
+        TimeSpan IAcquisitionOptions.Timeout => new(Timeout.InfiniteTicks);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private protected readonly struct TimeoutAndInterruptionReasonAndCancellationToken : IAcquisitionOptions
+    {
+        internal TimeoutAndInterruptionReasonAndCancellationToken(object? reason, TimeSpan timeout, CancellationToken token)
+        {
+            InterruptionReason = reason;
+            Timeout = timeout;
+            Token = token;
+        }
+
+        public CancellationToken Token { get; }
+
+        public object? InterruptionReason { get; }
+
+        [RequiresPreviewFeatures]
+        static bool IAcquisitionOptions.InterruptionRequired => true;
+
+        public TimeSpan Timeout { get; }
+    }
 }
 
 /// <summary>
@@ -543,18 +724,20 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        if (node.NeedsRemoval && RemoveNode(node))
-            DrainWaitQueue();
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval && RemoveNode(node))
+                DrainWaitQueue();
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     private void DrainWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(first is null or WaitNode);
 
         for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
@@ -587,14 +770,16 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// suspended callers.
     /// </remarks>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     protected void Release()
     {
-        ThrowIfDisposed();
-        DrainWaitQueue();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            DrainWaitQueue();
 
-        if (IsDisposing && IsReadyToDispose)
-            Dispose(true);
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
+        }
     }
 
     /// <summary>
@@ -606,15 +791,17 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// </remarks>
     /// <param name="context">The argument to be passed to <see cref="ReleaseCore(TContext)"/>.</param>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     protected void Release(TContext context)
     {
-        ThrowIfDisposed();
-        ReleaseCore(context);
-        DrainWaitQueue();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            ReleaseCore(context);
+            DrainWaitQueue();
 
-        if (IsDisposing && IsReadyToDispose)
-            Dispose(true);
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
+        }
     }
 
     /// <summary>
@@ -627,17 +814,18 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
     /// <returns><see langword="true"/> if this primitive is in acquired state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     protected bool TryAcquire(TContext context)
     {
-        ThrowIfDisposed();
-
-        return TryAcquireCore(context);
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            return TryAcquireCore(context);
+        }
     }
 
     private bool TryAcquireCore(TContext context)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         if (first is null && CanAcquire(context))
         {
@@ -648,22 +836,9 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         return false;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> AcquireCore<TResult>(TContext context)
-        where TResult : struct, IEquatable<TResult>
-    {
-        Debug.Assert(typeof(TResult).IsOneOf(typeof(ValueTask), typeof(ValueTask<bool>)));
-
-        return IsDisposingOrDisposed
-            ? GetDisposedTaskFactory<TResult>()
-            : TryAcquireCore(context)
-            ? GetSuccessfulTaskFactory<TResult>()
-            : Unsafe.As<ISupplier<TimeSpan, CancellationToken, TResult>>(EnqueueNode(context, typeof(TResult) == typeof(ValueTask)));
-    }
-
     private WaitNode EnqueueNode(TContext context, bool throwOnTimeout)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
         node.Context = context;
@@ -687,27 +862,50 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         switch (timeout.Ticks)
         {
-            case < 0L and not Timeout.InfiniteTicks:
+            case Timeout.InfiniteTicks:
+                goto default;
+            case < 0L:
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                try
+                lock (SyncRoot)
                 {
-                    task = new(TryAcquire(context));
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
+                    task = IsDisposingOrDisposed
+                        ? new(GetDisposedTask<bool>())
+                        : new(TryAcquireCore(context));
                 }
 
                 break;
             default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : AcquireCore<ValueTask<bool>>(context).Invoke(timeout, token);
+                if (token.IsCancellationRequested)
+                {
+                    task = ValueTask.FromCanceled<bool>(token);
+                    goto exit;
+                }
+
+                ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
+                lock (SyncRoot)
+                {
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(GetDisposedTask<bool>());
+                        goto exit;
+                    }
+
+                    if (TryAcquireCore(context))
+                    {
+                        task = new(true);
+                        goto exit;
+                    }
+
+                    factory = EnqueueNode(context, throwOnTimeout: false);
+                }
+
+                task = factory.Invoke(timeout, token);
                 break;
         }
 
+    exit:
         return task;
     }
 
@@ -727,29 +925,52 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         switch (timeout.Ticks)
         {
-            case < 0L and not Timeout.InfiniteTicks:
+            case Timeout.InfiniteTicks:
+                goto default;
+            case < 0L:
                 task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                try
+                lock (SyncRoot)
                 {
-                    task = TryAcquire(context)
+                    task = IsDisposingOrDisposed
+                        ? new(GetDisposedTask<bool>())
+                        : TryAcquireCore(context)
                         ? ValueTask.CompletedTask
                         : ValueTask.FromException(new TimeoutException());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
                 }
 
                 break;
             default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled(token)
-                    : AcquireCore<ValueTask>(context).Invoke(timeout, token);
+                if (token.IsCancellationRequested)
+                {
+                    task = ValueTask.FromCanceled(token);
+                    goto exit;
+                }
+
+                ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
+                lock (SyncRoot)
+                {
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(GetDisposedTask<bool>());
+                        goto exit;
+                    }
+
+                    if (TryAcquireCore(context))
+                    {
+                        task = ValueTask.CompletedTask;
+                        goto exit;
+                    }
+
+                    factory = EnqueueNode(context, throwOnTimeout: true);
+                }
+
+                task = factory.Invoke(timeout, token);
                 break;
         }
 
+    exit:
         return task;
     }
 
@@ -762,5 +983,5 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : AcquireCore<ValueTask>(context).Invoke(token);
+        => AcquireAsync(context, new(Timeout.InfiniteTicks), token);
 }

@@ -138,7 +138,7 @@ namespace DotNext.Threading
             True(@lock.TryAcquire(false));
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
+            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
             @lock.Release();
             await task;
         }
@@ -150,7 +150,7 @@ namespace DotNext.Threading
             True(@lock.TryAcquire(false));
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
+            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
             @lock.Downgrade();
             False(task.IsCompleted);
             @lock.Release();

@@ -59,13 +59,15 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        if (node.NeedsRemoval)
-            RemoveNode(node);
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval)
+                RemoveNode(node);
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <summary>
@@ -78,11 +80,13 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// </summary>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Reset()
     {
-        ThrowIfDisposed();
-        return TryAcquire(ref manager);
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            return TryAcquire(ref manager);
+        }
     }
 
     /// <summary>
@@ -90,30 +94,32 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// </summary>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Set()
     {
-        ThrowIfDisposed();
-
-        if (manager.Value)
-            return false;
-
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; ; current = next)
+        lock (SyncRoot)
         {
-            if (current is null)
+            ThrowIfDisposed();
+
+            if (manager.Value)
+                return false;
+
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; ; current = next)
             {
-                manager.Value = true;
-                break;
+                if (current is null)
+                {
+                    manager.Value = true;
+                    break;
+                }
+
+                next = current.Next;
+
+                // skip dead node
+                if (RemoveAndSignal(current))
+                    break;
             }
 
-            next = current.Next;
-
-            // skip dead node
-            if (RemoveAndSignal(current))
-                break;
+            return true;
         }
-
-        return true;
     }
 
     /// <inheritdoc/>
@@ -121,11 +127,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
     /// <inheritdoc/>
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<TResult>()
-        where TResult : struct, IEquatable<TResult>
-        => GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -137,34 +138,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(Reset());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : Wait<ValueTask<bool>>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -174,5 +148,5 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait<ValueTask>().Invoke(token);
+        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
 }

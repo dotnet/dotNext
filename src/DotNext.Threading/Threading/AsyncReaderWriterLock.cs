@@ -202,6 +202,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted, concurrencyLevel);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private ref TLockManager GetLockManager<TLockManager>()
+        where TLockManager : struct, ILockManager<WaitNode>
+        => ref Unsafe.As<State, TLockManager>(ref state);
+
     /// <summary>
     /// Initializes a new reader/writer lock.
     /// </summary>
@@ -211,13 +216,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        if (node.NeedsRemoval && RemoveNode(node))
-            DrainWaitQueue();
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval && RemoveNode(node))
+                DrainWaitQueue();
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <summary>
@@ -263,19 +270,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    public bool TryEnterReadLock()
-    {
-        ThrowIfDisposed();
-
-        return TryAcquire(ref Unsafe.As<State, ReadLockManager>(ref state));
-    }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> Acquire<TManager, TResult>()
-        where TManager : struct, ILockManager<WaitNode>
-        where TResult : struct, IEquatable<TResult>
-        => GetTaskFactory<WaitNode, TManager, TResult>(ref Unsafe.As<State, TManager>(ref state), ref pool);
+    public bool TryEnterReadLock() => TryEnter<ReadLockManager>();
 
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -288,34 +283,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(TryEnterReadLock());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : Acquire<ReadLockManager, ValueTask<bool>>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref GetLockManager<ReadLockManager>(), new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -329,36 +297,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = TryEnterReadLock()
-                        ? ValueTask.CompletedTask
-                        : ValueTask.FromException(new TimeoutException());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled(token)
-                    : Acquire<ReadLockManager, ValueTask>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => AcquireAsync(ref pool, ref GetLockManager<ReadLockManager>(), new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -370,7 +309,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<ReadLockManager, ValueTask>().Invoke(token);
+        => AcquireAsync(ref pool, ref GetLockManager<ReadLockManager>(), new CancellationTokenOnly(token));
 
     /// <summary>
     /// Attempts to acquire write lock without blocking.
@@ -378,12 +317,14 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <param name="stamp">The stamp of the read lock.</param>
     /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool TryEnterWriteLock(in LockStamp stamp)
     {
-        ThrowIfDisposed();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        return stamp.IsValid(in state) && TryAcquire(ref Unsafe.As<State, WriteLockManager>(ref state));
+            return stamp.IsValid(in state) && TryAcquire(ref GetLockManager<WriteLockManager>());
+        }
     }
 
     /// <summary>
@@ -391,13 +332,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    public bool TryEnterWriteLock()
-    {
-        ThrowIfDisposed();
-
-        return TryAcquire(ref Unsafe.As<State, WriteLockManager>(ref state));
-    }
+    public bool TryEnterWriteLock() => TryEnter<WriteLockManager>();
 
     /// <summary>
     /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -410,34 +345,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(TryEnterWriteLock());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : Acquire<WriteLockManager, ValueTask<bool>>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -449,7 +357,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<WriteLockManager, ValueTask>().Invoke(token);
+        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new CancellationTokenOnly(token));
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -463,48 +371,24 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = TryEnterWriteLock()
-                        ? ValueTask.CompletedTask
-                        : ValueTask.FromException(new TimeoutException());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled(token)
-                    : Acquire<WriteLockManager, ValueTask>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.
     /// </summary>
     /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    public bool TryUpgradeToWriteLock()
-    {
-        ThrowIfDisposed();
+    public bool TryUpgradeToWriteLock() => TryEnter<UpgradeManager>();
 
-        return TryAcquire(ref Unsafe.As<State, UpgradeManager>(ref state));
+    private bool TryEnter<TLockManager>()
+        where TLockManager : struct, ILockManager<WaitNode>
+    {
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+
+            return TryAcquire(ref GetLockManager<TLockManager>());
+        }
     }
 
     /// <summary>
@@ -518,34 +402,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(TryUpgradeToWriteLock());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : Acquire<UpgradeManager, ValueTask<bool>>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref GetLockManager<UpgradeManager>(), new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -557,7 +414,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<UpgradeManager, ValueTask>().Invoke(token);
+        => AcquireAsync(ref pool, ref GetLockManager<UpgradeManager>(), new CancellationTokenOnly(token));
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -571,51 +428,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = TryUpgradeToWriteLock()
-                        ? ValueTask.CompletedTask
-                        : ValueTask.FromException(new TimeoutException());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled(token)
-                    : Acquire<UpgradeManager, ValueTask>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> StealWriteLock<TResult>(object? reason)
-        where TResult : struct, IEquatable<TResult>
-    {
-        Interrupt(reason);
-        return GetTaskFactory<WaitNode, WriteLockManager, TResult>(ref Unsafe.As<State, WriteLockManager>(ref state), ref pool);
-    }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TryStealWriteLock(object? reason)
-    {
-        Interrupt(reason);
-        return TryAcquire(ref Unsafe.As<State, WriteLockManager>(ref state));
-    }
+        => AcquireAsync(ref pool, ref GetLockManager<UpgradeManager>(), new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -629,34 +442,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(TryStealWriteLock(reason));
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : StealWriteLock<ValueTask<bool>>(reason).Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -671,36 +457,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = TryStealWriteLock(reason)
-                        ? ValueTask.CompletedTask
-                        : ValueTask.FromException(new TimeoutException());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled(token)
-                    : StealWriteLock<ValueTask>(reason).Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -713,11 +470,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : StealWriteLock<ValueTask>(reason).Invoke(token);
+        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new InterruptionReasonAndCancellationToken(reason, token));
 
     private void DrainWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(first is null or WaitNode);
 
         for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
@@ -772,19 +529,21 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </remarks>
     /// <exception cref="SynchronizationLockException">The caller has not entered the lock in write mode.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Release()
     {
-        ThrowIfDisposed();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        if (state.IsWriteLockAllowed)
-            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+            if (state.IsWriteLockAllowed)
+                throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-        state.ExitLock();
-        DrainWaitQueue();
+            state.ExitLock();
+            DrainWaitQueue();
 
-        if (IsDisposing && IsReadyToDispose)
-            Dispose(true);
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
+        }
     }
 
     /// <summary>
@@ -796,16 +555,18 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </remarks>
     /// <exception cref="SynchronizationLockException">The caller has not entered the lock in write mode.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void DowngradeFromWriteLock()
     {
-        ThrowIfDisposed();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        if (state.IsWriteLockAllowed)
-            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+            if (state.IsWriteLockAllowed)
+                throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-        state.DowngradeFromWriteLock();
-        DrainWaitQueue();
+            state.DowngradeFromWriteLock();
+            DrainWaitQueue();
+        }
     }
 
     private protected override bool IsReadyToDispose => state.IsWriteLockAllowed && first is null;

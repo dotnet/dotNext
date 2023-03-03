@@ -28,8 +28,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         internal void Increment(long value) => Current = checked(Current + value);
 
-        internal bool Decrement(long value)
-            => (Current = Math.Max(0L, checked(Current - value))) is 0L;
+        internal bool Decrement(long value = 1L)
+            => (Current = Math.Max(0L, Current - value)) is 0L;
 
         readonly void ILockManager.AcquireLock()
         {
@@ -79,13 +79,15 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        if (node.NeedsRemoval)
-            RemoveNode(node);
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval)
+                RemoveNode(node);
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <summary>
@@ -103,19 +105,21 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// </summary>
     public bool IsSet => CurrentCount is 0L;
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     internal bool TryAddCount(long signalCount, bool autoReset)
     {
-        ThrowIfDisposed();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        if (signalCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(signalCount));
+            if (signalCount < 0)
+                throw new ArgumentOutOfRangeException(nameof(signalCount));
 
-        if (manager.Current is 0L && !autoReset)
-            return false;
+            if (manager.Current is 0L && !autoReset)
+                return false;
 
-        manager.Increment(signalCount);
-        return true;
+            manager.Increment(signalCount);
+            return true;
+        }
     }
 
     /// <summary>
@@ -168,112 +172,168 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/>, if state of this object changed from signaled to non-signaled state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Reset(long count)
     {
-        ThrowIfDisposed();
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        // in signaled state
-        if (manager.Current is not 0L)
-            return false;
+        bool result;
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        manager.Current = manager.Initial = count;
-        return true;
+            // in signaled state
+            if (manager.Current is not 0L)
+            {
+                result = false;
+            }
+            else
+            {
+                manager.Current = manager.Initial = count;
+                result = true;
+            }
+        }
+
+        return result;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private bool SignalCore(long signalCount, out LinkedValueTaskCompletionSource<bool>? head)
     {
-        if (manager.Current is 0L)
-            throw new InvalidOperationException();
+        lock (SyncRoot)
+        {
+            if (manager.Current is 0L)
+                throw new InvalidOperationException();
 
-        bool result;
-        head = (result = manager.Decrement(signalCount))
-            ? DetachWaitQueue()
-            : null;
+            bool result;
+            head = (result = manager.Decrement(signalCount))
+                ? DetachWaitQueue()
+                : null;
 
-        return result;
+            return result;
+        }
     }
 
-    private bool TrySignalAndResetCore(long signalCount)
+    private bool SignalAndResetCore(out LinkedValueTaskCompletionSource<bool>? head)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        bool result;
-        if (result = manager.Decrement(signalCount))
+        if (manager.Decrement())
         {
-            ResumeAll(DetachWaitQueue());
             manager.Current = manager.Initial;
+            head = DetachWaitQueue();
+            return true;
         }
 
-        return result;
-    }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TrySignalAndReset(long signalCount) => TrySignalAndResetCore(signalCount);
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> SignalAndWait<TResult>(out bool completedSynchronously)
-        where TResult : struct, IEquatable<TResult>
-    {
-        ISupplier<TimeSpan, CancellationToken, TResult> result;
-
-        if (IsDisposingOrDisposed)
-        {
-            completedSynchronously = true;
-            result = GetDisposedTaskFactory<TResult>();
-        }
-        else if (completedSynchronously = TrySignalAndResetCore(1L))
-        {
-            result = GetSuccessfulTaskFactory<TResult>();
-        }
-        else
-        {
-            result = GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
-        }
-
-        return result;
+        head = null;
+        return false;
     }
 
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
     {
         ValueTask<bool> task;
+        completedSynchronously = true;
 
         switch (timeout.Ticks)
         {
-            case < 0L and not Timeout.InfiniteTicks:
+            case Timeout.InfiniteTicks:
+                goto default;
+            case < 0L:
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                completedSynchronously = true;
                 break;
             case 0L:
-                try
+                LinkedValueTaskCompletionSource<bool>? queue;
+                completedSynchronously = true;
+                lock (SyncRoot)
                 {
-                    task = new(TrySignalAndReset(1L));
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(GetDisposedTask<bool>());
+                        goto exit;
+                    }
+
+                    SignalAndResetCore(out queue);
                 }
 
-                completedSynchronously = true;
+                ResumeAll(queue);
+                task = new(false);
                 break;
             default:
-                task = (completedSynchronously = token.IsCancellationRequested)
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : SignalAndWait<ValueTask<bool>>(out completedSynchronously).Invoke(timeout, token);
+                if (token.IsCancellationRequested)
+                {
+                    task = ValueTask.FromCanceled<bool>(token);
+                    goto exit;
+                }
+
+                ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
+                lock (SyncRoot)
+                {
+                    if (IsDisposingOrDisposed)
+                    {
+                        task = new(GetDisposedTask<bool>());
+                        goto exit;
+                    }
+
+                    if (SignalAndResetCore(out queue))
+                    {
+                        task = new(true);
+                        goto resume_callers;
+                    }
+
+                    factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
+                }
+
+                completedSynchronously = false;
+                task = factory.Invoke(timeout, token);
+                break;
+
+            resume_callers:
+                ResumeAll(queue);
                 break;
         }
 
+    exit:
         return task;
     }
 
     internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
     {
-        return (completedSynchronously = token.IsCancellationRequested)
-            ? ValueTask.FromCanceled(token)
-            : SignalAndWait<ValueTask>(out completedSynchronously).Invoke(token);
+        ValueTask task;
+        completedSynchronously = true;
+
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+            goto exit;
+        }
+
+        ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
+        LinkedValueTaskCompletionSource<bool>? queue;
+        lock (SyncRoot)
+        {
+            if (IsDisposingOrDisposed)
+            {
+                task = new(DisposedTask);
+                goto exit;
+            }
+
+            if (SignalAndResetCore(out queue))
+            {
+                task = ValueTask.CompletedTask;
+                goto resume_callers;
+            }
+
+            factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
+        }
+
+        completedSynchronously = false;
+        task = factory.Invoke(token);
+        goto exit;
+
+    resume_callers:
+        ResumeAll(queue);
+
+    exit:
+        return task;
     }
 
     /// <summary>
@@ -300,11 +360,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc />
     bool IAsyncEvent.Signal() => Signal();
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<TResult>()
-        where TResult : struct, IEquatable<TResult>
-        => GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
-
     /// <summary>
     /// Turns caller into idle state until the current event is set.
     /// </summary>
@@ -314,12 +369,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default) => timeout.Ticks switch
-    {
-        < 0L and not Timeout.InfiniteTicks => ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout))),
-        0L => new(IsSet),
-        _ => token.IsCancellationRequested ? ValueTask.FromCanceled<bool>(token) : Wait<ValueTask<bool>>().Invoke(timeout, token),
-    };
+    public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
+        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -329,5 +380,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait<ValueTask>().Invoke(token);
+        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
 }

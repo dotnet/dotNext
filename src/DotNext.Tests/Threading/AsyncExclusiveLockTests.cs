@@ -52,7 +52,7 @@ namespace DotNext.Threading
         {
             using var @lock = new AsyncExclusiveLock();
             True(@lock.TryAcquire());
-            var waitNode = @lock.AcquireAsync(CancellationToken.None);
+            var waitNode = @lock.AcquireAsync();
             False(waitNode.IsCompleted);
             Throws<ArgumentOutOfRangeException>(() => @lock.CancelSuspendedCallers(new CancellationToken(false)));
             @lock.CancelSuspendedCallers(new CancellationToken(true));
@@ -93,7 +93,7 @@ namespace DotNext.Threading
             True(@lock.TryAcquire());
             var task = @lock.DisposeAsync();
             False(task.IsCompleted);
-            await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
+            await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace DotNext.Threading
             var l = new AsyncExclusiveLock();
             l.Dispose();
             var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
-            await ThrowsAnyAsync<ObjectDisposedException>(result.AsTask);
+            await ThrowsAsync<ObjectDisposedException>(result.AsTask);
         }
 
         [Fact]

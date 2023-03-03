@@ -87,13 +87,15 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        if (node.NeedsRemoval)
-            RemoveNode(node);
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval)
+                RemoveNode(node);
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <inheritdoc/>
@@ -110,8 +112,13 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     public long Value => manager.VolatileRead();
 
     /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    bool IAsyncEvent.Reset() => manager.TryReset();
+    bool IAsyncEvent.Reset()
+    {
+        lock (SyncRoot)
+        {
+            return manager.TryReset();
+        }
+    }
 
     /// <summary>
     /// Increments counter and resume suspended callers.
@@ -142,20 +149,22 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private void IncrementCore(long delta)
     {
         Debug.Assert(delta > 0L);
 
-        ThrowIfDisposed();
-        manager.Increment(delta);
-
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && manager.Value > 0L; current = next)
+        lock (SyncRoot)
         {
-            next = current.Next;
+            ThrowIfDisposed();
+            manager.Increment(delta);
 
-            if (RemoveAndSignal(current))
-                manager.Decrement();
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && manager.Value > 0L; current = next)
+            {
+                next = current.Next;
+
+                if (RemoveAndSignal(current))
+                    manager.Decrement();
+            }
         }
     }
 
@@ -165,11 +174,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         Increment();
         return true;
     }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> Wait<TResult>()
-        where TResult : struct, IEquatable<TResult>
-        => GetTaskFactory<DefaultWaitNode, StateManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -181,34 +185,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(TryDecrement());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : Wait<ValueTask<bool>>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -219,16 +196,18 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait<ValueTask>().Invoke(token);
+        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.
     /// </summary>
     /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool TryDecrement()
     {
-        ThrowIfDisposed();
-        return TryAcquire(ref manager);
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            return TryAcquire(ref manager);
+        }
     }
 }

@@ -69,7 +69,7 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedValueTaskCompletionSource<bool>? EnqueueCompletedTask(LinkedTaskNode node)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
 
         if (firstTask is null || lastTask is null)
@@ -85,13 +85,22 @@ public partial class TaskCompletionPipe<T>
         return DetachWaitQueue();
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private LinkedValueTaskCompletionSource<bool>? EnqueueCompletedTask(LinkedTaskNode node, uint expectedVersion)
-        => version == expectedVersion ? EnqueueCompletedTask(node) : null;
+    {
+        LinkedValueTaskCompletionSource<bool>? result;
+        lock (SyncRoot)
+        {
+            result = version == expectedVersion
+                ? EnqueueCompletedTask(node)
+                : null;
+        }
+
+        return result;
+    }
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         if (firstTask is not null)
         {
@@ -110,7 +119,7 @@ public partial class TaskCompletionPipe<T>
 
     private void ClearTaskQueue()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         firstTask = lastTask = null;
     }

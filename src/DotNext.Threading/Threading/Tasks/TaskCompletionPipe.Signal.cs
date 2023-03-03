@@ -27,7 +27,7 @@ public partial class TaskCompletionPipe<T>
 
     private void RemoveNode(LinkedValueTaskCompletionSource<bool> signal)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         if (ReferenceEquals(signal, first))
             first = signal.Next;
@@ -41,7 +41,7 @@ public partial class TaskCompletionPipe<T>
     // detach all suspended callers to process out of the monitor lock
     private LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var result = first;
         first = last = null;
@@ -50,7 +50,7 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedValueTaskCompletionSource<bool> EnqueueNode()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         LinkedValueTaskCompletionSource<bool> result = pool.Get();
 

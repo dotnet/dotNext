@@ -58,13 +58,15 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        if (node.NeedsRemoval && RemoveNode(node))
-            DrainWaitQueue();
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval && RemoveNode(node))
+                DrainWaitQueue();
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <summary>
@@ -77,17 +79,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool TryAcquire()
     {
-        ThrowIfDisposed();
-        return TryAcquire(ref manager);
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            return TryAcquire(ref manager);
+        }
     }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> Acquire<TResult>()
-        where TResult : struct, IEquatable<TResult>
-        => GetTaskFactory<DefaultWaitNode, LockManager, TResult>(ref manager, ref pool);
 
     /// <summary>
     /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
@@ -100,34 +99,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(TryAcquire());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : Acquire<ValueTask<bool>>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -141,36 +113,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = TryAcquire()
-                        ? ValueTask.CompletedTask
-                        : ValueTask.FromException(new TimeoutException());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled(token)
-                    : Acquire<ValueTask>().Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -182,22 +125,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Acquire<ValueTask>().Invoke(token);
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ISupplier<TimeSpan, CancellationToken, TResult> Steal<TResult>(object? reason)
-        where TResult : struct, IEquatable<TResult>
-    {
-        Interrupt(reason);
-        return GetTaskFactory<DefaultWaitNode, LockManager, TResult>(ref manager, ref pool);
-    }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private bool TrySteal(object? reason)
-    {
-        Interrupt(reason);
-        return TryAcquire(ref manager);
-    }
+        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -216,34 +144,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = new(TrySteal(reason));
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled<bool>(token)
-                    : Steal<ValueTask<bool>>(reason).Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -263,36 +164,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask task;
-
-        switch (timeout.Ticks)
-        {
-            case < 0L and not Timeout.InfiniteTicks:
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                try
-                {
-                    task = TrySteal(reason)
-                        ? ValueTask.CompletedTask
-                        : ValueTask.FromException(new TimeoutException());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
-                }
-
-                break;
-            default:
-                task = token.IsCancellationRequested
-                    ? ValueTask.FromCanceled(token)
-                    : Steal<ValueTask>(reason).Invoke(timeout, token);
-                break;
-        }
-
-        return task;
-    }
+        => AcquireAsync(ref pool, ref manager, new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -310,11 +182,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Steal<ValueTask>(reason).Invoke(token);
+        => AcquireAsync(ref pool, ref manager, new InterruptionReasonAndCancellationToken(reason, token));
 
     private void DrainWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
         {
@@ -337,18 +209,20 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Release()
     {
-        ThrowIfDisposed();
-        if (!manager.Value)
-            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            if (!manager.Value)
+                throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-        manager.ExitLock();
-        DrainWaitQueue();
+            manager.ExitLock();
+            DrainWaitQueue();
 
-        if (IsDisposing && IsReadyToDispose)
-            Dispose(true);
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
+        }
     }
 
     private protected sealed override bool IsReadyToDispose => manager is { Value: false } && first is null;
