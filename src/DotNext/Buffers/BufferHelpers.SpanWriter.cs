@@ -42,7 +42,7 @@ public static partial class BufferHelpers
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the value.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void WriteInt16(this ref SpanWriter<byte> writer, short value, bool isLittleEndian)
-        => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value));
+        => writer.Write(isLittleEndian == BitConverter.IsLittleEndian ? value : ReverseEndianness(value)); // TODO: Replace with generic numbers in .NET 8
 
     /// <summary>
     /// Writes 16-bit unsigned integer to the block of memory.
