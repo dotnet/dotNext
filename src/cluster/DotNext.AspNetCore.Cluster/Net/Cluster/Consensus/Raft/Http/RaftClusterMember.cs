@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
@@ -63,11 +62,12 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     internal void Touch() => Status = ClusterMemberStatus.Available;
 
-    [RequiresPreviewFeatures]
     private async Task<TResponse> SendAsync<TResponse, TMessage>(TMessage message, CancellationToken token)
         where TMessage : class, IHttpMessage<TResponse>
     {
+#pragma warning disable CA2252
         context.Logger.SendingRequestToMember(EndPoint, TMessage.MessageType);
+#pragma warning restore CA2252
         var request = new HttpRequestMessage
         {
             RequestUri = resourcePath,
@@ -75,7 +75,9 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             VersionPolicy = DefaultVersionPolicy,
         };
 
+#pragma warning disable CA2252
         HttpMessage.SetMessageType<TMessage>(request);
+#pragma warning restore CA2252
         message.PrepareRequest(request);
 
         // setup additional timeout control token needed if actual timeout
@@ -108,7 +110,9 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         }
         catch (HttpRequestException e)
         {
+#pragma warning disable CA2252
             if (response is null || TMessage.IsMemberUnavailable(e.StatusCode))
+#pragma warning restore CA2252
                 throw MemberUnavailable(e);
 
             throw new UnexpectedStatusCodeException(response, e);
@@ -139,7 +143,9 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 #pragma warning restore CS0618
             ResponseTimeMeter.Record(
                 responseTime,
+#pragma warning disable CA2252
                 new(IRaftClusterMember.MessageTypeAttributeName, TMessage.MessageType),
+#pragma warning restore CA2252
                 cachedRemoteAddressAttribute);
         }
 
@@ -166,23 +172,19 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         return result;
     }
 
-    [RequiresPreviewFeatures]
     Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote
             ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
             : Task.FromResult(new Result<bool>(term, true));
 
-    [RequiresPreviewFeatures]
     Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote
             ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
             : Task.FromResult(new Result<PreVoteResult>(term, PreVoteResult.Accepted));
 
-    [RequiresPreviewFeatures]
     Task<bool> IClusterMember.ResignAsync(CancellationToken token)
         => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMemberId), token);
 
-    [RequiresPreviewFeatures]
     Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
         long term,
         TList entries,
@@ -198,13 +200,11 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             : Task.FromResult(new Result<bool>(term, true));
     }
 
-    [RequiresPreviewFeatures]
     Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         => IsRemote
             ? SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
             : Task.FromResult(new Result<bool>(term, true));
 
-    [RequiresPreviewFeatures]
     async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
     {
         if (!IsRemote)
@@ -216,7 +216,6 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         return metadata;
     }
 
-    [RequiresPreviewFeatures]
     Task<long?> IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)
         => IsRemote ? SendAsync<long?, SynchronizeMessage>(new SynchronizeMessage(context.LocalMemberId, commitIndex), token) : Task.FromResult<long?>(null);
 
@@ -234,28 +233,22 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         private set => IClusterMember.OnMemberStatusChanged(this, ref status, value, memberStatusChanged);
     }
 
-    [RequiresPreviewFeatures]
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
         => SendAsync<TResponse, CustomMessage<TResponse>>(new(context.LocalMemberId, message, responseReader) { RespectLeadership = respectLeadership }, token);
 
-    [RequiresPreviewFeatures]
     Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         => SendMessageAsync(message, responseReader, false, token);
 
-    [RequiresPreviewFeatures]
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, bool respectLeadership, CancellationToken token)
         where TResponse : notnull, ISerializable<TResponse>
         => SendAsync<TResponse, CustomSerializableMessage<TResponse>>(new(context.LocalMemberId, message) { RespectLeadership = respectLeadership }, token);
 
-    [RequiresPreviewFeatures]
     Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, CancellationToken token)
         => SendMessageAsync<TResponse>(message, false, token);
 
-    [RequiresPreviewFeatures]
     internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
         SendAsync<IMessage?, CustomMessage>(message, token);
 
-    [RequiresPreviewFeatures]
     Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
     {
         var request = new CustomMessage(context.LocalMemberId, message, requiresConfirmation);

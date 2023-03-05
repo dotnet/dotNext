@@ -69,12 +69,14 @@ Starting from the current release, `DotNext.Reflection` library is no longer pub
 * Optimized memory allocations caused by `FileBufferingWriter` class
 * Added `DotNext.Text.Json.JsonSerializable<T>` wrapper acting as a bridge between [binary DTO](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Serialization.ISerializable-1.html) and JSON serialization infrastructure from .NET BCL
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
+* Reduced API surface requiring [RequiresPreviewFeatures](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.versioning.requirespreviewfeaturesattribute) attribute
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.11.0">DotNext.Net.Cluster 4.10.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 * Fixed [151](https://github.com/dotnet/dotNext/issues/151)
 * Raft: reduced memory allocations when the node is Leader
 * Raft: fixed correctness of `ForceReplication` method when it is used as a write barrier in a distributed environment
+Reduced API surface requiring [RequiresPreviewFeatures](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.versioning.requirespreviewfeaturesattribute) attribute
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.11.0">DotNext.AspNetCore.Cluster 4.11.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)

@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Messaging;
 
@@ -10,7 +9,6 @@ using Runtime.Serialization;
 /// Represents typed message.
 /// </summary>
 /// <typeparam name="T">The payload of the message.</typeparam>
-[RequiresPreviewFeatures]
 internal sealed class Message<T> : IMessage
     where T : notnull, ISerializable<T>
 {

@@ -7,12 +7,12 @@ namespace DotNext.Text.Json;
 /// Represents JSON serializable type.
 /// </summary>
 /// <typeparam name="TSelf">The type implementing this interface.</typeparam>
-[RequiresPreviewFeatures]
 public interface IJsonSerializable<TSelf>
     where TSelf : notnull, IJsonSerializable<TSelf>
 {
     /// <summary>
     /// Gets the type information required by serialization or deserialization process.
     /// </summary>
+    [RequiresPreviewFeatures]
     static abstract JsonTypeInfo<TSelf> TypeInfo { get; }
 }

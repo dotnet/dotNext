@@ -18,7 +18,6 @@ using PipeBinaryReader = IO.Pipelines.PipeBinaryReader;
 /// </summary>
 /// <typeparam name="T">JSON serializable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-[RequiresPreviewFeatures]
 public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, ISupplier<T>
     where T : IJsonSerializable<T>
 {
@@ -34,6 +33,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     readonly long? IDataTransferObject.Length => null;
 
     /// <inheritdoc />
+    [RequiresPreviewFeatures]
     readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
         ValueTask result;
@@ -71,6 +71,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     }
 
     /// <inheritdoc cref="ISerializable{TSelf}.ReadFromAsync{TReader}(TReader, CancellationToken)"/>
+    [RequiresPreviewFeatures]
     public static ValueTask<JsonSerializable<T>> ReadFromAsync<TReader>(TReader reader, CancellationToken token = default)
         where TReader : notnull, IAsyncBinaryReader
     {

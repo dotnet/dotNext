@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
@@ -24,7 +23,6 @@ internal partial class RaftHttpCluster : IOutputChannel
     void IMessageBus.RemoveListener(IInputChannel handler)
         => messageHandlers = messageHandlers.Remove(handler);
 
-    [RequiresPreviewFeatures]
     async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -66,7 +64,6 @@ internal partial class RaftHttpCluster : IOutputChannel
         }
     }
 
-    [RequiresPreviewFeatures]
     async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -107,7 +104,6 @@ internal partial class RaftHttpCluster : IOutputChannel
         }
     }
 
-    [RequiresPreviewFeatures]
     async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(message);

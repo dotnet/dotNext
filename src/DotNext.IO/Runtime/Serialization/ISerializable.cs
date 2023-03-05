@@ -8,7 +8,6 @@ using IO;
 /// Represents an object that supports serialization and deserialization.
 /// </summary>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
-[RequiresPreviewFeatures]
 public interface ISerializable<TSelf> : IDataTransferObject
     where TSelf : ISerializable<TSelf>
 {
@@ -23,6 +22,7 @@ public interface ISerializable<TSelf> : IDataTransferObject
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The decoded object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [RequiresPreviewFeatures]
     public static abstract ValueTask<TSelf> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
         where TReader : notnull, IAsyncBinaryReader;
 }

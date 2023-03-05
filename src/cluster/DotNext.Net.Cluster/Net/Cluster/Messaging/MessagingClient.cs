@@ -9,7 +9,6 @@ using Runtime.Serialization;
 /// <summary>
 /// Represents typed client for sending messages to the nodes in the cluster.
 /// </summary>
-[RequiresPreviewFeatures]
 public class MessagingClient
 {
     private readonly IOutputChannel channel;
@@ -56,6 +55,7 @@ public class MessagingClient
     /// <typeparam name="TMessage">The type of the message payload.</typeparam>
     /// <param name="messageInfo">The information about message type.</param>
     /// <returns>This client.</returns>
+    [RequiresPreviewFeatures]
     public MessagingClient RegisterMessage<TMessage>(MessageAttribute<TMessage> messageInfo)
         where TMessage : notnull, ISerializable<TMessage>
         => RegisterMessage<TMessage>(messageInfo.Name, new(messageInfo.MimeType));
