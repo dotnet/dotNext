@@ -38,7 +38,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     [CLSCompliant(false)]
     protected TagList measurementTags;
 
-    private ClusterMemberId localMemberId;
     private AsyncLock transitionSync;  // used to synchronize state transitions
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
@@ -67,7 +66,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         standbyNode = config.Standby;
         clockDriftBound = config.ClockDriftBound;
         readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        localMemberId = config.Id ?? new(random);
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         state = new StandbyState<TMember>(this);
@@ -99,11 +97,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     [CLSCompliant(false)]
     protected virtual ILogger Logger => NullLogger.Instance;
-
-    /// <summary>
-    /// Gets information the current member.
-    /// </summary>
-    public ref readonly ClusterMemberId LocalMemberId => ref localMemberId;
 
     /// <inheritdoc />
     ILogger IRaftStateMachine.Logger => Logger;
@@ -313,25 +306,28 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private TMember? TryGetLocalMember() => members.Values.FirstOrDefault(static m => m.IsRemote is false);
 
     /// <summary>
+    /// Determines whether the specified candidate represents a local node.
+    /// </summary>
+    /// <param name="candidate">The candidate to check.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if <paramref name="candidate"/> represents a local node; otherwise, <see langword="false"/>.</returns>
+    protected abstract ValueTask<bool> DetectLocalMemberAsync(TMember candidate, CancellationToken token);
+
+    /// <summary>
     /// Starts serving local member.
     /// </summary>
-    /// <param name="localMemberDetector">A predicate that allows to resolve local cluster member.</param>
     /// <param name="token">The token that can be used to cancel initialization process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="localMemberDetector"/> is <see langword="null"/>.</exception>
     /// <seealso cref="StartFollowing"/>
-    protected async Task StartAsync(Func<TMember, CancellationToken, ValueTask<bool>> localMemberDetector, CancellationToken token)
+    public virtual async Task StartAsync(CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(localMemberDetector);
-
         await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
         // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
         foreach (var member in members.Values)
         {
-            if (await localMemberDetector(member, token).ConfigureAwait(false))
+            if (await DetectLocalMemberAsync(member, token).ConfigureAwait(false))
             {
-                localMemberId = member.Id;
                 state = standbyNode ? new StandbyState<TMember>(this) : new FollowerState<TMember>(this);
                 readinessProbe.TrySetResult();
                 return;
@@ -952,7 +948,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 else
                     readyForTransition = false;
 
-                if (readyForTransition)
+                if (readyForTransition && TryGetLocalMember()?.Id is { } localMemberId)
                 {
                     var newState = new CandidateState<TMember>(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false));
                     await UpdateStateAsync(newState).ConfigureAwait(false);

@@ -67,8 +67,8 @@ internal sealed class GenericClient : Client
     private readonly MemoryAllocator<byte> defaultAllocator;
     private readonly IConnectionFactory factory;
 
-    internal GenericClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IConnectionFactory factory, MemoryAllocator<byte> defaultAllocator)
-        : base(localMember, endPoint, id)
+    internal GenericClient(ILocalMember localMember, EndPoint endPoint, IConnectionFactory factory, MemoryAllocator<byte> defaultAllocator)
+        : base(localMember, endPoint)
     {
         Debug.Assert(factory is not null);
         Debug.Assert(defaultAllocator is not null);

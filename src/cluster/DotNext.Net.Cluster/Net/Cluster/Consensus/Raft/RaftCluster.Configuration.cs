@@ -85,7 +85,7 @@ public partial class RaftCluster
         /// <returns>The constructed storage.</returns>
         public InMemoryClusterConfigurationStorage<EndPoint> UseInMemoryConfigurationStorage()
         {
-            var storage = new InMemoryClusterConfigurationStorage(MemoryAllocator);
+            var storage = new InMemoryClusterConfigurationStorage(this.As<IClusterMemberConfiguration>().EndPointComparer, MemoryAllocator);
             ConfigurationStorage = storage;
             return storage;
         }
@@ -211,7 +211,7 @@ public partial class RaftCluster
         public ClusterMemberId? Id { get; set; }
 
 #pragma warning disable CS0618
-        internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics);
+        internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics);
 #pragma warning restore CS0618
 
         internal abstract IServer CreateServer(ILocalMember localMember);
@@ -277,8 +277,8 @@ public partial class RaftCluster
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
 #pragma warning disable CS0618
-        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
-            => new(localMember, endPoint, id, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
+        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
+            => new(localMember, endPoint, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
 #pragma warning restore CS0618
 
         internal override GenericServer CreateServer(ILocalMember localMember)
@@ -441,8 +441,8 @@ public partial class RaftCluster
         }
 
 #pragma warning disable CS0618
-        internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
-            => new(localMember, endPoint, id, CreateClient)
+        internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
+            => new(localMember, endPoint, CreateClient)
             {
                 RequestTimeout = RequestTimeout,
                 Metrics = metrics,
@@ -540,8 +540,8 @@ public partial class RaftCluster
         }
 
 #pragma warning disable CS0618
-        internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, IClientMetricsCollector? metrics)
-            => new(localMember, endPoint, id, MemoryAllocator)
+        internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
+            => new(localMember, endPoint, MemoryAllocator)
             {
                 TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,

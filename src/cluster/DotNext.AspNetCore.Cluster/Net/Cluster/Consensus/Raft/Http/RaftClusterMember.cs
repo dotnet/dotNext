@@ -41,14 +41,14 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         ResponseTimeMeter = meter.CreateHistogram<double>("response-time", unit: "ms", description: "Response Time");
     }
 
-    internal RaftClusterMember(IHostingContext context, UriEndPoint remoteMember, in ClusterMemberId id)
+    internal RaftClusterMember(IHostingContext context, UriEndPoint remoteMember)
         : base(remoteMember.Uri, context.CreateHttpHandler(), true)
     {
         this.context = context;
         status = new(ClusterMemberStatus.Unknown);
         EndPoint = remoteMember;
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, remoteMember.ToString());
-        Id = id;
+        Id = ClusterMemberId.FromEndPoint(remoteMember);
         resourcePath = remoteMember.Uri.GetComponents(UriComponents.Path, UriFormat.UriEscaped) is { Length: > 0 }
             ? null
             : new(DefaultProtocolPath, UriKind.Relative);
@@ -169,18 +169,18 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     [RequiresPreviewFeatures]
     Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote
-            ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token)
+            ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
             : Task.FromResult(new Result<bool>(term, true));
 
     [RequiresPreviewFeatures]
     Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => IsRemote
-            ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMember, term, lastLogIndex, lastLogTerm), token)
+            ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
             : Task.FromResult(new Result<PreVoteResult>(term, PreVoteResult.Accepted));
 
     [RequiresPreviewFeatures]
     Task<bool> IClusterMember.ResignAsync(CancellationToken token)
-        => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMember), token);
+        => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMemberId), token);
 
     [RequiresPreviewFeatures]
     Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
@@ -194,14 +194,14 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         CancellationToken token)
     {
         return IsRemote
-            ? SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalMember, term, prevLogIndex, prevLogTerm, commitIndex, entries, configuration, applyConfig) { UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries }, token)
+            ? SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalMemberId, term, prevLogIndex, prevLogTerm, commitIndex, entries, configuration, applyConfig) { UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries }, token)
             : Task.FromResult(new Result<bool>(term, true));
     }
 
     [RequiresPreviewFeatures]
     Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         => IsRemote
-            ? SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMember, term, snapshotIndex, snapshot), token)
+            ? SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
             : Task.FromResult(new Result<bool>(term, true));
 
     [RequiresPreviewFeatures]
@@ -211,14 +211,14 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             return context.Metadata;
 
         if (metadata is null || refresh)
-            metadata = await SendAsync<MemberMetadata, MetadataMessage>(new MetadataMessage(context.LocalMember), token).ConfigureAwait(false);
+            metadata = await SendAsync<MemberMetadata, MetadataMessage>(new MetadataMessage(context.LocalMemberId), token).ConfigureAwait(false);
 
         return metadata;
     }
 
     [RequiresPreviewFeatures]
     Task<long?> IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)
-        => IsRemote ? SendAsync<long?, SynchronizeMessage>(new SynchronizeMessage(context.LocalMember, commitIndex), token) : Task.FromResult<long?>(null);
+        => IsRemote ? SendAsync<long?, SynchronizeMessage>(new SynchronizeMessage(context.LocalMemberId, commitIndex), token) : Task.FromResult<long?>(null);
 
     EndPoint IPeer.EndPoint => EndPoint;
 
@@ -226,7 +226,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     bool IClusterMember.IsLeader => context.IsLeader(this);
 
-    public bool IsRemote => Id != context.LocalMember;
+    public bool IsRemote => Id != context.LocalMemberId;
 
     public ClusterMemberStatus Status
     {
@@ -236,7 +236,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     [RequiresPreviewFeatures]
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
-        => SendAsync<TResponse, CustomMessage<TResponse>>(new(context.LocalMember, message, responseReader) { RespectLeadership = respectLeadership }, token);
+        => SendAsync<TResponse, CustomMessage<TResponse>>(new(context.LocalMemberId, message, responseReader) { RespectLeadership = respectLeadership }, token);
 
     [RequiresPreviewFeatures]
     Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
@@ -245,7 +245,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     [RequiresPreviewFeatures]
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, bool respectLeadership, CancellationToken token)
         where TResponse : notnull, ISerializable<TResponse>
-        => SendAsync<TResponse, CustomSerializableMessage<TResponse>>(new(context.LocalMember, message) { RespectLeadership = respectLeadership }, token);
+        => SendAsync<TResponse, CustomSerializableMessage<TResponse>>(new(context.LocalMemberId, message) { RespectLeadership = respectLeadership }, token);
 
     [RequiresPreviewFeatures]
     Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, CancellationToken token)
@@ -258,7 +258,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     [RequiresPreviewFeatures]
     Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
     {
-        var request = new CustomMessage(context.LocalMember, message, requiresConfirmation);
+        var request = new CustomMessage(context.LocalMemberId, message, requiresConfirmation);
         return SendSignalAsync(request, token);
     }
 

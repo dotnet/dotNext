@@ -16,8 +16,8 @@ internal sealed class ExchangePeer : RaftClusterMember
     private readonly IClient client;
     private readonly PipeOptions pipeConfig;
 
-    internal ExchangePeer(ILocalMember localMember, EndPoint address, ClusterMemberId id, Func<EndPoint, IClient> clientFactory)
-        : base(localMember, address, id)
+    internal ExchangePeer(ILocalMember localMember, EndPoint address, Func<EndPoint, IClient> clientFactory)
+        : base(localMember, address)
     {
         client = clientFactory(address);
         pipeConfig = PipeOptions.Default;

@@ -102,6 +102,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     }
 
     private readonly ClusterConfiguration active, proposed;
+    private readonly IEqualityComparer<TAddress>? comparer;
     private readonly int bufferSize;
 
     /// <summary>
@@ -109,14 +110,16 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// </summary>
     /// <param name="path">The full path to the folder used as persistent storage of cluster members.</param>
     /// <param name="fileBufferSize">The buffer size for file I/O.</param>
+    /// <param name="comparer">The address comparer.</param>
     /// <param name="allocator">The memory allocator for file I/O.</param>
-    protected PersistentClusterConfigurationStorage(string path, int fileBufferSize = 512, MemoryAllocator<byte>? allocator = null)
-        : this(new DirectoryInfo(path), fileBufferSize, allocator)
+    protected PersistentClusterConfigurationStorage(string path, int fileBufferSize = 512, IEqualityComparer<TAddress>? comparer = null, MemoryAllocator<byte>? allocator = null)
+        : this(new DirectoryInfo(path), fileBufferSize, comparer, allocator)
     {
+        this.comparer = comparer;
     }
 
-    private PersistentClusterConfigurationStorage(DirectoryInfo storage, int fileBufferSize, MemoryAllocator<byte>? allocator)
-        : base(allocator)
+    private PersistentClusterConfigurationStorage(DirectoryInfo storage, int fileBufferSize, IEqualityComparer<TAddress>? comparer, MemoryAllocator<byte>? allocator)
+        : base(comparer, allocator)
     {
         if (!storage.Exists)
             storage.Create();
@@ -176,7 +179,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// <inheritdoc/>
     protected sealed override async ValueTask LoadConfigurationAsync(CancellationToken token = default)
     {
-        var builder = ImmutableDictionary.CreateBuilder<ClusterMemberId, TAddress>();
+        var builder = ImmutableHashSet.CreateBuilder<TAddress>(comparer);
 
         using var buffer = new PooledBufferWriter<byte>
         {
@@ -209,7 +212,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         builder.Clear();
     }
 
-    private MemoryOwner<byte> Encode(IReadOnlyDictionary<ClusterMemberId, TAddress> configuration, long fingerprint)
+    private MemoryOwner<byte> Encode(IReadOnlyCollection<TAddress> configuration, long fingerprint)
     {
         MemoryOwner<byte> result;
         var writer = new BufferWriterSlim<byte>(bufferSize, allocator);
@@ -231,13 +234,13 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     }
 
     /// <inheritdoc />
-    protected sealed override async ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
+    protected sealed override async ValueTask<bool> AddMemberAsync(TAddress address, CancellationToken token = default)
     {
-        if (!proposed.IsEmpty || activeCache.ContainsKey(id))
+        if (!proposed.IsEmpty || activeCache.Contains(address))
             return false;
 
         var builder = activeCache.ToBuilder();
-        builder.Add(id, address);
+        builder.Add(address);
         proposedCache = builder.ToImmutable();
 
         proposed.Fingerprint = GenerateFingerprint();
@@ -251,13 +254,13 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     }
 
     /// <inheritdoc />
-    protected sealed override async ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
+    protected sealed override async ValueTask<bool> RemoveMemberAsync(TAddress address, CancellationToken token = default)
     {
-        if (!proposed.IsEmpty || !activeCache.ContainsKey(id))
+        if (!proposed.IsEmpty)
             return false;
 
         var builder = activeCache.ToBuilder();
-        if (!builder.Remove(id, out var address))
+        if (!builder.Remove(address))
             return false;
         proposedCache = builder.ToImmutable();
 

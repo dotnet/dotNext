@@ -46,12 +46,12 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     /// <summary>
     /// Represents configuration builder.
     /// </summary>
-    public sealed class ConfigurationBuilder : Dictionary<ClusterMemberId, TAddress>
+    public sealed class ConfigurationBuilder : HashSet<TAddress>
     {
         private readonly InMemoryClusterConfigurationStorage<TAddress> storage;
 
         internal ConfigurationBuilder(InMemoryClusterConfigurationStorage<TAddress> storage)
-            : base(storage.activeCache)
+            : base(storage.activeCache, storage.activeCache.KeyComparer)
             => this.storage = storage;
 
         /// <summary>
@@ -59,7 +59,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         /// </summary>
         public void Build()
         {
-            storage.activeCache = ImmutableDictionary.CreateRange(this);
+            storage.activeCache = ImmutableHashSet.CreateRange(Comparer, this);
 
             var config = storage.Encode(this);
             storage.active?.Dispose();
@@ -72,9 +72,10 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     /// <summary>
     /// Initializes a new in-memory configuration storage.
     /// </summary>
+    /// <param name="comparer">An object responsible for comparison of <typeparamref name="TAddress"/> values.</param>
     /// <param name="allocator">The memory allocator.</param>
-    protected InMemoryClusterConfigurationStorage(MemoryAllocator<byte>? allocator = null)
-        : base(allocator)
+    protected InMemoryClusterConfigurationStorage(IEqualityComparer<TAddress>? comparer = null, MemoryAllocator<byte>? allocator = null)
+        : base(comparer, allocator)
     {
     }
 
@@ -126,7 +127,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         OnActivated();
     }
 
-    private MemoryOwner<byte> Encode(IReadOnlyDictionary<ClusterMemberId, TAddress> configuration)
+    private MemoryOwner<byte> Encode(IReadOnlyCollection<TAddress> configuration)
     {
         MemoryOwner<byte> result;
         var writer = new BufferWriterSlim<byte>(InitialBufferSize, allocator);
@@ -149,19 +150,18 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     /// <summary>
     /// Proposes a new member.
     /// </summary>
-    /// <param name="id">The identifier of the cluster member to add.</param>
     /// <param name="address">The address of the cluster member.</param>
     /// <returns>
     /// <see langword="true"/> if the new member is added to the proposed configuration;
     /// <see langword="false"/> if the storage has the proposed configuration already.
     /// </returns>
-    public bool AddMember(ClusterMemberId id, TAddress address)
+    public bool AddMember(TAddress address)
     {
-        if (proposed is not null || activeCache.ContainsKey(id))
+        if (proposed is not null || activeCache.Contains(address))
             return false;
 
         var builder = activeCache.ToBuilder();
-        builder.Add(id, address);
+        builder.Add(address);
         proposedCache = builder.ToImmutable();
 
         proposed = new(GenerateFingerprint(), Encode(builder));
@@ -172,7 +172,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     }
 
     /// <inheritdoc />
-    protected sealed override ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default)
+    protected sealed override ValueTask<bool> AddMemberAsync(TAddress address, CancellationToken token = default)
     {
         ValueTask<bool> result;
         if (token.IsCancellationRequested)
@@ -183,7 +183,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         {
             try
             {
-                result = new(AddMember(id, address));
+                result = new(AddMember(address));
             }
             catch (Exception e)
             {
@@ -197,18 +197,18 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     /// <summary>
     /// Proposes removal of the existing member.
     /// </summary>
-    /// <param name="id">The identifier of the cluster member to remove.</param>
+    /// <param name="address">The address of the cluster member.</param>
     /// <returns>
     /// <see langword="true"/> if the new member is added to the proposed configuration;
     /// <see langword="false"/> if the storage has the proposed configuration already.
     /// </returns>
-    public bool RemoveMember(ClusterMemberId id)
+    public bool RemoveMember(TAddress address)
     {
-        if (proposed is not null || !activeCache.ContainsKey(id))
+        if (proposed is not null)
             return false;
 
         var builder = activeCache.ToBuilder();
-        if (!builder.Remove(id, out var address))
+        if (!builder.Remove(address))
             return false;
         proposedCache = builder.ToImmutable();
 
@@ -220,7 +220,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
     }
 
     /// <inheritdoc />
-    protected sealed override ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default)
+    protected sealed override ValueTask<bool> RemoveMemberAsync(TAddress address, CancellationToken token = default)
     {
         ValueTask<bool> result;
         if (token.IsCancellationRequested)
@@ -231,7 +231,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         {
             try
             {
-                result = new(RemoveMember(id));
+                result = new(RemoveMember(address));
             }
             catch (Exception e)
             {
@@ -270,8 +270,8 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
 
 internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<EndPoint>
 {
-    internal InMemoryClusterConfigurationStorage(MemoryAllocator<byte>? allocator)
-        : base(allocator)
+    internal InMemoryClusterConfigurationStorage(IEqualityComparer<EndPoint> comparer, MemoryAllocator<byte>? allocator)
+        : base(comparer, allocator)
     {
     }
 

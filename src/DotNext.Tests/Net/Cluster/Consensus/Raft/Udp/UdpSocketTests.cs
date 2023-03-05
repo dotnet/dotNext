@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
 
             ExchangePeer CreateClient(EndPoint address, ILocalMember member, TimeSpan requestTimeout)
-                => new(member, address, Random.Shared.Next<ClusterMemberId>(), CreateUdpClient) { RequestTimeout = requestTimeout };
+                => new(member, address, CreateUdpClient) { RequestTimeout = requestTimeout };
         }
     }
 }

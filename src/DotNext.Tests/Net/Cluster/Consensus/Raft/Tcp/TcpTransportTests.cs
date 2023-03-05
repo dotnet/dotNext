@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 SslOptions = useSsl ? CreateServerSslOptions() : null
             };
 
-            TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
@@ -73,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 GracefulShutdownTimeout = 2000
             };
 
-            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
@@ -95,7 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 GracefulShutdownTimeout = 2000
             };
 
-            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
@@ -139,7 +139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 GracefulShutdownTimeout = 2000
             };
 
-            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 TransmissionBlockSize = 400,
                 RequestTimeout = timeout,
@@ -170,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 GracefulShutdownTimeout = 2000
             };
 
-            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
@@ -192,7 +192,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 GracefulShutdownTimeout = 2000
             };
 
-            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
@@ -215,7 +215,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 GracefulShutdownTimeout = 2000
             };
 
-            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,
@@ -259,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 GracefulShutdownTimeout = 2000
             };
 
-            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, Random.Shared.Next<ClusterMemberId>(), DefaultAllocator)
+            static TcpClient CreateClient(EndPoint address, ILocalMember member, TimeSpan timeout) => new(member, address, DefaultAllocator)
             {
                 RequestTimeout = timeout,
                 ConnectTimeout = timeout,

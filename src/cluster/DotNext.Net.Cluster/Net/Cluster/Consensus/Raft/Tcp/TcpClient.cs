@@ -75,8 +75,8 @@ internal sealed class TcpClient : Client, ITcpTransport
     private readonly byte ttl;
     private readonly LingerOption linger;
 
-    internal TcpClient(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id, MemoryAllocator<byte> allocator)
-        : base(localMember, endPoint, id)
+    internal TcpClient(ILocalMember localMember, EndPoint endPoint, MemoryAllocator<byte> allocator)
+        : base(localMember, endPoint)
     {
         Debug.Assert(allocator is not null);
 

@@ -65,7 +65,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 
     private readonly ImmutableDictionary<string, string> metadata;
 #pragma warning disable CS0618
-    private readonly Func<ILocalMember, EndPoint, ClusterMemberId, IClientMetricsCollector?, RaftClusterMember> clientFactory;
+    private readonly Func<ILocalMember, EndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
 #pragma warning restore CS0618
     private readonly Func<ILocalMember, IServer> serverFactory;
     private readonly MemoryAllocator<byte>? allocator;
@@ -73,7 +73,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     private readonly int warmupRounds;
     private readonly bool coldStart;
     private readonly ClusterConfiguration cachedConfig;
-    private readonly Channel<ClusterConfigurationEvent<EndPoint>> configurationEvents;
+    private readonly Channel<(EndPoint, bool)> configurationEvents;
+    private readonly ClusterMemberId localMemberId;
     private Task pollingLoopTask;
     private IServer? server;
 
@@ -90,15 +91,15 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
         clientFactory = configuration.CreateClient;
         serverFactory = configuration.CreateServer;
-        LocalMemberAddress = configuration.PublicEndPoint;
+        localMemberId = ClusterMemberId.FromEndPoint(LocalMemberAddress = configuration.PublicEndPoint);
         allocator = configuration.MemoryAllocator;
         announcer = configuration.Announcer;
         warmupRounds = configuration.WarmupRounds;
         coldStart = configuration.ColdStart;
-        ConfigurationStorage = configuration.ConfigurationStorage ?? new InMemoryClusterConfigurationStorage(allocator);
+        ConfigurationStorage = configuration.ConfigurationStorage ?? new InMemoryClusterConfigurationStorage(EndPointComparer, allocator);
         pollingLoopTask = Task.CompletedTask;
         cachedConfig = new();
-        configurationEvents = Channel.CreateUnbounded<ClusterConfigurationEvent<EndPoint>>(new() { SingleWriter = true, SingleReader = true });
+        configurationEvents = Channel.CreateUnbounded<(EndPoint, bool)>(new() { SingleWriter = true, SingleReader = true });
         measurementTags = new()
         {
             { IRaftCluster.LocalAddressMeterAttributeName, LocalMemberAddress.ToString() },
@@ -118,39 +119,52 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// </summary>
     /// <param name="token">The token that can be used to cancel initialization process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public async Task StartAsync(CancellationToken token = default)
+    public override async Task StartAsync(CancellationToken token = default)
     {
-        ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteAsync;
+        ConfigurationStorage.ActiveConfigurationChanged += GetConfigurationEventHandler(configurationEvents.Writer);
+
         if (coldStart)
         {
             // in case of cold start, add the local member to the configuration
-            var localMember = CreateMember(LocalMemberId, LocalMemberAddress);
+            var localMember = CreateMember(LocalMemberAddress);
             await AddMemberAsync(localMember, token).ConfigureAwait(false);
-            await ConfigurationStorage.AddMemberAsync(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
+            await ConfigurationStorage.AddMemberAsync(LocalMemberAddress, token).ConfigureAwait(false);
             await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
         }
         else
         {
             await ConfigurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
 
-            foreach (var (id, address) in ConfigurationStorage.ActiveConfiguration)
+            foreach (var address in ConfigurationStorage.ActiveConfiguration)
             {
-                await AddMemberAsync(CreateMember(id, address), token).ConfigureAwait(false);
+                await AddMemberAsync(CreateMember(address), token).ConfigureAwait(false);
             }
         }
 
         pollingLoopTask = ConfigurationPollingLoop();
-        await StartAsync(IsLocalMember, token).ConfigureAwait(false);
+        await base.StartAsync(token).ConfigureAwait(false);
         server = serverFactory(this);
         await server.StartAsync(token).ConfigureAwait(false);
         StartFollowing();
 
         if (!coldStart && announcer is not null)
-            await announcer(LocalMemberId, LocalMemberAddress, token).ConfigureAwait(false);
+            await announcer(LocalMemberAddress, metadata, token).ConfigureAwait(false);
     }
 
-    private ValueTask<bool> IsLocalMember(RaftClusterMember member, CancellationToken token)
-        => new(EndPointComparer.Equals(LocalMemberAddress, member.EndPoint));
+    private static Func<EndPoint, bool, CancellationToken, ValueTask> GetConfigurationEventHandler(ChannelWriter<(EndPoint, bool)> writer)
+    {
+        unsafe
+        {
+            return DelegateHelpers.CreateDelegate<ChannelWriter<(EndPoint, bool)>, EndPoint, bool, CancellationToken, ValueTask>(&WriteConfigurationEvent, writer);
+        }
+
+        static ValueTask WriteConfigurationEvent(ChannelWriter<(EndPoint, bool)> writer, EndPoint address, bool isAdded, CancellationToken token)
+            => writer.WriteAsync(new(address, isAdded), token);
+    }
+
+    /// <inheritdoc />
+    protected override ValueTask<bool> DetectLocalMemberAsync(RaftClusterMember candidate, CancellationToken token)
+        => new(EndPointComparer.Equals(LocalMemberAddress, candidate.EndPoint));
 
     /// <summary>
     /// Stops serving local member.
@@ -167,7 +181,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             {
                 await (server?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
                 server = null;
-                ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
+                ConfigurationStorage.ActiveConfigurationChanged -= GetConfigurationEventHandler(configurationEvents.Writer);
                 configurationEvents.Writer.TryComplete();
                 await pollingLoopTask.ConfigureAwait(false);
                 pollingLoopTask = Task.CompletedTask;
@@ -179,15 +193,14 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         }
     }
 
-    private RaftClusterMember CreateMember(ClusterMemberId id, EndPoint address)
+    private RaftClusterMember CreateMember(EndPoint address)
 #pragma warning disable CS0618
-        => clientFactory.Invoke(this, address, id, Metrics as IClientMetricsCollector);
+        => clientFactory.Invoke(this, address, Metrics as IClientMetricsCollector);
 #pragma warning restore CS0618
 
     /// <summary>
     /// Announces a new member in the cluster.
     /// </summary>
-    /// <param name="id">The identifier of the cluster member.</param>
     /// <param name="address">The addres of the cluster member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>
@@ -195,11 +208,13 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
-    public async Task<bool> AddMemberAsync(ClusterMemberId id, EndPoint address, CancellationToken token = default)
+    public async Task<bool> AddMemberAsync(EndPoint address, CancellationToken token = default)
     {
-        using var member = CreateMember(id, address);
-        return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
+        using var member = CreateMember(address);
+        return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, GetAddress, token).ConfigureAwait(false);
     }
+
+    private static EndPoint GetAddress(RaftClusterMember member) => member.EndPoint;
 
     /// <summary>
     /// Removes the member from the cluster.
@@ -211,29 +226,22 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
     public Task<bool> RemoveMemberAsync(EndPoint address, CancellationToken token = default)
-    {
-        foreach (var member in Members)
-        {
-            if (EndPointComparer.Equals(member.EndPoint, address))
-                return RemoveMemberAsync(member.Id, ConfigurationStorage, token);
-        }
-
-        return Task.FromResult<bool>(false);
-    }
+        => RemoveMemberAsync(ClusterMemberId.FromEndPoint(address), ConfigurationStorage, GetAddress, token);
 
     private async Task ConfigurationPollingLoop()
     {
         await foreach (var eventInfo in configurationEvents.Reader.ReadAllAsync(LifecycleToken).ConfigureAwait(false))
         {
-            if (eventInfo.IsAdded)
+            RaftClusterMember? member;
+            if (eventInfo.Item2)
             {
-                var member = CreateMember(eventInfo.Id, eventInfo.Address);
+                member = CreateMember(eventInfo.Item1);
                 if (!await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
                     member.Dispose();
             }
             else
             {
-                var member = await RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
+                member = await RemoveMemberAsync(ClusterMemberId.FromEndPoint(eventInfo.Item1), LifecycleToken).ConfigureAwait(false);
                 if (member is not null)
                 {
                     await member.CancelPendingRequestsAsync().ConfigureAwait(false);
@@ -245,13 +253,13 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 
     /// <inheritdoc />
     protected sealed override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
-        => await ConfigurationStorage.RemoveMemberAsync(member.Id, token).ConfigureAwait(false);
+        => await ConfigurationStorage.RemoveMemberAsync(GetAddress(member), token).ConfigureAwait(false);
 
     /// <inheritdoc />
     bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
     /// <inheritdoc />
-    ref readonly ClusterMemberId ILocalMember.Id => ref LocalMemberId;
+    ref readonly ClusterMemberId ILocalMember.Id => ref localMemberId;
 
     /// <inheritdoc />
     IReadOnlyDictionary<string, string> ILocalMember.Metadata => metadata;

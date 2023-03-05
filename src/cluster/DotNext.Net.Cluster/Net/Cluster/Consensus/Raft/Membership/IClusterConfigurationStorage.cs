@@ -58,38 +58,37 @@ public interface IClusterConfigurationStorage<TAddress> : IClusterConfigurationS
     /// <summary>
     /// Proposes a new member.
     /// </summary>
-    /// <param name="id">The identifier of the cluster member to add.</param>
     /// <param name="address">The address of the cluster member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>
     /// <see langword="true"/> if the new member is added to the proposed configuration;
     /// <see langword="false"/> if the storage has the proposed configuration already.
     /// </returns>
-    ValueTask<bool> AddMemberAsync(ClusterMemberId id, TAddress address, CancellationToken token = default);
+    ValueTask<bool> AddMemberAsync(TAddress address, CancellationToken token = default);
 
     /// <summary>
     /// Proposes removal of the existing member.
     /// </summary>
-    /// <param name="id">The identifier of the cluster member to remove.</param>
+    /// <param name="address">The address of the cluster member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>
     /// <see langword="true"/> if the new member is added to the proposed configuration;
     /// <see langword="false"/> if the storage has the proposed configuration already.
     /// </returns>
-    ValueTask<bool> RemoveMemberAsync(ClusterMemberId id, CancellationToken token = default);
+    ValueTask<bool> RemoveMemberAsync(TAddress address, CancellationToken token = default);
 
     /// <summary>
     /// An event occurred when proposed configuration is applied.
     /// </summary>
-    event Func<ClusterConfigurationEvent<TAddress>, CancellationToken, ValueTask> ActiveConfigurationChanged;
+    event Func<TAddress, bool, CancellationToken, ValueTask> ActiveConfigurationChanged;
 
     /// <summary>
     /// Represents active cluster configuration maintained by the node.
     /// </summary>
-    new IReadOnlyDictionary<ClusterMemberId, TAddress> ActiveConfiguration { get; }
+    new IReadOnlySet<TAddress> ActiveConfiguration { get; }
 
     /// <summary>
     /// Represents proposed cluster configuration.
     /// </summary>
-    new IReadOnlyDictionary<ClusterMemberId, TAddress>? ProposedConfiguration { get; }
+    new IReadOnlySet<TAddress>? ProposedConfiguration { get; }
 }

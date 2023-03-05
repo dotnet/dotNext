@@ -26,15 +26,16 @@ internal partial class RaftHttpCluster
     {
         await foreach (var eventInfo in configurationEvents.Reader.ReadAllAsync(LifecycleToken).ConfigureAwait(false))
         {
-            if (eventInfo.IsAdded)
+            RaftClusterMember? member;
+            if (eventInfo.Item2)
             {
-                var member = CreateMember(eventInfo.Id, eventInfo.Address);
+                member = CreateMember(eventInfo.Item1);
                 if (!await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
                     member.Dispose();
             }
             else
             {
-                var member = await RemoveMemberAsync(eventInfo.Id, LifecycleToken).ConfigureAwait(false);
+                member = await RemoveMemberAsync(ClusterMemberId.FromEndPoint(eventInfo.Item1), LifecycleToken).ConfigureAwait(false);
                 if (member is not null)
                 {
                     member.CancelPendingRequests();
@@ -44,32 +45,17 @@ internal partial class RaftHttpCluster
         }
     }
 
-    private async Task<bool> AddMemberAsync(ClusterMemberId id, UriEndPoint address, CancellationToken token)
+    private async Task<bool> AddMemberAsync(UriEndPoint address, CancellationToken token)
     {
-        using var member = CreateMember(id, address);
-        return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, static m => m.EndPoint, token).ConfigureAwait(false);
+        using var member = CreateMember(address);
+        return await AddMemberAsync(member, warmupRounds, ConfigurationStorage, GetAddress, token).ConfigureAwait(false);
     }
 
-    Task<bool> IRaftHttpCluster.AddMemberAsync(ClusterMemberId id, Uri address, CancellationToken token)
-        => AddMemberAsync(id, new(address), token);
+    private static UriEndPoint GetAddress(RaftClusterMember member) => member.EndPoint;
 
-    Task<bool> IRaftHttpCluster.RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
-        => RemoveMemberAsync(id, ConfigurationStorage, token);
-
-    private Task<bool> RemoveMemberAsync(UriEndPoint address, CancellationToken token)
-    {
-        foreach (var member in Members)
-        {
-            if (EndPointComparer.Equals(member.EndPoint, address))
-            {
-                member.CancelPendingRequests();
-                return RemoveMemberAsync(member.Id, ConfigurationStorage, token);
-            }
-        }
-
-        return Task.FromResult<bool>(false);
-    }
+    Task<bool> IRaftHttpCluster.AddMemberAsync(Uri address, CancellationToken token)
+        => AddMemberAsync(new(address), token);
 
     Task<bool> IRaftHttpCluster.RemoveMemberAsync(Uri address, CancellationToken token)
-        => RemoveMemberAsync(new(address), token);
+        => RemoveMemberAsync(ClusterMemberId.FromEndPoint(new UriEndPoint(address)), ConfigurationStorage, GetAddress, token);
 }

@@ -29,7 +29,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
     private long nextIndex, fingerprint;
 
-    private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id)
+    private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint)
     {
         Debug.Assert(localMember is not null);
         Debug.Assert(endPoint is not null);
@@ -37,7 +37,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
         this.localMember = localMember;
         EndPoint = endPoint;
         status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
-        Id = id;
+        Id = ClusterMemberId.FromEndPoint(endPoint);
         requestTimeout = TimeSpan.FromSeconds(30);
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString());
     }

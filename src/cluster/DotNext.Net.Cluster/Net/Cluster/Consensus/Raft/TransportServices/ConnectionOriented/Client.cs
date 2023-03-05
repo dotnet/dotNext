@@ -30,8 +30,8 @@ internal abstract partial class Client : RaftClusterMember
     private readonly TimeSpan connectTimeout;
     private IConnectionContext? context;
 
-    private protected Client(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id)
-        : base(localMember, endPoint, id)
+    private protected Client(ILocalMember localMember, EndPoint endPoint)
+        : base(localMember, endPoint)
     {
         accessLock = new();
         connectTimeout = TimeSpan.FromSeconds(1);

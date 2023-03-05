@@ -8,6 +8,7 @@ using IO;
 internal sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<UriEndPoint>
 {
     internal InMemoryClusterConfigurationStorage()
+        : base(comparer: EndPointFormatter.UriEndPointComparer)
     {
     }
 

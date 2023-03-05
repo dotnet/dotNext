@@ -12,7 +12,7 @@ internal interface IHostingContext
 
     ILogger Logger { get; }
 
-    ref readonly ClusterMemberId LocalMember { get; }
+    ref readonly ClusterMemberId LocalMemberId { get; }
 
     IReadOnlyDictionary<string, string> Metadata { get; }
 

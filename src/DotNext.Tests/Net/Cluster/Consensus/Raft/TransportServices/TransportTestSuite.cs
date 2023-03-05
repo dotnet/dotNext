@@ -473,10 +473,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Equal(host1.LocalMemberAddress, (await host1.WaitForLeaderAsync(DefaultTimeout)).EndPoint);
 
                 // add two nodes to the cluster
-                await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress);
+                await host1.AddMemberAsync(host2.LocalMemberAddress);
                 await host2.Readiness.WaitAsync(DefaultTimeout);
 
-                await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress);
+                await host1.AddMemberAsync(host3.LocalMemberAddress);
                 await host3.Readiness.WaitAsync(DefaultTimeout);
 
                 oldLeader = await AssertLeadershipAsync(EqualityComparer<EndPoint>.Default, host1, host2, host3);
@@ -525,10 +525,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             False(host1.LeadershipToken.IsCancellationRequested);
 
             // add two nodes to the cluster
-            True(await host1.AddMemberAsync(host2.LocalMemberId, host2.LocalMemberAddress));
+            True(await host1.AddMemberAsync(host2.LocalMemberAddress));
             await host2.Readiness.WaitAsync(DefaultTimeout);
 
-            True(await host1.AddMemberAsync(host3.LocalMemberId, host3.LocalMemberAddress));
+            True(await host1.AddMemberAsync(host3.LocalMemberAddress));
             await host3.Readiness.WaitAsync(DefaultTimeout);
 
             await AssertLeadershipAsync(EqualityComparer<EndPoint>.Default, host1, host2, host3);
