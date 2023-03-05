@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Membership;
 
