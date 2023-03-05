@@ -40,6 +40,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
         Id = ClusterMemberId.FromEndPoint(endPoint);
         requestTimeout = TimeSpan.FromSeconds(30);
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString());
+        IsRemote = localMember.Id != Id;
     }
 
     [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
@@ -73,7 +74,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     /// <summary>
     /// Determines whether this member is not a local node.
     /// </summary>
-    public bool IsRemote => Id != localMember.Id;
+    public bool IsRemote { get; }
 
     /// <summary>
     /// Gets the status of this member.

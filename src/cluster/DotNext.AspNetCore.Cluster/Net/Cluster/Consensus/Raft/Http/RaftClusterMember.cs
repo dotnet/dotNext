@@ -52,6 +52,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             ? null
             : new(DefaultProtocolPath, UriKind.Relative);
         DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new()).ToString()));
+        IsRemote = Id != context.LocalMemberId;
     }
 
     event Action<ClusterMemberStatusChangedEventArgs> IClusterMember.MemberStatusChanged
@@ -225,7 +226,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     bool IClusterMember.IsLeader => context.IsLeader(this);
 
-    public bool IsRemote => Id != context.LocalMemberId;
+    public bool IsRemote { get; }
 
     public ClusterMemberStatus Status
     {
