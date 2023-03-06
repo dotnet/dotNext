@@ -205,11 +205,6 @@ public partial class RaftCluster
         /// </summary>
         public bool AggressiveLeaderStickiness { get; set; }
 
-        /// <summary>
-        /// Gets or sets custom member identifier. If not set, it will be generated randomly.
-        /// </summary>
-        public ClusterMemberId? Id { get; set; }
-
 #pragma warning disable CS0618
         internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics);
 #pragma warning restore CS0618

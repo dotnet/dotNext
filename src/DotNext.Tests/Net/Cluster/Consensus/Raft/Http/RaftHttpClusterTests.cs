@@ -662,36 +662,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host.StopAsync();
         }
 
-        // [Fact]
-        // public static async Task SelfHost()
-        // {
-        //     const string memberId = "DE9F69D738B6577C6E357C8E43C367D825A94FC78F8E11E136836404";
-        //     var configuration = new Dictionary<string, string>
-        //     {
-        //         {"metadata:nodeName", "TestNode"},
-        //         {"partitioning", "false"},
-        //         {"publicEndPoint", "http://localhost:3262"},
-        //         {"coldStart", "true"},
-        //         {"id", memberId},
-        //     };
+        [Fact]
+        public static async Task SelfHost()
+        {
+            var configuration = new Dictionary<string, string>
+            {
+                {"metadata:nodeName", "TestNode"},
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+            };
 
-        //     using var host = new HostBuilder()
-        //         .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
-        //         .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-        //         .ConfigureServices(static (context, services) =>
-        //         {
-        //             services.Configure<HttpClusterMemberConfiguration>(context.Configuration);
-        //         })
-        //         .Build();
+            using var host = new HostBuilder()
+                .ConfigureHostOptions(static options => options.ShutdownTimeout = DefaultTimeout)
+                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
+                .ConfigureServices(static (context, services) =>
+                {
+                    services.Configure<HttpClusterMemberConfiguration>(context.Configuration);
+                })
+                .Build();
 
-        //     await host.StartAsync();
-        //     using (var clusterHost = new RaftClusterHttpHost(host.Services, "category"))
-        //     {
-        //         Equal(new Uri(configuration["publicEndPoint"]), clusterHost.Cluster.LocalMemberAddress);
-        //         Equal(memberId, clusterHost.Cluster.LocalMemberId.ToString());
-        //         IsType<ConsensusOnlyState>(clusterHost.Cluster.AuditTrail);
-        //     }
-        //     await host.StopAsync();
-        // }
+            await host.StartAsync();
+            using (var clusterHost = new RaftClusterHttpHost(host.Services, "category"))
+            {
+                Equal(new Uri(configuration["publicEndPoint"]), clusterHost.Cluster.LocalMemberAddress);
+                IsType<ConsensusOnlyState>(clusterHost.Cluster.AuditTrail);
+            }
+
+            await host.StopAsync();
+        }
     }
 }
