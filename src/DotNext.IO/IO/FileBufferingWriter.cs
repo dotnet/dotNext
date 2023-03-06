@@ -338,8 +338,15 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             return size <= memoryThreshold ? MemoryEvaluationResult.PersistExistingBuffer : MemoryEvaluationResult.PersistAll;
         }
 
-        if (buffer.Length < newSize)
+        var bufLen = buffer.Length;
+
+        // expand buffer if necessary
+        if (bufLen < newSize)
         {
+            bufLen <<= 1; // optimistically doubles buffer size to reduce the number of memory rentals
+            if ((uint)bufLen > (uint)newSize && (uint)bufLen <= (uint)memoryThreshold)
+                newSize = bufLen;
+
             buffer.Resize(newSize, exactSize: false, allocator: allocator);
             allocationCounter?.WriteMetric(buffer.Length);
             AllocationMeter.Record(buffer.Length, measurementTags);
