@@ -46,9 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 02-02-2023
-
-Starting from the current release, `DotNext.Reflection` library is no longer published on regular basis. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
+Release Date: 03-07-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.11.0">DotNext 4.11.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
@@ -74,9 +72,10 @@ Starting from the current release, `DotNext.Reflection` library is no longer pub
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.11.0">DotNext.Net.Cluster 4.10.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 * Fixed [151](https://github.com/dotnet/dotNext/issues/151)
+* Fixed [153](https://github.com/dotnet/dotNext/issues/153)
 * Raft: reduced memory allocations when the node is Leader
 * Raft: fixed correctness of `ForceReplication` method when it is used as a write barrier in a distributed environment
-Reduced API surface requiring [RequiresPreviewFeatures](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.versioning.requirespreviewfeaturesattribute) attribute
+* Reduced API surface requiring [RequiresPreviewFeatures](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.versioning.requirespreviewfeaturesattribute) attribute
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.11.0">DotNext.AspNetCore.Cluster 4.11.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
