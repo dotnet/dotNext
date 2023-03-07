@@ -125,7 +125,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     {
         ThrowIfDisposed();
 
-        if (ParticipantCount == 0L)
+        if (ParticipantCount is 0L)
             throw new InvalidOperationException();
 
         var result = await countdown.SignalAndWaitAsync(out bool completedSynchronously, timeout, token).ConfigureAwait(false);
@@ -156,7 +156,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     {
         ThrowIfDisposed();
 
-        if (ParticipantCount == 0L)
+        if (ParticipantCount is 0L)
             throw new InvalidOperationException();
 
         await countdown.SignalAndWaitAsync(out var completedSynchronously, token).ConfigureAwait(false);

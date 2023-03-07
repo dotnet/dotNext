@@ -8,12 +8,15 @@ using static IO.Pipelines.PipeExtensions;
 
 internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDisposable
 {
+    private const string Name = "InstallSnapshot";
+
     private readonly Pipe pipe;
     private readonly long term, snapshotIndex;
     private readonly IRaftLogEntry snapshot;
     private Task? transmission;
 
     internal SnapshotExchange(long term, IRaftLogEntry snapshot, long snapshotIndex, PipeOptions? options = null)
+        : base(Name)
     {
         this.term = term;
         this.snapshotIndex = snapshotIndex;

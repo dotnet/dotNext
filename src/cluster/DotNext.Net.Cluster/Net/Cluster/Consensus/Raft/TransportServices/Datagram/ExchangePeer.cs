@@ -16,8 +16,8 @@ internal sealed class ExchangePeer : RaftClusterMember
     private readonly IClient client;
     private readonly PipeOptions pipeConfig;
 
-    internal ExchangePeer(ILocalMember localMember, EndPoint address, ClusterMemberId id, Func<EndPoint, IClient> clientFactory)
-        : base(localMember, address, id)
+    internal ExchangePeer(ILocalMember localMember, EndPoint address, Func<EndPoint, IClient> clientFactory)
+        : base(localMember, address)
     {
         client = clientFactory(address);
         pipeConfig = PipeOptions.Default;
@@ -54,7 +54,15 @@ internal sealed class ExchangePeer : RaftClusterMember
         }
         finally
         {
-            Metrics?.ReportResponseTime(timeStamp.Elapsed);
+            var responseTime = timeStamp.ElapsedMilliseconds;
+#pragma warning disable CS0618
+            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
+#pragma warning restore CS0618
+            ResponseTimeMeter.Record(
+                responseTime,
+                new(IRaftClusterMember.MessageTypeAttributeName, exchange.Name),
+                cachedRemoteAddressAttribute);
+
             timeoutSource.Dispose();
             if (exchange is IAsyncDisposable disposable)
                 await disposable.DisposeAsync().ConfigureAwait(false);

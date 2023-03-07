@@ -30,8 +30,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     private readonly HttpProtocolVersion protocolVersion;
     private readonly HttpVersionPolicy protocolVersionPolicy;
     private readonly UriEndPoint localNode;
+    private readonly ClusterMemberId localNodeId;
     private readonly int warmupRounds;
-    private readonly Channel<ClusterConfigurationEvent<UriEndPoint>> configurationEvents;
+    private readonly Channel<(UriEndPoint, bool)> configurationEvents;
 
     public RaftHttpCluster(
         IOptionsMonitor<HttpClusterMemberConfiguration> config,
@@ -41,7 +42,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IPersistentState? auditTrail = null,
         IClusterConfigurationStorage<UriEndPoint>? configStorage = null,
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
+#pragma warning disable CS0618
         MetricsCollector? metrics = null,
+#pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null,
         Func<IRaftClusterMember, IFailureDetector>? failureDetectorFactory = null)
         : this(config, messageHandlers, loggerFactory.CreateLogger<RaftHttpCluster>(), configurator, auditTrail, configStorage, httpHandlerFactory, metrics, announcer)
@@ -57,7 +60,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IPersistentState? auditTrail = null,
         IClusterConfigurationStorage<UriEndPoint>? configStorage = null,
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
+#pragma warning disable CS0618
         MetricsCollector? metrics = null,
+#pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null)
         : base(config.CurrentValue)
     {
@@ -71,6 +76,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         protocolVersion = config.CurrentValue.ProtocolVersion;
         protocolVersionPolicy = config.CurrentValue.ProtocolVersionPolicy;
         localNode = new(config.CurrentValue.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress));
+        localNodeId = ClusterMemberId.FromEndPoint(localNode);
         ProtocolPath = new(localNode.Uri.GetComponents(UriComponents.Path, UriFormat.Unescaped) is { Length: > 0 } protocolPath
                 ? string.Concat("/", protocolPath)
                 : RaftClusterMember.DefaultProtocolPath);
@@ -87,12 +93,18 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         ConfigurationStorage = configStorage ?? new InMemoryClusterConfigurationStorage();
         this.httpHandlerFactory = httpHandlerFactory;
         Logger = logger;
+#pragma warning disable CS0618
         Metrics = metrics;
+#pragma warning restore CS0618
         this.announcer = announcer;
+        measurementTags = new()
+        {
+            { IRaftCluster.LocalAddressMeterAttributeName, localNode.ToString() },
+        };
 
         // track changes in configuration, do not track membership
         configurationTracker = config.OnChange(ConfigurationChanged);
-        configurationEvents = Channel.CreateUnbounded<ClusterConfigurationEvent<UriEndPoint>>(new() { SingleWriter = true, SingleReader = true });
+        configurationEvents = Channel.CreateUnbounded<(UriEndPoint, bool)>(new() { SingleWriter = true, SingleReader = true });
     }
 
     protected override IClusterConfigurationStorage<UriEndPoint> ConfigurationStorage { get; }
@@ -100,12 +112,14 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     /// <inheritdoc />
     IReadOnlyCollection<ISubscriber> IMessageBus.Members => Members;
 
-    private RaftClusterMember CreateMember(in ClusterMemberId id, UriEndPoint address)
+    private RaftClusterMember CreateMember(UriEndPoint address)
     {
-        var result = new RaftClusterMember(this, address, in id)
+        var result = new RaftClusterMember(this, address)
         {
             Timeout = requestTimeout,
+#pragma warning disable CS0618
             Metrics = Metrics as IClientMetricsCollector,
+#pragma warning restore CS0618
         };
 
         result.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
@@ -131,7 +145,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-    ref readonly ClusterMemberId IHostingContext.LocalMember => ref LocalMemberId;
+    public ref readonly ClusterMemberId LocalMemberId => ref localNodeId;
 
     HttpMessageHandler IHostingContext.CreateHttpHandler()
         => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new SocketsHttpHandler { ConnectTimeout = connectTimeout };
@@ -140,41 +154,44 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     Uri IRaftHttpCluster.LocalMemberAddress => localNode.Uri;
 
-    public async Task StartAsync(CancellationToken token)
+    public override async Task StartAsync(CancellationToken token)
     {
         configurator?.OnStart(this, metadata);
-        ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteAsync;
+        ConfigurationStorage.ActiveConfigurationChanged += GetConfigurationEventHandler(configurationEvents.Writer);
 
         if (coldStart)
         {
             // in case of cold start, add the local member to the configuration
-            var localMember = CreateMember(LocalMemberId, localNode);
+            var localMember = CreateMember(localNode);
             Debug.Assert(localMember.IsRemote is false);
             await AddMemberAsync(localMember, token).ConfigureAwait(false);
-            await ConfigurationStorage.AddMemberAsync(LocalMemberId, localNode, token).ConfigureAwait(false);
+            await ConfigurationStorage.AddMemberAsync(localNode, token).ConfigureAwait(false);
             await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
         }
         else
         {
             await ConfigurationStorage.LoadConfigurationAsync(token).ConfigureAwait(false);
 
-            foreach (var (id, address) in ConfigurationStorage.ActiveConfiguration)
+            foreach (var address in ConfigurationStorage.ActiveConfiguration)
             {
-                await AddMemberAsync(CreateMember(id, address), token).ConfigureAwait(false);
+                await AddMemberAsync(CreateMember(address), token).ConfigureAwait(false);
             }
         }
 
         pollingLoopTask = ConfigurationPollingLoop();
-        await StartAsync(IsLocalMember, token).ConfigureAwait(false);
+        await base.StartAsync(token).ConfigureAwait(false);
 
         if (!coldStart && announcer is not null)
-            await announcer(LocalMemberId, localNode, token).ConfigureAwait(false);
+            await announcer(localNode, metadata, token).ConfigureAwait(false);
 
         StartFollowing();
     }
 
-    private ValueTask<bool> IsLocalMember(RaftClusterMember member, CancellationToken token)
-        => new(EndPointComparer.Equals(localNode, member.EndPoint));
+    private static ValueTask WriteConfigurationEvent(ChannelWriter<(UriEndPoint, bool)> writer, UriEndPoint address, bool isAdded, CancellationToken token)
+        => writer.WriteAsync(new(address, isAdded), token);
+
+    protected override ValueTask<bool> DetectLocalMemberAsync(RaftClusterMember candidate, CancellationToken token)
+        => new(EndPointComparer.Equals(localNode, candidate.EndPoint));
 
     public override Task StopAsync(CancellationToken token)
     {
@@ -186,7 +203,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
             {
                 configurator?.OnStop(this);
                 duplicationDetector.Trim(100);
-                ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteAsync;
+                ConfigurationStorage.ActiveConfigurationChanged -= GetConfigurationEventHandler(configurationEvents.Writer);
                 configurationEvents.Writer.TryComplete();
                 await pollingLoopTask.ConfigureAwait(false);
                 pollingLoopTask = Task.CompletedTask;
@@ -196,6 +213,17 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
                 await base.StopAsync(token).ConfigureAwait(false);
             }
         }
+    }
+
+    private static Func<UriEndPoint, bool, CancellationToken, ValueTask> GetConfigurationEventHandler(ChannelWriter<(UriEndPoint, bool)> writer)
+    {
+        unsafe
+        {
+            return DelegateHelpers.CreateDelegate<ChannelWriter<(UriEndPoint, bool)>, UriEndPoint, bool, CancellationToken, ValueTask>(&WriteConfigurationEvent, writer);
+        }
+
+        static ValueTask WriteConfigurationEvent(ChannelWriter<(UriEndPoint, bool)> writer, UriEndPoint address, bool isAdded, CancellationToken token)
+            => writer.WriteAsync(new(address, isAdded), token);
     }
 
     /// <inheritdoc />
@@ -211,7 +239,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     }
 
     protected override async ValueTask UnavailableMemberDetected(RaftClusterMember member, CancellationToken token)
-        => await ConfigurationStorage.RemoveMemberAsync(member.Id, token).ConfigureAwait(false);
+        => await ConfigurationStorage.RemoveMemberAsync(GetAddress(member), token).ConfigureAwait(false);
 
     protected override void Dispose(bool disposing)
     {

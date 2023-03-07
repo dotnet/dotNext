@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
-using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count becomes non zero.
@@ -27,46 +27,26 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         internal StateManager(long initialValue)
             => state = initialValue;
 
-        internal readonly long Value => IntPtr.Size == sizeof(long) ? state : state.VolatileRead();
+        internal readonly long Value => state;
 
-        internal void Increment(long delta)
-        {
-            var newValue = checked(state + delta);
-            if (IntPtr.Size == sizeof(long))
-                state.VolatileWrite(newValue);
-            else
-                state = newValue;
-        }
+        internal readonly long VolatileRead() => state.VolatileRead();
 
-        internal void Decrement()
-        {
-            if (IntPtr.Size == sizeof(long))
-                state--;
-            else
-                state.DecrementAndGet();
-        }
+        internal void Increment(long delta) => state = checked(state + delta);
+
+        internal void Decrement() => state--;
 
         internal bool TryReset()
         {
-            bool result;
-            if (IntPtr.Size == sizeof(long))
-            {
-                result = state > 0L;
-                state = 0L;
-            }
-            else
-            {
-                result = Interlocked.Exchange(ref state, 0L) > 0L;
-            }
-
+            var result = state > 0L;
+            state = 0L;
             return result;
         }
 
-        bool ILockManager.IsLockAllowed => Value > 0L;
+        readonly bool ILockManager.IsLockAllowed => state > 0L;
 
         void ILockManager.AcquireLock() => Decrement();
 
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
             // nothing to do here
         }
@@ -107,17 +87,19 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        if (node.NeedsRemoval)
-            RemoveNode(node);
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval)
+                RemoveNode(node);
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <inheritdoc/>
-    bool IAsyncEvent.IsSet => manager.Value > 0L;
+    bool IAsyncEvent.IsSet => manager.VolatileRead() > 0L;
 
     /// <summary>
     /// Gets the counter value.
@@ -127,11 +109,16 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
     /// blocking.
     /// </remarks>
-    public long Value => manager.Value;
+    public long Value => manager.VolatileRead();
 
     /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    bool IAsyncEvent.Reset() => manager.TryReset();
+    bool IAsyncEvent.Reset()
+    {
+        lock (SyncRoot)
+        {
+            return manager.TryReset();
+        }
+    }
 
     /// <summary>
     /// Increments counter and resume suspended callers.
@@ -162,20 +149,22 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private void IncrementCore(long delta)
     {
         Debug.Assert(delta > 0L);
 
-        ThrowIfDisposed();
-        manager.Increment(delta);
-
-        for (LinkedValueTaskCompletionSource? current = first, next; current is not null && manager.Value > 0L; current = next)
+        lock (SyncRoot)
         {
-            next = current.Next;
+            ThrowIfDisposed();
+            manager.Increment(delta);
 
-            if (RemoveAndSignal(current))
-                manager.Decrement();
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && manager.Value > 0L; current = next)
+            {
+                next = current.Next;
+
+                if (RemoveAndSignal(current))
+                    manager.Decrement();
+            }
         }
     }
 
@@ -185,10 +174,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         Increment();
         return true;
     }
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait(bool zeroTimeout)
-        => Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -200,12 +185,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -216,16 +196,18 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait(zeroTimeout: false).CreateVoidTask(token);
+        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.
     /// </summary>
     /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool TryDecrement()
     {
-        ThrowIfDisposed();
-        return TryAcquire(ref manager);
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            return TryAcquire(ref manager);
+        }
     }
 }

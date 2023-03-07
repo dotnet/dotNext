@@ -11,8 +11,8 @@ namespace DotNext.Threading
             var lazy = new AsyncLazy<int>(2);
             True(lazy.IsValueCreated);
             False(lazy.Reset());
-            True(lazy.Task.IsCompletedSuccessfully);
-            Equal(2, lazy.Task.Result);
+            True(lazy.WithCancellation(CancellationToken.None).IsCompletedSuccessfully);
+            Equal(2, lazy.Value);
         }
 
         [Theory]
@@ -22,13 +22,13 @@ namespace DotNext.Threading
         {
             var lazy = new AsyncLazy<long>(MaxValue, resettable);
             False(lazy.IsValueCreated);
-            Equal(42L, await lazy);
+            Equal(42L, await lazy.WithCancellation(CancellationToken.None));
             True(lazy.IsValueCreated);
-            Equal(42L, lazy.Value.Value);
+            Equal(42L, lazy.Value);
 
-            static async Task<long> MaxValue()
+            static async Task<long> MaxValue(CancellationToken token)
             {
-                await Task.Delay(100);
+                await Task.Delay(100, token);
                 return 42L;
             }
         }
@@ -40,10 +40,10 @@ namespace DotNext.Threading
         {
             var lazy = new AsyncLazy<long>(ThrowException, resettable);
             False(lazy.IsValueCreated);
-            await ThrowsAsync<ArithmeticException>(() => lazy.Task);
+            await ThrowsAsync<ArithmeticException>(() => lazy.WithCancellation(CancellationToken.None));
             True(lazy.IsValueCreated);
 
-            static async Task<long> ThrowException()
+            static async Task<long> ThrowException(CancellationToken token)
             {
                 await Task.Delay(100);
                 throw new ArithmeticException();
@@ -74,11 +74,12 @@ namespace DotNext.Threading
         {
             var lazy = new AsyncLazy<long>(MaxValue, resettable);
             False(lazy.IsValueCreated);
-            await ThrowsAsync<TaskCanceledException>(() => lazy.Task);
+            await ThrowsAsync<TaskCanceledException>(() => lazy.WithCancellation(CancellationToken.None));
             False(lazy.IsValueCreated);
 
-            static async Task<long> MaxValue()
+            static async Task<long> MaxValue(CancellationToken token)
             {
+                False(token.CanBeCanceled);
                 await Task.Delay(100, new CancellationToken(true));
                 return 42L;
             }

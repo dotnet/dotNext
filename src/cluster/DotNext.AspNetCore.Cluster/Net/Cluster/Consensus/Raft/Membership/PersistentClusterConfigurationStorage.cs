@@ -8,7 +8,7 @@ using IO;
 internal sealed class PersistentClusterConfigurationStorage : PersistentClusterConfigurationStorage<UriEndPoint>
 {
     internal PersistentClusterConfigurationStorage(string path)
-        : base(path)
+        : base(path, comparer: EndPointFormatter.UriEndPointComparer)
     {
     }
 

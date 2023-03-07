@@ -30,11 +30,15 @@ internal partial class Client : RaftClusterMember
         static ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadResultAsync(token);
 
+        static string IClientExchange<Result<bool>>.Name => "Vote";
+
         ValueTask IClientExchange<Result<PreVoteResult>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token);
 
         static ValueTask<Result<PreVoteResult>> IClientExchange<Result<PreVoteResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadPreVoteResultAsync(token);
+
+        static string IClientExchange<Result<PreVoteResult>>.Name => "PreVote";
     }
 
     [RequiresPreviewFeatures]

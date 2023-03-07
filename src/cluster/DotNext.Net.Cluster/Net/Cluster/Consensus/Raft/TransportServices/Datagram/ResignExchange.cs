@@ -4,6 +4,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 internal sealed class ResignExchange : ClientExchange<bool>
 {
+    private const string Name = "Resign";
+
+    internal ResignExchange()
+        : base(Name)
+    {
+    }
+
     public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {
         Debug.Assert(headers.Control == FlowControl.Ack);

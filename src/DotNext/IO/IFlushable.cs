@@ -9,9 +9,6 @@ namespace DotNext.IO;
 /// </summary>
 public interface IFlushable
 {
-    private static readonly Action<object> FlushableFlush = UnsafeFlush;
-    private static readonly Func<object, CancellationToken, Task> FlushableFlushAsync = UnsafeFlushAsync;
-
     /// <summary>
     /// Flushes this stream by writing any buffered output to the underlying stream.
     /// </summary>
@@ -54,8 +51,8 @@ public interface IFlushable
     {
         if (obj is IFlushable)
         {
-            flush ??= FlushableFlush;
-            flushAsync ??= FlushableFlushAsync;
+            flush ??= UnsafeFlush;
+            flushAsync ??= UnsafeFlushAsync;
         }
     }
 }

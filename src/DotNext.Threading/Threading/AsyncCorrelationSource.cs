@@ -1,4 +1,3 @@
-using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
@@ -131,12 +130,11 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TValue> WaitAsync(TKey eventId, object? userData, TimeSpan timeout, CancellationToken token = default)
     {
-        if (timeout != InfiniteTimeSpan && timeout < TimeSpan.Zero)
-            return ValueTask.FromException<TValue>(new ArgumentOutOfRangeException(nameof(timeout)));
-        if (token.IsCancellationRequested)
-            return ValueTask.FromCanceled<TValue>(token);
-
-        return EnsureInitialized(ref GetBucket(eventId)).CreateNode(eventId, userData).CreateTask(timeout, token);
+        return timeout is { Ticks: < 0L and not Timeout.InfiniteTicks }
+            ? ValueTask.FromException<TValue>(new ArgumentOutOfRangeException(nameof(timeout)))
+            : token.IsCancellationRequested
+            ? ValueTask.FromCanceled<TValue>(token)
+            : EnsureInitialized(ref GetBucket(eventId)).CreateNode(eventId, userData).CreateTask(timeout, token);
 
         // we are not using LazyInitializer to avoid try-catch block
         static Bucket EnsureInitialized(ref Bucket? bucket)
@@ -166,5 +164,5 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <returns>The task representing the event arrival.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TValue> WaitAsync(TKey eventId, CancellationToken token = default)
-        => WaitAsync(eventId, InfiniteTimeSpan, token);
+        => WaitAsync(eventId, new(Timeout.InfiniteTicks), token);
 }

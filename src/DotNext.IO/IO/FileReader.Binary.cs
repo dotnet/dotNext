@@ -14,13 +14,17 @@ using PipeConsumer = Pipelines.PipeConsumer;
 
 public partial class FileReader : IAsyncBinaryReader
 {
-    private T Read<T>()
+    private bool TryRead<T>(out T value)
         where T : unmanaged
     {
-        var reader = new SpanReader<byte>(TrimLength(Buffer, length).Span);
-        var result = reader.Read<T>();
-        Consume(reader.ConsumedCount);
-        length -= reader.ConsumedCount;
+        bool result;
+        if (result = MemoryMarshal.TryRead(TrimLength(Buffer, length).Span, out value))
+        {
+            var count = Unsafe.SizeOf<T>();
+            Consume(count);
+            length -= count;
+        }
+
         return result;
     }
 
@@ -49,7 +53,9 @@ public partial class FileReader : IAsyncBinaryReader
         {
             try
             {
-                result = new(Read<T>());
+                result = TryRead(out T value)
+                    ? new(value)
+                    : throw new EndOfStreamException();
             }
             catch (Exception e)
             {
@@ -99,8 +105,9 @@ public partial class FileReader : IAsyncBinaryReader
             default:
                 throw new ArgumentOutOfRangeException(nameof(lengthFormat));
             case LengthFormat.Plain:
-                result = length >= sizeof(int) ? Read<int>() : throw new EndOfStreamException();
-                break;
+                if (TryRead(out result))
+                    break;
+                throw new EndOfStreamException();
             case LengthFormat.PlainLittleEndian:
                 littleEndian = true;
                 goto case LengthFormat.Plain;

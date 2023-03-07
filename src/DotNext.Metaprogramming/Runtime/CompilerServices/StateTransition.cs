@@ -1,12 +1,11 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct StateTransition : IEquatable<StateTransition>
+internal readonly record struct StateTransition : IEquatable<StateTransition>
 {
     internal readonly LabelTarget? Successful;
     internal readonly LabelTarget? Failure;
@@ -38,17 +37,4 @@ internal readonly struct StateTransition : IEquatable<StateTransition>
 
         return Expression.Condition(new HasNoExceptionExpression(), Expression.Goto(Successful), Expression.Goto(Failure));
     }
-
-    internal bool Equals(in StateTransition other)
-        => Equals(Successful, other.Successful) && Equals(Failure, other.Failure);
-
-    bool IEquatable<StateTransition>.Equals(StateTransition other) => Equals(in other);
-
-    public override bool Equals([NotNullWhen(true)] object? other) => other is StateTransition transition && Equals(transition);
-
-    public override int GetHashCode() => HashCode.Combine(Successful, Failure);
-
-    public static bool operator ==(in StateTransition first, in StateTransition second) => first.Equals(second);
-
-    public static bool operator !=(in StateTransition first, in StateTransition second) => !first.Equals(second);
 }

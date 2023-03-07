@@ -52,7 +52,7 @@ namespace DotNext.Threading
         {
             using var @lock = new AsyncExclusiveLock();
             True(@lock.TryAcquire());
-            var waitNode = @lock.AcquireAsync(CancellationToken.None);
+            var waitNode = @lock.AcquireAsync();
             False(waitNode.IsCompleted);
             Throws<ArgumentOutOfRangeException>(() => @lock.CancelSuspendedCallers(new CancellationToken(false)));
             @lock.CancelSuspendedCallers(new CancellationToken(true));

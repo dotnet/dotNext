@@ -11,15 +11,15 @@ namespace DotNext.Threading
             var @lock = default(AsyncLock);
             var holder = await @lock.TryAcquireAsync(CancellationToken.None);
             if (holder)
-                throw new Exception();
+                Fail("Lock is in acquired state");
 
             holder = await @lock.AcquireAsync(CancellationToken.None);
             if (holder)
-                throw new Exception();
+                Fail("Lock is in acquired state");
 
             holder = await @lock.AcquireAsync(DefaultTimeout);
             if (holder)
-                throw new Exception();
+                Fail("Lock is in acquired state");
 
             holder.Dispose();
         }
@@ -31,7 +31,7 @@ namespace DotNext.Threading
             using var @lock = AsyncLock.Exclusive(syncRoot);
             var holder = await @lock.TryAcquireAsync(DefaultTimeout, CancellationToken.None);
             if (holder) { }
-            else throw new Exception();
+            else Fail("Lock was not acquired");
             True(syncRoot.IsLockHeld);
             holder.Dispose();
             False(syncRoot.IsLockHeld);
@@ -49,7 +49,7 @@ namespace DotNext.Threading
             using var @lock = AsyncLock.Semaphore(sem);
             var holder = await @lock.TryAcquireAsync(DefaultTimeout, CancellationToken.None);
             if (holder) { }
-            else throw new Exception();
+            else Fail("Lock was not acquired");
             Equal(2, sem.CurrentCount);
             holder.Dispose();
             Equal(3, sem.CurrentCount);

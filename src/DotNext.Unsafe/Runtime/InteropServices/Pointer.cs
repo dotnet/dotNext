@@ -737,7 +737,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     }
 
     /// <summary>
-    /// Gets the value stored in the memory identified by this pointer.
+    /// Dereferences this pointer.
     /// </summary>
     /// <returns>The value stored in the memory.</returns>
     /// <exception cref="NullPointerException">The pointer is 0.</exception>
@@ -785,6 +785,63 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// <param name="index">The index of the element to modify.</param>
     /// <exception cref="NullPointerException">The pointer is 0.</exception>
     public void Set(T value, nint index) => this[index] = value;
+
+    /// <summary>
+    /// Dereferences this pointer, assuming that this pointer is unaligned.
+    /// </summary>
+    /// <returns>The value stored in the memory.</returns>
+    /// <exception cref="NullPointerException">The pointer is zero.</exception>
+    public unsafe T GetUnaligned()
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Unsafe.ReadUnaligned<T>(value);
+    }
+
+    /// <summary>
+    /// Gets the value stored in the memory at the specified position, assuming
+    /// that this pointer is unaligned.
+    /// </summary>
+    /// <param name="index">The index of the element.</param>
+    /// <returns>The value stored in the memory at the specified position.</returns>
+    /// <exception cref="NullPointerException">The pointer is zero.</exception>
+    public unsafe T GetUnaligned(nint index)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        return Unsafe.ReadUnaligned<T>(value + index);
+    }
+
+    /// <summary>
+    /// Sets the value stored in the memory identified by this pointer, assuming
+    /// that this pointer is unaligned.
+    /// </summary>
+    /// <param name="value">The value to be stored in the memory.</param>
+    /// <exception cref="NullPointerException">The pointer is 0.</exception>
+    public unsafe void SetUnaligned(T value)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        Unsafe.WriteUnaligned(this.value, value);
+    }
+
+    /// <summary>
+    /// Sets the value at the specified position in the memory, assuming
+    /// that this pointer is unaligned.
+    /// </summary>
+    /// <param name="value">The value to be stored in the memory.</param>
+    /// <param name="index">The index of the element to modify.</param>
+    /// <exception cref="NullPointerException">The pointer is 0.</exception>
+    public unsafe void SetUnaligned(T value, nint index)
+    {
+        if (IsNull)
+            ThrowNullPointerException();
+
+        Unsafe.WriteUnaligned(this.value + index, value);
+    }
 
     /// <summary>
     /// Gets enumerator over raw memory.

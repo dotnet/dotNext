@@ -19,7 +19,7 @@ public interface ICluster : IPeerMesh<IClusterMember>
     /// <exception cref="TimeoutException">The operation is timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
-    Task<IClusterMember> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default);
+    ValueTask<IClusterMember> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default);
 
     /// <summary>
     /// An event raised when leader has been changed.
@@ -30,5 +30,5 @@ public interface ICluster : IPeerMesh<IClusterMember>
     /// Revokes leadership and starts new election process.
     /// </summary>
     /// <returns><see langword="true"/> if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-    Task<bool> ResignAsync(CancellationToken token = default);
+    ValueTask<bool> ResignAsync(CancellationToken token = default);
 }

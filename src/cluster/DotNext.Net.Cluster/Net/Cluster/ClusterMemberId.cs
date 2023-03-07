@@ -3,7 +3,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Connections;
 using static System.Buffers.Binary.BinaryPrimitives;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster;
 
@@ -22,7 +21,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <summary>
     /// Gets size of this type, in bytes.
     /// </summary>
-    public static int Size => 16 + sizeof(ulong) + sizeof(int);
+    public static unsafe int Size => sizeof(Guid) + sizeof(ulong) + sizeof(int);
 
     private readonly Guid address;
     private readonly ulong lengthAndPort; // pack two fields as 8 bytes for more efficient equality operation

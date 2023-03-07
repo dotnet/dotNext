@@ -68,7 +68,7 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     var modifier = default(DataModifier?);
     if (!string.IsNullOrEmpty(persistentStorage))
     {
-        var state = new SimplePersistentState(persistentStorage, new AppEventSource());
+        var state = new SimplePersistentState(persistentStorage);
         cluster.AuditTrail = state;
         modifier = new DataModifier(cluster, state);
     }
@@ -86,14 +86,9 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     {
         var builder = storage.CreateActiveConfigurationBuilder();
 
-        var address = new IPEndPoint(IPAddress.Loopback, 3262);
-        builder.Add(ClusterMemberId.FromEndPoint(address), address);
-
-        address = new(IPAddress.Loopback, 3263);
-        builder.Add(ClusterMemberId.FromEndPoint(address), address);
-
-        address = new(IPAddress.Loopback, 3264);
-        builder.Add(ClusterMemberId.FromEndPoint(address), address);
+        builder.Add(new IPEndPoint(IPAddress.Loopback, 3262));
+        builder.Add(new IPEndPoint(IPAddress.Loopback, 3263));
+        builder.Add(new IPEndPoint(IPAddress.Loopback, 3264));
 
         builder.Build();
     }

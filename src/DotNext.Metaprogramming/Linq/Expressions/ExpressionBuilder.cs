@@ -743,10 +743,10 @@ public static partial class ExpressionBuilder
     {
         if (!interfaceType.IsAssignableFrom(instance.Type))
             throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(instance.Type, interfaceType));
-        MethodInfo? method = interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, GetType));
-        return method is null ?
-            throw new MissingMethodException(interfaceType.FullName, methodName) :
-            instance.Call(method, arguments);
+
+        return interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, GetType)) is { } method
+            ? instance.Call(method, arguments)
+            : throw new MissingMethodException(interfaceType.FullName, methodName);
     }
 
     /// <summary>
@@ -758,10 +758,9 @@ public static partial class ExpressionBuilder
     /// <returns>An expression representing static method call.</returns>
     public static MethodCallExpression CallStatic(this Type type, string methodName, params Expression[] arguments)
     {
-        MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), null);
-        return method is null ?
-            throw new MissingMethodException(type.FullName, methodName) :
-            Expression.Call(method, arguments);
+        return type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), null) is { } method
+            ? Expression.Call(method, arguments)
+            : throw new MissingMethodException(type.FullName, methodName);
     }
 
     /// <summary>
@@ -790,10 +789,9 @@ public static partial class ExpressionBuilder
     /// <returns>Property access expression.</returns>
     public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
     {
-        PropertyInfo? property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-        return property is null ?
-            throw new MissingMemberException(interfaceType.FullName, propertyName) :
-            instance.Property(property, indicies);
+        return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
+            ? instance.Property(property, indicies)
+            : throw new MissingMemberException(interfaceType.FullName, propertyName);
     }
 
     /// <summary>
@@ -1096,12 +1094,12 @@ public static partial class ExpressionBuilder
     /// <returns>Instantiation expression.</returns>
     public static NewExpression New(this Type type, params Expression[] args)
     {
-        if (args.LongLength == 0L)
+        if (args.LongLength is 0L)
             return Expression.New(type);
-        ConstructorInfo? ctor = type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type));
-        return ctor is null ?
-            throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName) :
-            Expression.New(ctor, args);
+
+        return type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type)) is { } ctor
+            ? Expression.New(ctor, args)
+            : throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName);
     }
 
     /// <summary>

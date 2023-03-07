@@ -42,7 +42,7 @@ public static class LinkedTokenSourceFactory
     {
         CancellationTokenSource? result;
 
-        if (token.IsCancellationRequested || timeout < TimeSpan.Zero)
+        if (token.IsCancellationRequested || timeout < default(TimeSpan))
         {
             result = null;
         }

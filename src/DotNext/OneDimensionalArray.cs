@@ -1,6 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using static System.Runtime.CompilerServices.Unsafe;
-using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext;
 
@@ -337,7 +335,7 @@ public static class OneDimensionalArray
     /// <param name="first">First array for equality check.</param>
     /// <param name="second">Second array of equality check.</param>
     /// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
-    public static unsafe bool BitwiseEquals<T>(this T[]? first, T[]? second)
+    public static bool BitwiseEquals<T>(this T[]? first, T[]? second)
         where T : unmanaged
         => Span.BitwiseEquals(new ReadOnlySpan<T>(first), new ReadOnlySpan<T>(second));
 
@@ -348,7 +346,7 @@ public static class OneDimensionalArray
     /// <param name="array">The array to be hashed.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>32-bit hash code of the array content.</returns>
-    public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
+    public static int BitwiseHashCode<T>(this T[] array, bool salted = true)
         where T : unmanaged
         => Span.BitwiseHashCode(new ReadOnlySpan<T>(array), salted);
 
@@ -413,7 +411,7 @@ public static class OneDimensionalArray
     /// <param name="array">The array to be hashed.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>64-bit hash code of the array content.</returns>
-    public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
+    public static long BitwiseHashCode64<T>(this T[] array, bool salted = true)
         where T : unmanaged
         => Span.BitwiseHashCode64(new ReadOnlySpan<T>(array), salted);
 
@@ -477,7 +475,7 @@ public static class OneDimensionalArray
     /// <param name="first">The first array to compare.</param>
     /// <param name="second">The second array to compare.</param>
     /// <returns>Comparison result.</returns>
-    public static unsafe int BitwiseCompare<T>(this T[]? first, T[]? second)
+    public static int BitwiseCompare<T>(this T[]? first, T[]? second)
         where T : unmanaged
         => Span.BitwiseCompare(new ReadOnlySpan<T>(first), new ReadOnlySpan<T>(second));
 }

@@ -5,6 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Metrics;
 /// <see cref="MetricsCollector"/> to collect metrics about response time reported
 /// by the Raft client.
 /// </summary>
+[Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
 public interface IClientMetricsCollector
 {
     /// <summary>

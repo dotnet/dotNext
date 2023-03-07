@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Threading;
-using static Replication.CommitEvent;
+using Replication;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
@@ -74,8 +74,25 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct CommitChecker : ISupplier<bool>
+    {
+        private readonly ConsensusOnlyState state;
+        private readonly long index;
+
+        internal CommitChecker(ConsensusOnlyState state, long index)
+        {
+            Debug.Assert(state is not null);
+
+            this.state = state;
+        }
+
+        bool ISupplier<bool>.Invoke()
+            => index <= state.commitIndex.VolatileRead();
+    }
+
     private readonly AsyncReaderWriterLock syncRoot = new();
-    private readonly AsyncManualResetEvent commitEvent = new(false);
+    private readonly AsyncTrigger commitEvent = new();
     private long term, commitIndex, lastTerm, index;
 
     // boxed ClusterMemberId or null if there is not last vote stored
@@ -173,7 +190,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
                 commitIndex.VolatileWrite(startIndex);
                 index.VolatileWrite(startIndex);
                 log = Array.Empty<long>();
-                commitEvent.Set(true);
+                commitEvent.Signal(resumeAll: true);
             }
             else if (startIndex > index.VolatileRead() + 1L)
             {
@@ -208,7 +225,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
                 // count indicates how many elements should be removed from log
                 log = log.RemoveFirst(count);
-                commitEvent.Set(true);
+                commitEvent.Signal(resumeAll: true);
             }
         }
 
@@ -357,7 +374,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     /// <inheritdoc/>
     ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
-        => commitEvent.WaitForCommitAsync(static (state, index) => index <= state.commitIndex.VolatileRead(), this, index, token);
+        => commitEvent.SpinWaitAsync(new CommitChecker(this, index), token);
 
     /// <inheritdoc/>
     [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]

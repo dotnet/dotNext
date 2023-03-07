@@ -50,10 +50,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
 
         private static async ValueTask StorageTest(IClusterConfigurationStorage<HttpEndPoint> storage)
         {
-            var events = new Queue<ClusterConfigurationEvent<HttpEndPoint>>();
-            storage.ActiveConfigurationChanged += (ev, token) =>
+            var events = new Queue<(HttpEndPoint, bool)>();
+            storage.ActiveConfigurationChanged += (address, added, token) =>
             {
-                events.Enqueue(ev);
+                events.Enqueue((address, added));
                 return ValueTask.CompletedTask;
             };
 
@@ -62,16 +62,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             Empty(storage.ActiveConfiguration);
 
             var ep = new HttpEndPoint(new Uri("https://localhost:3262", UriKind.Absolute));
-            var id = ClusterMemberId.FromEndPoint(ep);
-            True(await storage.AddMemberAsync(id, ep));
+            True(await storage.AddMemberAsync(ep));
             NotNull(storage.ProposedConfiguration);
             NotNull(storage.As<IClusterConfigurationStorage>().ProposedConfiguration);
             Empty(storage.ActiveConfiguration);
-            Contains(id, storage.ProposedConfiguration.Keys);
-            Equal(ep, storage.ProposedConfiguration[id]);
+            Contains(ep, storage.ProposedConfiguration);
             var task = storage.WaitForApplyAsync();
 
-            False(await storage.RemoveMemberAsync(id));
+            False(await storage.RemoveMemberAsync(ep));
             False(task.IsCompleted);
 
             await storage.ApplyAsync();
@@ -82,14 +80,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             NotEmpty(storage.ActiveConfiguration);
 
             var ev = events.Dequeue();
-            True(ev.IsAdded);
-            Equal(ev.Id, id);
-            Equal(ev.Address, ep);
+            True(ev.Item2);
+            Equal(ev.Item1, ep);
 
-            Contains(id, storage.ActiveConfiguration.Keys);
-            Equal(ep, storage.ActiveConfiguration[id]);
+            Contains(ep, storage.ActiveConfiguration);
 
-            True(await storage.RemoveMemberAsync(id));
+            True(await storage.RemoveMemberAsync(ep));
             task = storage.WaitForApplyAsync();
             False(task.IsCompleted);
             Empty(storage.ProposedConfiguration);
@@ -99,9 +95,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             Null(storage.ProposedConfiguration);
 
             ev = events.Dequeue();
-            False(ev.IsAdded);
-            Equal(ev.Id, id);
-            Equal(ev.Address, ep);
+            False(ev.Item2);
+            Equal(ev.Item1, ep);
         }
 
         [Fact]
@@ -126,22 +121,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         {
             var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var ep = new HttpEndPoint(new Uri("https://localhost:3262", UriKind.Absolute));
-            var id = ClusterMemberId.FromEndPoint(ep);
 
             using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
             {
                 await storage.LoadConfigurationAsync();
-                True(await storage.AddMemberAsync(id, ep));
+                True(await storage.AddMemberAsync(ep));
                 await storage.ApplyAsync();
             }
 
             var ep2 = new HttpEndPoint(new Uri("https://localhost:3263", UriKind.Absolute));
-            var id2 = ClusterMemberId.FromEndPoint(ep2);
 
             using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
             {
                 await storage.LoadConfigurationAsync();
-                True(await storage.AddMemberAsync(id2, ep2));
+                True(await storage.AddMemberAsync(ep2));
                 await storage.ApplyAsync();
             }
 
@@ -149,8 +142,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             {
                 await storage.LoadConfigurationAsync();
                 Null(storage.ProposedConfiguration);
-                Equal(ep, storage.ActiveConfiguration[id]);
-                Equal(ep2, storage.ActiveConfiguration[id2]);
+                Contains(ep, storage.ActiveConfiguration);
+                Contains(ep2, storage.ActiveConfiguration);
             }
         }
 
@@ -159,14 +152,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         {
             var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var ep = new HttpEndPoint(new Uri("https://localhost:3262", UriKind.Absolute));
-            var id = ClusterMemberId.FromEndPoint(ep);
             long fingerprint;
             byte[] configuration;
 
             using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
             {
                 await storage.LoadConfigurationAsync();
-                True(await storage.AddMemberAsync(id, ep));
+                True(await storage.AddMemberAsync(ep));
                 await storage.ApplyAsync();
                 fingerprint = storage.As<IClusterConfigurationStorage>().ActiveConfiguration.Fingerprint;
                 configuration = await storage.As<IClusterConfigurationStorage>().ActiveConfiguration.ToByteArrayAsync();
@@ -179,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             {
                 await storage.ProposeAsync(new SimpleConfigurationStorage(configuration, fingerprint));
                 NotNull(storage.As<IClusterConfigurationStorage>().ProposedConfiguration);
-                Equal(ep, storage.ProposedConfiguration[id]);
+                Contains(ep, storage.ProposedConfiguration);
             }
 
             // re-read proposed configuration
@@ -187,7 +179,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
             {
                 await storage.LoadConfigurationAsync();
                 NotNull(storage.As<IClusterConfigurationStorage>().ProposedConfiguration);
-                Equal(ep, storage.ProposedConfiguration[id]);
+                Contains(ep, storage.ProposedConfiguration);
             }
         }
 
@@ -196,11 +188,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Membership
         {
             var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var ep = new HttpEndPoint(new Uri("https://localhost:3262", UriKind.Absolute));
-            var id = ClusterMemberId.FromEndPoint(ep);
 
             using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
             {
-                True(await storage.AddMemberAsync(id, ep));
+                True(await storage.AddMemberAsync(ep));
                 await storage.ApplyAsync();
             }
 

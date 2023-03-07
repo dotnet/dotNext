@@ -95,5 +95,17 @@ namespace DotNext.Diagnostics
             detector.Reset();
             Equal(0.0D, detector.Value);
         }
+
+        [Fact]
+        public static void RegressionIssue151()
+        {
+            var detector = new PhiAccrualFailureDetector { MaxSampleSize = 3 };
+            var ts = new Timestamp();
+
+            for (var i = 0; i < 50; i++)
+            {
+                detector.ReportHeartbeat(ts + TimeSpan.FromMilliseconds(i));
+            }
+        }
     }
 }

@@ -8,15 +8,6 @@ namespace DotNext;
 /// </summary>
 public static class Converter
 {
-    private static class Id<TInput, TOutput>
-        where TInput : TOutput
-    {
-        internal static readonly Converter<TInput, TOutput> Value = Identity<TInput, TOutput>;
-    }
-
-    internal static TOutput Identity<TInput, TOutput>(TInput input)
-        where TInput : TOutput => input;
-
     /// <summary>
     /// The converter which returns input argument
     /// without any modifications.
@@ -29,7 +20,7 @@ public static class Converter
     /// </remarks>
     public static Converter<TInput, TOutput> Identity<TInput, TOutput>()
         where TInput : TOutput
-        => Id<TInput, TOutput>.Value;
+        => ObjectExtensions.Identity<TInput, TOutput>;
 
     /// <summary>
     /// The converter which returns input argument

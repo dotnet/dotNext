@@ -54,22 +54,16 @@ internal sealed class Startup
         var path = configuration[SimplePersistentState.LogLocation];
         if (!string.IsNullOrWhiteSpace(path))
         {
-            services.AddSingleton<AppEventSource>();
             services.UsePersistenceEngine<ISupplier<long>, SimplePersistentState>()
                 .AddSingleton<IHostedService, DataModifier>();
         }
     }
 
     // NOTE: this way of adding members to the cluster is not recommended in production code
-    private static void AddClusterMembers(IDictionary<ClusterMemberId, UriEndPoint> members)
+    private static void AddClusterMembers(ICollection<UriEndPoint> members)
     {
-        var address = new UriEndPoint(new("https://localhost:3262", UriKind.Absolute));
-        members.Add(ClusterMemberId.FromEndPoint(address), address);
-
-        address = new UriEndPoint(new("https://localhost:3263", UriKind.Absolute));
-        members.Add(ClusterMemberId.FromEndPoint(address), address);
-
-        address = new UriEndPoint(new("https://localhost:3264", UriKind.Absolute));
-        members.Add(ClusterMemberId.FromEndPoint(address), address);
+        members.Add(new UriEndPoint(new("https://localhost:3262", UriKind.Absolute)));
+        members.Add(new UriEndPoint(new("https://localhost:3263", UriKind.Absolute)));
+        members.Add(new UriEndPoint(new("https://localhost:3264", UriKind.Absolute)));
     }
 }

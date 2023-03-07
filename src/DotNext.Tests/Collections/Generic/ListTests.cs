@@ -43,9 +43,7 @@ namespace DotNext.Collections.Generic
             Equal(2, view[1]);
             Equal(3, view[2]);
             NotEmpty(view);
-            foreach (var value in view)
-                if (!value.IsBetween(0, 3, BoundType.Closed))
-                    throw new Exception();
+            All(view, static value => True(value.IsBetween(0, 3, BoundType.Closed)));
         }
 
         [Fact]
@@ -89,19 +87,10 @@ namespace DotNext.Collections.Generic
             slice[0] = 50L;
             Equal(50L, list[1]);
 
-            var index = 0;
-            foreach (var item in slice)
-                switch (index++)
-                {
-                    case 0:
-                        Equal(50L, item);
-                        continue;
-                    case 1:
-                        Equal(30L, item);
-                        continue;
-                    default:
-                        throw new Xunit.Sdk.XunitException();
-                }
+            Collection(
+                slice,
+                Equal(50L),
+                Equal(30L));
 
             var array = new long[2];
             slice.CopyTo(array, 0);

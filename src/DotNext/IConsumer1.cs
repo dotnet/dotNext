@@ -1,6 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext;
 
@@ -124,7 +122,7 @@ public readonly unsafe struct ConsumerClosure<TContext, T> : IConsumer<T>
 /// </summary>
 /// <typeparam name="T">The type of the consumer argument.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct DelegatingConsumer<T> : IConsumer<T>
+public readonly record struct DelegatingConsumer<T> : IConsumer<T>, IEquatable<DelegatingConsumer<T>>
 {
     private readonly Action<T> action;
 
@@ -147,44 +145,8 @@ public readonly struct DelegatingConsumer<T> : IConsumer<T>
     /// <inheritdoc />
     Action<T> IFunctional<Action<T>>.ToDelegate() => action;
 
-    /// <summary>
-    /// Determines whether this object contains the same delegate instance as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same delegate instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(DelegatingConsumer<T> other)
-        => ReferenceEquals(action, other.action);
-
-    /// <summary>
-    /// Determines whether this object contains the same delegate instance as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same delegate instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals([NotNullWhen(true)] object? other) => other is DelegatingConsumer<T> consumer && Equals(consumer);
-
-    /// <summary>
-    /// Gets the hash code representing identity of the stored delegate instance.
-    /// </summary>
-    /// <returns>The hash code representing identity of the stored delegate instance.</returns>
-    public override int GetHashCode() => RuntimeHelpers.GetHashCode(action);
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the same delegate instance.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the same delegate instance; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(DelegatingConsumer<T> x, DelegatingConsumer<T> y)
-        => x.Equals(y);
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the different delegate instances.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the different delegate instances; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(DelegatingConsumer<T> x, DelegatingConsumer<T> y)
-        => !x.Equals(y);
+    /// <inheritdoc />
+    public override string? ToString() => action?.ToString();
 
     /// <summary>
     /// Wraps the delegate.

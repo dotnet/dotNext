@@ -24,7 +24,6 @@ internal struct ValueTaskPool<T, TNode, TCallback>
     internal ValueTaskPool(TCallback backToPool, long? maximumRetained = null)
     {
         Debug.Assert(backToPool is not null);
-        Debug.Assert((backToPool.Method.MethodImplementationFlags & MethodImplAttributes.Synchronized) != 0);
 
         this.backToPool = backToPool;
         first = null;
@@ -36,7 +35,6 @@ internal struct ValueTaskPool<T, TNode, TCallback>
     {
         Debug.Assert(node is not null);
         Debug.Assert(backToPool.Target is not null);
-        Debug.Assert(Monitor.IsEntered(backToPool.Target));
         Debug.Assert(count is 0L || first is not null);
 
         if (!node.TryReset(out _))
@@ -56,7 +54,6 @@ internal struct ValueTaskPool<T, TNode, TCallback>
     internal TNode Get()
     {
         Debug.Assert(backToPool.Target is not null);
-        Debug.Assert(Monitor.IsEntered(backToPool.Target));
 
         TNode result;
         if (first is null)

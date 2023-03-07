@@ -81,7 +81,7 @@ public sealed class WithExpression : CustomExpression
     /// </summary>
     /// <param name="body">A new body to be placed into this expression.</param>
     /// <returns>The expression updated with the given body.</returns>
-    public WithExpression Update(Expression body) => new(assignment is null ? Variable : assignment.Right) { Body = body };
+    public WithExpression Update(Expression body) => new(assignment?.Right ?? Variable) { Body = body };
 
     /// <summary>
     /// Translates this expression into predefined set of expressions

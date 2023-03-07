@@ -37,35 +37,26 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
 
-        internal long RemainingLocks
-        {
-            readonly get => remainingLocks.VolatileRead();
-            private set => remainingLocks.VolatileWrite(value);
-        }
+        internal readonly long RemainingLocks => remainingLocks.VolatileRead();
 
-        internal readonly bool IsWeakLockAllowed => RemainingLocks > 0L;
+        internal readonly bool IsWeakLockAllowed => remainingLocks > 0L;
 
         internal void AcquireWeakLock() => remainingLocks.DecrementAndGet();
 
         internal void ExitLock()
         {
-            if (RemainingLocks < 0L)
-            {
-                RemainingLocks = ConcurrencyLevel;
-            }
-            else
-            {
-                remainingLocks.IncrementAndGet();
-            }
+            remainingLocks = remainingLocks < 0L
+                ? ConcurrencyLevel
+                : remainingLocks + 1L;
         }
 
-        internal readonly bool IsStrongLockHeld => RemainingLocks < 0L;
+        internal readonly bool IsStrongLockHeld => remainingLocks < 0L;
 
-        internal readonly bool IsStrongLockAllowed => RemainingLocks == ConcurrencyLevel;
+        internal readonly bool IsStrongLockAllowed => remainingLocks == ConcurrencyLevel;
 
-        internal void AcquireStrongLock() => RemainingLocks = ExclusiveMode;
+        internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
 
-        internal void Downgrade() => RemainingLocks = ConcurrencyLevel - 1L;
+        internal void Downgrade() => remainingLocks = ConcurrencyLevel - 1L;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -115,13 +106,15 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(WaitNode node)
     {
-        if (node.NeedsRemoval && RemoveNode(node))
-            DrainWaitQueue();
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval && RemoveNode(node))
+                DrainWaitQueue();
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <summary>
@@ -144,12 +137,19 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     public bool IsStrongLockHeld => state.IsStrongLockHeld;
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private ref TLockManager GetLockManager<TLockManager>()
+        where TLockManager : struct, ILockManager<WaitNode>
+        => ref Unsafe.As<State, TLockManager>(ref state);
+
     private bool TryAcquire<TManager>()
         where TManager : struct, ILockManager<WaitNode>
     {
-        ThrowIfDisposed();
-        return TryAcquire(ref Unsafe.As<State, TManager>(ref state));
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            return TryAcquire(ref GetLockManager<TManager>());
+        }
     }
 
     /// <summary>
@@ -160,11 +160,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryAcquire(bool strongLock)
         => strongLock ? TryAcquire<StrongLockManager>() : TryAcquire<WeakLockManager>();
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Acquire<TManager>(bool throwOnTimeout, bool zeroTimeout)
-        where TManager : struct, ILockManager<WaitNode>
-        => Wait(ref Unsafe.As<State, TManager>(ref state), ref pool, throwOnTimeout, zeroTimeout);
 
     /// <summary>
     /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -178,14 +173,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-        {
-            task = (strongLock
-                ? Acquire<StrongLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero)
-                : Acquire<WeakLockManager>(throwOnTimeout: false, timeout == TimeSpan.Zero)).CreateTask(timeout, token);
-        }
-
-        return task;
+        var options = new TimeoutAndCancellationToken(timeout, token);
+        return strongLock
+            ? TryAcquireAsync(ref pool, ref GetLockManager<StrongLockManager>(), options)
+            : TryAcquireAsync(ref pool, ref GetLockManager<WeakLockManager>(), options);
     }
 
     /// <summary>
@@ -201,14 +192,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask task))
-        {
-            task = (strongLock
-                ? Acquire<StrongLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero)
-                : Acquire<WeakLockManager>(throwOnTimeout: true, timeout == TimeSpan.Zero)).CreateVoidTask(timeout, token);
-        }
-
-        return task;
+        var options = new TimeoutAndCancellationToken(timeout, token);
+        return strongLock
+            ? AcquireAsync(ref pool, ref GetLockManager<StrongLockManager>(), options)
+            : AcquireAsync(ref pool, ref GetLockManager<WeakLockManager>(), options);
     }
 
     /// <summary>
@@ -221,15 +208,15 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
     {
-        return token.IsCancellationRequested
-            ? ValueTask.FromCanceled(token)
-            : (strongLock ? Acquire<StrongLockManager>(throwOnTimeout: false, zeroTimeout: false) : Acquire<WeakLockManager>(throwOnTimeout: false, zeroTimeout: false))
-            .CreateVoidTask(token);
+        var options = new CancellationTokenOnly(token);
+        return strongLock
+            ? AcquireAsync(ref pool, ref GetLockManager<StrongLockManager>(), options)
+            : AcquireAsync(ref pool, ref GetLockManager<WeakLockManager>(), options);
     }
 
     private void DrainWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(first is null or WaitNode);
 
         for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
@@ -268,16 +255,18 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Downgrade()
     {
-        ThrowIfDisposed();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        if (state.IsStrongLockAllowed) // nothing to release
-            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+            if (state.IsStrongLockAllowed) // nothing to release
+                throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-        state.Downgrade();
-        DrainWaitQueue();
+            state.Downgrade();
+            DrainWaitQueue();
+        }
     }
 
     /// <summary>
@@ -285,19 +274,21 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Release()
     {
-        ThrowIfDisposed();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        if (state.IsStrongLockAllowed) // nothing to release
-            throw new SynchronizationLockException(ExceptionMessages.NotInLock);
+            if (state.IsStrongLockAllowed) // nothing to release
+                throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-        state.ExitLock();
-        DrainWaitQueue();
+            state.ExitLock();
+            DrainWaitQueue();
 
-        if (IsDisposing && IsReadyToDispose)
-            Dispose(true);
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
+        }
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && first is null;

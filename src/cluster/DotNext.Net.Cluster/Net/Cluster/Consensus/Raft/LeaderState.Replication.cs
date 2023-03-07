@@ -8,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 using Membership;
 using Threading;
+using Timestamp = Diagnostics.Timestamp;
 using IDataTransferObject = IO.IDataTransferObject;
 
 internal partial class LeaderState<TMember>
@@ -249,93 +250,35 @@ internal partial class LeaderState<TMember>
         }
     }
 
-    private sealed class ReplicationCallback : TaskCompletionSource
+    private readonly AsyncAutoResetEvent replicationEvent;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
+    private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
+
+    private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
     {
-        private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent;
-
-        internal ReplicationCallback(in ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter parent)
-            => this.parent = parent;
-
-        internal void Invoke()
-        {
-            Debug.Assert(parent.IsCompleted);
-
-            try
-            {
-                parent.GetResult();
-                TrySetResult();
-            }
-            catch (ObjectDisposedException e)
-            {
-                TrySetException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
-            }
-            catch (OperationCanceledException e)
-            {
-                TrySetCanceled(e.CancellationToken);
-            }
-            catch (Exception e)
-            {
-                TrySetException(e);
-            }
-            finally
-            {
-                parent = default; // help GC
-            }
-        }
+        // subtract heartbeat processing duration from heartbeat period for better stability
+        var delay = period - startTime.Elapsed;
+        return replicationEvent.WaitAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token);
     }
 
-    private readonly AsyncAutoResetEvent replicationEvent = new(initialState: false);
-
-    // We're using AsyncTrigger instead of TaskCompletionSource because adding a new completion
-    // callback to AsyncTrigger is always O(1) in contrast to TaskCompletionSource which provides
-    // O(n) as worst case (underlying list of completion callbacks organized as List<T>
-    // in combination with monitor lock for insertion)
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
-    private readonly AsyncTrigger replicationQueue = new();
-
-    private void DrainReplicationQueue()
-        => replicationQueue.Signal(resumeAll: true);
-
-    private ValueTask<bool> WaitForReplicationAsync(TimeSpan period, CancellationToken token)
-        => replicationEvent.WaitAsync(period, token);
-
-    internal Task ForceReplicationAsync(CancellationToken token)
+    internal ValueTask ForceReplicationAsync(CancellationToken token)
     {
-        Task result;
+        ValueTask replicationTask;
         try
         {
             // enqueue a new task representing completion callback
-            var replicationTask = replicationQueue.WaitAsync(token).ConfigureAwait(false).GetAwaiter();
+            replicationTask = replicationQueue.WaitAsync(token);
 
             // resume heartbeat loop to force replication
             replicationEvent.Set();
-
-            if (replicationTask.IsCompleted)
-            {
-                replicationTask.GetResult();
-                result = Task.CompletedTask;
-            }
-            else
-            {
-                var callback = new ReplicationCallback(replicationTask);
-                replicationTask.UnsafeOnCompleted(callback.Invoke);
-                result = callback.Task;
-            }
         }
         catch (ObjectDisposedException e)
         {
-            result = Task.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
-        }
-        catch (OperationCanceledException e)
-        {
-            result = Task.FromCanceled(e.CancellationToken);
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException(e);
+            replicationTask = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
         }
 
-        return result;
+        return replicationTask;
     }
 
     private static Task<Result<bool>> QueueReplication(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)

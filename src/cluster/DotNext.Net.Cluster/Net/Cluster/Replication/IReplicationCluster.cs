@@ -18,7 +18,7 @@ public interface IReplicationCluster : ICluster
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    Task ForceReplicationAsync(CancellationToken token = default);
+    ValueTask ForceReplicationAsync(CancellationToken token = default);
 
     /// <summary>
     /// Represents an event raised when the local node completes its replication with another
@@ -51,6 +51,6 @@ public interface IReplicationCluster<TEntry> : IReplicationCluster
     /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if retry is required.</returns>
     /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    Task<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
+    ValueTask<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
         where TEntryImpl : notnull, TEntry;
 }

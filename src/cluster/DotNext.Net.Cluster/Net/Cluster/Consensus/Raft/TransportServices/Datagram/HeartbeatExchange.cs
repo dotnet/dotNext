@@ -4,11 +4,12 @@ using Buffers;
 
 internal sealed class HeartbeatExchange : ClientExchange
 {
+    private const string Name = "Heartbeat";
     private readonly long prevLogIndex, prevLogTerm, commitIndex;
     private readonly EmptyClusterConfiguration? configuration;
 
     internal HeartbeatExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, EmptyClusterConfiguration? configState)
-        : base(term)
+        : base(Name, term)
     {
         this.prevLogIndex = prevLogIndex;
         this.prevLogTerm = prevLogTerm;

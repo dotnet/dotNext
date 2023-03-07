@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using static System.Threading.Timeout;
+using System.Runtime.InteropServices;
 using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
 
 namespace DotNext.Threading.Tasks;
@@ -18,8 +18,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private CancellationTokenSource? timeoutSource;
 
     // task management
-    private Action<object?>? continuation;
-    private object? continuationState, capturedContext, completionData;
+    private Continuation continuation;
+    private object? completionData;
     private ExecutionContext? context;
     private protected short version;
     private volatile ManualResetCompletionSourceStatus status;
@@ -80,18 +80,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected abstract void CompleteAsCanceled(CancellationToken token);
 
-    private static object? CaptureContext()
-    {
-        object? context = SynchronizationContext.Current;
-        if (context is null || context.GetType() == typeof(SynchronizationContext))
-        {
-            var scheduler = TaskScheduler.Current;
-            context = ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
-        }
-
-        return context;
-    }
-
     private protected void StopTrackingCancellation()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -111,63 +99,33 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
-    private static void InvokeContinuation(object? capturedContext, Action<object?> continuation, object? state, bool runAsynchronously, bool flowExecutionContext)
-    {
-        switch (capturedContext)
-        {
-            case null when runAsynchronously:
-                if (flowExecutionContext)
-                    ThreadPool.QueueUserWorkItem(continuation, state, preferLocal: true);
-                else
-                    ThreadPool.UnsafeQueueUserWorkItem(continuation, state, preferLocal: true);
-                break;
-            case SynchronizationContext context:
-                context.Post(continuation.Invoke, state);
-                break;
-            case TaskScheduler scheduler:
-                Task.Factory.StartNew(continuation, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
-                break;
-            default:
-                continuation(state);
-                break;
-        }
-    }
-
-    private void InvokeContinuationCore(bool flowExecutionContext)
-    {
-        var continuation = this.continuation;
-        this.continuation = null;
-
-        var continuationState = this.continuationState;
-        this.continuationState = null;
-
-        var capturedContext = this.capturedContext;
-        this.capturedContext = null;
-
-        if (continuation is not null)
-            InvokeContinuation(capturedContext, continuation, continuationState, runContinuationsAsynchronously, flowExecutionContext);
-    }
-
     private protected void InvokeContinuation()
     {
-        var contextCopy = context;
-        context = null;
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (contextCopy is null)
+        if (continuation)
         {
-            InvokeContinuationCore(flowExecutionContext: false);
-        }
-        else
-        {
-            ExecutionContext.Run(
-                contextCopy,
-                static source =>
-                {
-                    Debug.Assert(source is ManualResetCompletionSource);
+            if (context is null)
+            {
+                continuation.Invoke(runContinuationsAsynchronously, flowExecutionContext: false);
+            }
+            else
+            {
+                ExecutionContext.Run(
+                    context,
+                    static arg =>
+                    {
+                        Debug.Assert(arg is ManualResetCompletionSource);
 
-                    Unsafe.As<ManualResetCompletionSource>(source).InvokeContinuationCore(flowExecutionContext: true);
-                },
-                this);
+                        var source = Unsafe.As<ManualResetCompletionSource>(arg);
+                        source.continuation.Invoke(source.runContinuationsAsynchronously, flowExecutionContext: true);
+                    },
+                    this);
+
+                context = null;
+            }
+
+            continuation = default;
         }
     }
 
@@ -178,8 +136,8 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         version += 1;
         status = ManualResetCompletionSourceStatus.WaitForActivation;
         context = null;
-        continuation = null;
-        continuationState = capturedContext = completionData = null;
+        completionData = null;
+        continuation = default;
     }
 
     /// <summary>
@@ -266,7 +224,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         status = ManualResetCompletionSourceStatus.WaitForConsumption;
     }
 
-    private void OnCompleted(object? capturedContext, Action<object?> continuation, object? state, short token, bool flowExecutionContext)
+    private void OnCompleted(in Continuation continuation, short token, bool flowExecutionContext)
     {
         string errorMessage;
 
@@ -309,14 +267,12 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             }
 
             this.continuation = continuation;
-            continuationState = state;
-            this.capturedContext = capturedContext;
             context = flowExecutionContext ? ExecutionContext.Capture() : null;
             goto exit;
         }
 
     execute_inplace:
-        InvokeContinuation(capturedContext, continuation, state, runContinuationsAsynchronously, flowExecutionContext);
+        continuation.Invoke(runContinuationsAsynchronously, flowExecutionContext);
 
     exit:
         return;
@@ -326,8 +282,10 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
     {
-        var capturedContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is 0 ? null : CaptureContext();
-        OnCompleted(capturedContext, continuation, state, token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) != 0);
+        OnCompleted(
+            new Continuation(continuation, state, (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0),
+            token,
+            (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0);
     }
 
     /// <summary>
@@ -383,7 +341,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (timeout == TimeSpan.Zero)
+        if (timeout == default)
         {
             CompleteAsTimedOut();
         }
@@ -400,7 +358,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
 
     private protected bool PrepareTask(TimeSpan timeout, CancellationToken token)
     {
-        if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
+        if (timeout.Ticks is < 0L and not Timeout.InfiniteTicks)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
         bool result;
@@ -429,4 +387,61 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     [StackTraceHidden]
     private protected static void InvalidSourceStateDetected()
         => throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+
+    // encapsulates continuation and its execution logic
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct Continuation
+    {
+        private readonly Action<object?> action;
+        private readonly object? state, schedulingContext;
+
+        internal Continuation(Action<object?> action, object? state, bool useSchedulingContext)
+        {
+            Debug.Assert(action is not null);
+
+            this.action = action;
+            this.state = state;
+
+            // capture scheduling context
+            schedulingContext = useSchedulingContext ? CaptureContext() : null;
+
+            static object? CaptureContext()
+            {
+                object? schedulingContext = SynchronizationContext.Current;
+                if (schedulingContext is null || schedulingContext.GetType() == typeof(SynchronizationContext))
+                {
+                    var scheduler = TaskScheduler.Current;
+                    schedulingContext = ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
+                }
+
+                return schedulingContext;
+            }
+        }
+
+        internal void Invoke(bool runAsynchronously, bool flowExecutionContext)
+        {
+            switch (schedulingContext)
+            {
+                case null when runAsynchronously:
+                    if (flowExecutionContext)
+                        ThreadPool.QueueUserWorkItem(action, state, preferLocal: true);
+                    else
+                        ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal: true);
+                    break;
+                case SynchronizationContext context:
+                    context.Post(action.Invoke, state);
+                    break;
+                case TaskScheduler scheduler:
+                    Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+                    break;
+                default:
+                    action(state);
+                    break;
+            }
+        }
+
+        public static bool operator true(in Continuation continuation) => continuation.action is not null;
+
+        public static bool operator false(in Continuation continuation) => continuation.action is null;
+    }
 }

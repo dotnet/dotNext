@@ -15,6 +15,10 @@ public static class ObjectExtensions
 
     internal static bool IsTypeOf<T>(object? obj) => obj is T;
 
+    internal static TOutput Identity<TInput, TOutput>(TInput input)
+        where TInput : TOutput
+        => input;
+
     /// <summary>
     /// Provides ad-hoc approach to associate some data with the object
     /// without modification of it.
@@ -102,6 +106,6 @@ public static class ObjectExtensions
     /// <returns>The reinterpreted <paramref name="obj"/> reference.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T As<T>(this T obj)
-        where T : class
+        where T : class?
         => obj;
 }

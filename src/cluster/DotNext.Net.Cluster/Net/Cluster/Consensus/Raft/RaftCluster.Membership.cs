@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -152,10 +153,14 @@ public partial class RaftCluster<TMember>
     /// <summary>
     /// Adds a new member to the collection of members visible by the current node.
     /// </summary>
+    /// <remarks>
+    /// This method is exposed to be called by <see cref="IClusterConfigurationStorage{TAddress}.ActiveConfigurationChanged"/>
+    /// handler.
+    /// </remarks>
     /// <param name="member">The member to add.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if the member is addedd successfully; <see langword="false"/> if the member is already in the list.</returns>
-    protected async ValueTask<bool> AddMemberAsync(TMember member, CancellationToken token)
+    public async ValueTask<bool> AddMemberAsync(TMember member, CancellationToken token)
     {
         var tokenHolder = token.LinkTo(LifecycleToken);
         var lockHolder = default(AsyncLock.Holder);
@@ -186,10 +191,14 @@ public partial class RaftCluster<TMember>
     /// <summary>
     /// Removes the member from the collection of members visible by the current node.
     /// </summary>
+    /// <remarks>
+    /// This method is exposed to be called by <see cref="IClusterConfigurationStorage{TAddress}.ActiveConfigurationChanged"/>
+    /// handler.
+    /// </remarks>
     /// <param name="id">The identifier of the member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The removed member.</returns>
-    protected async ValueTask<TMember?> RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
+    public async ValueTask<TMember?> RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
     {
         TMember? result;
         var tokenHolder = token.LinkTo(LifecycleToken);
@@ -276,7 +285,7 @@ public partial class RaftCluster<TMember>
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
 
             // proposes a new member
-            if (await configurationStorage.AddMemberAsync(member.Id, addressProvider(member), token).ConfigureAwait(false))
+            if (await configurationStorage.AddMemberAsync(addressProvider(member), token).ConfigureAwait(false))
             {
                 while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
 
@@ -304,6 +313,7 @@ public partial class RaftCluster<TMember>
     /// <typeparam name="TAddress">The type of the member address.</typeparam>
     /// <param name="id">The cluster member to remove.</param>
     /// <param name="configurationStorage">The configuration storage.</param>
+    /// <param name="addressProvider">The delegate that allows to get the address of the member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>
     /// <see langword="true"/> if the node has been removed from the cluster successfully;
@@ -312,38 +322,41 @@ public partial class RaftCluster<TMember>
     /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
     /// <exception cref="ConcurrentMembershipModificationException">The method is called concurrently.</exception>
-    public async Task<bool> RemoveMemberAsync<TAddress>(ClusterMemberId id, IClusterConfigurationStorage<TAddress> configurationStorage, CancellationToken token = default)
+    protected async Task<bool> RemoveMemberAsync<TAddress>(ClusterMemberId id, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
         where TAddress : notnull
     {
         if (!membershipState.FalseToTrue())
             throw new ConcurrentMembershipModificationException();
 
-        var tokenSource = token.LinkTo(LeadershipToken);
-        try
+        if (members.TryGetValue(id, out var member))
         {
-            // ensure that previous configuration has been committed
-            await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
-
-            // remove the existing member
-            if (await configurationStorage.RemoveMemberAsync(id, token).ConfigureAwait(false))
+            var tokenSource = token.LinkTo(LeadershipToken);
+            try
             {
-                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
-
-                // ensure that the removed member has been committed
+                // ensure that previous configuration has been committed
                 await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
-                return true;
-            }
 
-            return false;
+                // remove the existing member
+                if (await configurationStorage.RemoveMemberAsync(addressProvider(member), token).ConfigureAwait(false))
+                {
+                    while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
+
+                    // ensure that the removed member has been committed
+                    await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+                    return true;
+                }
+            }
+            catch (OperationCanceledException e) when (tokenSource is not null)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+                membershipState.Value = false;
+            }
         }
-        catch (OperationCanceledException e) when (tokenSource is not null)
-        {
-            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
-        }
-        finally
-        {
-            tokenSource?.Dispose();
-            membershipState.Value = false;
-        }
+
+        return false;
     }
 }

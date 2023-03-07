@@ -6,9 +6,12 @@ using Buffers;
 
 internal sealed class PreVoteExchange : ClientExchange<Result<PreVoteResult>>
 {
+    private const string Name = "PreVote";
+
     private readonly long lastLogIndex, lastLogTerm, currentTerm;
 
     internal PreVoteExchange(long term, long lastLogIndex, long lastLogTerm)
+        : base(Name)
     {
         this.lastLogIndex = lastLogIndex;
         this.lastLogTerm = lastLogTerm;

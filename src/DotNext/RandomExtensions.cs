@@ -73,7 +73,7 @@ public static class RandomExtensions
             if (position >= (uint)randomBuffer.Length)
             {
                 position = 0;
-                randomBytesSource.GetBytes(MemoryMarshal.AsBytes(randomBuffer));
+                GetItems(randomBytesSource, randomBuffer);
             }
 
             return Unsafe.Add(ref MemoryMarshal.GetReference(randomBuffer), position++);
@@ -95,7 +95,7 @@ public static class RandomExtensions
         [MethodImpl(MethodImplOptions.NoInlining)]
         private ulong Reject(ulong m, uint maxValue)
         {
-            uint t = unchecked(~maxValue + 1U) % maxValue;
+            uint t = unchecked(0U - maxValue) % maxValue;
 
             while ((uint)m < t)
                 m = (ulong)NextUInt32() * maxValue;
@@ -116,6 +116,7 @@ public static class RandomExtensions
     private static void Next<TRandom, T>(TRandom random, ReadOnlySpan<T> allowedInput, Span<T> buffer)
         where TRandom : struct, IRandomBytesSource
     {
+        // TODO: Remove in .NET 8: https://github.com/dotnet/runtime/issues/73864
         Debug.Assert(!buffer.IsEmpty);
         Debug.Assert(!allowedInput.IsEmpty);
 
@@ -123,7 +124,7 @@ public static class RandomExtensions
         using UInt32LocalBuffer randomVectorBuffer = (uint)buffer.Length <= (uint)UInt32LocalBuffer.StackallocThreshold
             ? stackalloc uint[buffer.Length]
             : new UInt32LocalBuffer(buffer.Length);
-        random.GetBytes(MemoryMarshal.AsBytes(randomVectorBuffer.Span));
+        GetItems(random, randomVectorBuffer.Span);
 
         if (BitOperations.IsPow2(allowedInput.Length))
         {
@@ -149,13 +150,24 @@ public static class RandomExtensions
             foreach (ref var outputPtr in output)
             {
                 outputPtr = Unsafe.Add(ref inputPtr, randomVectorPtr & moduloOperand);
-                randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, 1);
+                randomVectorPtr = ref Unsafe.Add(ref randomVectorPtr, 1U);
             }
         }
     }
 
+    private static unsafe void GetItems<TRandom, T>(TRandom random, Span<T> values)
+        where TRandom : struct, IRandomBytesSource
+        where T : unmanaged
+    {
+        for (int maxLength = Array.MaxLength / sizeof(T), length; !values.IsEmpty; values = values.Slice(length))
+        {
+            length = Math.Min(values.Length, maxLength);
+            random.GetBytes(MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(values)), length * sizeof(T)));
+        }
+    }
+
     /// <summary>
-    /// Generates random string of the given length.
+    /// Generates a random string of the given length.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="allowedChars">The allowed characters for the random string.</param>
@@ -184,7 +196,7 @@ public static class RandomExtensions
     }
 
     /// <summary>
-    /// Generates random string of the given length.
+    /// Generates a random string of the given length.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="allowedChars">The string of allowed characters for the random string.</param>
@@ -196,7 +208,7 @@ public static class RandomExtensions
         => NextString(random, allowedChars.AsSpan(), length);
 
     /// <summary>
-    /// Generates random set of characters.
+    /// Generates a random set of characters.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="allowedChars">The allowed characters for the random string.</param>
@@ -211,7 +223,7 @@ public static class RandomExtensions
     }
 
     /// <summary>
-    /// Generates random string of the given length.
+    /// Generates a random string of the given length.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="allowedChars">The allowed characters for the random string.</param>
@@ -244,7 +256,7 @@ public static class RandomExtensions
         => MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in (result = new('\0', length)).GetPinnableReference()), length);
 
     /// <summary>
-    /// Generates random string of the given length.
+    /// Generates a random string of the given length.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="allowedChars">The string of allowed characters for the random string.</param>
@@ -256,7 +268,7 @@ public static class RandomExtensions
         => NextString(random, allowedChars.AsSpan(), length);
 
     /// <summary>
-    /// Generates random set of characters.
+    /// Generates a random set of characters.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="allowedChars">The allowed characters for the random string.</param>
@@ -271,7 +283,7 @@ public static class RandomExtensions
     }
 
     /// <summary>
-    /// Generates random boolean value.
+    /// Generates a random boolean value.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="trueProbability">A probability of <see langword="true"/> result (should be between 0.0 and 1.0).</param>
@@ -283,7 +295,7 @@ public static class RandomExtensions
                 throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
     /// <summary>
-    /// Generates random non-negative random integer.
+    /// Generates non-negative integer.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>).</returns>
@@ -303,7 +315,7 @@ public static class RandomExtensions
     }
 
     /// <summary>
-    /// Generates random boolean value.
+    /// Generates a random boolean value.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <param name="trueProbability">A probability of <see langword="true"/> result (should be between 0.0 and 1.0).</param>
@@ -323,7 +335,7 @@ public static class RandomExtensions
         => random.Next<ulong>().Normalize();
 
     /// <summary>
-    /// Generates random value of blittable type.
+    /// Generates a random value of blittable type.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <typeparam name="T">The blittable type.</typeparam>
@@ -338,17 +350,39 @@ public static class RandomExtensions
     }
 
     /// <summary>
-    /// Generates random value of blittable type.
+    /// Generates a random value of blittable type.
     /// </summary>
     /// <param name="random">The source of random numbers.</param>
     /// <typeparam name="T">The blittable type.</typeparam>
     /// <returns>The randomly generated value.</returns>
     [SkipLocalsInit]
-    public static unsafe T Next<T>(this RandomNumberGenerator random)
+    public static T Next<T>(this RandomNumberGenerator random)
         where T : unmanaged
     {
         Unsafe.SkipInit(out T result);
         random.GetBytes(Span.AsBytes(ref result));
         return result;
     }
+
+    /// <summary>
+    /// Fills the buffer with random values of the specified type.
+    /// </summary>
+    /// <typeparam name="T">The blittable type.</typeparam>
+    /// <param name="random">The source of random numbers.</param>
+    /// <param name="buffer">The buffer to fill with random values.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
+    public static void GetItems<T>(this Random random, Span<T> buffer)
+        where T : unmanaged
+        => GetItems<RandomBytesSource, T>(random ?? throw new ArgumentNullException(nameof(random)), buffer);
+
+    /// <summary>
+    /// Fills the buffer with random values of the specified type.
+    /// </summary>
+    /// <typeparam name="T">The blittable type.</typeparam>
+    /// <param name="random">The source of random numbers.</param>
+    /// <param name="buffer">The buffer to fill with random values.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="random"/> is <see langword="null"/>.</exception>
+    public static void GetItems<T>(this RandomNumberGenerator random, Span<T> buffer)
+        where T : unmanaged
+        => GetItems<CryptographicRandomBytesSource, T>(random ?? throw new ArgumentNullException(nameof(random)), buffer);
 }

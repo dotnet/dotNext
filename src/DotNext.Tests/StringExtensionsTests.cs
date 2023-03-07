@@ -24,15 +24,13 @@ namespace DotNext
         {
             var str = Random.Shared.NextString(allowedChars, length);
             Equal(length, str.Length);
-            foreach (var ch in str)
-                True(allowedChars.Contains(ch));
+            All(str, ch => True(allowedChars.Contains(ch)));
 
             using (var generator = RandomNumberGenerator.Create())
             {
                 str = generator.NextString(allowedChars, length);
                 Equal(length, str.Length);
-                foreach (var ch in str)
-                    allowedChars.Contains(ch);
+                All(str, ch => True(allowedChars.Contains(ch)));
             }
         }
 
@@ -43,16 +41,14 @@ namespace DotNext
             var str = new char[6];
 
             Random.Shared.NextChars(AllowedChars, str);
-            foreach (var ch in str)
-                True(AllowedChars.Contains(ch));
+            All(str, static ch => True(AllowedChars.Contains(ch)));
 
             using (var generator = RandomNumberGenerator.Create())
             {
                 Array.Clear(str);
                 generator.NextChars(AllowedChars, str);
 
-                foreach (var ch in str)
-                    True(AllowedChars.Contains(ch));
+                All(str, static ch => True(AllowedChars.Contains(ch)));
             }
         }
 

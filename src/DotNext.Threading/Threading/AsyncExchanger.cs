@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -66,26 +65,30 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
+    private object SyncRoot => disposeTask;
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     private bool CanBeCompletedSynchronously => point is { IsCompleted: false };
 
     private ExchangePoint RentExchangePoint(T value)
     {
-        Debug.Assert(Monitor.IsEntered(this));
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var result = pool.Get();
         result.Value = value;
         return result;
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private void RemoveExchangePoint(ExchangePoint point)
     {
-        if (ReferenceEquals(this.point, point))
-            this.point = null;
+        lock (SyncRoot)
+        {
+            if (ReferenceEquals(this.point, point))
+                this.point = null;
 
-        pool.Return(point);
+            pool.Return(point);
+        }
     }
 
     /// <summary>
@@ -97,36 +100,63 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The object provided by another async flow.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled or timed out.</exception>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public ValueTask<T> ExchangeAsync(T value, TimeSpan timeout, CancellationToken token = default)
     {
         ValueTask<T> result;
 
-        if (IsDisposed)
+        switch (timeout.Ticks)
         {
-            result = new(GetDisposedTask<T>());
-        }
-        else if (IsDisposing)
-        {
-            Dispose(true);
-            result = new(GetDisposedTask<T>());
-        }
-        else if (termination is not null)
-        {
-            result = ValueTask.FromException<T>(termination);
-        }
-        else if (point?.TryExchange(ref value) ?? false)
-        {
-            point = null;
-            result = new(value);
-        }
-        else
-        {
-            point = RentExchangePoint(value);
-            result = point.CreateTask(timeout, token);
+            case Timeout.InfiniteTicks:
+                goto default;
+            case < 0L:
+                result = ValueTask.FromException<T>(new ArgumentOutOfRangeException(nameof(timeout)));
+                break;
+            case 0L:
+                try
+                {
+                    result = TryExchange(ref value)
+                        ? new(value)
+                        : ValueTask.FromException<T>(new TimeoutException());
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException<T>(e);
+                }
+
+                break;
+            default:
+                lock (SyncRoot)
+                {
+                    if (IsDisposed)
+                    {
+                        result = new(GetDisposedTask<T>());
+                    }
+                    else if (IsDisposing)
+                    {
+                        Dispose(true);
+                        result = new(GetDisposedTask<T>());
+                    }
+                    else if (termination is not null)
+                    {
+                        result = ValueTask.FromException<T>(termination);
+                    }
+                    else if (point?.TryExchange(ref value) ?? false)
+                    {
+                        point = null;
+                        result = new(value);
+                    }
+                    else
+                    {
+                        point = RentExchangePoint(value);
+                        result = point.CreateTask(timeout, token);
+                    }
+                }
+
+                break;
         }
 
         return result;
@@ -143,7 +173,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
     public ValueTask<T> ExchangeAsync(T value, CancellationToken token = default)
-        => ExchangeAsync(value, InfiniteTimeSpan, token);
+        => ExchangeAsync(value, new(Timeout.InfiniteTicks), token);
 
     /// <summary>
     /// Attempts to transfer the object to another flow synchronously.
@@ -155,29 +185,32 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <returns><see langword="true"/> if another flow is ready for exchange; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool TryExchange(ref T value)
     {
-        ThrowIfDisposed();
-
         bool result;
-        if (IsDisposing)
+
+        lock (SyncRoot)
         {
-            Dispose(true);
-            result = false;
-        }
-        else if (termination is not null)
-        {
-            throw termination;
-        }
-        else if (point is null)
-        {
-            result = false;
-        }
-        else
-        {
-            result = point.TryExchange(ref value);
-            point = null;
+            ThrowIfDisposed();
+
+            if (IsDisposing)
+            {
+                Dispose(true);
+                result = false;
+            }
+            else if (termination is not null)
+            {
+                throw termination;
+            }
+            else if (point is null)
+            {
+                result = false;
+            }
+            else
+            {
+                result = point.TryExchange(ref value);
+                point = null;
+            }
         }
 
         return result;
@@ -189,17 +222,19 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <param name="exception">The optional exception indicating termination reason.</param>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="InvalidOperationException">The exchange is already terminated.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public void Terminate(Exception? exception = null)
     {
-        ThrowIfDisposed();
-        if (termination is not null)
-            throw new InvalidOperationException();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            if (termination is not null)
+                throw new InvalidOperationException();
 
-        ExchangeTerminatedException tmp;
-        termination = tmp = new ExchangeTerminatedException(exception);
-        if (point?.TrySetException(tmp) ?? false)
-            point = null;
+            ExchangeTerminatedException tmp;
+            termination = tmp = new ExchangeTerminatedException(exception);
+            if (point?.TrySetException(tmp) ?? false)
+                point = null;
+        }
     }
 
     /// <summary>
@@ -215,11 +250,13 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         }
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private void NotifyObjectDisposed()
     {
-        point?.TrySetException(new ObjectDisposedException(GetType().Name));
-        point = null;
+        lock (SyncRoot)
+        {
+            point?.TrySetException(new ObjectDisposedException(GetType().Name));
+            point = null;
+        }
     }
 
     /// <inheritdoc />
@@ -236,16 +273,24 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    [MethodImpl(MethodImplOptions.Synchronized)]
     protected override ValueTask DisposeAsyncCore()
     {
-        if (point is null or { IsCompleted: true })
+        ValueTask result;
+
+        lock (SyncRoot)
         {
-            Dispose(true);
-            return ValueTask.CompletedTask;
+            if (point is null or { IsCompleted: true })
+            {
+                Dispose(true);
+                result = ValueTask.CompletedTask;
+            }
+            else
+            {
+                result = new(disposeTask.Task);
+            }
         }
 
-        return new(disposeTask.Task);
+        return result;
     }
 
     /// <summary>

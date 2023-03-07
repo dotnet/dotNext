@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers;
@@ -23,6 +24,7 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     {
         if (initialCapacity <= 0)
             throw new ArgumentOutOfRangeException(nameof(initialCapacity));
+
         this.allocator = allocator;
         buffer = allocator.Invoke(initialCapacity, exactSize: false);
     }
@@ -153,7 +155,10 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     private protected override void Resize(int newSize)
     {
         buffer.Resize(newSize, false, allocator);
+#pragma warning disable CS0618
         AllocationCounter?.WriteMetric(buffer.Length);
+#pragma warning restore CS0618
+        PooledBufferWriter.AllocationMeter.Record(buffer.Length, measurementTags);
     }
 
     /// <inheritdoc/>
@@ -161,10 +166,24 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     {
         if (disposing)
         {
+#pragma warning disable CS0618
             BufferSizeCallback?.Invoke(buffer.Length);
+#pragma warning restore CS0618
         }
 
         buffer.Dispose();
         base.Dispose(disposing);
+    }
+}
+
+// TODO: Convert to file-local class in C# 11
+internal static class PooledBufferWriter
+{
+    internal static readonly Histogram<int> AllocationMeter;
+
+    static PooledBufferWriter()
+    {
+        var meter = new Meter("DotNext.Buffers.PooledBuffer");
+        AllocationMeter = meter.CreateHistogram<int>("capacity", unit: "items", description: "Capacity");
     }
 }

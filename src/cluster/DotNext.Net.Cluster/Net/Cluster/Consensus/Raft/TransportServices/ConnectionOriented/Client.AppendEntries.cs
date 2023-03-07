@@ -14,6 +14,8 @@ internal partial class Client : RaftClusterMember
         where TEntry : notnull, IRaftLogEntry
         where TList : notnull, IReadOnlyList<TEntry>
     {
+        private const string Name = "AppendEntries";
+
         private readonly ILocalMember localMember;
         private readonly long term, prevLogIndex, prevLogTerm, commitIndex;
         private readonly TList entries;
@@ -40,6 +42,8 @@ internal partial class Client : RaftClusterMember
 
         static ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadResultAsync(token);
+
+        static string IClientExchange<Result<bool>>.Name => Name;
     }
 
     [RequiresPreviewFeatures]

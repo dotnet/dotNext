@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using SequenceMarshal = System.Runtime.InteropServices.SequenceMarshal;
 
 namespace DotNext.IO;
 
@@ -35,9 +36,7 @@ public class BinaryTransferObject<T> : IDataTransferObject, ISupplier<T>
 
     /// <inheritdoc/>
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-    {
-        return transformation.TransformAsync(new SequenceReader(ToMemory()), token);
-    }
+        => transformation.TransformAsync(new SequenceReader(ToMemory()), token);
 
     /// <inheritdoc/>
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
@@ -85,7 +84,7 @@ public class BinaryTransferObject : IDataTransferObject, ISupplier<ReadOnlySeque
 
     /// <inheritdoc/>
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        => content.IsSingleSegment ? writer.WriteAsync(content.First, null, token) : new(writer.WriteAsync(content, token));
+        => SequenceMarshal.TryGetReadOnlyMemory(content, out var memory) ? writer.WriteAsync(memory, null, token) : new(writer.WriteAsync(content, token));
 
     /// <inheritdoc/>
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
@@ -93,14 +92,5 @@ public class BinaryTransferObject : IDataTransferObject, ISupplier<ReadOnlySeque
 
     /// <inheritdoc/>
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
-    {
-        if (content.IsSingleSegment)
-        {
-            memory = content.First;
-            return true;
-        }
-
-        memory = default;
-        return false;
-    }
+        => SequenceMarshal.TryGetReadOnlyMemory(content, out memory);
 }

@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
-using LinkedValueTaskCompletionSource = Tasks.LinkedValueTaskCompletionSource<bool>;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="AutoResetEvent"/>.
@@ -16,24 +16,16 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [StructLayout(LayoutKind.Auto)]
     private struct StateManager : ILockManager<DefaultWaitNode>
     {
-        private AtomicBoolean state;
+        internal bool Value;
 
         internal StateManager(bool initialState)
-            => state = new(initialState);
+            => Value = initialState;
 
-        readonly bool ILockManager.IsLockAllowed => state.Value;
+        readonly bool ILockManager.IsLockAllowed => Value;
 
-        void ILockManager.AcquireLock() => state.Value = false;
+        void ILockManager.AcquireLock() => Value = false;
 
-        internal bool TryReset() => state.TrueToFalse();
-
-        internal bool Value
-        {
-            readonly get => state.Value;
-            set => state.Value = value;
-        }
-
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
+        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
             // nothing to do here
         }
@@ -67,49 +59,33 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         pool = new(OnCompleted);
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized | MethodImplOptions.NoInlining)]
     private void OnCompleted(DefaultWaitNode node)
     {
-        if (node.NeedsRemoval)
-            RemoveNode(node);
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval)
+                RemoveNode(node);
 
-        pool.Return(node);
+            pool.Return(node);
+        }
     }
 
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => manager.Value;
+    public bool IsSet => Volatile.Read(ref manager.Value);
 
     /// <summary>
     /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.
     /// </summary>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Reset()
     {
-        ThrowIfDisposed();
-        return manager.TryReset();
-    }
-
-    private void SetCore()
-    {
-        Debug.Assert(Monitor.IsEntered(this));
-
-        for (LinkedValueTaskCompletionSource? current = first, next; ; current = next)
+        lock (SyncRoot)
         {
-            if (current is null)
-            {
-                manager.Value = true;
-                break;
-            }
-
-            next = current.Next;
-
-            // skip dead node
-            if (RemoveAndSignal(current))
-                break;
+            ThrowIfDisposed();
+            return TryAcquire(ref manager);
         }
     }
 
@@ -118,16 +94,32 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// </summary>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    [MethodImpl(MethodImplOptions.Synchronized)]
     public bool Set()
     {
-        ThrowIfDisposed();
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
 
-        if (manager.Value)
-            return false;
+            if (manager.Value)
+                return false;
 
-        SetCore();
-        return true;
+            for (LinkedValueTaskCompletionSource<bool>? current = first, next; ; current = next)
+            {
+                if (current is null)
+                {
+                    manager.Value = true;
+                    break;
+                }
+
+                next = current.Next;
+
+                // skip dead node
+                if (RemoveAndSignal(current))
+                    break;
+            }
+
+            return true;
+        }
     }
 
     /// <inheritdoc/>
@@ -135,10 +127,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
     /// <inheritdoc/>
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.AutoReset;
-
-    [MethodImpl(MethodImplOptions.Synchronized)]
-    private ValueTaskFactory Wait(bool zeroTimeout)
-        => Wait(ref manager, ref pool, throwOnTimeout: false, zeroTimeout);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -150,12 +138,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        if (ValidateTimeoutAndToken(timeout, token, out ValueTask<bool> task))
-            task = Wait(timeout == TimeSpan.Zero).CreateTask(timeout, token);
-
-        return task;
-    }
+        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -165,5 +148,5 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : Wait(zeroTimeout: false).CreateVoidTask(token);
+        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
 }

@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -153,6 +154,15 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         PersistAll,
     }
 
+    private static readonly Histogram<int> AllocationMeter;
+
+    static FileBufferingWriter()
+    {
+        var meter = new Meter("DotNext.Buffers.FileBufferingWriter");
+        AllocationMeter = meter.CreateHistogram<int>("buffer-size", unit: "B", "In-Memory Buffer Size");
+    }
+
+    private readonly TagList measurementTags;
     private readonly BackingFileProvider fileProvider;
     private readonly int memoryThreshold;
     private readonly MemoryAllocator<byte>? allocator;
@@ -205,7 +215,10 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         this.memoryThreshold = memoryThreshold;
         fileProvider = new BackingFileProvider(in options);
+#pragma warning disable CS0618
         allocationCounter = options.AllocationCounter;
+#pragma warning restore CS0618
+        measurementTags = options.MeasurementTags;
     }
 
     /// <inheritdoc/>
@@ -325,10 +338,18 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             return size <= memoryThreshold ? MemoryEvaluationResult.PersistExistingBuffer : MemoryEvaluationResult.PersistAll;
         }
 
-        if (buffer.Length < newSize)
+        var bufLen = buffer.Length;
+
+        // expand buffer if necessary
+        if (bufLen < newSize)
         {
+            bufLen <<= 1; // optimistically doubles buffer size to reduce the number of memory rentals
+            if ((uint)bufLen > (uint)newSize && (uint)bufLen <= (uint)memoryThreshold)
+                newSize = bufLen;
+
             buffer.Resize(newSize, exactSize: false, allocator: allocator);
             allocationCounter?.WriteMetric(buffer.Length);
+            AllocationMeter.Record(buffer.Length, measurementTags);
         }
 
         output = buffer.Memory.Slice(position, size);

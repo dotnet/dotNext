@@ -1,7 +1,5 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
 
 namespace DotNext.Buffers;
 
@@ -149,7 +147,7 @@ public readonly struct DelegatingReadOnlySpanConsumer<T, TArg> : IReadOnlySpanCo
 /// </summary>
 /// <typeparam name="T">The type of the consumer argument.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BufferConsumer<T> : IReadOnlySpanConsumer<T>, IEquatable<BufferConsumer<T>>
+public readonly record struct BufferConsumer<T> : IReadOnlySpanConsumer<T>, IEquatable<BufferConsumer<T>>
 {
     private readonly IBufferWriter<T> output;
 
@@ -193,46 +191,8 @@ public readonly struct BufferConsumer<T> : IReadOnlySpanConsumer<T>, IEquatable<
     }
 
     /// <summary>
-    /// Determines whether this object contains the same buffer instance as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same buffer instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(BufferConsumer<T> other) => ReferenceEquals(output, other.output);
-
-    /// <summary>
-    /// Determines whether this object contains the same buffer instance as the specified object.
-    /// </summary>
-    /// <param name="other">The object to compare.</param>
-    /// <returns><see langword="true"/> if this object contains the same buffer instance as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals([NotNullWhen(true)] object? other) => other is BufferConsumer<T> consumer && Equals(consumer);
-
-    /// <summary>
-    /// Gets the hash code representing identity of the stored buffer writer.
-    /// </summary>
-    /// <returns>The hash code representing identity of the stored buffer writer.</returns>
-    public override int GetHashCode() => RuntimeHelpers.GetHashCode(output);
-
-    /// <summary>
     /// Returns a string that represents the underlying buffer.
     /// </summary>
     /// <returns>A string that represents the underlying buffer.</returns>
     public override string? ToString() => output?.ToString();
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the same buffer writer.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the same buffer writer; otherwise, <see langword="false"/>.</returns>
-    public static bool operator ==(BufferConsumer<T> x, BufferConsumer<T> y)
-        => x.Equals(y);
-
-    /// <summary>
-    /// Determines whether the two objects contain references to the different buffer writers.
-    /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns><see langword="true"/> if the both objects contain references the different buffer writers; otherwise, <see langword="false"/>.</returns>
-    public static bool operator !=(BufferConsumer<T> x, BufferConsumer<T> y)
-        => !x.Equals(y);
 }

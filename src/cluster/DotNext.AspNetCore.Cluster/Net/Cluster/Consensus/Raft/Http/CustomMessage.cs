@@ -187,7 +187,6 @@ internal sealed class CustomMessage<T> : CustomMessage, IHttpMessage<T>
         => ParseResponseAsync<T>(response, reader, token);
 }
 
-[RequiresPreviewFeatures]
 internal sealed class CustomSerializableMessage<T> : CustomMessage, IHttpMessage<T>
     where T : notnull, ISerializable<T>
 {
@@ -196,6 +195,7 @@ internal sealed class CustomSerializableMessage<T> : CustomMessage, IHttpMessage
     {
     }
 
+    [RequiresPreviewFeatures]
     Task<T> IHttpMessage<T>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
         => ParseResponseAsync<T>(response, token);
 }

@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -9,6 +10,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     private readonly IRaftStateMachine<TMember> stateMachine;
 
     private protected RaftState(IRaftStateMachine<TMember> stateMachine) => this.stateMachine = stateMachine;
+
+    private protected ref readonly TagList MeasurementTags => ref stateMachine.MeasurementTags;
 
     private protected ILogger Logger => stateMachine.Logger;
 

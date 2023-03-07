@@ -545,6 +545,7 @@ public static partial class Span
     /// <param name="random">The source of random values.</param>
     public static void Shuffle<T>(this Span<T> span, Random random)
     {
+        // TODO: Remove in .NET 8: https://github.com/dotnet/runtime/issues/73864
         for (var i = span.Length - 1; i > 0; i--)
         {
             var randomIndex = random.Next(i + 1);
@@ -706,7 +707,7 @@ public static partial class Span
     /// <param name="span">The span over elements.</param>
     /// <returns>The span pointing to the same memory as <paramref name="span"/>.</returns>
     public static ReadOnlySpan<TBase> Contravariance<T, TBase>(this ReadOnlySpan<T> span)
-        where T : class, TBase
-        where TBase : class
+        where T : class?, TBase
+        where TBase : class?
         => MemoryMarshal.CreateReadOnlySpan(ref As<T, TBase>(ref MemoryMarshal.GetReference(span)), span.Length);
 }

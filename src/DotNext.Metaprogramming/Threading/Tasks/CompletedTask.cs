@@ -24,14 +24,14 @@ internal readonly struct CompletedTask
     /// </summary>
     /// <param name="task">Completed task.</param>
     public static implicit operator Task(CompletedTask task)
-        => task.failure is null ? Task.CompletedTask : Task.FromException(task.failure);
+        => task.failure is { } f ? Task.FromException(f) : Task.CompletedTask;
 
     /// <summary>
     /// Obtains <see cref="ValueTask"/> completed synchronously.
     /// </summary>
     /// <param name="task">Completed task.</param>
     public static implicit operator ValueTask(CompletedTask task)
-        => task.failure is null ? ValueTask.CompletedTask : ValueTask.FromException(task.failure);
+        => task.failure is { } f ? ValueTask.FromException(f) : ValueTask.CompletedTask;
 }
 
 /// <summary>

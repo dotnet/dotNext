@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+
 namespace DotNext.Net.Cluster.Messaging;
 
 using Runtime.Serialization;
@@ -171,9 +173,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         MessageHandler ISupplier<MessageHandler>.Invoke() => Build();
     }
 
-    /// <summary>
-    /// Creates a new instance of <see cref="Builder"/>.
-    /// </summary>
-    /// <returns>A new instance of <see cref="Builder"/>.</returns>
+    /// <inheritdoc cref="IBuildable{TSelf, TBuilder}.CreateBuilder"/>
+    [RequiresPreviewFeatures]
     static Builder IBuildable<MessageHandler, MessageHandler.Builder>.CreateBuilder() => new();
 }

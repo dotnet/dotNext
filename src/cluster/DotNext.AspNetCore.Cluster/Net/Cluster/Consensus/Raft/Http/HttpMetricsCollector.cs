@@ -12,12 +12,10 @@ using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 /// You need to register singleton service of type <see cref="MetricsCollector"/>
 /// to collect metrics produced by Raft node.
 /// </remarks>
+[Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
 public class HttpMetricsCollector : MetricsCollector, IClientMetricsCollector
 {
-    /// <summary>
-    /// Reports about HTTP response time.
-    /// </summary>
-    /// <param name="value">The response time.</param>
+    /// <inheritdoc cref="IClientMetricsCollector.ReportResponseTime(TimeSpan)"/>
     public virtual void ReportResponseTime(TimeSpan value)
     {
     }

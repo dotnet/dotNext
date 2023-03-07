@@ -1,7 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
-using static System.Threading.Timeout;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -33,6 +33,8 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         LeadershipToken = timerCancellation.Token;
         this.maxLease = maxLease;
         lease = ExpiredLease.Instance;
+        replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
+        replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
     }
 
     internal ILeaderStateMetrics? Metrics
@@ -100,7 +102,9 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             }
         }
 
-        Metrics?.ReportBroadcastTime(startTime.Elapsed);
+        var broadcastTime = startTime.ElapsedMilliseconds;
+        Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
+        LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
 
         if (term <= currentTerm && (quorum > 0 || allowPartitioning))
         {
@@ -158,7 +162,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         catch (OperationCanceledException)
         {
             // leading was canceled
-            Metrics?.ReportBroadcastTime(startTime.Elapsed);
+            var broadcastTime = startTime.ElapsedMilliseconds;
+            Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
+            LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
+
             return false;
         }
         catch (Exception e)
@@ -182,10 +189,12 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     {
         using var cancellationSource = token.LinkTo(LeadershipToken);
 
-        var forced = false;
         for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset())
         {
             var startTime = new Timestamp();
+
+            // do not resume suspended callers that came after the barrier, resume them in the next iteration
+            replicationQueue.SwitchValve();
 
             // we want to minimize GC intrusion during replication process
             // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
@@ -195,12 +204,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     break;
             }
 
-            if (forced)
-                DrainReplicationQueue();
+            // resume all suspended callers added to the queue concurrently before SwitchValve()
+            replicationQueue.Drain();
 
-            // subtract heartbeat processing duration from heartbeat period for better stability
-            var delay = period - startTime.Elapsed;
-            forced = await WaitForReplicationAsync(delay > TimeSpan.Zero ? delay : TimeSpan.Zero, token).ConfigureAwait(false);
+            // wait for heartbeat timeout or forced replication
+            await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);
         }
     }
 
@@ -259,4 +267,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         base.Dispose(disposing);
     }
+}
+
+internal static class LeaderState
+{
+    internal static readonly Histogram<double> BroadcastTimeMeter = Metrics.Instrumentation.ServerSide.CreateHistogram<double>("broadcast-time", unit: "ms", description: "Heartbeat Broadcasting Time");
+    internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-leader-count", description: "Number of Transitions of Leader State");
 }

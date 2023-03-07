@@ -93,7 +93,7 @@ public static class RaftClusterConfiguration
     public static IServiceCollection UsePersistentConfigurationStorage(this IServiceCollection services, string path)
         => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>>(path.CreatePersistentStorageFromPath);
 
-    private static InMemoryClusterConfigurationStorage CreateInMemoryStorage(this Action<IDictionary<ClusterMemberId, UriEndPoint>> configuration, IServiceProvider services)
+    private static InMemoryClusterConfigurationStorage CreateInMemoryStorage(this Action<ICollection<UriEndPoint>> configuration, IServiceProvider services)
     {
         var storage = new InMemoryClusterConfigurationStorage();
         var builder = storage.CreateActiveConfigurationBuilder();
@@ -111,6 +111,6 @@ public static class RaftClusterConfiguration
     /// <param name="services">A collection of services.</param>
     /// <param name="configuration">The delegate that allows to configure a list of cluster members at startup.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action<IDictionary<ClusterMemberId, UriEndPoint>> configuration)
+    public static IServiceCollection UseInMemoryConfigurationStorage(this IServiceCollection services, Action<ICollection<UriEndPoint>> configuration)
         => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>>(configuration.CreateInMemoryStorage);
 }

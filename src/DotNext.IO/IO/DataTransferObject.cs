@@ -41,7 +41,7 @@ public static class DataTransferObject
     {
         null => new PooledBufferWriter<byte> { BufferAllocator = allocator },
         0L => null,
-        long length when length <= Array.MaxLength => new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = (int)length },
+        { } length when length <= Array.MaxLength => new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = (int)length },
         _ => throw new InsufficientMemoryException(),
     };
 

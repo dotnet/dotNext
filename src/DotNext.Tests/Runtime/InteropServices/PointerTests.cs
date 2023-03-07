@@ -367,13 +367,33 @@ namespace DotNext.Runtime.InteropServices
                 Equal(new IntPtr(p), (IntPtr)ptr.Address);
                 ptr.Set(20);
                 Equal(20, array[0]);
-                Equal(20, ptr.Get(0));
+                Equal(20, ptr.Get());
                 ptr.Set(30, 1);
                 Equal(30, array[1]);
                 Equal(30, ptr.Get(1));
                 ptr.Set(42, 0);
                 Equal(42, array[0]);
                 Equal(42, ptr.Get(0));
+            }
+        }
+
+        [Fact]
+        public static unsafe void ReadWriteUnaligned()
+        {
+            var array = new ushort[] { 1, 2, 3 };
+            fixed (ushort* p = array)
+            {
+                var ptr = new Pointer<ushort>(p);
+                Equal(new IntPtr(p), (IntPtr)ptr.Address);
+                ptr.SetUnaligned(20);
+                Equal(20, array[0]);
+                Equal(20, ptr.GetUnaligned());
+                ptr.SetUnaligned(30, 1);
+                Equal(30, array[1]);
+                Equal(30, ptr.GetUnaligned(1));
+                ptr.SetUnaligned(42, 0);
+                Equal(42, array[0]);
+                Equal(42, ptr.GetUnaligned(0));
             }
         }
 
@@ -451,9 +471,9 @@ namespace DotNext.Runtime.InteropServices
             Equal(new IntPtr(42), ptr1);
             True(new IntPtr(42).ToPointer() == ptr1);
             if (ptr1) { }
-            else throw new Xunit.Sdk.XunitException();
+            else Fail("Unexpected zero pointer");
             ptr2 = default;
-            if (ptr2) throw new Xunit.Sdk.XunitException();
+            if (ptr2) Fail("Unexpected non-zero pointer");
 
             ptr1 += 2U;
             Equal(new IntPtr(50), ptr1);

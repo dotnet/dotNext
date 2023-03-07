@@ -1,4 +1,6 @@
-﻿namespace DotNext;
+﻿using Debug = System.Diagnostics.Debug;
+
+namespace DotNext;
 
 /// <summary>
 /// Provides extension methods for type <see cref="Predicate{T}"/> and
@@ -6,51 +8,12 @@
 /// </summary>
 public static class Predicate
 {
-    private static class TruePredicate<T>
-    {
-        internal static readonly Predicate<T> Value = AlwaysTrue;
-
-        private static bool AlwaysTrue(T value) => true;
-    }
-
-    private static class FalsePredicate<T>
-    {
-        internal static readonly Predicate<T> Value = AlwaysFalse;
-
-        private static bool AlwaysFalse(T value) => false;
-    }
-
-    private static class IsNullPredicate<T>
-        where T : class
-    {
-        internal static readonly Predicate<T> Value = ObjectExtensions.IsNull;
-    }
-
-    private static class IsNotNullPredicate<T>
-        where T : class
-    {
-        internal static readonly Predicate<T> Value = ObjectExtensions.IsNotNull;
-    }
-
-    private static class HasValuePredicate<T>
-        where T : struct
-    {
-        internal static readonly Predicate<T?> Value = HasValue;
-
-        private static bool HasValue(T? nullable) => nullable.HasValue;
-    }
-
-    private static class TypeChecker<T>
-    {
-        internal static readonly Predicate<object?> Value = ObjectExtensions.IsTypeOf<T>;
-    }
-
     /// <summary>
     /// Gets a predicate that can be used to check whether the specified object is of specific type.
     /// </summary>
     /// <typeparam name="T">The target type.</typeparam>
     /// <returns>The predicate instance.</returns>
-    public static Predicate<object?> IsTypeOf<T>() => TypeChecker<T>.Value;
+    public static Predicate<object?> IsTypeOf<T>() => ObjectExtensions.IsTypeOf<T>;
 
     /// <summary>
     /// Returns predicate implementing nullability check.
@@ -61,8 +24,8 @@ public static class Predicate
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
     public static Predicate<T> IsNull<T>()
-        where T : class
-        => IsNullPredicate<T>.Value;
+        where T : class?
+        => ObjectExtensions.IsNull;
 
     /// <summary>
     /// Returns predicate checking that input argument
@@ -74,8 +37,8 @@ public static class Predicate
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
     public static Predicate<T> IsNotNull<T>()
-        where T : class
-        => IsNotNullPredicate<T>.Value;
+        where T : class?
+        => ObjectExtensions.IsNotNull;
 
     /// <summary>
     /// Returns predicate checking that input argument of value type
@@ -88,7 +51,26 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T?> HasValue<T>()
         where T : struct
-        => HasValuePredicate<T>.Value;
+    {
+        return HasValueCore;
+
+        static bool HasValueCore(T? value) => value.HasValue;
+    }
+
+    /// <summary>
+    /// Returns a predicate which always returns the specified value.
+    /// </summary>
+    /// <typeparam name="T">The type of the input parameter.</typeparam>
+    /// <param name="value">The value to be returned by the predicate.</param>
+    /// <returns>A cached predicate always returning <paramref name="value"/>.</returns>
+    public static Predicate<T> Constant<T>(bool value)
+    {
+        return value ? True : False;
+
+        static bool True(T value) => true;
+
+        static bool False(T value) => false;
+    }
 
     /// <summary>
     /// Returns a predicate which always returns <see langword="true"/>.
@@ -98,7 +80,8 @@ public static class Predicate
     /// <remarks>
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
-    public static Predicate<T> True<T>() => TruePredicate<T>.Value;
+    [Obsolete("Use Constant method instead.")]
+    public static Predicate<T> True<T>() => Constant<T>(value: true);
 
     /// <summary>
     /// Returns a predicate which always returns <see langword="false"/>.
@@ -108,7 +91,8 @@ public static class Predicate
     /// <remarks>
     /// This method returns the same instance of predicate on every call.
     /// </remarks>
-    public static Predicate<T> False<T>() => FalsePredicate<T>.Value;
+    [Obsolete("Use Constant method instead.")]
+    public static Predicate<T> False<T>() => Constant<T>(value: false);
 
     /// <summary>
     /// Represents predicate as type <see cref="Func{T,Boolean}"/>.
@@ -138,7 +122,28 @@ public static class Predicate
     /// <typeparam name="T">Type of the predicate argument.</typeparam>
     /// <param name="predicate">The predicate to negate.</param>
     /// <returns>The predicate which negates evaluation result of the original predicate.</returns>
-    public static Predicate<T> Negate<T>(this Predicate<T> predicate) => predicate.Negate;
+    public static Predicate<T> Negate<T>(this Predicate<T> predicate)
+        => predicate is not null ? predicate.Negate : throw new ArgumentNullException(nameof(predicate));
+
+    private sealed class BinaryOperator<T>
+    {
+        private readonly Predicate<T> left, right;
+
+        internal BinaryOperator(Predicate<T> left, Predicate<T> right)
+        {
+            Debug.Assert(left is not null);
+            Debug.Assert(right is not null);
+
+            this.left = left;
+            this.right = right;
+        }
+
+        internal bool Or(T value) => left(value) || right(value);
+
+        internal bool And(T value) => left(value) && right(value);
+
+        internal bool Xor(T value) => left(value) ^ right(value);
+    }
 
     /// <summary>
     /// Returns a predicate which computes logical OR between
@@ -148,7 +153,13 @@ public static class Predicate
     /// <param name="left">The first predicate acting as logical OR operand.</param>
     /// <param name="right">The second predicate acting as logical OR operand.</param>
     /// <returns>The predicate which computes logical OR between results of two other predicates.</returns>
-    public static Predicate<T> Or<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) || right(input);
+    public static Predicate<T> Or<T>(this Predicate<T> left, Predicate<T> right)
+    {
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
+
+        return new BinaryOperator<T>(left, right).Or;
+    }
 
     /// <summary>
     /// Returns a predicate which computes logical AND between
@@ -158,7 +169,13 @@ public static class Predicate
     /// <param name="left">The first predicate acting as logical AND operand.</param>
     /// <param name="right">The second predicate acting as logical AND operand.</param>
     /// <returns>The predicate which computes logical AND between results of two other predicates.</returns>
-    public static Predicate<T> And<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) && right(input);
+    public static Predicate<T> And<T>(this Predicate<T> left, Predicate<T> right)
+    {
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
+
+        return new BinaryOperator<T>(left, right).And;
+    }
 
     /// <summary>
     /// Returns a predicate which computes logical XOR between
@@ -168,7 +185,13 @@ public static class Predicate
     /// <param name="left">The first predicate acting as logical XOR operand.</param>
     /// <param name="right">The second predicate acting as logical XOR operand.</param>
     /// <returns>The predicate which computes logical XOR between results of two other predicates.</returns>
-    public static Predicate<T> Xor<T>(this Predicate<T> left, Predicate<T> right) => input => left(input) ^ right(input);
+    public static Predicate<T> Xor<T>(this Predicate<T> left, Predicate<T> right)
+    {
+        ArgumentNullException.ThrowIfNull(left);
+        ArgumentNullException.ThrowIfNull(right);
+
+        return new BinaryOperator<T>(left, right).Xor;
+    }
 
     /// <summary>
     /// Invokes predicate without throwing the exception.

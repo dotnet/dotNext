@@ -255,6 +255,22 @@ public partial class PersistentState
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct CommitChecker : ISupplier<bool>
+    {
+        private readonly NodeState state;
+        private readonly long index;
+
+        internal CommitChecker(NodeState state, long index)
+        {
+            Debug.Assert(state is not null);
+
+            this.state = state;
+        }
+
+        bool ISupplier<bool>.Invoke() => index <= state.CommitIndex;
+    }
+
     /// <summary>
     /// Indicates that <see cref="Options.IntegrityCheck"/> enabled and
     /// the internal state of the WAL didn't pass the integrity check.

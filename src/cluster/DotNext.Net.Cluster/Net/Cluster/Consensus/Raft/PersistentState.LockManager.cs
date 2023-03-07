@@ -1,6 +1,4 @@
-using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -8,105 +6,6 @@ using Threading;
 
 public partial class PersistentState
 {
-    internal sealed class LockState
-    {
-        private readonly uint maxReadCount;
-        private uint readerCount;
-        private bool allowWrite;
-
-        internal LockState(int concurrencyLevel)
-        {
-            maxReadCount = (uint)concurrencyLevel;
-            allowWrite = true;
-        }
-
-        internal bool IsStrongReadLockAllowed => readerCount < maxReadCount && allowWrite;
-
-        internal void AcquireStrongReadLock()
-        {
-            Debug.Assert(IsStrongReadLockAllowed);
-
-            allowWrite = false;
-            readerCount += 1U;
-        }
-
-        internal void ReleaseStrongReadLock()
-        {
-            Debug.Assert(readerCount > 0U);
-            Debug.Assert(!allowWrite);
-
-            readerCount -= 1U;
-            allowWrite = true;
-        }
-
-        internal bool IsWeakReadLockAllowed => readerCount < maxReadCount;
-
-        internal void AcquireWeakReadLock()
-        {
-            Debug.Assert(IsWeakReadLockAllowed);
-
-            readerCount += 1U;
-        }
-
-        internal void ReleaseWeakReadLock()
-        {
-            Debug.Assert(readerCount > 0L);
-
-            readerCount -= 1U;
-        }
-
-        internal bool IsWriteLockAllowed => allowWrite;
-
-        internal void AcquireWriteLock()
-        {
-            Debug.Assert(IsWriteLockAllowed);
-
-            allowWrite = false;
-        }
-
-        internal void ReleaseWriteLock()
-        {
-            Debug.Assert(!allowWrite);
-
-            allowWrite = true;
-        }
-
-        internal bool IsCompactionLockAllowed => readerCount == 0U;
-
-        internal void AcquireCompactionLock()
-        {
-            Debug.Assert(IsCompactionLockAllowed);
-
-            readerCount = uint.MaxValue;
-        }
-
-        internal void ReleaseCompactionLock()
-        {
-            Debug.Assert(readerCount == uint.MaxValue);
-
-            readerCount = 0U;
-        }
-
-        internal bool IsExclusiveLockAllowed => readerCount == 0L && allowWrite;
-
-        internal void AcquireExclusiveLock()
-        {
-            Debug.Assert(IsExclusiveLockAllowed);
-
-            readerCount = uint.MaxValue;
-            allowWrite = false;
-        }
-
-        internal void ReleaseExclusiveLock()
-        {
-            Debug.Assert(readerCount == uint.MaxValue);
-            Debug.Assert(!allowWrite);
-
-            readerCount = 0U;
-            allowWrite = true;
-        }
-    }
-
     internal enum LockType : int
     {
         WeakReadLock = 0,
@@ -123,88 +22,116 @@ public partial class PersistentState
     // Compaction lock  - disallow reads, allow writes (to the end of the log), disallow compaction
     // Exclusive lock   - disallow everything
     // Write lock + Compaction lock = exclusive lock
-    internal sealed class LockManager : AsyncTrigger<LockState>
+    internal sealed class LockManager : QueuedSynchronizer<LockType>
     {
-        private sealed class WeakReadLockTransition : ITransition
+        private readonly uint maxReadCount;
+        private uint readerCount;
+        private bool allowWrite;
+
+        internal LockManager(int concurrencyLevel)
+            : base(concurrencyLevel + 2) // + write lock + compaction lock
         {
-            bool ITransition.Test(LockState state) => state.IsWeakReadLockAllowed;
-
-            void ITransition.Transit(LockState state) => state.AcquireWeakReadLock();
-
-            internal static void Release(LockState state) => state.ReleaseWeakReadLock();
+            maxReadCount = (uint)concurrencyLevel;
+            allowWrite = true;
         }
 
-        private sealed class StrongReadLockTransition : ITransition
+        protected override bool CanAcquire(LockType type) => type switch
         {
-            bool ITransition.Test(LockState state) => state.IsStrongReadLockAllowed;
+            LockType.WeakReadLock => readerCount < maxReadCount,
+            LockType.StrongReadLock => readerCount < maxReadCount && allowWrite,
+            LockType.WriteLock => allowWrite,
+            LockType.CompactionLock => readerCount is 0U,
+            LockType.ExclusiveLock => readerCount is 0U && allowWrite,
+            _ => false,
+        };
 
-            void ITransition.Transit(LockState state) => state.AcquireStrongReadLock();
+        protected override void AcquireCore(LockType type)
+        {
+            Debug.Assert(CanAcquire(type));
 
-            internal static void Release(LockState state) => state.ReleaseStrongReadLock();
+            switch (type)
+            {
+                case LockType.WeakReadLock:
+                    readerCount += 1U;
+                    break;
+                case LockType.StrongReadLock:
+                    allowWrite = false;
+                    readerCount += 1U;
+                    break;
+                case LockType.WriteLock:
+                    allowWrite = false;
+                    break;
+                case LockType.CompactionLock:
+                    readerCount = uint.MaxValue;
+                    break;
+                case LockType.ExclusiveLock:
+                    readerCount = uint.MaxValue;
+                    allowWrite = false;
+                    break;
+                default:
+                    Debug.Fail($"Unexpected lock type {type}");
+                    break;
+            }
         }
 
-        private sealed class WriteLockTransition : ITransition
-        {
-            bool ITransition.Test(LockState state) => state.IsWriteLockAllowed;
-
-            void ITransition.Transit(LockState state) => state.AcquireWriteLock();
-
-            internal static void Release(LockState state) => state.ReleaseWriteLock();
-        }
-
-        private sealed class CompactionLockTransition : ITransition
-        {
-            bool ITransition.Test(LockState state) => state.IsCompactionLockAllowed;
-
-            void ITransition.Transit(LockState state) => state.AcquireCompactionLock();
-
-            internal static void Release(LockState state) => state.ReleaseCompactionLock();
-        }
-
-        private sealed class ExclusiveLockTransition : ITransition
-        {
-            bool ITransition.Test(LockState state) => state.IsExclusiveLockAllowed;
-
-            void ITransition.Transit(LockState state) => state.AcquireExclusiveLock();
-
-            internal static void Release(LockState state) => state.ReleaseExclusiveLock();
-        }
-
-        private readonly ITransition[] acquisitions = { new WeakReadLockTransition(), new StrongReadLockTransition(), new WriteLockTransition(), new CompactionLockTransition(), new ExclusiveLockTransition() };
-        private readonly Action<LockState>[] exits = { WeakReadLockTransition.Release, StrongReadLockTransition.Release, WriteLockTransition.Release, CompactionLockTransition.Release, ExclusiveLockTransition.Release };
-
-        internal LockManager(IAsyncLockSettings configuration)
-            : base(new(configuration.ConcurrencyLevel), configuration.ConcurrencyLevel + 2) // + write lock + compaction lock
-        {
-            // setup metrics
-            if (configuration.LockContentionCounter is not null)
-                LockContentionCounter = configuration.LockContentionCounter;
-            if (configuration.LockDurationCounter is not null)
-                LockDurationCounter = configuration.LockDurationCounter;
-        }
-
-        internal ValueTask AcquireAsync(LockType type, CancellationToken token = default)
+        internal new ValueTask AcquireAsync(LockType type, CancellationToken token = default)
         {
             Debug.Assert(type is >= LockType.WeakReadLock and <= LockType.ExclusiveLock);
 
-            var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(acquisitions), (int)type);
-            return WaitAsync(acquisition, token);
+            return base.AcquireAsync(type, token);
         }
 
-        internal ValueTask<bool> AcquireAsync(LockType type, TimeSpan timeout, CancellationToken token = default)
+        internal new void Release(LockType type)
         {
             Debug.Assert(type is >= LockType.WeakReadLock and <= LockType.ExclusiveLock);
 
-            var acquisition = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(acquisitions), (int)type);
-            return WaitAsync(acquisition, timeout, token);
+            base.Release(type);
         }
 
-        internal void Release(LockType type)
+        protected override void ReleaseCore(LockType type)
+        {
+            switch (type)
+            {
+                case LockType.WeakReadLock:
+                    Debug.Assert(readerCount > 0L);
+
+                    readerCount -= 1U;
+                    break;
+                case LockType.StrongReadLock:
+                    Debug.Assert(readerCount > 0U);
+                    Debug.Assert(!allowWrite);
+
+                    readerCount -= 1U;
+                    allowWrite = true;
+                    break;
+                case LockType.WriteLock:
+                    Debug.Assert(!allowWrite);
+
+                    allowWrite = true;
+                    break;
+                case LockType.CompactionLock:
+                    Debug.Assert(readerCount is uint.MaxValue);
+
+                    readerCount = 0U;
+                    break;
+                case LockType.ExclusiveLock:
+                    Debug.Assert(readerCount is uint.MaxValue);
+                    Debug.Assert(!allowWrite);
+
+                    readerCount = 0U;
+                    allowWrite = true;
+                    break;
+                default:
+                    Debug.Fail($"Unexpected lock type {type}");
+                    break;
+            }
+        }
+
+        internal new bool TryAcquire(LockType type)
         {
             Debug.Assert(type is >= LockType.WeakReadLock and <= LockType.ExclusiveLock);
 
-            var exit = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(exits), (int)type);
-            Signal(exit);
+            return base.TryAcquire(type);
         }
     }
 }

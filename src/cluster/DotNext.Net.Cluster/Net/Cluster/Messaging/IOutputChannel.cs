@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace DotNext.Net.Cluster.Messaging;
 
 using Runtime.Serialization;
@@ -34,7 +32,6 @@ public interface IOutputChannel
     /// <returns>The message representing response; or <see langword="null"/> if request message in one-way.</returns>
     /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [RequiresPreviewFeatures]
     Task<TResponse> SendMessageAsync<TResponse>(IMessage message, CancellationToken token = default)
         where TResponse : notnull, Runtime.Serialization.ISerializable<TResponse>
         => SendMessageAsync<TResponse>(message, Serializable.TransformAsync<IMessage, TResponse>);

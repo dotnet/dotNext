@@ -22,14 +22,16 @@ internal abstract partial class Client : RaftClusterMember
         ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
         static abstract ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
+
+        static abstract string Name { get; }
     }
 
     private readonly AsyncExclusiveLock accessLock;
     private readonly TimeSpan connectTimeout;
     private IConnectionContext? context;
 
-    private protected Client(ILocalMember localMember, EndPoint endPoint, ClusterMemberId id)
-        : base(localMember, endPoint, id)
+    private protected Client(ILocalMember localMember, EndPoint endPoint)
+        : base(localMember, endPoint)
     {
         accessLock = new();
         connectTimeout = TimeSpan.FromSeconds(1);
@@ -90,7 +92,15 @@ internal abstract partial class Client : RaftClusterMember
             if (lockTaken)
                 accessLock.Release();
 
-            Metrics?.ReportResponseTime(timeStamp.Elapsed);
+            var responseTime = timeStamp.ElapsedMilliseconds;
+#pragma warning disable CS0618
+            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
+#pragma warning restore CS0618
+            ResponseTimeMeter.Record(
+                responseTime,
+                new(IRaftClusterMember.MessageTypeAttributeName, TExchange.Name),
+                cachedRemoteAddressAttribute);
+
             requestDurationTracker.Dispose();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
 using System.Net;
 using System.Reflection;
@@ -876,35 +877,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private sealed class AsyncLockSettings : PersistentState.IAsyncLockSettings
-        {
-            public int ConcurrencyLevel => 10;
-
-            IncrementingEventCounter PersistentState.IAsyncLockSettings.LockContentionCounter => null;
-
-            EventCounter PersistentState.IAsyncLockSettings.LockDurationCounter => null;
-        }
-
         [Fact]
         public static void ReadWriteConcurrently()
         {
-            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
-            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
-            False(manager.AcquireAsync(PersistentState.LockType.ExclusiveLock, TimeSpan.Zero).Result);
+            False(manager.TryAcquire(PersistentState.LockType.WriteLock));
+            False(manager.TryAcquire(PersistentState.LockType.ExclusiveLock));
         }
 
         [Fact]
         public static void CombineCompactionAndWriteLock()
         {
-            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.CompactionLock).IsCompletedSuccessfully);
-            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
-            False(manager.AcquireAsync(PersistentState.LockType.WeakReadLock, TimeSpan.Zero).Result);
-            False(manager.AcquireAsync(PersistentState.LockType.StrongReadLock, TimeSpan.Zero).Result);
+            False(manager.TryAcquire(PersistentState.LockType.WriteLock));
+            False(manager.TryAcquire(PersistentState.LockType.WeakReadLock));
+            False(manager.TryAcquire(PersistentState.LockType.StrongReadLock));
 
             manager.Release(PersistentState.LockType.ExclusiveLock);
             True(manager.AcquireAsync(PersistentState.LockType.ExclusiveLock).IsCompletedSuccessfully);
@@ -913,10 +905,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Fact]
         public static void StrongWeakLock()
         {
-            using var manager = new PersistentState.LockManager(new AsyncLockSettings());
+            using var manager = new PersistentState.LockManager(10);
             True(manager.AcquireAsync(PersistentState.LockType.StrongReadLock).IsCompletedSuccessfully);
             True(manager.AcquireAsync(PersistentState.LockType.WeakReadLock).IsCompletedSuccessfully);
-            False(manager.AcquireAsync(PersistentState.LockType.WriteLock, TimeSpan.Zero).Result);
+            False(manager.TryAcquire(PersistentState.LockType.WriteLock));
 
             manager.Release(PersistentState.LockType.StrongReadLock);
             True(manager.AcquireAsync(PersistentState.LockType.WriteLock).IsCompletedSuccessfully);

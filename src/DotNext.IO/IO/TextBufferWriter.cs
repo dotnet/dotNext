@@ -45,14 +45,12 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
     {
         if (flushAsync is null)
         {
-            return flush is null ?
-                Task.CompletedTask
+            return flush is null
+                ? Task.CompletedTask
                 : Task.Factory.StartNew(() => flush(writer), token, TaskCreationOptions.DenyChildAttach, TaskScheduler.Current);
         }
-        else
-        {
-            return flushAsync(writer, token);
-        }
+
+        return flushAsync(writer, token);
     }
 
     public sealed override Task FlushAsync() => FlushAsync(CancellationToken.None);

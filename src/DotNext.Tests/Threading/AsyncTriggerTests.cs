@@ -1,16 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
     public sealed class AsyncTriggerTests : Test
     {
-        private sealed class State : StrongBox<int>
-        {
-
-        }
-
         [Fact]
         public static async Task UnicastSignal()
         {
@@ -71,6 +67,7 @@ namespace DotNext.Threading
             await ThrowsAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true).AsTask);
         }
 
+        [Obsolete]
         private sealed class TestTransition : AsyncTrigger<StrongBox<int>>.ITransition
         {
             bool AsyncTrigger<StrongBox<int>>.ITransition.Test(StrongBox<int> state)
@@ -81,6 +78,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        [Obsolete]
         public static async Task Transitions()
         {
             using var trigger = new AsyncTrigger<StrongBox<int>>(new());
@@ -99,6 +97,45 @@ namespace DotNext.Threading
             trigger.CancelSuspendedCallers(new(true));
 
             await ThrowsAsync<OperationCanceledException>(task2.AsTask);
+        }
+
+        private sealed class Condition : StrongBox<bool>, ISupplier<bool>
+        {
+            bool ISupplier<bool>.Invoke() => Value;
+        }
+
+        [Fact]
+        public static async Task SpinWaitAsync()
+        {
+            using var trigger = new AsyncTrigger();
+            var cond = new Condition();
+            var task = trigger.SpinWaitAsync(cond).AsTask();
+            False(task.IsCompleted);
+
+            trigger.Signal();
+            False(task.IsCompleted);
+
+            cond.Value = true;
+            Thread.MemoryBarrier();
+            trigger.Signal();
+            await task;
+        }
+
+        [Fact]
+        public static async Task SpinWaitAsync2()
+        {
+            using var trigger = new AsyncTrigger();
+            var cond = new Condition();
+            var task = trigger.SpinWaitAsync(cond, InfiniteTimeSpan).AsTask();
+            False(task.IsCompleted);
+
+            trigger.Signal();
+            False(task.IsCompleted);
+
+            cond.Value = true;
+            Thread.MemoryBarrier();
+            trigger.Signal();
+            True(await task);
         }
     }
 }

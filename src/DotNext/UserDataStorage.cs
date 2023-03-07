@@ -111,12 +111,8 @@ public readonly ref partial struct UserDataStorage
 
     private readonly object source;
 
-    internal UserDataStorage(object source) => this.source = source switch
-    {
-        null => throw new ArgumentNullException(nameof(UserDataStorage.source)),
-        IContainer support => support.Source,
-        _ => source,
-    };
+    internal UserDataStorage(object source)
+        => this.source = (source as IContainer)?.Source ?? source ?? throw new ArgumentNullException(nameof(UserDataStorage.source));
 
     /// <summary>
     /// Gets a value indicating that this storage is valid.
@@ -150,8 +146,7 @@ public readonly ref partial struct UserDataStorage
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        return storage is null ? defaultValue : storage.Get(slot).Or(defaultValue);
+        return GetStorage() is { } storage ? storage.Get(slot).Or(defaultValue) : defaultValue;
     }
 
     /// <summary>
@@ -166,8 +161,7 @@ public readonly ref partial struct UserDataStorage
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        return storage is null ? default : storage.Get(slot).OrDefault();
+        return GetStorage() is { } storage ? storage.Get(slot).OrDefault() : default;
     }
 
     /// <summary>

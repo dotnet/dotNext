@@ -405,16 +405,10 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         => context.Rewrite(node, base.VisitMemberInit);
 
     private Expression Rethrow(UnaryExpression node)
-    {
-        var holder = context.ExceptionHolder;
-        return holder is null ? new RethrowExpression() : RethrowExpression.Dispatch(holder);
-    }
+        => context.ExceptionHolder is { } holder ? RethrowExpression.Dispatch(holder) : new RethrowExpression();
 
-    protected override Expression VisitUnary(UnaryExpression node) => node.NodeType switch
-    {
-        ExpressionType.Throw when node.Operand is null => context.Rewrite(node, Rethrow),
-        _ => context.Rewrite(node, base.VisitUnary)
-    };
+    protected override Expression VisitUnary(UnaryExpression node)
+        => context.Rewrite<UnaryExpression, Expression>(node, node is { NodeType: ExpressionType.Throw, Operand: null } ? Rethrow : base.VisitUnary);
 
     private SwitchExpression MakeSwitch()
     {

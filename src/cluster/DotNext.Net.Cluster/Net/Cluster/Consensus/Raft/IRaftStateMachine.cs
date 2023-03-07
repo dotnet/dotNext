@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -16,6 +17,8 @@ internal interface IRaftStateMachine
 
         void Clear();
     }
+
+    ref readonly TagList MeasurementTags { get; }
 }
 
 internal interface IRaftStateMachine<TMember> : IRaftStateMachine
