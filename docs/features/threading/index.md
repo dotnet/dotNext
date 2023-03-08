@@ -79,7 +79,7 @@ using (builder.AcquireWriteLockAsync(CancellationToken.None))
 For more information check extension methods inside of [AsyncLockAcquisition](xref:DotNext.Threading.LockAcquisition) class.
 
 # Custom synchronization primitive
-[QueuedSynchronizer&lt;TContext&gt;](xref:DotNext.Threading.QueuedSynchronizer-1) provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same [synchronization engine](xref:DotNext.Threading.QueuedSynchronizer) as other primitives shipped with the library: [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock), [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock), etc. The following example demonstrates how to write custom async-aware reader-writer lock:
+[QueuedSynchronizer&lt;TContext&gt;](xref:DotNext.Threading.QueuedSynchronizer`1) provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same [synchronization engine](xref:DotNext.Threading.QueuedSynchronizer) as other primitives shipped with the library: [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock), [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock), etc. The following example demonstrates how to write custom async-aware reader-writer lock:
 ```csharp
 using DotNext.Threading;
 

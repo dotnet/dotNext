@@ -118,20 +118,20 @@ Func&lt;string, int&gt; lengthOf = str =&gt; str.Length;
 Converter&lt;string, int&gt; lengthOf2 = lengthOf.ChangeType&lt;Converter&lt;string, int&gt;&gt;();
 </code></pre>
 <h2 id="specialized-delegate-converters">Specialized delegate converters</h2>
-<p>Conversion between mostly used delegate types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2?view=netcore-3.0">Func&lt;T, TResult&gt;</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a>.</p>
+<p>Conversion between mostly used delegate types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a>.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-Predicate&lt;string&gt; isEmpty = str =&gt; str.Length == 0;
+Predicate&lt;string&gt; isEmpty = str =&gt; str is { Length: 0 };
 Func&lt;string, bool&gt; isEmptyFunc = isEmpty.AsFunc();
 Converter&lt;string, bool&gt; isEmptyConv = isEmpty.AsConverter();
 </code></pre>
 <h2 id="predefined-delegates">Predefined delegates</h2>
-<p>Cached delegate instances for mostly used delegate types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2?view=netcore-3.0">Func&lt;T, TResult&gt;</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a>.</p>
+<p>Cached delegate instances for mostly used delegate types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a>.</p>
 <pre><code class="lang-csharp">using DotNext;
 
 Func&lt;int, int&gt; identity = Func.Identity&lt;int&gt;(); //identity delegate which returns input argument without any changes
-Predicate&lt;string&gt; truePredicate = Predicate.True&lt;string&gt;(); // predicate which always returns true
-Predicate&lt;object&gt; falsePredicate = Predicate.False&lt;string&gt;(); //predicate which always returns false
+Predicate&lt;string&gt; truePredicate = Predicate.Constant&lt;string&gt;(true); // predicate which always returns true
+Predicate&lt;object&gt; falsePredicate = Predicate.Constant&lt;string&gt;(false); //predicate which always returns false
 Predicate&lt;string&gt; nullCheck = Predicate.IsNull&lt;string&gt;(); //predicate checking whether the input argument is null
 Predicate&lt;string&gt; notNullCheck = Predicate.IsNotNull&lt;string&gt;(); //predicate checking whether the input argument is not null
 </code></pre>
@@ -163,8 +163,8 @@ Func&lt;int&gt; closedDelegate = DelegateHelpers.CreateDelegate&lt;string, int&g
 <p>Checks whether the given value is in specific range.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-var b = 10.Between(5, 11, BoundType.Closed); //b == true
-b = 10.Between(0, 4); //b == false
+var b = 10.IsBetween(5, 11, BoundType.Closed); //b == true
+b = 10.IsBetween(0, 4); //b == false
 var i = 5.Clamp(4, 10); //i == 5
 i = 5.Clamp(6, 10); //i == 6
 i = 5.Clamp(0, 4); //i == 4
@@ -186,7 +186,7 @@ b = &quot;a&quot;.IsOneOf(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;); //b == f
 <pre><code class="lang-csharp">var array2 = new int[] { 1, 2, 3 };
 array2.BitwiseEquals(new [] {1, 2, 4});    //false
 </code></pre>
-<h2 id="functional-iteration">Functional iteration</h2>
+<h2 id="functional-iterator">Functional iterator</h2>
 <p>Extension method <code>ForEach</code> allows to iterate over array elements and, optionally, modify array element.</p>
 <pre><code class="lang-csharp">var array = new string[] {&quot;ab&quot;, &quot;bc&quot; };
 array.ForEach((long index, ref string element) =&gt; {
@@ -209,7 +209,7 @@ array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
 </code></pre>
 <p>The same behavior can be achieved using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. However, these methods support large arrays where index and length cannot be represented by <strong>int</strong> data type.</p>
 <h1 id="timestamp">Timestamp</h1>
-<p><a class="xref" href="../../api/DotNext.Diagnostics.Timestamp.html">Timestamp</a> value type can be used as allocation-free alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch">Stopwatch</a> when you need to measure time intervals.</p>
+<p><a href="xref:DotNext.Diagnostics.Timestamp">Timestamp</a> value type can be used as allocation-free alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch">Stopwatch</a> when you need to measure time intervals.</p>
 <pre><code class="lang-csharp">using DotNext.Diagnostics;
 using System;
 

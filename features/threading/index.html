@@ -138,6 +138,48 @@ using (builder.AcquireWriteLockAsync(CancellationToken.None))
 }
 </code></pre>
 <p>For more information check extension methods inside of <a class="xref" href="../../api/DotNext.Threading.LockAcquisition.html">AsyncLockAcquisition</a> class.</p>
+<h1 id="custom-synchronization-primitive">Custom synchronization primitive</h1>
+<p><a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer-1.html">QueuedSynchronizer&lt;TContext&gt;</a> provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">synchronization engine</a> as other primitives shipped with the library: <a class="xref" href="../../api/DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a>, <a class="xref" href="../../api/DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>, etc. The following example demonstrates how to write custom async-aware reader-writer lock:</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+
+// bool indicates lock type:
+// false - read lock
+// true - write lock
+class MyExclusiveLock : QueuedSynchronizer&lt;bool&gt;
+{
+    // = 0 - no lock acquired
+    // &gt; 0 - read lock
+    // &lt; 0 - write lock
+    private int readersCount;
+
+    public MyExclusiveLock()
+        : base(null)
+    {
+    }
+
+    public ValueTask AcquireReadLockAsync(CancellationToken token)
+        =&gt; base.AcquireAsync(false, token);
+
+    public void ReleaseReadLock(CancellationToken token)
+        =&gt; base.Release(false);
+
+    public ValueTask AcquireWriteLockAsync(CancellationToken token)
+        =&gt; base.AcquireAsync(true, token);
+
+    public void ReleaseWriteLock()
+        =&gt; base.Release(true);
+
+    // write lock cannot be acquired if there is at least one read lock, or single write lock
+    protected override bool CanAcquire(bool writeLock)
+        =&gt; writeLock ? readersCount is 0 : readersCount &gt;= 0;
+
+    protected override void AcquireCore(bool writeLock)
+        =&gt; readersCount = writeLock ? -1 : readersCount + 1;
+
+    protected override void ReleaseCore(bool writeLock)
+        =&gt; readersCount = writeLock ? 0 : readersCount - 1;
+}
+</code></pre>
 <h1 id="diagnostics">Diagnostics</h1>
 <p>All synchronization primitives for asynchronous code mostly derive from <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronized</a> class that exposes a set of important diagnostics counters:</p>
 <ul>

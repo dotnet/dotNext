@@ -145,7 +145,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;bool&gt; ResignAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask&lt;bool&gt; ResignAsync(CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -174,7 +174,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
         <td><p><span class="xref">true</span> if leadership is revoked successfully; otherwise, <span class="xref">false</span>.</p>
 </td>
       </tr>
@@ -194,7 +194,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;IClusterMember&gt; WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask&lt;IClusterMember&gt; WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -230,7 +230,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Net.Cluster.IClusterMember.html">IClusterMember</a>&gt;</td>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="DotNext.Net.Cluster.IClusterMember.html">IClusterMember</a>&gt;</td>
         <td><p>The elected leader.</p>
 </td>
       </tr>

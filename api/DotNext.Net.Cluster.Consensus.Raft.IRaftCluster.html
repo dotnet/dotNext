@@ -120,6 +120,38 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public interface IRaftCluster : IReplicationCluster&lt;IRaftLogEntry&gt;, IReplicationCluster, ICluster, IPeerMesh&lt;IClusterMember&gt;, IPeerMesh&lt;IRaftClusterMember&gt;, IPeerMesh</code></pre>
   </div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LocalAddressMeterAttributeName.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LocalAddressMeterAttributeName%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L14">View Source</a>
+  </span>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LocalAddressMeterAttributeName" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LocalAddressMeterAttributeName">LocalAddressMeterAttributeName</h4>
+  <div class="markdown level1 summary"><p>Represents metrics attribute containing the address of the local node.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected const string LocalAddressMeterAttributeName = &quot;dotnext.raft.server.address&quot;</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -127,7 +159,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_AuditTrail.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_AuditTrail_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_AuditTrail" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail">AuditTrail</h4>
@@ -158,7 +190,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L19">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L24">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout">ElectionTimeout</h4>
@@ -189,7 +221,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipToken%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipToken*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.LeadershipToken">LeadershipToken</h4>
@@ -223,7 +255,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Lease.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Lease%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L40">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L46">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Lease_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Lease*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Lease" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Lease">Lease</h4>
@@ -255,7 +287,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Members.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Members%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L24">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L29">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Members_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Members*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Members" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Members">Members</h4>
@@ -286,7 +318,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Metrics.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L29">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L34">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Metrics_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Metrics" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics">Metrics</h4>
@@ -317,7 +349,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Readiness.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Readiness%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L53">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L59">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Readiness_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Readiness*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Readiness" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Readiness">Readiness</h4>
@@ -348,7 +380,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Term.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Term%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L14">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L19">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Term*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Term">Term</h4>
@@ -381,7 +413,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L64">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ApplyReadBarrierAsync(CancellationToken)">ApplyReadBarrierAsync(CancellationToken)</h4>
@@ -433,7 +465,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_DotNext_Net_Cluster_Replication_IReplicationCluster_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AuditTrail.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.DotNext%23Net%23Cluster%23Replication%23IReplicationCluster%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23AuditTrail%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L56">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/IRaftCluster.cs/#L62">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_DotNext_Net_Cluster_Replication_IReplicationCluster_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AuditTrail_" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.DotNext#Net#Cluster#Replication#IReplicationCluster{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AuditTrail*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_DotNext_Net_Cluster_Replication_IReplicationCluster_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AuditTrail" data-uid="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.DotNext#Net#Cluster#Replication#IReplicationCluster{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AuditTrail">IReplicationCluster&lt;IRaftLogEntry&gt;.AuditTrail</h4>

@@ -85,6 +85,7 @@ of the log entries.</p>
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.IO.Log.ILogEntryProducer-1.html">ILogEntryProducer</a>&lt;TEntry&gt;</div>
     <div><span class="xref">IAsyncEnumerator</span>&lt;TEntry&gt;</div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -114,7 +115,7 @@ of the log entries.</p>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_Log_LogEntryProducer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class LogEntryProducer&lt;TEntry&gt; : ILogEntryProducer&lt;TEntry&gt; where TEntry : ILogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class LogEntryProducer&lt;TEntry&gt; : ILogEntryProducer&lt;TEntry&gt;, IResettable where TEntry : ILogEntry</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -354,6 +355,9 @@ of the log entries.</p>
   </div>
   <div>
       <span class="xref">IAsyncEnumerator&lt;&gt;</span>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

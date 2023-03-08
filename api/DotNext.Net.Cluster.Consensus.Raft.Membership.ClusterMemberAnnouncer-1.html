@@ -79,7 +79,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Membership_ClusterMemberAnnouncer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate Task ClusterMemberAnnouncer&lt;in TAddress&gt;(ClusterMemberId id, TAddress address, CancellationToken token);</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate Task ClusterMemberAnnouncer&lt;in TAddress&gt;(TAddress address, IReadOnlyDictionary&lt;string, string&gt; metadata, CancellationToken token);</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -92,15 +92,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.ClusterMemberId.html">ClusterMemberId</a></td>
-        <td><span class="parametername">id</span></td>
-        <td><p>The identifier of the cluster member.</p>
-</td>
-      </tr>
-      <tr>
         <td><span class="xref">TAddress</span></td>
         <td><span class="parametername">address</span></td>
         <td><p>The address of the cluster member.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IReadOnlyDictionary</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><span class="parametername">metadata</span></td>
+        <td><p>The metadata associated with a cluster member.</p>
 </td>
       </tr>
       <tr>

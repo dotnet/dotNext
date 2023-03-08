@@ -173,7 +173,6 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 <li><code>AppendAsync</code> adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries</li>
 <li><code>DropAsync</code> removes the uncommitted entries from the log</li>
 <li><code>CommitAsync</code> marks appended entries as committed. Optionally, it can force log compaction</li>
-<li><code>EnsureConsistencyAsync</code> suspends the caller and waits until the last committed entry is from leader's term</li>
 <li><code>WaitForCommitAsync</code> waits for the specific or any commit</li>
 <li><code>CreateBackupAsync</code> creates backup of the log packed into ZIP archive</li>
 <li><code>ForceCompactionAsync</code> manually triggers log compaction. Has no effect if compaction mode other than <em>Background</em></li>

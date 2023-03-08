@@ -179,7 +179,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;bool&gt; ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl entry, CancellationToken token = null)
+    <pre><code class="lang-csharp hljs">ValueTask&lt;bool&gt; ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl entry, CancellationToken token = null)
 
     where TEntryImpl : TEntry</code></pre>
   </div>
@@ -217,7 +217,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
         <td><p><span class="xref">true</span> if the appended log entry has been committed by the majority of nodes; <span class="xref">false</span> if retry is required.</p>
 </td>
       </tr>
