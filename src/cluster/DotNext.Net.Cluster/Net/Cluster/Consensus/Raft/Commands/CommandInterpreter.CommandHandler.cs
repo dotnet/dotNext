@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
@@ -24,6 +25,7 @@ public partial class CommandInterpreter
         }
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        [RequiresPreviewFeatures]
         internal override async ValueTask InterpretAsync<TReader>(TReader reader, CancellationToken token)
         {
             var command = await TCommand.ReadFromAsync(reader, token).ConfigureAwait(false);

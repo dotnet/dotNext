@@ -1,3 +1,5 @@
+using System.Runtime.Versioning;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
 using Runtime.Serialization;
@@ -69,9 +71,7 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         CommandInterpreter ISupplier<CommandInterpreter>.Invoke() => Build();
     }
 
-    /// <summary>
-    /// Creates a new instance of <see cref="Builder"/>.
-    /// </summary>
-    /// <returns>A new instance of <see cref="Builder"/>.</returns>
+    /// <inheritdoc cref="IBuildable{TSelf, TBuilder}.CreateBuilder"/>
+    [RequiresPreviewFeatures]
     static Builder IBuildable<CommandInterpreter, Builder>.CreateBuilder() => new();
 }
