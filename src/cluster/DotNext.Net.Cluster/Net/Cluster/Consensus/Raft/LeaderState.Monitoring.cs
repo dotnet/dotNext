@@ -11,32 +11,33 @@ internal partial class LeaderState<TMember>
 
     private sealed class ClusterFailureDetector
     {
-        private readonly Func<TMember, IFailureDetector> detectorFactory;
+        private readonly Func<TimeSpan, TMember, IFailureDetector> detectorFactory;
         private readonly ConditionalWeakTable<TMember, IFailureDetector> detectors;
+        private readonly TimeSpan estimateFirstHeartbeat;
 
-        internal ClusterFailureDetector(Func<TMember, IFailureDetector> factory)
+        internal ClusterFailureDetector(TimeSpan estimateFirstHeartbeat, Func<TimeSpan, TMember, IFailureDetector> factory)
         {
+            Debug.Assert(estimateFirstHeartbeat > TimeSpan.Zero);
             Debug.Assert(factory is not null);
 
             detectorFactory = factory;
             detectors = new();
+            this.estimateFirstHeartbeat = estimateFirstHeartbeat;
         }
 
-        internal void ReportHeartbeat(TMember member)
+        internal IFailureDetector GetOrCreateDetector(TMember member)
         {
             if (!detectors.TryGetValue(member, out var detector))
-                detectors.Add(member, detector = detectorFactory(member));
+                detectors.Add(member, detector = detectorFactory(estimateFirstHeartbeat, member));
 
-            detector.ReportHeartbeat();
+            return detector;
         }
-
-        internal bool IsAlive(TMember member) => detectors.TryGetValue(member, out var detector) ? detector.IsHealthy : true;
 
         internal void Clear() => detectors.Clear();
     }
 
-    internal Func<TMember, IFailureDetector>? FailureDetectorFactory
+    internal Func<TimeSpan, TMember, IFailureDetector>? FailureDetectorFactory
     {
-        init => failureDetector = value is not null ? new(value) : null;
+        init => failureDetector = value is not null ? new(maxLease, value) : null;
     }
 }

@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 => cluster.LeaderChanged -= OnLeaderChanged;
         }
 
-        private static IHost CreateHost<TStartup>(int port, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null, Func<IRaftClusterMember, IFailureDetector> failureDetectorFactory = null)
+        private static IHost CreateHost<TStartup>(int port, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null, Func<TimeSpan, IRaftClusterMember, IFailureDetector> failureDetectorFactory = null)
             where TStartup : class
         {
             return new HostBuilder()
@@ -397,8 +397,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             await host2.StopAsync();
             await host1.StopAsync();
 
-            static IFailureDetector CreateFailureDetector(IRaftClusterMember member)
-                => new PhiAccrualFailureDetector() { Threshold = 3D };
+            static IFailureDetector CreateFailureDetector(TimeSpan estimate, IRaftClusterMember member)
+                => new PhiAccrualFailureDetector(estimate) { Threshold = 3D };
         }
 
         [Fact]
@@ -690,6 +690,92 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
 
             await host.StopAsync();
+        }
+
+        [Fact]
+        public async Task RegressionIssue153()
+        {
+            var configRoot = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            var config1 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+                {"metadata:nodeName", "node1"},
+            };
+            var config2 = new Dictionary<string, string>
+            {
+                {"partitioning", "false" },
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node2"},
+            };
+            var config3 = new Dictionary<string, string>
+            {
+                {"partitioning", "false"},
+                {"publicEndPoint", "http://localhost:3264"},
+                {"coldStart", "false"},
+                {"metadata:nodeName", "node3"},
+            };
+
+            var memberGoneTask = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            Action<IPeerMesh, PeerEventArgs> peerGoneHandler = (mesh, args) =>
+            {
+                if (args.PeerAddress is UriEndPoint { Uri: { Port: 3262 } })
+                    memberGoneTask.TrySetResult();
+            };
+
+            // two nodes in frozen state
+            using var host2 = CreateHost<Startup>(3263, config2, failureDetectorFactory: CreateFailureDetector);
+            GetLocalClusterView(host2).PeerGone += peerGoneHandler;
+
+            using var host3 = CreateHost<Startup>(3264, config3, failureDetectorFactory: CreateFailureDetector);
+            GetLocalClusterView(host3).PeerGone += peerGoneHandler;
+
+            IClusterMember leader2, leader3;
+            EndPoint oldLeader;
+            using (var host1 = CreateHost<Startup>(3262, config1))
+            {
+                await host1.StartAsync();
+                True(GetLocalClusterView(host1).Readiness.IsCompletedSuccessfully);
+                await host2.StartAsync();
+                await host3.StartAsync();
+
+                Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout)).EndPoint, EndPointFormatter.UriEndPointComparer);
+
+                // add two nodes to the cluster
+                await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress);
+                await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+                await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberAddress);
+                await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
+
+                oldLeader = await AssertLeadershipAsync(
+                    EndPointFormatter.UriEndPointComparer,
+                    GetLocalClusterView(host1),
+                    GetLocalClusterView(host2),
+                    GetLocalClusterView(host3));
+
+                // stop the leader
+                await host1.StopAsync();
+            }
+
+            // wait for new election
+            do
+            {
+                leader2 = await GetLocalClusterView(host2).WaitForLeaderAsync(DefaultTimeout);
+                leader3 = await GetLocalClusterView(host3).WaitForLeaderAsync(DefaultTimeout);
+            }
+            while (leader2 is null || leader3 is null || EndPointFormatter.UriEndPointComparer.Equals(oldLeader, leader2.EndPoint) || EndPointFormatter.Equals(oldLeader, leader3.EndPoint));
+
+            await memberGoneTask.Task.WaitAsync(DefaultTimeout);
+
+            await host2.StopAsync();
+            await host3.StopAsync();
+
+            static IFailureDetector CreateFailureDetector(TimeSpan estimate, IRaftClusterMember member)
+                => new PhiAccrualFailureDetector(estimate) { Threshold = 3D, TreatUnknownValueAsUnhealthy = true };
         }
     }
 }

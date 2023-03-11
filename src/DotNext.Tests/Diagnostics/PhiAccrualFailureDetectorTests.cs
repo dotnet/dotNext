@@ -8,28 +8,41 @@ namespace DotNext.Diagnostics
         [Fact]
         public static void EmptyPhi()
         {
-            var detector = new PhiAccrualFailureDetector();
-            Equal(0.0D, detector.Value);
+            var detector = new PhiAccrualFailureDetector(TimeSpan.FromMilliseconds(500));
 
-            detector.ReportHeartbeat();
+            False(detector.IsMonitoring);
             Equal(0.0D, detector.Value);
+        }
+
+        [Fact]
+        public static void TreatUnknownValueAsUnhealthy()
+        {
+            var detector = new PhiAccrualFailureDetector(TimeSpan.FromMilliseconds(500))
+            {
+                TreatUnknownValueAsUnhealthy = true,
+            };
+
+            True(detector.IsMonitoring);
+            Equal(double.PositiveInfinity, detector.Value);
+            False(detector.IsHealthy);
         }
 
         [Fact]
         public static void PhiNaNRegression()
         {
-            var detector = new PhiAccrualFailureDetector();
+            var detector = new PhiAccrualFailureDetector(TimeSpan.FromMilliseconds(500));
             detector.ReportHeartbeat(new(TimeSpan.Parse("02:50:45.1408563")));
             detector.ReportHeartbeat(new(TimeSpan.Parse("02:50:45.9669910")));
             detector.ReportHeartbeat(new(TimeSpan.Parse("02:50:46.7933090")));
             var v = detector.GetValue(new(TimeSpan.Parse("02:50:47.7933090")));
             False(double.IsNaN(v));
+            True(detector.IsMonitoring);
         }
 
         [Fact]
         public static void MainTest()
         {
-            var detector = new PhiAccrualFailureDetector();
+            var detector = new PhiAccrualFailureDetector(TimeSpan.FromMilliseconds(500));
             long now = 1420070400000L;
             for (int i = 0; i < 300; i++)
             {
@@ -99,7 +112,7 @@ namespace DotNext.Diagnostics
         [Fact]
         public static void RegressionIssue151()
         {
-            var detector = new PhiAccrualFailureDetector { MaxSampleSize = 3 };
+            var detector = new PhiAccrualFailureDetector(TimeSpan.FromMilliseconds(500)) { MaxSampleSize = 10 };
             var ts = new Timestamp();
 
             for (var i = 0; i < 50; i++)

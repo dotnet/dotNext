@@ -71,7 +71,7 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     /// <description>Allows to announce a new node the cluster leader.</description>
     /// </item>
     /// <item>
-    /// <term><see cref="Func{IRaftClusterMember, IFailureDetector}"/> with generic arguments <see cref="IRaftClusterMember"/> and <see cref="IFailureDetector"/></term>
+    /// <term><see cref="Func{TimeSpan, IRaftClusterMember, IFailureDetector}"/> with generic arguments <see cref="TimeSpan"/>, <see cref="IRaftClusterMember"/>, and <see cref="IFailureDetector"/></term>
     /// <description>Provides failure detection mechanism that allows the leader to remove unresponsive members from the cluster.</description>
     /// </item>
     /// </list>
@@ -94,7 +94,7 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
 #pragma warning restore CS0618
             announcer: activationContext.GetService<ClusterMemberAnnouncer<UriEndPoint>>())
         {
-            FailureDetectorFactory = activationContext.GetService<Func<IRaftClusterMember, IFailureDetector>>(),
+            FailureDetectorFactory = activationContext.GetService<Func<TimeSpan, IRaftClusterMember, IFailureDetector>>(),
         };
     }
 
