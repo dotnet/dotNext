@@ -1,6 +1,15 @@
 Release Notes
 ====
 
+# 03-11-2023
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.0">DotNext.Net.Cluster 4.12.0</a>
+* Fixed initialization logic of [PhiAccrualFailureDetector](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.PhiAccrualFailureDetector.html)
+* Partially fixed [153](https://github.com/dotnet/dotNext/issues/153). Optionally, the node which initial state cannot be recognized by failure detector (e.g., node never responds) is treated as dead
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.0">DotNext.AspNetCore.Cluster 4.12.0</a>
+* Fixed initialization logic of [PhiAccrualFailureDetector](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.PhiAccrualFailureDetector.html)
+* Partially fixed [153](https://github.com/dotnet/dotNext/issues/153). Optionally, the node which initial state cannot be recognized by failure detector (e.g., node never responds) is treated as dead
+
 # 03-07-2023
 <a href="https://www.nuget.org/packages/dotnext/4.11.0">DotNext 4.11.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
@@ -23,7 +32,7 @@ Release Notes
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 * Reduced API surface requiring [RequiresPreviewFeatures](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.versioning.requirespreviewfeaturesattribute) attribute
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.11.0">DotNext.Net.Cluster 4.10.0</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.11.0">DotNext.Net.Cluster 4.11.0</a>
 * Adoption of [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics) instruments to provide compatibility with [OpenTelemetry](https://opentelemetry.io/)
 * Fixed [151](https://github.com/dotnet/dotNext/issues/151)
 * Fixed [153](https://github.com/dotnet/dotNext/issues/153)
