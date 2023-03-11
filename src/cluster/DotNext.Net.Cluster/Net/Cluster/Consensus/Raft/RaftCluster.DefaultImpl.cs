@@ -1,5 +1,3 @@
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -63,7 +61,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         }
     }
 
-    private readonly ImmutableDictionary<string, string> metadata;
+    private readonly IReadOnlyDictionary<string, string> metadata;
 #pragma warning disable CS0618
     private readonly Func<ILocalMember, EndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
 #pragma warning restore CS0618
@@ -88,7 +86,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 #pragma warning disable CS0618
         Metrics = configuration.Metrics;
 #pragma warning restore CS0618
-        metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
+        metadata = new Dictionary<string, string>(configuration.Metadata, StringComparer.Ordinal); // TODO: Migrate to FrozenDictionary in .NET 8
         clientFactory = configuration.CreateClient;
         serverFactory = configuration.CreateServer;
         localMemberId = ClusterMemberId.FromEndPoint(LocalMemberAddress = configuration.PublicEndPoint);

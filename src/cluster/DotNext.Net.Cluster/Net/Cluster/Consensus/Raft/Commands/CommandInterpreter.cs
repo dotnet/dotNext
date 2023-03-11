@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Versioning;
@@ -91,7 +90,7 @@ public partial class CommandInterpreter : Disposable
     private CommandInterpreter(IDictionary<int, CommandHandler> interpreters, IDictionary<Type, int> identifiers, int? snapshotCommandId)
     {
         this.interpreters = CreateRegistry(interpreters);
-        this.identifiers = ImmutableDictionary.ToImmutableDictionary(identifiers);
+        this.identifiers = new Dictionary<Type, int>(identifiers); // TODO: Migrate to FrozenDictionary in .NET 8
         this.snapshotCommandId = snapshotCommandId;
     }
 

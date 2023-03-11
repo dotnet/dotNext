@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -11,66 +8,63 @@ using Threading;
 
 public partial class RaftCluster<TMember>
 {
-    internal sealed class MemberList : IReadOnlyDictionary<ClusterMemberId, TMember>, IReadOnlyCollection<TMember>
+    private interface IMemberList : IReadOnlyDictionary<ClusterMemberId, TMember>
     {
-        internal static readonly MemberList Empty = new();
+        new IReadOnlyCollection<TMember> Values { get; }
 
-        private readonly ImmutableDictionary<ClusterMemberId, TMember> dictionary;
+        bool TryAdd(TMember member, out IMemberList list);
 
-        internal MemberList(IReadOnlyDictionary<ClusterMemberId, TMember> members)
-            => dictionary = ImmutableDictionary.CreateRange(members);
+        TMember? TryRemove(ClusterMemberId id, out IMemberList list);
 
-        private MemberList(ImmutableDictionary<ClusterMemberId, TMember> dictionary)
-            => this.dictionary = dictionary;
+        internal static IMemberList Empty { get; } = new MemberList();
+    }
 
-        private MemberList()
-            : this(ImmutableDictionary<ClusterMemberId, TMember>.Empty)
+    private sealed class MemberList : Dictionary<ClusterMemberId, TMember>, IMemberList
+    {
+        internal MemberList()
+            : base(10)
         {
         }
 
-        public TMember this[ClusterMemberId id] => dictionary[id];
-
-        public int Count => dictionary.Count;
-
-        public bool ContainsKey(ClusterMemberId id) => dictionary.ContainsKey(id);
-
-        public IEnumerable<ClusterMemberId> Keys => dictionary.Keys;
-
-        public IEnumerable<TMember> Values => dictionary.Values;
-
-        internal static bool TryAdd(ref MemberList membership, TMember member)
+        private MemberList(MemberList origin)
+            : base(origin)
         {
-            var dictionary = membership.dictionary;
-            var result = ImmutableInterlocked.TryAdd(ref dictionary, member.Id, member);
-            if (!ReferenceEquals(membership.dictionary, dictionary))
+        }
+
+        IReadOnlyCollection<TMember> IMemberList.Values => Values;
+
+        bool IMemberList.TryAdd(TMember member, out IMemberList list)
+        {
+            MemberList tmp;
+
+            // O(n) complexity, but it's fine since the number of nodes is relatively small (not even hundreds)
+            if (!ContainsKey(member.Id) && (tmp = new(this)).TryAdd(member.Id, member))
             {
-                membership = new(dictionary);
-                Interlocked.MemoryBarrierProcessWide();
+                list = tmp;
+                return true;
+            }
+
+            list = this;
+            return false;
+        }
+
+        TMember? IMemberList.TryRemove(ClusterMemberId id, out IMemberList list)
+        {
+            MemberList tmp;
+
+            // O(n) complexity, but it's fine since the number of nodes is relatively small (not even hundreds)
+            if (ContainsKey(id) && (tmp = new(this)).Remove(id, out var result))
+            {
+                list = tmp;
+            }
+            else
+            {
+                result = null;
+                list = this;
             }
 
             return result;
         }
-
-        internal static bool TryRemove(ref MemberList membership, ClusterMemberId id, [NotNullWhen(true)] out TMember? member)
-        {
-            var dictionary = membership.dictionary;
-            var result = ImmutableInterlocked.TryRemove(ref dictionary, id, out member);
-            if (!ReferenceEquals(membership.dictionary, dictionary))
-                membership = new(dictionary);
-
-            return result;
-        }
-
-        public bool TryGetValue(ClusterMemberId id, [MaybeNullWhen(false)] out TMember member)
-            => dictionary.TryGetValue(id, out member);
-
-        internal MemberList Clear() => new(dictionary.Clear());
-
-        IEnumerator<TMember> IEnumerable<TMember>.GetEnumerator() => Values.GetEnumerator();
-
-        IEnumerator<KeyValuePair<ClusterMemberId, TMember>> IEnumerable<KeyValuePair<ClusterMemberId, TMember>>.GetEnumerator() => dictionary.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => Values.GetEnumerator();
     }
 
     /// <summary>
@@ -93,7 +87,7 @@ public partial class RaftCluster<TMember>
         }
     }
 
-    private MemberList members;
+    private IMemberList members;
     private InvocationList<Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>> memberAddedHandlers, memberRemovedHandlers;
     private AtomicBoolean membershipState;
 
@@ -170,8 +164,11 @@ public partial class RaftCluster<TMember>
             // assuming that the member is in sync with the leader
             member.NextIndex = auditTrail.LastUncommittedEntryIndex + 1;
 
-            if (!MemberList.TryAdd(ref members, member))
+            if (!members.TryAdd(member, out members))
                 return false;
+
+            // synchronize with reader thread
+            Interlocked.MemoryBarrierProcessWide();
         }
         catch (OperationCanceledException e) when (tokenHolder is not null)
         {
@@ -205,14 +202,20 @@ public partial class RaftCluster<TMember>
         try
         {
             lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
-            if (MemberList.TryRemove(ref members, id, out result) && !result.IsRemote && state is not null)
+            if ((result = members.TryRemove(id, out members)) is not null)
             {
-                // local member is removed, downgrade it
-                await MoveToStandbyState(resumable: false).ConfigureAwait(false);
-            }
+                // synchronize with reader thread
+                Interlocked.MemoryBarrierProcessWide();
 
-            if (ReferenceEquals(result, Leader))
-                Leader = null;
+                if (result.IsRemote is false && state is not null)
+                {
+                    // local member is removed, downgrade it
+                    await MoveToStandbyState(resumable: false).ConfigureAwait(false);
+                }
+
+                if (ReferenceEquals(result, Leader))
+                    Leader = null;
+            }
         }
         catch (OperationCanceledException e) when (tokenHolder is not null)
         {

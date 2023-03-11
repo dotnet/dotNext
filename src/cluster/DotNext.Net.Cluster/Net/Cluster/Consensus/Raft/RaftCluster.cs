@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
@@ -57,7 +56,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
         allowPartitioning = config.Partitioning;
-        members = MemberList.Empty;
+        members = IMemberList.Empty;
         transitionSync = AsyncLock.Exclusive();
         transitionCancellation = new();
         LifecycleToken = transitionCancellation.Token;
@@ -161,7 +160,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// Gets members of Raft-based cluster.
     /// </summary>
     /// <returns>A collection of cluster member.</returns>
-    public IReadOnlyCollection<TMember> Members => members;
+    public IReadOnlyCollection<TMember> Members => members.Values;
 
     /// <inheritdoc />
     IReadOnlyCollection<IRaftClusterMember> IRaftCluster.Members => Members;
@@ -1132,7 +1131,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     IClusterMember? IPeerMesh<IClusterMember>.TryGetPeer(EndPoint peer) => TryGetPeer(peer);
 
     /// <inheritdoc />
-    IReadOnlySet<EndPoint> IPeerMesh.Peers => ImmutableHashSet.CreateRange(EndPointComparer, members.Values.Select(static m => m.EndPoint));
+    IReadOnlySet<EndPoint> IPeerMesh.Peers => new HashSet<EndPoint>(members.Values.Select(static m => m.EndPoint), EndPointComparer);
 
     /// <inheritdoc />
     protected override void Dispose(bool disposing)
@@ -1142,7 +1141,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             if (!LifecycleToken.IsCancellationRequested)
                 Logger.StopAsyncWasNotCalled();
 
-            Dispose(Interlocked.Exchange(ref members, MemberList.Empty));
+            Dispose(Interlocked.Exchange(ref members, IMemberList.Empty).Values);
             transitionCancellation.Dispose();
             transitionSync.Dispose();
             state.Dispose();

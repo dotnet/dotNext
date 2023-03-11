@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -151,8 +150,9 @@ public partial class MessageHandler : IInputChannel
 
     private MessageHandler(IDictionary<string, RpcHandler> rpcHandlers, IDictionary<string, SignalHandler> signalHandlers)
     {
-        this.rpcHandlers = ImmutableDictionary.ToImmutableDictionary(rpcHandlers);
-        this.signalHandlers = ImmutableDictionary.ToImmutableDictionary(signalHandlers);
+        // TODO: Migrate to FrozenDictionary in .NET 8
+        this.rpcHandlers = new Dictionary<string, RpcHandler>(rpcHandlers, NameComparer);
+        this.signalHandlers = new Dictionary<string, SignalHandler>(signalHandlers, NameComparer);
     }
 
     /// <inheritdoc/>
