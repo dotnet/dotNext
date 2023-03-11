@@ -75,14 +75,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Gets or sets failure detector to be used by the leader node to detect and remove unresponsive followers.
     /// </summary>
-    public Func<TMember, IFailureDetector>? FailureDetectorFactory
+    public Func<TimeSpan, TMember, IFailureDetector>? FailureDetectorFactory
     {
         get;
         init;
     }
 
     /// <inheritdoc/>
-    Func<IClusterMember, IFailureDetector>? IUnresponsiveClusterMemberRemovalSupport.FailureDetectorFactory
+    Func<TimeSpan, IClusterMember, IFailureDetector>? IUnresponsiveClusterMemberRemovalSupport.FailureDetectorFactory
     {
         init => FailureDetectorFactory = value;
     }
@@ -478,8 +478,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         void LocalMemberGone()
         {
-            var localMember = TryGetLocalMember();
-            if (localMember is not null)
+            if (TryGetLocalMember() is { } localMember)
                 OnMemberRemoved(localMember);
         }
     }

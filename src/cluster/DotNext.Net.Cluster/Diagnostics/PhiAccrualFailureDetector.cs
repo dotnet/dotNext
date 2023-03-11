@@ -10,12 +10,30 @@ namespace DotNext.Diagnostics;
 public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<double>
 {
     private readonly double threshold = 16.0;
-    private readonly TimeSpan minStdDeviation = TimeSpan.FromMilliseconds(500D),
-        acceptableHeartbeatPause = TimeSpan.Zero,
-        suspiciousGrowthThreshold = TimeSpan.Zero;
+    private readonly double minStdDeviation = TimeSpan.FromMilliseconds(500D).TotalMilliseconds;
+    private readonly double acceptableHeartbeatPause;
+    private readonly double suspiciousGrowthThreshold;
 
-    private volatile HeartbeatSlidingWindow snapshot = HeartbeatSlidingWindow.Initial(200);
+    private readonly Measurement initial;
+    private volatile Measurement snapshot;
     private Action<TimeSpan>? suspiciousGrowthCallback;
+
+    /// <summary>
+    /// Initializes a new failure detector.
+    /// </summary>
+    /// <param name="estimatedFirstHeartbeat">The estimated interval to the first heartbeat.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="estimatedFirstHeartbeat"/> is less than or equal to <see cref="TimeSpan.Zero"/>.</exception>
+    public PhiAccrualFailureDetector(TimeSpan estimatedFirstHeartbeat)
+    {
+        if (estimatedFirstHeartbeat <= default(TimeSpan))
+            throw new ArgumentOutOfRangeException(nameof(estimatedFirstHeartbeat));
+
+        const int defaultMaxSampleSize = 100;
+        var mean = estimatedFirstHeartbeat.TotalMilliseconds;
+        var stdDeviation = mean / 4D;
+
+        snapshot = initial = new Measurement(defaultMaxSampleSize, mean - stdDeviation) + (mean + stdDeviation);
+    }
 
     /// <summary>
     /// Gets or sets Phi value threshold that is used to determine whether the underlying resource is no longer available.
@@ -38,7 +56,7 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     public int MaxSampleSize
     {
         get => snapshot.MaxSampleSize;
-        init => snapshot = value > 0 ? HeartbeatSlidingWindow.Initial(value) : throw new ArgumentOutOfRangeException(nameof(value));
+        init => snapshot = initial = value > 5 ? initial.SetMaxSampleSize(value) : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
@@ -50,8 +68,8 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// </remarks>
     public TimeSpan MinStdDeviation
     {
-        get => minStdDeviation;
-        init => minStdDeviation = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        get => TimeSpan.FromMilliseconds(minStdDeviation);
+        init => minStdDeviation = value > TimeSpan.Zero ? value.TotalMilliseconds : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
@@ -64,12 +82,27 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// </remarks>
     public TimeSpan AcceptableHeartbeatPause
     {
-        get => acceptableHeartbeatPause;
+        get => TimeSpan.FromMilliseconds(acceptableHeartbeatPause);
         init
         {
-            acceptableHeartbeatPause = value >= TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
-            suspiciousGrowthThreshold = value / 3L * 2L;
+            var valueInMs = value.TotalMilliseconds;
+            acceptableHeartbeatPause = valueInMs >= 0D ? valueInMs : throw new ArgumentOutOfRangeException(nameof(value));
+            suspiciousGrowthThreshold = valueInMs / 3D * 2D;
         }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating that this detector
+    /// interprets <see langword="false"/> value of <see cref="IsMonitoring"/>
+    /// as unhealthy resource.
+    /// </summary>
+    /// <remarks>
+    /// By default, this property is <see langword="false"/>.
+    /// </remarks>
+    public bool TreatUnknownValueAsUnhealthy
+    {
+        get;
+        init;
     }
 
     /// <summary>
@@ -82,7 +115,14 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// </summary>
     /// <param name="ts">The timestamp of the heartbeat.</param>
     /// <returns>Phi value.</returns>
-    public double GetValue(Timestamp ts) => snapshot.Phi(ts, acceptableHeartbeatPause, minStdDeviation, out _);
+    public double GetValue(Timestamp ts)
+    {
+        return snapshot is StampedMeasurement stamped
+            ? stamped.Phi(ts, acceptableHeartbeatPause, minStdDeviation)
+            : TreatUnknownValueAsUnhealthy
+            ? double.PositiveInfinity
+            : 0D;
+    }
 
     /// <inheritdoc />
     double ISupplier<double>.Invoke() => Value;
@@ -101,7 +141,7 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// <summary>
     /// Indicates that this detector has received any heartbeats and started monitoring of the resource.
     /// </summary>
-    public bool IsMonitoring => snapshot.GetType() != typeof(HeartbeatSlidingWindow);
+    public bool IsMonitoring => snapshot is StampedMeasurement || TreatUnknownValueAsUnhealthy;
 
     /// <summary>
     /// Notifies that this detector received a heartbeat from the associated resource.
@@ -109,20 +149,18 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// <param name="ts">The timestamp of the heartbeat.</param>
     public void ReportHeartbeat(Timestamp ts)
     {
-        TimeSpan interval;
-        HeartbeatSlidingWindow currentSnapshot, newSnapshot = snapshot;
-
+        Measurement currentSnapshot, newSnapshot = snapshot;
         do
         {
             currentSnapshot = newSnapshot;
 
-            if (currentSnapshot.Phi(ts, acceptableHeartbeatPause, minStdDeviation, out interval) < threshold)
+            if (currentSnapshot.Phi(ts, acceptableHeartbeatPause, minStdDeviation) < threshold)
                 newSnapshot = currentSnapshot.Next(ts);
         }
         while (!ReferenceEquals(newSnapshot = Interlocked.CompareExchange(ref snapshot, newSnapshot, currentSnapshot), currentSnapshot));
 
-        if (interval >= suspiciousGrowthThreshold)
-            suspiciousGrowthCallback?.Invoke(interval);
+        if (currentSnapshot.Interval >= suspiciousGrowthThreshold)
+            suspiciousGrowthCallback?.Invoke(TimeSpan.FromMilliseconds(currentSnapshot.Interval));
     }
 
     /// <summary>
@@ -137,19 +175,5 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// <summary>
     /// Resets this detector to its initial state.
     /// </summary>
-    public void Reset()
-    {
-        HeartbeatSlidingWindow currentSnapshot, newSnapshot = snapshot;
-
-        do
-        {
-            currentSnapshot = newSnapshot;
-
-            newSnapshot = HeartbeatSlidingWindow.Initial(currentSnapshot.MaxSampleSize);
-        }
-        while (!ReferenceEquals(newSnapshot = Interlocked.CompareExchange(ref snapshot, newSnapshot, currentSnapshot), currentSnapshot));
-    }
-
-    /// <inheritdoc />
-    public override string ToString() => Value.ToString(InvariantCulture);
+    public void Reset() => snapshot = initial;
 }

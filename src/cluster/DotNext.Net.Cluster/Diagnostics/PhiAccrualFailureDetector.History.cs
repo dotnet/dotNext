@@ -6,56 +6,48 @@ namespace DotNext.Diagnostics;
 
 public partial class PhiAccrualFailureDetector
 {
-    /// <summary>
-    /// Represents snapshot of the heartbeat history.
-    /// </summary>
-    private class HeartbeatSlidingWindow
+    private class Measurement
     {
-        private protected readonly Timestamp currentTs;
+        internal readonly double Interval;
         internal readonly int MaxSampleSize;
-
-        private protected HeartbeatSlidingWindow(Timestamp ts, int maxSampleSize)
-        {
-            currentTs = ts;
-            MaxSampleSize = maxSampleSize;
-        }
-
-        private HeartbeatSlidingWindow(int maxSampleSize) => MaxSampleSize = maxSampleSize;
-
-        internal virtual double Phi(Timestamp ts, TimeSpan acceptableHeartbeatPause, TimeSpan minStdDeviation, out TimeSpan interval)
-        {
-            interval = default;
-            return 0.0D;
-        }
-
-        internal virtual HeartbeatSlidingWindow Next(Timestamp stamp)
-            => currentTs.IsEmpty ? new HeartbeatSlidingWindow(stamp, MaxSampleSize) : new HeartbeatHistorySnapshot(stamp, MaxSampleSize, stamp.ElapsedSince(currentTs));
-
-        internal static HeartbeatSlidingWindow Initial(int maxSampleSize) => new(maxSampleSize);
-    }
-
-    private sealed class HeartbeatHistorySnapshot : HeartbeatSlidingWindow
-    {
         private readonly double intervalSum, squaredIntervalSum;
-        private readonly HeartbeatHistorySnapshot? previous;
-        private readonly double value;
+        private readonly Measurement? previous;
         private readonly double[]? backlog;
         private readonly int count, remainingOffset;
 
-        internal HeartbeatHistorySnapshot(Timestamp ts, int maxSampleSize, double interval)
-            : base(ts, maxSampleSize)
+        internal Measurement(int maxSampleSize, double interval)
         {
-            value = interval;
+            MaxSampleSize = maxSampleSize;
+            Interval = interval;
             count = 1;
             intervalSum = interval;
             squaredIntervalSum = Squared(interval);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private HeartbeatHistorySnapshot(Timestamp ts, HeartbeatHistorySnapshot previous)
-            : base(ts, previous.MaxSampleSize)
+        protected Measurement(Measurement origin)
         {
-            value = ts.ElapsedSince(previous.currentTs);
+            Debug.Assert(origin is not null);
+
+            MaxSampleSize = origin.MaxSampleSize;
+            Interval = origin.Interval;
+            count = origin.count;
+            remainingOffset = origin.remainingOffset;
+            intervalSum = origin.intervalSum;
+            squaredIntervalSum = origin.squaredIntervalSum;
+            previous = origin.previous;
+            backlog = origin.backlog;
+        }
+
+        private Measurement(Measurement origin, int maxSampleSize)
+            : this(origin)
+            => MaxSampleSize = maxSampleSize;
+
+        protected Measurement(Measurement previous, double interval)
+        {
+            Debug.Assert(previous is not null);
+
+            MaxSampleSize = previous.MaxSampleSize;
+            Interval = interval;
             intervalSum = previous.intervalSum;
             squaredIntervalSum = previous.squaredIntervalSum;
 
@@ -84,8 +76,8 @@ public partial class PhiAccrualFailureDetector
                 this.previous = previous;
             }
 
-            intervalSum += value;
-            squaredIntervalSum += Squared(value);
+            intervalSum += Interval;
+            squaredIntervalSum += Squared(Interval);
         }
 
         private double[] GetBacklog(out double removedItem)
@@ -94,13 +86,15 @@ public partial class PhiAccrualFailureDetector
 
             var current = this;
             for (var index = result.Length - 1; current is not null && index >= 0; index--, current = current.previous)
-                result[index] = current.value!;
+                result[index] = current.Interval;
 
             Debug.Assert(current is not null);
-            removedItem = current.value!;
+            removedItem = current.Interval;
 
             return result;
         }
+
+        internal Measurement SetMaxSampleSize(int value) => new(this, value);
 
         [MemberNotNullWhen(false, nameof(backlog))]
         private bool NewBacklogRequired => backlog is null || remainingOffset == backlog.Length;
@@ -114,22 +108,43 @@ public partial class PhiAccrualFailureDetector
 
         private double StdDeviation => Math.Sqrt(Variance);
 
-        internal override HeartbeatHistorySnapshot Next(Timestamp ts) => new(ts, this);
+        internal virtual Measurement Next(Timestamp ts) => new StampedMeasurement(this, ts);
 
-        internal override double Phi(Timestamp ts, TimeSpan acceptableHeartbeatPause, TimeSpan minStdDeviation, out TimeSpan interval)
+        protected double Phi(double timeSinceLastMeasurement, double acceptableHeartbeatPause, double minStdDeviation)
         {
-            var intervalMillis = ts.ElapsedSince(currentTs);
-            interval = TimeSpan.FromMilliseconds(intervalMillis);
-
-            var meanMillis = Mean + acceptableHeartbeatPause.TotalMilliseconds;
-            var deviationMillis = Math.Max(StdDeviation, minStdDeviation.TotalMilliseconds);
+            var meanMillis = Mean + acceptableHeartbeatPause;
+            var deviationMillis = Math.Max(StdDeviation, minStdDeviation);
 
             Debug.Assert(double.IsNaN(deviationMillis) is false);
 
-            var y = (intervalMillis - meanMillis) / deviationMillis;
+            var y = (timeSinceLastMeasurement - meanMillis) / deviationMillis;
             var e = Math.Exp(-y * (1.5976D + (0.070566D * Squared(y))));
 
-            return -Math.Log10(intervalMillis > meanMillis ? e / (1D + e) : 1D - (1D / (1D + e)));
+            return -Math.Log10(timeSinceLastMeasurement > meanMillis ? e / (1D + e) : 1D - (1D / (1D + e)));
         }
+
+        internal virtual double Phi(Timestamp ts, double acceptableHeartbeatPause, double minStdDeviation)
+            => 0D;
+
+        public static Measurement operator +(Measurement previous, double interval)
+            => new(previous, interval);
+    }
+
+    private sealed class StampedMeasurement : Measurement
+    {
+        private readonly Timestamp currentTs;
+
+        internal StampedMeasurement(Measurement origin, Timestamp ts)
+            : base(origin)
+            => currentTs = ts;
+
+        private StampedMeasurement(StampedMeasurement previous, Timestamp ts)
+            : base(previous, ts.ElapsedSince(previous.currentTs))
+            => currentTs = ts;
+
+        internal override StampedMeasurement Next(Timestamp ts) => new(this, ts);
+
+        internal override double Phi(Timestamp ts, double acceptableHeartbeatPause, double minStdDeviation)
+            => Phi(ts.ElapsedSince(currentTs), acceptableHeartbeatPause, minStdDeviation);
     }
 }

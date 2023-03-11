@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
@@ -131,14 +132,16 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         return false;
     }
 
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
         var member = ReplicationWorkItem.GetReplicatedMember(response);
+        var memberDetector = failureDetector?.GetOrCreateDetector(member);
 
         try
         {
             var result = response.GetAwaiter().GetResult();
-            failureDetector?.ReportHeartbeat(member);
+            memberDetector?.ReportHeartbeat();
             term = Math.Max(term, result.Term);
             quorum++;
 
@@ -178,8 +181,15 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
 
         // report unavailable cluster member
-        if (failureDetector is not null && failureDetector.IsAlive(member) is false)
-            UnavailableMemberDetected(member, LeadershipToken);
+        switch (memberDetector)
+        {
+            case { IsMonitoring: false }:
+                Logger.UnknownHealthStatus(member.EndPoint);
+                break;
+            case { IsHealthy: false }:
+                UnavailableMemberDetected(member, LeadershipToken);
+                break;
+        }
 
         return true;
     }

@@ -15,7 +15,7 @@ internal static partial class LogMessages
         EventIdOffset,
         LogLevel.Debug,
         "Member is downgrading to follower state with term {Term}",
-        EventName = EventIdPrefix + "." + nameof(DowngradingToFollowerState)
+        EventName = $"{EventIdPrefix}.{nameof(DowngradingToFollowerState)}"
     )]
     public static partial void DowngradingToFollowerState(this ILogger logger, long term);
 
@@ -23,7 +23,7 @@ internal static partial class LogMessages
         EventIdOffset + 1,
         LogLevel.Debug,
         "Member is downgraded to follower state with term {Term}",
-        EventName = EventIdPrefix + "." + nameof(DowngradedToFollowerState)
+        EventName = $"{EventIdPrefix}.{nameof(DowngradedToFollowerState)}"
     )]
     public static partial void DowngradedToFollowerState(this ILogger logger, long term);
 
@@ -31,7 +31,7 @@ internal static partial class LogMessages
         EventIdOffset + 2,
         LogLevel.Information,
         "Transition to Candidate state has started with term {Term}",
-        EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateStarted)
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToCandidateStateStarted)}"
     )]
     public static partial void TransitionToCandidateStateStarted(this ILogger logger, long term);
 
@@ -39,7 +39,7 @@ internal static partial class LogMessages
         EventIdOffset + 3,
         LogLevel.Information,
         "Transition to Candidate state has completed with term {Term}",
-        EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateCompleted)
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToCandidateStateCompleted)}"
     )]
     public static partial void TransitionToCandidateStateCompleted(this ILogger logger, long term);
 
@@ -47,7 +47,7 @@ internal static partial class LogMessages
         EventIdOffset + 4,
         LogLevel.Information,
         "Transition to Leader state has started with term {Term}",
-        EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateStarted)
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToLeaderStateStarted)}"
     )]
     public static partial void TransitionToLeaderStateStarted(this ILogger logger, long term);
 
@@ -55,7 +55,7 @@ internal static partial class LogMessages
         EventIdOffset + 5,
         LogLevel.Information,
         "Transition to Leader state has completed with term {Term}",
-        EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateCompleted)
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToLeaderStateCompleted)}"
     )]
     public static partial void TransitionToLeaderStateCompleted(this ILogger logger, long term);
 
@@ -63,7 +63,7 @@ internal static partial class LogMessages
         EventIdOffset + 6,
         LogLevel.Debug,
         "Voting is started with timeout {ElectionTimeout} and term {Term}",
-        EventName = EventIdPrefix + "." + nameof(VotingStarted)
+        EventName = $"{EventIdPrefix}.{nameof(VotingStarted)}"
     )]
     public static partial void VotingStarted(this ILogger logger, int electionTimeout, long term);
 
@@ -71,7 +71,7 @@ internal static partial class LogMessages
         EventIdOffset + 7,
         LogLevel.Debug,
         "Voting is completed with term {Term}. Total vote weight is {Quorum}",
-        EventName = EventIdPrefix + "." + nameof(VotingCompleted)
+        EventName = $"{EventIdPrefix}.{nameof(VotingCompleted)}"
     )]
     public static partial void VotingCompleted(this ILogger logger, int quorum, long term);
 
@@ -79,7 +79,7 @@ internal static partial class LogMessages
         EventIdOffset + 8,
         LogLevel.Debug,
         "Vote is granted by member {Member}",
-        EventName = EventIdPrefix + "." + nameof(VoteGranted)
+        EventName = $"{EventIdPrefix}.{nameof(VoteGranted)}"
     )]
     public static partial void VoteGranted(this ILogger logger, EndPoint member);
 
@@ -87,7 +87,7 @@ internal static partial class LogMessages
         EventIdOffset + 9,
         LogLevel.Debug,
         "Vote is rejected by member {Member}",
-        EventName = EventIdPrefix + "." + nameof(VoteRejected)
+        EventName = $"{EventIdPrefix}.{nameof(VoteRejected)}"
     )]
     public static partial void VoteRejected(this ILogger logger, EndPoint member);
 
@@ -95,7 +95,7 @@ internal static partial class LogMessages
         EventIdOffset + 10,
         LogLevel.Warning,
         "Cluster member {Member} is unavailable",
-        EventName = EventIdPrefix + "." + nameof(MemberUnavailable)
+        EventName = $"{EventIdPrefix}.{nameof(MemberUnavailable)}"
     )]
     public static partial void MemberUnavailable(this ILogger logger, EndPoint member, Exception? e = null);
 
@@ -103,7 +103,7 @@ internal static partial class LogMessages
         EventIdOffset + 11,
         LogLevel.Debug,
         "Election timeout is refreshed",
-        EventName = EventIdPrefix + "." + nameof(TimeoutReset)
+        EventName = $"{EventIdPrefix}.{nameof(TimeoutReset)}"
     )]
     public static partial void TimeoutReset(this ILogger logger);
 
@@ -111,7 +111,7 @@ internal static partial class LogMessages
         EventIdOffset + 12,
         LogLevel.Debug,
         "Replication of member {Member} started at log index {EntryIndex}",
-        EventName = EventIdPrefix + "." + nameof(ReplicationStarted)
+        EventName = $"{EventIdPrefix}.{nameof(ReplicationStarted)}"
     )]
     public static partial void ReplicationStarted(this ILogger logger, EndPoint member, long entryIndex);
 
@@ -119,7 +119,7 @@ internal static partial class LogMessages
         EventIdOffset + 13,
         LogLevel.Debug,
         "Replication of {Member} contains {LogEntries} entries. Preceding entry has index {PrevLogIndex} and term {PrevLogTerm}. Local fingerprint is {LocalFingerprint}, remote is {RemoteFingerprint}, apply {ApplyConfig}",
-        EventName = EventIdPrefix + "." + nameof(ReplicaSize)
+        EventName = $"{EventIdPrefix}.{nameof(ReplicaSize)}"
     )]
     public static partial void ReplicaSize(this ILogger logger, EndPoint member, int logEntries, long prevLogIndex, long prevLogTerm, long localFingerprint, long remoteFingerprint, bool applyConfig);
 
@@ -127,7 +127,7 @@ internal static partial class LogMessages
         EventIdOffset + 14,
         LogLevel.Debug,
         "Member {Member} is replicated successfully starting from index {EntryIndex}",
-        EventName = EventIdPrefix + "." + nameof(ReplicationSuccessful)
+        EventName = $"{EventIdPrefix}.{nameof(ReplicationSuccessful)}"
     )]
     public static partial void ReplicationSuccessful(this ILogger logger, EndPoint member, long entryIndex);
 
@@ -135,7 +135,7 @@ internal static partial class LogMessages
         EventIdOffset + 15,
         LogLevel.Warning,
         "Replication of {Member} is failed. Retry replication from entry {EntryIndex}",
-        EventName = EventIdPrefix + "." + nameof(ReplicationFailed)
+        EventName = $"{EventIdPrefix}.{nameof(ReplicationFailed)}"
     )]
     public static partial void ReplicationFailed(this ILogger logger, EndPoint member, long entryIndex);
 
@@ -143,7 +143,7 @@ internal static partial class LogMessages
         EventIdOffset + 16,
         LogLevel.Debug,
         "Local changes are not committed. Quorum is {Quorum}, last committed entry is {CommitIndex}",
-        EventName = EventIdPrefix + "." + nameof(CommitFailed)
+        EventName = $"{EventIdPrefix}.{nameof(CommitFailed)}"
     )]
     public static partial void CommitFailed(this ILogger logger, int quorum, long commitIndex);
 
@@ -151,7 +151,7 @@ internal static partial class LogMessages
         EventIdOffset + 17,
         LogLevel.Debug,
         "All changes at index {EntryIndex} are committed. The number of committed entries is {LogEntries}",
-        EventName = EventIdPrefix + "." + nameof(CommitSuccessful)
+        EventName = $"{EventIdPrefix}.{nameof(CommitSuccessful)}"
     )]
     public static partial void CommitSuccessful(this ILogger logger, long entryIndex, long logEntries);
 
@@ -159,7 +159,7 @@ internal static partial class LogMessages
         EventIdOffset + 18,
         LogLevel.Information,
         "Installing snapshot at index {EntryIndex}",
-        EventName = EventIdPrefix + "." + nameof(InstallingSnapshot)
+        EventName = $"{EventIdPrefix}.{nameof(InstallingSnapshot)}"
     )]
     public static partial void InstallingSnapshot(this ILogger logger, long entryIndex);
 
@@ -169,7 +169,7 @@ internal static partial class LogMessages
         EventIdOffset + 19,
         LogLevel.Error,
         "Datagram with id {PacketId} has dropped from remote endpoint {Member} because it cannot be dispatched to appropriate logical channel",
-        EventName = EventIdPrefix + "." + nameof(PacketDropped)
+        EventName = $"{EventIdPrefix}.{nameof(PacketDropped)}"
     )]
     public static partial void PacketDropped(this ILogger logger, TransportServices.Datagram.CorrelationId packetId, EndPoint? member);
 
@@ -177,7 +177,7 @@ internal static partial class LogMessages
         EventIdOffset + 20,
         LogLevel.Error,
         "Too many pallel requests",
-        EventName = EventIdPrefix + "." + nameof(NotEnoughRequestHandlers)
+        EventName = $"{EventIdPrefix}.{nameof(NotEnoughRequestHandlers)}"
     )]
     public static partial void NotEnoughRequestHandlers(this ILogger logger);
 
@@ -185,7 +185,7 @@ internal static partial class LogMessages
         EventIdOffset + 21,
         LogLevel.Error,
         "Socket error {SockerError} occurred",
-        EventName = EventIdPrefix + "." + nameof(SockerErrorOccurred)
+        EventName = $"{EventIdPrefix}.{nameof(SockerErrorOccurred)}"
     )]
     public static partial void SockerErrorOccurred(this ILogger logger, SocketError sockerError);
 
@@ -193,7 +193,7 @@ internal static partial class LogMessages
         EventIdOffset + 22,
         LogLevel.Warning,
         "Timeout occurred while processing request from {RemoteEndPoint}",
-        EventName = EventIdPrefix + "." + nameof(RequestTimedOut)
+        EventName = $"{EventIdPrefix}.{nameof(RequestTimedOut)}"
     )]
     public static partial void RequestTimedOut(this ILogger logger, EndPoint? remoteEndPoint, OperationCanceledException e);
 
@@ -201,7 +201,7 @@ internal static partial class LogMessages
         EventIdOffset + 23,
         LogLevel.Debug,
         "Listening of incoming connections unexpectedly failed",
-        EventName = EventIdPrefix + "." + nameof(SocketAcceptLoopTerminated)
+        EventName = $"{EventIdPrefix}.{nameof(SocketAcceptLoopTerminated)}"
     )]
     public static partial void SocketAcceptLoopTerminated(this ILogger logger, Exception e);
 
@@ -209,7 +209,7 @@ internal static partial class LogMessages
         EventIdOffset + 24,
         LogLevel.Warning,
         "Graceful shutdown of TCP server failed. Timeout is {Timeout}",
-        EventName = EventIdPrefix + "." + nameof(TcpGracefulShutdownFailed)
+        EventName = $"{EventIdPrefix}.{nameof(TcpGracefulShutdownFailed)}"
     )]
     public static partial void TcpGracefulShutdownFailed(this ILogger logger, int timeout);
 
@@ -217,7 +217,7 @@ internal static partial class LogMessages
         EventIdOffset + 25,
         LogLevel.Warning,
         "Unable to cancel all pending outbound requests",
-        EventName = EventIdPrefix + "." + nameof(FailedToCancelPendingRequests)
+        EventName = $"{EventIdPrefix}.{nameof(FailedToCancelPendingRequests)}"
     )]
     public static partial void FailedToCancelPendingRequests(this ILogger logger, Exception e);
 
@@ -225,7 +225,7 @@ internal static partial class LogMessages
         EventIdOffset + 26,
         LogLevel.Warning,
         "StopAsync() method wasn't called",
-        EventName = EventIdPrefix + "." + nameof(StopAsyncWasNotCalled)
+        EventName = $"{EventIdPrefix}.{nameof(StopAsyncWasNotCalled)}"
     )]
     public static partial void StopAsyncWasNotCalled(this ILogger logger);
 
@@ -233,7 +233,7 @@ internal static partial class LogMessages
         EventIdOffset + 27,
         LogLevel.Error,
         "TLS handshake with {RemoteEndPoint} failed",
-        EventName = EventIdPrefix + "." + nameof(TlsHandshakeFailed)
+        EventName = $"{EventIdPrefix}.{nameof(TlsHandshakeFailed)}"
     )]
     public static partial void TlsHandshakeFailed(this ILogger logger, EndPoint? remoteEndPoint, Exception e);
 
@@ -241,7 +241,7 @@ internal static partial class LogMessages
         EventIdOffset + 28,
         LogLevel.Error,
         "Failed to process request from {RemoteEndPoint}",
-        EventName = EventIdPrefix + "." + nameof(FailedToProcessRequest)
+        EventName = $"{EventIdPrefix}.{nameof(FailedToProcessRequest)}"
     )]
     public static partial void FailedToProcessRequest(this ILogger logger, EndPoint? remoteEndPoint, Exception e);
 
@@ -249,7 +249,7 @@ internal static partial class LogMessages
         EventIdOffset + 29,
         LogLevel.Information,
         "Connection was reset by {RemoteEndPoint}",
-        EventName = EventIdPrefix + "." + nameof(ConnectionWasResetByClient)
+        EventName = $"{EventIdPrefix}.{nameof(ConnectionWasResetByClient)}"
     )]
     public static partial void ConnectionWasResetByClient(this ILogger logger, EndPoint? remoteEndPoint);
 
@@ -257,7 +257,7 @@ internal static partial class LogMessages
         EventIdOffset + 30,
         LogLevel.Critical,
         "Transition to follower state has failed",
-        EventName = EventIdPrefix + "." + nameof(TransitionToFollowerStateFailed)
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToFollowerStateFailed)}"
     )]
     public static partial void TransitionToFollowerStateFailed(this ILogger logger, Exception e);
 
@@ -265,7 +265,7 @@ internal static partial class LogMessages
         EventIdOffset + 31,
         LogLevel.Critical,
         "Transition to candidate state has failed",
-        EventName = EventIdPrefix + "." + nameof(TransitionToCandidateStateFailed)
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToCandidateStateFailed)}"
     )]
     public static partial void TransitionToCandidateStateFailed(this ILogger logger, Exception e);
 
@@ -273,7 +273,7 @@ internal static partial class LogMessages
         EventIdOffset + 32,
         LogLevel.Critical,
         "Transition to leader state has failed",
-        EventName = EventIdPrefix + "." + nameof(TransitionToLeaderStateFailed)
+        EventName = $"{EventIdPrefix}.{nameof(TransitionToLeaderStateFailed)}"
     )]
     public static partial void TransitionToLeaderStateFailed(this ILogger logger, Exception e);
 
@@ -281,7 +281,7 @@ internal static partial class LogMessages
         EventIdOffset + 33,
         LogLevel.Debug,
         "Follower loop stopped with error",
-        EventName = EventIdPrefix + "." + nameof(FollowerStateExitedFailed)
+        EventName = $"{EventIdPrefix}.{nameof(FollowerStateExitedFailed)}"
     )]
     public static partial void FollowerStateExitedFailed(this ILogger logger, Exception e);
 
@@ -289,7 +289,7 @@ internal static partial class LogMessages
         EventIdOffset + 34,
         LogLevel.Debug,
         "Candidate state reverted with error",
-        EventName = EventIdPrefix + "." + nameof(CandidateStateExitedWithError)
+        EventName = $"{EventIdPrefix}.{nameof(CandidateStateExitedWithError)}"
     )]
     public static partial void CandidateStateExitedWithError(this ILogger logger, Exception e);
 
@@ -297,7 +297,7 @@ internal static partial class LogMessages
         EventIdOffset + 35,
         LogLevel.Debug,
         "Leader state reverted with error",
-        EventName = EventIdPrefix + "." + nameof(LeaderStateExitedWithError)
+        EventName = $"{EventIdPrefix}.{nameof(LeaderStateExitedWithError)}"
     )]
     public static partial void LeaderStateExitedWithError(this ILogger logger, Exception e);
 
@@ -305,7 +305,7 @@ internal static partial class LogMessages
         EventIdOffset + 36,
         LogLevel.Warning,
         "The leader failed to process unresponsive member {RemoteEndPoint}",
-        EventName = EventIdPrefix + "." + nameof(FailedToProcessUnresponsiveMember)
+        EventName = $"{EventIdPrefix}.{nameof(FailedToProcessUnresponsiveMember)}"
     )]
     public static partial void FailedToProcessUnresponsiveMember(this ILogger logger, EndPoint remoteEndPoint, Exception e);
 
@@ -313,14 +313,23 @@ internal static partial class LogMessages
         EventIdOffset + 37,
         LogLevel.Warning,
         "Unresponsive cluster member {RemoteEndPoint} detected",
-        EventName = EventIdPrefix + "." + nameof(UnresponsiveMemberDetected)
+        EventName = $"{EventIdPrefix}.{nameof(UnresponsiveMemberDetected)}"
     )]
     public static partial void UnresponsiveMemberDetected(this ILogger logger, EndPoint remoteEndPoint);
 
     [LoggerMessage(
         EventIdOffset + 38,
         LogLevel.Debug,
-        "Incoming configuration with {RemoteFingerprint} fingerprint from leader. Local fingerprint is {LocalFingerprint}, apply {ApplyConfig}"
+        "Incoming configuration with {RemoteFingerprint} fingerprint from leader. Local fingerprint is {LocalFingerprint}, apply {ApplyConfig}",
+        EventName = $"{EventIdPrefix}.{nameof(IncomingConfiguration)}"
     )]
     public static partial void IncomingConfiguration(this ILogger logger, long localFingerprint, long remoteFingerprint, bool applyConfig);
+
+    [LoggerMessage(
+        EventIdOffset + 39,
+        LogLevel.Warning,
+        "Failure detector cannot determine health status of {Member} cluster node. The node will not be removed automatically. Admin action is required",
+        EventName = $"{EventIdPrefix}.{nameof(UnknownHealthStatus)}"
+    )]
+    public static partial void UnknownHealthStatus(this ILogger logger, EndPoint member);
 }

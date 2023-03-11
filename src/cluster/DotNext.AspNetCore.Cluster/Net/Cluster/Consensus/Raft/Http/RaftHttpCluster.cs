@@ -46,7 +46,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         MetricsCollector? metrics = null,
 #pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null,
-        Func<IRaftClusterMember, IFailureDetector>? failureDetectorFactory = null)
+        Func<TimeSpan, IRaftClusterMember, IFailureDetector>? failureDetectorFactory = null)
         : this(config, messageHandlers, loggerFactory.CreateLogger<RaftHttpCluster>(), configurator, auditTrail, configStorage, httpHandlerFactory, metrics, announcer)
     {
         FailureDetectorFactory = failureDetectorFactory;
