@@ -82,7 +82,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc/>
-    Func<TimeSpan, IClusterMember, IFailureDetector>? IUnresponsiveClusterMemberRemovalSupport.FailureDetectorFactory
+    Func<TimeSpan, IRaftClusterMember, IFailureDetector>? IUnresponsiveClusterMemberRemovalSupport.FailureDetectorFactory
     {
         init => FailureDetectorFactory = value;
     }
