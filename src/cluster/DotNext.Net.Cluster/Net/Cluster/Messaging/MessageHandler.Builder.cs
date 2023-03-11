@@ -6,6 +6,8 @@ using Runtime.Serialization;
 
 public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.Builder>
 {
+    private static StringComparer NameComparer => StringComparer.Ordinal;
+
     /// <summary>
     /// Represents builder of message handlers.
     /// </summary>
@@ -19,8 +21,8 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// </summary>
         public Builder()
         {
-            rpcHandlers = new(StringComparer.Ordinal);
-            signalHandlers = new(StringComparer.Ordinal);
+            rpcHandlers = new(NameComparer);
+            signalHandlers = new(NameComparer);
         }
 
         /// <summary>
