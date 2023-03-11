@@ -10,5 +10,5 @@ public interface IUnresponsiveClusterMemberRemovalSupport : IRaftCluster
     /// <summary>
     /// Sets failure detector to be used by the leader node to detect and remove unresponsive followers.
     /// </summary>
-    Func<TimeSpan, IClusterMember, IFailureDetector>? FailureDetectorFactory { init; }
+    Func<TimeSpan, IRaftClusterMember, IFailureDetector>? FailureDetectorFactory { init; }
 }
