@@ -136,7 +136,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
         var member = ReplicationWorkItem.GetReplicatedMember(response);
-        var memberDetector = failureDetector?.GetOrCreateDetector(member);
+        var memberDetector = detectors?.GetValue(member, detectorFactory!);
 
         try
         {
@@ -271,7 +271,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
             replicationEvent.Dispose();
 
-            failureDetector?.Clear();
+            detectors?.Clear();
             precedingTermCache.Clear();
         }
 
