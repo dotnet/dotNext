@@ -130,30 +130,20 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
     internal ValueTask<bool> TryDequeue(out T? task, CancellationToken token)
     {
-        ValueTask<bool> result;
         ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
 
         lock (SyncRoot)
         {
             if (TryDequeueCompletedTask(out task))
-            {
-                result = new(true);
-                goto exit;
-            }
+                return new(true);
 
             if (IsCompleted)
-            {
-                result = new(false);
-                goto exit;
-            }
+                return new(false);
 
             factory = EnqueueNode();
         }
 
-        result = factory.Invoke(token);
-
-    exit:
-        return result;
+        return factory.Invoke(token);
     }
 
     /// <summary>
@@ -194,7 +184,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 if (token.IsCancellationRequested)
                 {
                     task = ValueTask.FromCanceled<bool>(token);
-                    goto exit;
+                    break;
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
@@ -203,13 +193,13 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                     if (firstTask is not null)
                     {
                         task = new(true);
-                        goto exit;
+                        break;
                     }
 
                     if (IsCompleted)
                     {
                         task = new(false);
-                        goto exit;
+                        break;
                     }
 
                     factory = EnqueueNode();
@@ -219,7 +209,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 break;
         }
 
-    exit:
         return task;
     }
 

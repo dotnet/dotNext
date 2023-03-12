@@ -167,7 +167,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 if (token.IsCancellationRequested)
                 {
                     task = ValueTask.FromCanceled<bool>(token);
-                    goto exit;
+                    break;
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
@@ -176,7 +176,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                     if (IsDisposingOrDisposed)
                     {
                         task = new(GetDisposedTask<bool>());
-                        goto exit;
+                        break;
                     }
 
                     queue = resumeAll ? DetachWaitQueue() : DetachHead();
@@ -184,7 +184,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                     if (queue is null && throwOnEmptyQueue)
                     {
                         task = ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-                        goto exit;
+                        break;
                     }
 
                     factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
@@ -195,7 +195,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 break;
         }
 
-    exit:
         return task;
     }
 
@@ -217,13 +216,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token = default)
     {
-        ValueTask task;
-
         if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-            goto exit;
-        }
+            return ValueTask.FromCanceled(token);
 
         LinkedValueTaskCompletionSource<bool>? queue;
         ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
@@ -232,19 +226,13 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             queue = resumeAll ? DetachWaitQueue() : DetachHead();
 
             if (queue is null && throwOnEmptyQueue)
-            {
-                task = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-                goto exit;
-            }
+                return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
 
             factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
         }
 
         ResumeAll(queue);
-        task = factory.Invoke(token);
-
-    exit:
-        return task;
+        return factory.Invoke(token);
     }
 
     /// <summary>

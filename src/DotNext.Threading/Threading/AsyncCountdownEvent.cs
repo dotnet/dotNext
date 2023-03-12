@@ -248,7 +248,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                     if (IsDisposingOrDisposed)
                     {
                         task = new(GetDisposedTask<bool>());
-                        goto exit;
+                        break;
                     }
 
                     SignalAndResetCore(out queue);
@@ -261,7 +261,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 if (token.IsCancellationRequested)
                 {
                     task = ValueTask.FromCanceled<bool>(token);
-                    goto exit;
+                    break;
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
@@ -270,7 +270,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                     if (IsDisposingOrDisposed)
                     {
                         task = new(GetDisposedTask<bool>());
-                        goto exit;
+                        break;
                     }
 
                     if (SignalAndResetCore(out queue))
@@ -291,7 +291,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 break;
         }
 
-    exit:
         return task;
     }
 
