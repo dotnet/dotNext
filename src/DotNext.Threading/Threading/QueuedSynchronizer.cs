@@ -220,7 +220,7 @@ public class QueuedSynchronizer : Disposable
                     if (IsDisposingOrDisposed)
                     {
                         task = new(DisposedTask);
-                        goto exit;
+                        break;
                     }
 
 #pragma warning disable CA2252
@@ -238,7 +238,7 @@ public class QueuedSynchronizer : Disposable
                 if (options.Token.IsCancellationRequested)
                 {
                     task = ValueTask.FromCanceled(options.Token);
-                    goto exit;
+                    break;
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
@@ -247,7 +247,7 @@ public class QueuedSynchronizer : Disposable
                     if (IsDisposingOrDisposed)
                     {
                         task = new(DisposedTask);
-                        goto exit;
+                        break;
                     }
 
 #pragma warning disable CA2252
@@ -258,7 +258,7 @@ public class QueuedSynchronizer : Disposable
                     if (TryAcquire(ref manager))
                     {
                         task = ValueTask.CompletedTask;
-                        goto exit;
+                        break;
                     }
 
                     factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
@@ -268,7 +268,6 @@ public class QueuedSynchronizer : Disposable
                 break;
         }
 
-    exit:
         return task;
     }
 
@@ -292,7 +291,7 @@ public class QueuedSynchronizer : Disposable
                     if (IsDisposingOrDisposed)
                     {
                         task = new(GetDisposedTask<bool>());
-                        goto exit;
+                        break;
                     }
 #pragma warning disable CA2252
                     if (TOptions.InterruptionRequired)
@@ -307,7 +306,7 @@ public class QueuedSynchronizer : Disposable
                 if (options.Token.IsCancellationRequested)
                 {
                     task = ValueTask.FromCanceled<bool>(options.Token);
-                    goto exit;
+                    break;
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
@@ -316,7 +315,7 @@ public class QueuedSynchronizer : Disposable
                     if (IsDisposingOrDisposed)
                     {
                         task = new(GetDisposedTask<bool>());
-                        goto exit;
+                        break;
                     }
 
 #pragma warning disable CA2252
@@ -327,7 +326,7 @@ public class QueuedSynchronizer : Disposable
                     if (TryAcquire(ref manager))
                     {
                         task = new(true);
-                        goto exit;
+                        break;
                     }
 
                     factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
@@ -337,7 +336,6 @@ public class QueuedSynchronizer : Disposable
                 break;
         }
 
-    exit:
         return task;
     }
 
@@ -880,7 +878,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 if (token.IsCancellationRequested)
                 {
                     task = ValueTask.FromCanceled<bool>(token);
-                    goto exit;
+                    break;
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
@@ -889,13 +887,13 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                     if (IsDisposingOrDisposed)
                     {
                         task = new(GetDisposedTask<bool>());
-                        goto exit;
+                        break;
                     }
 
                     if (TryAcquireCore(context))
                     {
                         task = new(true);
-                        goto exit;
+                        break;
                     }
 
                     factory = EnqueueNode(context, throwOnTimeout: false);
@@ -905,7 +903,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 break;
         }
 
-    exit:
         return task;
     }
 
@@ -945,7 +942,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 if (token.IsCancellationRequested)
                 {
                     task = ValueTask.FromCanceled(token);
-                    goto exit;
+                    break;
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
@@ -954,13 +951,13 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                     if (IsDisposingOrDisposed)
                     {
                         task = new(GetDisposedTask<bool>());
-                        goto exit;
+                        break;
                     }
 
                     if (TryAcquireCore(context))
                     {
                         task = ValueTask.CompletedTask;
-                        goto exit;
+                        break;
                     }
 
                     factory = EnqueueNode(context, throwOnTimeout: true);
@@ -970,7 +967,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 break;
         }
 
-    exit:
         return task;
     }
 
