@@ -87,26 +87,22 @@ public partial class BufferWriter
         {
             switch (value)
             {
-                case IFormattable:
-                    if (value is ISpanFormattable)
+                case ISpanFormattable:
+                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                     {
-                        for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
-                        {
-                            using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
+                        using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
 
-                            // constrained call avoiding boxing for value types
-                            if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out var charsWritten, format, provider))
-                            {
-                                AppendFormatted(tempBuffer.Span.Slice(0, charsWritten));
-                                break;
-                            }
+                        // constrained call avoiding boxing for value types
+                        if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out var charsWritten, format, provider))
+                        {
+                            AppendFormatted(tempBuffer.Span.Slice(0, charsWritten));
+                            break;
                         }
                     }
-                    else
-                    {
-                        AppendLiteral(((IFormattable)value).ToString(format, provider)); // constrained call avoiding boxing for value types
-                    }
 
+                    break;
+                case IFormattable:
+                    AppendLiteral(((IFormattable)value).ToString(format, provider)); // constrained call avoiding boxing for value types
                     break;
                 case not null:
                     AppendLiteral(value.ToString());
@@ -185,42 +181,38 @@ public partial class BufferWriter
 
             switch (value)
             {
-                case IFormattable:
-                    if (value is ISpanFormattable)
+                case ISpanFormattable:
+                    for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                     {
-                        for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                        using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
+                        var span = tempBuffer.Span;
+
+                        if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                         {
-                            using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
-                            var span = tempBuffer.Span;
+                            var padding = alignment - charsWritten;
 
-                            if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
+                            if (padding <= 0)
                             {
-                                var padding = alignment - charsWritten;
-
-                                if (padding <= 0)
-                                {
-                                    alignment = charsWritten;
-                                }
-                                else if (leftAlign)
-                                {
-                                    span.Slice(charsWritten, padding).Fill(Whitespace);
-                                }
-                                else
-                                {
-                                    span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
-                                    span.Slice(0, padding).Fill(Whitespace);
-                                }
-
-                                AppendFormatted(span.Slice(0, alignment));
-                                break;
+                                alignment = charsWritten;
                             }
+                            else if (leftAlign)
+                            {
+                                span.Slice(charsWritten, padding).Fill(Whitespace);
+                            }
+                            else
+                            {
+                                span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
+                                span.Slice(0, padding).Fill(Whitespace);
+                            }
+
+                            AppendFormatted(span.Slice(0, alignment));
+                            break;
                         }
                     }
-                    else
-                    {
-                        AppendFormatted(((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
-                    }
 
+                    break;
+                case IFormattable:
+                    AppendFormatted(((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
                     break;
                 case not null:
                     AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);

@@ -122,26 +122,22 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     {
         switch (value)
         {
-            case IFormattable:
-                if (value is ISpanFormattable)
+            case ISpanFormattable:
+                int charsWritten;
+                for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
-                    int charsWritten;
-                    for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
-                    {
-                        var span = GetSpan(bufferSize);
+                    var span = GetSpan(bufferSize);
 
-                        // constrained call avoiding boxing for value types
-                        if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
-                            break;
-                    }
-
-                    count += charsWritten;
-                }
-                else
-                {
                     // constrained call avoiding boxing for value types
-                    AppendLiteral(((IFormattable)value).ToString(format, provider));
+                    if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                        break;
                 }
+
+                count += charsWritten;
+                break;
+            case IFormattable:
+                // constrained call avoiding boxing for value types
+                AppendLiteral(((IFormattable)value).ToString(format, provider));
 
                 break;
             case not null:
@@ -219,40 +215,36 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
 
         switch (value)
         {
-            case IFormattable:
-                if (value is ISpanFormattable)
+            case ISpanFormattable:
+                for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
-                    for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+                    var span = GetSpan(bufferSize);
+                    if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
-                        var span = GetSpan(bufferSize);
-                        if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
+                        var padding = alignment - charsWritten;
+
+                        if (padding <= 0)
                         {
-                            var padding = alignment - charsWritten;
-
-                            if (padding <= 0)
-                            {
-                                alignment = charsWritten;
-                            }
-                            else if (leftAlign)
-                            {
-                                span.Slice(charsWritten, padding).Fill(Whitespace);
-                            }
-                            else
-                            {
-                                span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
-                                span.Slice(0, padding).Fill(Whitespace);
-                            }
-
-                            count += alignment;
-                            break;
+                            alignment = charsWritten;
                         }
+                        else if (leftAlign)
+                        {
+                            span.Slice(charsWritten, padding).Fill(Whitespace);
+                        }
+                        else
+                        {
+                            span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
+                            span.Slice(0, padding).Fill(Whitespace);
+                        }
+
+                        count += alignment;
+                        break;
                     }
                 }
-                else
-                {
-                    AppendFormatted(((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
-                }
 
+                break;
+            case IFormattable:
+                AppendFormatted(((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
                 break;
             case not null:
                 AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);
