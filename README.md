@@ -48,6 +48,22 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 03-11-2023
 
+<a href="https://www.nuget.org/packages/dotnext/4.12.0">DotNext 4.12.0</a>
+* Performance improvements of interpolated string handlers
+
+a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.0">DotNext.Metaprogramming 4.12.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.12.0">DotNext.Unsafe 4.12.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.12.0">DotNext.Threading 4.12.0</a>
+* Reduced complexity of `QueuedSynchronizer` class internals
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.12.0">DotNext.IO 4.12.0</a>
+* Performance improvements of interpolated string handlers
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.0">DotNext.Net.Cluster 4.12.0</a>
 * Fixed initialization logic of [PhiAccrualFailureDetector](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.PhiAccrualFailureDetector.html)
 * Partially fixed [153](https://github.com/dotnet/dotNext/issues/153). Optionally, the node which initial state cannot be recognized by failure detector (e.g., node never responds) is treated as dead
