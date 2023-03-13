@@ -34,7 +34,9 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
         this.buffer = new(ref buffer);
         this.provider = provider;
 
-        buffer.GetSpan(literalLength + formattedCount);
+        // assume that every placeholder will be converted to substring no longer than X chars
+        const int charsPerPlaceholder = 10;
+        buffer.GetSpan(charsPerPlaceholder * formattedCount + literalLength);
         count = 0;
     }
 

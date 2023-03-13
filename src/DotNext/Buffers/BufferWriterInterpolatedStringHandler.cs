@@ -34,7 +34,9 @@ public struct BufferWriterInterpolatedStringHandler
         this.buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
         this.provider = provider;
 
-        buffer.GetSpan(literalLength + formattedCount);
+        // assume that every placeholder will be converted to substring no longer than X chars
+        const int charsPerPlaceholder = 10;
+        buffer.GetSpan(formattedCount * charsPerPlaceholder + literalLength);
         count = 0;
     }
 
