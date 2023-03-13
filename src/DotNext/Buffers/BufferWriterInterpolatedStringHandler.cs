@@ -36,7 +36,7 @@ public struct BufferWriterInterpolatedStringHandler
 
         // assume that every placeholder will be converted to substring no longer than X chars
         const int charsPerPlaceholder = 10;
-        buffer.GetSpan(formattedCount * charsPerPlaceholder + literalLength);
+        buffer.GetSpan((formattedCount * charsPerPlaceholder) + literalLength);
         count = 0;
     }
 
