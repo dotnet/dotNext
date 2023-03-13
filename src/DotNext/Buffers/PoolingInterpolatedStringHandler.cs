@@ -138,7 +138,6 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
             case IFormattable:
                 // constrained call avoiding boxing for value types
                 AppendLiteral(((IFormattable)value).ToString(format, provider));
-
                 break;
             case not null:
                 AppendLiteral(value.ToString());
