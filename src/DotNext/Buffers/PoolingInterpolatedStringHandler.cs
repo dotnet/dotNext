@@ -32,7 +32,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     {
         // assume that every placeholder will be converted to substring no longer than X chars
         const int charsPerPlaceholder = 10;
-        var length = charsPerPlaceholder * formattedCount + literalLength;
+        var length = (charsPerPlaceholder * formattedCount) + literalLength;
 
         buffer = (uint)length <= (uint)Array.MaxLength
             ? allocator.Invoke(length, exactSize: false)
