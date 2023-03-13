@@ -46,7 +46,9 @@ public partial class BufferWriter
             encoder = context.GetEncoder();
             this.charBuffer = charBuffer;
 
-            buffer.GetSpan(context.Encoding.GetMaxByteCount(literalLength + formattedCount));
+            // assume that every placeholder will be converted to substring no longer than X chars
+            const int charsPerPlaceholder = 10;
+            buffer.GetSpan(context.Encoding.GetMaxByteCount(charsPerPlaceholder * formattedCount + formattedCount));
             count = 0;
         }
 

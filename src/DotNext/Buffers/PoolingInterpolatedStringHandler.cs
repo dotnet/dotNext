@@ -30,7 +30,14 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     /// <param name="provider">Optional formatting provider.</param>
     public PoolingInterpolatedStringHandler(int literalLength, int formattedCount, MemoryAllocator<char>? allocator, IFormatProvider? provider = null)
     {
-        buffer = allocator.Invoke(literalLength + formattedCount, exactSize: false);
+        // assume that every placeholder will be converted to substring no longer than X chars
+        const int charsPerPlaceholder = 10;
+        var length = charsPerPlaceholder * formattedCount + literalLength;
+
+        buffer = (uint)length <= (uint)Array.MaxLength
+            ? allocator.Invoke(length, exactSize: false)
+            : throw new InsufficientMemoryException();
+
         this.allocator = allocator;
         this.provider = provider;
         count = 0;
