@@ -479,11 +479,21 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             var actual = Interlocked.CompareExchange(ref this.value, Combine(version, value), Combine(version, comparand));
 
+            string errorMessage;
             if (GetStatus(ref actual) != comparand)
-                throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+            {
+                errorMessage = ExceptionMessages.InvalidSourceState;
+            }
+            else if (GetVersion(ref actual) != version)
+            {
+                errorMessage = ExceptionMessages.InvalidSourceToken;
+            }
+            else
+            {
+                return;
+            }
 
-            if (GetVersion(ref actual) != version)
-                throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
+            throw new InvalidOperationException(errorMessage);
         }
 
         public void Reset()
