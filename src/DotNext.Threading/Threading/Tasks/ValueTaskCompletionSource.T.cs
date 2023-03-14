@@ -185,7 +185,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         {
             lock (SyncRoot)
             {
-                if (result = CanBeCompleted && (!completionToken.HasValue || completionToken.GetValueOrDefault() == versionAndStatus.Version))
+                if (result = CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
                     SetResult(func(arg), completionData);
             }
         }
