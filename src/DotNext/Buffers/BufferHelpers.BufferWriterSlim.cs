@@ -165,7 +165,7 @@ public static partial class BufferHelpers
 
         for (int bufferSize = 0; ;)
         {
-            var buffer = writer.GetSpan(bufferSize);
+            var buffer = writer.InternalGetSpan(bufferSize);
             if (value.TryFormat(buffer, out charsWritten, format, provider))
             {
                 writer.Advance(charsWritten);
@@ -229,7 +229,7 @@ public static partial class BufferHelpers
                     case > int.MaxValue:
                         throw new OutOfMemoryException();
                     default:
-                        var output = writer.GetSpan((int)totalLength);
+                        var output = writer.InternalGetSpan((int)totalLength);
                         foreach (var str in values)
                         {
                             if (str is { Length: > 0 })
