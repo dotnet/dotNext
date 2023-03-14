@@ -185,7 +185,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         {
             lock (SyncRoot)
             {
-                if (result = CanBeCompleted && completionToken.GetValueOrDefault(version) == version)
+                if (result = CanBeCompleted && (!completionToken.HasValue || completionToken.GetValueOrDefault() == versionAndStatus.Version))
                     SetResult(func(arg), completionData);
             }
         }
@@ -246,7 +246,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         if (!PrepareTask(timeout, token))
             InvalidSourceStateDetected();
 
-        return new(this, version);
+        return new(this, versionAndStatus.Version);
     }
 
     /// <inheritdoc />
@@ -259,21 +259,15 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         if (!PrepareTask(timeout, token))
             InvalidSourceStateDetected();
 
-        return new(this, version);
+        return new(this, versionAndStatus.Version);
     }
 
     private T GetResult(short token)
     {
-        if (Status is not ManualResetCompletionSourceStatus.WaitForConsumption)
-            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
-
-        if (token != version)
-            throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
-
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()
         var resultCopy = result;
-
+        versionAndStatus.Ensure(token, ManualResetCompletionSourceStatus.Consumed, ManualResetCompletionSourceStatus.WaitForConsumption);
         OnConsumed();
         return resultCopy.Value;
     }
@@ -286,10 +280,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
 
     private ValueTaskSourceStatus GetStatus(short token)
     {
-        if (token != version)
+        var snapshot = versionAndStatus;
+        if (token != snapshot.Version)
             throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
 
-        return !IsCompleted ? ValueTaskSourceStatus.Pending : result.Error switch
+        return !snapshot.IsCompleted ? ValueTaskSourceStatus.Pending : result.Error switch
         {
             null => ValueTaskSourceStatus.Succeeded,
             OperationCanceledException => ValueTaskSourceStatus.Canceled,
@@ -326,7 +321,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
             InvalidSourceStateDetected();
 
         var source = new LinkedTaskCompletionSource(userData);
-        source.LinkTo(this, version);
+        source.LinkTo(this, versionAndStatus.Version);
         return source;
     }
 }

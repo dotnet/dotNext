@@ -21,13 +21,12 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private Continuation continuation;
     private object? completionData;
     private ExecutionContext? context;
-    private protected short version;
-    private ManualResetCompletionSourceStatus status;
+    private protected VersionAndStatus versionAndStatus;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
     {
         this.runContinuationsAsynchronously = runContinuationsAsynchronously;
-        version = short.MinValue;
+        versionAndStatus = new();
         isConsumptionCallbackProvided = new Action(AfterConsumed).Method.DeclaringType != typeof(ManualResetCompletionSource);
 
         // cached callback to avoid further allocations
@@ -44,11 +43,11 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
-        if (status is ManualResetCompletionSourceStatus.Activated)
+        if (versionAndStatus.Status is ManualResetCompletionSourceStatus.Activated)
         {
             lock (SyncRoot)
             {
-                if (status is ManualResetCompletionSourceStatus.Activated && (short)expectedVersion == version)
+                if (versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated))
                 {
                     if (timeoutSource?.Token == token)
                         CompleteAsTimedOut();
@@ -66,13 +65,13 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         if (timeout > TimeSpan.Zero)
         {
             timeoutSource ??= new();
-            timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder = version);
+            timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder = versionAndStatus.Version);
             timeoutSource.CancelAfter(timeout);
         }
 
         if (token.CanBeCanceled)
         {
-            tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? version);
+            tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? versionAndStatus.Version);
         }
     }
 
@@ -99,6 +98,9 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
     }
 
+    // acts as a compiler barrier when using in combination with OnCompleted
+    // to preserve modification of versionAndStatus field
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private protected void InvokeContinuation()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -133,13 +135,10 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        version += 1;
         context = null;
         completionData = null;
         continuation = default;
-
-        // No need barrier here, it is guaranteed by the monitor
-        status = ManualResetCompletionSourceStatus.WaitForActivation;
+        versionAndStatus.Reset();
     }
 
     /// <summary>
@@ -159,7 +158,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         {
             StopTrackingCancellation();
             ResetCore();
-            result = version;
+            result = versionAndStatus.Version;
         }
 
         return result;
@@ -179,7 +178,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             {
                 StopTrackingCancellation();
                 ResetCore();
-                token = version;
+                token = versionAndStatus.Version;
             }
             finally
             {
@@ -213,9 +212,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void OnConsumed()
     {
-        Interlocked.MemoryBarrier();
-        status = ManualResetCompletionSourceStatus.Consumed;
-
         if (isConsumptionCallbackProvided)
             ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
     }
@@ -224,21 +220,22 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private protected void OnCompleted(object? completionData)
     {
         this.completionData = completionData;
-        status = ManualResetCompletionSourceStatus.WaitForConsumption;
+        versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
     }
 
     private void OnCompleted(in Continuation continuation, short token, bool flowExecutionContext)
     {
         string errorMessage;
+        var snapshot = versionAndStatus;
 
         // fast path - monitor lock is not needed
-        if (token != version)
+        if (token != snapshot.Version)
         {
             errorMessage = ExceptionMessages.InvalidSourceToken;
             goto invalid_state;
         }
 
-        switch (status)
+        switch (snapshot.Status)
         {
             default:
                 errorMessage = ExceptionMessages.InvalidSourceState;
@@ -252,13 +249,13 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         lock (SyncRoot)
         {
             // avoid running continuation inside of the lock
-            if (token != version)
+            if (token != versionAndStatus.Version)
             {
                 errorMessage = ExceptionMessages.InvalidSourceToken;
                 goto invalid_state;
             }
 
-            switch (status)
+            switch (versionAndStatus.Status)
             {
                 default:
                     errorMessage = ExceptionMessages.InvalidSourceState;
@@ -326,9 +323,9 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// <summary>
     /// Gets the status of this source.
     /// </summary>
-    public ManualResetCompletionSourceStatus Status => status.VolatileRead();
+    public ManualResetCompletionSourceStatus Status => versionAndStatus.Status;
 
-    private protected bool CanBeCompleted => status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
+    private protected bool CanBeCompleted => versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
 
     /// <summary>
     /// Gets a value indicating that this source is in signaled (completed) state.
@@ -337,7 +334,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// This property returns <see langword="true"/> if <see cref="Status"/> is <see cref="ManualResetCompletionSourceStatus.WaitForConsumption"/>
     /// or <see cref="ManualResetCompletionSourceStatus.Consumed"/>.
     /// </remarks>
-    public bool IsCompleted => status >= ManualResetCompletionSourceStatus.WaitForConsumption;
+    public bool IsCompleted => versionAndStatus.IsCompleted;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
@@ -354,7 +351,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         }
         else
         {
-            status = ManualResetCompletionSourceStatus.Activated;
+            versionAndStatus.Status = ManualResetCompletionSourceStatus.Activated;
             StartTrackingCancellation(timeout, token);
         }
     }
@@ -369,7 +366,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         // The task can be created for the completed source. This workaround is needed for AsyncBridge methods
         lock (SyncRoot)
         {
-            switch (status)
+            switch (versionAndStatus.Status)
             {
                 case ManualResetCompletionSourceStatus.WaitForActivation:
                     PrepareTaskCore(timeout, token);
@@ -446,5 +443,71 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         public static bool operator true(in Continuation continuation) => continuation.action is not null;
 
         public static bool operator false(in Continuation continuation) => continuation.action is null;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private protected struct VersionAndStatus
+    {
+        private ulong value;
+
+        public VersionAndStatus()
+            : this(short.MinValue, ManualResetCompletionSourceStatus.WaitForActivation)
+        {
+        }
+
+        private VersionAndStatus(short version, ManualResetCompletionSourceStatus status)
+        {
+            Debug.Assert(Enum.GetUnderlyingType(typeof(ManualResetCompletionSourceStatus)) == typeof(int));
+
+            value = Combine(version, status);
+        }
+
+        public short Version => GetVersion(ref value);
+
+        public ManualResetCompletionSourceStatus Status
+        {
+            get => GetStatus(ref value);
+            set => GetStatus(ref this.value) = value;
+        }
+
+        public bool IsCompleted => Status >= ManualResetCompletionSourceStatus.WaitForConsumption;
+
+        public bool Check(short version, ManualResetCompletionSourceStatus status)
+            => value == Combine(version, status);
+
+        public void Ensure(short version, ManualResetCompletionSourceStatus value, ManualResetCompletionSourceStatus comparand)
+        {
+            var actual = Interlocked.CompareExchange(ref this.value, Combine(version, value), Combine(version, comparand));
+
+            if (GetStatus(ref actual) != comparand)
+                throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+
+            if (GetVersion(ref actual) != version)
+                throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
+        }
+
+        public void Reset()
+        {
+            GetVersion(ref value)++;
+            GetStatus(ref value) = ManualResetCompletionSourceStatus.WaitForActivation;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ref short GetVersion(ref ulong value)
+            => ref Unsafe.As<ulong, short>(ref value);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ref ManualResetCompletionSourceStatus GetStatus(ref ulong value)
+            => ref Unsafe.As<int, ManualResetCompletionSourceStatus>(ref Unsafe.Add(ref Unsafe.As<ulong, int>(ref value), 1));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ulong Combine(short version, ManualResetCompletionSourceStatus status)
+        {
+            Unsafe.SkipInit(out ulong result);
+            GetVersion(ref result) = version;
+            GetStatus(ref result) = status;
+
+            return result;
+        }
     }
 }
