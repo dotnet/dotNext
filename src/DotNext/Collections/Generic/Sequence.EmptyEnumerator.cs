@@ -5,7 +5,8 @@ namespace DotNext.Collections.Generic;
 
 public static partial class Sequence
 {
-    private sealed class EmptyEnumerator<T> : IEnumerator<T>, IAsyncEnumerator<T>
+    [DebuggerDisplay("Count = 0")]
+    private sealed class EmptyEnumerator<T> : IEnumerator<T>, IAsyncEnumerator<T>, IAsyncEnumerable<T>
     {
         internal static readonly EmptyEnumerator<T> Instance = new();
 
@@ -22,6 +23,8 @@ public static partial class Sequence
         bool IEnumerator.MoveNext() => false;
 
         ValueTask<bool> IAsyncEnumerator<T>.MoveNextAsync() => new(false);
+
+        IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken cancellationToken) => this;
 
         void IEnumerator.Reset()
         {
