@@ -42,18 +42,6 @@ public static partial class Sequence
             => new Enumerator(enumerable, token);
     }
 
-    private sealed class AsyncEmptyEnumerable<T> : IAsyncEnumerable<T>
-    {
-        internal static readonly AsyncEmptyEnumerable<T> Instance = new();
-
-        private AsyncEmptyEnumerable()
-        {
-        }
-
-        IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
-            => EmptyEnumerator<T>.Instance;
-    }
-
     /// <summary>
     /// Converts synchronous collection of elements to asynchronous.
     /// </summary>
@@ -78,5 +66,5 @@ public static partial class Sequence
     /// </summary>
     /// <typeparam name="T">The type of the elements in the collection.</typeparam>
     /// <returns>Empty asynchronous collection.</returns>
-    public static IAsyncEnumerable<T> GetEmptyAsyncEnumerable<T>() => AsyncEmptyEnumerable<T>.Instance;
+    public static IAsyncEnumerable<T> GetEmptyAsyncEnumerable<T>() => EmptyEnumerator<T>.Instance;
 }
