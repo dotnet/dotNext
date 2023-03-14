@@ -273,7 +273,6 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()
         var resultCopy = result;
-        Thread.MemoryBarrier();
 
         OnConsumed();
         return resultCopy.Value;

@@ -22,7 +22,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     private object? completionData;
     private ExecutionContext? context;
     private protected short version;
-    private volatile ManualResetCompletionSourceStatus status;
+    private ManualResetCompletionSourceStatus status;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
     {
@@ -134,10 +134,12 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         version += 1;
-        status = ManualResetCompletionSourceStatus.WaitForActivation;
         context = null;
         completionData = null;
         continuation = default;
+
+        // No need barrier here, it is guaranteed by the monitor
+        status = ManualResetCompletionSourceStatus.WaitForActivation;
     }
 
     /// <summary>
@@ -211,6 +213,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void OnConsumed()
     {
+        Interlocked.MemoryBarrier();
         status = ManualResetCompletionSourceStatus.Consumed;
 
         if (isConsumptionCallbackProvided)
@@ -323,7 +326,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// <summary>
     /// Gets the status of this source.
     /// </summary>
-    public ManualResetCompletionSourceStatus Status => status;
+    public ManualResetCompletionSourceStatus Status => status.VolatileRead();
 
     private protected bool CanBeCompleted => status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
 
