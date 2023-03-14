@@ -91,10 +91,10 @@ public static class TextStreamExtensions
     /// <returns>A task that represents the asynchronous write operation.</returns>
     public static ValueTask WriteAsync(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator), nameof(provider))] ref PoolingInterpolatedStringHandler handler, CancellationToken token = default)
     {
-        return WriteAsync(InterpolatedString.Allocate(allocator, provider, ref handler));
+        return WriteAsync(writer, InterpolatedString.Allocate(allocator, provider, ref handler), token);
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        async ValueTask WriteAsync(MemoryOwner<char> buffer)
+        static async ValueTask WriteAsync(TextWriter writer, MemoryOwner<char> buffer, CancellationToken token)
         {
             try
             {
