@@ -103,7 +103,19 @@ public ref partial struct BufferWriterSlim<T>
     public Span<T> GetSpan(int sizeHint = 0)
     {
         if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+            ThrowArgumentOutOfRangeException();
+
+        return InternalGetSpan(sizeHint);
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowArgumentOutOfRangeException()
+            => throw new ArgumentOutOfRangeException(nameof(sizeHint));
+    }
+
+    internal Span<T> InternalGetSpan(int sizeHint)
+    {
+        Debug.Assert(sizeHint >= 0);
 
         Span<T> result;
         int newSize;
@@ -168,7 +180,7 @@ public ref partial struct BufferWriterSlim<T>
     {
         if (!input.IsEmpty)
         {
-            input.CopyTo(GetSpan(input.Length));
+            input.CopyTo(InternalGetSpan(input.Length));
             position += input.Length;
         }
     }
@@ -180,7 +192,7 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place <paramref name="item"/> to it and this builder is not growable.</exception>
     public void Add(T item)
     {
-        MemoryMarshal.GetReference(GetSpan(1)) = item;
+        MemoryMarshal.GetReference(InternalGetSpan(1)) = item;
         position += 1;
     }
 

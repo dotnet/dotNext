@@ -61,7 +61,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             case ISpanFormattable:
                 for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
-                    var span = buffer.GetSpan(bufferSize);
+                    var span = buffer.InternalGetSpan(bufferSize);
 
                     // constrained call avoiding boxing for value types
                     if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
@@ -123,7 +123,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             return;
         }
 
-        var span = buffer.Value.GetSpan(alignment);
+        var span = buffer.Value.InternalGetSpan(alignment);
         if (leftAlign)
         {
             span.Slice(value.Length, padding).Fill(Whitespace);
@@ -185,7 +185,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
             case ISpanFormattable:
                 for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
-                    var span = buffer.Value.GetSpan(bufferSize);
+                    var span = buffer.Value.InternalGetSpan(bufferSize);
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
                         var padding = alignment - charsWritten;
