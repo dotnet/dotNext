@@ -60,6 +60,7 @@ a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.0">DotNext.M
 <a href="https://www.nuget.org/packages/dotnext.threading/4.12.0">DotNext.Threading 4.12.0</a>
 * Reduced complexity of `QueuedSynchronizer` class internals
 * Fixed rare concurrency issues when multiple consumers trying to get task result from `ValueTaskCompletionSource`
+* Reduced number of work items submitted by async locks internally
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.12.0">DotNext.IO 4.12.0</a>
