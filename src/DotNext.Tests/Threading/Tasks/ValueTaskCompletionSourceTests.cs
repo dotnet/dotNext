@@ -77,7 +77,7 @@ namespace DotNext.Threading.Tasks
         {
             var source = new ValueTaskCompletionSource();
             var task = source.CreateTask(InfiniteTimeSpan, default);
-            var result = Task.Run(async () => await task);
+            var result = Task.Run(task.AsTask);
             await Task.Delay(10);
             True(source.TrySetResult());
             await result;
@@ -109,6 +109,17 @@ namespace DotNext.Threading.Tasks
 
             Equal("Hello, world!", task.AsyncState);
             await ThrowsAsync<TimeoutException>(Func.Constant(task));
+        }
+
+        [Fact]
+        public static async Task ConsumeTwice()
+        {
+            var source = new ValueTaskCompletionSource();
+            var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None);
+            source.TrySetResult();
+
+            await task;
+            await ThrowsAsync<InvalidOperationException>(task.AsTask);
         }
     }
 }
