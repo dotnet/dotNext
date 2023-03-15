@@ -10,10 +10,10 @@ namespace DotNext.Threading.Tasks;
 /// Represents base class for producer of value task.
 /// </summary>
 [SuppressMessage("Usage", "CA1001", Justification = "CTS is disposed automatically when passing through lifecycle of the completion source")]
-public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
+public abstract class ManualResetCompletionSource
 {
     private readonly Action<object?, CancellationToken> cancellationCallback;
-    private readonly bool runContinuationsAsynchronously, isConsumptionCallbackProvided;
+    private readonly bool runContinuationsAsynchronously;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
     private CancellationTokenSource? timeoutSource;
 
@@ -27,7 +27,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     {
         this.runContinuationsAsynchronously = runContinuationsAsynchronously;
         versionAndStatus = new();
-        isConsumptionCallbackProvided = new Action(AfterConsumed).Method.DeclaringType != typeof(ManualResetCompletionSource);
 
         // cached callback to avoid further allocations
         cancellationCallback = CancellationRequested;
@@ -205,16 +204,6 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// Gets a value passed to the manual completion method.
     /// </summary>
     protected object? CompletionData => completionData;
-
-    /// <inheritdoc />
-    void IThreadPoolWorkItem.Execute() => AfterConsumed();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected void OnConsumed()
-    {
-        if (isConsumptionCallbackProvided)
-            ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void OnCompleted(object? completionData)
