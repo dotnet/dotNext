@@ -323,7 +323,7 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
     /// <summary>
     /// Gets the status of this source.
     /// </summary>
-    public ManualResetCompletionSourceStatus Status => versionAndStatus.Status;
+    public ManualResetCompletionSourceStatus Status => versionAndStatus.ReadStatusVolatile();
 
     private protected bool CanBeCompleted => versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
 
@@ -470,17 +470,28 @@ public abstract class ManualResetCompletionSource : IThreadPoolWorkItem
             set => GetStatus(ref this.value) = value;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ManualResetCompletionSourceStatus ReadStatusVolatile()
+        {
+            var copy = Volatile.Read(ref value);
+            return GetStatus(ref copy);
+        }
+
         public bool IsCompleted => Status >= ManualResetCompletionSourceStatus.WaitForConsumption;
 
         public bool Check(short version, ManualResetCompletionSourceStatus status)
             => value == Combine(version, status);
 
-        public void Ensure(short version, ManualResetCompletionSourceStatus value, ManualResetCompletionSourceStatus comparand)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Consume(short version)
         {
-            var actual = Interlocked.CompareExchange(ref this.value, Combine(version, value), Combine(version, comparand));
+            // LOCK CMPXCHG (x86) or CASAL (ARM) provides full memory fence. This what we actually
+            // need because Consume method orders LOAD copy of the task result and OnConsumed that
+            // triggers Reset() and erasure of the task result in the right way
+            var actual = Interlocked.CompareExchange(ref this.value, Combine(version, ManualResetCompletionSourceStatus.Consumed), Combine(version, ManualResetCompletionSourceStatus.WaitForConsumption));
 
             string errorMessage;
-            if (GetStatus(ref actual) != comparand)
+            if (GetStatus(ref actual) != ManualResetCompletionSourceStatus.WaitForConsumption)
             {
                 errorMessage = ExceptionMessages.InvalidSourceState;
             }
