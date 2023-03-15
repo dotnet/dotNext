@@ -477,7 +477,7 @@ public abstract class ManualResetCompletionSource
             // LOCK CMPXCHG (x86) or CASAL (ARM) provides full memory fence. This what we actually
             // need because Consume method orders LOAD copy of the task result and OnConsumed that
             // triggers Reset() and erasure of the task result in the right way
-            var actual = Interlocked.CompareExchange(ref this.value, Combine(version, ManualResetCompletionSourceStatus.Consumed), Combine(version, ManualResetCompletionSourceStatus.WaitForConsumption));
+            var actual = Interlocked.CompareExchange(ref value, Combine(version, ManualResetCompletionSourceStatus.Consumed), Combine(version, ManualResetCompletionSourceStatus.WaitForConsumption));
 
             string errorMessage;
             if (GetStatus(ref actual) != ManualResetCompletionSourceStatus.WaitForConsumption)
