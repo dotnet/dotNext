@@ -540,7 +540,7 @@ public class QueuedSynchronizer : Disposable
                 LockDurationMeter.Record(duration, owner.measurementTags);
             }
 
-            node.As<IPooledManualResetCompletionSource<Action<T>>>().OnConsumed?.Invoke(node);
+            node.OnConsumed?.Invoke(node);
         }
     }
 
