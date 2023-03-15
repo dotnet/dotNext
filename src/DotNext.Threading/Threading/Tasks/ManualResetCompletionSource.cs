@@ -61,7 +61,7 @@ public abstract class ManualResetCompletionSource
     {
         // box current token once and only if needed
         var tokenHolder = default(IEquatable<short>);
-        if (timeout > TimeSpan.Zero)
+        if (timeout > default(TimeSpan))
         {
             timeoutSource ??= new();
             timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder = versionAndStatus.Version);
