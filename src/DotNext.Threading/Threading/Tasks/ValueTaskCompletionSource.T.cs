@@ -268,7 +268,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         // concurrency with Reset()
         var resultCopy = result;
         versionAndStatus.Consume(token);
-        OnConsumed();
+        AfterConsumed();
         return resultCopy.Value;
     }
 
