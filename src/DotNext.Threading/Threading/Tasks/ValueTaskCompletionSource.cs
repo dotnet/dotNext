@@ -95,20 +95,18 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     {
     }
 
-    private void SetResult(Exception? result, object? completionData = null)
+    private Continuation SetResult(Exception? result, object? completionData = null)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        StopTrackingCancellation();
         this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
-        OnCompleted(completionData);
-        InvokeContinuation();
+        return Complete(completionData);
     }
 
-    private protected sealed override void CompleteAsTimedOut()
+    private protected sealed override Continuation CompleteAsTimedOut()
         => SetResult(OnTimeout());
 
-    private protected sealed override void CompleteAsCanceled(CancellationToken token)
+    private protected sealed override Continuation CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
     private protected override void ResetCore()
@@ -142,13 +140,22 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         where TFactory : notnull, ISupplier<Exception?>
     {
         bool result;
-        if (result = CanBeCompleted)
+
+        if (result = versionAndStatus.CanBeCompleted)
         {
+            Continuation continuation;
+
             lock (SyncRoot)
             {
-                if (result = CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
-                    SetResult(factory.Invoke(), completionData);
+                continuation = (result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
+                    ? SetResult(factory.Invoke(), completionData)
+                    : default;
             }
+
+            // Invokes custom callback out of the lock scope to avoid deadlocks.
+            // Also, the lock acts as a barrier to ensure that the callback observes the correct status of this source
+            if (continuation)
+                continuation.Invoke(runContinuationsAsynchronously);
         }
 
         return result;

@@ -170,10 +170,10 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     public unsafe bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
         => TrySetResult(&FromCanceled, token, completionData, completionToken);
 
-    private protected sealed override void CompleteAsTimedOut()
+    private protected sealed override Continuation CompleteAsTimedOut()
         => SetResult(OnTimeout());
 
-    private protected sealed override void CompleteAsCanceled(CancellationToken token)
+    private protected sealed override Continuation CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
     private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg, object? completionData, short? completionToken = null)
@@ -181,26 +181,32 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         Debug.Assert(func != null);
 
         bool result;
-        if (result = CanBeCompleted)
+        if (result = versionAndStatus.CanBeCompleted)
         {
+            Continuation continuation;
+
             lock (SyncRoot)
             {
-                if (result = CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
-                    SetResult(func(arg), completionData);
+                continuation = (result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
+                    ? SetResult(func(arg), completionData)
+                    : default;
             }
+
+            // Invokes custom callback out of the lock scope to avoid deadlocks.
+            // Also, the lock acts as a barrier to ensure that the callback observes the correct status of this source
+            if (continuation)
+                continuation.Invoke(runContinuationsAsynchronously);
         }
 
         return result;
     }
 
-    private void SetResult(Result<T> result, object? completionData = null)
+    private Continuation SetResult(Result<T> result, object? completionData = null)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        StopTrackingCancellation();
         this.result = result;
-        OnCompleted(completionData);
-        InvokeContinuation();
+        return Complete(completionData);
     }
 
     private protected override void ResetCore()

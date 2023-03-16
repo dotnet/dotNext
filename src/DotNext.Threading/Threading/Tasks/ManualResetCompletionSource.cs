@@ -13,14 +13,13 @@ namespace DotNext.Threading.Tasks;
 public abstract class ManualResetCompletionSource
 {
     private readonly Action<object?, CancellationToken> cancellationCallback;
-    private readonly bool runContinuationsAsynchronously;
+    private protected readonly bool runContinuationsAsynchronously;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
     private CancellationTokenSource? timeoutSource;
 
     // task management
     private Continuation continuation;
     private object? completionData;
-    private ExecutionContext? context;
     private protected VersionAndStatus versionAndStatus;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
@@ -44,16 +43,18 @@ public abstract class ManualResetCompletionSource
         // or completed flag is set (call twice with the same token)
         if (versionAndStatus.Status is ManualResetCompletionSourceStatus.Activated)
         {
+            Continuation continuation;
             lock (SyncRoot)
             {
-                if (versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated))
-                {
-                    if (timeoutSource?.Token == token)
-                        CompleteAsTimedOut();
-                    else
-                        CompleteAsCanceled(token);
-                }
+                continuation = versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated)
+                    ? timeoutSource?.Token == token
+                    ? CompleteAsTimedOut()
+                    : CompleteAsCanceled(token)
+                    : default;
             }
+
+            if (continuation)
+                continuation.Invoke(runContinuationsAsynchronously);
         }
     }
 
@@ -74,11 +75,11 @@ public abstract class ManualResetCompletionSource
         }
     }
 
-    private protected abstract void CompleteAsTimedOut();
+    private protected abstract Continuation CompleteAsTimedOut();
 
-    private protected abstract void CompleteAsCanceled(CancellationToken token);
+    private protected abstract Continuation CompleteAsCanceled(CancellationToken token);
 
-    private protected void StopTrackingCancellation()
+    private void StopTrackingCancellation()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
@@ -97,46 +98,11 @@ public abstract class ManualResetCompletionSource
         }
     }
 
-    // acts as a compiler barrier when using in combination with OnCompleted
-    // to preserve modification of versionAndStatus field
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private protected void InvokeContinuation()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        if (continuation)
-        {
-            if (context is null)
-            {
-                continuation.Invoke(runContinuationsAsynchronously, flowExecutionContext: false);
-            }
-            else
-            {
-                ExecutionContext.Run(
-                    context,
-                    static arg =>
-                    {
-                        Debug.Assert(arg is ManualResetCompletionSource);
-
-                        var source = Unsafe.As<ManualResetCompletionSource>(arg);
-                        source.continuation.Invoke(source.runContinuationsAsynchronously, flowExecutionContext: true);
-                    },
-                    this);
-
-                context = null;
-            }
-
-            continuation = default;
-        }
-    }
-
     private protected virtual void ResetCore()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        context = null;
         completionData = null;
-        continuation = default;
         versionAndStatus.Reset();
     }
 
@@ -205,14 +171,18 @@ public abstract class ManualResetCompletionSource
     /// </summary>
     protected object? CompletionData => completionData;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected void OnCompleted(object? completionData)
+    private protected Continuation Complete(object? completionData)
     {
+        StopTrackingCancellation();
         this.completionData = completionData;
         versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
+
+        var result = continuation;
+        continuation = default;
+        return result;
     }
 
-    private void OnCompleted(in Continuation continuation, short token, bool flowExecutionContext)
+    private void OnCompleted(in Continuation continuation, short token)
     {
         string errorMessage;
         var snapshot = versionAndStatus;
@@ -256,12 +226,11 @@ public abstract class ManualResetCompletionSource
             }
 
             this.continuation = continuation;
-            context = flowExecutionContext ? ExecutionContext.Capture() : null;
             goto exit;
         }
 
     execute_inplace:
-        continuation.Invoke(runContinuationsAsynchronously, flowExecutionContext);
+        continuation.InvokeWithinCurrentContext(runContinuationsAsynchronously);
 
     exit:
         return;
@@ -270,12 +239,7 @@ public abstract class ManualResetCompletionSource
     }
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-    {
-        OnCompleted(
-            new Continuation(continuation, state, (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0),
-            token,
-            (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0);
-    }
+        => OnCompleted(new(continuation, state, flags), token);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -313,8 +277,6 @@ public abstract class ManualResetCompletionSource
     /// Gets the status of this source.
     /// </summary>
     public ManualResetCompletionSourceStatus Status => versionAndStatus.ReadStatusVolatile();
-
-    private protected bool CanBeCompleted => versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
 
     /// <summary>
     /// Gets a value indicating that this source is in signaled (completed) state.
@@ -379,22 +341,28 @@ public abstract class ManualResetCompletionSource
 
     // encapsulates continuation and its execution logic
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct Continuation
+    private protected readonly struct Continuation
     {
         private readonly Action<object?> action;
         private readonly object? state, schedulingContext;
+        private readonly ExecutionContext? context;
 
-        internal Continuation(Action<object?> action, object? state, bool useSchedulingContext)
+        internal Continuation(Action<object?> action, object? state, ValueTaskSourceOnCompletedFlags flags)
         {
             Debug.Assert(action is not null);
 
             this.action = action;
             this.state = state;
 
-            // capture scheduling context
-            schedulingContext = useSchedulingContext ? CaptureContext() : null;
+            schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
+                ? CaptureSchedulingContext()
+                : null;
 
-            static object? CaptureContext()
+            context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
+                ? ExecutionContext.Capture()
+                : null;
+
+            static object? CaptureSchedulingContext()
             {
                 object? schedulingContext = SynchronizationContext.Current;
                 if (schedulingContext is null || schedulingContext.GetType() == typeof(SynchronizationContext))
@@ -407,7 +375,7 @@ public abstract class ManualResetCompletionSource
             }
         }
 
-        internal void Invoke(bool runAsynchronously, bool flowExecutionContext)
+        private void Invoke(bool runAsynchronously, bool flowExecutionContext)
         {
             switch (schedulingContext)
             {
@@ -426,6 +394,31 @@ public abstract class ManualResetCompletionSource
                 default:
                     action(state);
                     break;
+            }
+        }
+
+        internal void InvokeWithinCurrentContext(bool runAsynchronously) => Invoke(runAsynchronously, context is not null);
+
+        internal void Invoke(bool runAsynchronously)
+        {
+            if (context is null)
+            {
+                Invoke(runAsynchronously, flowExecutionContext: false);
+            }
+            else
+            {
+                // flow should not be suppressed
+                var currentContext = ExecutionContext.Capture() ?? throw new InvalidOperationException(ExceptionMessages.FlowSuppressed);
+                ExecutionContext.Restore(context);
+
+                try
+                {
+                    Invoke(runAsynchronously, flowExecutionContext: true);
+                }
+                finally
+                {
+                    ExecutionContext.Restore(currentContext);
+                }
             }
         }
 
@@ -467,6 +460,8 @@ public abstract class ManualResetCompletionSource
         }
 
         public bool IsCompleted => Status >= ManualResetCompletionSourceStatus.WaitForConsumption;
+
+        public bool CanBeCompleted => Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
 
         public bool Check(short version, ManualResetCompletionSourceStatus status)
             => value == Combine(version, status);
