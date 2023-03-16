@@ -493,8 +493,10 @@ public abstract class ManualResetCompletionSource
 
         public void Reset()
         {
-            GetVersion(ref value)++;
-            GetStatus(ref value) = ManualResetCompletionSourceStatus.WaitForActivation;
+            var version = GetVersion(ref value);
+
+            // write atomically
+            value = Combine(++version, ManualResetCompletionSourceStatus.WaitForActivation);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
