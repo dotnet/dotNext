@@ -347,10 +347,10 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
 
         protected override void AfterConsumed() => AfterConsumed(this);
 
-        private protected override void ResetCore()
+        protected override void Cleanup()
         {
             Transition = null;
-            base.ResetCore();
+            base.Cleanup();
         }
 
         Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }

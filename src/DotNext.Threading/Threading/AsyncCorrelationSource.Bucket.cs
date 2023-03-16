@@ -28,11 +28,11 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         internal bool Match(TKey other, IEqualityComparer<TKey>? comparer)
             => comparer?.Equals(id, other) ?? EqualityComparer<TKey>.Default.Equals(id, other);
 
-        private protected override void ResetCore()
+        protected override void Cleanup()
         {
             id = default;
             userData = null;
-            base.ResetCore();
+            base.Cleanup();
         }
 
         internal new WaitNode? Next => Unsafe.As<WaitNode>(base.Next);

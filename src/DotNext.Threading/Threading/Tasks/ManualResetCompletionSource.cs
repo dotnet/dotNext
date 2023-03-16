@@ -98,12 +98,20 @@ public abstract class ManualResetCompletionSource
         }
     }
 
-    private protected virtual void ResetCore()
+    /// <summary>
+    /// Resets internal state of this source.
+    /// </summary>
+    protected virtual void Cleanup()
+    {
+    }
+
+    private short ResetCore()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
+        StopTrackingCancellation();
         completionData = null;
-        versionAndStatus.Reset();
+        return versionAndStatus.Reset();
     }
 
     /// <summary>
@@ -121,9 +129,8 @@ public abstract class ManualResetCompletionSource
 
         lock (SyncRoot)
         {
-            StopTrackingCancellation();
-            ResetCore();
-            result = versionAndStatus.Version;
+            result = ResetCore();
+            Cleanup();
         }
 
         return result;
@@ -141,9 +148,8 @@ public abstract class ManualResetCompletionSource
         {
             try
             {
-                StopTrackingCancellation();
-                ResetCore();
-                token = versionAndStatus.Version;
+                token = ResetCore();
+                Cleanup();
             }
             finally
             {
@@ -491,12 +497,13 @@ public abstract class ManualResetCompletionSource
             throw new InvalidOperationException(errorMessage);
         }
 
-        public void Reset()
+        public short Reset()
         {
             var version = GetVersion(ref value);
 
             // write atomically
             value = Combine(++version, ManualResetCompletionSourceStatus.WaitForActivation);
+            return version;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

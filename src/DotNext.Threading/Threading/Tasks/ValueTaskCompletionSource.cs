@@ -109,11 +109,11 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     private protected sealed override Continuation CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
-    private protected override void ResetCore()
+    /// <inheritdoc />
+    protected override void Cleanup()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        base.ResetCore();
         result = null;
     }
 
