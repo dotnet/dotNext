@@ -19,7 +19,6 @@ public abstract class ManualResetCompletionSource
 
     // task management
     private Continuation continuation;
-    private ExecutionContext? context;
     private object? completionData;
     private protected VersionAndStatus versionAndStatus;
 
@@ -138,28 +137,18 @@ public abstract class ManualResetCompletionSource
         // this method should not throw any exceptions
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        var result = new CompletionResult(in continuation, context)
-        {
-            TokenTracker = tokenTracker,
-            TimeoutTracker = timeoutTracker,
-        };
+        var result = new CompletionResult(this);
 
-        context = null;
         continuation = default;
         tokenTracker = default;
         timeoutTracker = default;
-
-        if (timeoutSource is not null && !timeoutSource.TryReset())
-        {
-            result.TimeoutSource = timeoutSource;
-            timeoutSource = null;
-        }
-
+        timeoutSource = null;
         this.completionData = completionData;
+
         return result;
     }
 
-    private void OnCompleted(in Continuation continuation, short token, bool flowExecutionContext)
+    private void OnCompleted(in Continuation continuation, short token)
     {
         string errorMessage;
         var snapshot = versionAndStatus;
@@ -203,12 +192,11 @@ public abstract class ManualResetCompletionSource
             }
 
             this.continuation = continuation;
-            context = flowExecutionContext ? ExecutionContext.Capture() : null;
             goto exit;
         }
 
     execute_inplace:
-        continuation.Invoke(runContinuationsAsynchronously, flowExecutionContext);
+        continuation.Invoke(runContinuationsAsynchronously);
 
     exit:
         return;
@@ -217,7 +205,7 @@ public abstract class ManualResetCompletionSource
     }
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-        => OnCompleted(new(continuation, state, (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0), token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0);
+        => OnCompleted(new(continuation, state, flags), token);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -330,20 +318,25 @@ public abstract class ManualResetCompletionSource
     /// Represents continuation attached by the task consumer.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    private protected readonly struct Continuation
+    private protected readonly struct Continuation : IThreadPoolWorkItem
     {
         private readonly Action<object?> action;
         private readonly object? state, schedulingContext;
+        private readonly ExecutionContext? context;
 
-        internal Continuation(Action<object?> action, object? state, bool useSchedulingContext)
+        internal Continuation(Action<object?> action, object? state, ValueTaskSourceOnCompletedFlags flags)
         {
             Debug.Assert(action is not null);
 
             this.action = action;
             this.state = state;
 
-            schedulingContext = useSchedulingContext
+            schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
                 ? CaptureSchedulingContext()
+                : null;
+
+            context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
+                ? ExecutionContext.Capture()
                 : null;
 
             static object? CaptureSchedulingContext()
@@ -359,15 +352,12 @@ public abstract class ManualResetCompletionSource
             }
         }
 
-        internal void Invoke(bool runAsynchronously, bool flowExecutionContext)
+        public void Invoke(bool runAsynchronously)
         {
             switch (schedulingContext)
             {
                 case null when runAsynchronously:
-                    if (flowExecutionContext)
-                        ThreadPool.QueueUserWorkItem(action, state, preferLocal: true);
-                    else
-                        ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal: true);
+                    ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
                     break;
                 case SynchronizationContext context:
                     context.Post(action.Invoke, state);
@@ -381,27 +371,14 @@ public abstract class ManualResetCompletionSource
             }
         }
 
-        internal void Invoke(bool runAsynchronously, ExecutionContext? context)
+        void IThreadPoolWorkItem.Execute()
         {
-            if (context is null)
-            {
-                Invoke(runAsynchronously, flowExecutionContext: false);
-            }
-            else
-            {
-                // flow should not be suppressed
-                var currentContext = ExecutionContext.Capture() ?? throw new InvalidOperationException(ExceptionMessages.FlowSuppressed);
-                ExecutionContext.Restore(context);
+            // ThreadPool restores original execution context automatically
+            // See https://github.com/dotnet/runtime/blob/cb30e97f8397e5f87adee13f5b4ba914cc2c0064/src/libraries/System.Private.CoreLib/src/System/Threading/ThreadPoolWorkQueue.cs#L928
+            if (context is { } ctx)
+                ExecutionContext.Restore(ctx);
 
-                try
-                {
-                    Invoke(runAsynchronously, flowExecutionContext: true);
-                }
-                finally
-                {
-                    ExecutionContext.Restore(currentContext);
-                }
-            }
+            action(state);
         }
 
         public static bool operator true(in Continuation continuation) => continuation.action is not null;
@@ -506,47 +483,33 @@ public abstract class ManualResetCompletionSource
     /// of the monitor lock to avoid lock contention.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    private protected ref struct CompletionResult
+    private protected readonly ref struct CompletionResult
     {
         private readonly Continuation continuation;
-        private readonly ExecutionContext? context;
         private readonly CancellationTokenRegistration tokenTracker, timeoutTracker;
-        private CancellationTokenSource? timeoutSource;
+        private readonly CancellationTokenSource? timeoutSource;
 
-        internal CompletionResult(in Continuation continuation, ExecutionContext? context)
+        internal CompletionResult(ManualResetCompletionSource source)
         {
-            this.continuation = continuation;
-            this.context = context;
+            continuation = source.continuation;
+            tokenTracker = source.tokenTracker;
+            timeoutTracker = source.timeoutTracker;
+            timeoutSource = source.timeoutSource is { } ts && !ts.TryReset() ? ts : null;
         }
 
-        internal CancellationTokenRegistration TokenTracker
-        {
-            init => tokenTracker = value;
-        }
-
-        internal CancellationTokenRegistration TimeoutTracker
-        {
-            init => timeoutTracker = value;
-        }
-
-        internal CancellationTokenSource TimeoutSource
-        {
-            set => timeoutSource = value;
-        }
-
-        public readonly void FinalizeCompletion()
+        public void FinalizeCompletion()
         {
             tokenTracker.Unregister();
             timeoutTracker.Unregister();
             timeoutSource?.Dispose();
         }
 
-        public readonly void FinalizeCompletion(bool runContinuationsAsynchronously)
+        public void FinalizeCompletion(bool runContinuationsAsynchronously)
         {
             FinalizeCompletion();
 
             if (continuation)
-                continuation.Invoke(runContinuationsAsynchronously, context);
+                continuation.Invoke(runContinuationsAsynchronously);
         }
     }
 }
