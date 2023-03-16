@@ -19,6 +19,7 @@ public abstract class ManualResetCompletionSource
 
     // task management
     private Continuation continuation;
+    private ExecutionContext? context;
     private object? completionData;
     private protected VersionAndStatus versionAndStatus;
 
@@ -43,75 +44,32 @@ public abstract class ManualResetCompletionSource
         // or completed flag is set (call twice with the same token)
         if (versionAndStatus.Status is ManualResetCompletionSourceStatus.Activated)
         {
-            Continuation continuation;
+            CompletionResult completion;
             lock (SyncRoot)
             {
-                continuation = versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated)
+                completion = versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated)
                     ? timeoutSource?.Token == token
                     ? CompleteAsTimedOut()
                     : CompleteAsCanceled(token)
                     : default;
+
+                // ensure that timeout or cancellation handler sets the status correctly
+                Debug.Assert((short)expectedVersion != versionAndStatus.Version || versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
             }
 
-            if (continuation)
-                continuation.Invoke(runContinuationsAsynchronously);
+            completion.FinalizeCompletion(runContinuationsAsynchronously);
         }
     }
 
-    private protected void StartTrackingCancellation(TimeSpan timeout, CancellationToken token)
-    {
-        // box current token once and only if needed
-        var tokenHolder = default(IEquatable<short>);
-        if (timeout > default(TimeSpan))
-        {
-            timeoutSource ??= new();
-            timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder = versionAndStatus.Version);
-            timeoutSource.CancelAfter(timeout);
-        }
+    private protected abstract CompletionResult CompleteAsTimedOut();
 
-        if (token.CanBeCanceled)
-        {
-            tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? versionAndStatus.Version);
-        }
-    }
-
-    private protected abstract Continuation CompleteAsTimedOut();
-
-    private protected abstract Continuation CompleteAsCanceled(CancellationToken token);
-
-    private void StopTrackingCancellation()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        // Dispose() cannot be used here because it's a blocking call that could lead to deadlock
-        // because of concurrency with CancellationRequested
-        tokenTracker.Unregister();
-        tokenTracker = default;
-
-        timeoutTracker.Unregister();
-        timeoutTracker = default;
-
-        if (timeoutSource is not null && !timeoutSource.TryReset())
-        {
-            timeoutSource.Dispose();
-            timeoutSource = null;
-        }
-    }
+    private protected abstract CompletionResult CompleteAsCanceled(CancellationToken token);
 
     /// <summary>
     /// Resets internal state of this source.
     /// </summary>
     protected virtual void Cleanup()
     {
-    }
-
-    private short ResetCore()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        StopTrackingCancellation();
-        completionData = null;
-        return versionAndStatus.Reset();
     }
 
     /// <summary>
@@ -125,15 +83,14 @@ public abstract class ManualResetCompletionSource
     /// <returns>The version of the incompleted task.</returns>
     public short Reset()
     {
-        short result;
+        Monitor.Enter(SyncRoot);
+        var completion = Complete(completionData: null);
+        var token = versionAndStatus.Reset();
+        Monitor.Exit(SyncRoot);
 
-        lock (SyncRoot)
-        {
-            result = ResetCore();
-            Cleanup();
-        }
-
-        return result;
+        completion.FinalizeCompletion();
+        Cleanup();
+        return token;
     }
 
     /// <summary>
@@ -144,17 +101,15 @@ public abstract class ManualResetCompletionSource
     public bool TryReset(out short token)
     {
         bool result;
+
         if (result = Monitor.TryEnter(SyncRoot))
         {
-            try
-            {
-                token = ResetCore();
-                Cleanup();
-            }
-            finally
-            {
-                Monitor.Exit(SyncRoot);
-            }
+            var completion = Complete(completionData: null);
+            token = versionAndStatus.Reset();
+            Monitor.Exit(SyncRoot);
+
+            completion.FinalizeCompletion();
+            Cleanup();
         }
         else
         {
@@ -177,18 +132,34 @@ public abstract class ManualResetCompletionSource
     /// </summary>
     protected object? CompletionData => completionData;
 
-    private protected Continuation Complete(object? completionData)
+    // the caller should not ignore the result
+    private protected CompletionResult Complete(object? completionData)
     {
-        StopTrackingCancellation();
-        this.completionData = completionData;
-        versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
+        // this method should not throw any exceptions
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        var result = continuation;
+        var result = new CompletionResult(in continuation, context)
+        {
+            TokenTracker = tokenTracker,
+            TimeoutTracker = timeoutTracker,
+        };
+
+        context = null;
         continuation = default;
+        tokenTracker = default;
+        timeoutTracker = default;
+
+        if (timeoutSource is not null && !timeoutSource.TryReset())
+        {
+            result.TimeoutSource = timeoutSource;
+            timeoutSource = null;
+        }
+
+        this.completionData = completionData;
         return result;
     }
 
-    private void OnCompleted(in Continuation continuation, short token)
+    private void OnCompleted(in Continuation continuation, short token, bool flowExecutionContext)
     {
         string errorMessage;
         var snapshot = versionAndStatus;
@@ -232,11 +203,12 @@ public abstract class ManualResetCompletionSource
             }
 
             this.continuation = continuation;
+            context = flowExecutionContext ? ExecutionContext.Capture() : null;
             goto exit;
         }
 
     execute_inplace:
-        continuation.InvokeWithinCurrentContext(runContinuationsAsynchronously);
+        continuation.Invoke(runContinuationsAsynchronously, flowExecutionContext);
 
     exit:
         return;
@@ -245,7 +217,7 @@ public abstract class ManualResetCompletionSource
     }
 
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-        => OnCompleted(new(continuation, state, flags), token);
+        => OnCompleted(new(continuation, state, (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0), token, (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -293,51 +265,60 @@ public abstract class ManualResetCompletionSource
     /// </remarks>
     public bool IsCompleted => versionAndStatus.IsCompleted;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void PrepareTaskCore(TimeSpan timeout, CancellationToken token)
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        if (timeout == default)
-        {
-            CompleteAsTimedOut();
-        }
-        else if (token.IsCancellationRequested)
-        {
-            CompleteAsCanceled(token);
-        }
-        else
-        {
-            versionAndStatus.Status = ManualResetCompletionSourceStatus.Activated;
-            StartTrackingCancellation(timeout, token);
-        }
-    }
-
     private protected bool PrepareTask(TimeSpan timeout, CancellationToken token)
     {
         if (timeout.Ticks is < 0L and not Timeout.InfiniteTicks)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
-        bool result;
-
-        // The task can be created for the completed source. This workaround is needed for AsyncBridge methods
+        // The task can be created for the completed (but not yet consumed) source.
+        // This workaround is needed for AsyncBridge methods
         lock (SyncRoot)
         {
             switch (versionAndStatus.Status)
             {
                 case ManualResetCompletionSourceStatus.WaitForActivation:
-                    PrepareTaskCore(timeout, token);
+                    Activate(timeout, token);
                     goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForConsumption:
-                    result = true;
-                    break;
+                    return true;
                 default:
-                    result = false;
-                    break;
+                    return false;
             }
         }
 
-        return result;
+        void Activate(TimeSpan timeout, CancellationToken token)
+        {
+            if (timeout == default)
+            {
+                CompleteAsTimedOut();
+
+                Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
+            }
+            else if (token.IsCancellationRequested)
+            {
+                CompleteAsCanceled(token);
+
+                Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
+            }
+            else
+            {
+                versionAndStatus.Status = ManualResetCompletionSourceStatus.Activated;
+
+                // box current token once and only if needed
+                var tokenHolder = default(IEquatable<short>);
+                if (timeout > default(TimeSpan))
+                {
+                    timeoutSource ??= new();
+                    timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder = versionAndStatus.Version);
+                    timeoutSource.CancelAfter(timeout);
+                }
+
+                if (token.CanBeCanceled)
+                {
+                    tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? versionAndStatus.Version);
+                }
+            }
+        }
     }
 
     [DoesNotReturn]
@@ -345,27 +326,24 @@ public abstract class ManualResetCompletionSource
     private protected static void InvalidSourceStateDetected()
         => throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
-    // encapsulates continuation and its execution logic
+    /// <summary>
+    /// Represents continuation attached by the task consumer.
+    /// </summary>
     [StructLayout(LayoutKind.Auto)]
     private protected readonly struct Continuation
     {
         private readonly Action<object?> action;
         private readonly object? state, schedulingContext;
-        private readonly ExecutionContext? context;
 
-        internal Continuation(Action<object?> action, object? state, ValueTaskSourceOnCompletedFlags flags)
+        internal Continuation(Action<object?> action, object? state, bool useSchedulingContext)
         {
             Debug.Assert(action is not null);
 
             this.action = action;
             this.state = state;
 
-            schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
+            schedulingContext = useSchedulingContext
                 ? CaptureSchedulingContext()
-                : null;
-
-            context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
-                ? ExecutionContext.Capture()
                 : null;
 
             static object? CaptureSchedulingContext()
@@ -381,7 +359,7 @@ public abstract class ManualResetCompletionSource
             }
         }
 
-        private void Invoke(bool runAsynchronously, bool flowExecutionContext)
+        internal void Invoke(bool runAsynchronously, bool flowExecutionContext)
         {
             switch (schedulingContext)
             {
@@ -403,9 +381,7 @@ public abstract class ManualResetCompletionSource
             }
         }
 
-        internal void InvokeWithinCurrentContext(bool runAsynchronously) => Invoke(runAsynchronously, context is not null);
-
-        internal void Invoke(bool runAsynchronously)
+        internal void Invoke(bool runAsynchronously, ExecutionContext? context)
         {
             if (context is null)
             {
@@ -522,6 +498,55 @@ public abstract class ManualResetCompletionSource
             GetStatus(ref result) = status;
 
             return result;
+        }
+    }
+
+    /// <summary>
+    /// Captures the copy of state from the source to operate on it later, outside
+    /// of the monitor lock to avoid lock contention.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    private protected ref struct CompletionResult
+    {
+        private readonly Continuation continuation;
+        private readonly ExecutionContext? context;
+        private readonly CancellationTokenRegistration tokenTracker, timeoutTracker;
+        private CancellationTokenSource? timeoutSource;
+
+        internal CompletionResult(in Continuation continuation, ExecutionContext? context)
+        {
+            this.continuation = continuation;
+            this.context = context;
+        }
+
+        internal CancellationTokenRegistration TokenTracker
+        {
+            init => tokenTracker = value;
+        }
+
+        internal CancellationTokenRegistration TimeoutTracker
+        {
+            init => timeoutTracker = value;
+        }
+
+        internal CancellationTokenSource TimeoutSource
+        {
+            set => timeoutSource = value;
+        }
+
+        public readonly void FinalizeCompletion()
+        {
+            tokenTracker.Unregister();
+            timeoutTracker.Unregister();
+            timeoutSource?.Dispose();
+        }
+
+        public readonly void FinalizeCompletion(bool runContinuationsAsynchronously)
+        {
+            FinalizeCompletion();
+
+            if (continuation)
+                continuation.Invoke(runContinuationsAsynchronously, context);
         }
     }
 }

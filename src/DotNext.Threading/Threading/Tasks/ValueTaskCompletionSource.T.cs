@@ -170,10 +170,10 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     public unsafe bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
         => TrySetResult(&FromCanceled, token, completionData, completionToken);
 
-    private protected sealed override Continuation CompleteAsTimedOut()
+    private protected sealed override CompletionResult CompleteAsTimedOut()
         => SetResult(OnTimeout());
 
-    private protected sealed override Continuation CompleteAsCanceled(CancellationToken token)
+    private protected sealed override CompletionResult CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
     private unsafe bool TrySetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg, object? completionData, short? completionToken = null)
@@ -183,39 +183,34 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         bool result;
         if (result = versionAndStatus.CanBeCompleted)
         {
-            Continuation continuation;
+            CompletionResult completion;
 
             lock (SyncRoot)
             {
-                continuation = (result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
+                completion = (result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
                     ? SetResult(func(arg), completionData)
                     : default;
             }
 
             // Invokes custom callback out of the lock scope to avoid deadlocks.
             // Also, the lock acts as a barrier to ensure that the callback observes the correct status of this source
-            if (continuation)
-                continuation.Invoke(runContinuationsAsynchronously);
+            completion.FinalizeCompletion(runContinuationsAsynchronously);
         }
 
         return result;
     }
 
-    private Continuation SetResult(Result<T> result, object? completionData = null)
+    private CompletionResult SetResult(Result<T> result, object? completionData = null)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         this.result = result;
+        versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
         return Complete(completionData);
     }
 
     /// <inheritdoc />
-    protected override void Cleanup()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        result = default;
-    }
+    protected override void Cleanup() => result = default;
 
     /// <summary>
     /// Called automatically when timeout detected.
