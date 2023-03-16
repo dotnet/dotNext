@@ -507,11 +507,11 @@ public class QueuedSynchronizer : Disposable
             private set;
         }
 
-        private protected override void ResetCore()
+        protected override void Cleanup()
         {
             owner.SetTarget(target: null);
             CallerInfo = null;
-            base.ResetCore();
+            base.Cleanup();
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -665,12 +665,12 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         protected override void AfterConsumed() => AfterConsumed(this);
 
-        private protected override void ResetCore()
+        protected override void Cleanup()
         {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<TContext>())
                 Context = default;
 
-            base.ResetCore();
+            base.Cleanup();
         }
 
         Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }

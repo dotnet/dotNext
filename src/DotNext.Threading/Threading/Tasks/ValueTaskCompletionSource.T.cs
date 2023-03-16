@@ -209,11 +209,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return Complete(completionData);
     }
 
-    private protected override void ResetCore()
+    /// <inheritdoc />
+    protected override void Cleanup()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        base.ResetCore();
         result = default;
     }
 
