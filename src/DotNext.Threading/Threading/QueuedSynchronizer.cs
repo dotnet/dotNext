@@ -17,7 +17,7 @@ using Timestamp = Diagnostics.Timestamp;
 /// </summary>
 public class QueuedSynchronizer : Disposable
 {
-    private const string LockTypeMeterAttribute = "dotnext.threading.asynclock.type";
+    private const string LockTypeMeterAttribute = "dotnext.asynclock.type";
     private static readonly Counter<int> LockContentionMeter;
     private static readonly Histogram<double> LockDurationMeter;
 
