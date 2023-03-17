@@ -16,6 +16,7 @@ a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.0">DotNext.M
 * Fixed rare concurrency issues when multiple consumers trying to get task result from `ValueTaskCompletionSource`
 * Reduced number of work items submitted by async locks internally
 * Provided `ManualResetCompletionSource.Cleanup` protected virtual method that provides extension point for custom cleanup operations in derived classes
+* Heavily reduced monitor lock contention that can be caused by `ValueTaskCompletionSource` or `ValueTaskCompletionSource<T>`
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.12.0">DotNext.IO 4.12.0</a>
@@ -25,10 +26,12 @@ a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.0">DotNext.M
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.0">DotNext.Net.Cluster 4.12.0</a>
 * Fixed initialization logic of [PhiAccrualFailureDetector](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.PhiAccrualFailureDetector.html)
 * Partially fixed [153](https://github.com/dotnet/dotNext/issues/153). Optionally, the node which initial state cannot be recognized by failure detector (e.g., node never responds) is treated as dead
+* Fixed [155](https://github.com/dotnet/dotNext/issues/155)
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.0">DotNext.AspNetCore.Cluster 4.12.0</a>
 * Fixed initialization logic of [PhiAccrualFailureDetector](https://dotnet.github.io/dotNext/api/DotNext.Diagnostics.PhiAccrualFailureDetector.html)
 * Partially fixed [153](https://github.com/dotnet/dotNext/issues/153). Optionally, the node which initial state cannot be recognized by failure detector (e.g., node never responds) is treated as dead
+* Fixed [155](https://github.com/dotnet/dotNext/issues/155)
 
 # 03-07-2023
 <a href="https://www.nuget.org/packages/dotnext/4.11.0">DotNext 4.11.0</a>
