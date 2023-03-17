@@ -18,7 +18,7 @@ using Timestamp = Diagnostics.Timestamp;
 public class QueuedSynchronizer : Disposable
 {
     private const string LockTypeMeterAttribute = "dotnext.asynclock.type";
-    private static readonly Counter<int> LockContentionMeter;
+    private static readonly Counter<int> SuspendedCallersMeter;
     private static readonly Histogram<double> LockDurationMeter;
 
     private readonly Action<double>? contentionCounter, lockDurationCounter;
@@ -31,8 +31,8 @@ public class QueuedSynchronizer : Disposable
     static QueuedSynchronizer()
     {
         var meter = new Meter("DotNext.Threading.AsyncLock");
-        LockContentionMeter = meter.CreateCounter<int>("async-lock-contention-count", description: "Async Lock Contention");
-        LockDurationMeter = meter.CreateHistogram<double>("async-lock-duration", unit: "ms", description: "Async Lock Duration");
+        SuspendedCallersMeter = meter.CreateCounter<int>("suspended-callers-count", description: "Number of Suspended Callers");
+        LockDurationMeter = meter.CreateHistogram<double>("suspension-duration", unit: "ms", description: "Async Lock Duration");
     }
 
     private protected QueuedSynchronizer()
@@ -170,7 +170,7 @@ public class QueuedSynchronizer : Disposable
         }
 
         contentionCounter?.Invoke(1D);
-        LockContentionMeter.Add(1, measurementTags);
+        SuspendedCallersMeter.Add(1, measurementTags);
     }
 
     private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout)
