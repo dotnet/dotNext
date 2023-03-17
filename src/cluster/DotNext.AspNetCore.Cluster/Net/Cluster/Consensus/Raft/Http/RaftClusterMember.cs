@@ -223,7 +223,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             {
                 message = new(context.LocalMemberId, term, prevLogIndex, prevLogTerm, commitIndex, entries, configuration, applyConfig)
                 {
-                    UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries
+                    UseOptimizedTransfer = context.UseEfficientTransferOfLogEntries,
                 };
             }
             catch (Exception e)
