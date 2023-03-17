@@ -73,7 +73,7 @@ namespace DotNext.Threading.Tasks
         [InlineData(true)]
         public static async Task Reuse(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource();
+            var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
             var task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetResult());
             await task;
