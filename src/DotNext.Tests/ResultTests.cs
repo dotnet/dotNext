@@ -161,23 +161,23 @@ namespace DotNext
         }
 
         [Fact]
-        public static void Conversion()
+        public static unsafe void Conversion()
         {
             Result<float> result = 20F;
             Equal(20, result.Convert(Convert.ToInt32));
 
             result = new(new Exception());
-            False(result.Convert(Convert.ToInt32).IsSuccessful);
+            False(result.Convert(&Convert.ToInt32).IsSuccessful);
         }
 
         [Fact]
-        public static void Conversion2()
+        public static unsafe void Conversion2()
         {
             Result<float, EnvironmentVariableTarget> result = 20F;
             Equal(20, result.Convert(Convert.ToInt32));
 
             result = new(EnvironmentVariableTarget.Machine);
-            Equal(EnvironmentVariableTarget.Machine, result.Convert(Convert.ToInt32).Error);
+            Equal(EnvironmentVariableTarget.Machine, result.Convert(&Convert.ToInt32).Error);
         }
 
         [Fact]
