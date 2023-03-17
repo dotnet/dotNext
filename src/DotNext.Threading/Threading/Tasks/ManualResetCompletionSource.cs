@@ -196,7 +196,7 @@ public abstract class ManualResetCompletionSource
         }
 
     execute_inplace:
-        continuation.Invoke(runContinuationsAsynchronously);
+        continuation.InvokeOnCurrentContext(runContinuationsAsynchronously);
 
     exit:
         return;
@@ -352,13 +352,73 @@ public abstract class ManualResetCompletionSource
             }
         }
 
+        public void InvokeOnCurrentContext(bool runAsynchronously)
+        {
+            if (schedulingContext is not null)
+            {
+                Invoke();
+            }
+            else if (runAsynchronously)
+            {
+                ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
+            }
+            else
+            {
+                action(state);
+            }
+        }
+
         public void Invoke(bool runAsynchronously)
         {
+            if (schedulingContext is not null)
+            {
+                InvokeOnSchedulingContext();
+            }
+            else if (runAsynchronously)
+            {
+                ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
+            }
+            else if (context is { } ctx)
+            {
+                // ContextCallback has the same signature as Action<object?> so we
+                // can reinterpret the reference
+                ExecutionContext.Run(ctx, Unsafe.As<ContextCallback>(action), state);
+            }
+            else
+            {
+                action(state);
+            }
+        }
+
+        private void InvokeOnSchedulingContext()
+        {
+            if (context is { } ctx)
+            {
+                var currentContext = ExecutionContext.Capture();
+                ExecutionContext.Restore(ctx);
+
+                try
+                {
+                    Invoke();
+                }
+                finally
+                {
+                    if (currentContext is not null)
+                        ExecutionContext.Restore(currentContext);
+                }
+            }
+            else
+            {
+                Invoke();
+            }
+        }
+
+        private void Invoke()
+        {
+            Debug.Assert(schedulingContext is not null);
+
             switch (schedulingContext)
             {
-                case null when runAsynchronously:
-                    ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
-                    break;
                 case SynchronizationContext context:
                     context.Post(action.Invoke, state);
                     break;
@@ -366,7 +426,7 @@ public abstract class ManualResetCompletionSource
                     Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
                     break;
                 default:
-                    action(state);
+                    Debug.Fail($"Unexpected scheduling context {schedulingContext}");
                     break;
             }
         }
