@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext;
 
+using Intrinsics = Runtime.Intrinsics;
+
 /// <summary>
 /// Various extension and factory methods for constructing optional value.
 /// </summary>
@@ -513,7 +515,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : IsNull && Intrinsics.IsNullable<TResult>() ? new(default(TResult)) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
