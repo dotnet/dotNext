@@ -173,6 +173,9 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
         catch (Exception e)
         {
+            // treat any exception as faulty member
+            quorum -= 1;
+            commitQuorum -= 1;
             Logger.LogError(e, ExceptionMessages.UnexpectedError);
         }
         finally
