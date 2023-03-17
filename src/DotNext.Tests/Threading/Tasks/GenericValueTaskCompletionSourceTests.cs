@@ -6,10 +6,12 @@ namespace DotNext.Threading.Tasks
     [ExcludeFromCodeCoverage]
     public sealed class GenericValueTaskCompletionSourceTests : Test
     {
-        [Fact]
-        public static async Task SuccessfulCompletion()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task SuccessfulCompletion(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
             Equal(ManualResetCompletionSourceStatus.WaitForActivation, source.Status);
 
             var task = source.CreateTask(InfiniteTimeSpan, default);
@@ -23,19 +25,23 @@ namespace DotNext.Threading.Tasks
             Equal(ManualResetCompletionSourceStatus.Consumed, source.Status);
         }
 
-        [Fact]
-        public static async Task CompleteWithError()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task CompleteWithError(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
             var task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetException(new ArithmeticException()));
             await ThrowsAsync<ArithmeticException>(() => task.AsTask());
         }
 
-        [Fact]
-        public static async Task Cancellation()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task Cancellation(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
             using var cancellation = new CancellationTokenSource();
             var task = source.CreateTask(InfiniteTimeSpan, cancellation.Token);
             False(task.IsCompleted);
@@ -44,19 +50,23 @@ namespace DotNext.Threading.Tasks
             False(source.TrySetResult(42));
         }
 
-        [Fact]
-        public static async Task ForceTimeout()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task ForceTimeout(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
             var task = source.CreateTask(TimeSpan.FromMilliseconds(20), default);
             await ThrowsAsync<TimeoutException>(task.AsTask);
             False(source.TrySetResult(42));
         }
 
-        [Fact]
-        public static async Task CompleteWithToken()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task CompleteWithToken(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
             var completionToken = source.Reset();
             var task = source.CreateTask(InfiniteTimeSpan, default);
             False(source.TrySetResult(short.MaxValue, 42));
@@ -65,10 +75,12 @@ namespace DotNext.Threading.Tasks
             Equal(42, await task);
         }
 
-        [Fact]
-        public static async Task Reuse()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task Reuse(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
 
             var task = source.CreateTask(InfiniteTimeSpan, default);
             True(source.TrySetResult(42));
@@ -82,10 +94,12 @@ namespace DotNext.Threading.Tasks
             Equal(43, await task);
         }
 
-        [Fact]
-        public static async Task AsyncCompletion()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task AsyncCompletion(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
 
             var task = source.CreateTask(InfiniteTimeSpan, default);
             var result = Task.Run(task.AsTask);
@@ -94,10 +108,12 @@ namespace DotNext.Threading.Tasks
             Equal(42, await result);
         }
 
-        [Fact]
-        public static async Task AsyncLocalAccess()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task AsyncLocalAccess(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
 
             var task = source.CreateTask(InfiniteTimeSpan, default);
             var local = new AsyncLocal<int>() { Value = 56 };
@@ -114,10 +130,12 @@ namespace DotNext.Threading.Tasks
             Equal(42, await result);
         }
 
-        [Fact]
-        public static async Task InteropWithTaskCompletionSourceTimeout()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public static async Task InteropWithTaskCompletionSourceTimeout(bool runContinuationsAsynchronously)
         {
-            var source = new ValueTaskCompletionSource<int>();
+            var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
             var task = source.CreateLinkedTaskCompletionSource("Hello, world!", TimeSpan.FromMilliseconds(20), default).Task;
 
             Equal("Hello, world!", task.AsyncState);
