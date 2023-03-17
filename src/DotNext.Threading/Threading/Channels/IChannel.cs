@@ -8,7 +8,7 @@ using IO;
 
 internal interface IChannel
 {
-    private const string LocationMeterAttribute = "dotnext.threading.channels.persistentchannel.path";
+    private const string LocationMeterAttribute = "dotnext.persistentchannel.path";
 
     internal static readonly Counter<int> ReadRateMeter, WriteRateMeter;
 
