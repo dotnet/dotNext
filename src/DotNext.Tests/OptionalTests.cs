@@ -269,5 +269,45 @@ namespace DotNext
             output = input.Flatten();
             True(output.HasValue);
         }
+
+        [Fact]
+        public static void ConvertNoneToValueType()
+        {
+            var value = Optional<int>.None.Convert<string>(static i => i.ToString());
+            False(value.HasValue);
+            False(value.IsNull);
+        }
+
+        [Fact]
+        public static void ConvertValueTypeToValueType()
+        {
+            var value = new Optional<int>(42).Convert<int>(static i => i + 1);
+            True(value.HasValue);
+            Equal(43, value.Value);
+        }
+
+        [Fact]
+        public static unsafe void ConvertNullToValueType()
+        {
+            var value = new Optional<string>(null).Convert<int>(&int.Parse);
+            False(value.HasValue);
+            False(value.IsNull);
+        }
+
+        [Fact]
+        public static void ConvertNullToRefType()
+        {
+            var value = new Optional<string>(null).Convert<string>(Converter.Identity<string, string>());
+            False(value.HasValue);
+            True(value.IsNull);
+        }
+
+        [Fact]
+        public static void ConvertNoneToRefType()
+        {
+            var value = Optional<string>.None.Convert<string>(Converter.Identity<string, string>());
+            False(value.HasValue);
+            False(value.IsNull);
+        }
     }
 }
