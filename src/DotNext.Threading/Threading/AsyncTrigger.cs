@@ -68,13 +68,11 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
-    private LinkedValueTaskCompletionSource<bool>? Detach(bool detachAll)
+    private long Resume(bool resumeAll)
     {
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
-            return detachAll ? DetachWaitQueue() : DetachHead();
-        }
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
+
+        return ResumeAll(resumeAll ? DetachWaitQueue() : DetachHead());
     }
 
     /// <summary>
@@ -86,7 +84,14 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// </param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    public bool Signal(bool resumeAll = false) => ResumeAll(Detach(resumeAll)) > 0L;
+    public bool Signal(bool resumeAll = false)
+    {
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            return Resume(resumeAll) > 0L;
+        }
+    }
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => first is null;
@@ -152,13 +157,13 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                LinkedValueTaskCompletionSource<bool>? queue;
+                bool isEmpty;
                 lock (SyncRoot)
                 {
-                    queue = resumeAll ? DetachWaitQueue() : DetachHead();
+                    isEmpty = Resume(resumeAll) is 0L;
                 }
 
-                task = ResumeAll(queue) is 0L && throwOnEmptyQueue
+                task = isEmpty && throwOnEmptyQueue
                     ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
                     : new(false);
 
@@ -179,18 +184,11 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    queue = resumeAll ? DetachWaitQueue() : DetachHead();
-
-                    if (queue is null && throwOnEmptyQueue)
-                    {
-                        task = ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-                        break;
-                    }
-
-                    factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
+                    factory = Resume(resumeAll) is 0L && throwOnEmptyQueue
+                        ? EmptyWaitQueueExceptionFactory.Instance
+                        : EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
                 }
 
-                ResumeAll(queue);
                 task = factory.Invoke(timeout, token);
                 break;
         }
@@ -219,19 +217,14 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled(token);
 
-        LinkedValueTaskCompletionSource<bool>? queue;
         ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
         lock (SyncRoot)
         {
-            queue = resumeAll ? DetachWaitQueue() : DetachHead();
-
-            if (queue is null && throwOnEmptyQueue)
-                return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-
-            factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
+            factory = Resume(resumeAll) is 0L && throwOnEmptyQueue
+                ? EmptyWaitQueueExceptionFactory.Instance
+                : EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
         }
 
-        ResumeAll(queue);
         return factory.Invoke(token);
     }
 
@@ -310,6 +303,21 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
         }
+    }
+
+    private sealed class EmptyWaitQueueExceptionFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
+    {
+        internal static readonly EmptyWaitQueueExceptionFactory Instance = new();
+
+        private EmptyWaitQueueExceptionFactory()
+        {
+        }
+
+        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken tpken)
+            => ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
+
+        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken tpken)
+            => ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
     }
 }
 
