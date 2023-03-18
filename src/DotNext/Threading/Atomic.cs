@@ -89,7 +89,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// Performs atomic read.
     /// </summary>
     /// <param name="result">The result of atomic read.</param>
-    public readonly void Read(out T result)
+    public void Read(out T result)
     {
         lockState.Acquire();
         Copy(in value, out result);
@@ -244,6 +244,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void UpdateAndGet(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
+
         lockState.Acquire();
         try
         {
@@ -267,17 +268,19 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void GetAndUpdate(Updater updater, out T result)
     {
         ArgumentNullException.ThrowIfNull(updater);
+
         lockState.Acquire();
         var previous = value;
         try
         {
             updater(ref value);
-            Copy(in previous, out result);
         }
         finally
         {
             lockState.Release();
         }
+
+        Copy(in previous, out result);
     }
 
     /// <summary>
@@ -295,6 +298,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
+
         lockState.Acquire();
         try
         {
@@ -322,17 +326,19 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
     {
         ArgumentNullException.ThrowIfNull(accumulator);
+
         lockState.Acquire();
         var previous = value;
         try
         {
             accumulator(ref value, in x);
-            Copy(in previous, out result);
         }
         finally
         {
             lockState.Release();
         }
+
+        Copy(in previous, out result);
     }
 
     /// <summary>
@@ -344,7 +350,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// </remarks>
     public T Value
     {
-        readonly get
+        get
         {
             Read(out var result);
             return result;
@@ -355,7 +361,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// <inheritdoc/>
     object? IStrongBox.Value
     {
-        readonly get => Value;
+        get => Value;
         set => Value = (T)value!;
     }
 
@@ -363,7 +369,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     /// Converts the stored value into string atomically.
     /// </summary>
     /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
-    public override readonly string? ToString()
+    public override string? ToString()
     {
         Read(out var result);
         return result.ToString();
