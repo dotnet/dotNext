@@ -198,7 +198,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return result;
     }
 
-    private CompletionResult SetResult(Result<T> result, object? completionData = null)
+    private CompletionResult SetResult(scoped in Result<T> result, object? completionData = null)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
