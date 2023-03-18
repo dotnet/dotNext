@@ -183,11 +183,19 @@ public struct Atomic<T> : IStrongBox, ICloneable
     private bool CompareAndSet<TComparer>(TComparer comparer, in T expected, in T update)
         where TComparer : struct, IEqualityComparer
     {
-        lockState.Acquire();
         bool result;
-        if (result = comparer.Equals(in value, in expected))
-            Copy(in update, out value);
-        lockState.Release();
+        lockState.Acquire();
+        try
+        {
+            // custom comparer may throw exception
+            if (result = comparer.Equals(in value, in expected))
+                Copy(in update, out value);
+        }
+        finally
+        {
+            lockState.Release();
+        }
+
         return result;
     }
 
@@ -248,6 +256,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         lockState.Acquire();
         try
         {
+            // custom updater may throw exception
             updater(ref value);
             Copy(in value, out result);
         }
@@ -273,6 +282,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         var previous = value;
         try
         {
+            // custom updater may throw exception
             updater(ref value);
         }
         finally
@@ -302,6 +312,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         lockState.Acquire();
         try
         {
+            // custom accumulator may throw exception
             accumulator(ref value, in x);
             Copy(in value, out result);
         }
@@ -331,6 +342,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         var previous = value;
         try
         {
+            // custom accumulator may throw exception
             accumulator(ref value, in x);
         }
         finally
