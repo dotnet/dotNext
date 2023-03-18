@@ -96,21 +96,6 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Set() => Set(autoReset: false);
 
-    private bool SetCore(bool autoReset, out LinkedValueTaskCompletionSource<bool>? head)
-    {
-        bool result;
-
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
-            result = !manager.Value;
-            head = DetachWaitQueue();
-            manager.Value = !autoReset;
-        }
-
-        return result;
-    }
-
     /// <summary>
     /// Sets the state of the event to signaled, allowing one or more awaiters to proceed;
     /// and, optionally, reverts the state of the event to initial state.
@@ -121,8 +106,14 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public bool Set(bool autoReset)
     {
         bool result;
-        if (result = SetCore(autoReset, out var head))
-            ResumeAll(head);
+
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+            result = !manager.Value;
+            manager.Value = !autoReset;
+            ResumeAll(DetachWaitQueue());
+        }
 
         return result;
     }

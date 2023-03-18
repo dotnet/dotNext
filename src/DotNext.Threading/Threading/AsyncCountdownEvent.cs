@@ -197,35 +197,18 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         return result;
     }
 
-    private bool SignalCore(long signalCount, out LinkedValueTaskCompletionSource<bool>? head)
-    {
-        lock (SyncRoot)
-        {
-            if (manager.Current is 0L)
-                throw new InvalidOperationException();
-
-            bool result;
-            head = (result = manager.Decrement(signalCount))
-                ? DetachWaitQueue()
-                : null;
-
-            return result;
-        }
-    }
-
-    private bool SignalAndResetCore(out LinkedValueTaskCompletionSource<bool>? head)
+    private bool SignalAndResetCore()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (manager.Decrement())
+        bool result;
+        if (result = manager.Decrement())
         {
             manager.Current = manager.Initial;
-            head = DetachWaitQueue();
-            return true;
+            ResumeAll(DetachWaitQueue());
         }
 
-        head = null;
-        return false;
+        return result;
     }
 
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
@@ -241,8 +224,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                LinkedValueTaskCompletionSource<bool>? queue;
-                completedSynchronously = true;
                 lock (SyncRoot)
                 {
                     if (IsDisposingOrDisposed)
@@ -251,10 +232,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    SignalAndResetCore(out queue);
+                    SignalAndResetCore();
                 }
 
-                ResumeAll(queue);
                 task = new(false);
                 break;
             default:
@@ -273,10 +253,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    if (SignalAndResetCore(out queue))
+                    if (SignalAndResetCore())
                     {
                         task = new(true);
-                        goto resume_callers;
+                        break;
                     }
 
                     factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
@@ -284,10 +264,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
                 completedSynchronously = false;
                 task = factory.Invoke(timeout, token);
-                break;
-
-            resume_callers:
-                ResumeAll(queue);
                 break;
         }
 
@@ -306,7 +282,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
 
         ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
-        LinkedValueTaskCompletionSource<bool>? queue;
         lock (SyncRoot)
         {
             if (IsDisposingOrDisposed)
@@ -315,10 +290,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 goto exit;
             }
 
-            if (SignalAndResetCore(out queue))
+            if (SignalAndResetCore())
             {
                 task = ValueTask.CompletedTask;
-                goto resume_callers;
+                goto exit;
             }
 
             factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
@@ -326,10 +301,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         completedSynchronously = false;
         task = factory.Invoke(token);
-        goto exit;
-
-    resume_callers:
-        ResumeAll(queue);
 
     exit:
         return task;
@@ -348,10 +319,17 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (signalCount < 1L)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
-        ThrowIfDisposed();
         bool result;
-        if (result = SignalCore(signalCount, out var head))
-            ResumeAll(head);
+        lock (SyncRoot)
+        {
+            ThrowIfDisposed();
+
+            if (manager.Current is 0L)
+                throw new InvalidOperationException();
+
+            if (result = manager.Decrement(signalCount))
+                ResumeAll(DetachWaitQueue());
+        }
 
         return result;
     }
