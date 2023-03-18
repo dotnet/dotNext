@@ -68,13 +68,16 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         var bucket = Volatile.Read(ref GetBucket(eventId));
 
-        if (bucket is null)
+        if (bucket?.Remove(eventId, comparer, out var completionToken) is not { } node)
         {
             userData = null;
             return false;
         }
 
-        return bucket.Remove(eventId, in value, comparer, out userData);
+        userData = node.UserData;
+        return value.IsSuccessful
+            ? node.TrySetResult(Sentinel.Instance, completionToken, value.OrDefault()!)
+            : node.TrySetException(Sentinel.Instance, completionToken, value.Error);
     }
 
     private unsafe void PulseAll<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
@@ -93,7 +96,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetResult, value);
 
-        static void SetResult(LinkedValueTaskCompletionSource<TValue> slot, TValue value) => slot.TrySetResult(value);
+        static void SetResult(LinkedValueTaskCompletionSource<TValue> slot, TValue value)
+            => slot.TrySetResult(Sentinel.Instance, value);
     }
 
     /// <summary>
@@ -104,7 +108,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetException, e);
 
-        static void SetException(LinkedValueTaskCompletionSource<TValue> slot, Exception e) => slot.TrySetException(e);
+        static void SetException(LinkedValueTaskCompletionSource<TValue> slot, Exception e)
+            => slot.TrySetException(Sentinel.Instance, e);
     }
 
     /// <summary>
@@ -115,7 +120,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         PulseAll(&SetCanceled, token);
 
-        static void SetCanceled(LinkedValueTaskCompletionSource<TValue> slot, CancellationToken token) => slot.TrySetCanceled(token);
+        static void SetCanceled(LinkedValueTaskCompletionSource<TValue> slot, CancellationToken token)
+            => slot.TrySetCanceled(Sentinel.Instance, token);
     }
 
     /// <summary>
