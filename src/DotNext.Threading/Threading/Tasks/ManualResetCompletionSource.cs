@@ -61,7 +61,7 @@ public abstract class ManualResetCompletionSource
                 Debug.Assert((short)expectedVersion != versionAndStatus.Version || versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
             }
 
-            completion.FinalizeCompletion(runContinuationsAsynchronously);
+            completion.NotifyListener(runContinuationsAsynchronously);
         }
     }
 
@@ -92,7 +92,7 @@ public abstract class ManualResetCompletionSource
         var token = versionAndStatus.Reset();
         Monitor.Exit(SyncRoot);
 
-        completion.FinalizeCompletion();
+        completion.Cleanup();
         Cleanup();
         return token;
     }
@@ -112,7 +112,7 @@ public abstract class ManualResetCompletionSource
             token = versionAndStatus.Reset();
             Monitor.Exit(SyncRoot);
 
-            completion.FinalizeCompletion();
+            completion.Cleanup();
             Cleanup();
         }
         else
@@ -329,7 +329,7 @@ public abstract class ManualResetCompletionSource
         private readonly object? state, schedulingContext;
         private readonly ExecutionContext? context;
 
-        internal Continuation(Action<object?> action, object? state, ValueTaskSourceOnCompletedFlags flags)
+        public Continuation(Action<object?> action, object? state, ValueTaskSourceOnCompletedFlags flags)
         {
             Debug.Assert(action is not null);
 
@@ -356,6 +356,8 @@ public abstract class ManualResetCompletionSource
                 return schedulingContext;
             }
         }
+
+        public bool IsValid => action is not null;
 
         public void InvokeOnCurrentContext(bool runAsynchronously)
         {
@@ -445,10 +447,6 @@ public abstract class ManualResetCompletionSource
 
             action(state);
         }
-
-        public static bool operator true(in Continuation continuation) => continuation.action is not null;
-
-        public static bool operator false(in Continuation continuation) => continuation.action is null;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -554,7 +552,7 @@ public abstract class ManualResetCompletionSource
         private readonly CancellationTokenRegistration tokenTracker, timeoutTracker;
         private readonly CancellationTokenSource? timeoutSource;
 
-        internal CompletionResult(ManualResetCompletionSource source)
+        public CompletionResult(ManualResetCompletionSource source)
         {
             continuation = source.continuation;
             tokenTracker = source.tokenTracker;
@@ -562,19 +560,22 @@ public abstract class ManualResetCompletionSource
             timeoutSource = source.timeoutSource is { } ts && !ts.TryReset() ? ts : null;
         }
 
-        public void FinalizeCompletion()
+        public void Cleanup()
         {
             tokenTracker.Unregister();
             timeoutTracker.Unregister();
             timeoutSource?.Dispose();
         }
 
-        public void FinalizeCompletion(bool runContinuationsAsynchronously)
+        public bool NotifyListener(bool runContinuationsAsynchronously)
         {
-            FinalizeCompletion();
+            Cleanup();
 
-            if (continuation)
+            bool result;
+            if (result = continuation.IsValid)
                 continuation.Invoke(runContinuationsAsynchronously);
+
+            return result;
         }
     }
 }
