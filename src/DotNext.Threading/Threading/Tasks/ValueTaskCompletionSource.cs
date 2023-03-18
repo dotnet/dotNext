@@ -132,7 +132,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <returns>The exception representing task result; or <see langword="null"/> to complete successfully.</returns>
     protected virtual Exception? OnCanceled(CancellationToken token) => new OperationCanceledException(token);
 
-    private CompletionResult SetResult<TFactory>(TFactory factory, object? completionData, short? completionToken)
+    private CompletionResult SetResult<TFactory>(object? completionData, short? completionToken, TFactory factory)
         where TFactory : notnull, ISupplier<Exception?>
     {
         CompletionResult result;
@@ -156,7 +156,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
 
     /// <inheritdoc />
     public sealed override bool TrySetCanceled(object? completionData, CancellationToken token)
-        => SetResult<OperationCanceledExceptionFactory>(token, completionData, completionToken: null).NotifyListener(runContinuationsAsynchronously);
+        => SetResult<OperationCanceledExceptionFactory>(completionData, completionToken: null, token).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -176,11 +176,11 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
-        => SetResult<OperationCanceledExceptionFactory>(token, completionData, completionToken).NotifyListener(runContinuationsAsynchronously);
+        => SetResult<OperationCanceledExceptionFactory>(completionData, completionToken, token).NotifyListener(runContinuationsAsynchronously);
 
     /// <inheritdoc />
     public sealed override bool TrySetException(object? completionData, Exception e)
-        => SetResult<ValueSupplier<Exception>>(e, completionData, completionToken: null).NotifyListener(runContinuationsAsynchronously);
+        => SetResult<ValueSupplier<Exception>>(completionData, completionToken: null, e).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -200,7 +200,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetException(object? completionData, short completionToken, Exception e)
-        => SetResult<ValueSupplier<Exception>>(e, completionData, completionToken).NotifyListener(runContinuationsAsynchronously);
+        => SetResult<ValueSupplier<Exception>>(completionData, completionToken, e).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Attempts to complete the task sucessfully.
@@ -216,7 +216,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(object? completionData)
-        => SetResult(NullSupplier, completionData, completionToken: null).NotifyListener(runContinuationsAsynchronously);
+        => SetResult(completionData, completionToken: null, NullSupplier).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Attempts to complete the task sucessfully.
@@ -233,7 +233,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(object? completionData, short completionToken)
-        => SetResult<NullExceptionConstant>(NullSupplier, completionData, completionToken).NotifyListener(runContinuationsAsynchronously);
+        => SetResult<NullExceptionConstant>(completionData, completionToken, NullSupplier).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Creates a fresh task linked with this source.
