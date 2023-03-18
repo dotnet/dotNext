@@ -241,10 +241,23 @@ public struct AtomicBoolean : IEquatable<bool>
 
     internal void Acquire()
     {
-        for (var spinner = new SpinWait(); CompareExchange(false, true); spinner.SpinOnce());
+        ref var lockState = ref value;
+        if (Interlocked.Exchange(ref lockState, 1) is 1)
+            Contention(ref lockState);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void Contention(ref int value)
+        {
+            var spinner = new SpinWait();
+            do
+            {
+                spinner.SpinOnce();
+            }
+            while (Interlocked.Exchange(ref value, 1) is 1);
+        }
     }
 
-    internal void Release() => Value = false;
+    internal void Release() => System.Threading.Volatile.Write(ref value, 0);
 
     /// <summary>
     /// Determines whether stored value is equal to value passed as argument.
