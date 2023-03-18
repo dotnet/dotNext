@@ -100,7 +100,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public unsafe bool TrySetResult(object? completionData, T value)
-        => SetResult(&Result.FromValue, value, completionData, completionToken: null).NotifyListener(runContinuationsAsynchronously);
+        => SetResult(completionData, completionToken: null, &Result.FromValue, value).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Attempts to complete the task sucessfully.
@@ -120,11 +120,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public unsafe bool TrySetResult(object? completionData, short completionToken, T value)
-        => SetResult(&Result.FromValue, value, completionData, completionToken).NotifyListener(runContinuationsAsynchronously);
+        => SetResult(completionData, completionToken, &Result.FromValue, value).NotifyListener(runContinuationsAsynchronously);
 
     /// <inheritdoc />
     public sealed override unsafe bool TrySetException(object? completionData, Exception e)
-        => SetResult(&Result.FromException<T>, e, completionData, completionToken: null).NotifyListener(runContinuationsAsynchronously);
+        => SetResult(completionData, completionToken: null, &Result.FromException<T>, e).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -144,11 +144,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public unsafe bool TrySetException(object? completionData, short completionToken, Exception e)
-        => SetResult(&Result.FromException<T>, e, completionData, completionToken).NotifyListener(runContinuationsAsynchronously);
+        => SetResult(completionData, completionToken, &Result.FromException<T>, e).NotifyListener(runContinuationsAsynchronously);
 
     /// <inheritdoc />
     public sealed override unsafe bool TrySetCanceled(object? completionData, CancellationToken token)
-        => SetResult(&FromCanceled, token, completionData, completionToken: null).NotifyListener(runContinuationsAsynchronously);
+        => SetResult(completionData, completionToken: null, &FromCanceled, token).NotifyListener(runContinuationsAsynchronously);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -168,7 +168,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public unsafe bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
-        => SetResult(&FromCanceled, token, completionData, completionToken).NotifyListener(runContinuationsAsynchronously);
+        => SetResult(completionData, completionToken, &FromCanceled, token).NotifyListener(runContinuationsAsynchronously);
 
     private protected sealed override CompletionResult CompleteAsTimedOut()
         => SetResult(OnTimeout());
@@ -176,7 +176,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     private protected sealed override CompletionResult CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
-    private unsafe CompletionResult SetResult<TArg>(delegate*<TArg, Result<T>> func, TArg arg, object? completionData, short? completionToken)
+    private unsafe CompletionResult SetResult<TArg>(object? completionData, short? completionToken, delegate*<TArg, Result<T>> func, TArg arg)
     {
         Debug.Assert(func != null);
 
