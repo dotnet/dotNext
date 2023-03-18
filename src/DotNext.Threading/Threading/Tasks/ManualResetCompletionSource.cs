@@ -12,6 +12,11 @@ namespace DotNext.Threading.Tasks;
 [SuppressMessage("Usage", "CA1001", Justification = "CTS is disposed automatically when passing through lifecycle of the completion source")]
 public abstract class ManualResetCompletionSource
 {
+    /// <summary>
+    /// Represents initial value of the completion token when constructing a new instance of the completion source.
+    /// </summary>
+    protected const short InitialCompletionToken = short.MinValue;
+
     private readonly Action<object?, CancellationToken> cancellationCallback;
     private protected readonly bool runContinuationsAsynchronously;
     private CancellationTokenRegistration tokenTracker, timeoutTracker;
@@ -452,7 +457,7 @@ public abstract class ManualResetCompletionSource
         private ulong value;
 
         public VersionAndStatus()
-            : this(short.MinValue, ManualResetCompletionSourceStatus.WaitForActivation)
+            : this(InitialCompletionToken, ManualResetCompletionSourceStatus.WaitForActivation)
         {
         }
 
