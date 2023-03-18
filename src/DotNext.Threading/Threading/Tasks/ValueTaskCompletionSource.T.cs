@@ -181,23 +181,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         Debug.Assert(func != null);
 
         CompletionResult completion;
-        if (versionAndStatus.CanBeCompleted)
+        EnterLock();
+        try
         {
-            EnterLock();
-            try
-            {
-                completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
-                    ? SetResult(func(arg), completionData)
-                    : default;
-            }
-            finally
-            {
-                ExitLock();
-            }
+            completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
+                ? SetResult(func(arg), completionData)
+                : default;
         }
-        else
+        finally
         {
-            completion = default;
+            ExitLock();
         }
 
         completion.NotifyListener(runContinuationsAsynchronously);
@@ -216,23 +209,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     internal bool InternalSetResult(object? completionData, short? completionToken, in Result<T> result)
     {
         CompletionResult completion;
-        if (versionAndStatus.CanBeCompleted)
+        EnterLock();
+        try
         {
-            EnterLock();
-            try
-            {
-                completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
-                    ? SetResult(in result, completionData)
-                    : default;
-            }
-            finally
-            {
-                ExitLock();
-            }
+            completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
+                ? SetResult(in result, completionData)
+                : default;
         }
-        else
+        finally
         {
-            completion = default;
+            ExitLock();
         }
 
         completion.NotifyListener(runContinuationsAsynchronously);
