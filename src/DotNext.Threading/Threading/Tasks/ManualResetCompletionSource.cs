@@ -44,28 +44,25 @@ public abstract partial class ManualResetCompletionSource
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
-        if (versionAndStatus.Status is ManualResetCompletionSourceStatus.Activated)
+        CompletionResult completion;
+        EnterLock();
+        try
         {
-            CompletionResult completion;
-            EnterLock();
-            try
-            {
-                completion = versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated)
-                    ? timeoutSource?.Token == token
-                    ? CompleteAsTimedOut()
-                    : CompleteAsCanceled(token)
-                    : default;
+            completion = versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated)
+                ? timeoutSource?.Token == token
+                ? CompleteAsTimedOut()
+                : CompleteAsCanceled(token)
+                : default;
 
-                // ensure that timeout or cancellation handler sets the status correctly
-                Debug.Assert((short)expectedVersion != versionAndStatus.Version || versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
-            }
-            finally
-            {
-                ExitLock();
-            }
-
-            completion.NotifyListener(runContinuationsAsynchronously);
+            // ensure that timeout or cancellation handler sets the status correctly
+            Debug.Assert((short)expectedVersion != versionAndStatus.Version || versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
         }
+        finally
+        {
+            ExitLock();
+        }
+
+        completion.NotifyListener(runContinuationsAsynchronously);
     }
 
     private protected abstract CompletionResult CompleteAsTimedOut();
@@ -160,24 +157,6 @@ public abstract partial class ManualResetCompletionSource
         string errorMessage;
         var snapshot = versionAndStatus;
 
-        // fast path - monitor lock is not needed
-        if (token != snapshot.Version)
-        {
-            errorMessage = ExceptionMessages.InvalidSourceToken;
-            goto invalid_state;
-        }
-
-        switch (snapshot.Status)
-        {
-            default:
-                errorMessage = ExceptionMessages.InvalidSourceState;
-                goto invalid_state;
-            case ManualResetCompletionSourceStatus.WaitForConsumption:
-                goto execute_inplace;
-            case ManualResetCompletionSourceStatus.Activated:
-                break;
-        }
-
         // code block doesn't have any calls leading to exceptions
         // so replace try-finally with manually cloned code
         EnterLock();
@@ -196,16 +175,14 @@ public abstract partial class ManualResetCompletionSource
                 goto invalid_state;
             case ManualResetCompletionSourceStatus.WaitForConsumption:
                 ExitLock();
-                goto execute_inplace;
-            case ManualResetCompletionSourceStatus.Activated:
                 break;
+            case ManualResetCompletionSourceStatus.Activated:
+                this.continuation = continuation;
+                ExitLock();
+                goto exit;
         }
 
-        this.continuation = continuation;
-        ExitLock();
-        goto exit;
-
-    execute_inplace:
+        // execute continuation in-place because the source is completed already
         continuation.InvokeOnCurrentContext(runContinuationsAsynchronously);
 
     exit:
