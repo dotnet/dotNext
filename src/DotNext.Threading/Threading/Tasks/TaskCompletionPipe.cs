@@ -36,7 +36,11 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         }
     }
 
-    private LinkedValueTaskCompletionSource<bool>? CompleteCore()
+    /// <summary>
+    /// Marks the pipe as being complete, meaning no more items will be added to it.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
+    public void Complete()
     {
         lock (SyncRoot)
         {
@@ -44,15 +48,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 throw new InvalidOperationException();
 
             completionRequested = true;
-            return scheduledTasksCount is 0U ? DetachWaitQueue() : null;
+            if (scheduledTasksCount is 0U)
+                DetachWaitQueue()?.TrySetResultAndSentinelToAll(result: false);
         }
     }
-
-    /// <summary>
-    /// Marks the pipe as being complete, meaning no more items will be added to it.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
-    public void Complete() => CompleteCore()?.TrySetResultAndSentinelToAll(result: false);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private bool IsCompleted
@@ -65,7 +64,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         }
     }
 
-    private bool TryAdd(T task, out uint currentVersion, out LinkedValueTaskCompletionSource<bool>? waitNode)
+    private bool TryAdd(T task, out uint currentVersion)
     {
         bool result;
 
@@ -77,9 +76,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             scheduledTasksCount++;
             currentVersion = version;
 
-            waitNode = (result = task.IsCompleted)
-                ? EnqueueCompletedTask(new(task))
-                : null;
+            if (result = task.IsCompleted)
+                EnqueueCompletedTask(new(task));
         }
 
         return result;
@@ -95,27 +93,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     {
         ArgumentNullException.ThrowIfNull(task);
 
-        if (!TryAdd(task, out var expectedVersion, out var waitNode))
-        {
-            Debug.Assert(waitNode is null);
+        if (!TryAdd(task, out var expectedVersion))
             task.ConfigureAwait(false).GetAwaiter().OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion).Invoke);
-        }
-        else if (waitNode is not null)
-        {
-            waitNode.TrySetResultAndSentinelToAll(result: true);
-        }
-    }
-
-    private LinkedValueTaskCompletionSource<bool>? ResetCore()
-    {
-        lock (SyncRoot)
-        {
-            version += 1U;
-            scheduledTasksCount = 0U;
-            completionRequested = false;
-            ClearTaskQueue();
-            return DetachWaitQueue();
-        }
     }
 
     /// <summary>
@@ -125,7 +104,17 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// The pipe can be reused only if there are no active consumers and producers.
     /// Otherwise, the behavior of the pipe is unspecified.
     /// </remarks>
-    public void Reset() => ResetCore()?.TrySetResultAndSentinelToAll(result: false);
+    public void Reset()
+    {
+        lock (SyncRoot)
+        {
+            version += 1U;
+            scheduledTasksCount = 0U;
+            completionRequested = false;
+            ClearTaskQueue();
+            DetachWaitQueue()?.TrySetResultAndSentinelToAll(result: false);
+        }
+    }
 
     internal ValueTask<bool> TryDequeue(out T? task, CancellationToken token)
     {

@@ -56,18 +56,14 @@ public partial class TaskCompletionPipe<T>
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal void Invoke()
         {
-            var owner = GetOwnerAndClear();
-
-            (owner?.version.VolatileRead() == expectedVersion
-                ? owner.EnqueueCompletedTask(this, expectedVersion)
-                : null)?.
-                TrySetResultAndSentinelToAll(result: true);
+            if (GetOwnerAndClear() is { } owner && owner.version.VolatileRead() == expectedVersion)
+                owner.EnqueueCompletedTask(this, expectedVersion);
         }
     }
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private LinkedValueTaskCompletionSource<bool>? EnqueueCompletedTask(LinkedTaskNode node)
+    private void EnqueueCompletedTask(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
@@ -82,20 +78,16 @@ public partial class TaskCompletionPipe<T>
         }
 
         scheduledTasksCount--;
-        return DetachWaitQueue();
+        DetachWaitQueue()?.TrySetResultAndSentinelToAll(result: true);
     }
 
-    private LinkedValueTaskCompletionSource<bool>? EnqueueCompletedTask(LinkedTaskNode node, uint expectedVersion)
+    private void EnqueueCompletedTask(LinkedTaskNode node, uint expectedVersion)
     {
-        LinkedValueTaskCompletionSource<bool>? result;
         lock (SyncRoot)
         {
-            result = version == expectedVersion
-                ? EnqueueCompletedTask(node)
-                : null;
+            if (version == expectedVersion)
+                EnqueueCompletedTask(node);
         }
-
-        return result;
     }
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)
