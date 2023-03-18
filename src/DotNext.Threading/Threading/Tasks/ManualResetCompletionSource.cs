@@ -178,34 +178,32 @@ public abstract partial class ManualResetCompletionSource
                 break;
         }
 
+        // code block doesn't have any calls leading to exceptions
+        // so replace try-finally with manually cloned code
         EnterLock();
-        try
+        if (token != versionAndStatus.Version)
         {
-            // avoid running continuation inside of the lock
-            if (token != versionAndStatus.Version)
-            {
-                errorMessage = ExceptionMessages.InvalidSourceToken;
-                goto invalid_state;
-            }
-
-            switch (versionAndStatus.Status)
-            {
-                default:
-                    errorMessage = ExceptionMessages.InvalidSourceState;
-                    goto invalid_state;
-                case ManualResetCompletionSourceStatus.WaitForConsumption:
-                    goto execute_inplace;
-                case ManualResetCompletionSourceStatus.Activated:
-                    break;
-            }
-
-            this.continuation = continuation;
-            goto exit;
-        }
-        finally
-        {
+            errorMessage = ExceptionMessages.InvalidSourceToken;
             ExitLock();
+            goto invalid_state;
         }
+
+        switch (versionAndStatus.Status)
+        {
+            default:
+                errorMessage = ExceptionMessages.InvalidSourceState;
+                ExitLock();
+                goto invalid_state;
+            case ManualResetCompletionSourceStatus.WaitForConsumption:
+                ExitLock();
+                goto execute_inplace;
+            case ManualResetCompletionSourceStatus.Activated:
+                break;
+        }
+
+        this.continuation = continuation;
+        ExitLock();
+        goto exit;
 
     execute_inplace:
         continuation.InvokeOnCurrentContext(runContinuationsAsynchronously);
@@ -216,6 +214,7 @@ public abstract partial class ManualResetCompletionSource
         throw new InvalidOperationException(errorMessage);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
         => OnCompleted(new(continuation, state, flags), token);
 
