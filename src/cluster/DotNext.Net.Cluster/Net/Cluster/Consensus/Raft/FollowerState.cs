@@ -32,7 +32,7 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
 
     private void ResumeTracking() => suppressionEvent.Set();
 
-    private async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, CancellationToken token)
+    private async Task Track(TimeSpan timeout, CancellationToken token)
     {
         Debug.Assert(token != trackerCancellation.Token);
 
@@ -62,7 +62,7 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         else
         {
             timedOut = false;
-            tracker = Track(timeout, refreshEvent, token);
+            tracker = Track(timeout, token);
         }
     }
 
