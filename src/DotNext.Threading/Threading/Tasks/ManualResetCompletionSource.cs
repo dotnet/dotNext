@@ -377,6 +377,8 @@ public abstract class ManualResetCompletionSource
 
         public void Invoke(bool runAsynchronously)
         {
+            Debug.Assert(action is not null);
+
             if (schedulingContext is not null)
             {
                 InvokeOnSchedulingContext();
@@ -551,6 +553,7 @@ public abstract class ManualResetCompletionSource
         private readonly Continuation continuation;
         private readonly CancellationTokenRegistration tokenTracker, timeoutTracker;
         private readonly CancellationTokenSource? timeoutSource;
+        private readonly bool provided;
 
         public CompletionResult(ManualResetCompletionSource source)
         {
@@ -558,6 +561,7 @@ public abstract class ManualResetCompletionSource
             tokenTracker = source.tokenTracker;
             timeoutTracker = source.timeoutTracker;
             timeoutSource = source.timeoutSource is { } ts && !ts.TryReset() ? ts : null;
+            provided = true;
         }
 
         public void Cleanup()
@@ -567,15 +571,14 @@ public abstract class ManualResetCompletionSource
             timeoutSource?.Dispose();
         }
 
-        public bool NotifyListener(bool runContinuationsAsynchronously)
+        public void NotifyListener(bool runContinuationsAsynchronously)
         {
             Cleanup();
 
-            bool result;
-            if (result = continuation.IsValid)
+            if (continuation.IsValid)
                 continuation.Invoke(runContinuationsAsynchronously);
-
-            return result;
         }
+
+        public static implicit operator bool(in CompletionResult result) => result.provided;
     }
 }
