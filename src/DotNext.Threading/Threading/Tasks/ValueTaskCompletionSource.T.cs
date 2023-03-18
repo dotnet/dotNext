@@ -180,13 +180,13 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     {
         Debug.Assert(func != null);
 
-        CompletionResult result;
+        CompletionResult completion;
         if (versionAndStatus.CanBeCompleted)
         {
             EnterLock();
             try
             {
-                result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
+                completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
                     ? SetResult(func(arg), completionData)
                     : default;
             }
@@ -197,11 +197,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         }
         else
         {
-            result = default;
+            completion = default;
         }
 
-        result.NotifyListener(runContinuationsAsynchronously);
-        return result;
+        completion.NotifyListener(runContinuationsAsynchronously);
+        return completion;
     }
 
     private CompletionResult SetResult(scoped in Result<T> result, object? completionData = null)
