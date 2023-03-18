@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Debug = System.Diagnostics.Debug;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -14,8 +14,13 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         private readonly WeakReference<IConsumer<WaitNode>> ownerRef;
         private object? userData;
         private TKey? id;
+        internal short CompletionToken;
 
-        internal WaitNode(IConsumer<WaitNode> owner) => ownerRef = new(owner, trackResurrection: false);
+        internal WaitNode(IConsumer<WaitNode> owner)
+        {
+            CompletionToken = InitialCompletionToken;
+            ownerRef = new(owner, trackResurrection: false);
+        }
 
         internal void Initialize(TKey id, object? userData)
         {
@@ -44,6 +49,9 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             if (ownerRef.TryGetTarget(out var owner))
                 owner.Invoke(this);
         }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal bool NeedsRemoval => CompletionData is null;
     }
 
     private sealed class Bucket : IConsumer<WaitNode>
@@ -81,14 +89,18 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         [MethodImpl(MethodImplOptions.Synchronized)]
         void IConsumer<WaitNode>.Invoke(WaitNode node)
         {
-            Remove(node);
+            if (node.NeedsRemoval)
+                Remove(node);
 
-            if (pooled is null && node.TryReset(out _))
+            if (pooled is null && node.TryReset(out var freshToken))
+            {
+                node.CompletionToken = freshToken;
                 pooled = node;
+            }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        internal bool Remove(TKey expected, in Result<TValue> value, IEqualityComparer<TKey>? comparer, out object? userData)
+        internal WaitNode? Remove(TKey expected, IEqualityComparer<TKey>? comparer, out short completionToken)
         {
             for (WaitNode? current = first, next; current is not null; current = next)
             {
@@ -96,13 +108,13 @@ public partial class AsyncCorrelationSource<TKey, TValue>
                 if (current.Match(expected, comparer))
                 {
                     Remove(current);
-                    userData = current.UserData;
-                    return value.IsSuccessful ? current.TrySetResult(value.OrDefault()!) : current.TrySetException(value.Error);
+                    completionToken = current.CompletionToken; // it cannot be modified concurrently
+                    return current;
                 }
             }
 
-            userData = null;
-            return false;
+            completionToken = default;
+            return null;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
