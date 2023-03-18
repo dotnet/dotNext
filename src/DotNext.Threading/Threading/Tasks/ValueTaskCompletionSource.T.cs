@@ -207,6 +207,26 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return Complete(completionData);
     }
 
+    internal bool InternalSetResult(object? completionData, short? completionToken, in Result<T> result)
+    {
+        CompletionResult completion;
+        if (versionAndStatus.CanBeCompleted)
+        {
+            lock (SyncRoot)
+            {
+                completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
+                    ? SetResult(in result, completionData)
+                    : default;
+            }
+        }
+        else
+        {
+            completion = default;
+        }
+
+        return completion.NotifyListener(runContinuationsAsynchronously);
+    }
+
     /// <inheritdoc />
     protected override void Cleanup() => result = default;
 
