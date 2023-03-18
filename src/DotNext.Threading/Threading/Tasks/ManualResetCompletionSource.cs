@@ -10,7 +10,7 @@ namespace DotNext.Threading.Tasks;
 /// Represents base class for producer of value task.
 /// </summary>
 [SuppressMessage("Usage", "CA1001", Justification = "CTS is disposed automatically when passing through lifecycle of the completion source")]
-public abstract class ManualResetCompletionSource
+public abstract partial class ManualResetCompletionSource
 {
     /// <summary>
     /// Represents initial value of the completion token when constructing a new instance of the completion source.
@@ -36,8 +36,6 @@ public abstract class ManualResetCompletionSource
         cancellationCallback = CancellationRequested;
     }
 
-    private protected object SyncRoot => cancellationCallback;
-
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void CancellationRequested(object? expectedVersion, CancellationToken token)
     {
@@ -49,7 +47,8 @@ public abstract class ManualResetCompletionSource
         if (versionAndStatus.Status is ManualResetCompletionSourceStatus.Activated)
         {
             CompletionResult completion;
-            lock (SyncRoot)
+            EnterLock();
+            try
             {
                 completion = versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated)
                     ? timeoutSource?.Token == token
@@ -59,6 +58,10 @@ public abstract class ManualResetCompletionSource
 
                 // ensure that timeout or cancellation handler sets the status correctly
                 Debug.Assert((short)expectedVersion != versionAndStatus.Version || versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
+            }
+            finally
+            {
+                ExitLock();
             }
 
             completion.NotifyListener(runContinuationsAsynchronously);
@@ -87,10 +90,10 @@ public abstract class ManualResetCompletionSource
     /// <returns>The version of the incompleted task.</returns>
     public short Reset()
     {
-        Monitor.Enter(SyncRoot);
+        EnterLock();
         var completion = Complete(completionData: null);
         var token = versionAndStatus.Reset();
-        Monitor.Exit(SyncRoot);
+        ExitLock();
 
         completion.Cleanup();
         Cleanup();
@@ -106,11 +109,11 @@ public abstract class ManualResetCompletionSource
     {
         bool result;
 
-        if (result = Monitor.TryEnter(SyncRoot))
+        if (result = TryEnterLock())
         {
             var completion = Complete(completionData: null);
             token = versionAndStatus.Reset();
-            Monitor.Exit(SyncRoot);
+            ExitLock();
 
             completion.Cleanup();
             Cleanup();
@@ -140,10 +143,9 @@ public abstract class ManualResetCompletionSource
     private protected CompletionResult Complete(object? completionData)
     {
         // this method should not throw any exceptions
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertLocked();
 
         var result = new CompletionResult(this);
-
         continuation = default;
         tokenTracker = default;
         timeoutTracker = default;
@@ -176,7 +178,8 @@ public abstract class ManualResetCompletionSource
                 break;
         }
 
-        lock (SyncRoot)
+        EnterLock();
+        try
         {
             // avoid running continuation inside of the lock
             if (token != versionAndStatus.Version)
@@ -198,6 +201,10 @@ public abstract class ManualResetCompletionSource
 
             this.continuation = continuation;
             goto exit;
+        }
+        finally
+        {
+            ExitLock();
         }
 
     execute_inplace:
@@ -265,7 +272,8 @@ public abstract class ManualResetCompletionSource
 
         // The task can be created for the completed (but not yet consumed) source.
         // This workaround is needed for AsyncBridge methods
-        lock (SyncRoot)
+        EnterLock();
+        try
         {
             switch (versionAndStatus.Status)
             {
@@ -277,6 +285,10 @@ public abstract class ManualResetCompletionSource
                 default:
                     return false;
             }
+        }
+        finally
+        {
+            ExitLock();
         }
 
         void Activate(TimeSpan timeout, CancellationToken token)

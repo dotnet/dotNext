@@ -97,7 +97,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
 
     private CompletionResult SetResult(Exception? result, object? completionData = null)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertLocked();
 
         this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
         versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
@@ -139,11 +139,16 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
 
         if (versionAndStatus.CanBeCompleted)
         {
-            lock (SyncRoot)
+            EnterLock();
+            try
             {
                 completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
                     ? SetResult(factory.Invoke(), completionData)
                     : default;
+            }
+            finally
+            {
+                ExitLock();
             }
         }
         else

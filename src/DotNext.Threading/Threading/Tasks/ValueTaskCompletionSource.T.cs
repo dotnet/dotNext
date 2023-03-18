@@ -183,11 +183,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         CompletionResult result;
         if (versionAndStatus.CanBeCompleted)
         {
-            lock (SyncRoot)
+            EnterLock();
+            try
             {
                 result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
                     ? SetResult(func(arg), completionData)
                     : default;
+            }
+            finally
+            {
+                ExitLock();
             }
         }
         else
@@ -201,7 +206,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
 
     private CompletionResult SetResult(scoped in Result<T> result, object? completionData = null)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertLocked();
 
         this.result = result;
         versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
@@ -213,11 +218,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         CompletionResult completion;
         if (versionAndStatus.CanBeCompleted)
         {
-            lock (SyncRoot)
+            EnterLock();
+            try
             {
                 completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
                     ? SetResult(in result, completionData)
                     : default;
+            }
+            finally
+            {
+                ExitLock();
             }
         }
         else
