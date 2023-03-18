@@ -68,16 +68,14 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         var bucket = Volatile.Read(ref GetBucket(eventId));
 
-        if (bucket?.Remove(eventId, comparer, out var completionToken) is not { } node)
+        if (bucket?.Remove(eventId, comparer, out var completionToken) is { } node)
         {
-            userData = null;
-            return false;
+            userData = node.UserData;
+            return node.InternalSetResult(Sentinel.Instance, completionToken, in value);
         }
 
-        userData = node.UserData;
-        return value.IsSuccessful
-            ? node.TrySetResult(Sentinel.Instance, completionToken, value.OrDefault()!)
-            : node.TrySetException(Sentinel.Instance, completionToken, value.Error);
+        userData = null;
+        return false;
     }
 
     private unsafe void PulseAll<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
