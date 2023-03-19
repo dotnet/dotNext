@@ -60,13 +60,24 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
     private void OnCompleted(DefaultWaitNode node)
     {
+        ManualResetCompletionSource.CompletionResult completion;
         lock (SyncRoot)
         {
-            if (node.NeedsRemoval && RemoveNode(node))
-                DrainWaitQueue();
-
-            pool.Return(node);
+            if (node.NeedsRemoval && RemoveNode(node) && DrainWaitQueue(out completion))
+            {
+                pool.Return(node);
+            }
+            else
+            {
+                pool.Return(node);
+                goto exit;
+            }
         }
+
+        completion.NotifyListener(runContinuationsAsynchronously: true);
+
+    exit:
+        return;
     }
 
     /// <summary>
@@ -184,7 +195,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new InterruptionReasonAndCancellationToken(reason, token));
 
-    private void DrainWaitQueue()
+    private bool DrainWaitQueue(out ManualResetCompletionSource.CompletionResult completion)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
@@ -196,12 +207,15 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 break;
 
             // skip dead node
-            if (RemoveAndSignal(current))
+            if (RemoveAndSignal(current, out completion))
             {
                 manager.AcquireLock();
-                break;
+                return true;
             }
         }
+
+        completion = default;
+        return false;
     }
 
     /// <summary>
@@ -211,6 +225,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
+        ManualResetCompletionSource.CompletionResult completion;
         lock (SyncRoot)
         {
             ThrowIfDisposed();
@@ -218,11 +233,19 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             manager.ExitLock();
-            DrainWaitQueue();
+            if (!DrainWaitQueue(out completion))
+            {
+                if (IsDisposing && IsReadyToDispose)
+                    Dispose(true);
 
-            if (IsDisposing && IsReadyToDispose)
-                Dispose(true);
+                goto exit;
+            }
         }
+
+        completion.NotifyListener(runContinuationsAsynchronously: true);
+
+    exit:
+        return;
     }
 
     private protected sealed override bool IsReadyToDispose => manager is { Value: false } && first is null;
