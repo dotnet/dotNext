@@ -63,7 +63,7 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private ManualResetCompletionSource.CompletionResult EnqueueCompletedTask(LinkedTaskNode node)
+    private bool EnqueueCompletedTask(LinkedTaskNode node, out ManualResetCompletionSource.CompletionResult completion)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
@@ -84,15 +84,16 @@ public partial class TaskCompletionPipe<T>
         // but also improves throughput (number of submitted tasks per second).
         // Typically, the pipe has single consumer and multiple producers. In that
         // case, improved throughput is most preferred.
-        var completion = default(ManualResetCompletionSource.CompletionResult);
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && !completion; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
         {
             next = current.Next;
             RemoveNode(current);
-            completion = current.InternalSetResult(Sentinel.Instance, completionToken: null, true);
+            if (current.SetResult(Sentinel.Instance, completionToken: null, true, out completion))
+                return true;
         }
 
-        return completion;
+        completion = default;
+        return false;
     }
 
     private void EnqueueCompletedTask(LinkedTaskNode node, uint expectedVersion)
@@ -100,14 +101,16 @@ public partial class TaskCompletionPipe<T>
         ManualResetCompletionSource.CompletionResult completion;
         lock (SyncRoot)
         {
-            completion = version == expectedVersion
-                ? EnqueueCompletedTask(node)
-                : default;
+            if (version != expectedVersion || !EnqueueCompletedTask(node, out completion))
+                goto exit;
         }
 
         // Reuse the current thread to invoke continuation.
         // This is fine because the current method is called from task continuation
         completion.NotifyListener(runContinuationsAsynchronously: false);
+
+    exit:
+        return;
     }
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)

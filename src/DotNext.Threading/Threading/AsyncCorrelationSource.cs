@@ -66,18 +66,22 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
     public bool Pulse(TKey eventId, in Result<TValue> value, out object? userData)
     {
+        bool result;
         var bucket = Volatile.Read(ref GetBucket(eventId));
 
         if (bucket?.Remove(eventId, comparer, out var completionToken) is { } node)
         {
             userData = node.UserData;
-            var completion = node.InternalSetResult(Sentinel.Instance, completionToken, in value);
-            completion.NotifyListener(runContinuationsAsynchronously: true);
-            return completion;
+            if (result = node.SetResult(Sentinel.Instance, completionToken, in value, out var completion))
+                completion.NotifyListener(runContinuationsAsynchronously: true);
+        }
+        else
+        {
+            result = false;
+            userData = null;
         }
 
-        userData = null;
-        return false;
+        return result;
     }
 
     private unsafe void PulseAll<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
