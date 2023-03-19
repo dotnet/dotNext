@@ -60,18 +60,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
     private void OnCompleted(DefaultWaitNode node)
     {
-        ManualResetCompletionSource.CompletionResult completion;
+        Unsafe.SkipInit(out ManualResetCompletionSource.CompletionResult completion);
         lock (SyncRoot)
         {
-            if (node.NeedsRemoval && RemoveNode(node) && DrainWaitQueue(out completion))
-            {
-                pool.Return(node);
-            }
-            else
-            {
-                pool.Return(node);
+            var nodeDetached = node.NeedsRemoval && RemoveNode(node) && DrainWaitQueue(out completion);
+            pool.Return(node);
+            if (!nodeDetached)
                 goto exit;
-            }
         }
 
         completion.NotifyListener(runContinuationsAsynchronously: true);
