@@ -136,12 +136,18 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         where TFactory : notnull, ISupplier<Exception?>
     {
         CompletionResult completion;
+        bool result;
         EnterLock();
         try
         {
-            completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
-                ? SetResult(factory.Invoke(), completionData)
-                : default;
+            if (result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
+            {
+                completion = SetResult(factory.Invoke(), completionData);
+            }
+            else
+            {
+                goto exit;
+            }
         }
         finally
         {
@@ -149,7 +155,9 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         }
 
         completion.NotifyListener(runContinuationsAsynchronously);
-        return completion;
+
+    exit:
+        return result;
     }
 
     /// <inheritdoc />

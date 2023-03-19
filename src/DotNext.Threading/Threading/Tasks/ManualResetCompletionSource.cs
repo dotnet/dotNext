@@ -541,7 +541,6 @@ public abstract partial class ManualResetCompletionSource
         private readonly Continuation continuation;
         private readonly CancellationTokenRegistration tokenTracker, timeoutTracker;
         private readonly CancellationTokenSource? timeoutSource;
-        private readonly bool provided;
 
         public CompletionResult(ManualResetCompletionSource source)
         {
@@ -549,7 +548,6 @@ public abstract partial class ManualResetCompletionSource
             tokenTracker = source.tokenTracker;
             timeoutTracker = source.timeoutTracker;
             timeoutSource = source.timeoutSource is { } ts && !ts.TryReset() ? ts : null;
-            provided = true;
         }
 
         public void Cleanup()
@@ -566,7 +564,5 @@ public abstract partial class ManualResetCompletionSource
             if (continuation.IsValid)
                 continuation.Invoke(runContinuationsAsynchronously);
         }
-
-        public static implicit operator bool(in CompletionResult result) => result.provided;
     }
 }

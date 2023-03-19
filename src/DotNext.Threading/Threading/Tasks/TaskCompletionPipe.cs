@@ -76,14 +76,15 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
             scheduledTasksCount++;
             currentVersion = version;
-
-            completion = (result = task.IsCompleted)
-                ? EnqueueCompletedTask(new(task))
-                : default;
+            result = task.IsCompleted;
+            if (!result || !EnqueueCompletedTask(new(task), out completion))
+                goto exit;
         }
 
         // decouple producer thread from consumer thread
         completion.NotifyListener(runContinuationsAsynchronously: true);
+
+    exit:
         return result;
     }
 

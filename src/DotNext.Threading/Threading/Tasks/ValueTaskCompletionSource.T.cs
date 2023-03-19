@@ -181,12 +181,18 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         Debug.Assert(func != null);
 
         CompletionResult completion;
+        bool result;
         EnterLock();
         try
         {
-            completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
-                ? SetResult(func(arg), completionData)
-                : default;
+            if (result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
+            {
+                completion = SetResult(func(arg), completionData);
+            }
+            else
+            {
+                goto exit;
+            }
         }
         finally
         {
@@ -194,7 +200,9 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         }
 
         completion.NotifyListener(runContinuationsAsynchronously);
-        return completion;
+
+    exit:
+        return result;
     }
 
     private CompletionResult SetResult(scoped in Result<T> result, object? completionData = null)
@@ -206,13 +214,13 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return Complete(completionData);
     }
 
-    internal CompletionResult InternalSetResult(object? completionData, short? completionToken, scoped in Result<T> result)
+    internal bool SetResult(object? completionData, short? completionToken, scoped in Result<T> result, out CompletionResult completion)
     {
-        CompletionResult completion;
+        bool successful;
         EnterLock();
         try
         {
-            completion = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version)
+            completion = (successful = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
                 ? SetResult(in result, completionData)
                 : default;
         }
@@ -221,7 +229,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
             ExitLock();
         }
 
-        return completion;
+        return successful;
     }
 
     /// <inheritdoc />
