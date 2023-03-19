@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
@@ -114,10 +113,13 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset()
     {
-        lock (SyncRoot)
-        {
-            return manager.TryReset();
-        }
+        ThrowIfDisposed();
+
+        Monitor.Enter(SyncRoot);
+        var result = manager.TryReset();
+        Monitor.Exit(SyncRoot);
+
+        return result;
     }
 
     /// <summary>
@@ -125,8 +127,11 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// </summary>
     /// <exception cref="OverflowException">Counter overflow detected.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Increment() => IncrementCore(1L);
+    public void Increment()
+    {
+        ThrowIfDisposed();
+        IncrementCore(1L);
+    }
 
     /// <summary>
     /// Increments counter and resume suspended callers.
@@ -137,6 +142,8 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OverflowException">Counter overflow detected.</exception>
     public void Increment(long delta)
     {
+        ThrowIfDisposed();
+
         switch (delta)
         {
             case < 0L:
@@ -155,7 +162,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             manager.Increment(delta);
 
             for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && manager.Value > 0L; current = next)
@@ -204,10 +210,12 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
     public bool TryDecrement()
     {
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
-            return TryAcquire(ref manager);
-        }
+        ThrowIfDisposed();
+
+        Monitor.Enter(SyncRoot);
+        var result = TryAcquire(ref manager);
+        Monitor.Exit(SyncRoot);
+
+        return result;
     }
 }

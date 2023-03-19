@@ -1,9 +1,7 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
-using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -105,11 +103,11 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Set(bool autoReset)
     {
-        bool result;
+        ThrowIfDisposed();
 
+        bool result;
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             result = !manager.Value;
             manager.Value = !autoReset;
             ResumeAll(DetachWaitQueue());
@@ -125,11 +123,13 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Reset()
     {
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
-            return manager.TryReset();
-        }
+        ThrowIfDisposed();
+
+        Monitor.Enter(SyncRoot);
+        var result = manager.TryReset();
+        Monitor.Exit(SyncRoot);
+
+        return result;
     }
 
     /// <inheritdoc/>

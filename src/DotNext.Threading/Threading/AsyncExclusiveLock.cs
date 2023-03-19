@@ -60,16 +60,16 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
     private void OnCompleted(DefaultWaitNode node)
     {
-        Unsafe.SkipInit(out ManualResetCompletionSource.CompletionResult completion);
+        var suspendedCaller = default(ManualResetCompletionSource.CompletionResult);
         lock (SyncRoot)
         {
-            var nodeDetached = node.NeedsRemoval && RemoveNode(node) && DrainWaitQueue(out completion);
+            var nodeDetached = node.NeedsRemoval && RemoveNode(node) && DrainWaitQueue(out suspendedCaller);
             pool.Return(node);
             if (!nodeDetached)
                 goto exit;
         }
 
-        completion.NotifyListener(runContinuationsAsynchronously: true);
+        suspendedCaller.NotifyListener(runContinuationsAsynchronously: true);
 
     exit:
         return;
@@ -87,11 +87,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryAcquire()
     {
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
-            return TryAcquire(ref manager);
-        }
+        ThrowIfDisposed();
+        Monitor.Enter(SyncRoot);
+        var result = TryAcquire(ref manager);
+        Monitor.Exit(SyncRoot);
+
+        return result;
     }
 
     /// <summary>
@@ -190,7 +191,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new InterruptionReasonAndCancellationToken(reason, token));
 
-    private bool DrainWaitQueue(out ManualResetCompletionSource.CompletionResult completion)
+    private bool DrainWaitQueue(out ManualResetCompletionSource.CompletionResult suspendedCaller)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
@@ -202,14 +203,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 break;
 
             // skip dead node
-            if (RemoveAndSignal(current, out completion))
+            if (RemoveAndSignal(current, out suspendedCaller))
             {
                 manager.AcquireLock();
                 return true;
             }
         }
 
-        completion = default;
+        suspendedCaller = default;
         return false;
     }
 
@@ -220,10 +221,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
+        ThrowIfDisposed();
         ManualResetCompletionSource.CompletionResult completion;
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             if (!manager.Value)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 

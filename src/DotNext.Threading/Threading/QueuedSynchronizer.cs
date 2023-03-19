@@ -356,9 +356,9 @@ public class QueuedSynchronizer : Disposable
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
+        ThrowIfDisposed();
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             first?.TrySetCanceledAndSentinelToAll(token);
             first = last = null;
         }
@@ -776,9 +776,10 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected void Release()
     {
+        ThrowIfDisposed();
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
@@ -797,9 +798,10 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected void Release(TContext context)
     {
+        ThrowIfDisposed();
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             ReleaseCore(context);
             DrainWaitQueue();
 

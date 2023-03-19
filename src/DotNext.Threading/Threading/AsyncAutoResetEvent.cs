@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
@@ -82,11 +81,13 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Reset()
     {
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
-            return TryAcquire(ref manager);
-        }
+        ThrowIfDisposed();
+
+        Monitor.Enter(SyncRoot);
+        var result = TryAcquire(ref manager);
+        Monitor.Exit(SyncRoot);
+
+        return result;
     }
 
     /// <summary>
@@ -96,30 +97,39 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Set()
     {
+        ThrowIfDisposed();
+
+        ManualResetCompletionSource.CompletionResult suspendedCaller;
+        bool result;
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
-
-            if (manager.Value)
-                return false;
-
-            for (LinkedValueTaskCompletionSource<bool>? current = first, next; ; current = next)
+            if (result = !manager.Value)
             {
-                if (current is null)
+                for (LinkedValueTaskCompletionSource<bool>? current = first, next; ; current = next)
                 {
-                    manager.Value = true;
-                    break;
+                    if (current is null)
+                    {
+                        manager.Value = true;
+                        break;
+                    }
+
+                    next = current.Next;
+
+                    // skip dead node
+                    if (RemoveAndSignal(current, out suspendedCaller))
+                        goto invoke_continuation;
                 }
-
-                next = current.Next;
-
-                // skip dead node
-                if (RemoveAndSignal(current))
-                    break;
             }
 
-            return true;
+            goto exit;
         }
+
+    invoke_continuation:
+        suspendedCaller.NotifyListener(runContinuationsAsynchronously: true);
+
+    exit:
+        return result;
     }
 
     /// <inheritdoc/>
