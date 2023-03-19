@@ -319,12 +319,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryEnterWriteLock(in LockStamp stamp)
     {
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
+        ThrowIfDisposed();
 
-            return stamp.IsValid(in state) && TryAcquire(ref GetLockManager<WriteLockManager>());
-        }
+        Monitor.Enter(SyncRoot);
+        var result = stamp.IsValid(in state) && TryAcquire(ref GetLockManager<WriteLockManager>());
+        Monitor.Exit(SyncRoot);
+
+        return result;
     }
 
     /// <summary>
@@ -383,12 +384,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     private bool TryEnter<TLockManager>()
         where TLockManager : struct, ILockManager<WaitNode>
     {
-        lock (SyncRoot)
-        {
-            ThrowIfDisposed();
+        ThrowIfDisposed();
 
-            return TryAcquire(ref GetLockManager<TLockManager>());
-        }
+        Monitor.Enter(SyncRoot);
+        var result = TryAcquire(ref GetLockManager<TLockManager>());
+        Monitor.Exit(SyncRoot);
+
+        return result;
     }
 
     /// <summary>
@@ -531,10 +533,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
+        ThrowIfDisposed();
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
-
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
@@ -557,10 +559,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void DowngradeFromWriteLock()
     {
+        ThrowIfDisposed();
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
-
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 

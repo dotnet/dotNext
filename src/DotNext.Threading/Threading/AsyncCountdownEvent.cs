@@ -1,10 +1,8 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -107,13 +105,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
     internal bool TryAddCount(long signalCount, bool autoReset)
     {
+        Debug.Assert(signalCount > 0L);
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
-
-            if (signalCount < 0)
-                throw new ArgumentOutOfRangeException(nameof(signalCount));
-
             if (manager.Current is 0L && !autoReset)
                 return false;
 
@@ -129,7 +124,17 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if the increment succeeded; if <see cref="CurrentCount"/> is already at zero this will return <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than zero.</exception>
-    public bool TryAddCount(long signalCount) => TryAddCount(signalCount, false);
+    public bool TryAddCount(long signalCount)
+    {
+        ThrowIfDisposed();
+
+        return signalCount switch
+        {
+            < 0L => throw new ArgumentOutOfRangeException(nameof(signalCount)),
+            0L => true,
+            _ => TryAddCount(signalCount, autoReset: false),
+        };
+    }
 
     /// <summary>
     /// Attempts to increment the current count by one.

@@ -205,7 +205,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return result;
     }
 
-    private CompletionResult SetResult(scoped in Result<T> result, object? completionData = null)
+    private CompletionResult SetResult(in Result<T> result, object? completionData = null)
     {
         AssertLocked();
 
@@ -214,7 +214,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return Complete(completionData);
     }
 
-    internal bool SetResult(object? completionData, short? completionToken, scoped in Result<T> result, out CompletionResult completion)
+    internal bool SetResult(object? completionData, short? completionToken, in Result<T> result, out CompletionResult completion)
     {
         bool successful;
         EnterLock();

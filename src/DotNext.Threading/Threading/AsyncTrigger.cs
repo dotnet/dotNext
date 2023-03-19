@@ -5,7 +5,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
-using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -86,9 +85,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     public bool Signal(bool resumeAll = false)
     {
+        ThrowIfDisposed();
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             return Resume(resumeAll) > 0L;
         }
     }
@@ -438,9 +438,7 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
 
             next = Unsafe.As<WaitNode>(current.Next);
 
-            var transition = current.Transition;
-
-            if (current.IsCompleted || transition is null)
+            if (current.IsCompleted || current.Transition is not { } transition)
             {
                 RemoveNode(current);
                 continue;
@@ -460,9 +458,10 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     public void Signal()
     {
+        ThrowIfDisposed();
+
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
@@ -480,9 +479,9 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     {
         ArgumentNullException.ThrowIfNull(transition);
 
+        ThrowIfDisposed();
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             transition(State);
             DrainWaitQueue();
 
@@ -503,9 +502,9 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     {
         ArgumentNullException.ThrowIfNull(transition);
 
+        ThrowIfDisposed();
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             transition(State, arg);
             DrainWaitQueue();
 
@@ -525,10 +524,9 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     {
         ArgumentNullException.ThrowIfNull(transition);
 
+        ThrowIfDisposed();
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
-
             var manager = new LockManager(State, transition);
             return TryAcquire(ref manager);
         }
