@@ -33,9 +33,9 @@ public static class TaskCompletionPipe
     [DynamicInterfaceCastableImplementation]
     private interface ITypedTaskCompletionPipe<T> : IAsyncEnumerable<T>
     {
-        private static async IAsyncEnumerator<T> GetAsyncEnumerator(TaskCompletionPipe<Task<T>> pipe, CancellationToken token)
+        private static async IAsyncEnumerator<T> GetAsyncEnumerator(TaskCompletionPipe<Task<T>> pipe, uint expectedVersion, CancellationToken token)
         {
-            while (await pipe.TryDequeue(out var task, token).ConfigureAwait(false))
+            while (await pipe.TryDequeue(expectedVersion, out var task, token).ConfigureAwait(false))
             {
                 if (task is not null)
                 {
@@ -50,7 +50,8 @@ public static class TaskCompletionPipe
         {
             Debug.Assert(this is TaskCompletionPipe<Task<T>>);
 
-            return GetAsyncEnumerator(Unsafe.As<TaskCompletionPipe<Task<T>>>(this), token);
+            var pipe = Unsafe.As<TaskCompletionPipe<Task<T>>>(this);
+            return GetAsyncEnumerator(pipe, pipe.Version, token);
         }
     }
 

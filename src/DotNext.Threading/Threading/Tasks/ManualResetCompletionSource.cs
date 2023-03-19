@@ -536,7 +536,7 @@ public abstract partial class ManualResetCompletionSource
     /// of the monitor lock to avoid lock contention.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    private protected readonly ref struct CompletionResult
+    internal readonly ref struct CompletionResult
     {
         private readonly Continuation continuation;
         private readonly CancellationTokenRegistration tokenTracker, timeoutTracker;

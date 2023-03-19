@@ -140,8 +140,19 @@ namespace DotNext.Threading.Tasks
             pipe.Add(Task.FromResult(42));
             pipe.Complete();
             True(await consumer1);
-            True(await consumer2);
+            False(await consumer2);
             True(await pipe.WaitToReadAsync());
+        }
+
+        [Fact]
+        public static async Task WrongIteratorVersion()
+        {
+            var pipe = new TaskCompletionPipe<Task<int>>();
+            await using var enumerator = pipe.GetAsyncEnumerator(CancellationToken.None);
+            pipe.Reset();
+
+            pipe.Add(Task.FromResult(42));
+            False(await enumerator.MoveNextAsync());
         }
     }
 }
