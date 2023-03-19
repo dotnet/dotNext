@@ -154,7 +154,7 @@ public ref partial struct BufferWriterSlim<T>
     public void Advance(int count)
     {
         if (count < 0)
-            ThrowArgumentOutOfRangeException();
+            ThrowCountOutOfRangeException();
 
         if (position > Capacity - count)
             ThrowInvalidOperationException();
@@ -163,12 +163,25 @@ public ref partial struct BufferWriterSlim<T>
 
         [DoesNotReturn]
         [StackTraceHidden]
-        static void ThrowArgumentOutOfRangeException() => throw new ArgumentOutOfRangeException(nameof(count));
-
-        [DoesNotReturn]
-        [StackTraceHidden]
         static void ThrowInvalidOperationException() => throw new InvalidOperationException();
     }
+
+    /// <summary>
+    /// Moves the writer back the specified number of items.
+    /// </summary>
+    /// <param name="count">The number of items.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
+    public void Rewind(int count)
+    {
+        if ((uint)count > (uint)position)
+            ThrowCountOutOfRangeException();
+
+        position -= count;
+    }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowCountOutOfRangeException() => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Writes elements to this buffer.
