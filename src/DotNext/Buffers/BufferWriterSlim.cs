@@ -208,7 +208,7 @@ public ref partial struct BufferWriterSlim<T>
     /// <summary>
     /// Adds single element and returns a reference to it.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The reference to the added element.</returns>
     /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place extra element.</exception>
     public ref T Add()
     {
