@@ -56,14 +56,14 @@ public partial class TaskCompletionPipe<T>
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal void Invoke()
         {
-            if (GetOwnerAndClear() is { } owner && owner.version.VolatileRead() == expectedVersion)
+            if (GetOwnerAndClear() is { } owner && owner.Version == expectedVersion)
                 owner.EnqueueCompletedTask(this, expectedVersion);
         }
     }
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private void EnqueueCompletedTask(LinkedTaskNode node)
+    private ManualResetCompletionSource.CompletionResult EnqueueCompletedTask(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
@@ -78,16 +78,36 @@ public partial class TaskCompletionPipe<T>
         }
 
         scheduledTasksCount--;
-        DetachWaitQueue()?.TrySetResultAndSentinelToAll(result: true);
+
+        // Detaches continuation to call later out of monitor lock.
+        // This approach increases response time (the time needed to submit completed task asynchronously),
+        // but also improves throughput (number of submitted tasks per second).
+        // Typically, the pipe has single consumer and multiple producers. In that
+        // case, improved throughput is most preferred.
+        var completion = default(ManualResetCompletionSource.CompletionResult);
+        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && !completion; current = next)
+        {
+            next = current.Next;
+            RemoveNode(current);
+            completion = current.InternalSetResult(Sentinel.Instance, completionToken: null, true);
+        }
+
+        return completion;
     }
 
     private void EnqueueCompletedTask(LinkedTaskNode node, uint expectedVersion)
     {
+        ManualResetCompletionSource.CompletionResult completion;
         lock (SyncRoot)
         {
-            if (version == expectedVersion)
-                EnqueueCompletedTask(node);
+            completion = version == expectedVersion
+                ? EnqueueCompletedTask(node)
+                : default;
         }
+
+        // Reuse the current thread to invoke continuation.
+        // This is fine because the current method is called from task continuation
+        completion.NotifyListener(runContinuationsAsynchronously: false);
     }
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)

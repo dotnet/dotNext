@@ -67,6 +67,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     private bool TryAdd(T task, out uint currentVersion)
     {
         bool result;
+        ManualResetCompletionSource.CompletionResult completion;
 
         lock (SyncRoot)
         {
@@ -76,10 +77,13 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             scheduledTasksCount++;
             currentVersion = version;
 
-            if (result = task.IsCompleted)
-                EnqueueCompletedTask(new(task));
+            completion = (result = task.IsCompleted)
+                ? EnqueueCompletedTask(new(task))
+                : default;
         }
 
+        // decouple producer thread from consumer thread
+        completion.NotifyListener(runContinuationsAsynchronously: true);
         return result;
     }
 
@@ -116,22 +120,39 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         }
     }
 
-    internal ValueTask<bool> TryDequeue(out T? task, CancellationToken token)
+    internal ValueTask<bool> TryDequeue(uint expectedVersion, out T? task, CancellationToken token)
     {
         ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
+        ValueTask<bool> result;
 
         lock (SyncRoot)
         {
+            if (expectedVersion != version)
+            {
+                task = null;
+                result = new(false);
+                goto exit;
+            }
+
             if (TryDequeueCompletedTask(out task))
-                return new(true);
+            {
+                result = new(true);
+                goto exit;
+            }
 
             if (IsCompleted)
-                return new(false);
+            {
+                result = new(false);
+                goto exit;
+            }
 
             factory = EnqueueNode();
         }
 
-        return factory.Invoke(token);
+        result = factory.Invoke(token);
+
+    exit:
+        return result;
     }
 
     /// <summary>
@@ -208,14 +229,9 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
         => WaitToReadAsync(new(Timeout.InfiniteTicks), token);
 
-    /// <summary>
-    /// Gets the enumerator to get the completed tasks.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The enumerator over completed tasks.</returns>
-    public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
+    private async IAsyncEnumerator<T> GetAsyncEnumerator(uint expectedVersion, CancellationToken token)
     {
-        while (await TryDequeue(out var task, token).ConfigureAwait(false))
+        while (await TryDequeue(expectedVersion, out var task, token).ConfigureAwait(false))
         {
             if (task is not null)
             {
@@ -225,4 +241,14 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             }
         }
     }
+
+    /// <summary>
+    /// Gets the enumerator to get the completed tasks.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The enumerator over completed tasks.</returns>
+    public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
+        => GetAsyncEnumerator(Version, token);
+
+    internal uint Version => version.VolatileRead();
 }

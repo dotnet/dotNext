@@ -71,7 +71,9 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         if (bucket?.Remove(eventId, comparer, out var completionToken) is { } node)
         {
             userData = node.UserData;
-            return node.InternalSetResult(Sentinel.Instance, completionToken, in value);
+            var completion = node.InternalSetResult(Sentinel.Instance, completionToken, in value);
+            completion.NotifyListener(runContinuationsAsynchronously: true);
+            return completion;
         }
 
         userData = null;

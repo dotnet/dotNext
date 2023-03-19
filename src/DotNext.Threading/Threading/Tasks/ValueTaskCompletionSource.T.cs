@@ -206,7 +206,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return Complete(completionData);
     }
 
-    internal bool InternalSetResult(object? completionData, short? completionToken, in Result<T> result)
+    internal CompletionResult InternalSetResult(object? completionData, short? completionToken, scoped in Result<T> result)
     {
         CompletionResult completion;
         EnterLock();
@@ -221,7 +221,6 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
             ExitLock();
         }
 
-        completion.NotifyListener(runContinuationsAsynchronously);
         return completion;
     }
 
