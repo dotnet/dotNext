@@ -141,7 +141,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// </summary>
     /// <returns><see langword="true"/> if the increment succeeded; if <see cref="CurrentCount"/> is already at zero this will return <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    public bool TryAddCount() => TryAddCount(1L);
+    public bool TryAddCount()
+    {
+        ThrowIfDisposed();
+
+        return TryAddCount(1L, autoReset: false);
+    }
 
     /// <summary>
     /// Increments the current count by a specified value.
@@ -182,11 +187,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
 
+        ThrowIfDisposed();
+
         bool result;
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
-
             // in signaled state
             if (manager.Current is not 0L)
             {
@@ -324,11 +329,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (signalCount < 1L)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
+        ThrowIfDisposed();
+
         bool result;
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
-
             if (manager.Current is 0L)
                 throw new InvalidOperationException();
 
