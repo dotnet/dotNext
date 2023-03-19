@@ -58,7 +58,7 @@ namespace DotNext.Buffers
         {
             using var builder = new BufferWriterSlim<int>();
             Equal(0, builder.Capacity);
-            builder.Add(10);
+            builder.Add() = 10;
             Equal(1, builder.WrittenCount);
             Equal(10, builder[0]);
         }
