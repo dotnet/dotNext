@@ -256,5 +256,32 @@ namespace DotNext.Buffers
             Equal(10, buffer[0]);
             Equal(0, writer.WrittenCount);
         }
+
+        [Fact]
+        public static void AdvanceRewind()
+        {
+            var buffer = new BufferWriterSlim<int>(stackalloc int[3]);
+
+            var raised = false;
+            try
+            {
+                buffer.Rewind(1);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                raised = true;
+            }
+
+            True(raised);
+
+            buffer.Add(42);
+            Equal(1, buffer.WrittenCount);
+
+            buffer.Rewind(1);
+            Equal(0, buffer.WrittenCount);
+
+            buffer.Advance(1);
+            Equal(42, buffer[0]);
+        }
     }
 }
