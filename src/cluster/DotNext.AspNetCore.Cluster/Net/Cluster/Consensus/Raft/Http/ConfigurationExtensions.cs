@@ -23,7 +23,7 @@ public static partial class ConfigurationExtensions
         Func<IServiceProvider, RaftHttpCluster> clusterNodeCast = ServiceProviderServiceExtensions.GetRequiredService<RaftHttpCluster>;
 
         return services.AddSingleton<RaftHttpCluster>()
-            .AddSingleton<IHostedService>(clusterNodeCast)
+            .AddHostedService(clusterNodeCast)
             .AddSingleton<ICluster>(clusterNodeCast)
             .AddSingleton<IRaftHttpCluster>(clusterNodeCast)
             .AddSingleton<IStandbyModeSupport>(clusterNodeCast)

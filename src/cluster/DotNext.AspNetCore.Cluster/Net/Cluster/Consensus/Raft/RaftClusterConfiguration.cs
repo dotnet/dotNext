@@ -43,7 +43,7 @@ public static class RaftClusterConfiguration
             .AddSingleton<IPersistentState>(engineCast)
             .AddSingleton<PersistentState>(engineCast)
             .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast)
-            .AddSingleton<IHostedService, BackgroundCompactionService>();
+            .AddHostedService<BackgroundCompactionService>();
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public static class RaftClusterConfiguration
             .AddSingleton<IPersistentState>(engineCast)
             .AddSingleton<PersistentState>(engineCast)
             .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast)
-            .AddSingleton<IHostedService, BackgroundCompactionService>();
+            .AddHostedService<BackgroundCompactionService>();
     }
 
     /// <summary>
