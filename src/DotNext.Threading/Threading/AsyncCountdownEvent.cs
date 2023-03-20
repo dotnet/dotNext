@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -207,18 +208,19 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         return result;
     }
 
-    private bool SignalAndResetCore()
+    private bool SignalAndResetCore(out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        bool result;
-        if (result = manager.Decrement())
+        if (manager.Decrement())
         {
             manager.Current = manager.Initial;
-            ResumeAll(DetachWaitQueue());
+            suspendedCallers = DetachWaitQueue()?.SetResult(true);
+            return true;
         }
 
-        return result;
+        suspendedCallers = null;
+        return false;
     }
 
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
@@ -234,6 +236,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
+                LinkedValueTaskCompletionSource<bool>? suspendedCallers;
                 lock (SyncRoot)
                 {
                     if (IsDisposingOrDisposed)
@@ -242,9 +245,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    SignalAndResetCore();
+                    SignalAndResetCore(out suspendedCallers);
                 }
 
+                suspendedCallers?.Unwind();
                 task = new(false);
                 break;
             default:
@@ -263,10 +267,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    if (SignalAndResetCore())
+                    if (SignalAndResetCore(out suspendedCallers))
                     {
                         task = new(true);
-                        break;
+                        goto resume_suspended_callers;
                     }
 
                     factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
@@ -274,6 +278,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
                 completedSynchronously = false;
                 task = factory.Invoke(timeout, token);
+                break;
+
+            resume_suspended_callers:
+                suspendedCallers?.Unwind();
                 break;
         }
 
@@ -292,6 +300,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
 
         ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             if (IsDisposingOrDisposed)
@@ -300,10 +309,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 goto exit;
             }
 
-            if (SignalAndResetCore())
+            if (SignalAndResetCore(out suspendedCallers))
             {
                 task = ValueTask.CompletedTask;
-                goto exit;
+                goto resume_suspended_callers;
             }
 
             factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
@@ -311,6 +320,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         completedSynchronously = false;
         task = factory.Invoke(token);
+        goto exit;
+
+    resume_suspended_callers:
+        suspendedCallers?.Unwind();
 
     exit:
         return task;
@@ -332,15 +345,18 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         ThrowIfDisposed();
 
         bool result;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             if (manager.Current is 0L)
                 throw new InvalidOperationException();
 
-            if (result = manager.Decrement(signalCount))
-                ResumeAll(DetachWaitQueue());
+            suspendedCallers = (result = manager.Decrement(signalCount))
+                ? DetachWaitQueue()?.SetResult(true)
+                : null;
         }
 
+        suspendedCallers?.Unwind();
         return result;
     }
 

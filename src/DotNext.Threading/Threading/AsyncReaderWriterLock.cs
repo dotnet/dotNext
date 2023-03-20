@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -218,13 +219,17 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     private void OnCompleted(WaitNode node)
     {
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            if (node.NeedsRemoval && RemoveNode(node))
-                DrainWaitQueue();
+            suspendedCallers = node.NeedsRemoval && RemoveNode(node)
+                ? DrainWaitQueue()
+                : null;
 
             pool.Return(node);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -474,52 +479,61 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
         => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new InterruptionReasonAndCancellationToken(reason, token));
 
-    private void DrainWaitQueue()
+    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(first is null or WaitNode);
+
+        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
 
         for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
             Debug.Assert(current.Next is null or WaitNode);
 
             next = Unsafe.As<WaitNode>(current.Next);
-
             switch (current.Type)
             {
                 case LockType.Upgrade:
                     if (!state.IsUpgradeToWriteLockAllowed)
-                        return;
+                        goto exit;
 
                     if (RemoveAndSignal(current))
                     {
                         state.AcquireWriteLock();
-                        return;
+                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+                        goto exit;
                     }
 
                     continue;
                 case LockType.Exclusive:
                     if (!state.IsWriteLockAllowed)
-                        return;
+                        goto exit;
 
                     // skip dead node
                     if (RemoveAndSignal(current))
                     {
                         state.AcquireWriteLock();
-                        return;
+                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+                        goto exit;
                     }
 
                     continue;
                 default:
                     if (!state.IsReadLockAllowed)
-                        return;
+                        goto exit;
 
                     if (RemoveAndSignal(current))
+                    {
                         state.AcquireReadLock();
+                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+                    }
 
                     continue;
             }
         }
+
+    exit:
+        return localFirst;
     }
 
     /// <summary>
@@ -535,17 +549,20 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -561,14 +578,17 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.DowngradeFromWriteLock();
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
         }
+
+        suspendedCallers?.Unwind();
     }
 
     private protected override bool IsReadyToDispose => state.IsWriteLockAllowed && first is null;

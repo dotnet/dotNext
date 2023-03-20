@@ -63,7 +63,7 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private bool EnqueueCompletedTask(LinkedTaskNode node, out ManualResetCompletionSource.CompletionResult completion)
+    private ManualResetCompletionSource? EnqueueCompletedTask(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
@@ -88,29 +88,24 @@ public partial class TaskCompletionPipe<T>
         {
             next = current.Next;
             RemoveNode(current);
-            if (current.SetResult(Sentinel.Instance, completionToken: null, true, out completion))
-                return true;
+            if (current.InternalTrySetResult(Sentinel.Instance, completionToken: null, true))
+                return current;
         }
 
-        completion = default;
-        return false;
+        return null;
     }
 
     private void EnqueueCompletedTask(LinkedTaskNode node, uint expectedVersion)
     {
-        ManualResetCompletionSource.CompletionResult completion;
+        ManualResetCompletionSource? suspendedCaller;
         lock (SyncRoot)
         {
-            if (version != expectedVersion || !EnqueueCompletedTask(node, out completion))
-                goto exit;
+            suspendedCaller = version == expectedVersion
+                ? EnqueueCompletedTask(node)
+                : null;
         }
 
-        // Reuse the current thread to invoke continuation.
-        // This is fine because the current method is called from task continuation
-        completion.NotifyListener(runContinuationsAsynchronously: false);
-
-    exit:
-        return;
+        suspendedCaller?.Resume();
     }
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)

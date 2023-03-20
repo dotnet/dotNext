@@ -60,19 +60,17 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
     private void OnCompleted(DefaultWaitNode node)
     {
-        var suspendedCaller = default(ManualResetCompletionSource.CompletionResult);
+        ManualResetCompletionSource? suspendedCaller;
         lock (SyncRoot)
         {
-            var nodeDetached = node.NeedsRemoval && RemoveNode(node) && DrainWaitQueue(out suspendedCaller);
+            suspendedCaller = node.NeedsRemoval && RemoveNode(node)
+                ? DrainWaitQueue()
+                : null;
+
             pool.Return(node);
-            if (!nodeDetached)
-                goto exit;
         }
 
-        suspendedCaller.NotifyListener(runContinuationsAsynchronously: true);
-
-    exit:
-        return;
+        suspendedCaller?.Resume();
     }
 
     /// <summary>
@@ -191,7 +189,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new InterruptionReasonAndCancellationToken(reason, token));
 
-    private bool DrainWaitQueue(out ManualResetCompletionSource.CompletionResult suspendedCaller)
+    private ManualResetCompletionSource? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
@@ -203,15 +201,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 break;
 
             // skip dead node
-            if (RemoveAndSignal(current, out suspendedCaller))
+            if (RemoveAndSignal(current))
             {
                 manager.AcquireLock();
-                return true;
+                return current;
             }
         }
 
-        suspendedCaller = default;
-        return false;
+        return null;
     }
 
     /// <summary>
@@ -222,27 +219,21 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public void Release()
     {
         ThrowIfDisposed();
-        ManualResetCompletionSource.CompletionResult completion;
 
+        ManualResetCompletionSource? suspendedCaller;
         lock (SyncRoot)
         {
             if (!manager.Value)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             manager.ExitLock();
-            if (!DrainWaitQueue(out completion))
-            {
-                if (IsDisposing && IsReadyToDispose)
-                    Dispose(true);
+            suspendedCaller = DrainWaitQueue();
 
-                goto exit;
-            }
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
         }
 
-        completion.NotifyListener(runContinuationsAsynchronously: true);
-
-    exit:
-        return;
+        suspendedCaller?.Resume();
     }
 
     private protected sealed override bool IsReadyToDispose => manager is { Value: false } && first is null;

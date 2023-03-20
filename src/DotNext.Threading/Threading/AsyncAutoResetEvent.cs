@@ -99,7 +99,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ThrowIfDisposed();
 
-        ManualResetCompletionSource.CompletionResult suspendedCaller;
+        var suspendedCaller = default(ManualResetCompletionSource);
         bool result;
 
         lock (SyncRoot)
@@ -117,18 +117,16 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
                     next = current.Next;
 
                     // skip dead node
-                    if (RemoveAndSignal(current, out suspendedCaller))
-                        goto invoke_continuation;
+                    if (RemoveAndSignal(current))
+                    {
+                        suspendedCaller = current;
+                        break;
+                    }
                 }
             }
-
-            goto exit;
         }
 
-    invoke_continuation:
-        suspendedCaller.NotifyListener(runContinuationsAsynchronously: true);
-
-    exit:
+        suspendedCaller?.Resume();
         return result;
     }
 

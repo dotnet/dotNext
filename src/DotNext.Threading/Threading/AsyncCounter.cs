@@ -160,6 +160,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(delta > 0L);
 
+        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
         lock (SyncRoot)
         {
             manager.Increment(delta);
@@ -169,9 +170,14 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
                 next = current.Next;
 
                 if (RemoveAndSignal(current))
+                {
                     manager.Decrement();
+                    LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+                }
             }
         }
+
+        localFirst?.Unwind();
     }
 
     /// <inheritdoc/>

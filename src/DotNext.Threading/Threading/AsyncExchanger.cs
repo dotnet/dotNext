@@ -33,13 +33,15 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             base.Cleanup();
         }
 
-        internal bool TryExchange(ref T value, out ManualResetCompletionSource.CompletionResult completion)
+        internal bool TryExchange(ref T value)
         {
-            bool result;
-            if (result = SetResult(completionData: null, completionToken: null, value, out completion))
+            if (InternalTrySetResult(completionData: null, completionToken: null, value))
+            {
                 value = Value!;
+                return true;
+            }
 
-            return result;
+            return false;
         }
 
         Action<ExchangePoint>? IPooledManualResetCompletionSource<Action<ExchangePoint>>.OnConsumed
@@ -126,30 +128,25 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
                 break;
             default:
-                ManualResetCompletionSource.CompletionResult completion;
+                var suspendedCaller = default(ManualResetCompletionSource);
                 lock (SyncRoot)
                 {
                     if (IsDisposed)
                     {
                         result = new(GetDisposedTask<T>());
-                        break;
                     }
-
-                    if (IsDisposing)
+                    else if (IsDisposing)
                     {
                         Dispose(true);
                         result = new(GetDisposedTask<T>());
-                        break;
                     }
-
-                    if (termination is not null)
+                    else if (termination is not null)
                     {
                         result = ValueTask.FromException<T>(termination);
-                        break;
                     }
-
-                    if (point?.TryExchange(ref value, out completion) ?? false)
+                    else if (point?.TryExchange(ref value) ?? false)
                     {
+                        suspendedCaller = point;
                         point = null;
                         result = new(value);
                     }
@@ -157,11 +154,10 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
                     {
                         point = RentExchangePoint(value);
                         result = point.CreateTask(timeout, token);
-                        break;
                     }
                 }
 
-                completion.NotifyListener(runContinuationsAsynchronously: true);
+                suspendedCaller?.Resume();
                 break;
         }
 
@@ -194,7 +190,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     public bool TryExchange(ref T value)
     {
         bool result;
-        ManualResetCompletionSource.CompletionResult completion;
+        var suspendedCaller = default(ManualResetCompletionSource);
 
         lock (SyncRoot)
         {
@@ -204,25 +200,19 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             {
                 Dispose(true);
                 result = false;
-                goto exit;
             }
-
-            if (termination is not null)
-                throw termination;
-
-            if (point is null)
+            else if (termination is not null)
             {
-                result = false;
-                goto exit;
+                throw termination;
             }
-
-            result = point.TryExchange(ref value, out completion);
-            point = null;
+            else if (result = point?.TryExchange(ref value) ?? false)
+            {
+                suspendedCaller = point;
+                point = null;
+            }
         }
 
-        completion.NotifyListener(runContinuationsAsynchronously: true);
-
-    exit:
+        suspendedCaller?.Resume();
         return result;
     }
 

@@ -18,69 +18,6 @@ using NullExceptionConstant = Generic.DefaultConst<Exception?>;
 /// <seealso cref="ValueTaskCompletionSource{T}"/>
 public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTaskSource, ISupplier<TimeSpan, CancellationToken, ValueTask>
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct OperationCanceledExceptionFactory : ISupplier<OperationCanceledException>
-    {
-        private readonly CancellationToken token;
-
-        internal OperationCanceledExceptionFactory(CancellationToken token) => this.token = token;
-
-        OperationCanceledException ISupplier<OperationCanceledException>.Invoke()
-            => new(token);
-
-        public static implicit operator OperationCanceledExceptionFactory(CancellationToken token)
-            => new(token);
-    }
-
-    private sealed class LinkedTaskCompletionSource : TaskCompletionSource
-    {
-        private static readonly Action<object?> CompletionCallback = OnCompleted;
-
-        private static void OnCompleted(object? state)
-        {
-            Debug.Assert(state is LinkedTaskCompletionSource);
-
-            Unsafe.As<LinkedTaskCompletionSource>(state).OnCompleted();
-        }
-
-        private IValueTaskSource? source;
-        private short version;
-
-        internal LinkedTaskCompletionSource(object? state)
-            : base(state, TaskCreationOptions.None)
-        {
-        }
-
-        internal void LinkTo(IValueTaskSource source, short version)
-        {
-            this.source = source;
-            this.version = version;
-            source.OnCompleted(CompletionCallback, this, version, ValueTaskSourceOnCompletedFlags.None);
-        }
-
-        private void OnCompleted()
-        {
-            if (source is not null)
-            {
-                try
-                {
-                    source.GetResult(version);
-                    TrySetResult();
-                }
-                catch (OperationCanceledException e)
-                {
-                    TrySetCanceled(e.CancellationToken);
-                }
-                catch (Exception e)
-                {
-                    TrySetException(e);
-                }
-            }
-
-            source = null;
-        }
-    }
-
     private static readonly NullExceptionConstant NullSupplier = new();
 
     // null - success, not null - error
@@ -95,19 +32,19 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     {
     }
 
-    private CompletionResult SetResult(Exception? result, object? completionData = null)
+    private void SetResult(Exception? result, object? completionData = null)
     {
         AssertLocked();
 
         this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
+        CompletionData = completionData;
         versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
-        return Complete(completionData);
     }
 
-    private protected sealed override CompletionResult CompleteAsTimedOut()
+    private protected sealed override void CompleteAsTimedOut()
         => SetResult(OnTimeout());
 
-    private protected sealed override CompletionResult CompleteAsCanceled(CancellationToken token)
+    private protected sealed override void CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
     /// <inheritdoc />
@@ -135,14 +72,13 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     private bool SetResult<TFactory>(object? completionData, short? completionToken, TFactory factory)
         where TFactory : notnull, ISupplier<Exception?>
     {
-        CompletionResult completion;
         bool result;
         EnterLock();
         try
         {
-            if (result = versionAndStatus.CanBeCompleted && (completionToken is null || completionToken.GetValueOrDefault() == versionAndStatus.Version))
+            if (result = versionAndStatus.CanBeCompleted(completionToken))
             {
-                completion = SetResult(factory.Invoke(), completionData);
+                SetResult(factory.Invoke(), completionData);
             }
             else
             {
@@ -154,7 +90,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
             ExitLock();
         }
 
-        completion.NotifyListener(runContinuationsAsynchronously);
+        Resume();
 
     exit:
         return result;
@@ -253,12 +189,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask CreateTask(TimeSpan timeout, CancellationToken token)
-    {
-        if (!PrepareTask(timeout, token))
-            InvalidSourceStateDetected();
-
-        return new(this, versionAndStatus.Version);
-    }
+        => PrepareTask(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
     /// <inheritdoc />
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
@@ -270,7 +201,8 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()
         var resultCopy = result;
-        versionAndStatus.Consume(token);
+        versionAndStatus.Consume(token); // barrier to avoid reordering of result read
+
         AfterConsumed();
         resultCopy?.Throw();
     }
@@ -278,7 +210,8 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <inheritdoc />
     ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
     {
-        var snapshot = versionAndStatus;
+        var snapshot = versionAndStatus.VolatileRead();
+
         if (token != snapshot.Version)
             throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
 
@@ -305,11 +238,74 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public TaskCompletionSource CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
-        if (!PrepareTask(timeout, token))
-            InvalidSourceStateDetected();
+        if (PrepareTask(timeout, token) is not { } version)
+            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
         var source = new LinkedTaskCompletionSource(userData);
-        source.LinkTo(this, versionAndStatus.Version);
+        source.LinkTo(this, version);
         return source;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct OperationCanceledExceptionFactory : ISupplier<OperationCanceledException>
+    {
+        private readonly CancellationToken token;
+
+        internal OperationCanceledExceptionFactory(CancellationToken token) => this.token = token;
+
+        OperationCanceledException ISupplier<OperationCanceledException>.Invoke()
+            => new(token);
+
+        public static implicit operator OperationCanceledExceptionFactory(CancellationToken token)
+            => new(token);
+    }
+
+    private sealed class LinkedTaskCompletionSource : TaskCompletionSource
+    {
+        private IValueTaskSource? source;
+        private short version;
+
+        internal LinkedTaskCompletionSource(object? state)
+            : base(state, TaskCreationOptions.None)
+        {
+        }
+
+        internal void LinkTo(IValueTaskSource source, short version)
+        {
+            this.source = source;
+            this.version = version;
+            source.OnCompleted(
+                static state =>
+                {
+                    Debug.Assert(state is LinkedTaskCompletionSource);
+
+                    Unsafe.As<LinkedTaskCompletionSource>(state).OnCompleted();
+                },
+                this,
+                version,
+                ValueTaskSourceOnCompletedFlags.None);
+        }
+
+        private void OnCompleted()
+        {
+            if (source is not null)
+            {
+                try
+                {
+                    source.GetResult(version);
+                    TrySetResult();
+                }
+                catch (OperationCanceledException e)
+                {
+                    TrySetCanceled(e.CancellationToken);
+                }
+                catch (Exception e)
+                {
+                    TrySetException(e);
+                }
+            }
+
+            source = null;
+        }
     }
 }

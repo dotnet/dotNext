@@ -5,6 +5,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -67,12 +68,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
-    private long Resume(bool resumeAll)
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        return ResumeAll(resumeAll ? DetachWaitQueue() : DetachHead());
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private LinkedValueTaskCompletionSource<bool>? Detach(bool detachAll)
+        => detachAll ? DetachWaitQueue() : DetachHead();
 
     /// <summary>
     /// Resumes the first suspended caller in the wait queue.
@@ -87,10 +85,19 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            return Resume(resumeAll) > 0L;
+            suspendedCallers = Detach(resumeAll)?.SetResult(true);
         }
+
+        if (suspendedCallers is not null)
+        {
+            suspendedCallers.Unwind();
+            return true;
+        }
+
+        return false;
     }
 
     /// <inheritdoc/>
@@ -157,16 +164,23 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                bool isEmpty;
+                LinkedValueTaskCompletionSource<bool>? suspendedCallers;
                 lock (SyncRoot)
                 {
-                    isEmpty = Resume(resumeAll) is 0L;
+                    suspendedCallers = Detach(resumeAll)?.SetResult(true);
                 }
 
-                task = isEmpty && throwOnEmptyQueue
-                    ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
-                    : new(false);
+                if (suspendedCallers is not null)
+                {
+                    suspendedCallers.Unwind();
+                }
+                else if (throwOnEmptyQueue)
+                {
+                    task = ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
+                    break;
+                }
 
+                task = new(false);
                 break;
             default:
                 if (token.IsCancellationRequested)
@@ -184,11 +198,13 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    factory = Resume(resumeAll) is 0L && throwOnEmptyQueue
+                    suspendedCallers = Detach(resumeAll)?.SetResult(true);
+                    factory = suspendedCallers is null && throwOnEmptyQueue
                         ? EmptyWaitQueueExceptionFactory.Instance
                         : EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
                 }
 
+                suspendedCallers?.Unwind();
                 task = factory.Invoke(timeout, token);
                 break;
         }
@@ -218,13 +234,16 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             return ValueTask.FromCanceled(token);
 
         ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            factory = Resume(resumeAll) is 0L && throwOnEmptyQueue
+            suspendedCallers = Detach(resumeAll)?.SetResult(true);
+            factory = suspendedCallers is null && throwOnEmptyQueue
                 ? EmptyWaitQueueExceptionFactory.Instance
                 : EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
         }
 
+        suspendedCallers?.Unwind();
         return factory.Invoke(token);
     }
 
@@ -413,13 +432,17 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
 
     private void OnCompleted(WaitNode node)
     {
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            if (node.NeedsRemoval && RemoveNode(node))
-                DrainWaitQueue();
+            suspendedCallers = node.NeedsRemoval && RemoveNode(node)
+                ? DrainWaitQueue()
+                : null;
 
             pool.Return(node);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -427,10 +450,12 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     /// </summary>
     public TState State { get; }
 
-    private void DrainWaitQueue()
+    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(first is null or WaitNode);
+
+        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
 
         for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
@@ -448,8 +473,13 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
                 break;
 
             if (RemoveAndSignal(current))
+            {
                 transition.Transit(State);
+                LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+            }
         }
+
+        return localFirst;
     }
 
     /// <summary>
@@ -460,13 +490,16 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -480,14 +513,18 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         ArgumentNullException.ThrowIfNull(transition);
 
         ThrowIfDisposed();
+
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             transition(State);
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -503,14 +540,17 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         ArgumentNullException.ThrowIfNull(transition);
 
         ThrowIfDisposed();
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             transition(State, arg);
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>

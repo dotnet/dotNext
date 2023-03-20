@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -108,13 +109,17 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
     private void OnCompleted(WaitNode node)
     {
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            if (node.NeedsRemoval && RemoveNode(node))
-                DrainWaitQueue();
+            suspendedCallers = node.NeedsRemoval && RemoveNode(node)
+                ? DrainWaitQueue()
+                : null;
 
             pool.Return(node);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -216,40 +221,48 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             : AcquireAsync(ref pool, ref GetLockManager<WeakLockManager>(), options);
     }
 
-    private void DrainWaitQueue()
+    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(first is null or WaitNode);
+
+        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
 
         for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
             Debug.Assert(current.Next is null or WaitNode);
 
             next = Unsafe.As<WaitNode>(current.Next);
-
             switch ((current.IsStrongLock, state.IsStrongLockAllowed))
             {
                 case (true, true):
                     if (RemoveAndSignal(current))
                     {
                         state.AcquireStrongLock();
-                        return;
+                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+                        goto exit;
                     }
 
                     continue;
                 case (true, false):
-                    return;
+                    goto exit;
                 default:
                     // no more locks to acquire
                     if (!state.IsWeakLockAllowed)
-                        return;
+                        goto exit;
 
                     if (RemoveAndSignal(current))
+                    {
                         state.AcquireWeakLock();
+                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+                    }
 
                     continue;
             }
         }
+
+    exit:
+        return localFirst;
     }
 
     /// <summary>
@@ -261,14 +274,17 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.Downgrade();
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -280,17 +296,20 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && first is null;
