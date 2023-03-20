@@ -2,6 +2,7 @@ using System.Diagnostics;
 
 namespace DotNext.Threading;
 
+using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
@@ -106,13 +107,15 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         ThrowIfDisposed();
 
         bool result;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             result = !manager.Value;
             manager.Value = !autoReset;
-            ResumeAll(DetachWaitQueue());
+            suspendedCallers = DetachWaitQueue()?.SetResult(true);
         }
 
+        suspendedCallers?.Unwind();
         return result;
     }
 

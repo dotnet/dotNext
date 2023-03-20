@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
@@ -49,53 +50,76 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         return next;
     }
 
-    private unsafe long ResumeAll<TArg>(delegate*<LinkedValueTaskCompletionSource<T>, TArg, bool> callback, TArg arg)
+    internal void Unwind()
     {
-        Debug.Assert(callback != null);
+        for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
+        {
+            next = current.CleanupAndGotoNext();
+            current.Resume();
+        }
+    }
 
-        var count = 0L;
+    internal unsafe LinkedValueTaskCompletionSource<T>? SetResult<TArg>(delegate*<LinkedValueTaskCompletionSource<T>, TArg, bool> finalizer, TArg arg)
+    {
+        LinkedValueTaskCompletionSource<T>? first = null, last = null;
 
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-
-            if (callback(current, arg))
-                count++;
+            if (finalizer(current, arg))
+            {
+                Append(ref first, ref last, current);
+            }
         }
 
-        return count;
+        return first;
     }
 
-    internal long TrySetResultAndSentinelToAll(T result)
+    internal LinkedValueTaskCompletionSource<T>? SetCanceled(CancellationToken token)
     {
+        Debug.Assert(token.IsCancellationRequested);
+
         unsafe
         {
-            return ResumeAll(&TrySetResult, result);
-        }
-
-        static bool TrySetResult(LinkedValueTaskCompletionSource<T> source, T result)
-            => source.TrySetResult(Sentinel.Instance, result);
-    }
-
-    internal long TrySetCanceledAndSentinelToAll(CancellationToken token)
-    {
-        unsafe
-        {
-            return ResumeAll(&TrySetCanceled, token);
+            return SetResult(&TrySetCanceled, token);
         }
 
         static bool TrySetCanceled(LinkedValueTaskCompletionSource<T> source, CancellationToken token)
-            => source.TrySetCanceled(Sentinel.Instance, token);
+            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, new(new OperationCanceledException(token)));
     }
 
-    internal long TrySetExceptionAndSentinelToAll(Exception e)
+    internal LinkedValueTaskCompletionSource<T>? SetException(Exception e)
     {
         unsafe
         {
-            return ResumeAll(&TrySetException, e);
+            return SetResult(&TrySetException, e);
         }
 
-        static bool TrySetException(LinkedValueTaskCompletionSource<T> source, Exception reason)
-            => source.TrySetException(Sentinel.Instance, reason);
+        static bool TrySetException(LinkedValueTaskCompletionSource<T> source, Exception e)
+            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, new(e));
+    }
+
+    internal LinkedValueTaskCompletionSource<T>? SetResult(T value)
+    {
+        unsafe
+        {
+            return SetResult(&TrySetResult, value);
+        }
+
+        static bool TrySetResult(LinkedValueTaskCompletionSource<T> source, T value)
+            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, value);
+    }
+
+    internal static void Append([NotNull] ref LinkedValueTaskCompletionSource<T>? first, [NotNull] ref LinkedValueTaskCompletionSource<T>? last, LinkedValueTaskCompletionSource<T> source)
+    {
+        if (first is null || last is null)
+        {
+            first = last = source;
+        }
+        else
+        {
+            last.Append(source);
+            last = source;
+        }
     }
 }

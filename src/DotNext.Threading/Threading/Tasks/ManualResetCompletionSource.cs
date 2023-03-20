@@ -18,13 +18,11 @@ public abstract partial class ManualResetCompletionSource
     protected const short InitialCompletionToken = short.MinValue;
 
     private readonly Action<object?, CancellationToken> cancellationCallback;
-    private protected readonly bool runContinuationsAsynchronously;
-    private CancellationTokenRegistration tokenTracker, timeoutTracker;
-    private CancellationTokenSource? timeoutSource;
+    private readonly bool runContinuationsAsynchronously;
+    private CancellationState state;
 
     // task management
     private Continuation continuation;
-    private object? completionData;
     private protected VersionAndStatus versionAndStatus;
 
     private protected ManualResetCompletionSource(bool runContinuationsAsynchronously)
@@ -44,36 +42,46 @@ public abstract partial class ManualResetCompletionSource
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
-        CompletionResult completion;
         EnterLock();
         try
         {
-            completion = versionAndStatus.Check((short)expectedVersion, ManualResetCompletionSourceStatus.Activated)
-                ? timeoutSource?.Token == token
-                ? CompleteAsTimedOut()
-                : CompleteAsCanceled(token)
-                : default;
+            if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated || versionAndStatus.Version != (short)expectedVersion)
+                return;
+
+            if (state.IsTimeoutToken(token))
+                CompleteAsTimedOut();
+            else
+                CompleteAsCanceled(token);
 
             // ensure that timeout or cancellation handler sets the status correctly
-            Debug.Assert((short)expectedVersion != versionAndStatus.Version || versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
+            Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
         }
         finally
         {
             ExitLock();
         }
 
-        completion.NotifyListener(runContinuationsAsynchronously);
+        Resume();
     }
 
-    private protected abstract CompletionResult CompleteAsTimedOut();
+    private protected abstract void CompleteAsTimedOut();
 
-    private protected abstract CompletionResult CompleteAsCanceled(CancellationToken token);
+    private protected abstract void CompleteAsCanceled(CancellationToken token);
 
     /// <summary>
     /// Resets internal state of this source.
     /// </summary>
     protected virtual void Cleanup()
     {
+    }
+
+    private CancellationState ResetCore(out short token)
+    {
+        AssertLocked();
+
+        token = versionAndStatus.Reset();
+        CompletionData = null;
+        return state.Detach();
     }
 
     /// <summary>
@@ -88,11 +96,10 @@ public abstract partial class ManualResetCompletionSource
     public short Reset()
     {
         EnterLock();
-        var completion = Complete(completionData: null);
-        var token = versionAndStatus.Reset();
+        var stateCopy = ResetCore(out var token);
         ExitLock();
 
-        completion.Cleanup();
+        stateCopy.Cleanup();
         Cleanup();
         return token;
     }
@@ -102,17 +109,17 @@ public abstract partial class ManualResetCompletionSource
     /// </summary>
     /// <param name="token">The version of the incompleted task.</param>
     /// <returns><see langword="true"/> if the state was reset successfully; otherwise, <see langword="false"/>.</returns>
+    /// <seealso cref="Reset"/>
     public bool TryReset(out short token)
     {
         bool result;
 
         if (result = TryEnterLock())
         {
-            var completion = Complete(completionData: null);
-            token = versionAndStatus.Reset();
+            var stateCopy = ResetCore(out token);
             ExitLock();
 
-            completion.Cleanup();
+            stateCopy.Cleanup();
             Cleanup();
         }
         else
@@ -134,28 +141,29 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Gets a value passed to the manual completion method.
     /// </summary>
-    protected object? CompletionData => completionData;
-
-    // the caller should not ignore the result
-    private protected CompletionResult Complete(object? completionData)
+    protected object? CompletionData
     {
-        // this method should not throw any exceptions
-        AssertLocked();
+        get;
+        private protected set;
+    }
 
-        var result = new CompletionResult(this);
-        continuation = default;
-        tokenTracker = default;
-        timeoutTracker = default;
-        timeoutSource = null;
-        this.completionData = completionData;
+    /// <summary>
+    /// Invokes continuation callback and cleanup state of this source.
+    /// </summary>
+    internal void Resume()
+    {
+        state.Detach().Cleanup();
 
-        return result;
+        if (continuation is { IsValid: true } c)
+        {
+            continuation = default;
+            c.Invoke(runContinuationsAsynchronously);
+        }
     }
 
     private void OnCompleted(in Continuation continuation, short token)
     {
         string errorMessage;
-        var snapshot = versionAndStatus;
 
         // code block doesn't have any calls leading to exceptions
         // so replace try-finally with manually cloned code
@@ -230,7 +238,7 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Gets the status of this source.
     /// </summary>
-    public ManualResetCompletionSourceStatus Status => versionAndStatus.ReadStatusVolatile();
+    public ManualResetCompletionSourceStatus Status => versionAndStatus.VolatileRead().Status;
 
     /// <summary>
     /// Gets a value indicating that this source is in signaled (completed) state.
@@ -239,15 +247,16 @@ public abstract partial class ManualResetCompletionSource
     /// This property returns <see langword="true"/> if <see cref="Status"/> is <see cref="ManualResetCompletionSourceStatus.WaitForConsumption"/>
     /// or <see cref="ManualResetCompletionSourceStatus.Consumed"/>.
     /// </remarks>
-    public bool IsCompleted => versionAndStatus.IsCompleted;
+    public bool IsCompleted => versionAndStatus.VolatileRead().IsCompleted;
 
-    private protected bool PrepareTask(TimeSpan timeout, CancellationToken token)
+    private protected short? PrepareTask(TimeSpan timeout, CancellationToken token)
     {
         if (timeout.Ticks is < 0L and not Timeout.InfiniteTicks)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
         // The task can be created for the completed (but not yet consumed) source.
         // This workaround is needed for AsyncBridge methods
+        short? result;
         EnterLock();
         try
         {
@@ -257,15 +266,19 @@ public abstract partial class ManualResetCompletionSource
                     Activate(timeout, token);
                     goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForConsumption:
-                    return true;
+                    result = versionAndStatus.Version;
+                    break;
                 default:
-                    return false;
+                    result = null;
+                    break;
             }
         }
         finally
         {
             ExitLock();
         }
+
+        return result;
 
         void Activate(TimeSpan timeout, CancellationToken token)
         {
@@ -284,28 +297,10 @@ public abstract partial class ManualResetCompletionSource
             else
             {
                 versionAndStatus.Status = ManualResetCompletionSourceStatus.Activated;
-
-                // box current token once and only if needed
-                var tokenHolder = default(IEquatable<short>);
-                if (timeout > default(TimeSpan))
-                {
-                    timeoutSource ??= new();
-                    timeoutTracker = timeoutSource.Token.UnsafeRegister(cancellationCallback, tokenHolder = versionAndStatus.Version);
-                    timeoutSource.CancelAfter(timeout);
-                }
-
-                if (token.CanBeCanceled)
-                {
-                    tokenTracker = token.UnsafeRegister(cancellationCallback, tokenHolder ?? versionAndStatus.Version);
-                }
+                state.Initialize(cancellationCallback, versionAndStatus.Version, timeout, token);
             }
         }
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private protected static void InvalidSourceStateDetected()
-        => throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
     /// <summary>
     /// Represents continuation attached by the task consumer.
@@ -465,15 +460,18 @@ public abstract partial class ManualResetCompletionSource
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ManualResetCompletionSourceStatus ReadStatusVolatile()
-        {
-            var copy = Volatile.Read(ref value);
-            return GetStatus(ref copy);
-        }
+        public VersionAndStatus VolatileRead() => new() { value = Volatile.Read(ref value) };
 
         public bool IsCompleted => Status >= ManualResetCompletionSourceStatus.WaitForConsumption;
 
-        public bool CanBeCompleted => Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated;
+        public bool CanBeCompleted(short? token)
+        {
+            var status = Status;
+            var actualToken = Version;
+
+            return Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated
+                && token.GetValueOrDefault(actualToken) == actualToken;
+        }
 
         public bool Check(short version, ManualResetCompletionSourceStatus status)
             => value == Combine(version, status);
@@ -531,38 +529,52 @@ public abstract partial class ManualResetCompletionSource
         }
     }
 
-    /// <summary>
-    /// Captures the copy of state from the source to operate on it later, outside
-    /// of the monitor lock to avoid lock contention.
-    /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct CompletionResult
+    private struct CancellationState
     {
-        private readonly Continuation continuation;
-        private readonly CancellationTokenRegistration tokenTracker, timeoutTracker;
-        private readonly CancellationTokenSource? timeoutSource;
+        private CancellationTokenRegistration tokenTracker, timeoutTracker;
+        private CancellationTokenSource? timeoutSource;
 
-        public CompletionResult(ManualResetCompletionSource source)
+        internal void Initialize(Action<object?, CancellationToken> callback, short version, TimeSpan timeout, CancellationToken token)
         {
-            continuation = source.continuation;
-            tokenTracker = source.tokenTracker;
-            timeoutTracker = source.timeoutTracker;
-            timeoutSource = source.timeoutSource is { } ts && !ts.TryReset() ? ts : null;
+            // box current token once and only if needed
+            var cachedVersion = default(IEquatable<short>);
+
+            if (token.CanBeCanceled)
+            {
+                tokenTracker = token.UnsafeRegister(callback, cachedVersion = version);
+            }
+
+            if (timeout > default(TimeSpan))
+            {
+                timeoutSource ??= new();
+                timeoutTracker = timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? version);
+                timeoutSource.CancelAfter(timeout);
+            }
         }
 
-        public void Cleanup()
+        internal readonly bool IsTimeoutToken(CancellationToken token)
+            => timeoutSource?.Token == token;
+
+        internal CancellationState Detach()
         {
+            var copy = new CancellationState
+            {
+                tokenTracker = tokenTracker,
+                timeoutTracker = timeoutTracker,
+                timeoutSource = timeoutSource is { } ts && !ts.TryReset() ? ts : null,
+            };
+
+            this = default;
+            return copy;
+        }
+
+        internal readonly void Cleanup()
+        {
+            // Unregister() doesn't block the caller in contrast to Dispose()
             tokenTracker.Unregister();
             timeoutTracker.Unregister();
             timeoutSource?.Dispose();
-        }
-
-        public void NotifyListener(bool runContinuationsAsynchronously)
-        {
-            Cleanup();
-
-            if (continuation.IsValid)
-                continuation.Invoke(runContinuationsAsynchronously);
         }
     }
 }

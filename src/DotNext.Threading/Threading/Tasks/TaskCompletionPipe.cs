@@ -42,15 +42,19 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <exception cref="InvalidOperationException">The pipe is already completed.</exception>
     public void Complete()
     {
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             if (completionRequested)
                 throw new InvalidOperationException();
 
             completionRequested = true;
-            if (scheduledTasksCount is 0U)
-                DetachWaitQueue()?.TrySetResultAndSentinelToAll(result: false);
+            suspendedCallers = scheduledTasksCount is 0U
+                ? DetachWaitQueue()?.SetResult(false)
+                : null;
         }
+
+        suspendedCallers?.Unwind();
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -67,7 +71,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     private bool TryAdd(T task, out uint currentVersion)
     {
         bool result;
-        ManualResetCompletionSource.CompletionResult completion;
+        ManualResetCompletionSource? suspendedCaller;
 
         lock (SyncRoot)
         {
@@ -76,15 +80,13 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
             scheduledTasksCount++;
             currentVersion = version;
-            result = task.IsCompleted;
-            if (!result || !EnqueueCompletedTask(new(task), out completion))
-                goto exit;
+            suspendedCaller = (result = task.IsCompleted)
+                ? EnqueueCompletedTask(new(task))
+                : null;
         }
 
         // decouple producer thread from consumer thread
-        completion.NotifyListener(runContinuationsAsynchronously: true);
-
-    exit:
+        suspendedCaller?.Resume();
         return result;
     }
 
@@ -111,14 +113,17 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// </remarks>
     public void Reset()
     {
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             version += 1U;
             scheduledTasksCount = 0U;
             completionRequested = false;
             ClearTaskQueue();
-            DetachWaitQueue()?.TrySetResultAndSentinelToAll(result: false);
+            suspendedCallers = DetachWaitQueue()?.SetResult(false);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     internal ValueTask<bool> TryDequeue(uint expectedVersion, out T? task, CancellationToken token)

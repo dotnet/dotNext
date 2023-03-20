@@ -15,6 +15,12 @@ using Timestamp = Diagnostics.Timestamp;
 /// <summary>
 /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
 /// </summary>
+/// <remarks>
+/// This class is designed to provide better throughput rather than optimized response time.
+/// It means that it minimizes contention between concurrent calls and allows to process
+/// as many concurrent requests as possible by the cost of the execution time of a single
+/// method for a particular caller.
+/// </remarks>
 public class QueuedSynchronizer : Disposable
 {
     private const string LockTypeMeterAttribute = "dotnext.asynclock.type";
@@ -59,13 +65,7 @@ public class QueuedSynchronizer : Disposable
     private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node)
     {
         RemoveNode(node);
-        return node.TrySetResult(Sentinel.Instance, value: true);
-    }
-
-    private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node, out ManualResetCompletionSource.CompletionResult completion)
-    {
-        RemoveNode(node);
-        return node.SetResult(Sentinel.Instance, completionToken: null, result: true, out completion);
+        return node.InternalTrySetResult(Sentinel.Instance, completionToken: null, result: true);
     }
 
     /// <summary>
@@ -165,16 +165,7 @@ public class QueuedSynchronizer : Disposable
 
     private protected void EnqueueNode(WaitNode freshNode)
     {
-        if (last is null)
-        {
-            first = last = freshNode;
-        }
-        else
-        {
-            last.Append(freshNode);
-            last = freshNode;
-        }
-
+        LinkedValueTaskCompletionSource<bool>.Append(ref first, ref last, freshNode);
         contentionCounter?.Invoke(1D);
         SuspendedCallersMeter.Add(1, measurementTags);
     }
@@ -221,6 +212,7 @@ public class QueuedSynchronizer : Disposable
                 task = ValueTask.FromException(new ArgumentOutOfRangeException("timeout"));
                 break;
             case 0L: // attempt to acquire synchronously
+                LinkedValueTaskCompletionSource<bool>? interruptedCallers;
                 lock (SyncRoot)
                 {
                     if (IsDisposingOrDisposed)
@@ -230,15 +222,17 @@ public class QueuedSynchronizer : Disposable
                     }
 
 #pragma warning disable CA2252
-                    if (TOptions.InterruptionRequired)
+                    interruptedCallers = TOptions.InterruptionRequired
 #pragma warning restore CA2252
-                        Interrupt(options.InterruptionReason);
+                        ? Interrupt(options.InterruptionReason)
+                        : null;
 
                     task = TryAcquire(ref manager)
                         ? ValueTask.CompletedTask
                         : ValueTask.FromException(new TimeoutException());
                 }
 
+                interruptedCallers?.Unwind();
                 break;
             default:
                 if (options.Token.IsCancellationRequested)
@@ -257,9 +251,10 @@ public class QueuedSynchronizer : Disposable
                     }
 
 #pragma warning disable CA2252
-                    if (TOptions.InterruptionRequired)
+                    interruptedCallers = TOptions.InterruptionRequired
 #pragma warning restore CA2252
-                        Interrupt(options.InterruptionReason);
+                        ? Interrupt(options.InterruptionReason)
+                        : null;
 
                     if (TryAcquire(ref manager))
                     {
@@ -270,6 +265,7 @@ public class QueuedSynchronizer : Disposable
                     factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
                 }
 
+                interruptedCallers?.Unwind();
                 task = factory.Invoke(options.Timeout, options.Token);
                 break;
         }
@@ -292,6 +288,7 @@ public class QueuedSynchronizer : Disposable
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException("timeout"));
                 break;
             case 0L: // attempt to acquire synchronously
+                LinkedValueTaskCompletionSource<bool>? interruptedCallers;
                 lock (SyncRoot)
                 {
                     if (IsDisposingOrDisposed)
@@ -300,13 +297,15 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 #pragma warning disable CA2252
-                    if (TOptions.InterruptionRequired)
+                    interruptedCallers = TOptions.InterruptionRequired
 #pragma warning restore CA2252
-                        Interrupt(options.InterruptionReason);
+                        ? Interrupt(options.InterruptionReason)
+                        : null;
 
                     task = new(TryAcquire(ref manager));
                 }
 
+                interruptedCallers?.Unwind();
                 break;
             default:
                 if (options.Token.IsCancellationRequested)
@@ -325,9 +324,10 @@ public class QueuedSynchronizer : Disposable
                     }
 
 #pragma warning disable CA2252
-                    if (TOptions.InterruptionRequired)
+                    interruptedCallers = TOptions.InterruptionRequired
 #pragma warning restore CA2252
-                        Interrupt(options.InterruptionReason);
+                        ? Interrupt(options.InterruptionReason)
+                        : null;
 
                     if (TryAcquire(ref manager))
                     {
@@ -338,6 +338,7 @@ public class QueuedSynchronizer : Disposable
                     factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
                 }
 
+                interruptedCallers?.Unwind();
                 task = factory.Invoke(options.Timeout, options.Token);
                 break;
         }
@@ -357,17 +358,17 @@ public class QueuedSynchronizer : Disposable
             throw new ArgumentOutOfRangeException(nameof(token));
 
         ThrowIfDisposed();
+
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            first?.TrySetCanceledAndSentinelToAll(token);
-            first = last = null;
+            suspendedCallers = DetachWaitQueue()?.SetCanceled(token);
         }
+
+        suspendedCallers?.Unwind();
     }
 
-    private protected static long ResumeAll(LinkedValueTaskCompletionSource<bool>? head)
-        => head?.TrySetResultAndSentinelToAll(result: true) ?? 0L;
-
-    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
+    private protected unsafe LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
         Monitor.IsEntered(SyncRoot);
 
@@ -396,19 +397,26 @@ public class QueuedSynchronizer : Disposable
     {
         reason ??= new ObjectDisposedException(GetType().Name);
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            first?.TrySetExceptionAndSentinelToAll(reason);
-            first = last = null;
+            suspendedCallers = DetachWaitQueue()?.SetException(reason);
         }
+
+        suspendedCallers?.Unwind();
     }
 
-    private void Interrupt(object? reason)
+    private LinkedValueTaskCompletionSource<bool>? Interrupt(object? reason)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        first?.TrySetExceptionAndSentinelToAll(new PendingTaskInterruptedException { Reason = reason });
-        first = last = null;
+        unsafe
+        {
+            return DetachWaitQueue()?.SetResult(&TrySetReason, reason);
+        }
+
+        static bool TrySetReason(LinkedValueTaskCompletionSource<bool> source, object? reason)
+            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, new(new PendingTaskInterruptedException { Reason = reason }));
     }
 
     private void Dispose(bool disposing, Exception? reason)
@@ -730,19 +738,25 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
     private void OnCompleted(WaitNode node)
     {
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            if (node.NeedsRemoval && RemoveNode(node))
-                DrainWaitQueue();
+            suspendedCallers = node.NeedsRemoval && RemoveNode(node)
+                ? DrainWaitQueue()
+                : null;
 
             pool.Return(node);
         }
+
+        suspendedCallers?.Unwind();
     }
 
-    private void DrainWaitQueue()
+    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(first is null or WaitNode);
+
+        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
 
         for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
         {
@@ -760,8 +774,13 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                 break;
 
             if (RemoveAndSignal(current))
+            {
                 AcquireCore(current.Context!);
+                LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
+            }
         }
+
+        return localFirst;
     }
 
     private protected sealed override bool IsReadyToDispose => first is null;
@@ -778,13 +797,16 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -800,14 +822,17 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ThrowIfDisposed();
 
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             ReleaseCore(context);
-            DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
+
+        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -822,9 +847,9 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected bool TryAcquire(TContext context)
     {
+        ThrowIfDisposed();
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
             return TryAcquireCore(context);
         }
     }
