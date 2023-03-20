@@ -245,12 +245,13 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
 
     private ValueTaskSourceStatus GetStatus(short token)
     {
-        var snapshot = versionAndStatus.VolatileRead();
+        var resultCopy = result;
+        var snapshot = versionAndStatus.VolatileRead(); // barrier to avoid reordering of result read
 
         if (token != snapshot.Version)
             throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
 
-        return !snapshot.IsCompleted ? ValueTaskSourceStatus.Pending : result.Error switch
+        return !snapshot.IsCompleted ? ValueTaskSourceStatus.Pending : resultCopy.Error switch
         {
             null => ValueTaskSourceStatus.Succeeded,
             OperationCanceledException => ValueTaskSourceStatus.Canceled,
