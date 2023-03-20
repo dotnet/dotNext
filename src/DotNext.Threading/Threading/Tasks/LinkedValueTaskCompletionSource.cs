@@ -112,12 +112,14 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
     internal static void Append([NotNull] ref LinkedValueTaskCompletionSource<T>? first, [NotNull] ref LinkedValueTaskCompletionSource<T>? last, LinkedValueTaskCompletionSource<T> source)
     {
-        if (first is null || last is null)
+        if (last is null)
         {
             first = last = source;
         }
         else
         {
+            Debug.Assert(first is not null);
+
             last.Append(source);
             last = source;
         }
