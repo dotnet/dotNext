@@ -165,5 +165,13 @@ namespace DotNext.Threading.Tasks
             True(source.TrySetResult());
             await dest.Task;
         }
+
+        [Fact]
+        public static async Task CanceledToken()
+        {
+            var source = new ValueTaskCompletionSource();
+            var task = source.CreateTask(InfiniteTimeSpan, new(true)).AsTask();
+            await task;
+        }
     }
 }

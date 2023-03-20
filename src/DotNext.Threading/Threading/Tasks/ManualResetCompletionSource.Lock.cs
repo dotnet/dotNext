@@ -27,7 +27,7 @@ public partial class ManualResetCompletionSource
         }
     }
 
-    private bool TryEnterLock() => Interlocked.CompareExchange(ref lockState, 1, 0) is 0;
+    private bool TryEnterLock() => Interlocked.Exchange(ref lockState, 1) is 0;
 
     private protected void ExitLock()
     {

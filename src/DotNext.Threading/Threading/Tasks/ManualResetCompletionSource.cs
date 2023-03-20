@@ -42,6 +42,9 @@ public abstract partial class ManualResetCompletionSource
         // due to concurrency, this method can be called after Reset or twice
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
+        if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated)
+            return;
+
         EnterLock();
         try
         {
@@ -288,16 +291,15 @@ public abstract partial class ManualResetCompletionSource
 
                 Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
             }
-            else if (token.IsCancellationRequested)
-            {
-                CompleteAsCanceled(token);
-
-                Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
-            }
             else
             {
-                versionAndStatus.Status = ManualResetCompletionSourceStatus.Activated;
-                state.Initialize(cancellationCallback, versionAndStatus.Version, timeout, token);
+                state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token);
+
+                if (token.IsCancellationRequested)
+                {
+                    CompleteAsCanceled(token);
+                    Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
+                }
             }
         }
     }
@@ -466,15 +468,11 @@ public abstract partial class ManualResetCompletionSource
 
         public bool CanBeCompleted(short? token)
         {
-            var status = Status;
             var actualToken = Version;
 
             return Status is ManualResetCompletionSourceStatus.WaitForActivation or ManualResetCompletionSourceStatus.Activated
                 && token.GetValueOrDefault(actualToken) == actualToken;
         }
-
-        public bool Check(short version, ManualResetCompletionSourceStatus status)
-            => value == Combine(version, status);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Consume(short version)
@@ -485,7 +483,7 @@ public abstract partial class ManualResetCompletionSource
             var actual = Interlocked.CompareExchange(ref value, Combine(version, ManualResetCompletionSourceStatus.Consumed), Combine(version, ManualResetCompletionSourceStatus.WaitForConsumption));
 
             string errorMessage;
-            if (GetStatus(ref actual) != ManualResetCompletionSourceStatus.WaitForConsumption)
+            if (GetStatus(ref actual) is not ManualResetCompletionSourceStatus.WaitForConsumption)
             {
                 errorMessage = ExceptionMessages.InvalidSourceState;
             }
@@ -535,20 +533,27 @@ public abstract partial class ManualResetCompletionSource
         private CancellationTokenRegistration tokenTracker, timeoutTracker;
         private CancellationTokenSource? timeoutSource;
 
-        internal void Initialize(Action<object?, CancellationToken> callback, short version, TimeSpan timeout, CancellationToken token)
+        internal void Initialize(ref VersionAndStatus vs, Action<object?, CancellationToken> callback, TimeSpan timeout, CancellationToken token)
         {
             // box current token once and only if needed
             var cachedVersion = default(IEquatable<short>);
 
             if (token.CanBeCanceled)
             {
-                tokenTracker = token.UnsafeRegister(callback, cachedVersion = version);
+                tokenTracker = token.UnsafeRegister(callback, cachedVersion = vs.Version);
             }
 
-            if (timeout > default(TimeSpan))
+            // This method may cause deadlock if token becomes canceled within the lock.
+            // In this case, registration calls the callback synchronously.
+            // The callback tries to acquire the lock but stuck.
+            // To avoid that, change the status later using write barrier and check the token later
+            Interlocked.MemoryBarrier();
+            vs.Status = ManualResetCompletionSourceStatus.Activated;
+
+            if (timeout > default(TimeSpan) && !token.IsCancellationRequested)
             {
                 timeoutSource ??= new();
-                timeoutTracker = timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? version);
+                timeoutTracker = timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? vs.Version);
                 timeoutSource.CancelAfter(timeout);
             }
         }
