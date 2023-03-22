@@ -32,19 +32,18 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     {
     }
 
-    private void SetResult(Exception? result, object? completionData = null)
+    private bool SetResult(Exception? result, object? completionData = null)
     {
         AssertLocked();
 
         this.result = result is null ? null : ExceptionDispatchInfo.Capture(result);
-        CompletionData = completionData;
-        versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
+        return SetResult(completionData);
     }
 
-    private protected sealed override void CompleteAsTimedOut()
+    private protected sealed override bool CompleteAsTimedOut()
         => SetResult(OnTimeout());
 
-    private protected sealed override void CompleteAsCanceled(CancellationToken token)
+    private protected sealed override bool CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
     /// <inheritdoc />
@@ -76,14 +75,10 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         EnterLock();
         try
         {
-            if (result = versionAndStatus.CanBeCompleted(completionToken))
-            {
-                SetResult(factory.Invoke(), completionData);
-            }
-            else
-            {
+            result = versionAndStatus.CanBeCompleted(completionToken);
+
+            if (!result || !SetResult(factory.Invoke(), completionData))
                 goto exit;
-            }
         }
         finally
         {

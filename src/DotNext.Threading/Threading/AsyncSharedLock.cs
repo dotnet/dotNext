@@ -224,11 +224,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(first is null or WaitNode);
+        Debug.Assert(WaitQueueHead is null or WaitNode);
 
-        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
 
-        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
         {
             Debug.Assert(current.Next is null or WaitNode);
 
@@ -236,14 +236,14 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             switch ((current.IsStrongLock, state.IsStrongLockAllowed))
             {
                 case (true, true):
-                    if (RemoveAndSignal(current))
-                    {
-                        state.AcquireStrongLock();
-                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-                        goto exit;
-                    }
+                    if (!RemoveAndSignal(current, out var resumable))
+                        continue;
 
-                    continue;
+                    state.AcquireStrongLock();
+                    if (resumable)
+                        detachedQueue.Add(current);
+
+                    goto exit;
                 case (true, false):
                     goto exit;
                 default:
@@ -251,18 +251,18 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
                     if (!state.IsWeakLockAllowed)
                         goto exit;
 
-                    if (RemoveAndSignal(current))
-                    {
+                    if (RemoveAndSignal(current, out resumable))
                         state.AcquireWeakLock();
-                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-                    }
+
+                    if (resumable)
+                        detachedQueue.Add(current);
 
                     continue;
             }
         }
 
     exit:
-        return localFirst;
+        return detachedQueue.First;
     }
 
     /// <summary>
@@ -312,5 +312,5 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCallers?.Unwind();
     }
 
-    private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && first is null;
+    private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && WaitQueueHead is null;
 }

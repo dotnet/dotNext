@@ -70,7 +70,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private LinkedValueTaskCompletionSource<bool>? Detach(bool detachAll)
-        => detachAll ? DetachWaitQueue() : DetachHead();
+        => detachAll ? DetachWaitQueue() : DetachWaitQueueHead();
 
     /// <summary>
     /// Resumes the first suspended caller in the wait queue.
@@ -101,7 +101,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     }
 
     /// <inheritdoc/>
-    bool IAsyncEvent.IsSet => first is null;
+    bool IAsyncEvent.IsSet => WaitQueueHead is null;
 
     /// <inheritdoc/>
     bool IAsyncEvent.Signal() => Signal();
@@ -453,11 +453,11 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
     private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(first is null or WaitNode);
+        Debug.Assert(WaitQueueHead is null or WaitNode);
 
-        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
 
-        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
         {
             Debug.Assert(current.Next is null or WaitNode);
 
@@ -472,14 +472,14 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
             if (!transition.Test(State))
                 break;
 
-            if (RemoveAndSignal(current))
-            {
+            if (RemoveAndSignal(current, out var resumable))
                 transition.Transit(State);
-                LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-            }
+
+            if (resumable)
+                detachedQueue.Add(current);
         }
 
-        return localFirst;
+        return detachedQueue.First;
     }
 
     /// <summary>
@@ -605,5 +605,5 @@ public class AsyncTrigger<TState> : QueuedSynchronizer
         return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
 
-    private protected sealed override bool IsReadyToDispose => first is null;
+    private protected sealed override bool IsReadyToDispose => WaitQueueHead is null;
 }

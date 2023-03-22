@@ -160,24 +160,24 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(delta > 0L);
 
-        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
         lock (SyncRoot)
         {
             manager.Increment(delta);
 
-            for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null && manager.Value > 0L; current = next)
+            for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null && manager.Value > 0L; current = next)
             {
                 next = current.Next;
 
-                if (RemoveAndSignal(current))
-                {
+                if (RemoveAndSignal(current, out var resumable))
                     manager.Decrement();
-                    LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-                }
+
+                if (resumable)
+                    detachedQueue.Add(current);
             }
         }
 
-        localFirst?.Unwind();
+        detachedQueue.First?.Unwind();
     }
 
     /// <inheritdoc/>

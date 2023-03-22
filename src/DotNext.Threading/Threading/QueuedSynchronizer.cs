@@ -31,8 +31,7 @@ public class QueuedSynchronizer : Disposable
     private readonly TagList measurementTags;
     private readonly TaskCompletionSource disposeTask;
     private CallerInformationStorage? callerInfo;
-    private protected LinkedValueTaskCompletionSource<bool>? first;
-    private LinkedValueTaskCompletionSource<bool>? last;
+    private LinkedValueTaskCompletionSource<bool>.LinkedList waitQueue;
 
     static QueuedSynchronizer()
     {
@@ -47,6 +46,10 @@ public class QueuedSynchronizer : Disposable
         measurementTags = new() { { LockTypeMeterAttribute, GetType().Name } };
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private protected LinkedValueTaskCompletionSource<bool>? WaitQueueHead => waitQueue.First;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private protected object SyncRoot => disposeTask;
 
     /// <summary>
@@ -62,10 +65,10 @@ public class QueuedSynchronizer : Disposable
         }
     }
 
-    private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node)
+    private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node, out bool resumable)
     {
         RemoveNode(node);
-        return node.InternalTrySetResult(Sentinel.Instance, completionToken: null, result: true);
+        return node.InternalTrySetResult(Sentinel.Instance, completionToken: null, result: true, out resumable);
     }
 
     /// <summary>
@@ -102,11 +105,11 @@ public class QueuedSynchronizer : Disposable
         List<object?> list;
         lock (SyncRoot)
         {
-            if (first is null)
+            if (waitQueue.First is null)
                 return Array.Empty<Activity?>();
 
             list = new List<object?>();
-            for (LinkedValueTaskCompletionSource<bool>? current = first; current is not null; current = current.Next)
+            for (LinkedValueTaskCompletionSource<bool>? current = waitQueue.First; current is not null; current = current.Next)
             {
                 if (current is WaitNode node)
                     list.Add(node.CallerInfo);
@@ -148,24 +151,11 @@ public class QueuedSynchronizer : Disposable
     }
 
     private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
+        => waitQueue.Remove(node);
+
+    private protected void EnqueueNode(WaitNode node)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        bool isFirst;
-
-        if (isFirst = ReferenceEquals(first, node))
-            first = node.Next;
-
-        if (ReferenceEquals(last, node))
-            last = node.Previous;
-
-        node.Detach();
-        return isFirst;
-    }
-
-    private protected void EnqueueNode(WaitNode freshNode)
-    {
-        LinkedValueTaskCompletionSource<bool>.Append(ref first, ref last, freshNode);
+        waitQueue.Add(node);
         contentionCounter?.Invoke(1D);
         SuspendedCallersMeter.Add(1, measurementTags);
     }
@@ -188,7 +178,7 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (first is null && manager.IsLockAllowed)
+        if (waitQueue.First is null && manager.IsLockAllowed)
         {
             manager.AcquireLock();
             return true;
@@ -372,25 +362,16 @@ public class QueuedSynchronizer : Disposable
     {
         Monitor.IsEntered(SyncRoot);
 
-        var result = first;
-        first = last = null;
+        var result = waitQueue.First;
+        waitQueue = default;
         return result;
     }
 
-    private protected LinkedValueTaskCompletionSource<bool>? DetachHead()
+    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueueHead()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (first is { } head)
-        {
-            RemoveNode(head);
-        }
-        else
-        {
-            head = null;
-        }
-
-        return head;
+        return waitQueue.Dequeue();
     }
 
     private void NotifyObjectDisposed(Exception? reason = null)
@@ -412,11 +393,11 @@ public class QueuedSynchronizer : Disposable
 
         unsafe
         {
-            return DetachWaitQueue()?.SetResult(&TrySetReason, reason);
+            return DetachWaitQueue()?.SetResult(&FromReason, reason);
         }
 
-        static bool TrySetReason(LinkedValueTaskCompletionSource<bool> source, object? reason)
-            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, new(new PendingTaskInterruptedException { Reason = reason }));
+        static Result<bool> FromReason(object? reason)
+            => new(new PendingTaskInterruptedException { Reason = reason });
     }
 
     private void Dispose(bool disposing, Exception? reason)
@@ -754,11 +735,11 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(first is null or WaitNode);
+        Debug.Assert(WaitQueueHead is null or WaitNode);
 
-        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
 
-        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
         {
             Debug.Assert(current.Next is null or WaitNode);
 
@@ -773,17 +754,17 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
             if (!CanAcquire(current.Context!))
                 break;
 
-            if (RemoveAndSignal(current))
-            {
+            if (RemoveAndSignal(current, out var resumable))
                 AcquireCore(current.Context!);
-                LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-            }
+
+            if (resumable)
+                detachedQueue.Add(current);
         }
 
-        return localFirst;
+        return detachedQueue.First;
     }
 
-    private protected sealed override bool IsReadyToDispose => first is null;
+    private protected sealed override bool IsReadyToDispose => WaitQueueHead is null;
 
     /// <summary>
     /// Implements release semantics: attempts to resume the suspended callers.
@@ -858,7 +839,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (first is null && CanAcquire(context))
+        if (WaitQueueHead is null && CanAcquire(context))
         {
             AcquireCore(context);
             return true;

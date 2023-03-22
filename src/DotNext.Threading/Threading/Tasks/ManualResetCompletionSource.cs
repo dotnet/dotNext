@@ -43,18 +43,15 @@ public abstract partial class ManualResetCompletionSource
         // that's why we need to skip the call if token doesn't match (call after Reset)
         // or completed flag is set (call twice with the same token)
         if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated)
-            return;
+            goto exit;
 
         EnterLock();
         try
         {
-            if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated || versionAndStatus.Version != (short)expectedVersion)
-                return;
-
-            if (state.IsTimeoutToken(token))
-                CompleteAsTimedOut();
-            else
-                CompleteAsCanceled(token);
+            if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated
+                || versionAndStatus.Version != (short)expectedVersion
+                || !(state.IsTimeoutToken(token) ? CompleteAsTimedOut() : CompleteAsCanceled(token)))
+                goto exit;
 
             // ensure that timeout or cancellation handler sets the status correctly
             Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
@@ -65,11 +62,14 @@ public abstract partial class ManualResetCompletionSource
         }
 
         Resume();
+
+    exit:
+        return;
     }
 
-    private protected abstract void CompleteAsTimedOut();
+    private protected abstract bool CompleteAsTimedOut();
 
-    private protected abstract void CompleteAsCanceled(CancellationToken token);
+    private protected abstract bool CompleteAsCanceled(CancellationToken token);
 
     /// <summary>
     /// Resets internal state of this source.
@@ -147,7 +147,7 @@ public abstract partial class ManualResetCompletionSource
     protected object? CompletionData
     {
         get;
-        private protected set;
+        private set;
     }
 
     /// <summary>
@@ -162,6 +162,22 @@ public abstract partial class ManualResetCompletionSource
             continuation = default;
             c.Invoke(runContinuationsAsynchronously);
         }
+    }
+
+    /// <summary>
+    /// Moves this source to the completed state.
+    /// </summary>
+    /// <param name="completionData">Custom data to be record to <see cref="CompletionData"/> property.</param>
+    /// <returns>
+    /// <see langword="true"/> if the immediate caller must call <see cref="Resume"/> to execute the callback;
+    /// <see langword="false"/> to ignore invocation of <see cref="Resume"/> method because the callback
+    /// is not provided.
+    /// </returns>
+    private protected bool SetResult(object? completionData)
+    {
+        CompletionData = completionData;
+        versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
+        return continuation.IsValid;
     }
 
     private void OnCompleted(in Continuation continuation, short token)
@@ -265,8 +281,15 @@ public abstract partial class ManualResetCompletionSource
         {
             switch (versionAndStatus.Status)
             {
+                case ManualResetCompletionSourceStatus.WaitForActivation when timeout == default:
+                    CompleteAsTimedOut();
+                    goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForActivation:
-                    Activate(timeout, token);
+                    state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token);
+
+                    if (token.IsCancellationRequested)
+                        CompleteAsCanceled(token);
+
                     goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForConsumption:
                     result = versionAndStatus.Version;
@@ -282,26 +305,6 @@ public abstract partial class ManualResetCompletionSource
         }
 
         return result;
-
-        void Activate(TimeSpan timeout, CancellationToken token)
-        {
-            if (timeout == default)
-            {
-                CompleteAsTimedOut();
-
-                Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
-            }
-            else
-            {
-                state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token);
-
-                if (token.IsCancellationRequested)
-                {
-                    CompleteAsCanceled(token);
-                    Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -541,13 +544,13 @@ public abstract partial class ManualResetCompletionSource
             if (token.CanBeCanceled)
             {
                 tokenTracker = token.UnsafeRegister(callback, cachedVersion = vs.Version);
+                Interlocked.MemoryBarrier();
             }
 
             // This method may cause deadlock if token becomes canceled within the lock.
             // In this case, registration calls the callback synchronously.
             // The callback tries to acquire the lock but stuck.
             // To avoid that, change the status later using write barrier and check the token later
-            Interlocked.MemoryBarrier();
             vs.Status = ManualResetCompletionSourceStatus.Activated;
 
             if (timeout > default(TimeSpan) && !token.IsCancellationRequested)
