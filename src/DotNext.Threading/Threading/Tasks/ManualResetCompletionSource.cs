@@ -175,6 +175,8 @@ public abstract partial class ManualResetCompletionSource
     /// </returns>
     private protected bool SetResult(object? completionData)
     {
+        AssertLocked();
+
         CompletionData = completionData;
         versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
         return continuation.IsValid;
