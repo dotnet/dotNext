@@ -46,7 +46,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-11-2023
+Release Date: 03-22-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.12.0">DotNext 4.12.0</a>
 * Performance improvements of interpolated string handlers
@@ -61,7 +61,7 @@ a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.0">DotNext.M
 * Reduced complexity of `QueuedSynchronizer` class internals
 * Fixed rare concurrency issues when multiple consumers trying to get task result from `ValueTaskCompletionSource`
 * Reduced number of work items submitted by async locks internally
-* Provided `ManualResetCompletionSource.Cleanup` protected virtual method that provides extension point for custom cleanup operations in derived classes
+* Provided `ManualResetCompletionSource.Cleanup` protected virtual method for custom cleanup operations
 * Heavily reduced monitor lock contention that can be caused by `ValueTaskCompletionSource` or `ValueTaskCompletionSource<T>`
 * Updated dependencies
 
