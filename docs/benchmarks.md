@@ -6,7 +6,7 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Runtime | .NET 6.0.14 (6.0.1423.7309), X64 RyuJIT AVX2 |
+| Runtime | .NET 6.0.15 (6.0.1523.11507), X64 RyuJIT AVX2 |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 22.04.1 |
@@ -217,11 +217,11 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 
 |                         Method | Number of input tasks |        Mean |     Error |    StdDev | Ratio | RatioSD |
 |------------------------------- |---------------------- |------------:|----------:|----------:|------:|--------:|
-|   ProduceConsumeCompletionPipe |                    10 |    15.68 us |  0.410 us |  1.176 us |  0.76 |    0.08 |
-| ProduceConsumeUnboundedChannel |                    10 |    20.69 us |  0.585 us |  1.688 us |  1.00 |    0.00 |
+|   ProduceConsumeCompletionPipe |                    10 |    11.86 us |  0.234 us |  0.313 us |  0.64 |    0.06 |
+| ProduceConsumeUnboundedChannel |                    10 |    17.97 us |  0.418 us |  1.201 us |  1.00 |    0.00 |
 |                                |                       |             |           |           |       |         |
-|   ProduceConsumeCompletionPipe |                   100 |    89.37 us |  1.783 us |  2.054 us |  0.63 |    0.02 |
-| ProduceConsumeUnboundedChannel |                   100 |   141.32 us |  2.794 us |  3.326 us |  1.00 |    0.00 |
+|   ProduceConsumeCompletionPipe |                   100 |    83.09 us |  1.502 us |  1.254 us |  0.57 |    0.01 |
+| ProduceConsumeUnboundedChannel |                   100 |   145.54 us |  2.836 us |  2.785 us |  1.00 |    0.00 |
 |                                |                       |             |           |           |       |         |
-|   ProduceConsumeCompletionPipe |                  1000 |   820.54 us | 16.048 us | 24.985 us |  0.70 |    0.02 |
-| ProduceConsumeUnboundedChannel |                  1000 | 1,177.71 us | 21.948 us | 19.457 us |  1.00 |    0.00 |
+|   ProduceConsumeCompletionPipe |                  1000 |   798.83 us | 13.276 us | 12.418 us |  0.64 |    0.01 |
+| ProduceConsumeUnboundedChannel |                  1000 | 1,255.55 us | 17.538 us | 15.547 us |  1.00 |    0.00 |
