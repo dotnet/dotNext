@@ -171,7 +171,7 @@ namespace DotNext.Threading.Tasks
         {
             var source = new ValueTaskCompletionSource();
             var task = source.CreateTask(InfiniteTimeSpan, new(true)).AsTask();
-            await task;
+            await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
         }
     }
 }
