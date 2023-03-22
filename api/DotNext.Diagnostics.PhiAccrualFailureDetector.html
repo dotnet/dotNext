@@ -107,6 +107,9 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
     </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Diagnostics.html">DotNext.Diagnostics</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
@@ -114,6 +117,42 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public class PhiAccrualFailureDetector : IFailureDetector, IResettable, ISupplier&lt;double&gt;, IFunctional&lt;Func&lt;&gt;&gt;</code></pre>
   </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector__ctor_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.%23ctor(TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L26">View Source</a>
+  </span>
+  <a id="DotNext_Diagnostics_PhiAccrualFailureDetector__ctor_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.#ctor*"></a>
+  <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector__ctor_TimeSpan_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.#ctor(TimeSpan)">PhiAccrualFailureDetector(TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new failure detector.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PhiAccrualFailureDetector(TimeSpan estimatedFirstHeartbeat)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TimeSpan</span></td>
+        <td><span class="parametername">estimatedFirstHeartbeat</span></td>
+        <td><p>The estimated interval to the first heartbeat.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -121,7 +160,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_AcceptableHeartbeatPause.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.AcceptableHeartbeatPause%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L65">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_AcceptableHeartbeatPause_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.AcceptableHeartbeatPause*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_AcceptableHeartbeatPause" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.AcceptableHeartbeatPause">AcceptableHeartbeatPause</h4>
@@ -157,7 +196,7 @@ in heartbeat inter arrival times.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_IsHealthy.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.IsHealthy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L139">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_IsHealthy_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.IsHealthy*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_IsHealthy" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.IsHealthy">IsHealthy</h4>
@@ -189,7 +228,7 @@ and healthy.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_IsMonitoring.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.IsMonitoring%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L144">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_IsMonitoring_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.IsMonitoring*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_IsMonitoring" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.IsMonitoring">IsMonitoring</h4>
@@ -220,7 +259,7 @@ and healthy.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_MaxSampleSize.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.MaxSampleSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L38">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L56">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_MaxSampleSize_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.MaxSampleSize*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_MaxSampleSize" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.MaxSampleSize">MaxSampleSize</h4>
@@ -251,7 +290,7 @@ and healthy.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_MinStdDeviation.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.MinStdDeviation%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L51">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_MinStdDeviation_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.MinStdDeviation*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_MinStdDeviation" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.MinStdDeviation">MinStdDeviation</h4>
@@ -286,7 +325,7 @@ in heartbeat inter-arrival times.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_Threshold.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.Threshold%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L29">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L47">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_Threshold_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.Threshold*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_Threshold" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.Threshold">Threshold</h4>
@@ -319,10 +358,46 @@ actual crashes.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_TreatUnknownValueAsUnhealthy.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.TreatUnknownValueAsUnhealthy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_TreatUnknownValueAsUnhealthy_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.TreatUnknownValueAsUnhealthy*"></a>
+  <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_TreatUnknownValueAsUnhealthy" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.TreatUnknownValueAsUnhealthy">TreatUnknownValueAsUnhealthy</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating that this detector
+interprets <span class="xref">false</span> value of <a class="xref" href="DotNext.Diagnostics.PhiAccrualFailureDetector.html#DotNext_Diagnostics_PhiAccrualFailureDetector_IsMonitoring">IsMonitoring</a>
+as unhealthy resource.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TreatUnknownValueAsUnhealthy { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Diagnostics_PhiAccrualFailureDetector_TreatUnknownValueAsUnhealthy_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>By default, this property is <span class="xref">false</span>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_Value.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_Value_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.Value*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_Value" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.Value">Value</h4>
@@ -355,7 +430,7 @@ actual crashes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_GetValue_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.GetValue(DotNext.Diagnostics.Timestamp)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L85">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_GetValue_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.GetValue*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_GetValue_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.GetValue(DotNext.Diagnostics.Timestamp)">GetValue(Timestamp)</h4>
@@ -405,7 +480,7 @@ actual crashes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_ReportHeartbeat.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.ReportHeartbeat%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L93">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L133">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_ReportHeartbeat_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.ReportHeartbeat*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_ReportHeartbeat" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.ReportHeartbeat">ReportHeartbeat()</h4>
@@ -421,7 +496,7 @@ actual crashes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_ReportHeartbeat_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.ReportHeartbeat(DotNext.Diagnostics.Timestamp)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L110">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L150">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_ReportHeartbeat_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.ReportHeartbeat*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_ReportHeartbeat_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.ReportHeartbeat(DotNext.Diagnostics.Timestamp)">ReportHeartbeat(Timestamp)</h4>
@@ -455,7 +530,7 @@ actual crashes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_Reset.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L140">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L178">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_Reset_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.Reset*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_Reset" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.Reset">Reset()</h4>
@@ -466,38 +541,6 @@ actual crashes.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
   </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_ToString.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L154">View Source</a>
-  </span>
-  <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_ToString_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.ToString*"></a>
-  <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_ToString" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.ToString">ToString()</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring#system-object-tostring">Object.ToString()</a></div>
   <h3 id="events">Events
   </h3>
   <span class="small pull-right mobile-hide">
@@ -505,7 +548,7 @@ actual crashes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_SuspiciousIntervalGrowth.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.SuspiciousIntervalGrowth%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L131">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L169">View Source</a>
   </span>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_SuspiciousIntervalGrowth" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.SuspiciousIntervalGrowth">SuspiciousIntervalGrowth</h4>
   <div class="markdown level1 summary"><p>An event occurred when this detector considers than the interval between two heartbeats is growing too fast.</p>
@@ -537,7 +580,7 @@ actual crashes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Diagnostics_PhiAccrualFailureDetector_DotNext_ISupplier_System_Double__Invoke.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.PhiAccrualFailureDetector.DotNext%23ISupplier%7BSystem%23Double%7D%23Invoke%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L88">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Diagnostics/PhiAccrualFailureDetector.cs/#L128">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_PhiAccrualFailureDetector_DotNext_ISupplier_System_Double__Invoke_" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.DotNext#ISupplier{System#Double}#Invoke*"></a>
   <h4 id="DotNext_Diagnostics_PhiAccrualFailureDetector_DotNext_ISupplier_System_Double__Invoke" data-uid="DotNext.Diagnostics.PhiAccrualFailureDetector.DotNext#ISupplier{System#Double}#Invoke">ISupplier&lt;Double&gt;.Invoke()</h4>
