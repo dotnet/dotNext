@@ -59,46 +59,50 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         }
     }
 
-    internal unsafe LinkedValueTaskCompletionSource<T>? SetResult<TArg>(delegate*<TArg, Result<T>> finalizer, TArg arg)
+    internal unsafe LinkedValueTaskCompletionSource<T>? SetResult<TArg>(delegate*<TArg, Result<T>> finalizer, TArg arg, out bool signaled)
     {
         var detachedQueue = new LinkedList();
+        signaled = false;
 
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            if (current.TrySetResult(Sentinel.Instance, completionToken: null, finalizer(arg), out var resumable) && resumable)
+            if (current.TrySetResult(Sentinel.Instance, completionToken: null, finalizer(arg), out var resumable))
+                signaled = true;
+
+            if (resumable)
                 detachedQueue.Add(current);
         }
 
         return detachedQueue.First;
     }
 
-    internal LinkedValueTaskCompletionSource<T>? SetCanceled(CancellationToken token)
+    internal LinkedValueTaskCompletionSource<T>? SetCanceled(CancellationToken token, out bool signaled)
     {
         Debug.Assert(token.IsCancellationRequested);
 
         unsafe
         {
-            return SetResult(&CreateException, token);
+            return SetResult(&CreateException, token, out signaled);
         }
 
         static Result<T> CreateException(CancellationToken token)
             => new(new OperationCanceledException(token));
     }
 
-    internal LinkedValueTaskCompletionSource<T>? SetException(Exception e)
+    internal LinkedValueTaskCompletionSource<T>? SetException(Exception e, out bool signaled)
     {
         unsafe
         {
-            return SetResult(&Result.FromException<T>, e);
+            return SetResult(&Result.FromException<T>, e, out signaled);
         }
     }
 
-    internal LinkedValueTaskCompletionSource<T>? SetResult(T value)
+    internal LinkedValueTaskCompletionSource<T>? SetResult(T value, out bool signaled)
     {
         unsafe
         {
-            return SetResult(&Result.FromValue<T>, value);
+            return SetResult(&Result.FromValue<T>, value, out signaled);
         }
     }
 
@@ -132,12 +136,13 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
         internal LinkedValueTaskCompletionSource<T>? Dequeue()
         {
-            var result = first;
-
-            if (result is not null)
+            if (first is { } result)
             {
-                first = result.Next;
-                result.Detach();
+                Remove(result);
+            }
+            else
+            {
+                result = null;
             }
 
             return result;

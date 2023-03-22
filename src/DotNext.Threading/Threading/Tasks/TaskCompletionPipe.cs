@@ -50,7 +50,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
             completionRequested = true;
             suspendedCallers = scheduledTasksCount is 0U
-                ? DetachWaitQueue()?.SetResult(false)
+                ? DetachWaitQueue()?.SetResult(false, out _)
                 : null;
         }
 
@@ -120,7 +120,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             scheduledTasksCount = 0U;
             completionRequested = false;
             ClearTaskQueue();
-            suspendedCallers = DetachWaitQueue()?.SetResult(false);
+            suspendedCallers = DetachWaitQueue()?.SetResult(false, out _);
         }
 
         suspendedCallers?.Unwind();
