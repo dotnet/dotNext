@@ -51,7 +51,7 @@ Release Date: 03-22-2023
 <a href="https://www.nuget.org/packages/dotnext/4.12.0">DotNext 4.12.0</a>
 * Performance improvements of interpolated string handlers
 
-a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.0">DotNext.Metaprogramming 4.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.0">DotNext.Metaprogramming 4.12.0</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.12.0">DotNext.Unsafe 4.12.0</a>
