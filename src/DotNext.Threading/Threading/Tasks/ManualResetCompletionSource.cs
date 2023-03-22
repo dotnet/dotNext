@@ -270,7 +270,7 @@ public abstract partial class ManualResetCompletionSource
     /// </remarks>
     public bool IsCompleted => versionAndStatus.VolatileRead().IsCompleted;
 
-    private protected short? PrepareTask(TimeSpan timeout, CancellationToken token)
+    private protected short? Activate(TimeSpan timeout, CancellationToken token)
     {
         if (timeout.Ticks is < 0L and not Timeout.InfiniteTicks)
             throw new ArgumentOutOfRangeException(nameof(timeout));
@@ -313,7 +313,7 @@ public abstract partial class ManualResetCompletionSource
     /// Represents continuation attached by the task consumer.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    private protected readonly struct Continuation : IThreadPoolWorkItem
+    private readonly struct Continuation : IThreadPoolWorkItem
     {
         private readonly Action<object?> action;
         private readonly object? state, schedulingContext;

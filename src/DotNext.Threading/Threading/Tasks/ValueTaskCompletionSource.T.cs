@@ -209,7 +209,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)
-        => PrepareTask(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+        => Activate(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
     /// <inheritdoc />
     ValueTask<T> ISupplier<TimeSpan, CancellationToken, ValueTask<T>>.Invoke(TimeSpan timeout, CancellationToken token)
@@ -217,7 +217,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
 
     /// <inheritdoc />
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
-        => PrepareTask(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+        => Activate(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
     private T GetResult(short token)
     {
@@ -277,7 +277,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public TaskCompletionSource<T> CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
-        if (PrepareTask(timeout, token) is not { } version)
+        if (Activate(timeout, token) is not { } version)
             throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
         var source = new LinkedTaskCompletionSource(userData);
