@@ -23,28 +23,15 @@ public partial class TaskCompletionPipe<T>
     }
 
     private ValueTaskPool<bool, Signal, Action<Signal>> pool;
-    private LinkedValueTaskCompletionSource<bool>? first, last;
-
-    private void RemoveNode(LinkedValueTaskCompletionSource<bool> signal)
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        if (ReferenceEquals(signal, first))
-            first = signal.Next;
-
-        if (ReferenceEquals(signal, last))
-            last = signal.Previous;
-
-        signal.Detach();
-    }
+    private LinkedValueTaskCompletionSource<bool>.LinkedList waitQueue;
 
     // detach all suspended callers to process out of the monitor lock
     private LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        var result = first;
-        first = last = null;
+        var result = waitQueue.First;
+        waitQueue = default;
         return result;
     }
 
@@ -53,17 +40,7 @@ public partial class TaskCompletionPipe<T>
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         LinkedValueTaskCompletionSource<bool> result = pool.Get();
-
-        if (last is null)
-        {
-            first = last = result;
-        }
-        else
-        {
-            last.Append(result);
-            last = result;
-        }
-
+        waitQueue.Add(result);
         return result;
     }
 }

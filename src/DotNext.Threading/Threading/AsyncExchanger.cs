@@ -33,9 +33,9 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             base.Cleanup();
         }
 
-        internal bool TryExchange(ref T value)
+        internal bool TryExchange(ref T value, out bool resumable)
         {
-            if (InternalTrySetResult(completionData: null, completionToken: null, value))
+            if (InternalTrySetResult(completionData: null, completionToken: null, value, out resumable))
             {
                 value = Value!;
                 return true;
@@ -144,9 +144,9 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
                     {
                         result = ValueTask.FromException<T>(termination);
                     }
-                    else if (point?.TryExchange(ref value) ?? false)
+                    else if (point?.TryExchange(ref value, out var resumable) ?? false)
                     {
-                        suspendedCaller = point;
+                        suspendedCaller = resumable ? point : null;
                         point = null;
                         result = new(value);
                     }
@@ -205,9 +205,14 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             {
                 throw termination;
             }
-            else if (result = point?.TryExchange(ref value) ?? false)
+            else if (point is null)
             {
-                suspendedCaller = point;
+                result = false;
+            }
+            else
+            {
+                result = point.TryExchange(ref value, out var resumable);
+                suspendedCaller = resumable ? point : null;
                 point = null;
             }
         }

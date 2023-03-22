@@ -193,7 +193,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null; current = next)
         {
             next = current.Next;
 
@@ -201,10 +201,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 break;
 
             // skip dead node
-            if (RemoveAndSignal(current))
+            if (RemoveAndSignal(current, out var resumable))
             {
                 manager.AcquireLock();
-                return current;
+                return resumable ? current : null;
             }
         }
 
@@ -236,5 +236,5 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCaller?.Resume();
     }
 
-    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && first is null;
+    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && WaitQueueHead is null;
 }

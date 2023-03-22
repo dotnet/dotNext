@@ -106,7 +106,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         {
             if (result = !manager.Value)
             {
-                for (LinkedValueTaskCompletionSource<bool>? current = first, next; ; current = next)
+                for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; ; current = next)
                 {
                     if (current is null)
                     {
@@ -117,9 +117,9 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
                     next = current.Next;
 
                     // skip dead node
-                    if (RemoveAndSignal(current))
+                    if (RemoveAndSignal(current, out var resumable))
                     {
-                        suspendedCaller = current;
+                        suspendedCaller = resumable ? current : null;
                         break;
                     }
                 }

@@ -1,5 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-using Debug = System.Diagnostics.Debug;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Tasks;
 
@@ -59,20 +59,18 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         }
     }
 
-    internal unsafe LinkedValueTaskCompletionSource<T>? SetResult<TArg>(delegate*<LinkedValueTaskCompletionSource<T>, TArg, bool> finalizer, TArg arg)
+    internal unsafe LinkedValueTaskCompletionSource<T>? SetResult<TArg>(delegate*<TArg, Result<T>> finalizer, TArg arg)
     {
-        LinkedValueTaskCompletionSource<T>? first = null, last = null;
+        var detachedQueue = new LinkedList();
 
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            if (finalizer(current, arg))
-            {
-                Append(ref first, ref last, current);
-            }
+            if (current.InternalTrySetResult(Sentinel.Instance, completionToken: null, finalizer(arg), out var resumable) && resumable)
+                detachedQueue.Add(current);
         }
 
-        return first;
+        return detachedQueue.First;
     }
 
     internal LinkedValueTaskCompletionSource<T>? SetCanceled(CancellationToken token)
@@ -81,47 +79,82 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
         unsafe
         {
-            return SetResult(&TrySetCanceled, token);
+            return SetResult(&CreateException, token);
         }
 
-        static bool TrySetCanceled(LinkedValueTaskCompletionSource<T> source, CancellationToken token)
-            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, new(new OperationCanceledException(token)));
+        static Result<T> CreateException(CancellationToken token)
+            => new(new OperationCanceledException(token));
     }
 
     internal LinkedValueTaskCompletionSource<T>? SetException(Exception e)
     {
         unsafe
         {
-            return SetResult(&TrySetException, e);
+            return SetResult(&Result.FromException<T>, e);
         }
-
-        static bool TrySetException(LinkedValueTaskCompletionSource<T> source, Exception e)
-            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, new(e));
     }
 
     internal LinkedValueTaskCompletionSource<T>? SetResult(T value)
     {
         unsafe
         {
-            return SetResult(&TrySetResult, value);
+            return SetResult(&Result.FromValue<T>, value);
         }
-
-        static bool TrySetResult(LinkedValueTaskCompletionSource<T> source, T value)
-            => source.InternalTrySetResult(Sentinel.Instance, completionToken: null, value);
     }
 
-    internal static void Append([NotNull] ref LinkedValueTaskCompletionSource<T>? first, [NotNull] ref LinkedValueTaskCompletionSource<T>? last, LinkedValueTaskCompletionSource<T> source)
+    [StructLayout(LayoutKind.Auto)]
+    internal struct LinkedList
     {
-        if (last is null)
-        {
-            first = last = source;
-        }
-        else
-        {
-            Debug.Assert(first is not null);
+        private LinkedValueTaskCompletionSource<T>? first;
+        private LinkedValueTaskCompletionSource<T>? last;
 
-            last.Append(source);
-            last = source;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal readonly LinkedValueTaskCompletionSource<T>? First => first;
+
+        internal void Add(LinkedValueTaskCompletionSource<T> node)
+        {
+            Debug.Assert(node is not null);
+
+            if (last is null)
+            {
+                Debug.Assert(first is null);
+
+                first = last = node;
+            }
+            else
+            {
+                Debug.Assert(first is not null);
+
+                last.Append(node);
+                last = node;
+            }
+        }
+
+        internal LinkedValueTaskCompletionSource<T>? Dequeue()
+        {
+            var result = first;
+
+            if (result is not null)
+            {
+                first = result.Next;
+                result.Detach();
+            }
+
+            return result;
+        }
+
+        internal bool Remove(LinkedValueTaskCompletionSource<T> node)
+        {
+            bool isFirst;
+
+            if (isFirst = ReferenceEquals(first, node))
+                first = node.Next;
+
+            if (ReferenceEquals(last, node))
+                last = node.Previous;
+
+            node.Detach();
+            return isFirst;
         }
     }
 }

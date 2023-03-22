@@ -68,7 +68,7 @@ public partial class TaskCompletionPipe<T>
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
 
-        if (firstTask is null || lastTask is null)
+        if (lastTask is null)
         {
             firstTask = lastTask = node;
         }
@@ -84,11 +84,11 @@ public partial class TaskCompletionPipe<T>
         // but also improves throughput (number of submitted tasks per second).
         // Typically, the pipe has single consumer and multiple producers. In that
         // case, improved throughput is most preferred.
-        for (LinkedValueTaskCompletionSource<bool>? current = first, next; current is not null; current = next)
+        for (LinkedValueTaskCompletionSource<bool>? current = waitQueue.First, next; current is not null; current = next)
         {
             next = current.Next;
-            RemoveNode(current);
-            if (current.InternalTrySetResult(Sentinel.Instance, completionToken: null, true))
+            waitQueue.Remove(current);
+            if (current.InternalTrySetResult(Sentinel.Instance, completionToken: null, true, out var resumable) && resumable)
                 return current;
         }
 

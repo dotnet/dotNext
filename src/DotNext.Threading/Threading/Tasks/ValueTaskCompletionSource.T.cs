@@ -122,10 +122,10 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     public unsafe bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
         => SetResult(completionData, completionToken, &FromCanceled, token);
 
-    private protected sealed override void CompleteAsTimedOut()
+    private protected sealed override bool CompleteAsTimedOut()
         => SetResult(OnTimeout());
 
-    private protected sealed override void CompleteAsCanceled(CancellationToken token)
+    private protected sealed override bool CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
     private unsafe bool SetResult<TArg>(object? completionData, short? completionToken, delegate*<TArg, Result<T>> func, TArg arg)
@@ -136,14 +136,9 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         EnterLock();
         try
         {
-            if (result = versionAndStatus.CanBeCompleted(completionToken))
-            {
-                SetResult(func(arg), completionData);
-            }
-            else
-            {
+            result = versionAndStatus.CanBeCompleted(completionToken);
+            if (!result || !SetResult(func(arg), completionData))
                 goto exit;
-            }
         }
         finally
         {
@@ -156,23 +151,21 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return result;
     }
 
-    private void SetResult(in Result<T> result, object? completionData = null)
+    private bool SetResult(in Result<T> result, object? completionData = null)
     {
         AssertLocked();
 
         this.result = result;
-        CompletionData = completionData;
-        versionAndStatus.Status = ManualResetCompletionSourceStatus.WaitForConsumption;
+        return SetResult(completionData);
     }
 
-    internal bool InternalTrySetResult(object? completionData, short? completionToken, in Result<T> result)
+    internal bool InternalTrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
     {
         bool successful;
         EnterLock();
         try
         {
-            if (successful = versionAndStatus.CanBeCompleted(completionToken))
-                SetResult(in result, completionData);
+            resumable = (successful = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(in result, completionData);
         }
         finally
         {

@@ -30,7 +30,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         lock (SyncRoot)
         {
             if (signal.NeedsRemoval)
-                RemoveNode(signal);
+                waitQueue.Remove(signal);
 
             pool.Return(signal);
         }

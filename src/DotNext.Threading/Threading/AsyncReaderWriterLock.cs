@@ -482,11 +482,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(first is null or WaitNode);
+        Debug.Assert(WaitQueueHead is null or WaitNode);
 
-        LinkedValueTaskCompletionSource<bool>? localFirst = null, localLast = null;
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
 
-        for (WaitNode? current = Unsafe.As<WaitNode>(first), next; current is not null; current = next)
+        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
         {
             Debug.Assert(current.Next is null or WaitNode);
 
@@ -497,43 +497,43 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                     if (!state.IsUpgradeToWriteLockAllowed)
                         goto exit;
 
-                    if (RemoveAndSignal(current))
-                    {
-                        state.AcquireWriteLock();
-                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-                        goto exit;
-                    }
+                    if (!RemoveAndSignal(current, out var resumable))
+                        continue;
 
-                    continue;
+                    state.AcquireWriteLock();
+                    if (resumable)
+                        detachedQueue.Add(current);
+
+                    goto exit;
                 case LockType.Exclusive:
                     if (!state.IsWriteLockAllowed)
                         goto exit;
 
                     // skip dead node
-                    if (RemoveAndSignal(current))
-                    {
-                        state.AcquireWriteLock();
-                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-                        goto exit;
-                    }
+                    if (!RemoveAndSignal(current, out resumable))
+                        continue;
 
-                    continue;
+                    state.AcquireWriteLock();
+                    if (resumable)
+                        detachedQueue.Add(current);
+
+                    goto exit;
                 default:
                     if (!state.IsReadLockAllowed)
                         goto exit;
 
-                    if (RemoveAndSignal(current))
-                    {
+                    if (RemoveAndSignal(current, out resumable))
                         state.AcquireReadLock();
-                        LinkedValueTaskCompletionSource<bool>.Append(ref localFirst, ref localLast, current);
-                    }
+
+                    if (resumable)
+                        detachedQueue.Add(current);
 
                     continue;
             }
         }
 
     exit:
-        return localFirst;
+        return detachedQueue.First;
     }
 
     /// <summary>
@@ -591,5 +591,5 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCallers?.Unwind();
     }
 
-    private protected override bool IsReadyToDispose => state.IsWriteLockAllowed && first is null;
+    private protected override bool IsReadyToDispose => state.IsWriteLockAllowed && WaitQueueHead is null;
 }
