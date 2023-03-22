@@ -86,18 +86,15 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         ThrowIfDisposed();
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        bool result;
         lock (SyncRoot)
         {
-            suspendedCallers = Detach(resumeAll)?.SetResult(true);
+            result = false;
+            suspendedCallers = Detach(resumeAll)?.SetResult(true, out result);
         }
 
-        if (suspendedCallers is not null)
-        {
-            suspendedCallers.Unwind();
-            return true;
-        }
-
-        return false;
+        suspendedCallers?.Unwind();
+        return result;
     }
 
     /// <inheritdoc/>
@@ -165,16 +162,15 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 break;
             case 0L:
                 LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+                bool signaled;
                 lock (SyncRoot)
                 {
-                    suspendedCallers = Detach(resumeAll)?.SetResult(true);
+                    signaled = false;
+                    suspendedCallers = Detach(resumeAll)?.SetResult(true, out signaled);
                 }
 
-                if (suspendedCallers is not null)
-                {
-                    suspendedCallers.Unwind();
-                }
-                else if (throwOnEmptyQueue)
+                suspendedCallers?.Unwind();
+                if (!signaled && throwOnEmptyQueue)
                 {
                     task = ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
                     break;
@@ -198,8 +194,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    suspendedCallers = Detach(resumeAll)?.SetResult(true);
-                    factory = suspendedCallers is null && throwOnEmptyQueue
+                    signaled = false;
+                    suspendedCallers = Detach(resumeAll)?.SetResult(true, out signaled);
+                    factory = !signaled && throwOnEmptyQueue
                         ? EmptyWaitQueueExceptionFactory.Instance
                         : EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
                 }
@@ -237,8 +234,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            suspendedCallers = Detach(resumeAll)?.SetResult(true);
-            factory = suspendedCallers is null && throwOnEmptyQueue
+            var signaled = false;
+            suspendedCallers = Detach(resumeAll)?.SetResult(true, out signaled);
+            factory = !signaled && throwOnEmptyQueue
                 ? EmptyWaitQueueExceptionFactory.Instance
                 : EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
         }

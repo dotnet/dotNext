@@ -352,7 +352,7 @@ public class QueuedSynchronizer : Disposable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            suspendedCallers = DetachWaitQueue()?.SetCanceled(token);
+            suspendedCallers = DetachWaitQueue()?.SetCanceled(token, out _);
         }
 
         suspendedCallers?.Unwind();
@@ -381,7 +381,7 @@ public class QueuedSynchronizer : Disposable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            suspendedCallers = DetachWaitQueue()?.SetException(reason);
+            suspendedCallers = DetachWaitQueue()?.SetException(reason, out _);
         }
 
         suspendedCallers?.Unwind();
@@ -393,7 +393,7 @@ public class QueuedSynchronizer : Disposable
 
         unsafe
         {
-            return DetachWaitQueue()?.SetResult(&FromReason, reason);
+            return DetachWaitQueue()?.SetResult(&FromReason, reason, out _);
         }
 
         static Result<bool> FromReason(object? reason)

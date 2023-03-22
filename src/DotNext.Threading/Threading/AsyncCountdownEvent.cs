@@ -215,7 +215,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (manager.Decrement())
         {
             manager.Current = manager.Initial;
-            suspendedCallers = DetachWaitQueue()?.SetResult(true);
+            suspendedCallers = DetachWaitQueue()?.SetResult(true, out _);
             return true;
         }
 
@@ -352,7 +352,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 throw new InvalidOperationException();
 
             suspendedCallers = (result = manager.Decrement(signalCount))
-                ? DetachWaitQueue()?.SetResult(true)
+                ? DetachWaitQueue()?.SetResult(true, out _)
                 : null;
         }
 

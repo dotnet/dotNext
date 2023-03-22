@@ -112,7 +112,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         {
             result = !manager.Value;
             manager.Value = !autoReset;
-            suspendedCallers = DetachWaitQueue()?.SetResult(true);
+            suspendedCallers = DetachWaitQueue()?.SetResult(true, out _);
         }
 
         suspendedCallers?.Unwind();
