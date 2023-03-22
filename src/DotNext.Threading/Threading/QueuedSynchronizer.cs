@@ -68,7 +68,7 @@ public class QueuedSynchronizer : Disposable
     private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node, out bool resumable)
     {
         RemoveNode(node);
-        return node.InternalTrySetResult(Sentinel.Instance, completionToken: null, result: true, out resumable);
+        return node.TrySetResult(Sentinel.Instance, completionToken: null, result: true, out resumable);
     }
 
     /// <summary>

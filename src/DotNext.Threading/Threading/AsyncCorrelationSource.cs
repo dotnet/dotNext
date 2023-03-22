@@ -72,7 +72,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         if (bucket?.Remove(eventId, comparer, out var completionToken) is { } node)
         {
             userData = node.UserData;
-            result = node.InternalTrySetResult(Sentinel.Instance, completionToken, in value, out var resumable);
+            result = node.TrySetResult(Sentinel.Instance, completionToken, in value, out var resumable);
             if (resumable)
                 node.Resume();
         }
