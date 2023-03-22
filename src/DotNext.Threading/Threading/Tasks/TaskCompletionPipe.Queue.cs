@@ -88,7 +88,7 @@ public partial class TaskCompletionPipe<T>
         {
             next = current.Next;
             waitQueue.Remove(current);
-            if (current.InternalTrySetResult(Sentinel.Instance, completionToken: null, true, out var resumable) && resumable)
+            if (current.TrySetResult(Sentinel.Instance, completionToken: null, true, out var resumable) && resumable)
                 return current;
         }
 

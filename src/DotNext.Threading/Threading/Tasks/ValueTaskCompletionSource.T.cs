@@ -159,7 +159,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return SetResult(completionData);
     }
 
-    internal bool InternalTrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
+    internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
     {
         bool successful;
         EnterLock();

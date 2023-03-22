@@ -66,7 +66,7 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            if (current.InternalTrySetResult(Sentinel.Instance, completionToken: null, finalizer(arg), out var resumable) && resumable)
+            if (current.TrySetResult(Sentinel.Instance, completionToken: null, finalizer(arg), out var resumable) && resumable)
                 detachedQueue.Add(current);
         }
 
