@@ -18,6 +18,9 @@ namespace DotNext.Maintenance.CommandLine
     public sealed class CommandLineMaintenanceInterfaceHostTests : Test
     {
         [Theory]
+        [InlineData("probe readiness", "ok")]
+        [InlineData("probe startup", "ok")]
+        [InlineData("probe liveness", "fail")]
         [InlineData("probe readiness 00:00:01", "ok")]
         [InlineData("probe startup 00:00:01", "ok")]
         [InlineData("probe liveness 00:00:01", "fail")]

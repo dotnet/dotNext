@@ -23,6 +23,7 @@ public partial class ApplicationMaintenanceCommand
             .FromAmong(ApplicationProbe.StartupProbeName, ApplicationProbe.ReadinessProbeName, ApplicationProbe.LivenessProbeName);
 
         var timeoutArg = new Argument<TimeSpan>("timeout", parse: ParseTimeout, description: CommandResources.ProbeCommandTimeoutArgDescription);
+        timeoutArg.SetDefaultValue(Timeout.InfiniteTimeSpan);
 
         var successfulResponseOption = new Option<string>("--successful-response", Func.Constant("ok"), CommandResources.ProbeCommandSuccessfulResponseOptionDescription)
         {

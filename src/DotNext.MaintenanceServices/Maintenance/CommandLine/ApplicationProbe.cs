@@ -13,21 +13,29 @@ internal static class ApplicationProbe
 
     internal static async Task InvokeProbeAsync(this IApplicationStatusProvider provider, string probeName, IMaintenanceConsole console, string successfulResponse, string unsuccessfulRespose, TimeSpan timeout, CancellationToken token)
     {
-        var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         bool success;
-        try
+
+        if (timeout != Timeout.InfiniteTimeSpan)
         {
-            timeoutSource.CancelAfter(timeout);
-            success = await ExecuteProbeByNameAsync(provider, probeName, timeoutSource.Token).ConfigureAwait(false);
+            var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+            try
+            {
+                timeoutSource.CancelAfter(timeout);
+                success = await ExecuteProbeByNameAsync(provider, probeName, timeoutSource.Token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException e) when (!token.IsCancellationRequested)
+            {
+                // timeout occurred
+                throw new TimeoutException(CommandResources.CommandTimeoutOccurred, e);
+            }
+            finally
+            {
+                timeoutSource.Dispose();
+            }
         }
-        catch (OperationCanceledException e) when (!token.IsCancellationRequested)
+        else
         {
-            // timeout occurred
-            throw new TimeoutException(CommandResources.CommandTimeoutOccurred, e);
-        }
-        finally
-        {
-            timeoutSource.Dispose();
+            success = await ExecuteProbeByNameAsync(provider, probeName, token).ConfigureAwait(false);
         }
 
         console.Out.Write(success ? successfulResponse : unsuccessfulRespose);
