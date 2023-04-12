@@ -18,7 +18,6 @@ public partial class ApplicationMaintenanceCommand
         };
 
         blockingOption.AddAlias("-b");
-        blockingOption.Arity = ArgumentArity.ZeroOrOne;
 
         var compactingOption = new Option<bool>("--compacting", Func.Constant(false), description: CommandResources.GCCollectCommandCompactingOptionDescription)
         {
