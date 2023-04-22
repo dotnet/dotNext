@@ -187,7 +187,7 @@ public static class BitVector
     {
         Debug.Assert(Sse2.IsSupported);
 
-        var inputvec = Vector128.Create(input);
+        var onevec = Vector128.Create((byte)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
         var bitmask = Vector128.Create(
             0B_0000_0001,
             0B_0000_0010,
@@ -206,9 +206,7 @@ public static class BitVector
             0,
             0);
 
-        var result = Sse2.And(inputvec, bitmask);
-        var onevec = Vector128.Create((byte)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-        result = Sse2.Min(result, onevec);
+        var result = Sse2.Min(Sse2.And(Vector128.Create(input), bitmask), onevec);
         Unsafe.WriteUnaligned(ref Unsafe.As<bool, byte>(ref output), result.GetLower());
     }
 
@@ -216,6 +214,7 @@ public static class BitVector
     {
         Debug.Assert(Avx2.IsSupported);
 
+        var onevec = Vector256.Create((ushort)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
         var bitmask = Vector256.Create(
             (ushort)0B_0000_0000_0000_0001,
             0B_0000_0000_0000_0010,
@@ -234,9 +233,7 @@ public static class BitVector
             0B_0100_0000_0000_0000,
             0B_1000_0000_0000_0000);
 
-        var onevec = Vector256.Create((ushort)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-        // normalize first 8 bits
+        // normalize first 8 bits for each 128-bit subvector
         var shuffleMask = Vector256.Create(
             0,
             2,
