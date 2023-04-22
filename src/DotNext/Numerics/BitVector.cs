@@ -460,9 +460,9 @@ public static class BitVector
     [CLSCompliant(false)]
     public static void FromUInt(nuint value, Span<bool> bits)
     {
-        bits = bits.TrimLength(IntPtr.Size << 3);
+        bits = bits.TrimLength(UIntPtr.Size << 3);
 
-        switch (IntPtr.Size)
+        switch (UIntPtr.Size)
         {
             case sizeof(uint):
                 FromUInt32((uint)value, bits);
