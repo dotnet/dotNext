@@ -204,8 +204,7 @@ public static class BitVector
             0,
             0,
             0,
-            0
-        );
+            0);
 
         var result = Sse2.And(inputvec, bitmask);
         var onevec = Vector128.Create((byte)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
@@ -233,8 +232,7 @@ public static class BitVector
             0B_0001_0000_0000_0000,
             0B_0010_0000_0000_0000,
             0B_0100_0000_0000_0000,
-            0B_1000_0000_0000_0000
-        );
+            0B_1000_0000_0000_0000);
 
         var onevec = Vector256.Create((ushort)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
@@ -271,8 +269,7 @@ public static class BitVector
             byte.MaxValue,
             byte.MaxValue,
             byte.MaxValue,
-            byte.MaxValue
-        );
+            byte.MaxValue);
 
         var result = Avx2.Shuffle(
             Avx2.Min(Avx2.And(Vector256.Create(input), bitmask), onevec).AsByte(),
@@ -438,7 +435,22 @@ public static class BitVector
     /// <param name="value">The integer value.</param>
     /// <param name="bits">The buffer for extracted bits.</param>
     public static void FromInt(nint value, Span<bool> bits)
-        => GetBits<nuint, UIntPtrVector>((nuint)value, bits.TrimLength(IntPtr.Size << 3));
+    {
+        bits = bits.TrimLength(IntPtr.Size << 3);
+
+        switch (IntPtr.Size)
+        {
+            case sizeof(int):
+                FromInt32((int)value, bits);
+                break;
+            case sizeof(long):
+                FromInt64((long)value, bits);
+                break;
+            default:
+                GetBits<nuint, UIntPtrVector>((nuint)value, bits);
+                break;
+        }
+    }
 
     /// <summary>
     /// Extracts bits from platform-dependent signed integer.
@@ -447,5 +459,20 @@ public static class BitVector
     /// <param name="bits">The buffer for extracted bits.</param>
     [CLSCompliant(false)]
     public static void FromUInt(nuint value, Span<bool> bits)
-        => GetBits<nuint, UIntPtrVector>(value, bits.TrimLength(UIntPtr.Size << 3));
+    {
+        bits = bits.TrimLength(IntPtr.Size << 3);
+
+        switch (IntPtr.Size)
+        {
+            case sizeof(uint):
+                FromUInt32((uint)value, bits);
+                break;
+            case sizeof(ulong):
+                FromUInt64((ulong)value, bits);
+                break;
+            default:
+                GetBits<nuint, UIntPtrVector>(value, bits);
+                break;
+        }
+    }
 }
