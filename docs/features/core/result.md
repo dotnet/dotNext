@@ -29,7 +29,7 @@ int result = parser.TryInvoke("42").OrInvoke(static error => 0);
 ```
 
 # Custom error codes
-[Result&lt;T, TError&gt;](xref:DotNext.Result`1) is an overloaded type that allows to use custom error codes instead of exceptions. The second generic parameter expects **enum** type that enumerates all possible error codes.
+[Result&lt;T, TError&gt;](xref:DotNext.Result`2) is an overloaded type that allows to use custom error codes instead of exceptions. The second generic parameter expects **enum** type that enumerates all possible error codes.
 
 ```csharp
 using DotNext;
