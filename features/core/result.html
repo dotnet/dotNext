@@ -90,7 +90,7 @@ Func&lt;string, int&gt; parser = int.Parse;
 int result = parser.TryInvoke(&quot;42&quot;).OrInvoke(static error =&gt; 0);
 </code></pre>
 <h1 id="custom-error-codes">Custom error codes</h1>
-<p><a class="xref" href="../../api/DotNext.Result-1.html">Result&lt;T, TError&gt;</a> is an overloaded type that allows to use custom error codes instead of exceptions. The second generic parameter expects <strong>enum</strong> type that enumerates all possible error codes.</p>
+<p><a class="xref" href="../../api/DotNext.Result-2.html">Result&lt;T, TError&gt;</a> is an overloaded type that allows to use custom error codes instead of exceptions. The second generic parameter expects <strong>enum</strong> type that enumerates all possible error codes.</p>
 <pre><code class="lang-csharp">using DotNext;
 
 enum ErrorCode
