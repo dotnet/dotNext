@@ -436,8 +436,6 @@ public static class BitVector
     /// <param name="bits">The buffer for extracted bits.</param>
     public static void FromInt(nint value, Span<bool> bits)
     {
-        bits = bits.TrimLength(IntPtr.Size << 3);
-
         switch (IntPtr.Size)
         {
             case sizeof(int):
@@ -447,7 +445,7 @@ public static class BitVector
                 FromInt64((long)value, bits);
                 break;
             default:
-                GetBits<nuint, UIntPtrVector>((nuint)value, bits);
+                GetBits<nuint, UIntPtrVector>((nuint)value, bits.TrimLength(IntPtr.Size << 3));
                 break;
         }
     }
@@ -460,8 +458,6 @@ public static class BitVector
     [CLSCompliant(false)]
     public static void FromUInt(nuint value, Span<bool> bits)
     {
-        bits = bits.TrimLength(UIntPtr.Size << 3);
-
         switch (UIntPtr.Size)
         {
             case sizeof(uint):
@@ -471,7 +467,7 @@ public static class BitVector
                 FromUInt64((ulong)value, bits);
                 break;
             default:
-                GetBits<nuint, UIntPtrVector>(value, bits);
+                GetBits<nuint, UIntPtrVector>(value, bits.TrimLength(UIntPtr.Size << 3));
                 break;
         }
     }
