@@ -125,7 +125,7 @@ public partial class ConcurrentCache<TKey, TValue>
             if (readerCounter < concurrencyLevel)
             {
                 // interpret command
-                if (command.Invoke() is KeyValuePair evictedPair && evictionHandler is not null)
+                if (command.Invoke() is { } evictedPair && evictionHandler is not null)
                 {
                     Debug.Assert(evictedPair.Next is null);
 
