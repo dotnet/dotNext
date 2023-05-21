@@ -31,7 +31,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
     }
 
-    private volatile bool rateLimitReached;
+    private bool rateLimitReached;
     private volatile Command commandQueueWritePosition;
     private Command commandQueueReadPosition;
 
