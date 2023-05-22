@@ -62,9 +62,6 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        if (!Enum.IsDefined<CacheEvictionPolicy>(evictionPolicy))
-            throw new ArgumentOutOfRangeException(nameof(evictionPolicy));
-
         buckets = new KeyValuePair?[capacity];
         Span.Initialize<object>(locks = new object[capacity]);
         this.keyComparer = keyComparer;
@@ -74,7 +71,8 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         readCommand = evictionPolicy switch
         {
             CacheEvictionPolicy.LFU => OnReadLFU,
-            _ => OnReadLRU,
+            CacheEvictionPolicy.LRU => OnReadLRU,
+            _ => throw new ArgumentOutOfRangeException(nameof(evictionPolicy)),
         };
 
         commandQueueReadPosition = commandQueueWritePosition = new();
