@@ -230,5 +230,28 @@ namespace DotNext.Runtime.Caching
                 Equal(new(1, 1D), snapshot[0]);
             }
         }
+
+        [Fact]
+        public static void StressTest()
+        {
+            for (var i = 0; i < 10_000; i++)
+                Stress();
+
+            static void Stress()
+            {
+                var cache = new ConcurrentCache<string, string>(10000, CacheEvictionPolicy.LFU);
+
+                Enumerable.Range(0, 14).AsParallel().ForAll(_ =>
+                {
+                    foreach (int i in Enumerable.Range(0, 100000))
+                    {
+                        string num = Guid.NewGuid().ToString();
+                        if (cache.TryGetValue(num, out var _))
+                            continue;
+                        cache[num] = num;
+                    }
+                });
+            }
+        }
     }
 }
