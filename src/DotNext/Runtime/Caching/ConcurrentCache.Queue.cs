@@ -39,11 +39,11 @@ public partial class ConcurrentCache<TKey, TValue>
     private Command commandQueueReadPosition;
 
     // Command pool fields
-    private Command? pooledCommand; // volatile
+    private volatile Command? pooledCommand;
 
     private Command RentCommand()
     {
-        Command? current, next = Volatile.Read(ref pooledCommand);
+        Command? current, next = pooledCommand;
         do
         {
             if (next is null)
@@ -65,7 +65,7 @@ public partial class ConcurrentCache<TKey, TValue>
         // this method doesn't ensure that the command returned back to the pool
         // this assumption is needed to avoid spin-lock inside of the monitor lock
         command.Clear();
-        var currentValue = command.Next = Volatile.Read(ref pooledCommand);
+        var currentValue = command.Next = pooledCommand;
         Interlocked.CompareExchange(ref pooledCommand, command, currentValue);
     }
 
