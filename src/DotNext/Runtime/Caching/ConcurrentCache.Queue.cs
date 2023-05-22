@@ -121,7 +121,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
         KeyValuePair? evictedHead = null, evictedTail = null;
         var rateLimitReached = false;
-        var command = commandQueueReadPosition.Next;
+        Command? commandQueueReadPosition = this.commandQueueReadPosition,
+            command = commandQueueReadPosition.Next;
 
         for (var readerCounter = 0; command is not null; commandQueueReadPosition = command, command = command.Next, readerCounter++)
         {
@@ -146,6 +147,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
 
         this.rateLimitReached = rateLimitReached;
+        this.commandQueueReadPosition = commandQueueReadPosition;
         return evictedHead;
 
         static void AddToEvictionList(KeyValuePair pair, ref KeyValuePair? head, ref KeyValuePair? tail)
