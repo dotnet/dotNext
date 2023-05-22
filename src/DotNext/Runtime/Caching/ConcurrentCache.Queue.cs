@@ -12,6 +12,9 @@ public partial class ConcurrentCache<TKey, TValue>
 
         internal void Initialize(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
         {
+            Debug.Assert(invoker is not null);
+            Debug.Assert(target is not null);
+
             this.invoker = invoker;
             this.target = target;
         }
