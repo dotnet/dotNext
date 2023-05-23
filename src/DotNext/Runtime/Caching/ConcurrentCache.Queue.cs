@@ -119,9 +119,9 @@ public partial class ConcurrentCache<TKey, TValue>
         Debug.Assert(Monitor.IsEntered(evictionLock));
 
         KeyValuePair? evictedHead = null, evictedTail = null;
-        var readerCounter = 0;
+        var command = commandQueueReadPosition.Next;
 
-        for (var command = commandQueueReadPosition.Next; command is not null && readerCounter < concurrencyLevel; commandQueueReadPosition = command, command = command.Next, readerCounter++)
+        for (var readerCounter = 0; command is not null && readerCounter < concurrencyLevel; commandQueueReadPosition = command, command = command.Next, readerCounter++)
         {
             // interpret command
             if (command.Invoke() is { } evictedPair && evictionHandler is not null)
@@ -135,7 +135,7 @@ public partial class ConcurrentCache<TKey, TValue>
             ReturnCommand(commandQueueReadPosition);
         }
 
-        this.rateLimitReached = readerCounter >= concurrencyLevel;
+        this.rateLimitReached = command is not null;
         return evictedHead;
 
         static void AddToEvictionList(KeyValuePair pair, ref KeyValuePair? head, ref KeyValuePair? tail)
