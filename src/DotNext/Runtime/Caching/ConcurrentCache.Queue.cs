@@ -35,8 +35,7 @@ public partial class ConcurrentCache<TKey, TValue>
     }
 
     private bool rateLimitReached;
-    private volatile Command commandQueueWritePosition;
-    private Command commandQueueReadPosition;
+    private Command commandQueueWritePosition, commandQueueReadPosition;
 
     // Command pool fields
     private volatile Command? pooledCommand;
