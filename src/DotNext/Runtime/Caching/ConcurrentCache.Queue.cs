@@ -120,34 +120,23 @@ public partial class ConcurrentCache<TKey, TValue>
         Debug.Assert(Monitor.IsEntered(evictionLock));
 
         KeyValuePair? evictedHead = null, evictedTail = null;
-        var rateLimitReached = false;
-        Command? commandQueueReadPosition = this.commandQueueReadPosition,
-            command = commandQueueReadPosition.Next;
+        var readerCounter = 0;
 
-        for (var readerCounter = 0; command is not null; commandQueueReadPosition = command, command = command.Next, readerCounter++)
+        for (var command = commandQueueReadPosition.Next; command is not null && readerCounter < concurrencyLevel; commandQueueReadPosition = command, command = command.Next, readerCounter++)
         {
-            if (readerCounter < concurrencyLevel)
+            // interpret command
+            if (command.Invoke() is { } evictedPair && evictionHandler is not null)
             {
-                // interpret command
-                if (command.Invoke() is { } evictedPair && evictionHandler is not null)
-                {
-                    Debug.Assert(evictedPair.Next is null);
+                Debug.Assert(evictedPair.Next is null);
 
-                    AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
-                }
+                AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
+            }
 
-                // commandQueueReadPosition points to the previous command that can be returned to the pool
-                ReturnCommand(commandQueueReadPosition);
-            }
-            else
-            {
-                rateLimitReached = true;
-                break;
-            }
+            // commandQueueReadPosition points to the previous command that can be returned to the pool
+            ReturnCommand(commandQueueReadPosition);
         }
 
-        this.rateLimitReached = rateLimitReached;
-        this.commandQueueReadPosition = commandQueueReadPosition;
+        this.rateLimitReached = readerCounter >= concurrencyLevel;
         return evictedHead;
 
         static void AddToEvictionList(KeyValuePair pair, ref KeyValuePair? head, ref KeyValuePair? tail)
