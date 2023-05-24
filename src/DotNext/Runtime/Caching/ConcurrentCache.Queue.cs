@@ -135,7 +135,7 @@ public partial class ConcurrentCache<TKey, TValue>
             ReturnCommand(commandQueueReadPosition);
         }
 
-        this.rateLimitReached = command is not null;
+        rateLimitReached = command is not null;
         return evictedHead;
 
         static void AddToEvictionList(KeyValuePair pair, ref KeyValuePair? head, ref KeyValuePair? tail)
