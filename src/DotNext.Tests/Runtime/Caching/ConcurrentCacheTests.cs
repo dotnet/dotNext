@@ -85,6 +85,21 @@ namespace DotNext.Runtime.Caching
         }
 
         [Fact]
+        public static async Task OverflowParallel()
+        {
+            var cache = new ConcurrentCache<int, string>(3, CacheEvictionPolicy.LFU);
+
+            await Task.WhenAll(Task.Run(FillCache), Task.Run(FillCache), Task.Run(FillCache));
+            Equal(3, cache.Count);
+
+            void FillCache()
+            {
+                for (var i = 0; i < 5; i++)
+                    cache[i] = string.Empty;
+            }
+        }
+
+        [Fact]
         public static void Enumerators()
         {
             var cache = new ConcurrentCache<int, string>(3, 3, CacheEvictionPolicy.LRU);
