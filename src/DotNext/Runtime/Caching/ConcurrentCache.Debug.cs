@@ -27,7 +27,7 @@ public partial class ConcurrentCache<TKey, TValue>
         {
             var result = 0;
 
-            for (var current = pooledCommand; current is not null; current = current.Next)
+            for (var current = pool; current is not null; current = current.Next)
                 result++;
 
             return result;

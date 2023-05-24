@@ -8,7 +8,7 @@ public partial class ConcurrentCache<TKey, TValue>
     {
         private Func<KeyValuePair, KeyValuePair?>? invoker;
         private KeyValuePair? target;
-        internal volatile Command? Next;
+        internal Command? Next;
 
         internal void Initialize(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
         {
@@ -36,13 +36,11 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private bool rateLimitReached;
     private Command commandQueueWritePosition, commandQueueReadPosition;
-
-    // Command pool fields
-    private volatile Command? pooledCommand;
+    private Command? pool;
 
     private Command RentCommand()
     {
-        Command? current, next = pooledCommand;
+        Command? current, next = Volatile.Read(ref pool);
         do
         {
             if (next is null)
@@ -53,7 +51,7 @@ public partial class ConcurrentCache<TKey, TValue>
 
             current = next;
         }
-        while (!ReferenceEquals(next = Interlocked.CompareExchange(ref pooledCommand, current.Next, current), current));
+        while (!ReferenceEquals(next = Interlocked.CompareExchange(ref pool, current.Next, current), current));
 
         current.Next = null;
         return current;
@@ -64,8 +62,8 @@ public partial class ConcurrentCache<TKey, TValue>
         // this method doesn't ensure that the command returned back to the pool
         // this assumption is needed to avoid spin-lock inside of the monitor lock
         command.Clear();
-        var currentValue = command.Next = pooledCommand;
-        Interlocked.CompareExchange(ref pooledCommand, command, currentValue);
+        var currentValue = command.Next = pool;
+        Interlocked.CompareExchange(ref pool, command, currentValue);
     }
 
     private void EnqueueAndDrain(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
