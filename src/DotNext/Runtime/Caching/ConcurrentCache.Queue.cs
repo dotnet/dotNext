@@ -30,7 +30,7 @@ public partial class ConcurrentCache<TKey, TValue>
             Debug.Assert(target is not null);
             Debug.Assert(invoker is not null);
 
-            return invoker.Invoke(target);
+            return target.Removed ? null : invoker.Invoke(target);
         }
     }
 

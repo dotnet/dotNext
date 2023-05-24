@@ -13,6 +13,7 @@ public partial class ConcurrentCache<TKey, TValue>
         internal readonly TKey Key;
         internal volatile KeyValuePair? Next;
         internal (KeyValuePair? Previous, KeyValuePair? Next) Links;
+        internal bool Removed;
 
         private protected KeyValuePair(TKey key, int hashCode)
         {
@@ -35,7 +36,7 @@ public partial class ConcurrentCache<TKey, TValue>
             : base(key, hashCode)
             => Value = value;
 
-        public override string ToString() => $"Key = {Key} Value = {Value}";
+        public override string ToString() => $"Key = {Key} Value = {Value} Hash = {GetHashCode()}";
     }
 
     // non-atomic access utilizes copy-on-write semantics
@@ -60,7 +61,7 @@ public partial class ConcurrentCache<TKey, TValue>
             set => holder = new(value);
         }
 
-        public override string ToString() => $"Key = {Key} Value = {Value}";
+        public override string ToString() => $"Key = {Key} Value = {Value} Hash = {GetHashCode()}";
     }
 
     private readonly KeyValuePair?[] buckets;
@@ -120,6 +121,7 @@ public partial class ConcurrentCache<TKey, TValue>
                     else
                         previous.Next = actual.Next;
 
+                    expected.Removed = true;
                     OnRemoved();
                     break;
                 }

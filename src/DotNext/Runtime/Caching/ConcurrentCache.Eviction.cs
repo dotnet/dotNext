@@ -28,6 +28,7 @@ public partial class ConcurrentCache<TKey, TValue>
 
         Detach(target);
         evictionListSize--;
+
         return null;
     }
 
@@ -37,6 +38,7 @@ public partial class ConcurrentCache<TKey, TValue>
         Debug.Assert(Monitor.IsEntered(evictionLock));
 
         var parent = target.Links.Previous?.Links.Previous;
+        Debug.Assert(ReferenceEquals(parent, target) is false);
         Detach(target);
 
         if (parent is null)
@@ -59,12 +61,18 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private static void Append(KeyValuePair parent, KeyValuePair child)
     {
+        Debug.Assert(ReferenceEquals(parent, child) is false);
+
         child.Links.Previous = parent;
 
         if ((child.Links.Next = parent.Links.Next) is KeyValuePair childNext)
             childNext.Links.Previous = child;
 
         parent.Links.Next = child;
+
+        Debug.Assert(ReferenceEquals(child, child.Links.Previous) is false);
+        Debug.Assert(ReferenceEquals(child, child.Links.Next) is false);
+        Debug.Assert(ReferenceEquals(child.Links.Next, child.Links.Previous) is false);
     }
 
     private void AddFirst(KeyValuePair pair)
@@ -75,10 +83,18 @@ public partial class ConcurrentCache<TKey, TValue>
         }
         else
         {
+            Debug.Assert(ReferenceEquals(pair, firstPair) is false);
+
             firstPair.Links.Previous = pair;
             pair.Links.Next = firstPair;
+            pair.Links.Previous = null;
             firstPair = pair;
+
+            Debug.Assert(ReferenceEquals(pair.Links.Next, pair.Links.Previous) is false);
         }
+
+        Debug.Assert(ReferenceEquals(pair, pair.Links.Previous) is false);
+        Debug.Assert(ReferenceEquals(pair, pair.Links.Next) is false);
     }
 
     private KeyValuePair Evict()
@@ -96,6 +112,9 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private void Detach(KeyValuePair pair)
     {
+        Debug.Assert(ReferenceEquals(pair, pair.Links.Previous) is false);
+        Debug.Assert(ReferenceEquals(pair, pair.Links.Next) is false);
+
         if (ReferenceEquals(firstPair, pair))
             firstPair = pair.Links.Next;
 
