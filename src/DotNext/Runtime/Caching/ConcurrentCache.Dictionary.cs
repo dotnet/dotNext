@@ -36,7 +36,7 @@ public partial class ConcurrentCache<TKey, TValue>
             : base(key, hashCode)
             => Value = value;
 
-        public override string ToString() => $"Key = {Key} Value = {Value} Hash = {GetHashCode()}";
+        public override string ToString() => $"Key = {Key} Value = {Value}";
     }
 
     // non-atomic access utilizes copy-on-write semantics
@@ -61,7 +61,7 @@ public partial class ConcurrentCache<TKey, TValue>
             set => holder = new(value);
         }
 
-        public override string ToString() => $"Key = {Key} Value = {Value} Hash = {GetHashCode()}";
+        public override string ToString() => $"Key = {Key} Value = {Value}";
     }
 
     private readonly KeyValuePair?[] buckets;
