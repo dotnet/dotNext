@@ -133,11 +133,11 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private void OnRemoved() => Interlocked.Decrement(ref count);
 
-    private bool TryAdd(TKey key, IEqualityComparer<TKey>? keyComparer, int hashCode, TValue value, bool updateIfExists, out TValue? previous)
+    private unsafe bool TryAdd(TKey key, IEqualityComparer<TKey>? keyComparer, int hashCode, TValue value, bool updateIfExists, out TValue? previous)
     {
         ref var bucket = ref GetBucket(hashCode, out var bucketLock);
         bool result;
-        Func<KeyValuePair, KeyValuePair?> command;
+        delegate*<KeyValuePair, Command> commandFactory;
         KeyValuePair pair;
 
         lock (bucketLock)
@@ -153,7 +153,7 @@ public partial class ConcurrentCache<TKey, TValue>
                         if (updateIfExists)
                         {
                             SetValue(current, value);
-                            command = readCommand;
+                            commandFactory = readCommand;
                             pair = current;
                             goto enqueue_and_exit;
                         }
@@ -173,7 +173,7 @@ public partial class ConcurrentCache<TKey, TValue>
                         if (updateIfExists)
                         {
                             SetValue(current, value);
-                            command = readCommand;
+                            commandFactory = readCommand;
                             pair = current;
                             goto enqueue_and_exit;
                         }
@@ -189,13 +189,13 @@ public partial class ConcurrentCache<TKey, TValue>
                 : new KeyValuePairNonAtomicAccess(key, value, hashCode);
             pair.Next = bucket;
             Volatile.Write(ref bucket, pair);
-            command = addCommand;
+            commandFactory = addCommand;
             result = true;
             OnAdded();
         }
 
     enqueue_and_exit:
-        EnqueueAndDrain(command, pair);
+        EnqueueAndDrain(commandFactory(pair));
 
     exit:
         return result;
@@ -299,7 +299,7 @@ public partial class ConcurrentCache<TKey, TValue>
         return TryGetValue(key, keyComparer, hashCode, out value);
     }
 
-    private bool TryGetValue(TKey key, IEqualityComparer<TKey>? keyComparer, int hashCode, [MaybeNullWhen(false)] out TValue value)
+    private unsafe bool TryGetValue(TKey key, IEqualityComparer<TKey>? keyComparer, int hashCode, [MaybeNullWhen(false)] out TValue value)
     {
         KeyValuePair? pair;
 
@@ -309,7 +309,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 if (hashCode == pair.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, pair.Key) : pair.Key.Equals(key)))
                 {
-                    EnqueueAndDrain(readCommand, pair);
+                    EnqueueAndDrain(readCommand(pair));
                     value = GetValue(pair);
                     return true;
                 }
@@ -321,7 +321,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 if (hashCode == pair.KeyHashCode && keyComparer.Equals(key, pair.Key))
                 {
-                    EnqueueAndDrain(readCommand, pair);
+                    EnqueueAndDrain(readCommand(pair));
                     value = GetValue(pair);
                     return true;
                 }
@@ -366,7 +366,7 @@ public partial class ConcurrentCache<TKey, TValue>
         return TryRemove(key, matchValue: true, ref value);
     }
 
-    private bool TryRemove(TKey key, bool matchValue, ref TValue? value)
+    private unsafe bool TryRemove(TKey key, bool matchValue, ref TValue? value)
     {
         var keyComparer = this.keyComparer;
         var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
@@ -417,7 +417,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
 
     enqueue_and_exit:
-        EnqueueAndDrain(removeCommand, pair);
+        EnqueueAndDrain(new RemoveCommand(pair));
         return true;
     }
 
@@ -431,7 +431,7 @@ public partial class ConcurrentCache<TKey, TValue>
     /// <see langword="true"/> if the value with <paramref name="key"/> was equal to <paramref name="expectedValue"/> and
     /// replaced with <paramref name="newValue"/>; otherwise, <see langword="false"/>.
     /// </returns>
-    public bool TryUpdate(TKey key, TValue newValue, TValue expectedValue)
+    public unsafe bool TryUpdate(TKey key, TValue newValue, TValue expectedValue)
     {
         var keyComparer = this.keyComparer;
         var hashCode = keyComparer?.GetHashCode(key) ?? key.GetHashCode();
@@ -467,7 +467,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
 
     enqueue_and_exit:
-        EnqueueAndDrain(readCommand, pair);
+        EnqueueAndDrain(readCommand(pair));
         return true;
     }
 

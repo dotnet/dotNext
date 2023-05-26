@@ -249,24 +249,21 @@ namespace DotNext.Runtime.Caching
         [Fact]
         public static void StressTest()
         {
-            for (var i = 0; i < 10_000; i++)
-                Stress();
+            const int capacity = 10_000;
+            var cache = new ConcurrentCache<string, string>(10_000, CacheEvictionPolicy.LFU);
 
-            static void Stress()
+            Enumerable.Range(0, 14).AsParallel().ForAll(_ =>
             {
-                var cache = new ConcurrentCache<string, string>(10000, CacheEvictionPolicy.LFU);
-
-                Enumerable.Range(0, 14).AsParallel().ForAll(_ =>
+                foreach (int i in Enumerable.Range(0, capacity * 10))
                 {
-                    foreach (int i in Enumerable.Range(0, 100000))
-                    {
-                        string num = Guid.NewGuid().ToString();
-                        if (cache.TryGetValue(num, out var _))
-                            continue;
-                        cache[num] = num;
-                    }
-                });
-            }
+                    string num = Guid.NewGuid().ToString();
+                    if (cache.TryGetValue(num, out var _))
+                        continue;
+                    cache[num] = num;
+                }
+            });
+
+            Equal(capacity, cache.Count);
         }
     }
 }

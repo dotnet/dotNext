@@ -41,6 +41,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     }
 
     private readonly int concurrencyLevel;
+    private unsafe readonly delegate*<KeyValuePair, Command> addCommand, readCommand;
 
     /// <summary>
     /// Initializes a new empty cache.
@@ -66,16 +67,24 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         Span.Initialize<object>(locks = new object[capacity]);
         this.keyComparer = keyComparer;
         this.concurrencyLevel = concurrencyLevel;
-        addCommand = OnAdd;
-        removeCommand = OnRemove;
-        readCommand = evictionPolicy switch
+        unsafe
         {
-            CacheEvictionPolicy.LFU => OnReadLFU,
-            CacheEvictionPolicy.LRU => OnReadLRU,
-            _ => throw new ArgumentOutOfRangeException(nameof(evictionPolicy)),
-        };
+            addCommand = &OnAdd;
+            readCommand = evictionPolicy switch
+            {
+                CacheEvictionPolicy.LRU => &OnReadLRU,
+                CacheEvictionPolicy.LFU => &OnReadLFU,
+                _ => throw new ArgumentOutOfRangeException(nameof(evictionPolicy)),
+            };
+        }
 
         commandQueueReadPosition = commandQueueWritePosition = new();
+
+        static Command OnAdd(KeyValuePair target) => new AddCommand(target);
+
+        static Command OnReadLFU(KeyValuePair target) => new ReadLFUCommand(target);
+
+        static Command OnReadLRU(KeyValuePair target) => new ReadLRUCommand(target);
     }
 
     /// <summary>
