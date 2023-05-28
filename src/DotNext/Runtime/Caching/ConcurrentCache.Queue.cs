@@ -37,7 +37,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
 
         internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
-            => cache.OnAdd(target);
+            => target.Removed ? null : cache.OnAdd(target);
     }
 
     private sealed class RemoveCommand : CacheCommand
@@ -48,7 +48,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
 
         internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
-            => cache.OnRemove(target);
+            => target.Removed ? null : cache.OnRemove(target);
     }
 
     private sealed class ReadLFUCommand : CacheCommand
@@ -59,7 +59,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
 
         internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
-            => cache.OnReadLFU(target);
+            => target.Removed ? null : cache.OnReadLFU(target);
     }
 
     private sealed class ReadLRUCommand : CacheCommand

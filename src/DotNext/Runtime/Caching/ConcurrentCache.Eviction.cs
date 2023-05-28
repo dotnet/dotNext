@@ -12,6 +12,7 @@ public partial class ConcurrentCache<TKey, TValue>
     private KeyValuePair? OnAdd(KeyValuePair target)
     {
         Debug.Assert(Monitor.IsEntered(evictionLock));
+        Debug.Assert(target.Removed is false);
 
         AddFirst(target);
         evictionListSize += 1;
@@ -21,6 +22,7 @@ public partial class ConcurrentCache<TKey, TValue>
     private KeyValuePair? OnRemove(KeyValuePair target)
     {
         Debug.Assert(Monitor.IsEntered(evictionLock));
+        Debug.Assert(target.Removed is false);
 
         Detach(target);
         evictionListSize--;
@@ -31,6 +33,7 @@ public partial class ConcurrentCache<TKey, TValue>
     private KeyValuePair? OnReadLFU(KeyValuePair target)
     {
         Debug.Assert(Monitor.IsEntered(evictionLock));
+        Debug.Assert(target.Removed is false);
 
         var parent = target.Links.Previous?.Links.Previous;
         Debug.Assert(ReferenceEquals(parent, target) is false);
@@ -47,6 +50,7 @@ public partial class ConcurrentCache<TKey, TValue>
     private KeyValuePair? OnReadLRU(KeyValuePair target)
     {
         Debug.Assert(Monitor.IsEntered(evictionLock));
+        Debug.Assert(target.Removed is false);
 
         Detach(target);
         AddFirst(target);
