@@ -63,7 +63,7 @@ public partial class ConcurrentCache<TKey, TValue>
 
         child.Links.Previous = parent;
 
-        if ((child.Links.Next = parent.Links.Next) is KeyValuePair childNext)
+        if ((child.Links.Next = parent.Links.Next) is { } childNext)
             childNext.Links.Previous = child;
 
         parent.Links.Next = child;
