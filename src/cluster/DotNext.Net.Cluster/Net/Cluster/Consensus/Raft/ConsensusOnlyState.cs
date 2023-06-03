@@ -85,6 +85,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             Debug.Assert(state is not null);
 
             this.state = state;
+            this.index = index;
         }
 
         bool ISupplier<bool>.Invoke()
