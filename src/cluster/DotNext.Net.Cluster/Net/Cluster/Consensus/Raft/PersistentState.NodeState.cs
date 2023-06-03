@@ -266,6 +266,7 @@ public partial class PersistentState
             Debug.Assert(state is not null);
 
             this.state = state;
+            this.index = index;
         }
 
         bool ISupplier<bool>.Invoke() => index <= state.CommitIndex;
