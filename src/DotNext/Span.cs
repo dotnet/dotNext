@@ -569,6 +569,7 @@ public static partial class Span
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     /// <param name="span">The span of elements.</param>
     /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010", Justification = "False positive")]
     public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span) // TODO: Remove in the next version because of list pattern matching
         => span is [var result, ..] ? result : Optional<T>.None;
 
@@ -578,6 +579,7 @@ public static partial class Span
     /// <typeparam name="T">The type of elements in the span.</typeparam>
     /// <param name="span">The span of elements.</param>
     /// <returns>The last element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010", Justification = "False positive")]
     public static Optional<T> LastOrNone<T>(this ReadOnlySpan<T> span)
         => span is [.., var result] ? result : Optional<T>.None;
 
