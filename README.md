@@ -48,10 +48,16 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 05-29-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.12.1">DotNext 4.12.1</a>
-* Fixed [162](https://github.com/dotnet/dotNext/issues/162)
-* Fixed other race conditions in `ConcurrentCache`
-* Improved performance of `BitVector` methods
+<a href="https://www.nuget.org/packages/dotnext/4.12.2">DotNext 4.12.2</a>
+* Fixed [169](https://github.com/dotnet/dotNext/issues/169)
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.2">DotNext.Net.Cluster 4.12.2</a>
+* Fixed [165](https://github.com/dotnet/dotNext/issues/165)
+* Merged [170](https://github.com/dotnet/dotNext/pull/170)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.2">DotNext.AspNetCore.Cluster 4.12.2</a>
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
