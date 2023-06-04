@@ -6,5 +6,5 @@
 /// <typeparam name="T">The type representing deserialized message content.</typeparam>
 /// <param name="message">The message to be deserialized.</param>
 /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-/// <returns>The object representing deserialied message content.</returns>
+/// <returns>The object representing deserialized message content.</returns>
 public delegate ValueTask<T> MessageReader<T>(IMessage message, CancellationToken token);

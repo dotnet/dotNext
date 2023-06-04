@@ -14,7 +14,7 @@ using static Threading.AtomicInt64;
 /// Represents memory-based state machine with snapshotting support.
 /// </summary>
 /// Memory-based state machine keeps its state in the memory when the program is running.
-/// However, the state can be easily recovered by interprting committed log entries and the snapshot
+/// However, the state can be easily recovered by interpreting committed log entries and the snapshot
 /// which are persisted on the disk.
 /// <remarks>
 /// The layout of the audit trail file system:

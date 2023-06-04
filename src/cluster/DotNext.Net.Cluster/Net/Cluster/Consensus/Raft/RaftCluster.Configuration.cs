@@ -490,7 +490,7 @@ public partial class RaftCluster
         }
 
         /// <summary>
-        /// Gets or sets timeout used for graceful shtudown of the server.
+        /// Gets or sets timeout used for graceful shutdown of the server.
         /// </summary>
         public TimeSpan GracefulShutdownTimeout
         {

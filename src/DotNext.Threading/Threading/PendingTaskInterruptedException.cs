@@ -1,7 +1,7 @@
 namespace DotNext.Threading;
 
 /// <summary>
-/// The exception thay is thrown when pending asynchronous task is interrupted while
+/// The exception that is thrown when pending asynchronous task is interrupted while
 /// it is in waiting state.
 /// </summary>
 /// <seealso cref="ThreadInterruptedException"/>
