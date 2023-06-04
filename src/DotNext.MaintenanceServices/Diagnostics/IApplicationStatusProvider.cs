@@ -10,20 +10,20 @@ public interface IApplicationStatusProvider
     /// Implements Readiness probe.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if probe is successfull; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if probe is successful; otherwise, <see langword="false"/>.</returns>
     Task<bool> ReadinessProbeAsync(CancellationToken token) => Task.FromResult(true);
 
     /// <summary>
     /// Implements Liveness probe.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if probe is successfull; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if probe is successful; otherwise, <see langword="false"/>.</returns>
     Task<bool> LivenessProbeAsync(CancellationToken token);
 
     /// <summary>
     /// Implements Startup probe.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if probe is successfull; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if probe is successful; otherwise, <see langword="false"/>.</returns>
     Task<bool> StartupProbeAsync(CancellationToken token) => Task.FromResult(true);
 }

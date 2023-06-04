@@ -102,7 +102,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled or timed out.</exception>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
-    /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
+    /// <exception cref="ExchangeTerminatedException">The exchange has been terminated.</exception>
     public ValueTask<T> ExchangeAsync(T value, TimeSpan timeout, CancellationToken token = default)
     {
         ValueTask<T> result;
@@ -173,7 +173,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <returns>The object provided by another async flow.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
-    /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
+    /// <exception cref="ExchangeTerminatedException">The exchange has been terminated.</exception>
     public ValueTask<T> ExchangeAsync(T value, CancellationToken token = default)
         => ExchangeAsync(value, new(Timeout.InfiniteTicks), token);
 
@@ -186,7 +186,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <param name="value">The object to exchange.</param>
     /// <returns><see langword="true"/> if another flow is ready for exchange; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
-    /// <exception cref="ExchangeTerminatedException">The exhange has been terminated.</exception>
+    /// <exception cref="ExchangeTerminatedException">The exchange has been terminated.</exception>
     public bool TryExchange(ref T value)
     {
         bool result;

@@ -59,7 +59,7 @@ public static partial class StreamSource
     /// <param name="writer">The callback that is called automatically.</param>
     /// <param name="arg">The arg to be passed to the callback.</param>
     /// <param name="flush">Optional synchronous flush action.</param>
-    /// <param name="flushAsync">Optiona asynchronous flush action.</param>
+    /// <param name="flushAsync">Optional asynchronous flush action.</param>
     /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <returns>The writable stream wrapping the callback.</returns>
     public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
@@ -71,7 +71,7 @@ public static partial class StreamSource
     /// <typeparam name="TWriter">The type of the writer.</typeparam>
     /// <param name="writer">The writer to be wrapped by the stream.</param>
     /// <param name="flush">Optional synchronous flush action.</param>
-    /// <param name="flushAsync">Optiona asynchronous flush action.</param>
+    /// <param name="flushAsync">Optional asynchronous flush action.</param>
     /// <returns>The writable stream wrapping buffer writer.</returns>
     public static Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
         where TWriter : class, IBufferWriter<byte>
@@ -117,7 +117,7 @@ public static partial class StreamSource
     /// <param name="writer">The callback that is called automatically.</param>
     /// <param name="arg">The arg to be passed to the callback.</param>
     /// <param name="flush">Optional synchronous flush action.</param>
-    /// <param name="flushAsync">Optiona asynchronous flush action.</param>
+    /// <param name="flushAsync">Optional asynchronous flush action.</param>
     /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <returns>The writable stream wrapping the callback.</returns>
     public static Stream AsStream<TArg>(this Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)

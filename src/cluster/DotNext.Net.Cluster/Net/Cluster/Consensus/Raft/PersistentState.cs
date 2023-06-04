@@ -754,7 +754,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     /// <summary>
-    /// Dropes the uncommitted entries starting from the specified position to the end of the log.
+    /// Drops the uncommitted entries starting from the specified position to the end of the log.
     /// </summary>
     /// <param name="startIndex">The index of the first log entry to be dropped.</param>
     /// <param name="reuseSpace">
@@ -893,7 +893,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     /// <summary>
-    /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
+    /// Suspends the caller until the log entry with term equal to <see cref="Term"/>
     /// will be committed.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>

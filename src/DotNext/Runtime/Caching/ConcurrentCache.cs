@@ -5,13 +5,13 @@ using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.Runtime.Caching;
 
 /// <summary>
-/// Represents concurrect cache.
+/// Represents concurrent cache.
 /// </summary>
 /// <remarks>
 /// The cache provides O(1) lookup performance if there is no hash collision. Asymptotic complexity of other
 /// operations are same as for <see cref="System.Collections.Concurrent.ConcurrentDictionary{TKey, TValue}"/> class.
-/// The cache has the following architecture to deal with lock contention: the access to the concurrect dictionary is
-/// synchronouse while the access to the eviction deque is asynchronous. All actions need to be applied to the deque
+/// The cache has the following architecture to deal with lock contention: the access to the concurrent dictionary is
+/// synchronous while the access to the eviction deque is asynchronous. All actions need to be applied to the deque
 /// are delayed and distributed across concurrent threads. Thus, the deque is weakly consistent with the dictionary.
 /// </remarks>
 /// <typeparam name="TKey">The type of the keys.</typeparam>

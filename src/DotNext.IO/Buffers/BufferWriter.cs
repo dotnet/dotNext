@@ -9,7 +9,7 @@ using EncodingContext = DotNext.Text.EncodingContext;
 using LengthFormat = IO.LengthFormat;
 
 /// <summary>
-/// Represents extension methods for writting typed data into buffer.
+/// Represents extension methods for writing typed data into buffer.
 /// </summary>
 public static class BufferWriter
 {
