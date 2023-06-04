@@ -48,7 +48,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             {
                 var handle = this.handle;
 
-                var target = handle != ZeroHandle
+                var target = handle is not ZeroHandle
                     ? GCHandle.FromIntPtr(handle).Target as RaftState<TMember>
                     : null;
 
@@ -63,7 +63,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
         {
             var handle = Interlocked.Exchange(ref this.handle, ZeroHandle);
 
-            if (handle != ZeroHandle)
+            if (handle is not ZeroHandle)
                 GCHandle.FromIntPtr(handle).Free();
         }
 
@@ -73,17 +73,15 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             GC.SuppressFinalize(this);
         }
 
-        private protected abstract void Execute(RaftState<TMember> currentState);
+        private protected abstract void Execute(IRaftStateMachine<TMember> stateMachine);
 
         void IThreadPoolWorkItem.Execute()
         {
-            var currentState = Target;
-
             // reference is dead, release GC handle ASAP
-            if (currentState is null)
-                Clear();
+            if (Target?.stateMachine is { } stateMachine)
+                Execute(stateMachine);
             else
-                Execute(currentState);
+                Clear();
         }
 
         // Likely never be executed because all consumers call Clear() explicitly.
@@ -98,8 +96,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
         {
         }
 
-        private protected override void Execute(RaftState<TMember> currentState)
-            => currentState.stateMachine.MoveToCandidateState(this);
+        private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
+            => stateMachine.MoveToCandidateState(this);
     }
 
     private sealed class TransitionToFollowerState : StateTransitionWorkItem
@@ -114,8 +112,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             this.newTerm = newTerm;
         }
 
-        private protected override void Execute(RaftState<TMember> currentState)
-            => currentState.stateMachine.MoveToFollowerState(this, randomizeTimeout, newTerm);
+        private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
+            => stateMachine.MoveToFollowerState(this, randomizeTimeout, newTerm);
     }
 
     private sealed class TransitionToLeaderState : StateTransitionWorkItem
@@ -126,8 +124,8 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             : base(currentState)
             => this.leader = leader;
 
-        private protected override void Execute(RaftState<TMember> currentState)
-            => currentState.stateMachine.MoveToLeaderState(this, leader);
+        private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
+            => stateMachine.MoveToLeaderState(this, leader);
     }
 
     private sealed class UnavailableMemberNotification : StateTransitionWorkItem
@@ -142,7 +140,7 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
             this.token = token;
         }
 
-        private protected override void Execute(RaftState<TMember> currentState)
-            => currentState.stateMachine.UnavailableMemberDetected(this, member, token);
+        private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
+            => stateMachine.UnavailableMemberDetected(this, member, token);
     }
 }
