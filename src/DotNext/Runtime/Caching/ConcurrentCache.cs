@@ -69,18 +69,26 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         this.concurrencyLevel = concurrencyLevel;
         unsafe
         {
-            addCommand = &OnAdd;
-            readCommand = evictionPolicy switch
+            switch (evictionPolicy)
             {
-                CacheEvictionPolicy.LRU => &OnReadLRU,
-                CacheEvictionPolicy.LFU => &OnReadLFU,
-                _ => throw new ArgumentOutOfRangeException(nameof(evictionPolicy)),
-            };
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(evictionPolicy));
+                case CacheEvictionPolicy.LRU:
+                    addCommand = &OnAddLRU;
+                    readCommand = &OnReadLRU;
+                    break;
+                case CacheEvictionPolicy.LFU:
+                    addCommand = &OnAddLFU;
+                    readCommand = &OnReadLFU;
+                    break;
+            }
         }
 
         commandQueueReadPosition = commandQueueWritePosition = new();
 
-        static Command OnAdd(KeyValuePair target) => new AddCommand(target);
+        static Command OnAddLFU(KeyValuePair target) => new AddLFUCommand(target);
+
+        static Command OnAddLRU(KeyValuePair target) => new AddLRUCommand(target);
 
         static Command OnReadLFU(KeyValuePair target) => new ReadLFUCommand(target);
 

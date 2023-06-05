@@ -13,7 +13,7 @@ public partial class ConcurrentCache<TKey, TValue>
         internal readonly TKey Key;
         internal volatile KeyValuePair? Next;
         internal (KeyValuePair? Previous, KeyValuePair? Next) Links;
-        internal bool Removed;
+        internal KeyValuePairState State;
 
         private protected KeyValuePair(TKey key, int hashCode)
         {
@@ -26,6 +26,13 @@ public partial class ConcurrentCache<TKey, TValue>
             Links = default;
             Next = null;
         }
+    }
+
+    private enum KeyValuePairState
+    {
+        Added = 0,
+        Touched,
+        Removed,
     }
 
     private sealed class KeyValuePairAtomicAccess : KeyValuePair
@@ -108,6 +115,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private void Remove(KeyValuePair expected)
     {
+        Debug.Assert(Monitor.IsEntered(evictionLock));
+
         ref var bucket = ref GetBucket(expected.KeyHashCode, out var bucketLock);
 
         lock (bucketLock)
@@ -121,7 +130,7 @@ public partial class ConcurrentCache<TKey, TValue>
                     else
                         previous.Next = actual.Next;
 
-                    expected.Removed = true;
+                    expected.State = KeyValuePairState.Removed;
                     OnRemoved();
                     break;
                 }
