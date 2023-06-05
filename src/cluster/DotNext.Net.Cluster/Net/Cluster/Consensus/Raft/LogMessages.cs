@@ -342,7 +342,7 @@ internal static partial class LogMessages
     public static partial void StartedAsFollower(this ILogger logger, EndPoint member);
 
     [LoggerMessage(
-        EventIdOffset + 40,
+        EventIdOffset + 41,
         LogLevel.Debug,
         "Node started in Standby state",
         EventName = $"{EventIdPrefix}.{nameof(StartedAsFrozen)}"

@@ -58,7 +58,6 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
         static async Task<(TMember, long, VotingResult)> VoteAsync(TMember voter, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
         {
-
             VotingResult result;
             try
             {
