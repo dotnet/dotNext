@@ -332,4 +332,20 @@ internal static partial class LogMessages
         EventName = $"{EventIdPrefix}.{nameof(UnknownHealthStatus)}"
     )]
     public static partial void UnknownHealthStatus(this ILogger logger, EndPoint member);
+
+    [LoggerMessage(
+        EventIdOffset + 40,
+        LogLevel.Debug,
+        "Node started in Follower state. Local member is {Member}",
+        EventName = $"{EventIdPrefix}.{nameof(StartedAsFollower)}"
+    )]
+    public static partial void StartedAsFollower(this ILogger logger, EndPoint member);
+
+    [LoggerMessage(
+        EventIdOffset + 40,
+        LogLevel.Debug,
+        "Node started in Standby state",
+        EventName = $"{EventIdPrefix}.{nameof(StartedAsFrozen)}"
+    )]
+    public static partial void StartedAsFrozen(this ILogger logger);
 }

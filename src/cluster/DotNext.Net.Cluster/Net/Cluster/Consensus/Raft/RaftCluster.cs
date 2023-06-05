@@ -329,12 +329,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 state = standbyNode ? new StandbyState<TMember>(this) : new FollowerState<TMember>(this);
                 readinessProbe.TrySetResult();
+                Logger.StartedAsFollower(member.EndPoint);
                 return;
             }
         }
 
         // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
         state = new StandbyState<TMember>(this);
+        Logger.StartedAsFrozen();
     }
 
     /// <summary>
