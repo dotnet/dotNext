@@ -3,11 +3,13 @@ using System.Net;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
     using TransportServices;
+    using static DotNext.Extensions.Logging.TestLoggers;
 
     [ExcludeFromCodeCoverage]
     [Collection(TestCollections.Raft)]
@@ -267,6 +269,64 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             };
 
             return SendingSynchronizationRequestTest(CreateServer, CreateClient);
+        }
+
+        [Fact]
+        public static async Task ConcurrentElection()   // https://github.com/dotnet/dotNext/issues/168
+        {
+            const int host1Port = 3362;
+            const int host2Port = 3363;
+            const int host3Port = 3364;
+
+            await using var host1 = new RaftCluster(CreateConfiguration(host1Port));
+            await using var host2 = new RaftCluster(CreateConfiguration(host2Port));
+            await using var host3 = new RaftCluster(CreateConfiguration(host3Port));
+
+            // start in parallel
+            await Task.WhenAll(
+                Task.Run(() => host1.StartAsync()),
+                Task.Run(() => host2.StartAsync()),
+                Task.Run(() => host3.StartAsync()));
+
+            var leaders = await Task.WhenAll(
+                host1.WaitForLeaderAsync(DefaultTimeout),
+                host2.WaitForLeaderAsync(DefaultTimeout),
+                host3.WaitForLeaderAsync(DefaultTimeout));
+
+            var leader = default(EndPoint);
+
+            foreach (var member in leaders)
+            {
+                if (leader is null)
+                {
+                    leader = member.EndPoint;
+                }
+                else
+                {
+                    Equal(leader, member.EndPoint);
+                }
+            }
+
+            await host1.StopAsync();
+            await host2.StopAsync();
+            await host3.StopAsync();
+
+            static RaftCluster.TcpConfiguration CreateConfiguration(int port)
+            {
+                var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+                {
+                    LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
+                };
+
+                var builder = result.UseInMemoryConfigurationStorage().CreateActiveConfigurationBuilder();
+
+                builder.Add(new IPEndPoint(IPAddress.Loopback, host1Port));
+                builder.Add(new IPEndPoint(IPAddress.Loopback, host2Port));
+                builder.Add(new IPEndPoint(IPAddress.Loopback, host3Port));
+
+                builder.Build();
+                return result;
+            }
         }
     }
 }
