@@ -315,6 +315,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 var result = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
                 {
+                    // LowerElectionTimeout = 1000,
+                    // UpperElectionTimeout = 2000,
+                    ColdStart = false,
                     LoggerFactory = CreateDebugLoggerFactory(port.ToString(), static builder => builder.SetMinimumLevel(LogLevel.Debug)),
                 };
 
