@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using DotNext.Net.Cluster;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Cluster.Consensus.Raft.Membership;
