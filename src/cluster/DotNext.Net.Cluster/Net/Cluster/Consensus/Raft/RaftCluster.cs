@@ -940,7 +940,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder && state is FollowerState<TMember> { IsExpired: true } followerState && callerState.IsValid(followerState))
             {
-                Logger.TransitionToCandidateStateStarted(Term);
+                Logger.TransitionToCandidateStateStarted(Term, members.Count);
 
                 // if term changed after lock then assumes that leader will be updated soon
                 if (currentTerm == auditTrail.Term)

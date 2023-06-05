@@ -30,10 +30,10 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 2,
         LogLevel.Information,
-        "Transition to Candidate state has started with term {Term}",
+        "Transition to Candidate state has started with term {Term}, number of cluster nodes {Count}",
         EventName = $"{EventIdPrefix}.{nameof(TransitionToCandidateStateStarted)}"
     )]
-    public static partial void TransitionToCandidateStateStarted(this ILogger logger, long term);
+    public static partial void TransitionToCandidateStateStarted(this ILogger logger, long term, int count);
 
     [LoggerMessage(
         EventIdOffset + 3,
