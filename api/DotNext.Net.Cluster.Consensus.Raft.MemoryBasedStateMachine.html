@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Class MemoryBasedStateMachine
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class MemoryBasedStateMachine
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,22 +68,24 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine">
-  
-  
+
+
+
   <h1 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine" class="text-break">Class MemoryBasedStateMachine
-  </h1>
+</h1>
   <div class="markdown level0 summary"><p>Represents memory-based state machine with snapshotting support.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
     <div class="level2"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a></div>
     <div class="level3"><span class="xref">MemoryBasedStateMachine</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a></div>
     <div><a class="xref" href="DotNext.IO.Log.IAuditTrail-1.html">IAuditTrail</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>&gt;</div>
     <div><a class="xref" href="DotNext.IO.Log.IAuditTrail.html">IAuditTrail</a></div>
@@ -91,73 +93,58 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateBackupAsync_Stream_CancellationToken_">PersistentState.CreateBackupAsync(Stream, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateBackupAsync_System_IO_Stream_System_Threading_CancellationToken_">PersistentState.CreateBackupAsync(Stream, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_RestoreFromBackupAsync_Stream_DirectoryInfo_CancellationToken_">PersistentState.RestoreFromBackupAsync(Stream, DirectoryInfo, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_RestoreFromBackupAsync_System_IO_Stream_System_IO_DirectoryInfo_System_Threading_CancellationToken_">PersistentState.RestoreFromBackupAsync(Stream, DirectoryInfo, CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Location">PersistentState.Location</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_IO_Log_IAuditTrail_IsLogEntryLengthAlwaysPresented">PersistentState.IAuditTrail.IsLogEntryLengthAlwaysPresented</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Int64_System_Threading_CancellationToken_">PersistentState.ReadAsync&lt;TResult&gt;(LogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, long, long, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Int64_CancellationToken_">PersistentState.ReadAsync&lt;TResult&gt;(LogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, Int64, Int64, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Threading_CancellationToken_">PersistentState.ReadAsync&lt;TResult&gt;(LogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, long, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__1_DotNext_IO_Log_LogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_CancellationToken_">PersistentState.ReadAsync&lt;TResult&gt;(LogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, Int64, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Int64_System_Threading_CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(TEntry, long, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Int64_CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(TEntry, Int64, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Threading_CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(TEntry, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(TEntry, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Boolean_System_Threading_CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(TEntry, bool, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1___0_System_Boolean_CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(TEntry, Boolean, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1_DotNext_IO_Log_ILogEntryProducer___0__System_Threading_CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt;, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_AppendAsync__1_DotNext_IO_Log_ILogEntryProducer___0__CancellationToken_">PersistentState.AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DropAsync_System_Int64_System_Boolean_System_Threading_CancellationToken_">PersistentState.DropAsync(long, bool, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DropAsync_System_Int64_System_Boolean_CancellationToken_">PersistentState.DropAsync(Int64, Boolean, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_System_Threading_CancellationToken_">PersistentState.WaitForCommitAsync(CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_CancellationToken_">PersistentState.WaitForCommitAsync(CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_System_Int64_System_Threading_CancellationToken_">PersistentState.WaitForCommitAsync(long, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_WaitForCommitAsync_System_Int64_CancellationToken_">PersistentState.WaitForCommitAsync(Int64, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_System_Int64_System_Threading_CancellationToken_">PersistentState.CommitAsync(long, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_System_Int64_CancellationToken_">PersistentState.CommitAsync(Int64, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_System_Threading_CancellationToken_">PersistentState.CommitAsync(CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_CancellationToken_">PersistentState.CommitAsync(CancellationToken)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_EnsureConsistencyAsync_CancellationToken_">PersistentState.EnsureConsistencyAsync(CancellationToken)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IsVotedFor_DotNext_Net_Cluster_ClusterMemberId__">PersistentState.IPersistentState.IsVotedFor(ClusterMemberId)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_EnsureConsistencyAsync_System_Threading_CancellationToken_">PersistentState.EnsureConsistencyAsync(CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Term">PersistentState.Term</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync_DotNext_Net_Cluster_ClusterMemberId_">PersistentState.IPersistentState.IncrementTermAsync(ClusterMemberId)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateJsonLogEntry__1___0_System_String_System_Text_Json_JsonSerializerOptions_">PersistentState.CreateJsonLogEntry&lt;T&gt;(T, string, JsonSerializerOptions)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_System_Boolean_">PersistentState.IPersistentState.UpdateTermAsync(Int64, Boolean)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_DotNext_Net_Cluster_ClusterMemberId_">PersistentState.IPersistentState.UpdateVotedForAsync(ClusterMemberId)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateJsonLogEntry__1___0_System_String_System_Text_Json_JsonSerializerOptions_">PersistentState.CreateJsonLogEntry&lt;T&gt;(T, String, JsonSerializerOptions)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateJsonLogEntry__1___0_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo___0__">PersistentState.CreateJsonLogEntry&lt;T&gt;(T, String, JsonTypeInfo&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CreateJsonLogEntry__1___0_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo___0__">PersistentState.CreateJsonLogEntry&lt;T&gt;(T, string, JsonTypeInfo&lt;T&gt;)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LastCommittedEntryIndex">PersistentState.LastCommittedEntryIndex</a>
@@ -184,10 +171,10 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
     </div>
     <div>
-      <span class="xref">DotNext.Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;&gt;)</span>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_System_Threading_Tasks_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_System_Threading_Tasks_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a>
@@ -202,50 +189,71 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
     </div>
     <div>
-      <span class="xref">DotNext.Disposable.Dispose(IEnumerable&lt;&gt;)</span>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <span class="xref">DotNext.Disposable.DisposeAsync(IEnumerable&lt;&gt;)</span>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Nullable_IDisposable____">Disposable.Dispose(Nullable&lt;IDisposable&gt;[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(params IDisposable[])</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Nullable_IAsyncDisposable____">Disposable.DisposeAsync(Nullable&lt;IAsyncDisposable&gt;[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">DotNext.Net.Cluster.Consensus.Raft</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class MemoryBasedStateMachine : PersistentState, IPersistentState, IAuditTrail&lt;IRaftLogEntry&gt;, IAuditTrail</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class MemoryBasedStateMachine : PersistentState, IDisposable, IPersistentState, IAuditTrail&lt;IRaftLogEntry&gt;, IAuditTrail</code></pre>
   </div>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The layout of the audit trail file system:</p>
-<table><tbody><tr><td>node.state</td><td>file containing internal state of Raft node</td></tr><tr><td>&lt;partition></td><td>file containing log partition with log records</td></tr><tr><td>snapshot</td><td>file containing snapshot</td></tr></tbody></table>
-The audit trail supports log compaction. However, it doesn&apos;t know how to interpret and reduce log records during compaction.
-To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_SnapshotBuilderContext__">CreateSnapshotBuilder(in MemoryBasedStateMachine.SnapshotBuilderContext)</a> method and implement state machine logic.
+<table><tbody><tr><td class="term">node.state</td><td class="description">file containing internal state of Raft node</td></tr><tr><td class="term">&lt;partition&gt;</td><td class="description">file containing log partition with log records</td></tr><tr><td class="term">snapshot</td><td class="description">file containing snapshot</td></tr></tbody></table>
+The audit trail supports log compaction. However, it doesn't know how to interpret and reduce log records during compaction.
+To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_SnapshotBuilderContext__">CreateSnapshotBuilder(in SnapshotBuilderContext)</a> method and implement state machine logic.
 </div>
   <h3 id="constructors">Constructors
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_DirectoryInfo_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.%23ctor(DirectoryInfo%2CSystem.Int32%2CDotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_System_IO_DirectoryInfo_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.%23ctor(System.IO.DirectoryInfo%2CSystem.Int32%2CDotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L60">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.#ctor*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_DirectoryInfo_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.#ctor(DirectoryInfo,System.Int32,DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)">MemoryBasedStateMachine(DirectoryInfo, Int32, MemoryBasedStateMachine.Options)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_System_IO_DirectoryInfo_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.#ctor(System.IO.DirectoryInfo,System.Int32,DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)">MemoryBasedStateMachine(DirectoryInfo, int, Options?)</h4>
   <div class="markdown level1 summary"><p>Initializes a new memory-based state machine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected MemoryBasedStateMachine(DirectoryInfo path, int recordsPerPartition, MemoryBasedStateMachine.Options configuration = null)</code></pre>
+    <pre><code class="lang-csharp hljs">protected MemoryBasedStateMachine(DirectoryInfo path, int recordsPerPartition, MemoryBasedStateMachine.Options? configuration = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -255,43 +263,59 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DirectoryInfo</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.directoryinfo">DirectoryInfo</a></td>
         <td><span class="parametername">path</span></td>
         <td><p>The path to the folder to be used by audit trail.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">recordsPerPartition</span></td>
         <td><p>The maximum number of log entries that can be stored in the single file called partition.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options.html">MemoryBasedStateMachine.Options</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options.html">Options</a></td>
         <td><span class="parametername">configuration</span></td>
         <td><p>The configuration of the persistent audit trail.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">recordsPerPartition</code> is less than 2.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_System_String_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.%23ctor(System.String%2CSystem.Int32%2CDotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_System_String_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.%23ctor(System.String%2CSystem.Int32%2CDotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.#ctor*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_System_String_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.#ctor(System.String,System.Int32,DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)">MemoryBasedStateMachine(String, Int32, MemoryBasedStateMachine.Options)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine__ctor_System_String_System_Int32_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Options_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.#ctor(System.String,System.Int32,DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options)">MemoryBasedStateMachine(string, int, Options?)</h4>
   <div class="markdown level1 summary"><p>Initializes a new memory-based state machine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected MemoryBasedStateMachine(string path, int recordsPerPartition, MemoryBasedStateMachine.Options configuration = null)</code></pre>
+    <pre><code class="lang-csharp hljs">protected MemoryBasedStateMachine(string path, int recordsPerPartition, MemoryBasedStateMachine.Options? configuration = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -301,30 +325,46 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><span class="parametername">path</span></td>
         <td><p>The path to the folder to be used by audit trail.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">recordsPerPartition</span></td>
         <td><p>The maximum number of log entries that can be stored in the single file called partition.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options.html">MemoryBasedStateMachine.Options</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options.html">Options</a></td>
         <td><span class="parametername">configuration</span></td>
         <td><p>The configuration of the persistent audit trail.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">recordsPerPartition</code> is less than 2.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CompactionCount.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CompactionCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CompactionCount.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CompactionCount%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L151">View Source</a>
@@ -334,12 +374,12 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
   <div class="markdown level1 summary"><p>Gets approximate number of partitions that can be compacted.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public long CompactionCount { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -348,14 +388,14 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_IsBackgroundCompaction.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IsBackgroundCompaction%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_IsBackgroundCompaction.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IsBackgroundCompaction%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L95">View Source</a>
@@ -363,16 +403,16 @@ To do that, you can override <a class="xref" href="DotNext.Net.Cluster.Consensus
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_IsBackgroundCompaction_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IsBackgroundCompaction*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_IsBackgroundCompaction" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IsBackgroundCompaction">IsBackgroundCompaction</h4>
   <div class="markdown level1 summary"><p>Gets a value indicating that log compaction should
-be called manually using <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_CancellationToken_">ForceCompactionAsync(Int64, CancellationToken)</a>
+be called manually using <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_System_Threading_CancellationToken_">ForceCompactionAsync(long, CancellationToken)</a>
 in the background.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool IsBackgroundCompaction { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -381,31 +421,31 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="methods">Methods
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L685">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ApplyAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)">ApplyAsync(PersistentState.LogEntry)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)">ApplyAsync(LogEntry)</h4>
   <div class="markdown level1 summary"><p>Applies the command represented by the log entry to the underlying database engine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected abstract ValueTask ApplyAsync(PersistentState.LogEntry entry)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -415,7 +455,7 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html">PersistentState.LogEntry</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html">LogEntry</a></td>
         <td><span class="parametername">entry</span></td>
         <td><p>The entry to be applied to the state machine.</p>
 </td>
@@ -423,7 +463,7 @@ in the background.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -432,7 +472,7 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing asynchronous execution of this method.</p>
 </td>
       </tr>
@@ -444,21 +484,22 @@ in the background.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ClearAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ClearAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ClearAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ClearAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L785">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ClearAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ClearAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ClearAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ClearAsync(CancellationToken)">ClearAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ClearAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ClearAsync(System.Threading.CancellationToken)">ClearAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Removes all log entries from the log.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected sealed override async Task ClearAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">protected override sealed Task ClearAsync(CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -468,14 +509,15 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -484,31 +526,48 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
-        <td></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing asynchronous result of the method.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ClearAsync_CancellationToken_">PersistentState.ClearAsync(CancellationToken)</a></div>
+  <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ClearAsync_System_Threading_CancellationToken_">PersistentState.ClearAsync(CancellationToken)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been cancelled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_SnapshotBuilderContext__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CreateSnapshotBuilder(DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_SnapshotBuilderContext__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CreateSnapshotBuilder(DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.SnapshotBuilder.cs/#L244">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CreateSnapshotBuilder_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CreateSnapshotBuilder*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_SnapshotBuilderContext__" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CreateSnapshotBuilder(DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext@)">CreateSnapshotBuilder(in MemoryBasedStateMachine.SnapshotBuilderContext)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CreateSnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_SnapshotBuilderContext__" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CreateSnapshotBuilder(DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext@)">CreateSnapshotBuilder(in SnapshotBuilderContext)</h4>
   <div class="markdown level1 summary"><p>Creates a new snapshot builder.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected abstract MemoryBasedStateMachine.SnapshotBuilder CreateSnapshotBuilder(in MemoryBasedStateMachine.SnapshotBuilderContext context)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -518,7 +577,7 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext.html">MemoryBasedStateMachine.SnapshotBuilderContext</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext.html">SnapshotBuilderContext</a></td>
         <td><span class="parametername">context</span></td>
         <td><p>The context of the snapshot builder.</p>
 </td>
@@ -526,7 +585,7 @@ in the background.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -535,7 +594,7 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilder.html">MemoryBasedStateMachine.SnapshotBuilder</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilder.html">SnapshotBuilder</a></td>
         <td><p>The snapshot builder.</p>
 </td>
       </tr>
@@ -543,21 +602,22 @@ in the background.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L805">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Dispose*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Dispose(System.Boolean)">Dispose(Boolean)</h4>
-  <div class="markdown level1 summary"></div>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Dispose(System.Boolean)">Dispose(bool)</h4>
+  <div class="markdown level1 summary"><p>Releases all resources associated with this audit trail.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -567,32 +627,33 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td><span class="parametername">disposing</span></td>
-        <td></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Dispose_System_Boolean_">PersistentState.Dispose(Boolean)</a></div>
+  <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Dispose_System_Boolean_">PersistentState.Dispose(bool)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ForceCompactionAsync(System.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ForceCompactionAsync(System.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ForceCompactionAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ForceCompactionAsync(System.Int64,CancellationToken)">ForceCompactionAsync(Int64, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ForceCompactionAsync(System.Int64,System.Threading.CancellationToken)">ForceCompactionAsync(long, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Forces log compaction.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask ForceCompactionAsync(long count, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -602,13 +663,13 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
         <td><span class="parametername">count</span></td>
         <td><p>The number of partitions to be compacted.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel the operation.</p>
 </td>
@@ -616,7 +677,7 @@ in the background.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -625,91 +686,62 @@ in the background.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing asynchronous execution of this operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_CancellationToken__remarks">Remarks</h5>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ForceCompactionAsync_System_Int64_System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Full compaction may be time-expensive operation. In this case,
 all readers will be blocked until the end of the compaction.
-Therefore, <code data-dev-comment-type="paramref" class="paramref">count</code> can be used to reduce
+Therefore, <code class="paramref">count</code> can be used to reduce
 lock contention between compaction and readers. If it is <code>1</code>
 then compaction range is limited to the log entries contained in the single partition.
 This may be helpful if manual compaction is triggered by the background job.
-The job can wait for the commit using <span class="xref">langword_csharp_WaitForCommitAsync(CancellationToken)</span>
+The job can wait for the commit using <code>WaitForCommitAsync(CancellationToken)</code>
 and then call this method with appropriate number of partitions to be collected
 according with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_CompactionCount">CompactionCount</a> property.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This log is disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_InitializeAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InitializeAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_InitializeAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InitializeAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L774">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_InitializeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InitializeAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_InitializeAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InitializeAsync(CancellationToken)">InitializeAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override async Task InitializeAsync(CancellationToken token = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">CancellationToken</span></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Task</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_InitializeAsync_CancellationToken_">PersistentState.InitializeAsync(CancellationToken)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ReplayAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ReplayAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L727">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ReplayAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ReplayAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ReplayAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ReplayAsync(CancellationToken)">ReplayAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reconstructs dataset by calling <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_">ApplyAsync(PersistentState.LogEntry)</a>
-for each committed entry.</p>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_InitializeAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InitializeAsync(System.Threading.CancellationToken)">InitializeAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Initializes this state asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public async Task ReplayAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public override Task InitializeAsync(CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -719,7 +751,7 @@ for each committed entry.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel the operation.</p>
 </td>
@@ -727,7 +759,7 @@ for each committed entry.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -736,13 +768,85 @@ for each committed entry.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing asynchronous result of the method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_InitializeAsync_System_Threading_CancellationToken_">PersistentState.InitializeAsync(CancellationToken)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been cancelled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ReplayAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ReplayAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.cs/#L727">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ReplayAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ReplayAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ReplayAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.ReplayAsync(System.Threading.CancellationToken)">ReplayAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reconstructs dataset by calling <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_">ApplyAsync(LogEntry)</a>
+for each committed entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task ReplayAsync(CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
         <td><p>The task representing asynchronous state of the method.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a>
   </div>
@@ -754,65 +858,66 @@ for each committed entry.</p>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
                     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/MemoryBasedStateMachine.SnapshotBuilder.cs/#L11" class="contribution-link">View Source</a>
@@ -831,7 +936,7 @@ for each committed entry.</p>
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -841,7 +946,7 @@ for each committed entry.</p>
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -850,8 +955,8 @@ for each committed entry.</p>
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -869,8 +974,8 @@ for each committed entry.</p>
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>

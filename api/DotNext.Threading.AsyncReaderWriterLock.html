@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Class AsyncReaderWriterLock
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AsyncReaderWriterLock
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,23 +68,25 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncReaderWriterLock">
-  
-  
+
+
+
   <h1 id="DotNext_Threading_AsyncReaderWriterLock" data-uid="DotNext.Threading.AsyncReaderWriterLock" class="text-break">Class AsyncReaderWriterLock
-  </h1>
-  <div class="markdown level0 summary"><p>Represents asynchronous version of <see cref="!:ReaderWriterLockSlim"></see>.</p>
+</h1>
+  <div class="markdown level0 summary"><p>Represents asynchronous version of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.readerwriterlockslim">ReaderWriterLockSlim</a>.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
     <div class="level2"><a class="xref" href="DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a></div>
     <div class="level3"><span class="xref">AsyncReaderWriterLock</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><span class="xref">IAsyncDisposable</span></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -92,10 +94,10 @@
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags">QueuedSynchronizer.MeasurementTags</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Nullable_DotNext_Func_System_Object___">QueuedSynchronizer.TrackSuspendedCallers(Nullable&lt;Func&lt;Object&gt;&gt;)</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">QueuedSynchronizer.TrackSuspendedCallers(Func&lt;object&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(Object)</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(object)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers">QueuedSynchronizer.GetSuspendedCallers()</a>
@@ -107,13 +109,13 @@
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_LockDurationCounter">QueuedSynchronizer.LockDurationCounter</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_CancellationToken_">QueuedSynchronizer.CancelSuspendedCallers(CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_">QueuedSynchronizer.CancelSuspendedCallers(CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_">QueuedSynchronizer.Dispose(Boolean)</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_">QueuedSynchronizer.Dispose(bool)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Nullable_Exception__">QueuedSynchronizer.Dispose(Nullable&lt;Exception&gt;)</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Exception_">QueuedSynchronizer.Dispose(Exception)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore">QueuedSynchronizer.DisposeAsyncCore()</a>
@@ -140,10 +142,10 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
     </div>
     <div>
-      <span class="xref">DotNext.Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;&gt;)</span>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_System_Threading_Tasks_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_System_Threading_Tasks_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
@@ -152,32 +154,53 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
     </div>
     <div>
-      <span class="xref">DotNext.Disposable.Dispose(IEnumerable&lt;&gt;)</span>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <span class="xref">DotNext.Disposable.DisposeAsync(IEnumerable&lt;&gt;)</span>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Nullable_IDisposable____">Disposable.Dispose(Nullable&lt;IDisposable&gt;[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(params IDisposable[])</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Nullable_IAsyncDisposable____">Disposable.DisposeAsync(Nullable&lt;IAsyncDisposable&gt;[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_AsyncReaderWriterLock_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AsyncReaderWriterLock : QueuedSynchronizer</code></pre>
+    <pre><code class="lang-csharp hljs">public class AsyncReaderWriterLock : QueuedSynchronizer, IDisposable, IAsyncDisposable</code></pre>
   </div>
   <h5 id="DotNext_Threading_AsyncReaderWriterLock_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This lock doesn't support recursion.</p>
 </div>
   <h3 id="constructors">Constructors
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock__ctor.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock__ctor.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L214">View Source</a>
@@ -187,28 +210,28 @@
   <div class="markdown level1 summary"><p>Initializes a new reader/writer lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public AsyncReaderWriterLock()</code></pre>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock__ctor_" data-uid="DotNext.Threading.AsyncReaderWriterLock.#ctor*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock__ctor_System_Int32_" data-uid="DotNext.Threading.AsyncReaderWriterLock.#ctor(System.Int32)">AsyncReaderWriterLock(Int32)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock__ctor_System_Int32_" data-uid="DotNext.Threading.AsyncReaderWriterLock.#ctor(System.Int32)">AsyncReaderWriterLock(int)</h4>
   <div class="markdown level1 summary"><p>Initializes a new reader/writer lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public AsyncReaderWriterLock(int concurrencyLevel)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -218,18 +241,34 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">concurrencyLevel</span></td>
         <td><p>The expected number of concurrent flows.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">concurrencyLevel</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_CurrentReadCount.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_CurrentReadCount.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L238">View Source</a>
@@ -239,12 +278,12 @@
   <div class="markdown level1 summary"><p>Gets the total number of unique readers.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public long CurrentReadCount { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -253,14 +292,14 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_IsReadLockHeld.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_IsReadLockHeld.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.IsReadLockHeld%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L243">View Source</a>
@@ -270,12 +309,12 @@
   <div class="markdown level1 summary"><p>Gets a value that indicates whether the read lock taken.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool IsReadLockHeld { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -284,14 +323,14 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_IsWriteLockHeld.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_IsWriteLockHeld.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L248">View Source</a>
@@ -301,12 +340,12 @@
   <div class="markdown level1 summary"><p>Gets a value that indicates whether the write lock taken.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool IsWriteLockHeld { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -315,16 +354,16 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="methods">Methods
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_DowngradeFromWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.DowngradeFromWriteLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_DowngradeFromWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.DowngradeFromWriteLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L577">View Source</a>
@@ -334,7 +373,7 @@
   <div class="markdown level1 summary"><p>Downgrades the write lock to the read lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void DowngradeFromWriteLock()</code></pre>
   </div>
@@ -342,24 +381,45 @@
   <div class="markdown level1 remarks"><p>Exiting from the lock is synchronous non-blocking operation.
 Lock acquisition is an asynchronous operation.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.synchronizationlockexception">SynchronizationLockException</a></td>
+        <td><p>The caller has not entered the lock in write mode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(CancellationToken)">EnterReadLockAsync(CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.Threading.CancellationToken)">EnterReadLockAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Enters the lock in read mode asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask EnterReadLockAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask EnterReadLockAsync(CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -369,7 +429,7 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -377,7 +437,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -386,14 +446,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing acquisition operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -401,6 +461,21 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -410,22 +485,22 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L304">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(TimeSpan,CancellationToken)">EnterReadLockAsync(TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterReadLockAsync(System.TimeSpan,System.Threading.CancellationToken)">EnterReadLockAsync(TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Enters the lock in read mode asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -435,13 +510,13 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -449,7 +524,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -458,14 +533,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing asynchronous result.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -473,6 +548,26 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -482,22 +577,22 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L365">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(CancellationToken)">EnterWriteLockAsync(CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.Threading.CancellationToken)">EnterWriteLockAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Enters the lock in write mode asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask EnterWriteLockAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask EnterWriteLockAsync(CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -507,7 +602,7 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -515,7 +610,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -524,14 +619,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing lock acquisition operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -539,6 +634,21 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -548,22 +658,22 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L379">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(TimeSpan,CancellationToken)">EnterWriteLockAsync(TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_EnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.EnterWriteLockAsync(System.TimeSpan,System.Threading.CancellationToken)">EnterWriteLockAsync(TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Enters the lock in write mode asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -573,13 +683,13 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -587,7 +697,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -596,14 +706,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing lock acquisition operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -611,6 +721,26 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -620,7 +750,7 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_Release.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.Release%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_Release.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.Release%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L548">View Source</a>
@@ -630,7 +760,7 @@ Lock acquisition is an asynchronous operation.</p>
   <div class="markdown level1 summary"><p>Exits previously acquired mode.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Release()</code></pre>
   </div>
@@ -638,24 +768,45 @@ Lock acquisition is an asynchronous operation.</p>
   <div class="markdown level1 remarks"><p>Exiting from the lock is synchronous non-blocking operation.
 Lock acquisition is an asynchronous operation.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.synchronizationlockexception">SynchronizationLockException</a></td>
+        <td><p>The caller has not entered the lock in write mode.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L479">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object,CancellationToken)">StealWriteLockAsync(Object, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object,System.Threading.CancellationToken)">StealWriteLockAsync(object?, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Interrupts all pending callers in the queue and acquires write lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask StealWriteLockAsync(object reason = null, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -665,13 +816,13 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
         <td><span class="parametername">reason</span></td>
         <td><p>The reason for lock steal.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -679,7 +830,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -688,34 +839,60 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing lock acquisition operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_CancellationToken__seealso">See Also</h5>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_System_Threading_CancellationToken__seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object%2CTimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L466">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object,TimeSpan,CancellationToken)">StealWriteLockAsync(Object, TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.StealWriteLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)">StealWriteLockAsync(object?, TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Interrupts all pending callers in the queue and acquires write lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask StealWriteLockAsync(object reason, TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -725,19 +902,19 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
         <td><span class="parametername">reason</span></td>
         <td><p>The reason for lock steal.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -745,7 +922,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -754,19 +931,50 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing lock acquisition operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_TimeSpan_CancellationToken__seealso">See Also</h5>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncReaderWriterLock_StealWriteLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken__seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L278">View Source</a>
@@ -776,12 +984,12 @@ Lock acquisition is an asynchronous operation.</p>
   <div class="markdown level1 summary"><p>Attempts to obtain reader lock synchronously without blocking caller thread.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool TryEnterReadLock()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -790,30 +998,46 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if lock is taken successfuly; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if lock is taken successfuly; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L290">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(TimeSpan,CancellationToken)">TryEnterReadLockAsync(TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLockAsync(System.TimeSpan,System.Threading.CancellationToken)">TryEnterReadLockAsync(TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Tries to enter the lock in read mode asynchronously, with an optional time-out.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -823,13 +1047,13 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -837,7 +1061,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -846,14 +1070,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td><p><span class="xref">true</span> if the caller entered read mode; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the caller entered read mode; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -861,6 +1085,21 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -870,7 +1109,7 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L341">View Source</a>
@@ -880,12 +1119,12 @@ Lock acquisition is an asynchronous operation.</p>
   <div class="markdown level1 summary"><p>Attempts to obtain writer lock synchronously without blocking caller thread.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool TryEnterWriteLock()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -894,120 +1133,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if lock is taken successfuly; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_DotNext_Threading_AsyncReaderWriterLock_LockStamp__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L325">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_DotNext_Threading_AsyncReaderWriterLock_LockStamp__" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp@)">TryEnterWriteLock(in AsyncReaderWriterLock.LockStamp)</h4>
-  <div class="markdown level1 summary"><p>Attempts to acquire write lock without blocking.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryEnterWriteLock(in AsyncReaderWriterLock.LockStamp stamp)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">AsyncReaderWriterLock.LockStamp</a></td>
-        <td><span class="parametername">stamp</span></td>
-        <td><p>The stamp of the read lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if lock is acquired successfully; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L353">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(TimeSpan,CancellationToken)">TryEnterWriteLockAsync(TimeSpan, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Tries to enter the lock in write mode asynchronously, with an optional time-out.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TimeSpan</span></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The interval to wait for the lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">CancellationToken</span></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to abort lock acquisition.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td><p><span class="xref">true</span> if the caller entered write mode; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if lock is taken successfuly; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1015,6 +1148,159 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_DotNext_Threading_AsyncReaderWriterLock_LockStamp__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L325">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock*"></a>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_DotNext_Threading_AsyncReaderWriterLock_LockStamp__" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp@)">TryEnterWriteLock(in LockStamp)</h4>
+  <div class="markdown level1 summary"><p>Attempts to acquire write lock without blocking.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryEnterWriteLock(in AsyncReaderWriterLock.LockStamp stamp)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
+        <td><span class="parametername">stamp</span></td>
+        <td><p>The stamp of the read lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if lock is acquired successfully; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L353">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLockAsync(System.TimeSpan,System.Threading.CancellationToken)">TryEnterWriteLockAsync(TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to enter the lock in write mode asynchronously, with an optional time-out.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The interval to wait for the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to abort lock acquisition.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the caller entered write mode; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -1024,7 +1310,7 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryOptimisticRead.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryOptimisticRead.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L255">View Source</a>
@@ -1034,12 +1320,12 @@ Lock acquisition is an asynchronous operation.</p>
   <div class="markdown level1 summary"><p>Returns a stamp that can be validated later.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public AsyncReaderWriterLock.LockStamp TryOptimisticRead()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1048,30 +1334,46 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">AsyncReaderWriterLock.LockStamp</a></td>
+        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
         <td><p>Optimistic read stamp. May be invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryStealWriteLockAsync_System_Object_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryStealWriteLockAsync(System.Object%2CTimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryStealWriteLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryStealWriteLockAsync(System.Object%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L451">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryStealWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryStealWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryStealWriteLockAsync_System_Object_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryStealWriteLockAsync(System.Object,TimeSpan,CancellationToken)">TryStealWriteLockAsync(Object, TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryStealWriteLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryStealWriteLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)">TryStealWriteLockAsync(object?, TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Interrupts all pending callers in the queue and acquires write lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryStealWriteLockAsync(object reason, TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1081,19 +1383,19 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
         <td><span class="parametername">reason</span></td>
         <td><p>The reason for lock steal.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -1101,7 +1403,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1110,19 +1412,45 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td><p><span class="xref">true</span> if the caller entered write mode; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the caller entered write mode; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AsyncReaderWriterLock_TryStealWriteLockAsync_System_Object_TimeSpan_CancellationToken__seealso">See Also</h5>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncReaderWriterLock_TryStealWriteLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken__seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryUpgradeToWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryUpgradeToWriteLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryUpgradeToWriteLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryUpgradeToWriteLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L387">View Source</a>
@@ -1132,12 +1460,12 @@ Lock acquisition is an asynchronous operation.</p>
   <div class="markdown level1 summary"><p>Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool TryUpgradeToWriteLock()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1146,30 +1474,46 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if lock is taken successfuly; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if lock is taken successfuly; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryUpgradeToWriteLockAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryUpgradeToWriteLockAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_TryUpgradeToWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.TryUpgradeToWriteLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L411">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_TryUpgradeToWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryUpgradeToWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryUpgradeToWriteLockAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryUpgradeToWriteLockAsync(TimeSpan,CancellationToken)">TryUpgradeToWriteLockAsync(TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_TryUpgradeToWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.TryUpgradeToWriteLockAsync(System.TimeSpan,System.Threading.CancellationToken)">TryUpgradeToWriteLockAsync(TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Tries to upgrade the read lock to the write lock asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1179,13 +1523,13 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -1193,7 +1537,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1202,14 +1546,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td><p><span class="xref">true</span> if the caller entered upgradeable mode; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the caller entered upgradeable mode; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1217,6 +1561,21 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -1226,22 +1585,22 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L423">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(CancellationToken)">UpgradeToWriteLockAsync(CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(System.Threading.CancellationToken)">UpgradeToWriteLockAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Upgrades the read lock to the write lock asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask UpgradeToWriteLockAsync(CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1251,7 +1610,7 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -1259,7 +1618,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1268,14 +1627,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing lock acquisition operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1283,6 +1642,21 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -1292,22 +1666,22 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(TimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L437">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_" data-uid="DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_TimeSpan_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(TimeSpan,CancellationToken)">UpgradeToWriteLockAsync(TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_UpgradeToWriteLockAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncReaderWriterLock.UpgradeToWriteLockAsync(System.TimeSpan,System.Threading.CancellationToken)">UpgradeToWriteLockAsync(TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Upgrades the read lock to the write lock asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1317,13 +1691,13 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort lock acquisition.</p>
 </td>
@@ -1331,7 +1705,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1340,14 +1714,14 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ValueTask</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing lock acquisition operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1355,6 +1729,26 @@ Lock acquisition is an asynchronous operation.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>Time-out value is negative.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object has been disposed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></td>
         <td><p>The operation has been interrupted manually.</p>
@@ -1364,22 +1758,22 @@ Lock acquisition is an asynchronous operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_Validate_DotNext_Threading_AsyncReaderWriterLock_LockStamp__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.Validate(DotNext.Threading.AsyncReaderWriterLock.LockStamp%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock_Validate_DotNext_Threading_AsyncReaderWriterLock_LockStamp__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock.Validate(DotNext.Threading.AsyncReaderWriterLock.LockStamp%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L271">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncReaderWriterLock_Validate_" data-uid="DotNext.Threading.AsyncReaderWriterLock.Validate*"></a>
-  <h4 id="DotNext_Threading_AsyncReaderWriterLock_Validate_DotNext_Threading_AsyncReaderWriterLock_LockStamp__" data-uid="DotNext.Threading.AsyncReaderWriterLock.Validate(DotNext.Threading.AsyncReaderWriterLock.LockStamp@)">Validate(in AsyncReaderWriterLock.LockStamp)</h4>
-  <div class="markdown level1 summary"><p>Returns <span class="xref">true</span> if the lock has not been exclusively acquired since issuance of the given stamp.</p>
+  <h4 id="DotNext_Threading_AsyncReaderWriterLock_Validate_DotNext_Threading_AsyncReaderWriterLock_LockStamp__" data-uid="DotNext.Threading.AsyncReaderWriterLock.Validate(DotNext.Threading.AsyncReaderWriterLock.LockStamp@)">Validate(in LockStamp)</h4>
+  <div class="markdown level1 summary"><p>Returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the lock has not been exclusively acquired since issuance of the given stamp.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Validate(in AsyncReaderWriterLock.LockStamp stamp)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1389,7 +1783,7 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">AsyncReaderWriterLock.LockStamp</a></td>
+        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>.<a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">LockStamp</a></td>
         <td><span class="parametername">stamp</span></td>
         <td><p>A stamp to check.</p>
 </td>
@@ -1397,7 +1791,7 @@ Lock acquisition is an asynchronous operation.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -1406,77 +1800,81 @@ Lock acquisition is an asynchronous operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if the lock has not been exclusively acquired since issuance of the given stamp; else <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the lock has not been exclusively acquired since issuance of the given stamp; else <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <span class="xref">IAsyncDisposable</span>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncReaderWriterLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncReaderWriterLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
                     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncReaderWriterLock.cs/#L17" class="contribution-link">View Source</a>
@@ -1495,7 +1893,7 @@ Lock acquisition is an asynchronous operation.</p>
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -1505,7 +1903,7 @@ Lock acquisition is an asynchronous operation.</p>
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -1514,8 +1912,8 @@ Lock acquisition is an asynchronous operation.</p>
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -1533,8 +1931,8 @@ Lock acquisition is an asynchronous operation.</p>
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>

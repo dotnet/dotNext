@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Struct MemoryTemplate&lt;T&gt;
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct MemoryTemplate&lt;T&gt;
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,44 +68,43 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.Buffers.MemoryTemplate`1">
-  
-  
+
+
+
   <h1 id="DotNext_Buffers_MemoryTemplate_1" data-uid="DotNext.Buffers.MemoryTemplate`1" class="text-break">Struct MemoryTemplate&lt;T&gt;
-  </h1>
+</h1>
   <div class="markdown level0 summary"><p>Represents generic template for buffer rendering.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_MemoryTemplate_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct MemoryTemplate&lt;T&gt;
-
-    where T : IEquatable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct MemoryTemplate&lt;T&gt; where T : IEquatable&lt;T&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -126,30 +125,30 @@ called placeholder in the original sequence of elements.
 In other words, it is an implementation of find-and-replace algorithm.
 Pre-compiled template allows to reuse it when rendering with different
 arguments is required. The rendering process is much faster
-than <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string.format#system-string-format(system-string-system-object())">Format(String, Object[])</a> especially for
+than <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string.format#system-string-format(system-string-system-object())">Format(string, params object[])</a> especially for
 large templates. However, the rendering process doesn't offer
 formatting procedures.</p>
 </div>
   <h3 id="constructors">Constructors
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1__ctor_ReadOnlyMemory__0__scoped__0_placeholder_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.%23ctor(ReadOnlyMemory%7B%600%7D%2Cscoped%2C%600%2Cplaceholder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1__ctor_System_ReadOnlyMemory__0__System_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.%23ctor(System.ReadOnlyMemory%7B%600%7D%2CSystem.ReadOnlySpan%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryTemplate.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryTemplate_1__ctor_" data-uid="DotNext.Buffers.MemoryTemplate`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_MemoryTemplate_1__ctor_ReadOnlyMemory__0__scoped__0_placeholder_" data-uid="DotNext.Buffers.MemoryTemplate`1.#ctor(ReadOnlyMemory{`0},scoped,`0,placeholder)">MemoryTemplate(ReadOnlyMemory&lt;T&gt;, scoped, T, placeholder)</h4>
+  <h4 id="DotNext_Buffers_MemoryTemplate_1__ctor_System_ReadOnlyMemory__0__System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.MemoryTemplate`1.#ctor(System.ReadOnlyMemory{`0},System.ReadOnlySpan{`0})">MemoryTemplate(ReadOnlyMemory&lt;T&gt;, scoped ReadOnlySpan&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Initializes a new pre-compiled template.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryTemplate(ReadOnlyMemory&lt;T&gt; template, scoped ReadOnlySpan, T, placeholder)</code></pre>
+    <pre><code class="lang-csharp hljs">public MemoryTemplate(ReadOnlyMemory&lt;T&gt; template, scoped ReadOnlySpan&lt;T&gt; placeholder)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -159,33 +158,24 @@ formatting procedures.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlyMemory</span>&lt;T&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
         <td><span class="parametername">template</span></td>
         <td><p>The template containing placeholders for replacement.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">scoped</span></td>
-        <td><span class="parametername">ReadOnlySpan</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername"></span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="xref">placeholder</span></td>
-        <td><span class="parametername"></span></td>
-        <td></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">placeholder</span></td>
+        <td><p>The span of elements representing template placeholder.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h3 id="properties">Properties
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryTemplate.cs/#L97">View Source</a>
@@ -195,12 +185,12 @@ formatting procedures.</p>
   <div class="markdown level1 summary"><p>Gets original template passed to this object during construction.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly ReadOnlyMemory&lt;T&gt; Value { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public ReadOnlyMemory&lt;T&gt; Value { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -209,16 +199,16 @@ formatting procedures.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlyMemory</span>&lt;T&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="methods">Methods
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Render__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Render%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Render__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Render%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryTemplate.cs/#L137">View Source</a>
@@ -228,14 +218,12 @@ formatting procedures.</p>
   <div class="markdown level1 summary"><p>Replaces all placeholders in the template with custom content.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly void Render&lt;TConsumer&gt;(TConsumer consumer)
-
-    where TConsumer : IReadOnlySpanConsumer&lt;T&gt;, IConsumer&lt;int&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public void Render&lt;TConsumer&gt;(TConsumer consumer) where TConsumer : notnull, IReadOnlySpanConsumer&lt;T&gt;, IConsumer&lt;int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -253,7 +241,7 @@ formatting procedures.</p>
     </tbody>
   </table>
   <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -270,24 +258,22 @@ formatting procedures.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Render__1___0_Action_System_Int32___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Render%60%601(%60%600%2CAction%7BSystem.Int32%2C%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Render__1___0_System_Action_System_Int32___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Render%60%601(%60%600%2CSystem.Action%7BSystem.Int32%2C%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryTemplate.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryTemplate_1_Render_" data-uid="DotNext.Buffers.MemoryTemplate`1.Render*"></a>
-  <h4 id="DotNext_Buffers_MemoryTemplate_1_Render__1___0_Action_System_Int32___0__" data-uid="DotNext.Buffers.MemoryTemplate`1.Render``1(``0,Action{System.Int32,``0})">Render&lt;TWriter&gt;(TWriter, Action&lt;Int32, TWriter&gt;)</h4>
+  <h4 id="DotNext_Buffers_MemoryTemplate_1_Render__1___0_System_Action_System_Int32___0__" data-uid="DotNext.Buffers.MemoryTemplate`1.Render``1(``0,System.Action{System.Int32,``0})">Render&lt;TWriter&gt;(TWriter, Action&lt;int, TWriter&gt;)</h4>
   <div class="markdown level1 summary"><p>Replaces all placeholders in the template with custom content.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly void Render&lt;TWriter&gt;(TWriter output, Action&lt;int, TWriter&gt; rewriter)
-
-    where TWriter : class, IBufferWriter&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public void Render&lt;TWriter&gt;(TWriter output, Action&lt;int, TWriter&gt; rewriter) where TWriter : class, IBufferWriter&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -303,7 +289,7 @@ formatting procedures.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Action</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a>, TWriter&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>, TWriter&gt;</td>
         <td><span class="parametername">rewriter</span></td>
         <td><p>The action responsible for replacing placeholder with custom content.
 The first argument of the action indicates placeholder index.</p>
@@ -312,7 +298,7 @@ The first argument of the action indicates placeholder index.</p>
     </tbody>
   </table>
   <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -329,22 +315,22 @@ The first argument of the action indicates placeholder index.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Render__1___0_Action_System_Int32___0__System_Buffers_ReadOnlySpanAction__0___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Render%60%601(%60%600%2CAction%7BSystem.Int32%2C%60%600%7D%2CSystem.Buffers.ReadOnlySpanAction%7B%600%2C%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1_Render__1___0_System_Action_System_Int32___0__System_Buffers_ReadOnlySpanAction__0___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601.Render%60%601(%60%600%2CSystem.Action%7BSystem.Int32%2C%60%600%7D%2CSystem.Buffers.ReadOnlySpanAction%7B%600%2C%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryTemplate.cs/#L178">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryTemplate_1_Render_" data-uid="DotNext.Buffers.MemoryTemplate`1.Render*"></a>
-  <h4 id="DotNext_Buffers_MemoryTemplate_1_Render__1___0_Action_System_Int32___0__System_Buffers_ReadOnlySpanAction__0___0__" data-uid="DotNext.Buffers.MemoryTemplate`1.Render``1(``0,Action{System.Int32,``0},System.Buffers.ReadOnlySpanAction{`0,``0})">Render&lt;TArg&gt;(TArg, Action&lt;Int32, TArg&gt;, ReadOnlySpanAction&lt;T, TArg&gt;)</h4>
+  <h4 id="DotNext_Buffers_MemoryTemplate_1_Render__1___0_System_Action_System_Int32___0__System_Buffers_ReadOnlySpanAction__0___0__" data-uid="DotNext.Buffers.MemoryTemplate`1.Render``1(``0,System.Action{System.Int32,``0},System.Buffers.ReadOnlySpanAction{`0,``0})">Render&lt;TArg&gt;(TArg, Action&lt;int, TArg&gt;, ReadOnlySpanAction&lt;T, TArg&gt;)</h4>
   <div class="markdown level1 summary"><p>Replaces all placeholders in the template with custom content.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly void Render&lt;TArg&gt;(TArg arg, Action&lt;int, TArg&gt; rewriter, ReadOnlySpanAction&lt;T, TArg&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Render&lt;TArg&gt;(TArg arg, Action&lt;int, TArg&gt; rewriter, ReadOnlySpanAction&lt;T, TArg&gt; output)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -360,7 +346,7 @@ The first argument of the action indicates placeholder index.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Action</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a>, TArg&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>, TArg&gt;</td>
         <td><span class="parametername">rewriter</span></td>
         <td><p>The action responsible for replacing placeholder with custom content.
 The first argument of the action indicates placeholder index.</p>
@@ -375,7 +361,7 @@ The first argument of the action indicates placeholder index.</p>
     </tbody>
   </table>
   <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -385,27 +371,28 @@ The first argument of the action indicates placeholder index.</p>
     <tbody>
       <tr>
         <td><span class="parametername">TArg</span></td>
-        <td><p>The type of the argument to be passed to <code data-dev-comment-type="paramref" class="paramref">rewriter</code> and <code data-dev-comment-type="paramref" class="paramref">output</code>.</p>
+        <td><p>The type of the argument to be passed to <code class="paramref">rewriter</code> and <code class="paramref">output</code>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryTemplate_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryTemplate%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
                     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryTemplate.cs/#L21" class="contribution-link">View Source</a>
@@ -424,7 +411,7 @@ The first argument of the action indicates placeholder index.</p>
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -434,7 +421,7 @@ The first argument of the action indicates placeholder index.</p>
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -443,8 +430,8 @@ The first argument of the action indicates placeholder index.</p>
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -462,8 +449,8 @@ The first argument of the action indicates placeholder index.</p>
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>

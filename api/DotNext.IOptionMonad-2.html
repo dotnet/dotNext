@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Interface IOptionMonad&lt;T, TSelf&gt;
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IOptionMonad&lt;T, TSelf&gt;
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,18 +68,16 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.IOptionMonad`2">
-  
-  
+
+
+
   <h1 id="DotNext_IOptionMonad_2" data-uid="DotNext.IOptionMonad`2" class="text-break">Interface IOptionMonad&lt;T, TSelf&gt;
-  </h1>
+</h1>
   <div class="markdown level0 summary"><p>Represents common interface for all option monads.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_DotNext_ISupplier_System_Object__Invoke">IOptionMonad&lt;T&gt;.ISupplier&lt;Object&gt;.Invoke()</a>
-    </div>
     <div>
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_HasValue">IOptionMonad&lt;T&gt;.HasValue</a>
     </div>
@@ -90,29 +88,26 @@
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_Or__0_">IOptionMonad&lt;T&gt;.Or(T)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_OrInvoke_DotNext_Func__0__">IOptionMonad&lt;T&gt;.OrInvoke(Func&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_OrInvoke_System_Func__0__">IOptionMonad&lt;T&gt;.OrInvoke(Func&lt;T&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_TryGet__0__">IOptionMonad&lt;T&gt;.TryGet(T)</a>
+      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_TryGet__0__">IOptionMonad&lt;T&gt;.TryGet(out T)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;Object&gt;.Invoke()</a>
+      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;object&gt;.Invoke()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_DotNext_Runtime_CompilerServices_IFunctional_DotNext_Func_TResult___ToDelegate">ISupplier&lt;Object&gt;.IFunctional&lt;Func&lt;Object&gt;&gt;.ToDelegate()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;Object&gt;&gt;.ToDelegate()</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;object&gt;&gt;.ToDelegate()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IOptionMonad_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IOptionMonad&lt;T, TSelf&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object&gt;, IFunctional&lt;Func&lt;object&gt;&gt; where TSelf : struct, IOptionMonad&lt;T, TSelf&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IOptionMonad&lt;T, TSelf&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional&lt;Func&lt;object?&gt;&gt; where TSelf : struct, IOptionMonad&lt;T, TSelf&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -133,25 +128,25 @@
     </tbody>
   </table>
   <h3 id="operators">Operators
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_Explicit__1____0.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Explicit(%601%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_Explicit__1____0.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Explicit(%601%40)~%600%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_Explicit_" data-uid="DotNext.IOptionMonad`2.op_Explicit*"></a>
-  <h4 id="DotNext_IOptionMonad_2_op_Explicit__1____0" data-uid="DotNext.IOptionMonad`2.op_Explicit(`1@)~`0">Explicit(in TSelf to T)</h4>
+  <h4 id="DotNext_IOptionMonad_2_op_Explicit__1____0" data-uid="DotNext.IOptionMonad`2.op_Explicit(`1@)~`0">explicit operator T(in TSelf)</h4>
   <div class="markdown level1 summary"><p>Attempts to extract the value from the container.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">static explicit operator T(in TSelf container)</code></pre>
+    <pre><code class="lang-csharp hljs">public static abstract explicit operator T(in TSelf container)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -169,7 +164,7 @@
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -186,22 +181,22 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_False__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_False(%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_False__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_False(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_False_" data-uid="DotNext.IOptionMonad`2.op_False*"></a>
-  <h4 id="DotNext_IOptionMonad_2_op_False__1__" data-uid="DotNext.IOptionMonad`2.op_False(`1@)">False(in TSelf)</h4>
+  <h4 id="DotNext_IOptionMonad_2_op_False__1__" data-uid="DotNext.IOptionMonad`2.op_False(`1@)">operator false(in TSelf)</h4>
   <div class="markdown level1 summary"><p>Checks whether the container has no value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">static bool operator false (in TSelf container)</code></pre>
+    <pre><code class="lang-csharp hljs">public static abstract bool operator false(in TSelf container)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -219,7 +214,7 @@
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -228,30 +223,30 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if this container has no value; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container has no value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_Implicit__0___1.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Implicit(%600)~%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_Implicit__0___1.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Implicit(%600)~%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_Implicit_" data-uid="DotNext.IOptionMonad`2.op_Implicit*"></a>
-  <h4 id="DotNext_IOptionMonad_2_op_Implicit__0___1" data-uid="DotNext.IOptionMonad`2.op_Implicit(`0)~`1">Implicit(T to TSelf)</h4>
+  <h4 id="DotNext_IOptionMonad_2_op_Implicit__0___1" data-uid="DotNext.IOptionMonad`2.op_Implicit(`0)~`1">implicit operator TSelf(T)</h4>
   <div class="markdown level1 summary"><p>Places the value to the container.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">static implicit operator TSelf(T value)</code></pre>
+    <pre><code class="lang-csharp hljs">public static abstract implicit operator TSelf(T value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -269,7 +264,7 @@
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -286,22 +281,22 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_True__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_True(%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2_op_True__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_True(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_True_" data-uid="DotNext.IOptionMonad`2.op_True*"></a>
-  <h4 id="DotNext_IOptionMonad_2_op_True__1__" data-uid="DotNext.IOptionMonad`2.op_True(`1@)">True(in TSelf)</h4>
+  <h4 id="DotNext_IOptionMonad_2_op_True__1__" data-uid="DotNext.IOptionMonad`2.op_True(`1@)">operator true(in TSelf)</h4>
   <div class="markdown level1 summary"><p>Checks whether the container has value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">static bool operator true (in TSelf container)</code></pre>
+    <pre><code class="lang-csharp hljs">public static abstract bool operator true(in TSelf container)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -319,7 +314,7 @@
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -328,73 +323,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if this container has value; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container has value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="extensionmethods">Extension Methods</h3>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_IOptionMonad_2.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
                     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L55" class="contribution-link">View Source</a>
@@ -413,7 +357,7 @@
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -423,7 +367,7 @@
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -432,8 +376,8 @@
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -451,8 +395,8 @@
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>

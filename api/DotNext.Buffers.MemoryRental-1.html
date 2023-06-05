@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Struct MemoryRental&lt;T&gt;
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct MemoryRental&lt;T&gt;
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,10 +68,11 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.Buffers.MemoryRental`1">
-  
-  
+
+
+
   <h1 id="DotNext_Buffers_MemoryRental_1" data-uid="DotNext.Buffers.MemoryRental`1" class="text-break">Struct MemoryRental&lt;T&gt;
-  </h1>
+</h1>
   <div class="markdown level0 summary"><p>Represents the memory obtained from the pool or allocated
 on the stack or heap.</p>
 </div>
@@ -79,29 +80,29 @@ on the stack or heap.</p>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_MemoryRental_1_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ref struct MemoryRental&lt;T&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -118,95 +119,21 @@ on the stack or heap.</p>
   </table>
   <h5 id="DotNext_Buffers_MemoryRental_1_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This type is aimed to be compatible with memory allocated using <code>stackalloc</code> operator.
-If stack allocation threshold is reached (e.g. <span class="xref">DotNext.Buffers.MemoryRental`1.StackallocThreshold</span>) then it's possible to use pooled memory from
-arbitrary <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>. Custom
-<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> is not supported because default <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>
+If stack allocation threshold is reached (e.g. <a class="xref" href="DotNext.Buffers.MemoryRental-1.html#DotNext.Buffers.MemoryRental`1.StackallocThreshold">StackallocThreshold</a>) then it's possible to use pooled memory from
+arbitrary <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>. Custom
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> is not supported because default <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>
 is optimized for per-CPU core allocation which is perfect when the same
 thread is responsible for renting and releasing the array.</p>
 </div>
   <h5 id="DotNext_Buffers_MemoryRental_1_examples"><strong>Examples</strong></h5>
-  <pre><code>const int stackallocThreshold = 20;
-var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackalloc byte[stackallocThreshold], size) : new MemoryRental&lt;byte>(size);</code></pre>
+  <pre><code class="lang-csharp">const int stackallocThreshold = 20;
+var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stackalloc byte[stackallocThreshold], size) : new MemoryRental&lt;byte&gt;(size);</code></pre>
 
   <h3 id="constructors">Constructors
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_DotNext_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(DotNext.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L48">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_DotNext_Span__0__" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(DotNext.Span{`0})">MemoryRental(Span&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Rents the memory referenced by the span.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryRental(Span&lt;T&gt; span)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
-        <td><span class="parametername">span</span></td>
-        <td><p>The span that references the memory to rent.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_DotNext_Span__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(DotNext.Span%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L60">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_DotNext_Span__0__System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(DotNext.Span{`0},System.Int32)">MemoryRental(Span&lt;T&gt;, Int32)</h4>
-  <div class="markdown level1 summary"><p>Rents the memory referenced by the span.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryRental(Span&lt;T&gt; span, int length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
-        <td><span class="parametername">span</span></td>
-        <td><p>The span that references the memory to rent.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The actual length of the data.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L90">View Source</a>
@@ -216,12 +143,12 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackallo
   <div class="markdown level1 summary"><p>Rents the memory from the pool.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MemoryRental(MemoryPool&lt;T&gt; pool)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -238,24 +165,40 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackallo
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">pool</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_System_Boolean_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32,System.Boolean)">MemoryRental(MemoryPool&lt;T&gt;, Int32, Boolean)</h4>
+  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_System_Boolean_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32,System.Boolean)">MemoryRental(MemoryPool&lt;T&gt;, int, bool)</h4>
   <div class="markdown level1 summary"><p>Rents the memory from the pool.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MemoryRental(MemoryPool&lt;T&gt; pool, int minBufferSize, bool exactSize = true)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -271,37 +214,58 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackallo
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">minBufferSize</span></td>
         <td><p>The minimum size of the memory to rent.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td><span class="parametername">exactSize</span></td>
-        <td><p><span class="xref">true</span> to return the buffer of <code data-dev-comment-type="paramref" class="paramref">minBufferSize</code> length; otherwise, the returned buffer is at least of <code data-dev-comment-type="paramref" class="paramref">minBufferSize</code>.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to return the buffer of <code class="paramref">minBufferSize</code> length; otherwise, the returned buffer is at least of <code class="paramref">minBufferSize</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">pool</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">minBufferSize</code> is less than or equal to zero.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Int32%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L104">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Int32_System_Boolean_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Int32,System.Boolean)">MemoryRental(Int32, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Rents the memory from <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#system-buffers-arraypool-1-shared">Shared</a>.</p>
+  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Int32_System_Boolean_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Int32,System.Boolean)">MemoryRental(int, bool)</h4>
+  <div class="markdown level1 summary"><p>Rents the memory from <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public MemoryRental(int minBufferSize, bool exactSize = true)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -311,24 +275,114 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackallo
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">minBufferSize</span></td>
         <td><p>The minimum size of the memory to rent.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td><span class="parametername">exactSize</span></td>
-        <td><p><span class="xref">true</span> to return the buffer of <code data-dev-comment-type="paramref" class="paramref">minBufferSize</code> length; otherwise, the returned buffer is at least of <code data-dev-comment-type="paramref" class="paramref">minBufferSize</code>.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to return the buffer of <code class="paramref">minBufferSize</code> length; otherwise, the returned buffer is at least of <code class="paramref">minBufferSize</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">minBufferSize</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Span%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0})">MemoryRental(Span&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Rents the memory referenced by the span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryRental(Span&lt;T&gt; span)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td><p>The span that references the memory to rent.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Span%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L60">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0},System.Int32)">MemoryRental(Span&lt;T&gt;, int)</h4>
+  <div class="markdown level1 summary"><p>Rents the memory referenced by the span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryRental(Span&lt;T&gt; span, int length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td><p>The span that references the memory to rent.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The actual length of the data.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="properties">Properties
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L120">View Source</a>
@@ -339,12 +393,12 @@ var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte>(stackallo
 doesn't reference rented memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly bool IsEmpty { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -353,29 +407,29 @@ doesn't reference rented memory.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Item(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L141">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_Item_" data-uid="DotNext.Buffers.MemoryRental`1.Item*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1_Item_System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.Item(System.Int32)">Item[Int32]</h4>
+  <h4 id="DotNext_Buffers_MemoryRental_1_Item_System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.Item(System.Int32)">this[int]</h4>
   <div class="markdown level1 summary"><p>Gets the memory element by its index.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly ref T this[int index] { get; }</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -385,7 +439,7 @@ doesn't reference rented memory.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">index</span></td>
         <td><p>The index of the memory element.</p>
 </td>
@@ -393,7 +447,7 @@ doesn't reference rented memory.</p>
     </tbody>
   </table>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -410,7 +464,7 @@ doesn't reference rented memory.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L134">View Source</a>
@@ -420,12 +474,12 @@ doesn't reference rented memory.</p>
   <div class="markdown level1 summary"><p>Gets length of the rented memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly int Length { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -434,14 +488,14 @@ doesn't reference rented memory.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Span%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Span%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L114">View Source</a>
@@ -451,12 +505,12 @@ doesn't reference rented memory.</p>
   <div class="markdown level1 summary"><p>Gets the rented memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public readonly Span&lt;T&gt; Span { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -465,16 +519,16 @@ doesn't reference rented memory.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="methods">Methods
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L160">View Source</a>
@@ -484,13 +538,13 @@ doesn't reference rented memory.</p>
   <div class="markdown level1 summary"><p>Returns the memory back to the pool.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L155">View Source</a>
@@ -500,12 +554,12 @@ doesn't reference rented memory.</p>
   <div class="markdown level1 summary"><p>Gets textual representation of the rented memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -514,35 +568,35 @@ doesn't reference rented memory.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
         <td><p>The textual representation of the rented memory.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a></div>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
   <h3 id="operators">Operators
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_op_Implicit_DotNext_Span__0___DotNext_Buffers_MemoryRental__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.op_Implicit(DotNext.Span%7B%600%7D)~DotNext.Buffers.MemoryRental%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_op_Implicit_System_Span__0___DotNext_Buffers_MemoryRental__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.op_Implicit(System.Span%7B%600%7D)~DotNext.Buffers.MemoryRental%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L127">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_op_Implicit_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1_op_Implicit_DotNext_Span__0___DotNext_Buffers_MemoryRental__0_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit(DotNext.Span{`0})~DotNext.Buffers.MemoryRental{`0}">Implicit(Span&lt;T&gt; to MemoryRental&lt;T&gt;)</h4>
+  <h4 id="DotNext_Buffers_MemoryRental_1_op_Implicit_System_Span__0___DotNext_Buffers_MemoryRental__0_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit(System.Span{`0})~DotNext.Buffers.MemoryRental{`0}">implicit operator MemoryRental&lt;T&gt;(Span&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts the reference to the already allocated memory
 into the rental object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static implicit operator MemoryRental&lt;T&gt;(Span&lt;T&gt; span)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -552,7 +606,7 @@ into the rental object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
         <td><span class="parametername">span</span></td>
         <td><p>The allocated memory to convert.</p>
 </td>
@@ -560,7 +614,7 @@ into the rental object.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -574,15 +628,16 @@ into the rental object.</p>
       </tr>
     </tbody>
   </table>
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
                     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L27" class="contribution-link">View Source</a>
@@ -601,7 +656,7 @@ into the rental object.</p>
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -611,7 +666,7 @@ into the rental object.</p>
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -620,8 +675,8 @@ into the rental object.</p>
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -639,8 +694,8 @@ into the rental object.</p>
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>

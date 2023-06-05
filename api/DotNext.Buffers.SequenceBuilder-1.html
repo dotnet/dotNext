@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Class SequenceBuilder&lt;T&gt;
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class SequenceBuilder&lt;T&gt;
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,16 +68,17 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.Buffers.SequenceBuilder`1">
-  
-  
+
+
+
   <h1 id="DotNext_Buffers_SequenceBuilder_1" data-uid="DotNext.Buffers.SequenceBuilder`1" class="text-break">Class SequenceBuilder&lt;T&gt;
-  </h1>
+</h1>
   <div class="markdown level0 summary"><p>Represents builder of non-contiguous memory buffer.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
     <div class="level2"><a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html">SparseBufferWriter</a>&lt;T&gt;</div>
     <div class="level3"><span class="xref">SequenceBuilder&lt;T&gt;</span></div>
@@ -86,16 +87,16 @@
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;T&gt;</div>
-    <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;, <span class="xref">CancellationToken</span>, <span class="xref">ValueTask</span>&gt;&gt;</div>
-    <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;&gt;</div>
     <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
-    <div><span class="xref">System.Collections.IEnumerable</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource</a>&lt;T&gt;</div>
-    <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -106,43 +107,34 @@
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_IsSingleSegment">SparseBufferWriter&lt;T&gt;.IsSingleSegment</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_TryGetWrittenContent_ReadOnlyMemory__0___">SparseBufferWriter&lt;T&gt;.TryGetWrittenContent(ReadOnlyMemory&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_TryGetWrittenContent_System_ReadOnlyMemory__0___">SparseBufferWriter&lt;T&gt;.TryGetWrittenContent(out ReadOnlyMemory&lt;T&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Write_ReadOnlySpan__0__">SparseBufferWriter&lt;T&gt;.Write(ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Write_System_ReadOnlySpan__0__">SparseBufferWriter&lt;T&gt;.Write(ReadOnlySpan&lt;T&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Write_ReadOnlyMemory__0__System_Boolean_">SparseBufferWriter&lt;T&gt;.Write(ReadOnlyMemory&lt;T&gt;, Boolean)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Write_System_ReadOnlyMemory__0__System_Boolean_">SparseBufferWriter&lt;T&gt;.Write(ReadOnlyMemory&lt;T&gt;, bool)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Add__0_">SparseBufferWriter&lt;T&gt;.Add(T)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__Write__0_">SparseBufferWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.Write(T)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Write_System_Buffers_ReadOnlySequence__0___System_Boolean_">SparseBufferWriter&lt;T&gt;.Write(ReadOnlySequence&lt;T&gt;, Boolean)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Write_System_Buffers_ReadOnlySequence__0___System_Boolean_">SparseBufferWriter&lt;T&gt;.Write(in ReadOnlySequence&lt;T&gt;, bool)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TConsumer&gt;(TConsumer)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_DotNext_Buffers_IGrowableBuffer_T__CopyToAsync__1___0_CancellationToken_">SparseBufferWriter&lt;T&gt;.IGrowableBuffer&lt;T&gt;.CopyToAsync&lt;TConsumer&gt;(TConsumer, CancellationToken)</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1_System_Buffers_ReadOnlySpanAction__0___0____0_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;T, TArg&gt;, TArg)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo_DotNext_Span__0__">SparseBufferWriter&lt;T&gt;.CopyTo(Span&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo_System_Span__0__">SparseBufferWriter&lt;T&gt;.CopyTo(Span&lt;T&gt;)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Clear">SparseBufferWriter&lt;T&gt;.Clear()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_DotNext_ISupplier_System_Buffers_ReadOnlySequence_T___Invoke">SparseBufferWriter&lt;T&gt;.ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;.Invoke()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Dispose_System_Boolean_">SparseBufferWriter&lt;T&gt;.Dispose(Boolean)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Dispose_System_Boolean_">SparseBufferWriter&lt;T&gt;.Dispose(bool)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_ToString">SparseBufferWriter&lt;T&gt;.ToString()</a>
@@ -154,28 +146,22 @@
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Start">SparseBufferWriter&lt;T&gt;.Start</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_GetPosition_System_Int64_SequencePosition_">SparseBufferWriter&lt;T&gt;.GetPosition(Int64, SequencePosition)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_GetPosition_System_Int64_System_SequencePosition_">SparseBufferWriter&lt;T&gt;.GetPosition(long, SequencePosition)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Read_SequencePosition__System_Int64_">SparseBufferWriter&lt;T&gt;.Read(SequencePosition, Int64)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Read_System_SequencePosition__System_Int64_">SparseBufferWriter&lt;T&gt;.Read(ref SequencePosition, long)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo_scoped__0_output_scoped_SequencePosition__">SparseBufferWriter&lt;T&gt;.CopyTo(scoped, T, output, scoped, SequencePosition)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo_System_Span__0__System_SequencePosition__">SparseBufferWriter&lt;T&gt;.CopyTo(scoped Span&lt;T&gt;, scoped ref SequencePosition)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_SequencePosition_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TConsumer&gt;(TConsumer, SequencePosition)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_System_SequencePosition_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TConsumer&gt;(TConsumer, SequencePosition)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_scoped_SequencePosition__System_Int64_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TConsumer&gt;(TConsumer, scoped, SequencePosition, Int64)</a>
+      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_System_SequencePosition__System_Int64_">SparseBufferWriter&lt;T&gt;.CopyTo&lt;TConsumer&gt;(TConsumer, scoped ref SequencePosition, long)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_GetEnumerator">SparseBufferWriter&lt;T&gt;.GetEnumerator()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_System_Collections_IEnumerable_GetEnumerator">SparseBufferWriter&lt;T&gt;.IEnumerable.GetEnumerator()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_System_Buffers_IBufferWriter_T__Advance_System_Int32_">SparseBufferWriter&lt;T&gt;.IBufferWriter&lt;T&gt;.Advance(Int32)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
@@ -196,10 +182,10 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_System_Threading_Tasks_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_System_Threading_Tasks_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a>
@@ -214,26 +200,44 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_IEnumerable_System_Nullable_IDisposable___">Disposable.Dispose(IEnumerable&lt;Nullable&lt;IDisposable&gt;&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_IEnumerable_System_Nullable_IAsyncDisposable___">Disposable.DisposeAsync(IEnumerable&lt;Nullable&lt;IAsyncDisposable&gt;&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Nullable_IDisposable____">Disposable.Dispose(Nullable&lt;IDisposable&gt;[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(params IDisposable[])</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Nullable_IAsyncDisposable____">Disposable.DisposeAsync(Nullable&lt;IAsyncDisposable&gt;[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Buffers_SequenceBuilder_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class SequenceBuilder&lt;T&gt; : SparseBufferWriter&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IResettable, IBufferWriter&lt;T&gt;, IReadOnlySequenceSource&lt;T&gt;, ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlySequence&lt;T&gt;&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class SequenceBuilder&lt;T&gt; : SparseBufferWriter&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IResettable, IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;, IEnumerable, IBufferWriter&lt;T&gt;, IReadOnlySequenceSource&lt;T&gt;, IDisposable, ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlySequence&lt;T&gt;&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Name</th>
@@ -249,27 +253,27 @@
     </tbody>
   </table>
   <h3 id="constructors">Constructors
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/SequenceBuilder.cs/#L36">View Source</a>
   </span>
   <a id="DotNext_Buffers_SequenceBuilder_1__ctor_" data-uid="DotNext.Buffers.SequenceBuilder`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SequenceBuilder_1__ctor" data-uid="DotNext.Buffers.SequenceBuilder`1.#ctor">SequenceBuilder()</h4>
-  <div class="markdown level1 summary"><p>Initializes a new builder which uses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.memorypool-1.shared#system-buffers-memorypool-1-shared">Shared</a>
+  <div class="markdown level1 summary"><p>Initializes a new builder which uses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.memorypool-1.shared">Shared</a>
 as a default allocator of buffers.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public SequenceBuilder()</code></pre>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1__ctor_System_Buffers_MemoryPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1__ctor_System_Buffers_MemoryPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/SequenceBuilder.cs/#L27">View Source</a>
@@ -280,12 +284,12 @@ as a default allocator of buffers.</p>
 chunk size.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public SequenceBuilder(MemoryPool&lt;T&gt; pool)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -304,22 +308,22 @@ chunk size.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1__ctor_System_Int32_DotNext_Buffers_MemoryAllocator__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601.%23ctor(System.Int32%2CDotNext.Buffers.MemoryAllocator%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1__ctor_System_Int32_DotNext_Buffers_MemoryAllocator__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601.%23ctor(System.Int32%2CDotNext.Buffers.MemoryAllocator%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/SequenceBuilder.cs/#L17">View Source</a>
   </span>
   <a id="DotNext_Buffers_SequenceBuilder_1__ctor_" data-uid="DotNext.Buffers.SequenceBuilder`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_SequenceBuilder_1__ctor_System_Int32_DotNext_Buffers_MemoryAllocator__0__" data-uid="DotNext.Buffers.SequenceBuilder`1.#ctor(System.Int32,DotNext.Buffers.MemoryAllocator{`0})">SequenceBuilder(Int32, MemoryAllocator&lt;T&gt;)</h4>
+  <h4 id="DotNext_Buffers_SequenceBuilder_1__ctor_System_Int32_DotNext_Buffers_MemoryAllocator__0__" data-uid="DotNext.Buffers.SequenceBuilder`1.#ctor(System.Int32,DotNext.Buffers.MemoryAllocator{`0})">SequenceBuilder(int, MemoryAllocator&lt;T&gt;?)</h4>
   <div class="markdown level1 summary"><p>Initializes a new builder with the specified size of memory block.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public SequenceBuilder(int chunkSize, MemoryAllocator&lt;T&gt; allocator = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public SequenceBuilder(int chunkSize, MemoryAllocator&lt;T&gt;? allocator = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -329,7 +333,7 @@ chunk size.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">chunkSize</span></td>
         <td><p>The size of the memory block representing single segment within sequence.</p>
 </td>
@@ -342,35 +346,19 @@ chunk size.</p>
       </tr>
     </tbody>
   </table>
-  <h3 id="eii">Explicit Interface Implementations
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1_DotNext_Buffers_IReadOnlySequenceSource_T__Sequence.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601.DotNext%23Buffers%23IReadOnlySequenceSource%7BT%7D%23Sequence%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/SequenceBuilder.cs/#L42">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_SequenceBuilder_1_DotNext_Buffers_IReadOnlySequenceSource_T__Sequence_" data-uid="DotNext.Buffers.SequenceBuilder`1.DotNext#Buffers#IReadOnlySequenceSource{T}#Sequence*"></a>
-  <h4 id="DotNext_Buffers_SequenceBuilder_1_DotNext_Buffers_IReadOnlySequenceSource_T__Sequence" data-uid="DotNext.Buffers.SequenceBuilder`1.DotNext#Buffers#IReadOnlySequenceSource{T}#Sequence">IReadOnlySequenceSource&lt;T&gt;.Sequence</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ReadOnlySequence&lt;T&gt; IReadOnlySequenceSource&lt;T&gt;.Sequence { get; }</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Description</th>
+        <th>Condition</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
-        <td></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">chunkSize</code> is less than or equal to zero.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -388,22 +376,22 @@ chunk size.</p>
       <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
-      <span class="xref">IDisposable</span>
-  </div>
-  <div>
       <a class="xref" href="DotNext.IResettable.html">IResettable</a>
   </div>
   <div>
-      <span class="xref">System.Collections.IEnumerable&lt;&gt;</span>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
   </div>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">System.Buffers.IBufferWriter&lt;T&gt;</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource&lt;T&gt;</a>
   </div>
   <div>
-      <span class="xref">IDisposable</span>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
@@ -413,65 +401,126 @@ chunk size.</p>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_Write__1_System_Buffers_IBufferWriter___0____0_">BufferHelpers.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___">BufferHelpers.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, in ReadOnlySequence&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___">BufferHelpers.ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Sequence.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__System_Predicate___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;, Predicate&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__System_Predicate___0__">Sequence.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;, Predicate&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNull__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrNull&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Sequence.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_LastOrNone__1_System_Collections_Generic_IEnumerable___0__">Sequence.LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_LastOrNull__1_System_Collections_Generic_IEnumerable___0__">Sequence.LastOrNull&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_SequenceHashCode__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Sequence.SequenceHashCode&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Sequence.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
+  </div>
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_SequenceBuilder_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SequenceBuilder%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
                     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/SequenceBuilder.cs/#L9" class="contribution-link">View Source</a>
@@ -490,7 +539,7 @@ chunk size.</p>
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -500,7 +549,7 @@ chunk size.</p>
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -509,8 +558,8 @@ chunk size.</p>
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -528,8 +577,8 @@ chunk size.</p>
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>

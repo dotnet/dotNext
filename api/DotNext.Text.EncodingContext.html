@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Struct EncodingContext
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct EncodingContext
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,44 +68,45 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.Text.EncodingContext">
-  
-  
+
+
+
   <h1 id="DotNext_Text_EncodingContext" data-uid="DotNext.Text.EncodingContext" class="text-break">Struct EncodingContext
-  </h1>
+</h1>
   <div class="markdown level0 summary"><p>Represents text encoding context.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><span class="xref">ICloneable</span></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icloneable">ICloneable</a></div>
     <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals#system-valuetype-equals(system-object)">ValueType.Equals(Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode#system-valuetype-gethashcode">ValueType.GetHashCode()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring#system-valuetype-tostring">ValueType.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">Object.Equals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype#system-object-gettype">Object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals#system-object-referenceequals(system-object-system-object)">Object.ReferenceEquals(Object, Object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Text.html">DotNext.Text</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Text.html">Text</a></h6>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Text_EncodingContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct EncodingContext : IResettable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct EncodingContext : ICloneable, IResettable</code></pre>
   </div>
   <h5 id="DotNext_Text_EncodingContext_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The context represents an encoding cache to avoid memory allocations for each round of string encoding caused by methods of <a class="xref" href="DotNext.IO.StreamExtensions.html">StreamExtensions</a> class.
@@ -113,25 +114,25 @@ It cannot be shared across parallel flows or threads. However, you can call <a c
 an independent copy of this context for separated async flow or thread.</p>
 </div>
   <h3 id="constructors">Constructors
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext__ctor_System_Text_Encoding_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.%23ctor(System.Text.Encoding%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext__ctor_System_Text_Encoding_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.%23ctor(System.Text.Encoding%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/EncodingContext.cs/#L26">View Source</a>
   </span>
   <a id="DotNext_Text_EncodingContext__ctor_" data-uid="DotNext.Text.EncodingContext.#ctor*"></a>
-  <h4 id="DotNext_Text_EncodingContext__ctor_System_Text_Encoding_System_Boolean_" data-uid="DotNext.Text.EncodingContext.#ctor(System.Text.Encoding,System.Boolean)">EncodingContext(Encoding, Boolean)</h4>
+  <h4 id="DotNext_Text_EncodingContext__ctor_System_Text_Encoding_System_Boolean_" data-uid="DotNext.Text.EncodingContext.#ctor(System.Text.Encoding,System.Boolean)">EncodingContext(Encoding, bool)</h4>
   <div class="markdown level1 summary"><p>Initializes a new encoding context.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public EncodingContext(Encoding encoding, bool reuseEncoder)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -147,18 +148,34 @@ an independent copy of this context for separated async flow or thread.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td><span class="parametername">reuseEncoder</span></td>
-        <td><p><span class="xref">true</span> to reuse the encoder between encoding operations; <span class="xref">false</span> to create separated encoder for each encoding operation.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reuse the encoder between encoding operations; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to create separated encoder for each encoding operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">encoding</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="properties">Properties
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_Encoding.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.Encoding%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_Encoding.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.Encoding%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/EncodingContext.cs/#L50">View Source</a>
@@ -168,12 +185,12 @@ an independent copy of this context for separated async flow or thread.</p>
   <div class="markdown level1 summary"><p>Gets encoding associated with this context.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly Encoding Encoding { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Encoding Encoding { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -188,10 +205,10 @@ an independent copy of this context for separated async flow or thread.</p>
     </tbody>
   </table>
   <h3 id="methods">Methods
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_Copy.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.Copy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_Copy.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.Copy%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/EncodingContext.cs/#L37">View Source</a>
@@ -202,12 +219,12 @@ an independent copy of this context for separated async flow or thread.</p>
 in separated async flow or thread.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly EncodingContext Copy()</code></pre>
+    <pre><code class="lang-csharp hljs">public EncodingContext Copy()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -224,22 +241,22 @@ in separated async flow or thread.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_GetBytes_ReadOnlyMemory_System_Char__Memory_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.GetBytes(ReadOnlyMemory%7BSystem.Char%7D%2CMemory%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_GetBytes_System_ReadOnlyMemory_System_Char__System_Memory_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.GetBytes(System.ReadOnlyMemory%7BSystem.Char%7D%2CSystem.Memory%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/EncodingContext.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_Text_EncodingContext_GetBytes_" data-uid="DotNext.Text.EncodingContext.GetBytes*"></a>
-  <h4 id="DotNext_Text_EncodingContext_GetBytes_ReadOnlyMemory_System_Char__Memory_System_Byte__" data-uid="DotNext.Text.EncodingContext.GetBytes(ReadOnlyMemory{System.Char},Memory{System.Byte})">GetBytes(ReadOnlyMemory&lt;Char&gt;, Memory&lt;Byte&gt;)</h4>
+  <h4 id="DotNext_Text_EncodingContext_GetBytes_System_ReadOnlyMemory_System_Char__System_Memory_System_Byte__" data-uid="DotNext.Text.EncodingContext.GetBytes(System.ReadOnlyMemory{System.Char},System.Memory{System.Byte})">GetBytes(ReadOnlyMemory&lt;char&gt;, Memory&lt;byte&gt;)</h4>
   <div class="markdown level1 summary"><p>Encodes the characters.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly IEnumerable&lt;ReadOnlyMemory&lt;byte&gt;&gt; GetBytes(ReadOnlyMemory&lt;char&gt; chars, Memory&lt;byte&gt; buffer)</code></pre>
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;ReadOnlyMemory&lt;byte&gt;&gt; GetBytes(ReadOnlyMemory&lt;char&gt; chars, Memory&lt;byte&gt; buffer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -249,13 +266,13 @@ in separated async flow or thread.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
         <td><span class="parametername">chars</span></td>
         <td><p>The characters to encode.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Memory</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The temporary buffer used internally to encode characters.</p>
 </td>
@@ -263,7 +280,7 @@ in separated async flow or thread.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -272,15 +289,31 @@ in separated async flow or thread.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IEnumerable</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</td>
         <td><p>A collection of memory chunks representing encoded characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">buffer</code> is too small for encoding minimal portion of <code class="paramref">chars</code>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_Reset.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_Reset.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/EncodingContext.cs/#L45">View Source</a>
@@ -290,30 +323,30 @@ in separated async flow or thread.</p>
   <div class="markdown level1 summary"><p>Sets the encapsulated encoder to its initial state.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly void Reset()</code></pre>
+    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
   </div>
   <h3 id="operators">Operators
-  </h3>
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_op_Implicit_System_Text_Encoding__DotNext_Text_EncodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.op_Implicit(System.Text.Encoding)~DotNext.Text.EncodingContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext_op_Implicit_System_Text_Encoding__DotNext_Text_EncodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext.op_Implicit(System.Text.Encoding)~DotNext.Text.EncodingContext%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/EncodingContext.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Text_EncodingContext_op_Implicit_" data-uid="DotNext.Text.EncodingContext.op_Implicit*"></a>
-  <h4 id="DotNext_Text_EncodingContext_op_Implicit_System_Text_Encoding__DotNext_Text_EncodingContext" data-uid="DotNext.Text.EncodingContext.op_Implicit(System.Text.Encoding)~DotNext.Text.EncodingContext">Implicit(Encoding to EncodingContext)</h4>
+  <h4 id="DotNext_Text_EncodingContext_op_Implicit_System_Text_Encoding__DotNext_Text_EncodingContext" data-uid="DotNext.Text.EncodingContext.op_Implicit(System.Text.Encoding)~DotNext.Text.EncodingContext">implicit operator EncodingContext(Encoding)</h4>
   <div class="markdown level1 summary"><p>Creates encoding context.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static implicit operator EncodingContext(Encoding encoding)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -331,7 +364,7 @@ in separated async flow or thread.</p>
     </tbody>
   </table>
   <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
+  <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
@@ -347,27 +380,28 @@ in separated async flow or thread.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <span class="xref">ICloneable</span>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icloneable">ICloneable</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IResettable.html">IResettable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_EncodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.EncodingContext%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
                     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/EncodingContext.cs/#L14" class="contribution-link">View Source</a>
@@ -386,7 +420,7 @@ in separated async flow or thread.</p>
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -396,7 +430,7 @@ in separated async flow or thread.</p>
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -405,8 +439,8 @@ in separated async flow or thread.</p>
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -424,8 +458,8 @@ in separated async flow or thread.</p>
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>

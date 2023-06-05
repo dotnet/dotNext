@@ -1,30 +1,30 @@
 ﻿<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
-  
+
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>Namespace DotNext.Buffers
-   | .NEXT </title>
+ | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace DotNext.Buffers
-   | .NEXT ">
-    <meta name="generator" content="docfx 2.59.3.0">
-    
+ | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
     <link rel="stylesheet" href="../styles/docfx.css">
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
-    
-    
-    
+  
+  
+  
   </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
     <div id="wrapper">
       <header>
-        
+
         <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
           <div class="container">
             <div class="navbar-header">
@@ -34,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              
+
               <a class="navbar-brand" href="../index.html">
                 <img id="logo" class="svg" src="../doc_logo.png" alt="">
               </a>
@@ -48,7 +48,7 @@
             </div>
           </div>
         </nav>
-        
+
         <div class="subnav navbar navbar-default">
           <div class="container hide-when-search" id="breadcrumb">
             <ul class="breadcrumb">
@@ -58,7 +58,7 @@
         </div>
       </header>
       <div role="main" class="container body-content hide-when-search">
-        
+
         <div class="sidenav hide-when-search">
           <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
           <div class="sidetoggle collapse" id="sidetoggle">
@@ -68,26 +68,23 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="DotNext.Buffers">
-  
+
   <h1 id="DotNext_Buffers" data-uid="DotNext.Buffers" class="text-break">Namespace DotNext.Buffers
-  </h1>
+</h1>
   <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="markdown level0 remarks"></div>
-    <h3 id="classes">Classes
-  </h3>
-      <h4><a class="xref" href="DotNext.Buffers..html">DotNext.Buffers.</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>
-in the form of the writer to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>.</p>
-</section>
+    <h3 id="classes">
+Classes
+</h3>
       <h4><a class="xref" href="DotNext.Buffers.BufferHelpers.html">BufferHelpers</a></h4>
       <section><p>Represents helper methods to work with various buffer representations.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.BufferWriter.html">BufferWriter</a></h4>
-      <section><p>Represents extension methods for writting typed data into buffer.</p>
+      <section><p>Represents extension methods for writing typed data into buffer.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.BufferWriter-1.html">BufferWriter&lt;T&gt;</a></h4>
-      <section><p>Represents memory-backed output sink which <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> data can be written.</p>
+      <section><p>Represents memory-backed output sink which <code class="typeparamref">T</code> data can be written.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.MemoryAllocator.html">MemoryAllocator</a></h4>
       <section><p>Represents interop layer between .NET memory pools
@@ -117,14 +114,19 @@ and <a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocato
       <h4><a class="xref" href="DotNext.Buffers.UnmanagedMemoryPool-1.html">UnmanagedMemoryPool&lt;T&gt;</a></h4>
       <section><p>Represents pool of unmanaged memory.</p>
 </section>
-    <h3 id="structs">Structs
-  </h3>
+    <h3 id="structs">
+Structs
+</h3>
+      <h4><a class="xref" href="DotNext.Buffers.BufferConsumer-1.html">BufferConsumer&lt;T&gt;</a></h4>
+      <section><p>Represents implementation of <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>
+in the form of the writer to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>.</p>
+</section>
       <h4><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim&lt;T&gt;</a></h4>
       <section><p>Represents stack-allocated buffer writer.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.DelegatingReadOnlySpanConsumer-2.html">DelegatingReadOnlySpanConsumer&lt;T, TArg&gt;</a></h4>
       <section><p>Represents implementation of <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a> that delegates
-invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction&lt;T,TArg&gt;</a>.</p>
+invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction&lt;T, TArg&gt;</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner&lt;T&gt;</a></h4>
       <section><p>Represents unified representation of the memory rented using various
@@ -141,16 +143,17 @@ on the stack or heap.</p>
       <section><p>Represents typed function pointer implementing <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.SpanReader-1.html">SpanReader&lt;T&gt;</a></h4>
-      <section><p>Represents simple memory reader backed by <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
+      <section><p>Represents simple memory reader backed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.SpanWriter-1.html">SpanWriter&lt;T&gt;</a></h4>
-      <section><p>Represents simple memory writer backed by <see cref="!:Span&lt;T>"></see>.</p>
+      <section><p>Represents simple memory writer backed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.Enumerator.html">SparseBufferWriter&lt;T&gt;.Enumerator</a></h4>
       <section><p>Represents enumerator over memory segments.</p>
 </section>
-    <h3 id="interfaces">Interfaces
-  </h3>
+    <h3 id="interfaces">
+Interfaces
+</h3>
       <h4><a class="xref" href="DotNext.Buffers.IBinaryFormattable-1.html">IBinaryFormattable&lt;TSelf&gt;</a></h4>
       <section><p>Represents an object that can be converted to and restored from the binary representation.</p>
 </section>
@@ -162,26 +165,30 @@ on the stack or heap.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a></h4>
       <section><p>Represents functional interface returning no value
-and accepting the single argument of type <see cref="!:ReadOnlySpan&lt;T>"></see>.</p>
+and accepting the single argument of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.IUnmanagedMemoryOwner-1.html">IUnmanagedMemoryOwner&lt;T&gt;</a></h4>
       <section><p>Represents unmanaged memory access that allows
-to obtain <see cref="!:Memory&lt;T>"></see> pointing to the
+to obtain <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> pointing to the
 unmanaged memory.</p>
 </section>
-    <h3 id="enums">Enums
-  </h3>
+    <h3 id="enums">
+Enums
+</h3>
       <h4><a class="xref" href="DotNext.Buffers.SparseBufferGrowth.html">SparseBufferGrowth</a></h4>
       <section><p>Determines how the size of the subsequent memory chunk must be calculated.</p>
 </section>
-    <h3 id="delegates">Delegates
-  </h3>
+    <h3 id="delegates">
+Delegates
+</h3>
       <h4><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a></h4>
       <section><p>Represents memory allocator.</p>
 </section>
+
+
 </article>
           </div>
-          
+
           <div class="hidden-sm col-md-2" role="complementary">
             <div class="sideaffix">
               <div class="contribution">
@@ -200,7 +207,7 @@ unmanaged memory.</p>
                   <i aria-hidden="true">☾</i>
                 </div>
               </div>
-          
+
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
               <h5>In This Article</h5>
               <div></div>
@@ -210,7 +217,7 @@ unmanaged memory.</p>
           </div>
         </div>
       </div>
-      
+
       <footer>
         <div class="grad-bottom"></div>
         <div class="footer">
@@ -219,8 +226,8 @@ unmanaged memory.</p>
               <a href="#top">Back to top</a>
             </span>
             <div class="pull-left">
-              Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-              
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
             </div>
             <div class="toggle-mode pull-right visible-sm visible-xs">
               <div class="icon">
@@ -238,8 +245,8 @@ unmanaged memory.</p>
         </div>
         <script type="text/javascript" src="../styles/toggle-theme.js"></script>
       </footer>    </div>
-    
-    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
     <script type="text/javascript" src="../styles/docfx.js"></script>
     <script type="text/javascript" src="../styles/main.js"></script>
   </body>
