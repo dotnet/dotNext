@@ -11,7 +11,7 @@ public interface IOptionMonad<T> : ISupplier<object?>
     /// <summary>
     /// Gets the value stored in this container.
     /// </summary>
-    /// <returns>The value stored in this container; or <see langword="null"/> if the value is unavaible.</returns>
+    /// <returns>The value stored in this container; or <see langword="null"/> if the value is unavailable.</returns>
     object? ISupplier<object?>.Invoke() => TryGet(out T? result) ? result : null;
 
     /// <summary>

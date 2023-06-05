@@ -61,7 +61,7 @@ public static class TaskCompletionPipe
     /// <typeparam name="T">The type of the elements in the consuming collection.</typeparam>
     /// <param name="pipe">The task completion pipe with typed tasks.</param>
     /// <returns>The asynchronous consuming collection.</returns>
-    public static IAsyncEnumerable<T> GetConsumer<T>(this TaskCompletionPipe<Task<T>> pipe)
+    public static IAsyncEnumerable<T> GetConsumer<T>(this TaskCompletionPipe<Task<T>> pipe) // TODO: Change to struct and remove IDynamicInterfaceCastable
     {
         // dynamic interface dispatch must be compatible with AOT. Thus, we cannot use things like Type.MakeGenericType
         TaskCompletionPipe<Task<T>>.RuntimeEnumerableInfo ??= new(Intrinsics.TypeOf<IAsyncEnumerable<T>>(), Intrinsics.TypeOf<ITypedTaskCompletionPipe<T>>());

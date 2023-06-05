@@ -29,7 +29,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         Term = term;
     }
 
-    private async Task EndVoting(IAsyncEnumerable<(TMember, long, VotingResult)> voters)
+    private async Task EndVoting(IAsyncEnumerable<(TMember, long, VotingResult)> voters, CancellationToken token)
     {
         var votes = 0;
         var localMember = default(TMember);
@@ -69,7 +69,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         }
 
         Logger.VotingCompleted(votes, Term);
-        if (votingCancellation.IsCancellationRequested || votes <= 0 || localMember is null)
+        if (token.IsCancellationRequested || votes <= 0 || localMember is null)
             MoveToFollowerState(randomizeTimeout: true); // no clear consensus
         else
             MoveToLeaderState(localMember); // becomes a leader
@@ -91,7 +91,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
 
         voters.Complete();
         votingCancellation.CancelAfter(timeout);
-        votingTask = EndVoting(voters.GetConsumer());
+        votingTask = EndVoting(voters.GetConsumer(), votingCancellation.Token);
 
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
         static async Task<(TMember, long, VotingResult)> VoteAsync(TMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)

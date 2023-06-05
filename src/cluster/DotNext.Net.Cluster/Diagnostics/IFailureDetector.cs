@@ -2,7 +2,7 @@ namespace DotNext.Diagnostics;
 
 /// <summary>
 /// Represents failure detector that can be used to determine availability of the particular resource in
-/// distributed environment such as a cluser to peer-to-peer network.
+/// distributed environment such as a cluster to peer-to-peer network.
 /// </summary>
 public interface IFailureDetector : IResettable
 {

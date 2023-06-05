@@ -4,73 +4,84 @@ namespace DotNext.Runtime.Caching;
 
 public partial class ConcurrentCache<TKey, TValue>
 {
-    private sealed class Command
+    private class Command
     {
-        private Func<KeyValuePair, KeyValuePair?>? invoker;
-        private KeyValuePair? target;
-        internal volatile Command? Next;
+        internal Command? Next;
 
-        internal void Initialize(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
+        internal virtual KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
         {
-            this.invoker = invoker;
+            Debug.Fail("Should not be called");
+            return null;
+        }
+    }
+
+    private abstract class CacheCommand : Command
+    {
+        private protected readonly KeyValuePair target;
+
+        private protected CacheCommand(KeyValuePair target)
+        {
+            Debug.Assert(target is not null);
+
             this.target = target;
         }
 
-        internal void Clear()
-        {
-            invoker = null;
-            target = null;
-        }
-
-        internal KeyValuePair? Invoke()
-        {
-            Debug.Assert(target is not null);
-            Debug.Assert(invoker is not null);
-
-            return invoker.Invoke(target);
-        }
+        internal override abstract KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache);
     }
 
-    private volatile bool rateLimitReached;
-    private volatile Command commandQueueWritePosition;
-    private Command commandQueueReadPosition;
-
-    // Command pool fields
-    private Command? pooledCommand; // volatile
-
-    private Command RentCommand()
+    private sealed class AddCommand : CacheCommand
     {
-        Command? current, next = Volatile.Read(ref pooledCommand);
-        do
+        internal AddCommand(KeyValuePair target)
+            : base(target)
         {
-            if (next is null)
-            {
-                current = new();
-                break;
-            }
-
-            current = next;
         }
-        while (!ReferenceEquals(next = Interlocked.CompareExchange(ref pooledCommand, current.Next, current), current));
 
-        current.Next = null;
-        return current;
+        internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
+            => target.Removed ? null : cache.OnAdd(target);
     }
 
-    private void ReturnCommand(Command command)
+    private sealed class RemoveCommand : CacheCommand
     {
-        // this method doesn't ensure that the command returned back to the pool
-        // this assumption is needed to avoid spin-lock inside of the monitor lock
-        command.Clear();
-        var currentValue = command.Next = Volatile.Read(ref pooledCommand);
-        Interlocked.CompareExchange(ref pooledCommand, command, currentValue);
+        internal RemoveCommand(KeyValuePair target)
+            : base(target)
+        {
+        }
+
+        internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
+            => target.Removed ? null : cache.OnRemove(target);
     }
 
-    private void EnqueueAndDrain(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
+    private sealed class ReadLFUCommand : CacheCommand
+    {
+        internal ReadLFUCommand(KeyValuePair target)
+            : base(target)
+        {
+        }
+
+        internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
+            => target.Removed ? null : cache.OnReadLFU(target);
+    }
+
+    private sealed class ReadLRUCommand : CacheCommand
+    {
+        internal ReadLRUCommand(KeyValuePair target)
+            : base(target)
+        {
+        }
+
+        internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
+            => cache.OnReadLRU(target);
+    }
+
+    private bool rateLimitReached;
+    private Command commandQueueWritePosition, commandQueueReadPosition;
+
+    private unsafe void EnqueueAndDrain(Command cmd)
     {
         // enqueue
-        Enqueue(invoker, target);
+        Interlocked.Exchange(ref commandQueueWritePosition, cmd).Next = cmd;
 
+        // drain
         if (TryEnterEvictionLock())
         {
             KeyValuePair? evictedPair;
@@ -105,44 +116,27 @@ public partial class ConcurrentCache<TKey, TValue>
         return result;
     }
 
-    private void Enqueue(Func<KeyValuePair, KeyValuePair?> invoker, KeyValuePair target)
-    {
-        var command = RentCommand();
-        command.Initialize(invoker, target);
-        Interlocked.Exchange(ref commandQueueWritePosition, command).Next = command;
-    }
-
     private KeyValuePair? DrainQueue()
     {
         Debug.Assert(Monitor.IsEntered(evictionLock));
 
         KeyValuePair? evictedHead = null, evictedTail = null;
-        var rateLimitReached = false;
         var command = commandQueueReadPosition.Next;
 
-        for (var readerCounter = 0; command is not null; commandQueueReadPosition = command, command = command.Next, readerCounter++)
+        for (var readerCounter = 0; command is not null && readerCounter < concurrencyLevel; commandQueueReadPosition = command, command = command.Next, readerCounter++)
         {
-            if (readerCounter < concurrencyLevel)
+            // interpret command
+            if (command.Invoke(this) is { } evictedPair && evictionHandler is not null)
             {
-                // interpret command
-                if (command.Invoke() is KeyValuePair evictedPair && evictionHandler is not null)
-                {
-                    Debug.Assert(evictedPair.Next is null);
+                Debug.Assert(evictedPair.Next is null);
 
-                    AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
-                }
+                AddToEvictionList(evictedPair, ref evictedHead, ref evictedTail);
+            }
 
-                // commandQueueReadPosition points to the previous command that can be returned to the pool
-                ReturnCommand(commandQueueReadPosition);
-            }
-            else
-            {
-                rateLimitReached = true;
-                break;
-            }
+            commandQueueReadPosition.Next = null; // help GC
         }
 
-        this.rateLimitReached = rateLimitReached;
+        rateLimitReached = command is not null;
         return evictedHead;
 
         static void AddToEvictionList(KeyValuePair pair, ref KeyValuePair? head, ref KeyValuePair? tail)

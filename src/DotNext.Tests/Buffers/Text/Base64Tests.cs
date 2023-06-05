@@ -83,10 +83,9 @@ namespace DotNext.Buffers.Text
         [Fact]
         public static void DecodeInvalidBlock()
         {
-            var base64 = Encoding.UTF8.GetBytes("AB");
             var decoder = new Base64Decoder();
             using var writer = new PooledArrayBufferWriter<byte>();
-            decoder.DecodeFromUtf8(base64, writer);
+            decoder.DecodeFromUtf8("AB"u8, writer);
             True(decoder.NeedMoreData);
             Equal(0, writer.WrittenCount);
         }
@@ -530,6 +529,58 @@ namespace DotNext.Buffers.Text
                 await destination.FlushAsync();
                 Equal(expected, destination.ToArray());
             }
+        }
+
+        [Fact]
+        public static void CheckEndOfUnicodeData()
+        {
+            var decoder = new Base64Decoder();
+            var owner = decoder.DecodeFromUtf16("AA==");
+            owner.Dispose();
+            False(decoder.NeedMoreData);
+
+            Throws<FormatException>(() => decoder.DecodeFromUtf16("A=="));
+        }
+
+        [Fact]
+        public static void CheckEndOfUnicodeDataWithConsumer()
+        {
+            var decoder = new Base64Decoder();
+            var writer = new ArrayBufferWriter<byte>();
+            decoder.DecodeFromUtf16("AA==", Write, writer);
+            False(decoder.NeedMoreData);
+            Equal(1, writer.WrittenCount);
+
+            Throws<FormatException>(() => decoder.DecodeFromUtf16("A==", Write, writer));
+
+            static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
+                => output.Write(input);
+        }
+
+        [Fact]
+        public static void CheckEndOfUtf8Data()
+        {
+            var decoder = new Base64Decoder();
+            var owner = decoder.DecodeFromUtf8("AA=="u8);
+            owner.Dispose();
+            False(decoder.NeedMoreData);
+
+            Throws<FormatException>(() => decoder.DecodeFromUtf8("A=="u8));
+        }
+
+        [Fact]
+        public static void CheckEndOfUtf8DataWithConsumer()
+        {
+            var decoder = new Base64Decoder();
+            var writer = new ArrayBufferWriter<byte>();
+            decoder.DecodeFromUtf8("AA=="u8, Write, writer);
+            False(decoder.NeedMoreData);
+            Equal(1, writer.WrittenCount);
+
+            Throws<FormatException>(() => decoder.DecodeFromUtf8("A=="u8, Write, writer));
+
+            static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
+                => output.Write(input);
         }
     }
 }

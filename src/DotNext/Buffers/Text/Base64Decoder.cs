@@ -19,15 +19,16 @@ namespace DotNext.Buffers.Text;
 public partial struct Base64Decoder : IResettable
 {
     private const int DecodingBufferSize = 258;
+    private const int GotPaddingFlag = -1;
 
     // 8 bytes buffer for decoding base64
     // for utf8 encoding we need just 4 bytes
     // but for Unicode we need 8 bytes, because max chars in reserve is 4 (4 X sizeof(char) == 8 bytes)
     private ulong reservedBuffer;
-    private int reservedBufferSize;
+    private int reservedBufferSize; // negative if EOS reached
 
     /// <summary>
-    /// Indicates that decoders expected additional data to decode.
+    /// Indicates that the decoder expects additional data to decode.
     /// </summary>
     public readonly bool NeedMoreData => reservedBufferSize > 0;
 

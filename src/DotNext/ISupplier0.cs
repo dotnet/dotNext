@@ -10,7 +10,7 @@ using Runtime.CompilerServices;
 /// <remarks>
 /// Functional interface can be used to pass
 /// some application logic without heap allocation in
-/// contrast to regulat delegates. Additionally, implementation
+/// contrast to regular delegates. Additionally, implementation
 /// of functional interface may have encapsulated data acting
 /// as closure which is not allocated on the heap.
 /// </remarks>

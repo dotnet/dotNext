@@ -85,6 +85,21 @@ namespace DotNext.Runtime.Caching
         }
 
         [Fact]
+        public static async Task OverflowParallel()
+        {
+            var cache = new ConcurrentCache<int, string>(3, CacheEvictionPolicy.LFU);
+
+            await Task.WhenAll(Task.Run(FillCache), Task.Run(FillCache), Task.Run(FillCache));
+            Equal(3, cache.Count);
+
+            void FillCache()
+            {
+                for (var i = 0; i < 5; i++)
+                    cache[i] = string.Empty;
+            }
+        }
+
+        [Fact]
         public static void Enumerators()
         {
             var cache = new ConcurrentCache<int, string>(3, 3, CacheEvictionPolicy.LRU);
@@ -229,6 +244,26 @@ namespace DotNext.Runtime.Caching
                 Equal(new(0, 0D), snapshot[1]);
                 Equal(new(1, 1D), snapshot[0]);
             }
+        }
+
+        [Fact]
+        public static void StressTest()
+        {
+            const int capacity = 10_000;
+            var cache = new ConcurrentCache<string, string>(10_000, CacheEvictionPolicy.LFU);
+
+            Enumerable.Range(0, 14).AsParallel().ForAll(_ =>
+            {
+                foreach (int i in Enumerable.Range(0, capacity * 10))
+                {
+                    string num = Guid.NewGuid().ToString();
+                    if (cache.TryGetValue(num, out var _))
+                        continue;
+                    cache[num] = num;
+                }
+            });
+
+            Equal(capacity, cache.Count);
         }
     }
 }

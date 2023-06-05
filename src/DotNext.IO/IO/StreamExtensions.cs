@@ -1302,7 +1302,7 @@ public static partial class StreamExtensions
     /// <param name="bufferSize">The buffer size.</param>
     /// <param name="allocator">The allocator of the buffer.</param>
     /// <param name="token">The token that can be used to cancel the enumeration.</param>
-    /// <returns>A collection of memort blocks that can be obtained sequentially to read a whole stream.</returns>
+    /// <returns>A collection of memory blocks that can be obtained sequentially to read a whole stream.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than 1.</exception>
     public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this Stream stream, int bufferSize, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
     {

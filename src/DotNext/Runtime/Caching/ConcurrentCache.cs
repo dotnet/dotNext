@@ -5,13 +5,13 @@ using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.Runtime.Caching;
 
 /// <summary>
-/// Represents concurrect cache.
+/// Represents concurrent cache.
 /// </summary>
 /// <remarks>
 /// The cache provides O(1) lookup performance if there is no hash collision. Asymptotic complexity of other
 /// operations are same as for <see cref="System.Collections.Concurrent.ConcurrentDictionary{TKey, TValue}"/> class.
-/// The cache has the following architecture to deal with lock contention: the access to the concurrect dictionary is
-/// synchronouse while the access to the eviction deque is asynchronous. All actions need to be applied to the deque
+/// The cache has the following architecture to deal with lock contention: the access to the concurrent dictionary is
+/// synchronous while the access to the eviction deque is asynchronous. All actions need to be applied to the deque
 /// are delayed and distributed across concurrent threads. Thus, the deque is weakly consistent with the dictionary.
 /// </remarks>
 /// <typeparam name="TKey">The type of the keys.</typeparam>
@@ -41,6 +41,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     }
 
     private readonly int concurrencyLevel;
+    private unsafe readonly delegate*<KeyValuePair, Command> addCommand, readCommand;
 
     /// <summary>
     /// Initializes a new empty cache.
@@ -62,22 +63,28 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         if (concurrencyLevel < 1)
             throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
 
-        if (!Enum.IsDefined<CacheEvictionPolicy>(evictionPolicy))
-            throw new ArgumentOutOfRangeException(nameof(evictionPolicy));
-
         buckets = new KeyValuePair?[capacity];
         Span.Initialize<object>(locks = new object[capacity]);
         this.keyComparer = keyComparer;
         this.concurrencyLevel = concurrencyLevel;
-        addCommand = OnAdd;
-        removeCommand = OnRemove;
-        readCommand = evictionPolicy switch
+        unsafe
         {
-            CacheEvictionPolicy.LFU => OnReadLFU,
-            _ => OnReadLRU,
-        };
+            addCommand = &OnAdd;
+            readCommand = evictionPolicy switch
+            {
+                CacheEvictionPolicy.LRU => &OnReadLRU,
+                CacheEvictionPolicy.LFU => &OnReadLFU,
+                _ => throw new ArgumentOutOfRangeException(nameof(evictionPolicy)),
+            };
+        }
 
         commandQueueReadPosition = commandQueueWritePosition = new();
+
+        static Command OnAdd(KeyValuePair target) => new AddCommand(target);
+
+        static Command OnReadLFU(KeyValuePair target) => new ReadLFUCommand(target);
+
+        static Command OnReadLRU(KeyValuePair target) => new ReadLRUCommand(target);
     }
 
     /// <summary>

@@ -301,7 +301,7 @@ public partial class RaftCluster
         /// Gets or sets the maximum number of parallel requests that can be handled simultaneously.
         /// </summary>
         /// <remarks>
-        /// By default, the value based on the number of cluster members.
+        /// By default, it is 10.
         /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException">Supplied value is equal to or less than zero.</exception>
         public int ServerBacklog
@@ -490,7 +490,7 @@ public partial class RaftCluster
         }
 
         /// <summary>
-        /// Gets or sets timeout used for graceful shtudown of the server.
+        /// Gets or sets timeout used for graceful shutdown of the server.
         /// </summary>
         public TimeSpan GracefulShutdownTimeout
         {

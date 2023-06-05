@@ -591,5 +591,5 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCallers?.Unwind();
     }
 
-    private protected override bool IsReadyToDispose => state.IsWriteLockAllowed && WaitQueueHead is null;
+    private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && WaitQueueHead is null;
 }

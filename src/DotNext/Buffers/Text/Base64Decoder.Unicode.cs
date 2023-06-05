@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -9,6 +10,8 @@ using Buffers;
 
 public partial struct Base64Decoder
 {
+    private const char PaddingChar = '=';
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Span<char> AsChars(ref ulong value)
         => MemoryMarshal.CreateSpan(ref Unsafe.As<ulong, char>(ref value), sizeof(ulong) / sizeof(char));
@@ -21,11 +24,14 @@ public partial struct Base64Decoder
         return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<ulong, char>(ref Unsafe.AsRef(in value)), length);
     }
 
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010", Justification = "False positive")]
     private bool DecodeFromUtf16Core<TWriter>(scoped ReadOnlySpan<char> chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
+        Debug.Assert(reservedBufferSize >= 0);
+
         var size = chars.Length & 3;
-        if (size > 0)
+        if (size is not 0)
         {
             // size of the rest
             size = chars.Length - size;
@@ -34,23 +40,30 @@ public partial struct Base64Decoder
             reservedBufferSize = rest.Length; // keep the number of chars, not bytes
             chars = chars.Slice(0, size);
         }
+        else if (chars is [.., PaddingChar])
+        {
+            reservedBufferSize = GotPaddingFlag;
+        }
         else
         {
-            Reset();
+            reservedBufferSize = 0;
         }
 
-        // 4 characters => 3 bytes
-        if (!Convert.TryFromBase64Chars(chars, writer.GetSpan(chars.Length), out size))
-            return false;
+        bool result;
 
-        writer.Advance(size);
-        return true;
+        // 4 characters => 3 bytes
+        if (result = Convert.TryFromBase64Chars(chars, writer.GetSpan(chars.Length), out size))
+            writer.Advance(size);
+
+        return result;
     }
 
     [SkipLocalsInit]
     private bool CopyAndDecodeFromUtf16<TWriter>(scoped ReadOnlySpan<char> chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
     {
+        Debug.Assert(reservedBufferSize > 0);
+
         var newSize = reservedBufferSize + chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
         AsChars(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
@@ -61,7 +74,14 @@ public partial struct Base64Decoder
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool DecodeFromUtf16<TWriter>(scoped ReadOnlySpan<char> chars, scoped ref TWriter writer)
         where TWriter : notnull, IBufferWriter<byte>
-        => NeedMoreData ? CopyAndDecodeFromUtf16(chars, ref writer) : DecodeFromUtf16Core(chars, ref writer);
+    {
+        return reservedBufferSize switch
+        {
+            GotPaddingFlag => false,
+            0 => DecodeFromUtf16Core(chars, ref writer),
+            _ => CopyAndDecodeFromUtf16(chars, ref writer),
+        };
+    }
 
     /// <summary>
     /// Decodes base64 characters.
@@ -118,31 +138,32 @@ public partial struct Base64Decoder
     private void DecodeFromUtf16Core<TConsumer>(scoped ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
+        Debug.Assert(reservedBufferSize >= 0);
+
         const int maxInputBlockSize = (DecodingBufferSize / 3) * 4;
         Span<byte> buffer = stackalloc byte[DecodingBufferSize];
 
-    consume_next_chunk:
-        var chunk = chars.TrimLength(maxInputBlockSize);
-        if (Decode(chunk, buffer, out var consumed, out var produced))
+        do
         {
-            Reset();
-        }
-        else
-        {
-            reservedBufferSize = chunk.Length - consumed;
-            Debug.Assert(reservedBufferSize <= 4);
-            chunk.Slice(consumed).CopyTo(AsChars(ref reservedBuffer));
-        }
+            var chunk = chars.TrimLength(maxInputBlockSize);
+            if (!Decode(chunk, buffer, out var consumed, out var produced, ref reservedBufferSize))
+            {
+                reservedBufferSize = chunk.Length - consumed;
+                Debug.Assert(reservedBufferSize <= 4);
+                chunk.Slice(consumed).CopyTo(AsChars(ref reservedBuffer));
+            }
 
-        if (consumed > 0 && produced > 0)
-        {
+            if (consumed is 0 || produced is 0)
+                break;
+
             output.Invoke(buffer.Slice(0, produced));
             chars = chars.Slice(consumed);
-            goto consume_next_chunk;
         }
+        while (reservedBufferSize is not GotPaddingFlag);
 
         // true - encoding completed, false - need more data
-        static bool Decode(scoped ReadOnlySpan<char> input, scoped Span<byte> output, out int consumedChars, out int producedBytes)
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010", Justification = "False positive")]
+        static bool Decode(scoped ReadOnlySpan<char> input, scoped Span<byte> output, out int consumedChars, out int producedBytes, ref int reservedBufferSize)
         {
             Debug.Assert(output.Length == DecodingBufferSize);
             Debug.Assert(input.Length <= maxInputBlockSize);
@@ -151,9 +172,14 @@ public partial struct Base64Decoder
 
             // x & 3 is the same as x % 4
             if (result = (rest = input.Length & 3) is 0)
+            {
+                reservedBufferSize = input is [.., PaddingChar] ? GotPaddingFlag : 0;
                 consumedChars = input.Length;
+            }
             else
+            {
                 input = input.Slice(0, consumedChars = input.Length - rest);
+            }
 
             return Convert.TryFromBase64Chars(input, output, out producedBytes) ?
                 result :
@@ -165,6 +191,8 @@ public partial struct Base64Decoder
     private void CopyAndDecodeFromUtf16<TConsumer>(scoped ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
+        Debug.Assert(reservedBufferSize > 0);
+
         var newSize = reservedBufferSize + chars.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc char[newSize] : new MemoryRental<char>(newSize);
         AsChars(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
@@ -182,10 +210,17 @@ public partial struct Base64Decoder
     public void DecodeFromUtf16<TConsumer>(scoped ReadOnlySpan<char> chars, TConsumer output)
         where TConsumer : notnull, IReadOnlySpanConsumer<byte>
     {
-        if (NeedMoreData)
-            CopyAndDecodeFromUtf16(chars, output);
-        else
-            DecodeFromUtf16Core(chars, output);
+        switch (reservedBufferSize)
+        {
+            case GotPaddingFlag:
+                throw new FormatException(ExceptionMessages.MalformedBase64);
+            case 0:
+                DecodeFromUtf16Core(chars, output);
+                break;
+            default:
+                CopyAndDecodeFromUtf16(chars, output);
+                break;
+        }
     }
 
     /// <summary>
