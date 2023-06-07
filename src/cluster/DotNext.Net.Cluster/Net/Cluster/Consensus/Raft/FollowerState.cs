@@ -88,7 +88,7 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         }
         catch (Exception e)
         {
-            Logger.FollowerStateExitedFailed(e);
+            Logger.FollowerStateExitedWithError(e);
         }
         finally
         {

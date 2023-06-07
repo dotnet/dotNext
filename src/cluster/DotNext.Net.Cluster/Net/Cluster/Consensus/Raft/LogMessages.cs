@@ -281,9 +281,9 @@ internal static partial class LogMessages
         EventIdOffset + 33,
         LogLevel.Debug,
         "Follower loop stopped with error",
-        EventName = $"{EventIdPrefix}.{nameof(FollowerStateExitedFailed)}"
+        EventName = $"{EventIdPrefix}.{nameof(FollowerStateExitedWithError)}"
     )]
-    public static partial void FollowerStateExitedFailed(this ILogger logger, Exception e);
+    public static partial void FollowerStateExitedWithError(this ILogger logger, Exception e);
 
     [LoggerMessage(
         EventIdOffset + 34,
