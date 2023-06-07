@@ -37,7 +37,6 @@ public partial class RaftCluster<TMember>
         {
             MemberList tmp;
 
-            // O(n) complexity, but it's fine since the number of nodes is relatively small (not even hundreds)
             if (!ContainsKey(member.Id) && (tmp = new(this)).TryAdd(member.Id, member))
             {
                 list = tmp;
@@ -52,7 +51,6 @@ public partial class RaftCluster<TMember>
         {
             MemberList tmp;
 
-            // O(n) complexity, but it's fine since the number of nodes is relatively small (not even hundreds)
             if (ContainsKey(id) && (tmp = new(this)).Remove(id, out var result))
             {
                 list = tmp;
