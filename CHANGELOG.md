@@ -1,6 +1,20 @@
 Release Notes
 ====
 
+# 06-07-2023
+<a href="https://www.nuget.org/packages/dotnext/4.12.2">DotNext 4.12.2</a>
+* Fixed [169](https://github.com/dotnet/dotNext/issues/169)
+* Fixed concurrency between add and update operations of [ConcurrentCache](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Caching.ConcurrentCache-2.html) class
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.2">DotNext.Net.Cluster 4.12.2</a>
+* Fixed [165](https://github.com/dotnet/dotNext/issues/165)
+* Merged [170](https://github.com/dotnet/dotNext/pull/170)
+* Fixed [168](https://github.com/dotnet/dotNext/issues/168)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.2">DotNext.AspNetCore.Cluster 4.12.2</a>
+* Updated dependencies
+
 # 05-29-2023
 <a href="https://www.nuget.org/packages/dotnext/4.12.1">DotNext 4.12.1</a>
 * Fixed [162](https://github.com/dotnet/dotNext/issues/162)
