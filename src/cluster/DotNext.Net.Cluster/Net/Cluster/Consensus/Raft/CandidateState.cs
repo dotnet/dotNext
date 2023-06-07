@@ -32,7 +32,6 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     private async Task VoteAsync(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         // Perf: reuse index and related term once for all members
-        var currentTerm = Term;
         var lastIndex = auditTrail.LastUncommittedEntryIndex;
         var lastTerm = await auditTrail.GetTermAsync(lastIndex, votingCancellation.Token).ConfigureAwait(false);
 
