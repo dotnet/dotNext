@@ -61,12 +61,15 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         }
         else
         {
+            refreshEvent.Reset();
             timedOut = false;
             tracker = Track(timeout, token);
         }
     }
 
     internal bool IsExpired => timedOut;
+
+    internal bool IsRefreshRequested => refreshEvent.IsSet;
 
     internal void Refresh()
     {

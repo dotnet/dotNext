@@ -942,11 +942,16 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 Logger.TransitionToCandidateStateStarted(Term, members.Count);
 
-                // if term changed after lock then assumes that leader will be updated soon
-                if (currentTerm == auditTrail.Term)
+                if (currentTerm == auditTrail.Term && !followerState.IsRefreshRequested)
+                {
                     Leader = null;
+                }
                 else
+                {
+                    // if term changed after lock then assumes that leader will be updated soon, or
+                    // handle concurrency with Vote when the current state is Follower and timeout is about to be refreshed
                     readyForTransition = false;
+                }
 
                 if (readyForTransition && TryGetLocalMember()?.Id is { } localMemberId)
                 {
