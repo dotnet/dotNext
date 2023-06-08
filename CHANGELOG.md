@@ -1,6 +1,29 @@
 Release Notes
 ====
 
+# 06-08-2023
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.2">DotNext.Metaprogramming 4.12.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.12.2">DotNext.Unsafe 4.12.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.12.2">DotNext.Threading 4.12.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.12.2">DotNext.IO 4.12.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.3">DotNext.Net.Cluster 4.12.3</a>
+* Fixed [165](https://github.com/dotnet/dotNext/issues/165)
+* Merged [170](https://github.com/dotnet/dotNext/pull/170)
+* Fixed [168](https://github.com/dotnet/dotNext/issues/168)
+* Fixed [173](https://github.com/dotnet/dotNext/issues/173)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.3">DotNext.AspNetCore.Cluster 4.12.3</a>
+* Updated dependencies
+
 # 06-07-2023
 <a href="https://www.nuget.org/packages/dotnext/4.12.2">DotNext 4.12.2</a>
 * Fixed [169](https://github.com/dotnet/dotNext/issues/169)
