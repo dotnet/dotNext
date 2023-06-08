@@ -29,9 +29,9 @@ public partial class ConcurrentCache<TKey, TValue>
         internal override abstract KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache);
     }
 
-    private sealed class AddLFUCommand : CacheCommand
+    private sealed class AddOrReadLFUCommand : CacheCommand
     {
-        internal AddLFUCommand(KeyValuePair target)
+        internal AddOrReadLFUCommand(KeyValuePair target)
             : base(target)
         {
         }
@@ -44,9 +44,9 @@ public partial class ConcurrentCache<TKey, TValue>
         };
     }
 
-    private sealed class AddLRUCommand : CacheCommand
+    private sealed class AddOrReadLRUCommand : CacheCommand
     {
-        internal AddLRUCommand(KeyValuePair target)
+        internal AddOrReadLRUCommand(KeyValuePair target)
             : base(target)
         {
         }
@@ -68,28 +68,6 @@ public partial class ConcurrentCache<TKey, TValue>
 
         internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
             => target.State is not KeyValuePairState.Removed ? cache.OnRemove(target) : null;
-    }
-
-    private sealed class ReadLFUCommand : CacheCommand
-    {
-        internal ReadLFUCommand(KeyValuePair target)
-            : base(target)
-        {
-        }
-
-        internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
-            => target.State is not KeyValuePairState.Removed ? cache.OnReadLFU(target) : null;
-    }
-
-    private sealed class ReadLRUCommand : CacheCommand
-    {
-        internal ReadLRUCommand(KeyValuePair target)
-            : base(target)
-        {
-        }
-
-        internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache)
-            => target.State is not KeyValuePairState.Removed ? cache.OnReadLRU(target) : null;
     }
 
     private bool rateLimitReached;

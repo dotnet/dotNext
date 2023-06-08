@@ -41,7 +41,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     }
 
     private readonly int concurrencyLevel;
-    private unsafe readonly delegate*<KeyValuePair, Command> addCommand, readCommand;
+    private unsafe readonly delegate*<KeyValuePair, Command> addOrReadCommand;
 
     /// <summary>
     /// Initializes a new empty cache.
@@ -69,30 +69,19 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         this.concurrencyLevel = concurrencyLevel;
         unsafe
         {
-            switch (evictionPolicy)
+            addOrReadCommand = evictionPolicy switch
             {
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(evictionPolicy));
-                case CacheEvictionPolicy.LRU:
-                    addCommand = &OnAddLRU;
-                    readCommand = &OnReadLRU;
-                    break;
-                case CacheEvictionPolicy.LFU:
-                    addCommand = &OnAddLFU;
-                    readCommand = &OnReadLFU;
-                    break;
-            }
+                CacheEvictionPolicy.LRU => &OnAddOrReadLRU,
+                CacheEvictionPolicy.LFU => &OnAddOrReadLFU,
+                _ => throw new ArgumentOutOfRangeException(nameof(evictionPolicy)),
+            };
         }
 
         commandQueueReadPosition = commandQueueWritePosition = new();
 
-        static Command OnAddLFU(KeyValuePair target) => new AddLFUCommand(target);
+        static Command OnAddOrReadLFU(KeyValuePair target) => new AddOrReadLFUCommand(target);
 
-        static Command OnAddLRU(KeyValuePair target) => new AddLRUCommand(target);
-
-        static Command OnReadLFU(KeyValuePair target) => new ReadLFUCommand(target);
-
-        static Command OnReadLRU(KeyValuePair target) => new ReadLRUCommand(target);
+        static Command OnAddOrReadLRU(KeyValuePair target) => new AddOrReadLRUCommand(target);
     }
 
     /// <summary>

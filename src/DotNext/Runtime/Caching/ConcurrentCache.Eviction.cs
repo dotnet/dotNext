@@ -34,7 +34,7 @@ public partial class ConcurrentCache<TKey, TValue>
     private KeyValuePair? OnReadLFU(KeyValuePair target)
     {
         Debug.Assert(Monitor.IsEntered(evictionLock));
-        Debug.Assert(target.State is not KeyValuePairState.Removed);
+        Debug.Assert(target.State is KeyValuePairState.Consumed);
 
         var parent = target.Links.Previous?.Links.Previous;
         Debug.Assert(ReferenceEquals(parent, target) is false);
