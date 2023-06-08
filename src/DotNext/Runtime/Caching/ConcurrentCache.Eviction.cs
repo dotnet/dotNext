@@ -12,9 +12,10 @@ public partial class ConcurrentCache<TKey, TValue>
     private KeyValuePair? OnAdd(KeyValuePair target)
     {
         Debug.Assert(Monitor.IsEntered(evictionLock));
-        Debug.Assert(target.State is KeyValuePairState.Added);
+        Debug.Assert(target.State is KeyValuePairState.Created);
 
         AddFirst(target);
+        target.State = KeyValuePairState.Consumed;
         evictionListSize += 1;
         return evictionListSize > buckets.Length ? Evict() : null;
     }
@@ -44,7 +45,6 @@ public partial class ConcurrentCache<TKey, TValue>
         else
             Append(parent, target);
 
-        target.State = KeyValuePairState.Touched;
         return null;
     }
 
@@ -55,7 +55,6 @@ public partial class ConcurrentCache<TKey, TValue>
 
         Detach(target);
         AddFirst(target);
-        target.State = KeyValuePairState.Touched;
         return null;
     }
 

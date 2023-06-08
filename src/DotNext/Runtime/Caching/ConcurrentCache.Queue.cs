@@ -38,8 +38,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
         internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache) => target.State switch
         {
-            KeyValuePairState.Added => cache.OnAdd(target),
-            KeyValuePairState.Touched => cache.OnReadLFU(target),
+            KeyValuePairState.Created => cache.OnAdd(target),
+            KeyValuePairState.Consumed => cache.OnReadLFU(target),
             _ => null,
         };
     }
@@ -53,8 +53,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
         internal override KeyValuePair? Invoke(ConcurrentCache<TKey, TValue> cache) => target.State switch
         {
-            KeyValuePairState.Added => cache.OnAdd(target),
-            KeyValuePairState.Touched => cache.OnReadLRU(target),
+            KeyValuePairState.Created => cache.OnAdd(target),
+            KeyValuePairState.Consumed => cache.OnReadLRU(target),
             _ => null,
         };
     }

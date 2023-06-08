@@ -30,8 +30,19 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private enum KeyValuePairState
     {
-        Added = 0,
-        Touched,
+        /// <summary>
+        /// Created but not presented in eviction list.
+        /// </summary>
+        Created = 0,
+
+        /// <summary>
+        /// Presented in eviction list.
+        /// </summary>
+        Consumed,
+
+        /// <summary>
+        /// Removed from the dictionary.
+        /// </summary>
         Removed,
     }
 
