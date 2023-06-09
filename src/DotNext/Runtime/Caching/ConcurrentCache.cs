@@ -233,14 +233,14 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         {
             if (descendingOrder)
             {
-                for (var current = firstPair; current is not null && count < buffer.Length; current = current.Links.Next)
+                for (var current = firstPair; current is { State: not KeyValuePairState.Removed } && count < buffer.Length; current = current.Links.Next)
                 {
                     Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
                 }
             }
             else
             {
-                for (var current = lastPair; current is not null && count < buffer.Length; current = current.Links.Previous)
+                for (var current = lastPair; current is { State: not KeyValuePairState.Removed } && count < buffer.Length; current = current.Links.Previous)
                 {
                     Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
                 }
