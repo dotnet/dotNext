@@ -908,7 +908,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         var lockHolder = default(AsyncLock.Holder);
         try
         {
-            lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            lockHolder = await transitionSync.AcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder && callerState.IsValid(state))
             {
                 if (randomizeTimeout)
@@ -939,9 +939,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
             // Perf: avoid expensive pre-vote phase if refresh requested due to concurrency between inbound Vote
             // and transition to Candidate
-            var readyForTransition = await IsReadyForTransitionAsync(currentTerm);
+            var readyForTransition = await IsReadyForTransitionAsync(currentTerm).ConfigureAwait(false);
 
-            lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            lockHolder = await transitionSync.AcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder && state is FollowerState<TMember> { IsExpired: true } followerState && callerState.IsValid(followerState))
             {
                 Logger.TransitionToCandidateStateStarted(Term, members.Count);
@@ -1003,7 +1003,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         try
         {
             Logger.TransitionToLeaderStateStarted(Term);
-            lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
+            lockHolder = await transitionSync.AcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             long currentTerm;
             if (lockHolder && state is CandidateState<TMember> candidateState && callerState.IsValid(candidateState) && candidateState.Term == (currentTerm = auditTrail.Term))
             {
