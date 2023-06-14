@@ -935,9 +935,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         var lockHolder = default(AsyncLock.Holder);
         try
         {
+            var currentTerm = Term;
+
             // Perf: avoid expensive pre-vote phase if refresh requested due to concurrency between inbound Vote
             // and transition to Candidate
-            var readyForTransition = await IsReadyForTransition(out var currentTerm);
+            var readyForTransition = await IsReadyForTransitionAsync(currentTerm);
 
             lockHolder = await transitionSync.TryAcquireAsync(LifecycleToken).SuppressDisposedStateOrCancellation().ConfigureAwait(false);
             if (lockHolder && state is FollowerState<TMember> { IsExpired: true } followerState && callerState.IsValid(followerState))
@@ -987,13 +989,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             callerState.Clear();
         }
 
-        Task<bool> IsReadyForTransition(out long currentTerm)
-        {
-            currentTerm = Term;
-            return state is FollowerState<TMember> { IsExpired: true, IsRefreshRequested: false } followerState && callerState.IsValid(followerState)
+        Task<bool> IsReadyForTransitionAsync(long currentTerm)
+            => state is FollowerState<TMember> { IsExpired: true, IsRefreshRequested: false } followerState && callerState.IsValid(followerState)
                 ? PreVoteAsync(currentTerm)
                 : Task.FromResult<bool>(false);
-        }
     }
 
     /// <inheritdoc />
