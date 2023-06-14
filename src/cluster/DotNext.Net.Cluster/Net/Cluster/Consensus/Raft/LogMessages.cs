@@ -65,7 +65,7 @@ internal static partial class LogMessages
         "Voting is started with timeout {ElectionTimeout} and term {Term}",
         EventName = $"{EventIdPrefix}.{nameof(VotingStarted)}"
     )]
-    public static partial void VotingStarted(this ILogger logger, int electionTimeout, long term);
+    public static partial void VotingStarted(this ILogger logger, TimeSpan electionTimeout, long term);
 
     [LoggerMessage(
         EventIdOffset + 7,

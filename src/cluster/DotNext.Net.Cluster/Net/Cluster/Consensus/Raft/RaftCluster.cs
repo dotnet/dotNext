@@ -959,7 +959,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     await UpdateStateAsync(newState).ConfigureAwait(false);
 
                     // vote for self
-                    newState.StartVoting(electionTimeout, auditTrail);
+                    newState.StartVoting(ElectionTimeout, auditTrail);
 #pragma warning disable CS0618
                     Metrics?.MovedToCandidateState();
 #pragma warning restore CS0618

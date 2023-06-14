@@ -29,7 +29,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         Term = term;
     }
 
-    private async Task VoteAsync(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
+    private async Task VoteAsync(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         // Perf: reuse index and related term once for all members
         var lastIndex = auditTrail.LastUncommittedEntryIndex;
@@ -129,7 +129,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     /// </summary>
     /// <param name="timeout">Candidate state timeout.</param>
     /// <param name="auditTrail">The local transaction log.</param>
-    internal void StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
+    internal void StartVoting(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         Logger.VotingStarted(timeout, Term);
         votingTask = VoteAsync(timeout, auditTrail);
