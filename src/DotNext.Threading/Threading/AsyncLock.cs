@@ -203,6 +203,52 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public readonly ValueTask<Holder> AcquireAsync(CancellationToken token) => AcquireAsync(InfiniteTimeSpan, token);
 
+    [Conditional("DEBUG")]
+    private readonly void AssertLockType()
+    {
+        switch (type)
+        {
+            case Type.Exclusive:
+                Debug.Assert(lockedObject is AsyncExclusiveLock);
+                break;
+            case Type.ReadLock or Type.WriteLock or Type.Upgrade:
+                Debug.Assert(lockedObject is AsyncReaderWriterLock);
+                break;
+            case Type.Semaphore:
+                Debug.Assert(lockedObject is SemaphoreSlim);
+                break;
+            case Type.Strong or Type.Weak:
+                Debug.Assert(lockedObject is AsyncSharedLock);
+                break;
+            default:
+                Debug.Assert(lockedObject is null);
+                break;
+        }
+    }
+
+    private readonly ValueTask AcquireCoreAsync(TimeSpan timeout, CancellationToken token)
+    {
+        AssertLockType();
+
+        return type switch
+        {
+            Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token),
+            Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token),
+            Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token),
+            Type.Upgrade => As<AsyncReaderWriterLock>(lockedObject).UpgradeToWriteLockAsync(timeout, token),
+            Type.Semaphore => CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token)),
+            Type.Strong => As<AsyncSharedLock>(lockedObject).AcquireAsync(true, timeout, token),
+            Type.Weak => As<AsyncSharedLock>(lockedObject).AcquireAsync(false, timeout, token),
+            _ => ValueTask.CompletedTask,
+        };
+
+        static async ValueTask CheckOnTimeoutAsync(Task<bool> task)
+        {
+            if (!await task.ConfigureAwait(false))
+                throw new TimeoutException();
+        }
+    }
+
     /// <summary>
     /// Acquires the lock asynchronously.
     /// </summary>
@@ -213,55 +259,26 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public readonly async ValueTask<Holder> AcquireAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTask task;
-        switch (type)
-        {
-            default:
-                return default;
-            case Type.Exclusive:
-                task = As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout, token);
-                break;
-            case Type.ReadLock:
-                task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout, token);
-                break;
-            case Type.WriteLock:
-                task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout, token);
-                break;
-            case Type.Upgrade:
-                task = As<AsyncReaderWriterLock>(lockedObject).UpgradeToWriteLockAsync(timeout, token);
-                break;
-            case Type.Semaphore:
-                task = CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token));
-                break;
-            case Type.Strong:
-                task = As<AsyncSharedLock>(lockedObject).AcquireAsync(true, timeout, token);
-                break;
-            case Type.Weak:
-                task = As<AsyncSharedLock>(lockedObject).AcquireAsync(false, timeout, token);
-                break;
-        }
-
-        await task.ConfigureAwait(false);
+        await AcquireCoreAsync(timeout, token).ConfigureAwait(false);
         return CreateHolder();
-
-        static async ValueTask CheckOnTimeoutAsync(Task<bool> task)
-        {
-            if (!await task.ConfigureAwait(false))
-                throw new TimeoutException();
-        }
     }
 
-    private readonly ValueTask<bool> TryAcquireCoreAsync(TimeSpan timeout, CancellationToken token) => type switch
+    private readonly ValueTask<bool> TryAcquireCoreAsync(TimeSpan timeout, CancellationToken token)
     {
-        Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
-        Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token),
-        Type.Upgrade => As<AsyncReaderWriterLock>(lockedObject).TryUpgradeToWriteLockAsync(timeout, token),
-        Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token),
-        Type.Semaphore => new(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token)),
-        Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token),
-        Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token),
-        _ => new(false),
-    };
+        AssertLockType();
+
+        return type switch
+        {
+            Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
+            Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token),
+            Type.Upgrade => As<AsyncReaderWriterLock>(lockedObject).TryUpgradeToWriteLockAsync(timeout, token),
+            Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token),
+            Type.Semaphore => new(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token)),
+            Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token),
+            Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token),
+            _ => new(false),
+        };
+    }
 
     /// <summary>
     /// Tries to acquire the lock asynchronously.
