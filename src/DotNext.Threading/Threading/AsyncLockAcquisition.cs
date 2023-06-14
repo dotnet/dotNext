@@ -180,7 +180,7 @@ public static class AsyncLockAcquisition
     /// has been disposed.
     /// </summary>
     /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.TryAcquireAsync(CancellationToken)"/> or
+    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
     /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
     /// to replace <see cref="OperationCanceledException"/> or <see cref="OperationCanceledException"/>
     /// with empty <see cref="AsyncLock.Holder"/>.
