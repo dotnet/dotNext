@@ -154,10 +154,11 @@ public partial class RaftCluster<TMember>
     public async ValueTask<bool> AddMemberAsync(TMember member, CancellationToken token)
     {
         var tokenHolder = token.LinkTo(LifecycleToken);
-        var lockHolder = default(AsyncLock.Holder);
+        var lockTaken = false;
         try
         {
-            lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+            lockTaken = true;
 
             // assuming that the member is in sync with the leader
             member.NextIndex = auditTrail.LastUncommittedEntryIndex + 1;
@@ -175,7 +176,8 @@ public partial class RaftCluster<TMember>
         finally
         {
             tokenHolder?.Dispose();
-            lockHolder.Dispose();
+            if (lockTaken)
+                transitionLock.Release();
         }
 
         OnMemberAdded(member);
@@ -196,10 +198,12 @@ public partial class RaftCluster<TMember>
     {
         TMember? result;
         var tokenHolder = token.LinkTo(LifecycleToken);
-        var lockHolder = default(AsyncLock.Holder);
+        var lockTaken = false;
         try
         {
-            lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+            lockTaken = true;
+
             if ((result = members.TryRemove(id, out members)) is not null)
             {
                 // synchronize with reader thread
@@ -222,7 +226,8 @@ public partial class RaftCluster<TMember>
         finally
         {
             tokenHolder?.Dispose();
-            lockHolder.Dispose();
+            if (lockTaken)
+                transitionLock.Release();
         }
 
         if (result is not null)
