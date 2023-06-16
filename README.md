@@ -66,6 +66,7 @@ Release Date: 06-08-2023
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.4">DotNext.Net.Cluster 4.12.4</a>
 * Perf: avoid Pre-Vote phase in case of concurrency between inbound Vote request and transition to Candidate state
+* Optimized memory consumption by `RaftCluster` implementation
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.4">DotNext.AspNetCore.Cluster 4.12.4</a>
