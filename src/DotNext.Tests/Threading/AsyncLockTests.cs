@@ -63,6 +63,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        [Obsolete]
         public static void CanceledState()
         {
             var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
@@ -73,6 +74,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        [Obsolete]
         public static void DisposedOrCanceledState()
         {
             var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));

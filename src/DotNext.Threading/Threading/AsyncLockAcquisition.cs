@@ -163,6 +163,7 @@ public static class AsyncLockAcquisition
     /// </remarks>
     /// <param name="result">The result of the lock acquisition.</param>
     /// <returns>The task representing the lock acquisition.</returns>
+    [Obsolete("Catch exception manually instead.")]
     public static async ValueTask<AsyncLock.Holder> SuppressCancellation(this ValueTask<AsyncLock.Holder> result)
     {
         try
@@ -187,6 +188,7 @@ public static class AsyncLockAcquisition
     /// </remarks>
     /// <param name="result">The result of the lock acquisition.</param>
     /// <returns>The task representing the lock acquisition.</returns>
+    [Obsolete("Catch exception manually instead.")]
     public static async ValueTask<AsyncLock.Holder> SuppressDisposedStateOrCancellation(this ValueTask<AsyncLock.Holder> result)
     {
         try
