@@ -87,9 +87,8 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 
 # Development Process
 Philosophy of development process:
-1. All libraries in .NEXT family are available for the wide range of .NET runtimes: Mono, .NET, Blazor
-1. Compatibility with R2R/AOT compiler should be checked for every release
-1. Minimize set of dependencies
+1. All libraries in .NEXT family are available for various .NET form factors: Mono, WASM, NativeAOT
+1. Minimal set of dependencies
 1. Provide high-quality documentation
 1. Stay cross-platform
 1. Provide benchmarks
