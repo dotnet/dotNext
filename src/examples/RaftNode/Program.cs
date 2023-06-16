@@ -4,7 +4,6 @@ using System.Security.Cryptography.X509Certificates;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Cluster.Consensus.Raft.Membership;
-using Microsoft.Extensions.Logging.Console;
 using RaftNode;
 using SslOptions = DotNext.Net.Security.SslOptions;
 
@@ -45,7 +44,7 @@ static Task UseAspNetCoreHost(int port, string? persistentStorage = null)
         })
         .UseStartup<Startup>();
     })
-    .ConfigureLogging(static builder => builder.AddConsole().SetMinimumLevel(LogLevel.Error))
+    .ConfigureLogging(ConfigureLogging)
     .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
     .JoinCluster()
     .Build()
@@ -55,12 +54,7 @@ static Task UseAspNetCoreHost(int port, string? persistentStorage = null)
 static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string? persistentStorage)
 {
     AddMembersToCluster(config.UseInMemoryConfigurationStorage());
-    var loggerFactory = new LoggerFactory();
-    var loggerOptions = new ConsoleLoggerOptions
-    {
-        LogToStandardErrorThreshold = LogLevel.Warning
-    };
-    loggerFactory.AddProvider(new ConsoleLoggerProvider(new FakeOptionsMonitor<ConsoleLoggerOptions>(loggerOptions)));
+    var loggerFactory = LoggerFactory.Create(ConfigureLogging);
     config.LoggerFactory = loggerFactory;
     using var cluster = new RaftCluster(config);
     cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
@@ -92,6 +86,9 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
         builder.Build();
     }
 }
+
+static void ConfigureLogging(ILoggingBuilder builder)
+    => builder.AddConsole().SetMinimumLevel(LogLevel.Error);
 
 static Task UseUdpTransport(int port, string? persistentStorage)
 {
