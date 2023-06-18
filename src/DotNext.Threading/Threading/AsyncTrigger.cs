@@ -76,8 +76,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// Resumes the first suspended caller in the wait queue.
     /// </summary>
     /// <param name="resumeAll">
-    /// <see langword="true"/> to resume the first suspended caller in the queue;
-    /// <see langword="false"/> to resume all suspended callers in the queue.
+    /// <see langword="true"/> to resume all suspended callers in the queue;
+    /// <see langword="false"/> to resume the first suspended caller in the queue.
     /// </param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
@@ -136,8 +136,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// Resumes the first suspended caller in the queue and suspends the immediate caller.
     /// </summary>
     /// <param name="resumeAll">
-    /// <see langword="true"/> to resume the first suspended caller in the queue;
-    /// <see langword="false"/> to resume all suspended callers in the queue.
+    /// <see langword="true"/> to resume all suspended callers in the queue;
+    /// <see langword="false"/> to resume the first suspended caller in the queue.
     /// </param>
     /// <param name="throwOnEmptyQueue">
     /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
@@ -213,8 +213,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// Resumes the first suspended caller in the queue and suspends the immediate caller.
     /// </summary>
     /// <param name="resumeAll">
-    /// <see langword="true"/> to resume the first suspended caller in the queue;
-    /// <see langword="false"/> to resume all suspended callers in the queue.
+    /// <see langword="true"/> to resume all suspended callers in the queue;
+    /// <see langword="false"/> to resume the first suspended caller in the queue.
     /// </param>
     /// <param name="throwOnEmptyQueue">
     /// <see langword="true"/> to throw <see cref="InvalidOperationException"/> if there is no suspended callers to resume;
