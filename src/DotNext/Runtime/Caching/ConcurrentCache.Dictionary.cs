@@ -13,7 +13,7 @@ public partial class ConcurrentCache<TKey, TValue>
         internal readonly TKey Key;
         internal volatile KeyValuePair? Next;
         internal (KeyValuePair? Previous, KeyValuePair? Next) Links;
-        internal bool Removed;
+        internal KeyValuePairState State; // protected by evictionLock
 
         private protected KeyValuePair(TKey key, int hashCode)
         {
@@ -26,6 +26,24 @@ public partial class ConcurrentCache<TKey, TValue>
             Links = default;
             Next = null;
         }
+    }
+
+    private enum KeyValuePairState
+    {
+        /// <summary>
+        /// Created but not presented in eviction list.
+        /// </summary>
+        Created = 0,
+
+        /// <summary>
+        /// Presented in eviction list.
+        /// </summary>
+        Consumed,
+
+        /// <summary>
+        /// Removed from the dictionary.
+        /// </summary>
+        Removed,
     }
 
     private sealed class KeyValuePairAtomicAccess : KeyValuePair
@@ -108,6 +126,8 @@ public partial class ConcurrentCache<TKey, TValue>
 
     private void Remove(KeyValuePair expected)
     {
+        Debug.Assert(Monitor.IsEntered(evictionLock));
+
         ref var bucket = ref GetBucket(expected.KeyHashCode, out var bucketLock);
 
         lock (bucketLock)
@@ -121,7 +141,7 @@ public partial class ConcurrentCache<TKey, TValue>
                     else
                         previous.Next = actual.Next;
 
-                    expected.Removed = true;
+                    expected.State = KeyValuePairState.Removed;
                     OnRemoved();
                     break;
                 }
@@ -137,7 +157,6 @@ public partial class ConcurrentCache<TKey, TValue>
     {
         ref var bucket = ref GetBucket(hashCode, out var bucketLock);
         bool result;
-        delegate*<KeyValuePair, Command> commandFactory;
         KeyValuePair pair;
 
         lock (bucketLock)
@@ -153,7 +172,6 @@ public partial class ConcurrentCache<TKey, TValue>
                         if (updateIfExists)
                         {
                             SetValue(current, value);
-                            commandFactory = readCommand;
                             pair = current;
                             goto enqueue_and_exit;
                         }
@@ -173,7 +191,6 @@ public partial class ConcurrentCache<TKey, TValue>
                         if (updateIfExists)
                         {
                             SetValue(current, value);
-                            commandFactory = readCommand;
                             pair = current;
                             goto enqueue_and_exit;
                         }
@@ -189,13 +206,12 @@ public partial class ConcurrentCache<TKey, TValue>
                 : new KeyValuePairNonAtomicAccess(key, value, hashCode);
             pair.Next = bucket;
             Volatile.Write(ref bucket, pair);
-            commandFactory = addCommand;
             result = true;
             OnAdded();
         }
 
     enqueue_and_exit:
-        EnqueueAndDrain(commandFactory(pair));
+        EnqueueAndDrain(addOrReadCommand(pair));
 
     exit:
         return result;
@@ -309,7 +325,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 if (hashCode == pair.KeyHashCode && (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, pair.Key) : pair.Key.Equals(key)))
                 {
-                    EnqueueAndDrain(readCommand(pair));
+                    EnqueueAndDrain(addOrReadCommand(pair));
                     value = GetValue(pair);
                     return true;
                 }
@@ -321,7 +337,7 @@ public partial class ConcurrentCache<TKey, TValue>
             {
                 if (hashCode == pair.KeyHashCode && keyComparer.Equals(key, pair.Key))
                 {
-                    EnqueueAndDrain(readCommand(pair));
+                    EnqueueAndDrain(addOrReadCommand(pair));
                     value = GetValue(pair);
                     return true;
                 }
@@ -467,7 +483,7 @@ public partial class ConcurrentCache<TKey, TValue>
         }
 
     enqueue_and_exit:
-        EnqueueAndDrain(readCommand(pair));
+        EnqueueAndDrain(addOrReadCommand(pair));
         return true;
     }
 

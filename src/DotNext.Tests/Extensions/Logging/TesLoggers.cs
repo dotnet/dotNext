@@ -13,7 +13,13 @@ internal static class TestLoggers
 
     internal static ILoggingBuilder AddDebugLogger(this ILoggingBuilder builder, string prefix)
     {
-        builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, AdvancedDebugProvider>(prefix.CreateProvider));
+        AddDebugLogger(prefix, builder);
         return builder;
     }
+
+    private static void AddDebugLogger(this string prefix, ILoggingBuilder builder)
+        => builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, AdvancedDebugProvider>(prefix.CreateProvider));
+
+    internal static ILoggerFactory CreateDebugLoggerFactory(string prefix, Action<ILoggingBuilder> builder)
+        => LoggerFactory.Create(prefix.AddDebugLogger + builder);
 }

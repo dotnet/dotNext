@@ -29,6 +29,55 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         Term = term;
     }
 
+    private async Task VoteAsync(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
+    {
+        // Perf: reuse index and related term once for all members
+        var lastIndex = auditTrail.LastUncommittedEntryIndex;
+        var lastTerm = await auditTrail.GetTermAsync(lastIndex, votingCancellation.Token).ConfigureAwait(false);
+
+        // start voting in parallel
+        var voters = StartVoting(Members, Term, lastIndex, lastTerm, votingCancellation.Token);
+        votingCancellation.CancelAfter(timeout);
+
+        // finish voting
+        await EndVoting(voters.GetConsumer(), votingCancellation.Token).ConfigureAwait(false);
+
+        static TaskCompletionPipe<Task<(TMember, long, VotingResult)>> StartVoting(IReadOnlyCollection<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
+        {
+            var voters = new TaskCompletionPipe<Task<(TMember, long, VotingResult)>>();
+
+            // start voting in parallel
+            foreach (var member in members)
+                voters.Add(VoteAsync(member, currentTerm, lastIndex, lastTerm, token));
+
+            voters.Complete();
+            return voters;
+        }
+
+        [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+        static async Task<(TMember, long, VotingResult)> VoteAsync(TMember voter, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
+        {
+            VotingResult result;
+            try
+            {
+                var response = await voter.VoteAsync(currentTerm, lastIndex, lastTerm, token).ConfigureAwait(false);
+                currentTerm = response.Term;
+                result = response.Value ? VotingResult.Granted : VotingResult.Rejected;
+            }
+            catch (OperationCanceledException)
+            {
+                result = VotingResult.Canceled;
+            }
+            catch (MemberUnavailableException)
+            {
+                result = VotingResult.NotAvailable;
+                currentTerm = -1L;
+            }
+
+            return (voter, currentTerm, result);
+        }
+    }
+
     private async Task EndVoting(IAsyncEnumerable<(TMember, long, VotingResult)> voters, CancellationToken token)
     {
         var votes = 0;
@@ -80,43 +129,10 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     /// </summary>
     /// <param name="timeout">Candidate state timeout.</param>
     /// <param name="auditTrail">The local transaction log.</param>
-    internal void StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
+    internal void StartVoting(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         Logger.VotingStarted(timeout, Term);
-        var voters = new TaskCompletionPipe<Task<(TMember, long, VotingResult)>>();
-
-        // start voting in parallel
-        foreach (var member in Members)
-            voters.Add(VoteAsync(member, Term, auditTrail, votingCancellation.Token));
-
-        voters.Complete();
-        votingCancellation.CancelAfter(timeout);
-        votingTask = EndVoting(voters.GetConsumer(), votingCancellation.Token);
-
-        [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
-        static async Task<(TMember, long, VotingResult)> VoteAsync(TMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
-        {
-            var lastIndex = auditTrail.LastUncommittedEntryIndex;
-            var lastTerm = await auditTrail.GetTermAsync(lastIndex, token).ConfigureAwait(false);
-            VotingResult result;
-            try
-            {
-                var response = await voter.VoteAsync(term, lastIndex, lastTerm, token).ConfigureAwait(false);
-                term = response.Term;
-                result = response.Value ? VotingResult.Granted : VotingResult.Rejected;
-            }
-            catch (OperationCanceledException)
-            {
-                result = VotingResult.Canceled;
-            }
-            catch (MemberUnavailableException)
-            {
-                result = VotingResult.NotAvailable;
-                term = -1L;
-            }
-
-            return (voter, term, result);
-        }
+        votingTask = VoteAsync(timeout, auditTrail);
     }
 
     protected override async ValueTask DisposeAsyncCore()

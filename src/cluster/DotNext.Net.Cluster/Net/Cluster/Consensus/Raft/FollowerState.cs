@@ -48,7 +48,14 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
 
         timedOut = true;
 
-        // timeout happened, move to candidate state
+        // Timeout happened, move to candidate state.
+        // However, at this point, the cluster may receive Vote request which calls Refresh() method
+        // and turns refreshEvent into signaled state.
+        // In that case, we have a race condition between Follower and future Candidate state
+        // (because transition to Candidate state is scheduled via ThreadPool asynchronously).
+        // To resolve the issue, inside of transition handler we must check refreshEvent state.
+        // If it is in signaled state, resume following and do not move to Candidate state.
+        // See: https://github.com/dotnet/dotNext/issues/168
         MoveToCandidateState();
     }
 
@@ -61,12 +68,15 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         }
         else
         {
+            refreshEvent.Reset();
             timedOut = false;
             tracker = Track(timeout, token);
         }
     }
 
     internal bool IsExpired => timedOut;
+
+    internal bool IsRefreshRequested => refreshEvent.IsSet;
 
     internal void Refresh()
     {
@@ -85,7 +95,7 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         }
         catch (Exception e)
         {
-            Logger.FollowerStateExitedFailed(e);
+            Logger.FollowerStateExitedWithError(e);
         }
         finally
         {

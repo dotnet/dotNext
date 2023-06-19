@@ -203,6 +203,29 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public readonly ValueTask<Holder> AcquireAsync(CancellationToken token) => AcquireAsync(InfiniteTimeSpan, token);
 
+    [Conditional("DEBUG")]
+    private readonly void AssertLockType()
+    {
+        switch (type)
+        {
+            case Type.Exclusive:
+                Debug.Assert(lockedObject is AsyncExclusiveLock);
+                break;
+            case Type.ReadLock or Type.WriteLock or Type.Upgrade:
+                Debug.Assert(lockedObject is AsyncReaderWriterLock);
+                break;
+            case Type.Semaphore:
+                Debug.Assert(lockedObject is SemaphoreSlim);
+                break;
+            case Type.Strong or Type.Weak:
+                Debug.Assert(lockedObject is AsyncSharedLock);
+                break;
+            default:
+                Debug.Assert(lockedObject is null);
+                break;
+        }
+    }
+
     /// <summary>
     /// Acquires the lock asynchronously.
     /// </summary>
@@ -213,6 +236,8 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public readonly async ValueTask<Holder> AcquireAsync(TimeSpan timeout, CancellationToken token = default)
     {
+        AssertLockType();
+
         ValueTask task;
         switch (type)
         {
@@ -251,17 +276,22 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
         }
     }
 
-    private readonly ValueTask<bool> TryAcquireCoreAsync(TimeSpan timeout, CancellationToken token) => type switch
+    private readonly ValueTask<bool> TryAcquireCoreAsync(TimeSpan timeout, CancellationToken token)
     {
-        Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
-        Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token),
-        Type.Upgrade => As<AsyncReaderWriterLock>(lockedObject).TryUpgradeToWriteLockAsync(timeout, token),
-        Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token),
-        Type.Semaphore => new(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token)),
-        Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token),
-        Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token),
-        _ => new(false),
-    };
+        AssertLockType();
+
+        return type switch
+        {
+            Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
+            Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token),
+            Type.Upgrade => As<AsyncReaderWriterLock>(lockedObject).TryUpgradeToWriteLockAsync(timeout, token),
+            Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token),
+            Type.Semaphore => new(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token)),
+            Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token),
+            Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token),
+            _ => new(false),
+        };
+    }
 
     /// <summary>
     /// Tries to acquire the lock asynchronously.
@@ -278,6 +308,7 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
     /// </summary>
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</returns>
+    [Obsolete("Use AcquireAsync(CancellationToken) instead.")]
     public readonly ValueTask<Holder> TryAcquireAsync(CancellationToken token)
         => TryAcquireAsync(InfiniteTimeSpan, token);
 

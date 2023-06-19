@@ -132,7 +132,7 @@ public static class AsyncLockAcquisition
     /// has been disposed.
     /// </summary>
     /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.TryAcquireAsync(CancellationToken)"/> or
+    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
     /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
     /// to avoid <see cref="ObjectDisposedException"/> if the lock is already disposed
     /// at the time of the call. If the lock is disposed then this method returns empty <see cref="AsyncLock.Holder"/>.
@@ -156,13 +156,14 @@ public static class AsyncLockAcquisition
     /// into unsuccessfully acquired lock.
     /// </summary>
     /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.TryAcquireAsync(CancellationToken)"/> or
+    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
     /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
     /// to avoid <see cref="OperationCanceledException"/> if the lock acquisition is already canceled
     /// at the time of the call. If the acqusition is canceled then this method returns empty <see cref="AsyncLock.Holder"/>.
     /// </remarks>
     /// <param name="result">The result of the lock acquisition.</param>
     /// <returns>The task representing the lock acquisition.</returns>
+    [Obsolete("Catch exception manually instead.")]
     public static async ValueTask<AsyncLock.Holder> SuppressCancellation(this ValueTask<AsyncLock.Holder> result)
     {
         try
@@ -180,13 +181,14 @@ public static class AsyncLockAcquisition
     /// has been disposed.
     /// </summary>
     /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.TryAcquireAsync(CancellationToken)"/> or
+    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
     /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
     /// to replace <see cref="OperationCanceledException"/> or <see cref="OperationCanceledException"/>
     /// with empty <see cref="AsyncLock.Holder"/>.
     /// </remarks>
     /// <param name="result">The result of the lock acquisition.</param>
     /// <returns>The task representing the lock acquisition.</returns>
+    [Obsolete("Catch exception manually instead.")]
     public static async ValueTask<AsyncLock.Holder> SuppressDisposedStateOrCancellation(this ValueTask<AsyncLock.Holder> result)
     {
         try

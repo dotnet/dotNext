@@ -12,7 +12,6 @@
 | ---- | ---- |
 | [Interop between function pointer and delegate](https://github.com/dotnet/csharplang/discussions/3680) | [DelegateHelpers](https://dotnet.github.io/dotNext/api/DotNext.DelegateHelpers.html) factory methods |
 | [Check if an instance of T is default(T)](https://github.com/dotnet/corefx/issues/16209) | [IsDefault() method](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html) |
-| [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://dotnet.github.io/dotNext/features/concept.html) |
 | [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), e.g. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://dotnet.github.io/dotNext/features/metaprogramming/index.html) |
 | [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://dotnet.github.io/dotNext/features/threading/index.html) |
 | [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://dotnet.github.io/dotNext/features/cluster/wal.html)  |
@@ -26,17 +25,16 @@ Quick overview of additional features:
 
 * [Attachment of user data to an arbitrary objects](https://dotnet.github.io/dotNext/features/core/userdata.html)
 * Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
-* [Fast Reflection](https://dotnet.github.io/dotNext/features/reflection/fast.html)
 * Fast conversion of bytes to hexadecimal representation and vice versa with [Hex](https://dotnet.github.io/dotNext/api/DotNext.Buffers.Text.Hex.html) class
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
-* [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
+* [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types
 * [PipeExtensions](https://dotnet.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) provides high-level I/O operations for pipelines such as string encoding and decoding
 * A rich set of high-performance [memory buffers](https://dotnet.github.io/dotNext/features/io/buffers.html) for efficient I/O
 * String formatting, encoding and decoding with low GC pressure: [dynamic char buffers](https://dotnet.github.io/dotNext/features/io/buffers.html#char-buffer)
 * Fully-featured [Raft implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#raft)
 * Fully-featured [HyParView implementation](https://github.com/dotnet/dotNext/tree/master/src/cluster#hyparview)
 
-All these things are implemented in 100% managed code on top of existing .NET API without modifications of Roslyn compiler or CoreFX libraries.
+All these things are implemented in 100% managed code on top of existing .NET API.
 
 # Quick Links
 
@@ -46,17 +44,30 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 05-29-2023
+Release Date: 06-19-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.12.2">DotNext 4.12.2</a>
-* Fixed [169](https://github.com/dotnet/dotNext/issues/169)
+<a href="https://www.nuget.org/packages/dotnext/4.12.4">DotNext 4.12.4</a>
+* Fixed: sometimes `ConcurrentCache.TakeSnapshot` method may return evicted key/value pairs 
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.2">DotNext.Net.Cluster 4.12.2</a>
-* Fixed [165](https://github.com/dotnet/dotNext/issues/165)
-* Merged [170](https://github.com/dotnet/dotNext/pull/170)
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.4">DotNext.Metaprogramming 4.12.4</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.2">DotNext.AspNetCore.Cluster 4.12.2</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.12.4">DotNext.Unsafe 4.12.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.12.4">DotNext.Threading 4.12.4</a>
+* Deprecation of `AsyncLock.TryAcquireAsync(CancellationToken)` overload
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.12.4">DotNext.IO 4.12.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.4">DotNext.Net.Cluster 4.12.4</a>
+* Perf: avoid Pre-Vote phase in case of concurrency between inbound Vote request and transition to Candidate state
+* Optimized memory consumption by `RaftCluster` implementation
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.4">DotNext.AspNetCore.Cluster 4.12.4</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
@@ -76,9 +87,8 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 
 # Development Process
 Philosophy of development process:
-1. All libraries in .NEXT family are available for the wide range of .NET runtimes: Mono, .NET, Blazor
-1. Compatibility with R2R/AOT compiler should be checked for every release
-1. Minimize set of dependencies
+1. All libraries in .NEXT family are available for various .NET form factors: Mono, WASM, NativeAOT
+1. Minimal set of dependencies
 1. Provide high-quality documentation
 1. Stay cross-platform
 1. Provide benchmarks

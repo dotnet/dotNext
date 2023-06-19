@@ -1,6 +1,72 @@
 Release Notes
 ====
 
+# 06-19-2023
+<a href="https://www.nuget.org/packages/dotnext/4.12.4">DotNext 4.12.4</a>
+* Fixed: sometimes `ConcurrentCache.TakeSnapshot` method may return evicted key/value pairs 
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.4">DotNext.Metaprogramming 4.12.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.12.4">DotNext.Unsafe 4.12.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.12.4">DotNext.Threading 4.12.4</a>
+* Deprecation of `AsyncLock.TryAcquireAsync(CancellationToken)` overload
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.12.4">DotNext.IO 4.12.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.4">DotNext.Net.Cluster 4.12.4</a>
+* Perf: avoid Pre-Vote phase in case of concurrency between inbound Vote request and transition to Candidate state
+* Optimized memory consumption by `RaftCluster` implementation
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.4">DotNext.AspNetCore.Cluster 4.12.4</a>
+* Updated dependencies
+
+# 06-08-2023
+<a href="https://www.nuget.org/packages/dotnext/4.12.3">DotNext 4.12.3</a>
+* Fixed concurrency between add and update operations of [ConcurrentCache](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Caching.ConcurrentCache-2.html) class
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.3">DotNext.Metaprogramming 4.12.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.12.3">DotNext.Unsafe 4.12.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.12.3">DotNext.Threading 4.12.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.12.3">DotNext.IO 4.12.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.3">DotNext.Net.Cluster 4.12.3</a>
+* Fixed [173](https://github.com/dotnet/dotNext/issues/173)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.3">DotNext.AspNetCore.Cluster 4.12.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.2.0">DotNext.MaintenanceServices 0.2.0</a>
+* Make probe timeout optional
+* Updated dependencies
+
+# 06-07-2023
+<a href="https://www.nuget.org/packages/dotnext/4.12.2">DotNext 4.12.2</a>
+* Fixed [169](https://github.com/dotnet/dotNext/issues/169)
+* Fixed concurrency between add and update operations of [ConcurrentCache](https://dotnet.github.io/dotNext/api/DotNext.Runtime.Caching.ConcurrentCache-2.html) class
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.2">DotNext.Net.Cluster 4.12.2</a>
+* Fixed [165](https://github.com/dotnet/dotNext/issues/165)
+* Merged [170](https://github.com/dotnet/dotNext/pull/170)
+* Fixed [168](https://github.com/dotnet/dotNext/issues/168)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.2">DotNext.AspNetCore.Cluster 4.12.2</a>
+* Updated dependencies
+
 # 05-29-2023
 <a href="https://www.nuget.org/packages/dotnext/4.12.1">DotNext 4.12.1</a>
 * Fixed [162](https://github.com/dotnet/dotNext/issues/162)

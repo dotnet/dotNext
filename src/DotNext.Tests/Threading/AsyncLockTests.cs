@@ -9,11 +9,8 @@ namespace DotNext.Threading
         public static async Task EmptyLock()
         {
             var @lock = default(AsyncLock);
-            var holder = await @lock.TryAcquireAsync(CancellationToken.None);
-            if (holder)
-                Fail("Lock is in acquired state");
 
-            holder = await @lock.AcquireAsync(CancellationToken.None);
+            var holder = await @lock.AcquireAsync(CancellationToken.None);
             if (holder)
                 Fail("Lock is in acquired state");
 
@@ -60,12 +57,13 @@ namespace DotNext.Threading
         {
             var l = AsyncLock.Exclusive();
             l.Dispose();
-            var result = l.TryAcquireAsync(CancellationToken.None).SuppressDisposedState();
+            var result = l.AcquireAsync(CancellationToken.None).SuppressDisposedState();
             True(result.IsCompletedSuccessfully);
             False(result.Result);
         }
 
         [Fact]
+        [Obsolete]
         public static void CanceledState()
         {
             var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
@@ -76,6 +74,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        [Obsolete]
         public static void DisposedOrCanceledState()
         {
             var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));

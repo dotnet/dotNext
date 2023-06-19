@@ -30,10 +30,10 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 2,
         LogLevel.Information,
-        "Transition to Candidate state has started with term {Term}",
+        "Transition to Candidate state has started with term {Term}, number of cluster nodes {Count}",
         EventName = $"{EventIdPrefix}.{nameof(TransitionToCandidateStateStarted)}"
     )]
-    public static partial void TransitionToCandidateStateStarted(this ILogger logger, long term);
+    public static partial void TransitionToCandidateStateStarted(this ILogger logger, long term, int count);
 
     [LoggerMessage(
         EventIdOffset + 3,
@@ -65,7 +65,7 @@ internal static partial class LogMessages
         "Voting is started with timeout {ElectionTimeout} and term {Term}",
         EventName = $"{EventIdPrefix}.{nameof(VotingStarted)}"
     )]
-    public static partial void VotingStarted(this ILogger logger, int electionTimeout, long term);
+    public static partial void VotingStarted(this ILogger logger, TimeSpan electionTimeout, long term);
 
     [LoggerMessage(
         EventIdOffset + 7,
@@ -281,9 +281,9 @@ internal static partial class LogMessages
         EventIdOffset + 33,
         LogLevel.Debug,
         "Follower loop stopped with error",
-        EventName = $"{EventIdPrefix}.{nameof(FollowerStateExitedFailed)}"
+        EventName = $"{EventIdPrefix}.{nameof(FollowerStateExitedWithError)}"
     )]
-    public static partial void FollowerStateExitedFailed(this ILogger logger, Exception e);
+    public static partial void FollowerStateExitedWithError(this ILogger logger, Exception e);
 
     [LoggerMessage(
         EventIdOffset + 34,
@@ -332,4 +332,20 @@ internal static partial class LogMessages
         EventName = $"{EventIdPrefix}.{nameof(UnknownHealthStatus)}"
     )]
     public static partial void UnknownHealthStatus(this ILogger logger, EndPoint member);
+
+    [LoggerMessage(
+        EventIdOffset + 40,
+        LogLevel.Debug,
+        "Node started in Follower state. Local member is {Member}",
+        EventName = $"{EventIdPrefix}.{nameof(StartedAsFollower)}"
+    )]
+    public static partial void StartedAsFollower(this ILogger logger, EndPoint member);
+
+    [LoggerMessage(
+        EventIdOffset + 41,
+        LogLevel.Debug,
+        "Node started in Standby state",
+        EventName = $"{EventIdPrefix}.{nameof(StartedAsFrozen)}"
+    )]
+    public static partial void StartedAsFrozen(this ILogger logger);
 }

@@ -41,7 +41,7 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     }
 
     private readonly int concurrencyLevel;
-    private unsafe readonly delegate*<KeyValuePair, Command> addCommand, readCommand;
+    private unsafe readonly delegate*<KeyValuePair, Command> addOrReadCommand;
 
     /// <summary>
     /// Initializes a new empty cache.
@@ -69,22 +69,19 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         this.concurrencyLevel = concurrencyLevel;
         unsafe
         {
-            addCommand = &OnAdd;
-            readCommand = evictionPolicy switch
+            addOrReadCommand = evictionPolicy switch
             {
-                CacheEvictionPolicy.LRU => &OnReadLRU,
-                CacheEvictionPolicy.LFU => &OnReadLFU,
+                CacheEvictionPolicy.LRU => &OnAddOrReadLRU,
+                CacheEvictionPolicy.LFU => &OnAddOrReadLFU,
                 _ => throw new ArgumentOutOfRangeException(nameof(evictionPolicy)),
             };
         }
 
         commandQueueReadPosition = commandQueueWritePosition = new();
 
-        static Command OnAdd(KeyValuePair target) => new AddCommand(target);
+        static Command OnAddOrReadLFU(KeyValuePair target) => new AddOrReadLFUCommand(target);
 
-        static Command OnReadLFU(KeyValuePair target) => new ReadLFUCommand(target);
-
-        static Command OnReadLRU(KeyValuePair target) => new ReadLRUCommand(target);
+        static Command OnAddOrReadLRU(KeyValuePair target) => new AddOrReadLRUCommand(target);
     }
 
     /// <summary>
@@ -236,14 +233,14 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
         {
             if (descendingOrder)
             {
-                for (var current = firstPair; current is not null && count < buffer.Length; current = current.Links.Next)
+                for (var current = firstPair; current is { State: not KeyValuePairState.Removed } && count < buffer.Length; current = current.Links.Next)
                 {
                     Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
                 }
             }
             else
             {
-                for (var current = lastPair; current is not null && count < buffer.Length; current = current.Links.Previous)
+                for (var current = lastPair; current is { State: not KeyValuePairState.Removed } && count < buffer.Length; current = current.Links.Previous)
                 {
                     Unsafe.Add(ref MemoryMarshal.GetReference(buffer), count++) = new(current.Key, GetValue(current));
                 }

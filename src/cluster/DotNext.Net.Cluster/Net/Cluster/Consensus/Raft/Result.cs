@@ -7,10 +7,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 /// </summary>
 /// <typeparam name="T">The type of RPC response.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct Result<T>
+public readonly struct Result<T> // TODO: Change to required init properties in C# 12
 {
-    private readonly T result;
-
     /// <summary>
     /// Initializes a new result.
     /// </summary>
@@ -19,20 +17,16 @@ public readonly struct Result<T>
     public Result(long term, T value)
     {
         Term = term;
-        result = value;
+        Value = value;
     }
 
     /// <summary>
     /// Gets term of the remote member.
     /// </summary>
-    public long Term { get; }
+    public long Term { get; internal init; }
 
     /// <summary>
     /// Gets RPC response.
     /// </summary>
-    public T Value
-    {
-        get => result;
-        init => result = value;
-    }
+    public T Value { get; internal init; }
 }

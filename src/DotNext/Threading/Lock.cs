@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
 
@@ -146,12 +147,34 @@ public struct Lock : IDisposable, IEquatable<Lock>
     public static Lock WriteLock(ReaderWriterLockSlim rwLock)
         => new(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
 
+    [Conditional("DEBUG")]
+    private readonly void AssertLockType()
+    {
+        switch (type)
+        {
+            case Type.Monitor:
+                Debug.Assert(lockedObject is not null);
+                break;
+            case Type.ReadLock or Type.WriteLock or Type.UpgradeableReadLock:
+                Debug.Assert(lockedObject is ReaderWriterLockSlim);
+                break;
+            case Type.Semaphore:
+                Debug.Assert(lockedObject is SemaphoreSlim);
+                break;
+            default:
+                Debug.Assert(lockedObject is null);
+                break;
+        }
+    }
+
     /// <summary>
     /// Acquires lock.
     /// </summary>
     /// <returns>The holder of the acquired lock.</returns>
     public readonly Holder Acquire()
     {
+        AssertLockType();
+
         switch (type)
         {
             case Type.Monitor:
@@ -174,15 +197,20 @@ public struct Lock : IDisposable, IEquatable<Lock>
         return new Holder(lockedObject, type);
     }
 
-    private readonly bool TryAcquire() => type switch
+    private readonly bool TryAcquire()
     {
-        Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
-        Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
-        Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
-        Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
-        Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(0),
-        _ => false,
-    };
+        AssertLockType();
+
+        return type switch
+        {
+            Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
+            Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
+            Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
+            Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
+            Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(0),
+            _ => false,
+        };
+    }
 
     /// <summary>
     /// Attempts to acquire lock.
@@ -201,15 +229,20 @@ public struct Lock : IDisposable, IEquatable<Lock>
         return false;
     }
 
-    private readonly bool TryAcquire(TimeSpan timeout) => type switch
+    private readonly bool TryAcquire(TimeSpan timeout)
     {
-        Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
-        Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
-        Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
-        Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),
-        Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(timeout),
-        _ => false,
-    };
+        AssertLockType();
+
+        return type switch
+        {
+            Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
+            Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
+            Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
+            Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),
+            Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(timeout),
+            _ => false,
+        };
+    }
 
     /// <summary>
     /// Attempts to acquire lock.

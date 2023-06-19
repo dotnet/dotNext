@@ -9,6 +9,7 @@ using Buffers;
 using IO;
 using IO.Log;
 using Membership;
+using Microsoft.Extensions.Logging;
 using TransportServices;
 using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
@@ -97,12 +98,16 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         ConfigurationStorage = configuration.ConfigurationStorage ?? new InMemoryClusterConfigurationStorage(EndPointComparer, allocator);
         pollingLoopTask = Task.CompletedTask;
         cachedConfig = new();
+        Logger = configuration.LoggerFactory.CreateLogger<RaftCluster>();
         configurationEvents = Channel.CreateUnbounded<(EndPoint, bool)>(new() { SingleWriter = true, SingleReader = true });
         measurementTags = new()
         {
             { IRaftCluster.LocalAddressMeterAttributeName, LocalMemberAddress.ToString() },
         };
     }
+
+    /// <inheritdoc />
+    protected override ILogger Logger { get; }
 
     /// <summary>
     /// Gets the address of the local member.
