@@ -608,7 +608,8 @@ into unsuccessfully acquired lock.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;AsyncLock.Holder&gt; SuppressCancellation(this ValueTask&lt;AsyncLock.Holder&gt; result)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Catch exception manually instead.&quot;)]
+public static ValueTask&lt;AsyncLock.Holder&gt; SuppressCancellation(this ValueTask&lt;AsyncLock.Holder&gt; result)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -645,7 +646,7 @@ into unsuccessfully acquired lock.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AsyncLockAcquisition_SuppressCancellation_System_Threading_Tasks_ValueTask_DotNext_Threading_AsyncLock_Holder___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is usually combined with <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_">TryAcquireAsync(CancellationToken)</a> or
+  <div class="markdown level1 remarks"><p>This method is usually combined with <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_">AcquireAsync(CancellationToken)</a> or
 <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_">TryAcquireAsync(TimeSpan, CancellationToken)</a> calls
 to avoid <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> if the lock acquisition is already canceled
 at the time of the call. If the acqusition is canceled then this method returns empty <a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>.</p>
@@ -702,7 +703,7 @@ has been disposed.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AsyncLockAcquisition_SuppressDisposedState_System_Threading_Tasks_ValueTask_DotNext_Threading_AsyncLock_Holder___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is usually combined with <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_">TryAcquireAsync(CancellationToken)</a> or
+  <div class="markdown level1 remarks"><p>This method is usually combined with <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_">AcquireAsync(CancellationToken)</a> or
 <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_">TryAcquireAsync(TimeSpan, CancellationToken)</a> calls
 to avoid <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a> if the lock is already disposed
 at the time of the call. If the lock is disposed then this method returns empty <a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>.</p>
@@ -712,7 +713,7 @@ at the time of the call. If the lock is disposed then this method returns empty 
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLockAcquisition_SuppressDisposedStateOrCancellation_System_Threading_Tasks_ValueTask_DotNext_Threading_AsyncLock_Holder__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLockAcquisition.SuppressDisposedStateOrCancellation(System.Threading.Tasks.ValueTask%7BDotNext.Threading.AsyncLock.Holder%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L190">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLockAcquisition.cs/#L191">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLockAcquisition_SuppressDisposedStateOrCancellation_" data-uid="DotNext.Threading.AsyncLockAcquisition.SuppressDisposedStateOrCancellation*"></a>
   <h4 id="DotNext_Threading_AsyncLockAcquisition_SuppressDisposedStateOrCancellation_System_Threading_Tasks_ValueTask_DotNext_Threading_AsyncLock_Holder__" data-uid="DotNext.Threading.AsyncLockAcquisition.SuppressDisposedStateOrCancellation(System.Threading.Tasks.ValueTask{DotNext.Threading.AsyncLock.Holder})">SuppressDisposedStateOrCancellation(ValueTask&lt;Holder&gt;)</h4>
@@ -722,7 +723,8 @@ has been disposed.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;AsyncLock.Holder&gt; SuppressDisposedStateOrCancellation(this ValueTask&lt;AsyncLock.Holder&gt; result)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Catch exception manually instead.&quot;)]
+public static ValueTask&lt;AsyncLock.Holder&gt; SuppressDisposedStateOrCancellation(this ValueTask&lt;AsyncLock.Holder&gt; result)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -759,7 +761,7 @@ has been disposed.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AsyncLockAcquisition_SuppressDisposedStateOrCancellation_System_Threading_Tasks_ValueTask_DotNext_Threading_AsyncLock_Holder___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is usually combined with <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_">TryAcquireAsync(CancellationToken)</a> or
+  <div class="markdown level1 remarks"><p>This method is usually combined with <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_">AcquireAsync(CancellationToken)</a> or
 <a class="xref" href="DotNext.Threading.AsyncLock.html#DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_">TryAcquireAsync(TimeSpan, CancellationToken)</a> calls
 to replace <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a>
 with empty <a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>.</p>
