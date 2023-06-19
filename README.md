@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-08-2023
+Release Date: 06-19-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.12.4">DotNext 4.12.4</a>
 * Fixed: sometimes `ConcurrentCache.TakeSnapshot` method may return evicted key/value pairs 
