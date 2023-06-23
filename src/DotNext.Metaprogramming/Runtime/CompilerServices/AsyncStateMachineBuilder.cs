@@ -548,7 +548,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
                 builder.Add(type);
             }
 
-            slots = builder.Build(sm.Build, out _);
+            slots = builder.Build<MemberExpression>(sm.Build, out _);
         }
 
         Assert(sm.StateMachine is not null);
