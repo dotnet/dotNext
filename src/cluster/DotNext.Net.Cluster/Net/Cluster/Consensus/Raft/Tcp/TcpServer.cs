@@ -140,7 +140,7 @@ internal sealed class TcpServer : Server, ITcpTransport
                 timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(lifecycleToken);
             }
         }
-        catch (Exception e) when (e is SocketException { SocketErrorCode: SocketError.ConnectionReset } || e.InnerException is SocketException { SocketErrorCode: SocketError.ConnectionReset })
+        catch (Exception e) when (e is SocketException { SocketErrorCode: SocketError.ConnectionReset } or { InnerException: SocketException { SocketErrorCode: SocketError.ConnectionReset } })
         {
             logger.ConnectionWasResetByClient(clientAddress);
         }
