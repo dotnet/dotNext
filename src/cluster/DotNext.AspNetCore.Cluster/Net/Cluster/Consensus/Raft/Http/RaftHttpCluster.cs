@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Channels;
@@ -64,7 +65,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         MetricsCollector? metrics = null,
 #pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null)
-        : base(config.CurrentValue)
+        : base(config.CurrentValue, GetMeasurementTags(config.CurrentValue, out var localNode))
     {
         openConnectionForEachRequest = config.CurrentValue.OpenConnectionForEachRequest;
         metadata = new(config.CurrentValue.Metadata);
@@ -75,7 +76,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         clientHandlerName = config.CurrentValue.ClientHandlerName;
         protocolVersion = config.CurrentValue.ProtocolVersion;
         protocolVersionPolicy = config.CurrentValue.ProtocolVersionPolicy;
-        localNode = new(config.CurrentValue.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress));
+        this.localNode = localNode;
         localNodeId = ClusterMemberId.FromEndPoint(localNode);
         ProtocolPath = new(localNode.Uri.GetComponents(UriComponents.Path, UriFormat.Unescaped) is { Length: > 0 } protocolPath
                 ? string.Concat("/", protocolPath)
@@ -97,14 +98,19 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         Metrics = metrics;
 #pragma warning restore CS0618
         this.announcer = announcer;
-        measurementTags = new()
-        {
-            { IRaftCluster.LocalAddressMeterAttributeName, localNode.ToString() },
-        };
 
         // track changes in configuration, do not track membership
         configurationTracker = config.OnChange(ConfigurationChanged);
         configurationEvents = Channel.CreateUnbounded<(UriEndPoint, bool)>(new() { SingleWriter = true, SingleReader = true });
+    }
+
+    private static TagList GetMeasurementTags(HttpClusterMemberConfiguration config, out UriEndPoint localNode)
+    {
+        localNode = new(config.PublicEndPoint ?? throw new RaftProtocolException(ExceptionMessages.UnknownLocalNodeAddress));
+        return new()
+        {
+            { IRaftCluster.LocalAddressMeterAttributeName, localNode.ToString() },
+        };
     }
 
     protected override IClusterConfigurationStorage<UriEndPoint> ConfigurationStorage { get; }

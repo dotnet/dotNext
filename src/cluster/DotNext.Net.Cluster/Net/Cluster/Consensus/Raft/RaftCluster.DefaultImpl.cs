@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -82,7 +83,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// </summary>
     /// <param name="configuration">The configuration of the cluster.</param>
     public RaftCluster(NodeConfiguration configuration)
-        : base(configuration)
+        : base(configuration, GetMeasurementTags(configuration))
     {
 #pragma warning disable CS0618
         Metrics = configuration.Metrics;
@@ -100,11 +101,12 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         cachedConfig = new();
         Logger = configuration.LoggerFactory.CreateLogger<RaftCluster>();
         configurationEvents = Channel.CreateUnbounded<(EndPoint, bool)>(new() { SingleWriter = true, SingleReader = true });
-        measurementTags = new()
-        {
-            { IRaftCluster.LocalAddressMeterAttributeName, LocalMemberAddress.ToString() },
-        };
     }
+
+    private static TagList GetMeasurementTags(NodeConfiguration config) => new()
+    {
+        { IRaftCluster.LocalAddressMeterAttributeName, config.PublicEndPoint.ToString() },
+    };
 
     /// <inheritdoc />
     protected override ILogger Logger { get; }

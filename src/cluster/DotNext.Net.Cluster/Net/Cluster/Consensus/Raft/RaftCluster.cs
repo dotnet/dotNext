@@ -31,12 +31,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly TaskCompletionSource readinessProbe;
     private readonly bool standbyNode;
     private readonly AsyncExclusiveLock transitionLock; // used to synchronize state transitions
-
-    /// <summary>
-    /// Represents a tags to be attached to each performance measurement.
-    /// </summary>
-    [CLSCompliant(false)]
-    protected TagList measurementTags;
+    private readonly TagList measurementTags;
 
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
@@ -51,13 +46,26 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     /// <param name="config">The configuration of the local node.</param>
     protected RaftCluster(IClusterMemberConfiguration config)
+        : this(config, default)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new cluster manager for the local node.
+    /// </summary>
+    /// <param name="config">The configuration of the local node.</param>
+    /// <param name="measurementTags">A tags to be attached to each performance measurement.</param>
+    [CLSCompliant(false)]
+    protected RaftCluster(IClusterMemberConfiguration config, in TagList measurementTags)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+
         electionTimeoutProvider = config.ElectionTimeout;
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
         allowPartitioning = config.Partitioning;
         members = IMemberList.Empty;
-        transitionLock = new();
+        transitionLock = new() { MeasurementTags = measurementTags };
         transitionCancellation = new();
         LifecycleToken = transitionCancellation.Token;
         auditTrail = new ConsensusOnlyState();
@@ -69,6 +77,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         state = new StandbyState<TMember>(this);
         EndPointComparer = config.EndPointComparer;
+        this.measurementTags = measurementTags;
     }
 
     /// <summary>
@@ -526,7 +535,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 #pragma warning disable CS0618
                 Metrics?.MovedToFollowerState();
 #pragma warning restore CS0618
-                FollowerState.TransitionRateMeter.Add(1, measurementTags);
+                FollowerState.TransitionRateMeter.Add(1, in measurementTags);
                 break;
         }
 
@@ -795,7 +804,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 #pragma warning disable CS0618
                 Metrics?.ReportHeartbeat();
 #pragma warning restore CS0618
-                FollowerState.HeartbeatRateMeter.Add(1, measurementTags);
+                FollowerState.HeartbeatRateMeter.Add(1, in measurementTags);
             }
             else
             {
@@ -1021,7 +1030,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 #pragma warning disable CS0618
                     Metrics?.MovedToCandidateState();
 #pragma warning restore CS0618
-                    CandidateState.TransitionRateMeter.Add(1, measurementTags);
+                    CandidateState.TransitionRateMeter.Add(1, in measurementTags);
                     Logger.TransitionToCandidateStateCompleted(Term);
                 }
                 else
@@ -1090,7 +1099,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 #pragma warning disable CS0618
                 Metrics?.MovedToLeaderState();
 #pragma warning restore CS0618
-                LeaderState.TransitionRateMeter.Add(1, measurementTags);
+                LeaderState.TransitionRateMeter.Add(1, in measurementTags);
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
             }
         }
