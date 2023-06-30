@@ -44,31 +44,13 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-19-2023
+Release Date: 07-01-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.12.4">DotNext 4.12.4</a>
-* Fixed: sometimes `ConcurrentCache.TakeSnapshot` method may return evicted key/value pairs 
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.5">DotNext.Net.Cluster 4.12.5</a>
+* Improved Raft metrics over [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics)
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.12.4">DotNext.Metaprogramming 4.12.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.12.4">DotNext.Unsafe 4.12.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/4.12.4">DotNext.Threading 4.12.4</a>
-* Deprecation of `AsyncLock.TryAcquireAsync(CancellationToken)` overload
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.io/4.12.4">DotNext.IO 4.12.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.4">DotNext.Net.Cluster 4.12.4</a>
-* Perf: avoid Pre-Vote phase in case of concurrency between inbound Vote request and transition to Candidate state
-* Optimized memory consumption by `RaftCluster` implementation
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.4">DotNext.AspNetCore.Cluster 4.12.4</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.5">DotNext.AspNetCore.Cluster 4.12.5</a>
+* Improved Raft metrics over [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
