@@ -197,7 +197,7 @@ internal partial class LeaderState<TMember>
             // dispose all handles
             for (var i = 0; i < entries.Length; i++)
             {
-                ref var entry = ref entries[i];
+                ref var entry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), i);
                 for (ContextEntry? current = entry, next; current is not null; current = next)
                 {
                     next = current.Next;
