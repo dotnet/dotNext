@@ -37,7 +37,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
         {
             MeasurementTags = new()
             {
-                {ConfigurationTypeMeterAttributeName, GetType().Name},
+                { ConfigurationTypeMeterAttributeName, GetType().Name },
             },
         };
     }
