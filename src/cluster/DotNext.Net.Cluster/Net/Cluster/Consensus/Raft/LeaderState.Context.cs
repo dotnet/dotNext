@@ -207,7 +207,7 @@ internal partial class LeaderState<TMember>
                 entry = null;
             }
 
-            this = default;
+            entries = Array.Empty<ContextEntry?>();
         }
     }
 

@@ -282,9 +282,9 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicationEvent.Dispose();
 
             precedingTermCache.Clear();
+            context.Dispose();
         }
 
-        context.Dispose();
         base.Dispose(disposing);
     }
 }
