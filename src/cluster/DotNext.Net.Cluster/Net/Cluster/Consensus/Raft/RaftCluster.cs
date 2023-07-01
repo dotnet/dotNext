@@ -40,6 +40,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private volatile int electionTimeout;
     private IPersistentState auditTrail;
     private Timestamp lastUpdated; // volatile
+    private bool configurationReplicated;
 
     /// <summary>
     /// Initializes a new cluster manager for the local node.
@@ -642,15 +643,22 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                         switch ((config.Fingerprint == fingerprint, applyConfig))
                         {
                             case (true, true):
-                                await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
-                                break;
-                            case (true, false):
+                                // Perf: avoid calling ApplyAsync if configuration remains unchanged
+                                if (!configurationReplicated)
+                                {
+                                    await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                                    configurationReplicated = true;
+                                }
+
                                 break;
                             case (false, false):
                                 await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
-                                break;
+                                goto default;
                             case (false, true):
                                 result = result with { Value = false };
+                                goto default;
+                            default:
+                                configurationReplicated = false;
                                 break;
                         }
                     }
