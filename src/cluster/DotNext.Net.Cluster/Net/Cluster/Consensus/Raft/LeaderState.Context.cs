@@ -12,7 +12,7 @@ internal partial class LeaderState<TMember>
 {
     internal sealed class MemberContext
     {
-        public IFailureDetector? FailureDetector { get; set; }
+        internal IFailureDetector? FailureDetector;
     }
 
     private sealed class ContextEntry : Disposable
