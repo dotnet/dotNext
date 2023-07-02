@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 07-01-2023
+# 07-02-2023
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.5">DotNext.Net.Cluster 4.12.5</a>
 * Improved Raft metrics over [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics)
 * Improved performance of AppendEntries consensus message

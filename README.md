@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-01-2023
+Release Date: 07-02-2023
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.5">DotNext.Net.Cluster 4.12.5</a>
 * Improved Raft metrics over [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics)
