@@ -15,6 +15,8 @@ using Threading;
 public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClusterConfigurationStorage<TAddress>
     where TAddress : notnull
 {
+    private const string ConfigurationTypeMeterAttributeName = "dotnext.raft.config.type";
+
     /// <summary>
     /// The memory allocator.
     /// </summary>
@@ -31,7 +33,13 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
         fingerprintSource = new();
         activeCache = proposedCache = ImmutableHashSet.Create<TAddress>(comparer);
         activatedEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        accessLock = new();
+        accessLock = new()
+        {
+            MeasurementTags = new()
+            {
+                { ConfigurationTypeMeterAttributeName, GetType().Name },
+            },
+        };
     }
 
     private protected long GenerateFingerprint() => fingerprintSource.NextInt64();

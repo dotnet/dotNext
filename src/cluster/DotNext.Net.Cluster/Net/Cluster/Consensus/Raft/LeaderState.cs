@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Diagnostics;
 using IO.Log;
 using Membership;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
-using Timestamp = Diagnostics.Timestamp;
 using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 
 internal sealed partial class LeaderState<TMember> : RaftState<TMember>
@@ -36,6 +36,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         lease = ExpiredLease.Instance;
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
+        context = new();
     }
 
     internal ILeaderStateMetrics? Metrics
@@ -73,7 +74,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
-                responsePipe.Add(QueueReplication(new(activeConfig, proposedConfig, member, commitIndex, term, precedingIndex, precedingTerm, Logger), auditTrail, currentIndex, token));
+                responsePipe.Add(QueueReplication(member, context.GetOrCreate(member), activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm, Logger, auditTrail, currentIndex, token));
             }
         }
 
@@ -135,8 +136,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
-        var member = ReplicationWorkItem.GetReplicatedMember(response);
-        var memberDetector = detectors?.GetValue(member, detectorFactory!);
+        var (member, context) = ReplicationWorkItem.GetMemberAndContext(response);
+
+        var memberDetector = context is not null && detectorFactory is not null
+            ? context.FailureDetector ??= detectorFactory.Invoke(maxLease, member)
+            : null;
 
         try
         {
@@ -234,7 +238,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     /// <param name="token">The toke that can be used to cancel the operation.</param>
     internal void StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
-        foreach (var member in Members)
+        var members = Members;
+        context = new(members.Count);
+
+        foreach (var member in members)
         {
             member.NextIndex = transactionLog.LastUncommittedEntryIndex + 1;
             member.ConfigurationFingerprint = 0L;
@@ -274,8 +281,8 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
             replicationEvent.Dispose();
 
-            detectors?.Clear();
             precedingTermCache.Clear();
+            context.Dispose();
         }
 
         base.Dispose(disposing);

@@ -53,6 +53,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        [Obsolete]
         public static void DisposedState()
         {
             var l = AsyncLock.Exclusive();

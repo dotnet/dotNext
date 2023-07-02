@@ -1,6 +1,15 @@
 Release Notes
 ====
 
+# 07-02-2023
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.5">DotNext.Net.Cluster 4.12.5</a>
+* Improved Raft metrics over [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics)
+* Improved performance of AppendEntries consensus message
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.5">DotNext.AspNetCore.Cluster 4.12.5</a>
+* Improved Raft metrics over [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics)
+* Updated dependencies
+
 # 06-19-2023
 <a href="https://www.nuget.org/packages/dotnext/4.12.4">DotNext 4.12.4</a>
 * Fixed: sometimes `ConcurrentCache.TakeSnapshot` method may return evicted key/value pairs 

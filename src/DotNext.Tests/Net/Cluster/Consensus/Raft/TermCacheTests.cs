@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    [ExcludeFromCodeCoverage]
     public sealed class TermCacheTests : Test
     {
         [Fact]

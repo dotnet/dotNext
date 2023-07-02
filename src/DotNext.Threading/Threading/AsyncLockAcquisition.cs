@@ -139,6 +139,7 @@ public static class AsyncLockAcquisition
     /// </remarks>
     /// <param name="result">The result of the lock acquisition.</param>
     /// <returns>The task representing the lock acquisition.</returns>
+    [Obsolete("Catch exception manually instead.")]
     public static async ValueTask<AsyncLock.Holder> SuppressDisposedState(this ValueTask<AsyncLock.Holder> result)
     {
         try
