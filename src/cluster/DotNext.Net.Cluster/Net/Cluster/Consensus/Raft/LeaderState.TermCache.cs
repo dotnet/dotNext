@@ -175,23 +175,23 @@ internal partial class LeaderState<TMember>
             {
                 switch (node)
                 {
-                    case { IsLeft: true, Parent: { IsRoot: true } }:
+                    case { IsLeft: true, Parent.IsRoot: true }:
                         RotateRight(node.Parent); // zig rotation
                         break;
-                    case { IsLeft: false, Parent: { IsRoot: true } }:
+                    case { IsLeft: false, Parent.IsRoot: true }:
                         RotateLeft(node.Parent); // zag rotation
                         break;
-                    case { IsLeft: true, Parent: { IsLeft: true } }:
+                    case { IsLeft: true, Parent.IsLeft: true }:
                         // zig-zig rotation
                         RotateRight(node.Parent.Parent);
                         RotateRight(node.Parent);
                         break;
-                    case { IsRight: true, Parent: { IsRight: true } }:
+                    case { IsRight: true, Parent.IsRight: true }:
                         // zag-zag rotation
                         RotateLeft(node.Parent.Parent);
                         RotateLeft(node.Parent);
                         break;
-                    case { IsRight: true, Parent: { IsLeft: true } }:
+                    case { IsRight: true, Parent.IsLeft: true }:
                         // zig-zag rotation
                         RotateLeft(node.Parent);
                         RotateRight(node.Parent);
