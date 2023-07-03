@@ -28,7 +28,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
     protected DiskBasedStateMachine(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
-        : base(path, recordsPerPartition, configuration ??= new())
+        : base(path, recordsPerPartition, configuration ?? new())
     {
     }
 
@@ -77,7 +77,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
                     // Flush partition if we are finished or at the last entry in it
                     if (startIndex == commitIndex || startIndex == partition.LastIndex)
-                        await partition.FlushAsync().ConfigureAwait(false);
+                        await partition.FlushAsync(token).ConfigureAwait(false);
                 }
 
                 if (snapshotLength.HasValue)
