@@ -146,13 +146,10 @@ public struct BufferWriterInterpolatedStringHandler
     /// </param>
     public void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment)
     {
-        var leftAlign = false;
+        bool leftAlign;
 
-        if (alignment < 0)
-        {
-            leftAlign = true;
+        if (leftAlign = alignment < 0)
             alignment = -alignment;
-        }
 
         AppendFormatted(value, alignment, leftAlign);
     }
@@ -169,13 +166,10 @@ public struct BufferWriterInterpolatedStringHandler
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, int alignment, string? format = null)
     {
-        var leftAlign = false;
+        bool leftAlign;
 
-        if (alignment < 0)
-        {
-            leftAlign = true;
+        if (leftAlign = alignment < 0)
             alignment = -alignment;
-        }
 
         switch (value)
         {
