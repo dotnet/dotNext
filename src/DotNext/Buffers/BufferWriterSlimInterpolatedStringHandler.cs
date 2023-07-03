@@ -124,16 +124,12 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
         }
 
         var span = buffer.Value.InternalGetSpan(alignment);
-        if (leftAlign)
-        {
-            span.Slice(value.Length, padding).Fill(Whitespace);
-            value.CopyTo(span);
-        }
-        else
-        {
-            span.Slice(0, padding).Fill(Whitespace);
-            value.CopyTo(span.Slice(padding));
-        }
+        var filler = leftAlign
+            ? span.Slice(value.Length, padding)
+            : span.TrimLength(padding, out span);
+
+        filler.Fill(Whitespace);
+        value.CopyTo(span);
 
         buffer.Value.Advance(alignment);
         count += alignment;
@@ -200,8 +196,8 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
                         }
                         else
                         {
-                            span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
-                            span.Slice(0, padding).Fill(Whitespace);
+                            span.TrimLength(padding, out var rest).Fill(Whitespace);
+                            span.Slice(0, charsWritten).CopyTo(rest);
                         }
 
                         buffer.Value.Advance(alignment);

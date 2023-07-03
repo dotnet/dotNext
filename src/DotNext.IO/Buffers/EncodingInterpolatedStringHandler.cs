@@ -125,17 +125,12 @@ public ref struct EncodingInterpolatedStringHandler
 
         using var tempBuffer = alignment <= charBuffer.Length ? charBuffer.Slice(0, alignment) : new MemoryRental<char>(alignment);
         var span = tempBuffer.Span;
+        var filler = leftAlign
+            ? span.Slice(value.Length, padding)
+            : span.TrimLength(padding, out span);
 
-        if (leftAlign)
-        {
-            span.Slice(value.Length, padding).Fill(Whitespace);
-            value.CopyTo(span);
-        }
-        else
-        {
-            span.Slice(0, padding).Fill(Whitespace);
-            value.CopyTo(span.Slice(padding));
-        }
+        filler.Fill(Whitespace);
+        value.CopyTo(span);
 
         AppendFormatted(span);
     }
@@ -203,8 +198,8 @@ public ref struct EncodingInterpolatedStringHandler
                         }
                         else
                         {
-                            span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
-                            span.Slice(0, padding).Fill(Whitespace);
+                            span.TrimLength(padding, out var rest).Fill(Whitespace);
+                            span.Slice(0, charsWritten).CopyTo(rest);
                         }
 
                         AppendFormatted(span.Slice(0, alignment));
