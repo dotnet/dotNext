@@ -182,7 +182,7 @@ public ref struct EncodingInterpolatedStringHandler
                 for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
-                    var span = tempBuffer.Span;
+                    Span<char> span = tempBuffer.Span, filler;
 
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
@@ -194,12 +194,14 @@ public ref struct EncodingInterpolatedStringHandler
                         }
                         else if (leftAlign)
                         {
-                            span.Slice(charsWritten, padding).Fill(Whitespace);
+                            filler = span.Slice(charsWritten, padding);
+                            filler.Fill(Whitespace);
                         }
                         else
                         {
-                            span.TrimLength(padding, out var rest).Fill(Whitespace);
+                            filler = span.TrimLength(padding, out var rest);
                             span.Slice(0, charsWritten).CopyTo(rest);
+                            filler.Fill(Whitespace);
                         }
 
                         AppendFormatted(span.Slice(0, alignment));
