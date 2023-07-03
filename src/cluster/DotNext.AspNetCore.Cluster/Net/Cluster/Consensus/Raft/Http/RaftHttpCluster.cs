@@ -193,9 +193,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         StartFollowing();
     }
 
-    private static ValueTask WriteConfigurationEvent(ChannelWriter<(UriEndPoint, bool)> writer, UriEndPoint address, bool isAdded, CancellationToken token)
-        => writer.WriteAsync(new(address, isAdded), token);
-
     protected override ValueTask<bool> DetectLocalMemberAsync(RaftClusterMember candidate, CancellationToken token)
         => new(EndPointComparer.Equals(localNode, candidate.EndPoint));
 

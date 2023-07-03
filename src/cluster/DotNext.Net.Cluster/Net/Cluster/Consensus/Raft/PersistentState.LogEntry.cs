@@ -234,7 +234,7 @@ public partial class PersistentState
             if (PrepareContent())
                 return DeserializeSlowAsync(typeLoader, options, token);
 
-            return new(buffer.IsEmpty ? default(object) : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, options));
+            return new(buffer.IsEmpty ? default : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, options));
         }
 
         [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
@@ -270,7 +270,7 @@ public partial class PersistentState
             if (PrepareContent())
                 return DeserializeSlowAsync(typeLoader, context, token);
 
-            return new(buffer.IsEmpty ? default(object) : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, context));
+            return new(buffer.IsEmpty ? default : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, context));
         }
 
         private async ValueTask<object?> DeserializeSlowAsync(Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)

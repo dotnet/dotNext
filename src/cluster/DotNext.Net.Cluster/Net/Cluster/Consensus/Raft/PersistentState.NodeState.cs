@@ -10,7 +10,6 @@ using Buffers;
 using Threading;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 using IntegrityException = IO.Log.IntegrityException;
-using Intrinsics = Runtime.Intrinsics;
 
 public partial class PersistentState
 {

@@ -402,7 +402,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
                 var cachedEntry = new CachedLogEntry
                 {
-                    Content = await currentEntry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false),
+                    Content = await currentEntry.ToMemoryAsync(bufferManager.BufferAllocator, token).ConfigureAwait(false),
                     Term = currentEntry.Term,
                     CommandId = currentEntry.CommandId,
                     Timestamp = currentEntry.Timestamp,
@@ -639,7 +639,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
-        => await AppendCachedAsync(new CachedLogEntry { Content = await entry.ToMemoryAsync(bufferManager.BufferAllocator).ConfigureAwait(false), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token).ConfigureAwait(false);
+        => await AppendCachedAsync(new CachedLogEntry { Content = await entry.ToMemoryAsync(bufferManager.BufferAllocator, token).ConfigureAwait(false), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token).ConfigureAwait(false);
 
     private async ValueTask<long> AppendCachedAsync(CachedLogEntry cachedEntry, CancellationToken token)
     {

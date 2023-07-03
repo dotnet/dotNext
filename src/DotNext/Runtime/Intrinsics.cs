@@ -442,11 +442,7 @@ public static class Intrinsics
     /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
     /// <typeparam name="T">The type of the value.</typeparam>
     public static void Swap<T>(scoped ref T first, scoped ref T second)
-    {
-        var tmp = first;
-        first = second;
-        second = tmp;
-    }
+        => (second, first) = (first, second);
 
     /// <summary>
     /// Swaps two values.

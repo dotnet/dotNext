@@ -18,7 +18,7 @@ public static partial class Reflector
         Expression? thisArg = method switch
         {
             { IsStatic: true } or { MemberType: MemberTypes.Constructor } or { DeclaringType: null } => null,
-            { DeclaringType: { IsValueType: true } } => Expression.Unbox(target, method.DeclaringType),
+            { DeclaringType.IsValueType: true } => Expression.Unbox(target, method.DeclaringType),
             _ => Expression.Convert(target, method.DeclaringType)
         };
 
