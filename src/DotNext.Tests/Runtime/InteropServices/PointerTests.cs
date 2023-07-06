@@ -571,5 +571,12 @@ namespace DotNext.Runtime.InteropServices
             Equal(-1, x.CompareTo(new((nint)10)));
             Equal(0, x.CompareTo(new((nint)9)));
         }
+
+        [Fact]
+        public static unsafe void AlignmentCheck()
+        {
+            var i = 0;
+            True(new Pointer<int>(&i).IsAligned);
+        }
     }
 }
