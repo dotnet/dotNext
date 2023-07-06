@@ -19,27 +19,6 @@ namespace DotNext.Runtime.Caching;
 public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     where TKey : notnull
 {
-    // A conforming CLI shall guarantee that read and write access to properly aligned memory
-    // locations no larger than the native word size.
-    // See Section I.12.6.6 in https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf
-    private static readonly bool IsValueWriteAtomic;
-
-    static ConcurrentCache()
-    {
-        var valueType = typeof(TValue);
-
-        IsValueWriteAtomic = Type.GetTypeCode(valueType) switch
-        {
-            TypeCode.SByte or TypeCode.Byte
-                or TypeCode.Int16 or TypeCode.UInt16
-                or TypeCode.Int32 or TypeCode.UInt32
-                or TypeCode.Single or TypeCode.Char or TypeCode.Boolean
-                or TypeCode.String or TypeCode.DBNull => true,
-            TypeCode.Int64 or TypeCode.UInt64 or TypeCode.Double => IntPtr.Size is sizeof(long),
-            _ => valueType.IsOneOf(typeof(nint), typeof(nuint)) || Unsafe.SizeOf<TValue>() == IntPtr.Size && RuntimeHelpers.IsReferenceOrContainsReferences<TValue>(),
-        };
-    }
-
     private readonly int concurrencyLevel;
     private unsafe readonly delegate*<KeyValuePair, Command> addOrReadCommand;
 
