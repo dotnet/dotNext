@@ -1044,4 +1044,31 @@ public static class Intrinsics
         Ceq();
         return Return<bool>();
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct AlignmentHelperType<T>
+    {
+        private readonly byte field1;
+        private readonly T field2;
+    }
+
+    /// <summary>
+    /// Gets the alignment requirement for type <typeparamref name="T"/>, in bytes.
+    /// </summary>
+    /// <typeparam name="T">The target type.</typeparam>
+    /// <returns>The alignment of the type <typeparamref name="T"/>.</returns>
+    /// <seealso href="https://en.cppreference.com/w/c/language/_Alignof">_Alignof operator in C++</seealso>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int AlignOf<T>()
+        => Unsafe.SizeOf<AlignmentHelperType<T>>() - Unsafe.SizeOf<T>();
+
+    /// <summary>
+    /// Determines that the write to the location in the memory of
+    /// type <typeparamref name="T"/> is atomic.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to be written.</typeparam>
+    /// <returns><see langword="true"/> if write is atomic; otherwise, <see langword="false"/>.</returns>
+    /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
+    public static bool IsAtomic<T>()
+        => AlignOf<T>() == Unsafe.SizeOf<T>();
 }

@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Runtime
@@ -349,6 +350,37 @@ namespace DotNext.Runtime
             GC.SuppressFinalize(obj);
             Intrinsics.Finalize(obj);
             True(obj.IsFinalizerCalled);
+        }
+
+        [Fact]
+        public static void TypeAlignment()
+        {
+            Equal(4, Intrinsics.AlignOf<int>());
+            Equal(8, Intrinsics.AlignOf<long>());
+            Equal(8, Intrinsics.AlignOf<ValueTuple<byte, long>>());
+            Equal(IntPtr.Size, Intrinsics.AlignOf<string>());
+        }
+
+        [Fact]
+        public static void IsAtomicWrite()
+        {
+            True(Intrinsics.IsAtomic<byte>());
+            True(Intrinsics.IsAtomic<sbyte>());
+            True(Intrinsics.IsAtomic<bool>());
+            True(Intrinsics.IsAtomic<short>());
+            True(Intrinsics.IsAtomic<ushort>());
+            True(Intrinsics.IsAtomic<int>());
+            True(Intrinsics.IsAtomic<uint>());
+            True(Intrinsics.IsAtomic<long>());
+            True(Intrinsics.IsAtomic<ulong>());
+            True(Intrinsics.IsAtomic<nint>());
+            True(Intrinsics.IsAtomic<nuint>());
+            True(Intrinsics.IsAtomic<object>());
+            True(Intrinsics.IsAtomic<ValueTuple<object>>());
+
+            False(Intrinsics.IsAtomic<ValueTuple<byte, long>>());
+            False(Intrinsics.IsAtomic<ValueTuple<byte, byte>>());
+            False(Intrinsics.IsAtomic<Guid>());
         }
     }
 }
