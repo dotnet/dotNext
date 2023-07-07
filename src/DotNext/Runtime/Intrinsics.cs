@@ -1046,6 +1046,7 @@ public static class Intrinsics
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    [ExcludeFromCodeCoverage]
     private readonly struct AlignmentHelperType<T>
     {
         private readonly byte field1;
