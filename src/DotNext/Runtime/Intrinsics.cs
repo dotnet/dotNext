@@ -1071,5 +1071,5 @@ public static class Intrinsics
     /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAtomic<T>()
-        => AlignOf<T>() == Unsafe.SizeOf<T>();
+        => AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= UIntPtr.Size;
 }
