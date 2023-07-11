@@ -43,15 +43,21 @@ internal sealed class GenericServer : Server
     private protected override MemoryOwner<byte> AllocateBuffer(int bufferSize)
         => defaultAllocator(bufferSize);
 
-    private async void HandleConnection(ConnectionContext connection)
+    private (ConnectionContext, int, EndPoint?, MemoryAllocator<byte>) PrepareConnectionHandlerArgs(ConnectionContext connection)
     {
-        var clientAddress = connection.RemoteEndPoint;
-
-        // determine transmission size
         var transmissionSize = connection.Transport.Output.GetSpan().Length;
         var allocator = connection.Features.Get<MemoryAllocator<byte>>()
             ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool?.ToAllocator()
             ?? defaultAllocator;
+
+        return (connection, transmissionSize, connection.RemoteEndPoint, allocator);
+    }
+
+    private void HandleConnection((ConnectionContext, int, EndPoint?, MemoryAllocator<byte>) args)
+        => HandleConnection(args.Item1, args.Item2, args.Item3, args.Item4);
+
+    private async void HandleConnection(ConnectionContext connection, int transmissionSize, EndPoint? clientAddress, MemoryAllocator<byte> allocator)
+    {
         var protocol = new ProtocolPipeStream(connection.Transport, allocator, transmissionSize)
         {
             WriteTimeout = (int)ReceiveTimeout.TotalMilliseconds,
@@ -111,7 +117,7 @@ internal sealed class GenericServer : Server
 
     private async Task Listen(IConnectionListener listener)
     {
-        await using (listener.ConfigureAwait(false))
+        try
         {
             while (!lifecycleToken.IsCancellationRequested && !IsDisposingOrDisposed)
             {
@@ -121,7 +127,7 @@ internal sealed class GenericServer : Server
                     if (connection is null)
                         break;
 
-                    ThreadPool.UnsafeQueueUserWorkItem(HandleConnection, connection, preferLocal: false);
+                    ThreadPool.UnsafeQueueUserWorkItem(HandleConnection, PrepareConnectionHandlerArgs(connection), preferLocal: false);
                 }
                 catch (Exception e) when (e is ObjectDisposedException || (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
                 {
@@ -135,6 +141,10 @@ internal sealed class GenericServer : Server
             }
 
             await listener.UnbindAsync(lifecycleToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            await listener.DisposeAsync().ConfigureAwait(false);
         }
     }
 
