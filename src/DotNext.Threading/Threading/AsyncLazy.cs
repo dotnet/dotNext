@@ -55,20 +55,22 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         syncRoot = new();
     }
 
-    private void EraseFactory(Task expectedTask)
+    private void AttachFactoryErasureCallback(Task expectedTask)
     {
-        if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(ref task), expectedTask))
+        expectedTask.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(EraseFactory);
+
+        void EraseFactory()
         {
-            lock (syncRoot)
+            if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(ref task), expectedTask))
             {
-                if (ReferenceEquals(task, expectedTask))
-                    factory = null;
+                lock (syncRoot)
+                {
+                    if (ReferenceEquals(task, expectedTask))
+                        factory = null;
+                }
             }
         }
     }
-
-    private void AttachFactoryErasureCallback(Task expectedTask)
-        => expectedTask.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(() => EraseFactory(expectedTask));
 
     /// <summary>
     /// Gets a value that indicates whether a value has been computed.
