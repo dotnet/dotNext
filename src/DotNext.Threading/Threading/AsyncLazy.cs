@@ -14,7 +14,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
 {
     private const string NotAvailable = "<NotAvailable>";
     private readonly bool resettable;
-    private volatile Task<T>? task;
+    private Task<T>? task;
 
     // null or Func<Task<T>> or Func<CancellationToken, Task<T>>
     private MulticastDelegate? factory;
@@ -60,12 +60,12 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <summary>
     /// Gets a value that indicates whether a value has been computed.
     /// </summary>
-    public bool IsValueCreated => task is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted };
+    public bool IsValueCreated => Volatile.Read(ref task) is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted };
 
     /// <summary>
     /// Gets value if it is already computed.
     /// </summary>
-    public Result<T>? Value => task.TryGetResult();
+    public Result<T>? Value => Volatile.Read(ref task).TryGetResult();
 
     /// <inheritdoc />
     Task<T> ISupplier<CancellationToken, Task<T>>.Invoke(CancellationToken token)
@@ -74,7 +74,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     [MethodImpl(MethodImplOptions.Synchronized)]
     private Task<T> GetOrStartAsync(CancellationToken token)
     {
-        var t = task;
+        var t = task; // read barrier is provided by monitor
 
         if (t is { IsCanceled: false })
         {
@@ -114,7 +114,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Lazy representation of the value.</returns>
     public Task<T> WithCancellation(CancellationToken token)
-        => task is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
+        => Volatile.Read(ref task) is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
 
     /// <summary>
     /// Gets task representing asynchronous computation of lazy value.
@@ -158,10 +158,12 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// Returns textual representation of this object.
     /// </summary>
     /// <returns>The string representing this object.</returns>
-    public override string? ToString() => task?.Status switch
+    public override string? ToString()
     {
-        null => NotAvailable,
-        TaskStatus.RanToCompletion => task.Result?.ToString(),
-        { } status => $"<{status}>",
-    };
+        return Volatile.Read(ref task) is not { } t
+            ? NotAvailable
+            : t.Status is TaskStatus.RanToCompletion
+            ? t.Result?.ToString()
+            : $"<{t.Status}>";
+    }
 }
