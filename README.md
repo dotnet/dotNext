@@ -59,6 +59,7 @@ Release Date: 07-08-2023
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.13.0">DotNext.Threading 4.13.0</a>
+* Fixed [183](https://github.com/dotnet/dotNext/issues/183)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.13.0">DotNext.IO 4.13.0</a>
