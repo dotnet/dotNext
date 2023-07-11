@@ -17,8 +17,6 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     private readonly bool resettable;
     private readonly object syncRoot;
     private Task<T>? task;
-
-    // null or Func<Task<T>> or Func<CancellationToken, Task<T>>
     private Func<CancellationToken, Task<T>>? factory;
 
     /// <summary>
