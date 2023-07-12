@@ -448,7 +448,7 @@ public static class BitVector
     }
 
     /// <summary>
-    /// Extracts bits from platform-dependent signed integer.
+    /// Extracts bits from platform-dependent unsigned integer.
     /// </summary>
     /// <param name="value">The integer value.</param>
     /// <param name="bits">The buffer for extracted bits.</param>
