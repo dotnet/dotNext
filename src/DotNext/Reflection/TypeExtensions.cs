@@ -67,6 +67,7 @@ public static class TypeExtensions
     {
         for (var lookup = includeTopLevel ? type : type.BaseType; lookup is not null; lookup = lookup.BaseType)
             yield return lookup;
+
         if (includeInterfaces)
         {
             foreach (var iface in type.GetInterfaces())
@@ -88,11 +89,13 @@ public static class TypeExtensions
 
         if (type.IsInterface)
             goto exit;
+
         if (abstractMethod.DeclaringType.IsInterface && abstractMethod.DeclaringType.IsAssignableFrom(type))
         {
             // Interface maps for generic interfaces on arrays cannot be retrieved.
             if (type.IsArray && abstractMethod.DeclaringType.IsGenericType)
                 goto exit;
+
             var interfaceMap = type.GetInterfaceMap(abstractMethod.DeclaringType);
             for (var i = 0L; i < interfaceMap.InterfaceMethods.LongLength; i++)
             {
@@ -123,11 +126,13 @@ public static class TypeExtensions
         bool IsGenericInstanceOf(Type candidate)
             => candidate.IsConstructedGenericType && candidate.GetGenericTypeDefinition() == genericDefinition;
 
-        if (type.IsGenericTypeDefinition || !genericDefinition.IsGenericTypeDefinition)
-            return null;
-
-        if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == genericDefinition)
-            return type;
+        switch (type)
+        {
+            case { IsGenericTypeDefinition: true } when genericDefinition.IsGenericTypeDefinition is false:
+                return null;
+            case { IsConstructedGenericType: true } when type.GetGenericTypeDefinition() == genericDefinition:
+                return type;
+        }
 
         switch (genericDefinition)
         {
