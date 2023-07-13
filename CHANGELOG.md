@@ -1,6 +1,33 @@
 Release Notes
 ====
 
+# 07-13-2023
+<a href="https://www.nuget.org/packages/dotnext/4.13.0">DotNext 4.13.0</a>
+* Added of `AlignOf` intrinsic method that allows to obtain alignment requirements for the specified type
+* `ConcurrentCache` recognizes types with atomic write semantics more precisely that allows to avoid memory allocations for certain generic arguments
+* Introduced `TrimLength` overloaded extension method for [Span&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.span-1) data type that allows to retrieve the trimmed part of the span
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.0">DotNext.Metaprogramming 4.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.13.0">DotNext.Unsafe 4.13.0</a>
+* `Pointer<T>.IsAligned` property is unmarked as _obsolete_ because it is possible to determine memory alignment correctly
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.13.0">DotNext.Threading 4.13.0</a>
+* Fixed [183](https://github.com/dotnet/dotNext/issues/183)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.13.0">DotNext.IO 4.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.13.0">DotNext.Net.Cluster 4.13.0</a>
+* Fixed cancellation of some async methods exposed by Raft implementation and WAL
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.0">DotNext.AspNetCore.Cluster 4.12.0</a>
+* Updated dependencies
+
 # 07-02-2023
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.12.5">DotNext.Net.Cluster 4.12.5</a>
 * Improved Raft metrics over [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.metrics)

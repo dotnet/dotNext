@@ -129,7 +129,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
             for (MemoryChunk? current = first, next; current is not null; current = next)
             {
                 next = current.Next;
-                if (next is { WrittenMemory: { Length: > 0 } })
+                if (next is { WrittenMemory.Length: > 0 })
                     result += current.FreeCapacity;
             }
 

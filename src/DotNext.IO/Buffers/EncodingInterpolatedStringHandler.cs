@@ -125,17 +125,12 @@ public ref struct EncodingInterpolatedStringHandler
 
         using var tempBuffer = alignment <= charBuffer.Length ? charBuffer.Slice(0, alignment) : new MemoryRental<char>(alignment);
         var span = tempBuffer.Span;
+        var filler = leftAlign
+            ? span.Slice(value.Length, padding)
+            : span.TrimLength(padding, out span);
 
-        if (leftAlign)
-        {
-            span.Slice(value.Length, padding).Fill(Whitespace);
-            value.CopyTo(span);
-        }
-        else
-        {
-            span.Slice(0, padding).Fill(Whitespace);
-            value.CopyTo(span.Slice(padding));
-        }
+        filler.Fill(Whitespace);
+        value.CopyTo(span);
 
         AppendFormatted(span);
     }
@@ -150,13 +145,10 @@ public ref struct EncodingInterpolatedStringHandler
     /// </param>
     public void AppendFormatted(ReadOnlySpan<char> value, int alignment)
     {
-        var leftAlign = false;
+        bool leftAlign;
 
-        if (alignment < 0)
-        {
-            leftAlign = true;
+        if (leftAlign = alignment < 0)
             alignment = -alignment;
-        }
 
         AppendFormatted(value, alignment, leftAlign);
     }
@@ -173,13 +165,10 @@ public ref struct EncodingInterpolatedStringHandler
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, int alignment, string? format = null)
     {
-        var leftAlign = false;
+        bool leftAlign;
 
-        if (alignment < 0)
-        {
-            leftAlign = true;
+        if (leftAlign = alignment < 0)
             alignment = -alignment;
-        }
 
         switch (value)
         {
@@ -187,7 +176,7 @@ public ref struct EncodingInterpolatedStringHandler
                 for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
-                    var span = tempBuffer.Span;
+                    Span<char> span = tempBuffer.Span, filler;
 
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
@@ -199,12 +188,14 @@ public ref struct EncodingInterpolatedStringHandler
                         }
                         else if (leftAlign)
                         {
-                            span.Slice(charsWritten, padding).Fill(Whitespace);
+                            filler = span.Slice(charsWritten, padding);
+                            filler.Fill(Whitespace);
                         }
                         else
                         {
-                            span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
-                            span.Slice(0, padding).Fill(Whitespace);
+                            filler = span.TrimLength(padding, out var rest);
+                            span.Slice(0, charsWritten).CopyTo(rest);
+                            filler.Fill(Whitespace);
                         }
 
                         AppendFormatted(span.Slice(0, alignment));

@@ -705,7 +705,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
                     // Flush partition if we are finished or at the last entry in it
                     if (startIndex == commitIndex || startIndex == partition.LastIndex)
-                        await partition.FlushAsync().ConfigureAwait(false);
+                        await partition.FlushAsync(token).ConfigureAwait(false);
                 }
             }
             else
@@ -775,7 +775,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     {
         ThrowIfDisposed();
 
-        await base.InitializeAsync().ConfigureAwait(false);
+        await base.InitializeAsync(token).ConfigureAwait(false);
 
         if (replayOnInitialize)
             await ReplayAsync(token).ConfigureAwait(false);

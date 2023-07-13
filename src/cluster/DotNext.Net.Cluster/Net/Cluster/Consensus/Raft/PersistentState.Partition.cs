@@ -362,14 +362,12 @@ public partial class PersistentState
     // 4. The thread that is responsible for removing partitions from the head (compaction thread) doesn't have
     // concurrency with the thread that is adding new partitions
     // Under the hood, this is simply a sorted linked list
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed as a part of the linked list")]
     private protected Partition? FirstPartition
     {
         get;
         private set;
     }
 
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed as a part of the linked list")]
     private protected Partition? LastPartition
     {
         get;

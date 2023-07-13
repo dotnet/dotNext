@@ -71,17 +71,6 @@ public static class TaskType
         return (valueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(taskResult);
     }
 
-    private static Type? GetValueTaskType(Type valueTaskType)
-    {
-        if (valueTaskType == typeof(ValueTask))
-            return typeof(void);
-
-        if (valueTaskType.IsConstructedGenericType && valueTaskType.GetGenericTypeDefinition() == typeof(ValueTask<>))
-            return valueTaskType.GetGenericArguments()[0];
-
-        return null;
-    }
-
     /// <summary>
     /// Obtains result type from task type.
     /// </summary>
@@ -97,11 +86,40 @@ public static class TaskType
         if (taskType == CompletedTaskType)
             return typeof(void);
 
-        var result = taskType.FindGenericInstance(typeof(Task<>));
-        if (result is not null)
-            return result.GetGenericArguments()[0];
+        if (taskType.FindGenericInstance(typeof(Task<>)) is { } result)
+        {
+            result = result.GetGenericArguments()[0];
+        }
+        else if (typeof(Task).IsAssignableFrom(taskType))
+        {
+            result = typeof(void);
+        }
+        else
+        {
+            result = null;
+        }
 
-        return typeof(Task).IsAssignableFrom(taskType) ? typeof(void) : null;
+        return result;
+
+        static Type? GetValueTaskType(Type valueTaskType)
+        {
+            Type? result;
+
+            if (valueTaskType == typeof(ValueTask))
+            {
+                result = typeof(void);
+            }
+            else if (valueTaskType.IsConstructedGenericType && valueTaskType.GetGenericTypeDefinition() == typeof(ValueTask<>))
+            {
+                result = valueTaskType.GetGenericArguments()[0];
+            }
+            else
+            {
+                result = null;
+            }
+
+            return result;
+        }
     }
 
     /// <summary>

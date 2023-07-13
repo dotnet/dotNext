@@ -29,7 +29,6 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     // null - empty content
     // FileStream - file
     // IGrowableBuffer<byte> - in-memory copy of the log entry
-    [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly IDisposable? content;
     private readonly int commandId;
     private readonly byte flags;

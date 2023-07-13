@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
 using System.Threading;
@@ -10,7 +8,6 @@ using ProtocolStream = TransportServices.ConnectionOriented.ProtocolStream;
 
 internal sealed class TcpProtocolStream : ProtocolStream
 {
-    [SuppressMessage("Usage", "CA2213", Justification = "The objec doesn't own the stream")]
     internal readonly Stream BaseStream;
 
     internal TcpProtocolStream(Stream transport, MemoryAllocator<byte> allocator, int transmissionBlockSize)

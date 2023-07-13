@@ -142,8 +142,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     /// Determines whether this pointer is aligned
     /// to the size of <typeparamref name="T"/>.
     /// </summary>
-    [Obsolete(".NET doesn't have a precise way to detect alignment. See https://github.com/dotnet/runtime/issues/2167 for more info", error: true)]
-    public unsafe bool IsAligned => Address % Math.Min(sizeof(T), IntPtr.Size) is 0;
+    public unsafe bool IsAligned => Address % Intrinsics.AlignOf<T>() is 0;
 
     /// <summary>
     /// Fills the elements of the array with a specified value.

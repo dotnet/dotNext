@@ -59,6 +59,7 @@ public partial class PersistentState
 
         internal LogEntryMetadata(ReadOnlySpan<byte> input)
         {
+            Debug.Assert(Intrinsics.AlignOf<LogEntryMetadata>() is sizeof(long));
             Debug.Assert(input.Length >= Size);
 
             // fast path without any overhead for LE byte order
@@ -114,6 +115,7 @@ public partial class PersistentState
 
         public void Format(Span<byte> output)
         {
+            Debug.Assert(Intrinsics.AlignOf<LogEntryMetadata>() is sizeof(long));
             Debug.Assert(output.Length >= Size);
 
             // fast path without any overhead for LE byte order
@@ -144,6 +146,7 @@ public partial class PersistentState
 
         internal static long GetEndOfLogEntry(ReadOnlySpan<byte> input)
         {
+            Debug.Assert(Intrinsics.AlignOf<LogEntryMetadata>() is sizeof(long));
             ref var ptr = ref MemoryMarshal.GetReference(input);
 
             // BE case

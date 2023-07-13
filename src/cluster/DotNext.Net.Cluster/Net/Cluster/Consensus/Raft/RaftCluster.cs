@@ -284,8 +284,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ValueTask result;
 
         // ensure that local member has been received
-        TMember? localMember;
-        if (readinessProbe.Task.IsCompleted || (localMember = TryGetLocalMember()) is null)
+        if (readinessProbe.Task.IsCompleted || TryGetLocalMember() is null)
         {
             result = ValueTask.CompletedTask;
         }
@@ -483,7 +482,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             transitionCancellation.Cancel(false);
             await CancelPendingRequestsAsync().ConfigureAwait(false);
-            electionEvent.TrySetCanceled();
+            electionEvent.TrySetCanceled(LifecycleToken);
             LocalMemberGone();
             var lockTaken = false;
             try
@@ -652,7 +651,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                                 break;
                             case (false, false):
-                                await ConfigurationStorage.ProposeAsync(config).ConfigureAwait(false);
+                                await ConfigurationStorage.ProposeAsync(config, token).ConfigureAwait(false);
                                 goto default;
                             case (false, true):
                                 result = result with { Value = false };

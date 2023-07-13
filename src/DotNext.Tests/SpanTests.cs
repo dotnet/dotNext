@@ -503,5 +503,22 @@ namespace DotNext
             Contains('a', sequence[0]);
             Contains('b', sequence[1]);
         }
+
+        [Fact]
+        public static void SplitSpanByLength()
+        {
+            Span<char> chars = new char[] { 'a', 'b', 'c', 'd' };
+            var head = chars.TrimLength(2, out var rest);
+            Equal("ab", head.ToString());
+            Equal("cd", rest.ToString());
+
+            head = chars.TrimLength(0, out rest);
+            Equal(string.Empty, head.ToString());
+            Equal(chars.ToString(), rest.ToString());
+
+            head = chars.TrimLength(chars.Length, out rest);
+            Equal(chars.ToString(), head.ToString());
+            Equal(string.Empty, rest.ToString());
+        }
     }
 }

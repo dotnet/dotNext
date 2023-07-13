@@ -66,11 +66,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
             if (member.IsRemote)
             {
-                long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm;
+                long precedingIndex = Math.Max(0, member.NextIndex - 1);
                 minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
 
                 // try to get term from the cache to avoid touching audit trail for each member
-                if (!precedingTermCache.TryGet(precedingIndex, out precedingTerm))
+                if (!precedingTermCache.TryGet(precedingIndex, out var precedingTerm))
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure

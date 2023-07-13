@@ -125,16 +125,12 @@ public struct BufferWriterInterpolatedStringHandler
         }
 
         var span = buffer.GetSpan(alignment);
-        if (leftAlign)
-        {
-            span.Slice(value.Length, padding).Fill(Whitespace);
-            value.CopyTo(span);
-        }
-        else
-        {
-            span.Slice(0, padding).Fill(Whitespace);
-            value.CopyTo(span.Slice(padding));
-        }
+        var filler = leftAlign
+            ? span.Slice(value.Length, padding)
+            : span.TrimLength(padding, out span);
+
+        filler.Fill(Whitespace);
+        value.CopyTo(span);
 
         buffer.Advance(alignment);
         count += alignment;
@@ -150,13 +146,10 @@ public struct BufferWriterInterpolatedStringHandler
     /// </param>
     public void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment)
     {
-        var leftAlign = false;
+        bool leftAlign;
 
-        if (alignment < 0)
-        {
-            leftAlign = true;
+        if (leftAlign = alignment < 0)
             alignment = -alignment;
-        }
 
         AppendFormatted(value, alignment, leftAlign);
     }
@@ -173,20 +166,17 @@ public struct BufferWriterInterpolatedStringHandler
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, int alignment, string? format = null)
     {
-        var leftAlign = false;
+        bool leftAlign;
 
-        if (alignment < 0)
-        {
-            leftAlign = true;
+        if (leftAlign = alignment < 0)
             alignment = -alignment;
-        }
 
         switch (value)
         {
             case ISpanFormattable:
                 for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
                 {
-                    var span = buffer.GetSpan(bufferSize);
+                    Span<char> span = buffer.GetSpan(bufferSize), filler;
                     if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
                     {
                         var padding = alignment - charsWritten;
@@ -197,12 +187,14 @@ public struct BufferWriterInterpolatedStringHandler
                         }
                         else if (leftAlign)
                         {
-                            span.Slice(charsWritten, padding).Fill(Whitespace);
+                            filler = span.Slice(charsWritten, padding);
+                            filler.Fill(Whitespace);
                         }
                         else
                         {
-                            span.Slice(0, charsWritten).CopyTo(span.Slice(padding));
-                            span.Slice(0, padding).Fill(Whitespace);
+                            filler = span.TrimLength(padding, out var rest);
+                            span.Slice(0, charsWritten).CopyTo(rest);
+                            filler.Fill(Whitespace);
                         }
 
                         buffer.Advance(alignment);

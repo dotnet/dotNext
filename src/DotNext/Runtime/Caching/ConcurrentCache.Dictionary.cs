@@ -91,18 +91,18 @@ public partial class ConcurrentCache<TKey, TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static TValue GetValue(KeyValuePair pair)
     {
-        Debug.Assert(IsValueWriteAtomic ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
+        Debug.Assert(Intrinsics.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
-        return IsValueWriteAtomic ? Unsafe.As<KeyValuePairAtomicAccess>(pair).Value : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
+        return Intrinsics.IsAtomic<TValue>() ? Unsafe.As<KeyValuePairAtomicAccess>(pair).Value : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
     }
 
     // devirtualize Value setter manually (JIT will replace this method with one of the actual branches)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SetValue(KeyValuePair pair, TValue value)
     {
-        Debug.Assert(IsValueWriteAtomic ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
+        Debug.Assert(Intrinsics.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
-        if (IsValueWriteAtomic)
+        if (Intrinsics.IsAtomic<TValue>())
             Unsafe.As<KeyValuePairAtomicAccess>(pair).Value = value;
         else
             Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value = value;
@@ -201,7 +201,7 @@ public partial class ConcurrentCache<TKey, TValue>
             }
 
             previous = default;
-            pair = IsValueWriteAtomic
+            pair = Intrinsics.IsAtomic<TValue>()
                 ? new KeyValuePairAtomicAccess(key, value, hashCode)
                 : new KeyValuePairNonAtomicAccess(key, value, hashCode);
             pair.Next = bucket;

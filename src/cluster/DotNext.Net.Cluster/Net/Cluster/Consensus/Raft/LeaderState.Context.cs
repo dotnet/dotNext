@@ -113,14 +113,15 @@ internal partial class LeaderState<TMember>
                 {
                     next = current.Next; // make a copy because Next can be modified by Insert operation
 
-                    if (current.Key is null)
+                    if (current.Key is { } key)
                     {
-                        // do not migrate dead entries
-                        current.Dispose();
+                        Insert(current);
+                        GC.KeepAlive(key);
                     }
                     else
                     {
-                        Insert(current);
+                        // do not migrate dead entries
+                        current.Dispose();
                     }
                 }
 

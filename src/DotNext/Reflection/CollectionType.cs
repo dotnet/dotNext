@@ -60,9 +60,8 @@ public static class CollectionType
     {
         foreach (var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsReadOnlySpan())
         {
-            var instance = type.FindGenericInstance(collectionType);
-            if (instance is not null)
-                return instance;
+            if (type.FindGenericInstance(collectionType) is { } result)
+                return result;
         }
 
         return null;
