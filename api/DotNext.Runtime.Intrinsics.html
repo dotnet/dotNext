@@ -121,13 +121,13 @@
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L220">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_AddressOf_" data-uid="DotNext.Runtime.Intrinsics.AddressOf*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_AddressOf__1___0__" data-uid="DotNext.Runtime.Intrinsics.AddressOf``1(``0@)">AddressOf&lt;T&gt;(scoped in T)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_AddressOf__1___0__" data-uid="DotNext.Runtime.Intrinsics.AddressOf``1(``0@)">AddressOf&lt;T&gt;(in T)</h4>
   <div class="markdown level1 summary"><p>Returns an address of the given by-ref parameter.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static nint AddressOf&lt;T&gt;(scoped in T value)</code></pre>
+    <pre><code class="lang-csharp hljs">public static nint AddressOf&lt;T&gt;(in T value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -181,19 +181,71 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_AlignOf__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.AlignOf%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L1062">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_AlignOf_" data-uid="DotNext.Runtime.Intrinsics.AlignOf*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_AlignOf__1" data-uid="DotNext.Runtime.Intrinsics.AlignOf``1">AlignOf&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Gets the alignment requirement for type <code class="typeparamref">T</code>, in bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int AlignOf&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The alignment of the type <code class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The target type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Intrinsics_AlignOf__1_seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://en.cppreference.com/w/c/language/_Alignof">_Alignof operator in C++</a></span></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_AreSame__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.AreSame%60%601(%60%600%40%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L470">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L466">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_AreSame_" data-uid="DotNext.Runtime.Intrinsics.AreSame*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_AreSame__1___0____0__" data-uid="DotNext.Runtime.Intrinsics.AreSame``1(``0@,``0@)">AreSame&lt;T&gt;(scoped in T, scoped in T)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_AreSame__1___0____0__" data-uid="DotNext.Runtime.Intrinsics.AreSame``1(``0@,``0@)">AreSame&lt;T&gt;(in T, in T)</h4>
   <div class="markdown level1 summary"><p>Indicates that two managed pointers are equal.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool AreSame&lt;T&gt;(scoped in T first, scoped in T second)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool AreSame&lt;T&gt;(in T first, in T second)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -342,14 +394,14 @@ public static ref T AsRef&lt;T&gt;(this TypedReference reference)</code></pre>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L102">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Bitcast_" data-uid="DotNext.Runtime.Intrinsics.Bitcast*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_Bitcast__2___0____1__" data-uid="DotNext.Runtime.Intrinsics.Bitcast``2(``0@,``1@)">Bitcast&lt;T, TResult&gt;(scoped in T, out TResult)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_Bitcast__2___0____1__" data-uid="DotNext.Runtime.Intrinsics.Bitcast``2(``0@,``1@)">Bitcast&lt;T, TResult&gt;(in T, out TResult)</h4>
   <div class="markdown level1 summary"><p>Obtain a value of type <code class="typeparamref">TResult</code> by
 reinterpreting the object representation of <code class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Bitcast&lt;T, TResult&gt;(scoped in T input, out TResult output) where T : unmanaged where TResult : unmanaged</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Bitcast&lt;T, TResult&gt;(in T input, out TResult output) where T : unmanaged where TResult : unmanaged</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -495,7 +547,7 @@ value passed to <code class="paramref">obj</code> as invalid object of type <cod
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_ClearBits_System_Void__System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.ClearBits(System.Void*%2CSystem.IntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L533">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L529">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_ClearBits_" data-uid="DotNext.Runtime.Intrinsics.ClearBits*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_ClearBits_System_Void__System_IntPtr_" data-uid="DotNext.Runtime.Intrinsics.ClearBits(System.Void*,System.IntPtr)">ClearBits(void*, nint)</h4>
@@ -537,7 +589,7 @@ public static void ClearBits(void* address, nint length)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_ClearBits_System_Void__System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.ClearBits(System.Void*%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L548">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L544">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_ClearBits_" data-uid="DotNext.Runtime.Intrinsics.ClearBits*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_ClearBits_System_Void__System_UIntPtr_" data-uid="DotNext.Runtime.Intrinsics.ClearBits(System.Void*,System.UIntPtr)">ClearBits(void*, nuint)</h4>
@@ -822,13 +874,13 @@ public static void Copy&lt;T&gt;(T* input, T* output) where T : unmanaged</code>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L356">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Copy_" data-uid="DotNext.Runtime.Intrinsics.Copy*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_Copy__1___0____0__" data-uid="DotNext.Runtime.Intrinsics.Copy``1(``0@,``0@)">Copy&lt;T&gt;(scoped in T, out T)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_Copy__1___0____0__" data-uid="DotNext.Runtime.Intrinsics.Copy``1(``0@,``0@)">Copy&lt;T&gt;(in T, out T)</h4>
   <div class="markdown level1 summary"><p>Copies one value into another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(scoped in T input, out T output) where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output) where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -878,14 +930,14 @@ public static void Copy&lt;T&gt;(T* input, T* output) where T : unmanaged</code>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L412">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Copy_" data-uid="DotNext.Runtime.Intrinsics.Copy*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_Copy__1___0____0__System_Int64_" data-uid="DotNext.Runtime.Intrinsics.Copy``1(``0@,``0@,System.Int64)">Copy&lt;T&gt;(scoped in T, out T, long)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_Copy__1___0____0__System_Int64_" data-uid="DotNext.Runtime.Intrinsics.Copy``1(``0@,``0@,System.Int64)">Copy&lt;T&gt;(in T, out T, long)</h4>
   <div class="markdown level1 summary"><p>Copies the specified number of elements from source address to the destination address.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Copy overload that accepts the length as unsigned integer&quot;)]
-public static void Copy&lt;T&gt;(scoped in T source, out T destination, long count) where T : unmanaged</code></pre>
+public static void Copy&lt;T&gt;(in T source, out T destination, long count) where T : unmanaged</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -941,14 +993,14 @@ public static void Copy&lt;T&gt;(scoped in T source, out T destination, long cou
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L429">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Copy_" data-uid="DotNext.Runtime.Intrinsics.Copy*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_Copy__1___0____0__System_UIntPtr_" data-uid="DotNext.Runtime.Intrinsics.Copy``1(``0@,``0@,System.UIntPtr)">Copy&lt;T&gt;(scoped in T, out T, nuint)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_Copy__1___0____0__System_UIntPtr_" data-uid="DotNext.Runtime.Intrinsics.Copy``1(``0@,``0@,System.UIntPtr)">Copy&lt;T&gt;(in T, out T, nuint)</h4>
   <div class="markdown level1 summary"><p>Copies the specified number of elements from source address to the destination address.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void Copy&lt;T&gt;(scoped in T source, out T destination, nuint count) where T : unmanaged</code></pre>
+public static void Copy&lt;T&gt;(in T source, out T destination, nuint count) where T : unmanaged</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1181,7 +1233,7 @@ public static bool Equals(void* first, void* second, nuint length)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Error_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Error(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L965">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L961">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Error_" data-uid="DotNext.Runtime.Intrinsics.Error*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_Error_System_Object_" data-uid="DotNext.Runtime.Intrinsics.Error(System.Object)">Error(object)</h4>
@@ -1255,7 +1307,7 @@ such as <code>throw Error(&quot;Error&quot;);</code>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Finalize_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Finalize(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L1028">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L1024">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Finalize_" data-uid="DotNext.Runtime.Intrinsics.Finalize*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_Finalize_System_Object_" data-uid="DotNext.Runtime.Intrinsics.Finalize(System.Object)">Finalize(object)</h4>
@@ -1289,7 +1341,7 @@ such as <code>throw Error(&quot;Error&quot;);</code>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_IntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*%2CSystem.IntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L898">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L894">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode32_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_IntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*,System.IntPtr,System.Boolean)">GetHashCode32(void*, nint, bool)</h4>
@@ -1360,7 +1412,7 @@ public static int GetHashCode32(void* source, nint length, bool salted = true)</
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_IntPtr_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*%2CSystem.IntPtr%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L781">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L777">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode32_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_IntPtr_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*,System.IntPtr,System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode32(void*, nint, int, Func&lt;int, int, int&gt;, bool)</h4>
@@ -1440,7 +1492,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_UIntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*%2CSystem.UIntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L914">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L910">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode32_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_UIntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*,System.UIntPtr,System.Boolean)">GetHashCode32(void*, nuint, bool)</h4>
@@ -1510,7 +1562,7 @@ public static int GetHashCode32(void* source, nuint length, bool salted = true)<
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_UIntPtr_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*%2CSystem.UIntPtr%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L799">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L795">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode32_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode32_System_Void__System_UIntPtr_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32(System.Void*,System.UIntPtr,System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode32(void*, nuint, int, Func&lt;int, int, int&gt;, bool)</h4>
@@ -1589,7 +1641,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode32__1_System_Func___0_System_Int32_System_Int32__System_Int32___0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode32%60%601(System.Func%7B%60%600%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Int32%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L639">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L635">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode32_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode32__1_System_Func___0_System_Int32_System_Int32__System_Int32___0_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32``1(System.Func{``0,System.Int32,System.Int32},System.Int32,``0,System.Boolean)">GetHashCode32&lt;T&gt;(Func&lt;T, int, int&gt;, int, T, bool)</h4>
@@ -1673,7 +1725,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode32__1_System_Void__System_IntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode32%60%601(System.Void*%2CSystem.IntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L856">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L852">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode32_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode32__1_System_Void__System_IntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32``1(System.Void*,System.IntPtr,System.Boolean)">GetHashCode32&lt;THashFunction&gt;(void*, nint, bool)</h4>
@@ -1757,7 +1809,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode32__1_System_Void__System_UIntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode32%60%601(System.Void*%2CSystem.UIntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L874">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L870">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode32_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode32__1_System_Void__System_UIntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode32``1(System.Void*,System.UIntPtr,System.Boolean)">GetHashCode32&lt;THashFunction&gt;(void*, nuint, bool)</h4>
@@ -1840,7 +1892,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_IntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*%2CSystem.IntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L748">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L744">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode64_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_IntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*,System.IntPtr,System.Boolean)">GetHashCode64(void*, nint, bool)</h4>
@@ -1911,7 +1963,7 @@ public static long GetHashCode64(void* source, nint length, bool salted = true)<
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_IntPtr_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*%2CSystem.IntPtr%2CSystem.Int64%2CSystem.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L664">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L660">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode64_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_IntPtr_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*,System.IntPtr,System.Int64,System.Func{System.Int64,System.Int64,System.Int64},System.Boolean)">GetHashCode64(void*, nint, long, Func&lt;long, long, long&gt;, bool)</h4>
@@ -1991,7 +2043,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_UIntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*%2CSystem.UIntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L764">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L760">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode64_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_UIntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*,System.UIntPtr,System.Boolean)">GetHashCode64(void*, nuint, bool)</h4>
@@ -2061,7 +2113,7 @@ public static long GetHashCode64(void* source, nuint length, bool salted = true)
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_UIntPtr_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*%2CSystem.UIntPtr%2CSystem.Int64%2CSystem.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L682">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L678">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode64_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode64_System_Void__System_UIntPtr_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64(System.Void*,System.UIntPtr,System.Int64,System.Func{System.Int64,System.Int64,System.Int64},System.Boolean)">GetHashCode64(void*, nuint, long, Func&lt;long, long, long&gt;, bool)</h4>
@@ -2140,7 +2192,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode64__1_System_Func___0_System_Int32_System_Int64__System_Int32___0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode64%60%601(System.Func%7B%60%600%2CSystem.Int32%2CSystem.Int64%7D%2CSystem.Int32%2C%60%600%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L618">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L614">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode64_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode64__1_System_Func___0_System_Int32_System_Int64__System_Int32___0_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64``1(System.Func{``0,System.Int32,System.Int64},System.Int32,``0,System.Boolean)">GetHashCode64&lt;T&gt;(Func&lt;T, int, long&gt;, int, T, bool)</h4>
@@ -2224,7 +2276,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode64__1_System_Void__System_IntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode64%60%601(System.Void*%2CSystem.IntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L706">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L702">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode64_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode64__1_System_Void__System_IntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64``1(System.Void*,System.IntPtr,System.Boolean)">GetHashCode64&lt;THashFunction&gt;(void*, nint, bool)</h4>
@@ -2308,7 +2360,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetHashCode64__1_System_Void__System_UIntPtr_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetHashCode64%60%601(System.Void*%2CSystem.UIntPtr%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L724">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L720">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetHashCode64_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetHashCode64__1_System_Void__System_UIntPtr_System_Boolean_" data-uid="DotNext.Runtime.Intrinsics.GetHashCode64``1(System.Void*,System.UIntPtr,System.Boolean)">GetHashCode64&lt;THashFunction&gt;(void*, nuint, bool)</h4>
@@ -2391,7 +2443,7 @@ the same data. To disable this behavior, pass false to <code class="paramref">sa
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_GetLength_System_Array_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.GetLength(System.Array)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L997">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L993">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_GetLength_" data-uid="DotNext.Runtime.Intrinsics.GetLength*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_GetLength_System_Array_" data-uid="DotNext.Runtime.Intrinsics.GetLength(System.Array)">GetLength(Array)</h4>
@@ -2522,7 +2574,7 @@ public static ref readonly TBase GetReadonlyRef&lt;T, TBase&gt;(this T[] array, 
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_HasFinalizer_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.HasFinalizer(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L1041">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L1037">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_HasFinalizer_" data-uid="DotNext.Runtime.Intrinsics.HasFinalizer*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_HasFinalizer_System_Object_" data-uid="DotNext.Runtime.Intrinsics.HasFinalizer(System.Object)">HasFinalizer(object)</h4>
@@ -2641,19 +2693,68 @@ public static ref readonly TBase GetReadonlyRef&lt;T, TBase&gt;(this T[] array, 
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsAtomic__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsAtomic%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L1073">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_IsAtomic_" data-uid="DotNext.Runtime.Intrinsics.IsAtomic*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_IsAtomic__1" data-uid="DotNext.Runtime.Intrinsics.IsAtomic``1">IsAtomic&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Determines that the write to the location in the memory of
+type <code class="typeparamref">T</code> is atomic.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsAtomic&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if write is atomic; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the value to be written.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsDefault__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsDefault%60%601(%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L135">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_IsDefault_" data-uid="DotNext.Runtime.Intrinsics.IsDefault*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_IsDefault__1___0__" data-uid="DotNext.Runtime.Intrinsics.IsDefault``1(``0@)">IsDefault&lt;T&gt;(scoped in T)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_IsDefault__1___0__" data-uid="DotNext.Runtime.Intrinsics.IsDefault``1(``0@)">IsDefault&lt;T&gt;(in T)</h4>
   <div class="markdown level1 summary"><p>Indicates that specified value type is the default value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsDefault&lt;T&gt;(scoped in T value)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool IsDefault&lt;T&gt;(in T value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2710,7 +2811,7 @@ public static ref readonly TBase GetReadonlyRef&lt;T, TBase&gt;(this T[] array, 
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsExactTypeOf__1_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsExactTypeOf%60%601(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L934">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L930">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_IsExactTypeOf_" data-uid="DotNext.Runtime.Intrinsics.IsExactTypeOf*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_IsExactTypeOf__1_System_Object_" data-uid="DotNext.Runtime.Intrinsics.IsExactTypeOf``1(System.Object)">IsExactTypeOf&lt;T&gt;(object?)</h4>
@@ -2879,16 +2980,16 @@ public static int PointerHashCode(void* pointer)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Reverse__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Reverse%60%601(%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L924">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L920">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Reverse_" data-uid="DotNext.Runtime.Intrinsics.Reverse*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_Reverse__1___0__" data-uid="DotNext.Runtime.Intrinsics.Reverse``1(``0@)">Reverse&lt;T&gt;(scoped ref T)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_Reverse__1___0__" data-uid="DotNext.Runtime.Intrinsics.Reverse``1(``0@)">Reverse&lt;T&gt;(ref T)</h4>
   <div class="markdown level1 summary"><p>Reverse bytes in the specified value of blittable type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Reverse&lt;T&gt;(scoped ref T value) where T : unmanaged</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Reverse&lt;T&gt;(ref T value) where T : unmanaged</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2929,7 +3030,7 @@ public static int PointerHashCode(void* pointer)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_ShallowCopy__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.ShallowCopy%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L980">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L976">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_ShallowCopy_" data-uid="DotNext.Runtime.Intrinsics.ShallowCopy*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_ShallowCopy__1___0_" data-uid="DotNext.Runtime.Intrinsics.ShallowCopy``1(``0)">ShallowCopy&lt;T&gt;(T)</h4>
@@ -2995,7 +3096,7 @@ public static int PointerHashCode(void* pointer)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Swap__1___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Swap%60%601(%60%600*%2C%60%600*)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L457">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L453">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Swap_" data-uid="DotNext.Runtime.Intrinsics.Swap*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_Swap__1___0____0__" data-uid="DotNext.Runtime.Intrinsics.Swap``1(``0*,``0*)">Swap&lt;T&gt;(T*, T*)</h4>
@@ -3055,13 +3156,13 @@ public static void Swap&lt;T&gt;(T* first, T* second) where T : unmanaged</code>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L444">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Swap_" data-uid="DotNext.Runtime.Intrinsics.Swap*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_Swap__1___0____0__" data-uid="DotNext.Runtime.Intrinsics.Swap``1(``0@,``0@)">Swap&lt;T&gt;(scoped ref T, scoped ref T)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_Swap__1___0____0__" data-uid="DotNext.Runtime.Intrinsics.Swap``1(``0@,``0@)">Swap&lt;T&gt;(ref T, ref T)</h4>
   <div class="markdown level1 summary"><p>Swaps two values.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Swap&lt;T&gt;(scoped ref T first, scoped ref T second)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Swap&lt;T&gt;(ref T first, ref T second)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3108,7 +3209,7 @@ public static void Swap&lt;T&gt;(T* first, T* second) where T : unmanaged</code>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Throw_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Throw(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L945">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L941">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Throw_" data-uid="DotNext.Runtime.Intrinsics.Throw*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_Throw_System_Object_" data-uid="DotNext.Runtime.Intrinsics.Throw(System.Object)">Throw(object)</h4>
@@ -3164,13 +3265,13 @@ public static void Swap&lt;T&gt;(T* first, T* second) where T : unmanaged</code>
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L340">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_ThrowIfNull_" data-uid="DotNext.Runtime.Intrinsics.ThrowIfNull*"></a>
-  <h4 id="DotNext_Runtime_Intrinsics_ThrowIfNull__1___0__" data-uid="DotNext.Runtime.Intrinsics.ThrowIfNull``1(``0@)">ThrowIfNull&lt;T&gt;(scoped in T)</h4>
+  <h4 id="DotNext_Runtime_Intrinsics_ThrowIfNull__1___0__" data-uid="DotNext.Runtime.Intrinsics.ThrowIfNull``1(``0@)">ThrowIfNull&lt;T&gt;(in T)</h4>
   <div class="markdown level1 summary"><p>Throws <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullreferenceexception">NullReferenceException</a> if given managed pointer is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void ThrowIfNull&lt;T&gt;(scoped in T value)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void ThrowIfNull&lt;T&gt;(in T value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
