@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-08-2023
+Release Date: 07-13-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.13.0">DotNext 4.13.0</a>
 * Added of `AlignOf` intrinsic method that allows to obtain alignment requirements for the specified type

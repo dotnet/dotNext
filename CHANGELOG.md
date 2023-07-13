@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 07-08-2023
+# 07-13-2023
 <a href="https://www.nuget.org/packages/dotnext/4.13.0">DotNext 4.13.0</a>
 * Added of `AlignOf` intrinsic method that allows to obtain alignment requirements for the specified type
 * `ConcurrentCache` recognizes types with atomic write semantics more precisely that allows to avoid memory allocations for certain generic arguments
@@ -15,6 +15,7 @@ Release Notes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.13.0">DotNext.Threading 4.13.0</a>
+* Fixed [183](https://github.com/dotnet/dotNext/issues/183)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.13.0">DotNext.IO 4.13.0</a>
