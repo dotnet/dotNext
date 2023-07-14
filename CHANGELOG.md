@@ -25,7 +25,7 @@ Release Notes
 * Fixed cancellation of some async methods exposed by Raft implementation and WAL
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.0">DotNext.AspNetCore.Cluster 4.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.13.0">DotNext.AspNetCore.Cluster 4.13.0</a>
 * Updated dependencies
 
 # 07-02-2023
