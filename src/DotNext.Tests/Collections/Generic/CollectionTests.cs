@@ -6,13 +6,20 @@ namespace DotNext.Collections.Generic
     public sealed class CollectionTests : Test
     {
         [Fact]
-        public static void AddingItems()
+        public static void AddingItemsToList()
         {
-            var list = new List<int>();
-            list.AddAll(new[] { 1, 3, 5 });
-            Equal(1, list[0]);
-            Equal(3, list[1]);
-            Equal(5, list[2]);
+            var expected = new HashSet<int>(new[] { 1, 3, 5 });
+            AddItems<List<int>>(expected);
+            AddItems<HashSet<int>>(expected);
+            AddItems<LinkedList<int>>(expected);
+
+            static void AddItems<TCollection>(IReadOnlySet<int> expected)
+                where TCollection : class, ICollection<int>, new()
+            {
+                var actual = new TCollection();
+                actual.AddAll(expected);
+                True(expected.SetEquals(actual));
+            }
         }
 
         [Fact]

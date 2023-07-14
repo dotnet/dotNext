@@ -64,7 +64,22 @@ public static class Collection
     /// <param name="collection">A collection to modify.</param>
     /// <param name="items">An items to add into collection.</param>
     public static void AddAll<T>(this ICollection<T> collection, IEnumerable<T> items)
-        => items.ForEach(collection.Add);
+    {
+        switch (collection)
+        {
+            case null:
+                throw new ArgumentNullException(nameof(collection));
+            case List<T> list:
+                list.AddRange(items);
+                break;
+            case HashSet<T> set:
+                set.UnionWith(items);
+                break;
+            default:
+                items.ForEach(collection.Add);
+                break;
+        }
+    }
 
     /// <summary>
     /// Gets the random element from the collection.
