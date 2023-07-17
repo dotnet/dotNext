@@ -170,13 +170,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 }
 
                 suspendedCallers?.Unwind();
-                if (!signaled && throwOnEmptyQueue)
-                {
-                    task = ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-                    break;
-                }
+                task = !signaled && throwOnEmptyQueue
+                    ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
+                    : new(false);
 
-                task = new(false);
                 break;
             default:
                 if (token.IsCancellationRequested)
