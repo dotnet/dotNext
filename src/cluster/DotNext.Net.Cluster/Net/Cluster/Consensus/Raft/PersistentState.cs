@@ -133,11 +133,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         => new(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
+    private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
         var list = bufferManager.AllocLogEntryList(length);
         Debug.Assert(list.Length >= length);
-        var snapshotRequested = SnapshotInfo.Index > 0L && startIndex <= SnapshotInfo.Index;
 
         try
         {
@@ -195,11 +194,26 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, CancellationToken token)
     {
+        Debug.Assert(endIndex >= startIndex);
+
         if (startIndex > state.LastIndex)
             return ValueTask.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(startIndex)));
 
         if (endIndex > state.LastIndex)
             return ValueTask.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex)));
+
+        bool snapshotRequested;
+        var snapshotIndex = SnapshotInfo.Index;
+        if (SnapshotInfo.Index > 0L && startIndex <= snapshotIndex)
+        {
+            // adjust startIndex automatically to avoid growth of length
+            snapshotRequested = true;
+            startIndex = snapshotIndex;
+        }
+        else
+        {
+            snapshotRequested = false;
+        }
 
         var length = endIndex - startIndex + 1L;
         if (length > int.MaxValue)
@@ -209,15 +223,16 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         ReadRateMeter.Add(length, measurementTags);
 
         if (LastPartition is not null)
-            return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
+            return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token);
 
-        if (SnapshotInfo.Index > 0L)
+        if (snapshotRequested)
             return ReadSnapshotAsync(reader, sessionId, token);
 
-        return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
+        // read ephemeral entry
+        if (startIndex is 0L)
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token);
 
-        static ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
-            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+        return reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
     }
 
     /// <summary>
