@@ -356,4 +356,34 @@ public partial class PersistentState
             base.Dispose(disposing);
         }
     }
+
+    [StructLayout(LayoutKind.Auto)]
+    private struct LogEntryArray
+    {
+        private LogEntry[]? array;
+
+        internal ArraySegment<LogEntry> GetOrResize(int length)
+        {
+            Debug.Assert(length > 0);
+
+            var result = array;
+            if (result is null || result.Length < length)
+                array = result = new LogEntry[length];
+
+            return new(result, 0, length);
+        }
+    }
+
+    private readonly LogEntryArray[] arrayPool;
+
+    private ArraySegment<LogEntry> GetLogEntryArray(int sessionId, int length)
+    {
+        Debug.Assert(sessionId >= 0 && sessionId < arrayPool.Length);
+
+        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayPool), sessionId).GetOrResize(length);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ref LogEntry GetReference(ArraySegment<LogEntry> segment)
+        => ref MemoryMarshal.GetReference(segment.AsSpan());
 }

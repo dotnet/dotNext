@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
 
@@ -137,8 +136,6 @@ public partial class PersistentState
 
         internal MemoryOwner<CacheRecord> AllocLogEntryCache(int recordsPerPartition)
             => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
-
-        internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator(length);
     }
 
     private readonly ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? bufferingConsumer;

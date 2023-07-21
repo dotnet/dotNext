@@ -62,6 +62,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
         parallelIO = configuration.ParallelIO;
+        arrayPool = new LogEntryArray[concurrentReads];
 
         syncRoot = new(configuration.MaxConcurrentReads)
         {
@@ -135,8 +136,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
-        var list = bufferManager.AllocLogEntryList(length);
-        Debug.Assert(list.Length >= length);
+        var entries = GetLogEntryArray(sessionId, length);
+        Debug.Assert(entries.Count >= length);
 
         try
         {
@@ -154,7 +155,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                     snapshot = new(await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in SnapshotInfo);
                 }
 
-                BufferHelpers.GetReference(in list) = snapshot;
+                GetReference(entries) = snapshot;
 
                 // skip squashed log entries
                 startIndex = snapshot.Index + 1L;
@@ -162,7 +163,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             }
             else if (startIndex is 0L)
             {
-                BufferHelpers.GetReference(in list) = LogEntry.Initial;
+                GetReference(entries) = LogEntry.Initial;
                 startIndex = length = 1;
             }
             else
@@ -170,26 +171,26 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 length = 0;
             }
 
-            return await UnsafeReadAsync(in reader, in list, sessionId, startIndex, endIndex, length, token).ConfigureAwait(false);
+            return await UnsafeReadAsync(in reader, entries, sessionId, startIndex, endIndex, ref length, token).ConfigureAwait(false);
         }
         finally
         {
-            list.Dispose();
-
             if (snapshotRequested)
                 EndReadSnapshot(sessionId);
+
+            entries.AsSpan(0, length).Clear();
         }
     }
 
-    private ValueTask<TResult> UnsafeReadAsync<TResult>(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, int sessionId, long startIndex, long endIndex, int listIndex, CancellationToken token)
+    private ValueTask<TResult> UnsafeReadAsync<TResult>(in LogEntryConsumer<IRaftLogEntry, TResult> reader, ArraySegment<LogEntry> entries, int sessionId, long startIndex, long endIndex, ref int listIndex, CancellationToken token)
     {
-        ref var first = ref BufferHelpers.GetReference(in list);
+        ref var first = ref GetReference(entries);
 
         // enumerate over partitions in search of log entries
         for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
             Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.OptimizationHint);
 
-        return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
+        return reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(entries.Slice(0, listIndex), first.SnapshotIndex, token);
     }
 
     private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, CancellationToken token)
@@ -204,16 +205,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         bool snapshotRequested;
         var snapshotIndex = SnapshotInfo.Index;
-        if (SnapshotInfo.Index > 0L && startIndex <= snapshotIndex)
-        {
-            // adjust startIndex automatically to avoid growth of length
-            snapshotRequested = true;
-            startIndex = snapshotIndex;
-        }
-        else
-        {
-            snapshotRequested = false;
-        }
+        if (snapshotRequested = SnapshotInfo.Index > 0L && startIndex <= snapshotIndex)
+            endIndex = Math.Max(startIndex = snapshotIndex, endIndex); // adjust startIndex automatically to avoid growth of length
 
         var length = endIndex - startIndex + 1L;
         if (length > int.MaxValue)
@@ -1011,6 +1004,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             state.Dispose();
             commitEvent.Dispose();
             syncRoot.Dispose();
+            Array.Clear(arrayPool);
         }
 
         base.Dispose(disposing);
