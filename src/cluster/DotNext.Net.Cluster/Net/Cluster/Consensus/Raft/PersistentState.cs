@@ -157,10 +157,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                     snapshot = new(await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in SnapshotInfo);
                 }
 
+                Debug.Assert(startIndex == snapshot.Index);
                 GetReference(entries) = snapshot;
 
-                // skip squashed log entries
-                startIndex = snapshot.Index + 1L;
+                // advance to the record next to snapshot
+                startIndex++;
                 length = 1;
             }
             else if (startIndex is 0L)
@@ -221,7 +222,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token);
 
         if (startIndex is 0L)
-            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token);
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, snapshotIndex: null, token);
 
         if (snapshotRequested)
             return UnsafeReadSnapshotAsync(reader, sessionId, token);
