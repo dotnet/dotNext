@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Buffers;
 using Collections.Specialized;
 using IO.Log;
 using static IO.DataTransferObject;
