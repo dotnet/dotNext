@@ -149,10 +149,7 @@ public sealed class DelegateHelpersTests : Test
         static MethodInfo GetMethod(int argCount)
         {
             const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-            foreach (var candidate in typeof(Func).GetMethods(flags))
-                if (candidate.Name == nameof(Func.TryInvoke) && candidate.GetParameters().Length == argCount + 1)
-                    return candidate;
-            throw new Xunit.Sdk.XunitException(userMessage: null);
+            return Single(typeof(Func).GetMethods(flags), candidate => candidate.Name == nameof(Func.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
         }
 
         var successValue = Expression.Constant(42, typeof(int));
@@ -164,7 +161,7 @@ public sealed class DelegateHelpersTests : Test
             types[argCount] = typeof(int);
             var funcType = Expression.GetFuncType(types);
             var parameters = new ParameterExpression[argCount];
-            parameters.ForEach((ref ParameterExpression p, nint _) => p = Expression.Parameter(typeof(string)));
+            parameters.ForEach(static (ref ParameterExpression p, nint _) => p = Expression.Parameter(typeof(string)));
             //prepare args
             var args = new object[parameters.LongLength + 1];
             Array.Fill(args, string.Empty);

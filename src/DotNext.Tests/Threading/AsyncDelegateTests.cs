@@ -47,12 +47,9 @@ public sealed class AsyncDelegateTests : Test
         static MethodInfo GetMethod(int argCount)
         {
             const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-            foreach (var candidate in typeof(AsyncDelegate).GetMethods(flags))
-                if (candidate.Name == nameof(AsyncDelegate.InvokeAsync) && candidate.GetParameters().Length == argCount + 2 && candidate.GetParameters()[0].ParameterType.Name.Contains("Action"))
-                    return candidate;
-
-            throw new Xunit.Sdk.XunitException(userMessage: null);
+            return Single(typeof(AsyncDelegate).GetMethods(flags), candidate => candidate.Name == nameof(AsyncDelegate.InvokeAsync) && candidate.GetParameters().Length == argCount + 2 && candidate.GetParameters()[0].ParameterType.Name.Contains("Action"));
         }
+
         var successValue = Expression.Empty();
         var failedValue = Expression.Throw(Expression.New(typeof(ArithmeticException)));
         for (var argCount = 0; argCount <= 10; argCount++)
