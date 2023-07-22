@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -21,10 +22,10 @@ public partial class PersistentState
     [StructLayout(LayoutKind.Auto)]
     protected internal readonly struct LogEntry : IRaftLogEntry
     {
-        // null then the log entry payload is represented by buffer
-        private readonly IAsyncBinaryReader? content;
+        // null (if empty), FileReader, or byte[], or MemoryManager<byte>
+        private readonly object? content;
+        private readonly int contentOffset, contentLength;
         private readonly LogEntryMetadata metadata;
-        private readonly ReadOnlyMemory<byte> buffer;
 
         // if negative then it's a snapshot index because |snapshotIndex| > 0
         private readonly long index;
@@ -34,7 +35,6 @@ public partial class PersistentState
         {
             this.metadata = metadata;
             content = metadata.Length > 0L ? cachedContent : null;
-            buffer = ReadOnlyMemory<byte>.Empty;
             this.index = index;
         }
 
@@ -44,8 +44,23 @@ public partial class PersistentState
             Debug.Assert(cachedContent.IsEmpty || cachedContent.Length == metadata.Length, $"Log entry payload mismatch. Cached payload length: {cachedContent.Length}, length in metadata : {metadata.Length}");
             this.metadata = metadata;
             content = null;
-            buffer = cachedContent.Memory;
             this.index = index;
+
+            var buffer = cachedContent.Memory;
+            if (MemoryMarshal.TryGetArray<byte>(buffer, out var segment))
+            {
+                content = segment.Array;
+                contentOffset = segment.Offset;
+                contentLength = segment.Count;
+            }
+            else if (MemoryMarshal.TryGetMemoryManager<byte, MemoryManager<byte>>(buffer, out var manager, out contentOffset, out contentLength))
+            {
+                content = manager;
+            }
+            else
+            {
+                content = null;
+            }
         }
 
         // for snapshot
@@ -55,7 +70,6 @@ public partial class PersistentState
 
             this.metadata = metadata.RecordMetadata;
             content = metadata.RecordMetadata.Length > 0L ? cachedContent : null;
-            buffer = ReadOnlyMemory<byte>.Empty;
             index = -metadata.Index;
         }
 
@@ -65,8 +79,6 @@ public partial class PersistentState
             Debug.Assert(metadata.Index > 0L);
 
             this.metadata = metadata.RecordMetadata;
-            content = null;
-            buffer = ReadOnlyMemory<byte>.Empty;
             index = -metadata.Index;
         }
 
@@ -105,19 +117,17 @@ public partial class PersistentState
 
         internal bool IsEmpty => Length == 0L;
 
-        [MemberNotNullWhen(true, nameof(content))]
-        private bool PrepareContent()
+        private bool TryGetContentAsReader([NotNullWhen(true)] out FileReader? result)
         {
-            switch (content)
+            if (content is FileReader reader)
             {
-                case null:
-                    return false;
-                case FileReader reader:
-                    Adjust(reader, in metadata);
-                    goto default;
-                default:
-                    return true;
+                Adjust(reader, in metadata);
+                result = reader;
+                return true;
             }
+
+            result = null;
+            return false;
 
             static void Adjust(FileReader reader, in LogEntryMetadata metadata)
             {
@@ -137,20 +147,50 @@ public partial class PersistentState
             }
         }
 
+        private bool TryGetContentAsMemory(out ReadOnlyMemory<byte> buffer)
+        {
+            switch (content)
+            {
+                case byte[] array:
+                    buffer = array;
+                    break;
+                case MemoryManager<byte> manager:
+                    buffer = manager.Memory;
+                    break;
+                default:
+                    buffer = default;
+                    return false;
+            }
+
+            buffer = buffer.Slice(contentOffset, contentLength);
+            return true;
+        }
+
         /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            if (PrepareContent())
-                return new(content.CopyToAsync(writer, token));
+            ValueTask result;
+            if (TryGetContentAsReader(out var reader))
+            {
+                result = new(reader.CopyToAsync(writer, token));
+            }
+            else if (TryGetContentAsMemory(out var buffer))
+            {
+                result = writer.WriteAsync(buffer, lengthFormat: null, token);
+            }
+            else
+            {
+                result = ValueTask.CompletedTask;
+            }
 
-            return buffer.IsEmpty ? ValueTask.CompletedTask : writer.WriteAsync(buffer, null, token);
+            return result;
         }
 
         /// <inheritdoc/>
         long? IDataTransferObject.Length => Length;
 
         /// <inheritdoc/>
-        bool IDataTransferObject.IsReusable => content is null;
+        bool IDataTransferObject.IsReusable => content is not FileReader;
 
         /// <summary>
         /// Gets Raft term of this log entry.
@@ -166,12 +206,21 @@ public partial class PersistentState
         public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
             where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
         {
-            if (PrepareContent())
-                return transformation.TransformAsync(content, token);
+            ValueTask<TResult> result;
+            if (TryGetContentAsReader(out var reader))
+            {
+                result = transformation.TransformAsync(reader, token);
+            }
+            else if (TryGetContentAsMemory(out var buffer))
+            {
+                result = transformation.TransformAsync(IAsyncBinaryReader.Create(buffer.Slice(contentOffset, contentLength)), token);
+            }
+            else
+            {
+                result = IDataTransferObject.Empty.TransformAsync<TResult, TTransformation>(transformation, token);
+            }
 
-            return buffer.IsEmpty
-                ? IDataTransferObject.Empty.TransformAsync<TResult, TTransformation>(transformation, token)
-                : transformation.TransformAsync(IAsyncBinaryReader.Create(buffer), token);
+            return result;
         }
 
         /// <summary>
@@ -188,18 +237,11 @@ public partial class PersistentState
         {
             if (content is null)
             {
-                memory = buffer;
-                return true;
-            }
-
-            if (IsEmpty)
-            {
                 memory = ReadOnlyMemory<byte>.Empty;
                 return true;
             }
 
-            memory = default;
-            return false;
+            return TryGetContentAsMemory(out memory);
         }
 
         /// <summary>
@@ -208,10 +250,13 @@ public partial class PersistentState
         /// <returns>The binary reader providing access to the content of this log entry.</returns>
         public IAsyncBinaryReader GetReader()
         {
-            if (PrepareContent())
-                return content;
+            if (TryGetContentAsReader(out var reader))
+                return reader;
 
-            return buffer.IsEmpty ? IAsyncBinaryReader.Empty : IAsyncBinaryReader.Create(buffer);
+            if (TryGetContentAsMemory(out var buffer))
+                return IAsyncBinaryReader.Create(buffer);
+
+            return IAsyncBinaryReader.Empty;
         }
 
         /// <summary>
@@ -231,19 +276,36 @@ public partial class PersistentState
         [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
         public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
         {
-            if (PrepareContent())
-                return DeserializeSlowAsync(typeLoader, options, token);
+            ValueTask<object?> result;
 
-            return new(buffer.IsEmpty ? default : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, options));
+            if (TryGetContentAsReader(out var reader))
+            {
+                result = DeserializeSlowAsync(reader, metadata, typeLoader, options, token);
+            }
+            else if (TryGetContentAsMemory(out var buffer))
+            {
+                try
+                {
+                    result = new(JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Slice(contentOffset, contentLength)), typeLoader, options));
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException<object?>(e);
+                }
+            }
+            else
+            {
+                result = new(result: null);
+            }
+
+            return result;
         }
 
         [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
-        private async ValueTask<object?> DeserializeSlowAsync(Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
+        private static async ValueTask<object?> DeserializeSlowAsync(FileReader reader, LogEntryMetadata metadata, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
         {
-            Debug.Assert(content is not null);
-
             using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
-            await content.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, options);
         }
 
@@ -261,24 +323,43 @@ public partial class PersistentState
         /// <seealso cref="CreateJsonLogEntry{T}(T, string?, JsonTypeInfo{T})"/>
         public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token = default)
         {
+            ValueTask<object?> result;
+
             if (typeLoader is null)
-                return ValueTask.FromException<object?>(new ArgumentNullException(nameof(typeLoader)));
+            {
+                result = ValueTask.FromException<object?>(new ArgumentNullException(nameof(typeLoader)));
+            }
+            else if (context is null)
+            {
+                result = ValueTask.FromException<object?>(new ArgumentNullException(nameof(context)));
+            }
+            else if (TryGetContentAsReader(out var reader))
+            {
+                result = DeserializeSlowAsync(reader, metadata, typeLoader, context, token);
+            }
+            else if (TryGetContentAsMemory(out var buffer))
+            {
+                try
+                {
+                    result = new(JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Slice(contentOffset, contentLength)), typeLoader, context));
+                }
+                catch (Exception e)
+                {
+                    result = ValueTask.FromException<object?>(e);
+                }
+            }
+            else
+            {
+                result = new(result: null);
+            }
 
-            if (context is null)
-                return ValueTask.FromException<object?>(new ArgumentNullException(nameof(context)));
-
-            if (PrepareContent())
-                return DeserializeSlowAsync(typeLoader, context, token);
-
-            return new(buffer.IsEmpty ? default : JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, context));
+            return result;
         }
 
-        private async ValueTask<object?> DeserializeSlowAsync(Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
+        private static async ValueTask<object?> DeserializeSlowAsync(FileReader reader, LogEntryMetadata metadata, Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
         {
-            Debug.Assert(content is not null);
-
             using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
-            await content.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, context);
         }
     }
