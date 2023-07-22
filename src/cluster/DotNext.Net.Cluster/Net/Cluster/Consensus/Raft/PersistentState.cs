@@ -136,6 +136,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
         Debug.Assert(LastPartition is not null);
+        Debug.Assert(length > 1);
 
         var entries = GetLogEntryArray(sessionId, length);
         Debug.Assert(entries.Count >= length);
