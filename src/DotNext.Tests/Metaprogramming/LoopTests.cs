@@ -1,174 +1,171 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
-namespace DotNext.Metaprogramming
+namespace DotNext.Metaprogramming;
+
+using Linq.Expressions;
+using static Collections.Generic.Sequence;
+using static CodeGenerator;
+
+public sealed class LoopTests : Test
 {
-    using Linq.Expressions;
-    using static Collections.Generic.Sequence;
-    using static CodeGenerator;
-
-    [ExcludeFromCodeCoverage]
-    public sealed class LoopTests : Test
+    public struct CustomEnumerator
     {
-        public struct CustomEnumerator
-        {
-            private int counter;
+        private int counter;
 
-            public bool MoveNext()
+        public bool MoveNext()
+        {
+            if (counter < 4)
             {
-                if (counter < 4)
-                {
-                    counter += 1;
-                    return true;
-                }
-                else
-                    return false;
+                counter += 1;
+                return true;
             }
-
-            public int Current => counter;
+            else
+                return false;
         }
 
-        public sealed class CustomEnumerable
+        public int Current => counter;
+    }
+
+    public sealed class CustomEnumerable
+    {
+        public CustomEnumerator GetEnumerator() => new();
+    }
+
+    [Fact]
+    public static void CustomForEach()
+    {
+        var sum = Lambda<Func<CustomEnumerable, int>>((fun, result) =>
         {
-            public CustomEnumerator GetEnumerator() => new();
-        }
+            ForEach(fun[0], item =>
+            {
+                Assign(result, result.AsDynamic() + item);
+            });
+        })
+        .Compile();
+        Equal(10, sum(new CustomEnumerable()));
+    }
 
-        [Fact]
-        public static void CustomForEach()
+    [Fact]
+    public static void ArrayForEach()
+    {
+        var sum = Lambda<Func<long[], long>>((fun, result) =>
         {
-            var sum = Lambda<Func<CustomEnumerable, int>>((fun, result) =>
+            ForEach(fun[0], item =>
             {
-                ForEach(fun[0], item =>
-                {
-                    Assign(result, result.AsDynamic() + item);
-                });
-            })
-            .Compile();
-            Equal(10, sum(new CustomEnumerable()));
-        }
+                Assign(result, result.AsDynamic() + item);
+            });
+        })
+        .Compile();
+        Equal(10L, sum(new[] { 1L, 5L, 4L }));
+    }
 
-        [Fact]
-        public static void ArrayForEach()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task ForEachAsync(bool configureAwait)
+    {
+        var sum = AsyncLambda<Func<IAsyncEnumerable<long>, Task<long>>>((fun, result) =>
         {
-            var sum = Lambda<Func<long[], long>>((fun, result) =>
+            AwaitForEach(fun[0], item =>
             {
-                ForEach(fun[0], item =>
-                {
-                    Assign(result, result.AsDynamic() + item);
-                });
-            })
-            .Compile();
-            Equal(10L, sum(new[] { 1L, 5L, 4L }));
-        }
+                Assign(result, result.AsDynamic() + item);
+            }, configureAwait: configureAwait);
+        })
+        .Compile();
+        Equal(10L, await sum(new[] { 1L, 5L, 4L }.ToAsyncEnumerable()));
+    }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public static async Task ForEachAsync(bool configureAwait)
+    [Fact]
+    public static async Task RegressionIssue46()
+    {
+        var result = AsyncLambda<Func<IAsyncEnumerable<char>, IAsyncEnumerable<char>, Task>>(fun =>
         {
-            var sum = AsyncLambda<Func<IAsyncEnumerable<long>, Task<long>>>((fun, result) =>
+            AwaitForEach(fun[0], ch =>
             {
-                AwaitForEach(fun[0], item =>
-                {
-                    Assign(result, result.AsDynamic() + item);
-                }, configureAwait: configureAwait);
-            })
-            .Compile();
-            Equal(10L, await sum(new[] { 1L, 5L, 4L }.ToAsyncEnumerable()));
-        }
+                WriteLine(ch);
+                AwaitForEach(fun[1], WriteLine);
+            });
+        }).Compile();
 
-        [Fact]
-        public static async Task RegressionIssue46()
+        var e = await ThrowsAsync<Exception>(() => result(GetData('1'), GetData('2')));
+        Equal("Custom exception", e.Message);
+
+        static async IAsyncEnumerable<char> GetData(char data)
         {
-            var result = AsyncLambda<Func<IAsyncEnumerable<char>, IAsyncEnumerable<char>, Task>>(fun =>
-            {
-                AwaitForEach(fun[0], ch =>
-                {
-                    WriteLine(ch);
-                    AwaitForEach(fun[1], WriteLine);
-                });
-            }).Compile();
-
-            var e = await ThrowsAsync<Exception>(() => result(GetData('1'), GetData('2')));
-            Equal("Custom exception", e.Message);
-
-            static async IAsyncEnumerable<char> GetData(char data)
-            {
-                await Task.Yield();
-                yield return data;
-                throw new Exception("Custom exception");
-            }
+            await Task.Yield();
+            yield return data;
+            throw new Exception("Custom exception");
         }
+    }
 
-        [Fact]
-        public static void DoWhileLoop()
+    [Fact]
+    public static void DoWhileLoop()
+    {
+        var sum = Lambda<Func<long, long>>((fun, result) =>
         {
-            var sum = Lambda<Func<long, long>>((fun, result) =>
+            var arg = fun[0];
+            DoWhile((Expression)(arg.AsDynamic() > 0L), () =>
             {
-                var arg = fun[0];
-                DoWhile((Expression)(arg.AsDynamic() > 0L), () =>
-                {
-                    Assign(result, arg.AsDynamic() + result);
-                    Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
-                });
-            })
-            .Compile();
-            Equal(6, sum(3));
-        }
+                Assign(result, arg.AsDynamic() + result);
+                Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
+            });
+        })
+        .Compile();
+        Equal(6, sum(3));
+    }
 
-        [Fact]
-        public static void ForLoop()
+    [Fact]
+    public static void ForLoop()
+    {
+        var sum = Lambda<Func<long, long>>((fun, result) =>
         {
-            var sum = Lambda<Func<long, long>>((fun, result) =>
+            var arg = fun[0];
+            For(0L.Const(), i => i.AsDynamic() < arg, PostIncrementAssign, loopVar =>
             {
-                var arg = fun[0];
-                For(0L.Const(), i => i.AsDynamic() < arg, PostIncrementAssign, loopVar =>
-                {
-                    Assign(result, result.AsDynamic() + loopVar);
-                });
-            })
-            .Compile();
-            Equal(6, sum(4));
-        }
+                Assign(result, result.AsDynamic() + loopVar);
+            });
+        })
+        .Compile();
+        Equal(6, sum(4));
+    }
 
-        [Fact]
-        public static void FactorialUsingWhile()
+    [Fact]
+    public static void FactorialUsingWhile()
+    {
+        var factorial = Lambda<Func<long, long>>((fun, result) =>
         {
-            var factorial = Lambda<Func<long, long>>((fun, result) =>
+            var arg = fun[0];
+            Assign(result, 1L.Const());
+            While((Expression)(arg.AsDynamic() > 1L), () =>
             {
-                var arg = fun[0];
-                Assign(result, 1L.Const());
-                While((Expression)(arg.AsDynamic() > 1L), () =>
-                {
-                    Assign(result, result.AsDynamic() * arg);
-                    Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
-                });
-            })
-            .Compile();
-            Equal(6, factorial(3));
-        }
+                Assign(result, result.AsDynamic() * arg);
+                Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
+            });
+        })
+        .Compile();
+        Equal(6, factorial(3));
+    }
 
-        [Fact]
-        public static void Factorial()
+    [Fact]
+    public static void Factorial()
+    {
+        var factorial = Lambda<Func<long, long>>((fun, result) =>
         {
-            var factorial = Lambda<Func<long, long>>((fun, result) =>
+            var arg = fun[0];
+            Assign(result, 1L.Const());
+            Loop(() =>
             {
-                var arg = fun[0];
-                Assign(result, 1L.Const());
-                Loop(() =>
-                {
-                    If((Expression)(arg.AsDynamic() > 1L))
-                        .Then(new Action(() =>
-                        {
-                            Assign(result, result.AsDynamic() * arg);
-                            Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
-                        }))
-                        .Else(Break)
-                        .End();
-                });
-            })
-            .Compile();
-            Equal(6, factorial(3));
-        }
+                If((Expression)(arg.AsDynamic() > 1L))
+                    .Then(new Action(() =>
+                    {
+                        Assign(result, result.AsDynamic() * arg);
+                        Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
+                    }))
+                    .Else(Break)
+                    .End();
+            });
+        })
+        .Compile();
+        Equal(6, factorial(3));
     }
 }

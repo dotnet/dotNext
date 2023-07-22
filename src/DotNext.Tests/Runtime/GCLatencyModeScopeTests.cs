@@ -1,18 +1,15 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 
-namespace DotNext.Runtime
+namespace DotNext.Runtime;
+
+public sealed class GCLatencyModeScopeTests : Test
 {
-    [ExcludeFromCodeCoverage]
-    public sealed class GCLatencyModeScopeTests : Test
+    [Fact]
+    public static void EnableDisableMode()
     {
-        [Fact]
-        public static void EnableDisableMode()
+        using (GCLatencyModeScope.SustainedLowLatency)
         {
-            using (GCLatencyModeScope.SustainedLowLatency)
-            {
-                Equal(GCLatencyMode.SustainedLowLatency, GCSettings.LatencyMode);
-            }
+            Equal(GCLatencyMode.SustainedLowLatency, GCSettings.LatencyMode);
         }
     }
 }

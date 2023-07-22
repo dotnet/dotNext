@@ -1,202 +1,198 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace DotNext.Threading;
 
-namespace DotNext.Threading
+public sealed class AsyncReaderWriterLockTests : Test
 {
-    [ExcludeFromCodeCoverage]
-    public sealed class AsyncReaderWriterLockTests : Test
+    [Fact]
+    public static async Task TrivialLock()
     {
-        [Fact]
-        public static async Task TrivialLock()
+        using var rwLock = new AsyncReaderWriterLock(3);
+
+        // read lock
+        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
+        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
+        False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20)));
+        rwLock.Release();
+        False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20)));
+        rwLock.Release();
+
+        // write lock
+        True(await rwLock.TryEnterWriteLockAsync(DefaultTimeout));
+        False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(20)));
+        rwLock.Release();
+
+        // upgrade to write lock
+        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
+        True(await rwLock.TryUpgradeToWriteLockAsync(DefaultTimeout));
+        False(rwLock.TryEnterWriteLock());
+        rwLock.DowngradeFromWriteLock();
+        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
+    }
+
+    [Fact]
+    public static async Task WriterToWriterChain()
+    {
+        var are = new TaskCompletionSource();
+        using var rwLock = new AsyncReaderWriterLock();
+        True(await rwLock.TryEnterWriteLockAsync(TimeSpan.Zero));
+        var task = Task.Run(async () =>
         {
-            using var rwLock = new AsyncReaderWriterLock(3);
-
-            // read lock
-            True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
-            True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
-            False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20)));
-            rwLock.Release();
-            False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20)));
-            rwLock.Release();
-
-            // write lock
-            True(await rwLock.TryEnterWriteLockAsync(DefaultTimeout));
-            False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(20)));
-            rwLock.Release();
-
-            // upgrade to write lock
-            True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
-            True(await rwLock.TryUpgradeToWriteLockAsync(DefaultTimeout));
-            False(rwLock.TryEnterWriteLock());
-            rwLock.DowngradeFromWriteLock();
-            True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
-        }
-
-        [Fact]
-        public static async Task WriterToWriterChain()
-        {
-            var are = new TaskCompletionSource();
-            using var rwLock = new AsyncReaderWriterLock();
-            True(await rwLock.TryEnterWriteLockAsync(TimeSpan.Zero));
-            var task = Task.Run(async () =>
-            {
-                False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
-                await rwLock.EnterWriteLockAsync(DefaultTimeout);
-                rwLock.Release();
-            });
-
-            await are.Task.WaitAsync(DefaultTimeout);
-            rwLock.Release();
-            await task.WaitAsync(DefaultTimeout);
-        }
-
-        [Fact]
-        public static async Task WriterToReaderChain()
-        {
-            var are = new TaskCompletionSource();
-            using var rwLock = new AsyncReaderWriterLock();
+            False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(10)));
+            True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
             await rwLock.EnterWriteLockAsync(DefaultTimeout);
-            var task = Task.Run(async () =>
-            {
-                False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(10)));
-                True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
-                await rwLock.EnterReadLockAsync(DefaultTimeout);
-                rwLock.Release();
-            });
-
-            await are.Task.WaitAsync(DefaultTimeout);
             rwLock.Release();
-            await task.WaitAsync(DefaultTimeout);
-        }
+        });
 
-        [Fact]
-        public static void OptimisticRead()
+        await are.Task.WaitAsync(DefaultTimeout);
+        rwLock.Release();
+        await task.WaitAsync(DefaultTimeout);
+    }
+
+    [Fact]
+    public static async Task WriterToReaderChain()
+    {
+        var are = new TaskCompletionSource();
+        using var rwLock = new AsyncReaderWriterLock();
+        await rwLock.EnterWriteLockAsync(DefaultTimeout);
+        var task = Task.Run(async () =>
         {
-            using var rwLock = new AsyncReaderWriterLock();
-            var stamp = rwLock.TryOptimisticRead();
-            True(rwLock.Validate(stamp));
-            True(rwLock.TryEnterReadLock());
-            Equal(1, rwLock.CurrentReadCount);
-            True(rwLock.Validate(stamp));
+            False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(10)));
+            True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
+            await rwLock.EnterReadLockAsync(DefaultTimeout);
             rwLock.Release();
-            Equal(stamp, rwLock.TryOptimisticRead());
-            True(rwLock.TryEnterWriteLock());
-            False(rwLock.IsReadLockHeld);
-            True(rwLock.IsWriteLockHeld);
-            False(rwLock.Validate(stamp));
-        }
+        });
 
-        [Fact]
-        public static void CallDisposeTwice()
-        {
-            var @lock = new AsyncReaderWriterLock();
-            @lock.Dispose();
-            True(@lock.DisposeAsync().IsCompletedSuccessfully);
-        }
+        await are.Task.WaitAsync(DefaultTimeout);
+        rwLock.Release();
+        await task.WaitAsync(DefaultTimeout);
+    }
 
-        [Fact]
-        public static void DisposeAsyncCompletedSynchronously()
-        {
-            using var @lock = new AsyncReaderWriterLock();
-            True(@lock.DisposeAsync().IsCompletedSuccessfully);
-        }
+    [Fact]
+    public static void OptimisticRead()
+    {
+        using var rwLock = new AsyncReaderWriterLock();
+        var stamp = rwLock.TryOptimisticRead();
+        True(rwLock.Validate(stamp));
+        True(rwLock.TryEnterReadLock());
+        Equal(1, rwLock.CurrentReadCount);
+        True(rwLock.Validate(stamp));
+        rwLock.Release();
+        Equal(stamp, rwLock.TryOptimisticRead());
+        True(rwLock.TryEnterWriteLock());
+        False(rwLock.IsReadLockHeld);
+        True(rwLock.IsWriteLockHeld);
+        False(rwLock.Validate(stamp));
+    }
 
-        [Fact]
-        public static async Task GracefulShutdown()
-        {
-            using var @lock = new AsyncReaderWriterLock();
-            True(@lock.TryEnterWriteLock());
-            var task = @lock.DisposeAsync();
-            False(task.IsCompleted);
-            @lock.Release();
-            await task;
-            Throws<ObjectDisposedException>(() => @lock.TryEnterReadLock());
-        }
+    [Fact]
+    public static void CallDisposeTwice()
+    {
+        var @lock = new AsyncReaderWriterLock();
+        @lock.Dispose();
+        True(@lock.DisposeAsync().IsCompletedSuccessfully);
+    }
 
-        [Fact]
-        public static async Task GracefulShutdown2()
-        {
-            using var @lock = new AsyncReaderWriterLock();
-            True(@lock.TryEnterReadLock());
-            var task = @lock.DisposeAsync();
-            False(task.IsCompleted);
-            await ThrowsAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
-            @lock.Release();
-            await task;
-        }
+    [Fact]
+    public static void DisposeAsyncCompletedSynchronously()
+    {
+        using var @lock = new AsyncReaderWriterLock();
+        True(@lock.DisposeAsync().IsCompletedSuccessfully);
+    }
 
-        [Fact]
-        public static async Task GracefulShutdown3()
-        {
-            using var @lock = new AsyncReaderWriterLock();
-            True(@lock.TryEnterWriteLock());
-            var acquisition1 = @lock.EnterReadLockAsync();
-            False(acquisition1.IsCompleted);
-            var task = @lock.DisposeAsync();
-            False(task.IsCompleted);
+    [Fact]
+    public static async Task GracefulShutdown()
+    {
+        using var @lock = new AsyncReaderWriterLock();
+        True(@lock.TryEnterWriteLock());
+        var task = @lock.DisposeAsync();
+        False(task.IsCompleted);
+        @lock.Release();
+        await task;
+        Throws<ObjectDisposedException>(() => @lock.TryEnterReadLock());
+    }
 
-            await ThrowsAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
+    [Fact]
+    public static async Task GracefulShutdown2()
+    {
+        using var @lock = new AsyncReaderWriterLock();
+        True(@lock.TryEnterReadLock());
+        var task = @lock.DisposeAsync();
+        False(task.IsCompleted);
+        await ThrowsAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
+        @lock.Release();
+        await task;
+    }
 
-            @lock.Release();
-            await acquisition1;
-            False(task.IsCompleted);
+    [Fact]
+    public static async Task GracefulShutdown3()
+    {
+        using var @lock = new AsyncReaderWriterLock();
+        True(@lock.TryEnterWriteLock());
+        var acquisition1 = @lock.EnterReadLockAsync();
+        False(acquisition1.IsCompleted);
+        var task = @lock.DisposeAsync();
+        False(task.IsCompleted);
 
-            @lock.Release();
-            await task;
-        }
+        await ThrowsAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
 
-        [Fact]
-        public static async Task QueueFairness()
-        {
-            using var @lock = new AsyncReaderWriterLock();
-            True(@lock.TryEnterReadLock());
+        @lock.Release();
+        await acquisition1;
+        False(task.IsCompleted);
 
-            var writeLock = @lock.EnterWriteLockAsync();
-            var readLock = @lock.EnterReadLockAsync();
-            False(writeLock.IsCompleted);
-            False(readLock.IsCompleted);
+        @lock.Release();
+        await task;
+    }
 
-            @lock.Release();
-            await writeLock;
+    [Fact]
+    public static async Task QueueFairness()
+    {
+        using var @lock = new AsyncReaderWriterLock();
+        True(@lock.TryEnterReadLock());
 
-            @lock.Release();
-            await readLock;
-        }
+        var writeLock = @lock.EnterWriteLockAsync();
+        var readLock = @lock.EnterReadLockAsync();
+        False(writeLock.IsCompleted);
+        False(readLock.IsCompleted);
 
-        [Fact]
-        public static async Task LockStealing()
-        {
-            const string reason = "Hello, world!";
-            using var @lock = new AsyncReaderWriterLock();
-            True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
+        @lock.Release();
+        await writeLock;
 
-            var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
-            var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
-            var task3 = @lock.TryStealWriteLockAsync(reason, DefaultTimeout).AsTask();
+        @lock.Release();
+        await readLock;
+    }
 
-            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
-            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+    [Fact]
+    public static async Task LockStealing()
+    {
+        const string reason = "Hello, world!";
+        using var @lock = new AsyncReaderWriterLock();
+        True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
 
-            @lock.Release();
-            True(await task3);
-        }
+        var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
+        var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
+        var task3 = @lock.TryStealWriteLockAsync(reason, DefaultTimeout).AsTask();
 
-        [Fact]
-        public static async Task LockStealing2()
-        {
-            const string reason = "Hello, world!";
-            using var @lock = new AsyncReaderWriterLock();
-            True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
 
-            var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
-            var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
-            var task3 = @lock.StealWriteLockAsync(reason, DefaultTimeout).AsTask();
+        @lock.Release();
+        True(await task3);
+    }
 
-            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
-            Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+    [Fact]
+    public static async Task LockStealing2()
+    {
+        const string reason = "Hello, world!";
+        using var @lock = new AsyncReaderWriterLock();
+        True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
 
-            @lock.Release();
-            await task3;
-        }
+        var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
+        var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
+        var task3 = @lock.StealWriteLockAsync(reason, DefaultTimeout).AsTask();
+
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+
+        @lock.Release();
+        await task3;
     }
 }

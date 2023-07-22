@@ -1,8 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Threading;
 
-[ExcludeFromCodeCoverage]
 public sealed class SingleProducerMultipleConsumersCoordinatorTests : Test
 {
     [Fact]
