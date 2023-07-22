@@ -18,7 +18,7 @@ public partial class PersistentState
 
     private protected abstract void EndReadSnapshot(int sessionId);
 
-    private ValueTask<TResult> ReadSnapshotAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
+    private ValueTask<TResult> UnsafeReadSnapshotAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
     {
         return reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly ? ReadMetadataOnlyAsync() : ReadSlowAsync();
 

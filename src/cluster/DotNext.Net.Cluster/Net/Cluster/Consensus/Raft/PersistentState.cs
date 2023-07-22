@@ -136,6 +136,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
+        Debug.Assert(LastPartition is not null);
+
         var entries = GetLogEntryArray(sessionId, length);
         Debug.Assert(entries.Count >= length);
 
@@ -205,7 +207,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         bool snapshotRequested;
         var snapshotIndex = SnapshotInfo.Index;
-        if (snapshotRequested = SnapshotInfo.Index > 0L && startIndex <= snapshotIndex)
+        if (snapshotRequested = snapshotIndex > 0L && startIndex <= snapshotIndex)
             endIndex = Math.Max(startIndex = snapshotIndex, endIndex); // adjust startIndex automatically to avoid growth of length
 
         var length = endIndex - startIndex + 1L;
@@ -215,17 +217,20 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         readCounter?.Invoke(length);
         ReadRateMeter.Add(length, measurementTags);
 
-        if (LastPartition is not null)
+        if (length > 1L && LastPartition is not null)
             return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token);
 
-        if (snapshotRequested)
-            return ReadSnapshotAsync(reader, sessionId, token);
-
-        // read ephemeral entry
         if (startIndex is 0L)
             return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token);
 
-        return reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+        if (snapshotRequested)
+            return UnsafeReadSnapshotAsync(reader, sessionId, token);
+
+        // read single entry
+        if (TryGetPartition(PartitionOf(startIndex)) is { } partition)
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(partition.Read(sessionId, startIndex, reader.OptimizationHint), snapshotIndex: null, token);
+
+        return ValueTask.FromException<TResult>(new MissingPartitionException(startIndex));
     }
 
     /// <summary>
