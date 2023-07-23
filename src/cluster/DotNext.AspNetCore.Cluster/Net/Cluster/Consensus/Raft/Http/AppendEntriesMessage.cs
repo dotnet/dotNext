@@ -320,13 +320,13 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
     private sealed class OctetStreamLogEntriesWriter : HttpContent
     {
         private readonly IDataTransferObject configuration;
-        private Enumerable<TEntry, TList> entries; // not readonly to avoid defensive copies
+        private TList entries; // not readonly to avoid defensive copies
 
         internal OctetStreamLogEntriesWriter(in TList entries, IDataTransferObject configuration)
         {
             Headers.ContentType = new(MediaTypeNames.Application.Octet);
             this.configuration = configuration;
-            this.entries = new(entries);
+            this.entries = entries;
         }
 
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
@@ -337,8 +337,10 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             using var buffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 512);
             await configuration.WriteToAsync(stream, buffer.Memory, token).ConfigureAwait(false);
 
-            foreach (var entry in entries)
+            for (var i = 0; i < entries.Count; i++)
             {
+                var entry = entries[i];
+
                 // write metadata
                 await WriteMetadataAsync(stream, buffer.Memory, entry, token).ConfigureAwait(false);
 
@@ -385,12 +387,12 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
         private readonly string boundary;
         private readonly IDataTransferObject configuration;
-        private Enumerable<TEntry, TList> entries; // not readonly to avoid defensive copies
+        private TList entries; // not readonly to avoid defensive copies
 
         internal MultipartLogEntriesWriter(in TList entries, IDataTransferObject configuration)
         {
             boundary = Guid.NewGuid().ToString();
-            this.entries = new(in entries);
+            this.entries = entries;
             var contentType = new MediaTypeHeaderValue(ContentType);
             contentType.Parameters.Add(new(nameof(boundary), Quote + boundary + Quote));
             Headers.ContentType = contentType;
@@ -453,8 +455,10 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
                 // write each nested content
                 var writeDivider = false;
-                foreach (var entry in entries)
+                for (var i = 0; i < entries.Count; i++)
                 {
+                    var entry = entries[i];
+
                     builder.Clear(true);
                     await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer.Memory, token).ConfigureAwait(false);
                     encodingContext.Reset();
