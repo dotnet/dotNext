@@ -14,7 +14,12 @@ public interface ILogEntryProducer<out TEntry> : IAsyncEnumerator<TEntry>
     long RemainingCount { get; }
 
     /// <summary>
-    /// Gets optimization hint that may be used by the audit trail to optimize the consumption.
+    /// The payload of log entries provided by the producer are ready for consumption
+    /// synchronously.
     /// </summary>
-    LogEntryProducerOptimizationHint OptimizationHint => LogEntryProducerOptimizationHint.None;
+    /// <remarks>
+    /// This flag means that <see cref="IDataTransferObject.WriteToAsync{TWriter}(TWriter, CancellationToken)"/>
+    /// is likely to be completed synchronously.
+    /// </remarks>
+    bool LogEntryPayloadAvailableImmediately => false;
 }

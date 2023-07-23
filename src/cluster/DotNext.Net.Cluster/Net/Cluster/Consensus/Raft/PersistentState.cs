@@ -147,7 +147,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             if (snapshotRequested)
             {
                 LogEntry snapshot;
-                if (reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
+                if (reader.LogEntryMetadataOnly)
                 {
                     snapshot = new(in SnapshotInfo);
                     snapshotRequested = false;
@@ -191,7 +191,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         // enumerate over partitions in search of log entries
         for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
-            Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.OptimizationHint);
+            Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.LogEntryMetadataOnly);
 
         return reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(entries.Slice(0, listIndex), first.SnapshotIndex, token);
     }
@@ -229,7 +229,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         // read single entry
         if (TryGetPartition(PartitionOf(startIndex)) is { } partition)
-            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(partition.Read(sessionId, startIndex, reader.OptimizationHint), snapshotIndex: null, token);
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(partition.Read(sessionId, startIndex, reader.LogEntryMetadataOnly), snapshotIndex: null, token);
 
         return ValueTask.FromException<TResult>(new MissingPartitionException(startIndex));
     }
@@ -261,7 +261,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
         else if (startIndex > endIndex)
             result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
-        else if (bufferingConsumer is null || reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
+        else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, endIndex, token);
         else
             result = ReadBufferedAsync(reader, startIndex, endIndex, token);
@@ -356,7 +356,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (startIndex > state.LastIndex)
             result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
-        else if (bufferingConsumer is null || reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
+        else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, null, token);
         else
             result = ReadBufferedAsync(reader, startIndex, null, token);
@@ -381,7 +381,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             result = AppendCachedAsync(supplier, startIndex, writeThrough: true, skipCommitted, token);
         }
-        else if ((supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) is not 0)
+        else if (supplier.LogEntryPayloadAvailableImmediately)
         {
             result = AppendCachedAsync(supplier, startIndex, writeThrough: false, skipCommitted, token);
         }

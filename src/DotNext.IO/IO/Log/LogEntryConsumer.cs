@@ -17,23 +17,15 @@ public readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<TEn
     /// Wraps the delegate instance as a reader of log entries.
     /// </summary>
     /// <param name="consumer">The delegate representing the reader.</param>
-    /// <param name="optimizationHint">Represents optimization hint for the audit trail.</param>
-    public LogEntryConsumer(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> consumer, LogEntryReadOptimizationHint optimizationHint = LogEntryReadOptimizationHint.None)
-    {
-        this.consumer = consumer;
-        OptimizationHint = optimizationHint;
-    }
+    public LogEntryConsumer(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> consumer)
+        => this.consumer = consumer;
 
     /// <summary>
     /// Wraps the delegate instance as a reader of log entries.
     /// </summary>
     /// <param name="consumer">The delegate representing the reader.</param>
-    /// <param name="optimizationHint">Represents optimization hint for the audit trail.</param>
-    public LogEntryConsumer(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> consumer, LogEntryReadOptimizationHint optimizationHint = LogEntryReadOptimizationHint.None)
-    {
-        this.consumer = consumer;
-        OptimizationHint = optimizationHint;
-    }
+    public LogEntryConsumer(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> consumer)
+        => this.consumer = consumer;
 
     /// <summary>
     /// Wraps the consumer as a reader of log entries.
@@ -42,13 +34,13 @@ public readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<TEn
     public LogEntryConsumer(ILogEntryConsumer<TEntry, TResult> consumer)
     {
         this.consumer = consumer;
-        OptimizationHint = consumer.OptimizationHint;
+        LogEntryMetadataOnly = consumer.LogEntryMetadataOnly;
     }
 
     /// <summary>
-    /// Gets optimization hint that may be used by the audit trail to optimize the query.
+    /// Indicates that the consumer has no intention to read the content of the log entries.
     /// </summary>
-    public LogEntryReadOptimizationHint OptimizationHint { get; }
+    public bool LogEntryMetadataOnly { get; init; }
 
     /// <summary>
     /// Reads log entries asynchronously.

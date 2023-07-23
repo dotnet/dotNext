@@ -69,7 +69,4 @@ public sealed class LogEntryProducer<TEntry> : ILogEntryProducer<TEntry>, IReset
     /// <param name="entry">The entry to be exposed by producer.</param>
     /// <returns>The producer of single log entry.</returns>
     public static ILogEntryProducer<TEntry> Of(TEntry entry) => new SingleEntryProducer<TEntry>(entry);
-
-    /// <inheritdoc />
-    LogEntryProducerOptimizationHint ILogEntryProducer<TEntry>.OptimizationHint => LogEntryProducerOptimizationHint.SynchronousCompletion;
 }
