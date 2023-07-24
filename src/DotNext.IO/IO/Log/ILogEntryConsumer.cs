@@ -35,4 +35,9 @@ public interface ILogEntryConsumer<in TEntry, TResult>
     /// Indicates that the consumer has no intention to read the content of the log entries.
     /// </summary>
     bool LogEntryMetadataOnly => false;
+
+    /// <summary>
+    /// Indicates that the list of log entries is accessed sequentially by <see cref="ReadAsync{TEntryImpl, TList}(TList, long?, CancellationToken)"/> method.
+    /// </summary>
+    bool SequentialRead => false;
 }

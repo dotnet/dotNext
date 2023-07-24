@@ -2,6 +2,7 @@ using System.Reflection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
 public sealed class ConsensusOnlyStateTests : Test
@@ -33,7 +34,7 @@ public sealed class ConsensusOnlyStateTests : Test
             True(entries[0].IsSnapshot);
             return default;
         };
-        await auditTrail.ReadAsync(checker, 1L);
+        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1L);
     }
 
     [Fact]
@@ -57,7 +58,7 @@ public sealed class ConsensusOnlyStateTests : Test
             False(entries[1].IsSnapshot);
             return default;
         };
-        await auditTrail.ReadAsync(checker, 1, 2, CancellationToken.None);
+        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, 2, CancellationToken.None);
         //now replace entry at index 2 with new entry
         entry2 = new EmptyLogEntry(43);
         await auditTrail.AppendAsync(entry2, 2);
@@ -71,7 +72,7 @@ public sealed class ConsensusOnlyStateTests : Test
             False(entries[1].IsSnapshot);
             return default;
         };
-        await auditTrail.ReadAsync(checker, 1, 2, CancellationToken.None);
+        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, 2, CancellationToken.None);
         Equal(2, auditTrail.LastUncommittedEntryIndex);
         Equal(0, auditTrail.LastCommittedEntryIndex);
         //commit all entries
@@ -95,7 +96,7 @@ public sealed class ConsensusOnlyStateTests : Test
             False(entries[1].IsSnapshot);
             return default;
         };
-        await auditTrail.ReadAsync(checker, 1, 3, CancellationToken.None);
+        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, 3, CancellationToken.None);
     }
 
     [Fact]
@@ -112,6 +113,6 @@ public sealed class ConsensusOnlyStateTests : Test
             False(entries[0].IsSnapshot);
             return default;
         };
-        await auditTrail.ReadAsync(checker, 1, CancellationToken.None);
+        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
     }
 }

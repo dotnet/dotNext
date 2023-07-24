@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Buffers;
 using IO;
 using IRaftLog = IO.Log.IAuditTrail<IRaftLogEntry>;
+using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
 public sealed class DiskBasedStateMachineTests : Test
@@ -102,7 +103,7 @@ public sealed class DiskBasedStateMachineTests : Test
             False(entries[0].IsSnapshot);
             return default;
         };
-        await auditTrail.As<IRaftLog>().ReadAsync(checker, 1L, CancellationToken.None);
+        await auditTrail.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
         Equal(0L, await auditTrail.CommitAsync(CancellationToken.None));
     }
 
@@ -132,7 +133,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 Equal(0L, entries[0].Term);
                 return default;
             };
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker), 0L, CancellationToken.None);
 
             Equal(1L, await state.AppendAsync(entry1));
             checker = async (entries, snapshotIndex, token) =>
@@ -145,7 +146,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 return Missing.Value;
             };
 
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker), 0L, CancellationToken.None);
 
             // entry 2
             Equal(2L, await state.AppendAsync(entry2));
@@ -158,7 +159,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 return Missing.Value;
             };
 
-            await state.ReadAsync(checker, 2L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker), 2L, CancellationToken.None);
         }
         finally
         {
@@ -189,7 +190,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 False(entries[0].IsSnapshot);
                 return default;
             };
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker), 0L, CancellationToken.None);
 
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
             Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
@@ -218,7 +219,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 return default;
             };
 
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker), 0L, CancellationToken.None);
 
             await state.CommitAsync();
 
@@ -236,7 +237,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 return default;
             };
 
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker), 0L, CancellationToken.None);
         }
         finally
         {
@@ -269,7 +270,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 False(readResult[2].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 6, 9, CancellationToken.None).ConfigureAwait(false);
         }
     }
 }

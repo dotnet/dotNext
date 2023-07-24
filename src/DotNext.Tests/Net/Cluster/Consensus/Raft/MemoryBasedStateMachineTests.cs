@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO;
 using IRaftLog = IO.Log.IAuditTrail<IRaftLogEntry>;
+using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
 public sealed class MemoryBasedStateMachineTests : Test
@@ -149,20 +150,28 @@ public sealed class MemoryBasedStateMachineTests : Test
             False(entries[0].IsSnapshot);
             return default;
         };
-        await auditTrail.As<IRaftLog>().ReadAsync(checker, 1L, CancellationToken.None);
+        await auditTrail.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
         Equal(0L, await auditTrail.CommitAsync(CancellationToken.None));
     }
 
     [Theory]
-    [InlineData(0L, true, 65)]
-    [InlineData(1024, true, 65)]
-    [InlineData(0L, false, 65)]
-    [InlineData(1024, false, 65)]
-    [InlineData(0L, true, 3)]
-    [InlineData(1024, true, 3)]
-    [InlineData(0L, false, 3)]
-    [InlineData(1024, false, 3)]
-    public static async Task QueryAppendEntries(long partitionSize, bool caching, int concurrentReads)
+    [InlineData(0L, true, 65, false)]
+    [InlineData(1024, true, 65, false)]
+    [InlineData(0L, false, 65, false)]
+    [InlineData(1024, false, 65, false)]
+    [InlineData(0L, true, 3, false)]
+    [InlineData(1024, true, 3, false)]
+    [InlineData(0L, false, 3, false)]
+    [InlineData(1024, false, 3, false)]
+    [InlineData(0L, true, 65, true)]
+    [InlineData(1024, true, 65, true)]
+    [InlineData(0L, false, 65, true)]
+    [InlineData(1024, false, 65, true)]
+    [InlineData(0L, true, 3, true)]
+    [InlineData(1024, true, 3, true)]
+    [InlineData(0L, false, 3, true)]
+    [InlineData(1024, false, 3, true)]
+    public static async Task QueryAppendEntries(long partitionSize, bool caching, int concurrentReads, bool sequentialRead)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -179,20 +188,21 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(0L, entries[0].Term);
                 return default;
             };
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 0L, CancellationToken.None);
 
             Equal(1L, await state.AppendAsync(entry1));
             checker = async (entries, snapshotIndex, token) =>
             {
                 Null(snapshotIndex);
+
                 Equal(2, entries.Count);
-                Equal(0L, entries[0].Term);
-                Equal(42L, entries[1].Term);
+                Equal(0L, entries.First().Term);          // element 0
+                Equal(42L, entries.Skip(1).First().Term); // element 1
                 Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                 return Missing.Value;
             };
 
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 0L, CancellationToken.None);
 
             // entry 2
             Equal(2L, await state.AppendAsync(entry2));
@@ -205,7 +215,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 return Missing.Value;
             };
 
-            await state.ReadAsync(checker, 2L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 2L, CancellationToken.None);
         }
         finally
         {
@@ -239,9 +249,9 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(42L, entries[1].Term);
                 Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                 //execute reader inside of another reader which is not possible for ConsensusOnlyState
-                return await state.ReadAsync(checker2, 0L, CancellationToken.None);
+                return await state.ReadAsync(new LogEntryConsumer(checker2), 0L, CancellationToken.None);
             };
-            await state.ReadAsync(checker1, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker1), 0L, CancellationToken.None);
         }
         finally
         {
@@ -270,7 +280,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             return await state.AppendAsync(new TestLogEntry("SET Y = 42") { Term = 43L });
         };
 
-        var index = await state.As<IPersistentState>().ReadAsync(checker, 0L);
+        var index = await state.ReadAsync(new IO.Log.LogEntryConsumer<IRaftLogEntry, long>(checker), 0L);
         Equal(2L, index);
     }
 
@@ -328,14 +338,16 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8));
                 return Missing.Value;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1L, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
         }
     }
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public static async Task PartitionOverflow(bool useCaching)
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
+    public static async Task PartitionOverflow(bool useCaching, bool sequentialRead)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -355,7 +367,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 False(entries[0].IsSnapshot);
                 return default;
             };
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 0L, CancellationToken.None);
 
             Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
             Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
@@ -383,7 +395,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(entry5.Timestamp, entries[5].Timestamp);
                 return default;
             };
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 0L, CancellationToken.None);
         }
         finally
         {
@@ -417,7 +429,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(entry5.Timestamp, entries[5].Timestamp);
                 return Missing.Value;
             };
-            await state.ReadAsync(checker, 0L, CancellationToken.None);
+            await state.ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 0L, CancellationToken.None);
         }
         finally
         {
@@ -460,9 +472,11 @@ public sealed class MemoryBasedStateMachineTests : Test
     }
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public static async Task SnapshotInstallation(bool useCaching)
+    [InlineData(true, false)]
+    [InlineData(false, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
+    public static async Task SnapshotInstallation(bool useCaching, bool sequentialRead)
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
         entries.ForEach((ref Int64LogEntry entry, nint index) => entry = new Int64LogEntry(42L + index) { Term = index });
@@ -483,7 +497,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 False(readResult[2].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 6, 9, CancellationToken.None);
         }
 
         //read again
@@ -498,7 +512,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 False(readResult[2].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 6, 9, CancellationToken.None);
             await state.AppendAsync(new Int64LogEntry(90L, true), 11);
             checker = static (readResult, snapshotIndex, token) =>
             {
@@ -507,7 +521,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 True(readResult[0].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker) { SequentialRead = sequentialRead }, 6, 9, CancellationToken.None);
         }
     }
 
@@ -526,7 +540,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 NotEmpty(readResult);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1L, 1L);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, 1L);
         }
     }
 
@@ -553,7 +567,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 return default;
             };
 
-            await state.As<IRaftLog>().ReadAsync(checker, 6, 9, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 6, 9, CancellationToken.None);
             await state.ClearAsync();
 
             Equal(0L, state.LastCommittedEntryIndex);
@@ -610,8 +624,8 @@ public sealed class MemoryBasedStateMachineTests : Test
                 True(readResult[0].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
-            await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
         }
 
         //read again
@@ -623,7 +637,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 NotNull(snapshotIndex);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             Equal(0L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
@@ -631,7 +645,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(9, snapshotIndex);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
         }
     }
 
@@ -662,7 +676,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 False(readResult[2].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             checker = static (readResult, snapshotIndex, token) =>
             {
                 Equal(6, readResult.Count);
@@ -672,7 +686,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 False(readResult[2].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
         }
 
         //read again
@@ -684,7 +698,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 NotNull(snapshotIndex);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             Equal(0L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
@@ -695,7 +709,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 False(readResult[2].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
         }
     }
 
@@ -723,7 +737,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 True(readResult[0].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
         }
 
         //read again
@@ -735,7 +749,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 NotNull(snapshotIndex);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             Equal(0L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
@@ -743,7 +757,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(3, snapshotIndex);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
         }
     }
 
@@ -770,7 +784,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 True(readResult[0].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
         }
 
         //read again
@@ -782,7 +796,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 NotNull(snapshotIndex);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, 6, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             Equal(0L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
@@ -790,7 +804,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(4, snapshotIndex);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(checker, 1, CancellationToken.None);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
         }
     }
 
@@ -843,7 +857,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(entry5.Term, entries[4].Term);
                 return default;
             };
-            await state.ReadAsync(checker, 1L, 5L);
+            await state.ReadAsync(new LogEntryConsumer(checker), 1L, 5L);
         }
         finally
         {

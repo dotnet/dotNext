@@ -281,7 +281,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <inheritdoc/>
     bool IPersistentState.IsVotedFor(in ClusterMemberId id) => IPersistentState.IsVotedFor(lastVote, in id);
 
-    private ValueTask<TResult> ReadCoreAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
+    private ValueTask<TResult> ReadCoreAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
     {
         if (endIndex > index.VolatileRead())
             return ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
@@ -300,7 +300,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <param name="endIndex">The index of the last log entry to retrieve, inclusive.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The result of the transformation applied to the range of the log entries.</returns>
-    public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
+    public async ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
     {
         if (startIndex < 0L)
             throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -312,18 +312,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             return await ReadCoreAsync(reader, startIndex, endIndex, token).ConfigureAwait(false);
     }
 
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
-
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
-
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
-
     /// <summary>
     /// Reads the log entries starting at the specified index to the end of the log.
     /// </summary>
@@ -332,25 +320,13 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <param name="startIndex">The index of the first log entry to retrieve.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The result of the transformation applied to the range of the log entries.</returns>
-    public async ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
+    public async ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
     {
         if (startIndex < 0L)
             throw new ArgumentOutOfRangeException(nameof(startIndex));
         using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
             return await ReadCoreAsync(reader, startIndex, index.VolatileRead(), token).ConfigureAwait(false);
     }
-
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
-
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
-
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
 
     /// <inheritdoc/>
     ValueTask IPersistentState.UpdateTermAsync(long value, bool resetLastVote)

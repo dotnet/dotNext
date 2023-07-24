@@ -60,6 +60,8 @@ internal partial class LeaderState<TMember>
             }
         }
 
+        bool ILogEntryConsumer<IRaftLogEntry, Result<bool>>.SequentialRead => true;
+
         internal ValueTask<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
         {
             var startIndex = replicationIndex + 1L;

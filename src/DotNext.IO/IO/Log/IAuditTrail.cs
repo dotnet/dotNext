@@ -95,6 +95,16 @@ public interface IAuditTrail
     Task InitializeAsync(CancellationToken token = default);
 
     /// <summary>
+    /// Dropes the uncommitted entries starting from the specified position to the end of the log.
+    /// </summary>
+    /// <param name="startIndex">The index of the first log entry to be dropped.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The actual number of dropped entries.</returns>
+    /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    ValueTask<long> DropAsync(long startIndex, CancellationToken token = default);
+
+    /// <summary>
     /// Gets log entries in the specified range.
     /// </summary>
     /// <remarks>
@@ -112,7 +122,7 @@ public interface IAuditTrail
     /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="ILogEntry.IsSnapshot"/>
-    ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token = default);
+    ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token = default);
 
     /// <summary>
     /// Gets log entries starting from the specified index to the last log entry.
@@ -125,17 +135,7 @@ public interface IAuditTrail
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="ILogEntry.IsSnapshot"/>
-    ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token = default);
-
-    /// <summary>
-    /// Dropes the uncommitted entries starting from the specified position to the end of the log.
-    /// </summary>
-    /// <param name="startIndex">The index of the first log entry to be dropped.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The actual number of dropped entries.</returns>
-    /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask<long> DropAsync(long startIndex, CancellationToken token = default);
+    ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, CancellationToken token = default);
 }
 
 /// <summary>
@@ -165,24 +165,9 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <seealso cref="ILogEntry.IsSnapshot"/>
     ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token = default);
 
-    /// <summary>
-    /// Gets log entries in the specified range.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="reader">The reader of the log entries.</param>
-    /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
-    /// <param name="endIndex">The index of the last requested log entry, inclusively.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The collection of log entries.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
-    /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-    ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token = default)
-        => ReadAsync(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, endIndex, token);
-
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync<TResult>(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, endIndex, token);
+    /// <inheritdoc />
+    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
+        => ReadAsync<TResult>(reader, startIndex, endIndex, token);
 
     /// <summary>
     /// Gets log entries starting from the specified index to the last log entry.
@@ -197,22 +182,9 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <seealso cref="ILogEntry.IsSnapshot"/>
     ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult> reader, long startIndex, CancellationToken token = default);
 
-    /// <summary>
-    /// Gets log entries starting from the specified index to the last log entry.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="reader">The reader of the log entries.</param>
-    /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The collection of log entries.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask<TResult> ReadAsync<TResult>(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token = default)
-        => ReadAsync(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, token);
-
-    /// <inheritdoc/>
-    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
-        => ReadAsync<TResult>(new LogEntryConsumer<TEntry, TResult>(reader), startIndex, token);
+    /// <inheritdoc />
+    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, CancellationToken token)
+        => ReadAsync<TResult>(reader, startIndex, token);
 
     /// <summary>
     /// Adds uncommitted log entries into this log.

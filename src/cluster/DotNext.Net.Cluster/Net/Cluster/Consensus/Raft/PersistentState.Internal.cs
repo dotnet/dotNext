@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 using Debug = System.Diagnostics.Debug;
@@ -383,7 +384,99 @@ public partial class PersistentState
         return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayPool), sessionId).GetOrResize(length);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref LogEntry GetReference(ArraySegment<LogEntry> segment)
-        => ref MemoryMarshal.GetReference(segment.AsSpan());
+    // Lazy list of log entries optimized in the following aspects:
+    // 1. It doesn't depend on the actual number of log entries in the list
+    // 2. It's optimized for sequential reads only, when indexer is accessed for
+    //      monotonically increasing argument. In this case, indexer provides O(1) access time
+    // These assumptions are valid when the list is consumed by typical Raft algorithm implementation.
+    // Raft sequentially checks Term for each entry and then sequentially transmits entries one-by-one sequentially
+    // over the wire.
+    [StructLayout(LayoutKind.Auto)]
+    private struct LogEntryList : IReadOnlyList<LogEntry>
+    {
+        private readonly PersistentState state;
+        private readonly long startIndex, endIndex;
+        internal readonly int SessionId;
+        private readonly bool metadataOnly;
+        private readonly Partition? head; // partition containing the first log entry in the list
+        private LogEntry? firstEntry;
+        private Partition? cache;
+
+        internal LogEntryList(PersistentState state, int sessionId, long startIndex, long endIndex, int count, bool metadataOnly)
+        {
+            this.state = state;
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+            this.metadataOnly = metadataOnly;
+            if(!state.TryGetPartition(startIndex, ref head))
+                head = state.FirstPartition;
+
+            cache = head;
+            Count = count;
+            SessionId = sessionId;
+        }
+
+        internal readonly long? SnapshotIndex => firstEntry?.SnapshotIndex;
+
+        internal LogEntry FirstEntry
+        {
+            set => firstEntry = value;
+        }
+
+        public readonly int Count { get; }
+
+        public LogEntry this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= Count)
+                    throw new ArgumentOutOfRangeException(nameof(index));
+
+                var absoluteIndex = startIndex;
+
+                if (index is not 0)
+                {
+                    absoluteIndex += index;
+                }
+                else if (firstEntry.HasValue)
+                {
+                    return firstEntry.GetValueOrDefault();
+                }
+                else
+                {
+                    cache = head;
+                }
+
+                Debug.Assert(absoluteIndex <= endIndex);
+
+                return state.TryGetPartition(absoluteIndex, ref cache)
+                    ? cache.Read(SessionId, absoluteIndex, metadataOnly)
+                    : throw new MissingPartitionException(absoluteIndex);
+            }
+        }
+
+        private static IEnumerator<LogEntry> GetEnumerator(PersistentState state, Partition? partition, int sessionId, long startIndex, long endIndex, bool metadataOnly)
+        {
+            while (startIndex <= endIndex && state.TryGetPartition(startIndex, ref partition))
+                yield return partition.Read(sessionId, startIndex++, metadataOnly);
+        }
+
+        private static IEnumerator<LogEntry> GetEnumerator(PersistentState state, LogEntry first, Partition? partition, int sessionId, long startIndex, long endIndex, bool metadataOnly)
+        {
+            yield return first;
+
+            using var enumerator = GetEnumerator(state, partition, sessionId, startIndex + 1L, endIndex, metadataOnly);
+            while (enumerator.MoveNext())
+                yield return enumerator.Current;
+        }
+
+        public readonly IEnumerator<LogEntry> GetEnumerator()
+        {
+            return firstEntry.HasValue
+                ? GetEnumerator(state, firstEntry.GetValueOrDefault(), head, SessionId, startIndex, endIndex, metadataOnly)
+                : GetEnumerator(state, head, SessionId, startIndex, endIndex, metadataOnly);
+        }
+
+        readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
 }
