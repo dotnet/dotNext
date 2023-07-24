@@ -198,7 +198,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             : SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMemberId), token);
     }
 
-    Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
+    Task<Result<bool?>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
         long term,
         TList entries,
         long prevLogIndex,
@@ -208,11 +208,11 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         bool applyConfig,
         CancellationToken token)
     {
-        Task<Result<bool>> result;
+        Task<Result<bool?>> result;
 
         if (token.IsCancellationRequested)
         {
-            result = Task.FromCanceled<Result<bool>>(token);
+            result = Task.FromCanceled<Result<bool?>>(token);
         }
         else if (IsRemote)
         {
@@ -228,28 +228,28 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             }
             catch (Exception e)
             {
-                result = Task.FromException<Result<bool>>(e);
+                result = Task.FromException<Result<bool?>>(e);
                 goto exit;
             }
 
-            result = SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(message, token);
+            result = SendAsync<Result<bool?>, AppendEntriesMessage<TEntry, TList>>(message, token);
         }
         else
         {
-            result = Task.FromResult(new Result<bool>(term, true));
+            result = Task.FromResult(new Result<bool?>(term, value: true));
         }
 
     exit:
         return result;
     }
 
-    Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+    Task<Result<bool?>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
     {
         return token.IsCancellationRequested
-            ? Task.FromCanceled<Result<bool>>(token)
+            ? Task.FromCanceled<Result<bool?>>(token)
             : IsRemote
-            ? SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
-            : Task.FromResult(new Result<bool>(term, true));
+            ? SendAsync<Result<bool?>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
+            : Task.FromResult(new Result<bool?>(term, value: true));
     }
 
     async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)

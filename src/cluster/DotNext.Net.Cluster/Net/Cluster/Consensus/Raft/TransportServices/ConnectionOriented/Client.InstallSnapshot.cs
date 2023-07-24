@@ -8,7 +8,7 @@ internal partial class Client : RaftClusterMember
 {
     [StructLayout(LayoutKind.Auto)]
     [RequiresPreviewFeatures]
-    private readonly struct InstallSnapshotExchange : IClientExchange<Result<bool>>
+    private readonly struct InstallSnapshotExchange : IClientExchange<Result<bool?>>
     {
         private const string Name = "InstallSnapshot";
 
@@ -28,16 +28,16 @@ internal partial class Client : RaftClusterMember
             this.snapshotIndex = snapshotIndex;
         }
 
-        ValueTask IClientExchange<Result<bool>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask IClientExchange<Result<bool?>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer, token);
 
-        static ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.ReadResultAsync(token);
+        static ValueTask<Result<bool?>> IClientExchange<Result<bool?>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+            => protocol.ReadNullableResultAsync(token);
 
-        static string IClientExchange<Result<bool>>.Name => Name;
+        static string IClientExchange<Result<bool?>>.Name => Name;
     }
 
     [RequiresPreviewFeatures]
-    private protected sealed override Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        => RequestAsync<Result<bool>, InstallSnapshotExchange>(new(localMember, term, snapshot, snapshotIndex), token);
+    private protected sealed override Task<Result<bool?>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+        => RequestAsync<Result<bool?>, InstallSnapshotExchange>(new(localMember, term, snapshot, snapshotIndex), token);
 }

@@ -179,11 +179,12 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     private async ValueTask<(PacketHeaders, int, bool)> TransmissionControl(Memory<byte> output, CancellationToken token)
     {
         Debug.Assert(entriesExchangeCoordinator is not null);
+        Debug.Assert(task is Task<Result<bool?>>);
 
         MessageType responseType;
         int count;
         bool isContinueReceiving;
-        var resultTask = Cast<Task<Result<bool>>>(task);
+        var resultTask = Cast<Task<Result<bool?>>>(task);
         var stateTask = entriesExchangeCoordinator.WaitAnyAsync(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry, token);
 
         // wait for result or state transition

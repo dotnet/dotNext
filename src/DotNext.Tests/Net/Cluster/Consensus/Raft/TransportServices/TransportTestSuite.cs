@@ -86,7 +86,7 @@ public abstract class TransportTestSuite : RaftTest
             ReceivedConfiguration = buffer.Memory.ToArray();
         }
 
-        private async ValueTask<Result<bool>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+        private async ValueTask<Result<bool?>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
             where TEntry : IRaftLogEntry
         {
             Equal(42L, senderTerm);
@@ -128,13 +128,13 @@ public abstract class TransportTestSuite : RaftTest
                     break;
             }
 
-            return new Result<bool>(43L, true);
+            return new Result<bool?>(43L, value: true);
         }
 
-        ValueTask<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+        ValueTask<Result<bool?>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
             => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, fingerprint, applyConfig, token);
 
-        async ValueTask<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+        async ValueTask<Result<bool?>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         {
             if (config.Length > 0L)
                 ReceivedConfiguration = await config.ToByteArrayAsync(token: token);
@@ -142,14 +142,14 @@ public abstract class TransportTestSuite : RaftTest
             return await AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, config.Fingerprint, applyConfig, token);
         }
 
-        async ValueTask<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        async ValueTask<Result<bool?>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
             Equal(42L, senderTerm);
             Equal(10, snapshotIndex);
             True(snapshot.IsSnapshot);
             var buffer = await snapshot.ToByteArrayAsync(null, token);
             ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.Timestamp, snapshot.IsSnapshot, buffer));
-            return new Result<bool>(43L, true);
+            return new Result<bool?>(43L, value: true);
         }
 
         ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -226,9 +226,9 @@ public abstract class TransportTestSuite : RaftTest
 
         //Heartbeat request
         var config = IClusterConfiguration.CreateEmpty(fingerprint: 42L);
-        result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, true, CancellationToken.None);
-        True(result.Value);
-        Equal(43L, result.Term);
+        var appendEntries = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, true, CancellationToken.None);
+        True(appendEntries.Value);
+        Equal(43L, appendEntries.Term);
     }
 
     private protected async Task StressTestCore(ServerFactory serverFactory, ClientFactory clientFactory)
@@ -378,7 +378,7 @@ public abstract class TransportTestSuite : RaftTest
 
         var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
 
-        Result<bool> result;
+        Result<bool?> result;
         for (var i = 0; i < 100; i++)
         {
             // process snapshot

@@ -284,10 +284,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    async ValueTask<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
+    async ValueTask<Result<bool?>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
     {
         TryGetMember(sender)?.Touch();
-        Result<bool> result;
+        Result<bool?> result;
 
         try
         {
@@ -314,7 +314,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    ValueTask<Result<bool>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    ValueTask<Result<bool?>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         => AppendEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, token);
 
     /// <inheritdoc />
@@ -336,7 +336,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     /// <inheritdoc />
-    ValueTask<Result<bool>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+    ValueTask<Result<bool?>> ILocalMember.InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
     {
         TryGetMember(sender)?.Touch();
 

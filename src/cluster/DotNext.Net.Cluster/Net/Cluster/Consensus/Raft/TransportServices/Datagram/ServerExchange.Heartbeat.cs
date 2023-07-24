@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using IO.Log;
@@ -15,7 +17,9 @@ internal partial class ServerExchange
 
     private async ValueTask<(PacketHeaders, int, bool)> EndProcessHearbeat(Memory<byte> output)
     {
-        var result = await Cast<Task<Result<bool>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
+        Debug.Assert(task is Task<Result<bool?>>);
+
+        var result = await Cast<Task<Result<bool?>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
         return (new PacketHeaders(MessageType.Heartbeat, FlowControl.Ack), Result.Write(output.Span, result), false);
     }
 }

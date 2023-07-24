@@ -101,6 +101,9 @@ internal partial class ProtocolStream
     internal unsafe ValueTask<Result<bool>> ReadResultAsync(CancellationToken token)
         => ReadAsync<Result<bool>>(Result.Size, &Result.Read, token);
 
+    internal unsafe ValueTask<Result<bool?>> ReadNullableResultAsync(CancellationToken token)
+        => ReadAsync<Result<bool?>>(Result.Size, &Result.ReadNullable, token);
+
     internal unsafe ValueTask<Result<PreVoteResult>> ReadPreVoteResultAsync(CancellationToken token)
         => ReadAsync<Result<PreVoteResult>>(Result.Size, &Result.ReadPreVoteResult, token);
 

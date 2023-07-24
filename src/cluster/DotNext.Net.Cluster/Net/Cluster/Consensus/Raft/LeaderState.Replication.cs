@@ -19,13 +19,13 @@ internal partial class LeaderState<TMember>
         private readonly TMember member;
         private readonly MemberContext? context;
         private readonly long commitIndex, precedingTerm, term;
+        private readonly bool applyConfig;
         private readonly ILogger logger;
 
         // state
         private long replicationIndex; // reuse as precedingIndex
         private long fingerprint;
-        private bool replicatedWithCurrentTerm; // reuse as applyConfig
-        private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
+        private ConfiguredTaskAwaitable<Result<bool?>>.ConfiguredTaskAwaiter replicationAwaiter;
 
         // TODO: Replace with required init properties in the next version of C#
         internal Replicator(
@@ -55,12 +55,10 @@ internal partial class LeaderState<TMember>
                 // This branch is a hot path because configuration changes rarely.
                 // It is reasonable to prevent allocation of empty configuration every time.
                 // To do that, instance of Replicator serves as empty configuration
-                replicatedWithCurrentTerm = activeConfig.Fingerprint == fingerprint;
+                applyConfig = activeConfig.Fingerprint == fingerprint;
                 configuration = this;
             }
         }
-
-        bool ILogEntryConsumer<IRaftLogEntry, Result<bool>>.SequentialRead => true;
 
         internal ValueTask<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
         {
@@ -80,12 +78,11 @@ internal partial class LeaderState<TMember>
                 var result = replicationAwaiter.GetResult();
 
                 // analyze result and decrease node index when it is out-of-sync with the current node
-                if (result.Value)
+                if (result.Value is { } replicated)
                 {
                     logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
                     member.NextIndex = replicationIndex + 1L;
                     member.ConfigurationFingerprint = fingerprint;
-                    result = result with { Value = replicatedWithCurrentTerm };
                 }
                 else
                 {
@@ -95,9 +92,10 @@ internal partial class LeaderState<TMember>
                         member.NextIndex = --nextIndex;
 
                     logger.ReplicationFailed(member.EndPoint, nextIndex);
+                    replicated = false;
                 }
 
-                SetResult(result);
+                SetResult(new(result.Term, replicated));
             }
             catch (OperationCanceledException e)
             {
@@ -142,27 +140,15 @@ internal partial class LeaderState<TMember>
             logger.InstallingSnapshot(replicationIndex = snapshotIndex);
             replicationAwaiter = member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
             fingerprint = member.ConfigurationFingerprint; // keep local version unchanged
-            replicatedWithCurrentTerm = snapshot.Term == term;
         }
 
         private void ReplicateEntries<TEntry, TList>(TList entries, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
             where TList : notnull, IReadOnlyList<TEntry>
         {
-            logger.ReplicaSize(member.EndPoint, entries.Count, replicationIndex, precedingTerm, member.ConfigurationFingerprint, fingerprint, replicatedWithCurrentTerm);
-            replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, replicatedWithCurrentTerm, token).ConfigureAwait(false).GetAwaiter();
+            logger.ReplicaSize(member.EndPoint, entries.Count, replicationIndex, precedingTerm, member.ConfigurationFingerprint, fingerprint, applyConfig);
+            replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
             replicationIndex += entries.Count;
-
-            for (var i = 0; i < entries.Count; i++)
-            {
-                if (entries[i].Term == term)
-                {
-                    replicatedWithCurrentTerm = true;
-                    return;
-                }
-            }
-
-            replicatedWithCurrentTerm = false;
         }
 
         long IClusterConfiguration.Fingerprint => fingerprint;
