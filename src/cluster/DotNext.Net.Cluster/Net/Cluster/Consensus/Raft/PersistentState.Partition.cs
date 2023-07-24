@@ -193,12 +193,12 @@ public partial class PersistentState
             if (cachedContent.Content.IsEmpty && metadata.Length > 0L)
             {
                 persisted = true;
-                return new(GetSessionReader(sessionId), in metadata, absoluteIndex);
+                return new(in metadata, absoluteIndex) { ContentReader = GetSessionReader(sessionId) };
             }
 
         return_cached:
             persisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None;
-            return new(in cachedContent.Content, in metadata, absoluteIndex);
+            return new(in metadata, absoluteIndex) { ContentBuffer = cachedContent.Content.Memory };
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

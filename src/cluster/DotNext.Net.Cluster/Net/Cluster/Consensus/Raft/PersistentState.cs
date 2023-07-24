@@ -137,24 +137,25 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Debug.Assert(length > 1);
 
         var entries = new LogEntryList(this, sessionId, startIndex, endIndex, length, reader.LogEntryMetadataOnly);
-        if (startIndex is 0L)
-        {
-            entries.FirstEntry = LogEntry.Initial;
-        }
-        else if (!snapshotRequested)
-        {
-            // nothing to do
-        }
-        else if (reader.LogEntryMetadataOnly)
-        {
-            entries.FirstEntry = new(in SnapshotInfo);
-        }
-        else
-        {
-            return UnsafeReadSnapshotAsync(reader, entries, token);
-        }
+        long? snapshotIndex;
 
-        return reader.ReadAsync<LogEntry, LogEntryList>(entries, entries.SnapshotIndex, token);
+        switch ((snapshotRequested, reader.LogEntryMetadataOnly))
+        {
+            case (true, false):
+                Debug.Assert(startIndex == SnapshotInfo.Index);
+
+                return UnsafeReadSnapshotAsync(reader, entries, token);
+            case (true, true):
+                Debug.Assert(startIndex == SnapshotInfo.Index);
+
+                snapshotIndex = startIndex;
+                goto default;
+            case (false, _):
+                snapshotIndex = null;
+                goto default;
+            default:
+                return reader.ReadAsync<LogEntry, LogEntryList>(entries, snapshotIndex, token);
+        }
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -162,8 +163,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         try
         {
-            entries.FirstEntry = new(await BeginReadSnapshotAsync(entries.SessionId, token).ConfigureAwait(false), in SnapshotInfo);
-            return await reader.ReadAsync<LogEntry, LogEntryList>(entries, entries.SnapshotIndex, token).ConfigureAwait(false);
+            entries.Snapshot = await BeginReadSnapshotAsync(entries.SessionId, token).ConfigureAwait(false);
+            return await reader.ReadAsync<LogEntry, LogEntryList>(entries, entries.StartIndex, token).ConfigureAwait(false);
         }
         finally
         {

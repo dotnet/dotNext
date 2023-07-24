@@ -27,7 +27,11 @@ public partial class PersistentState
 
         async ValueTask<TResult> ReadSlowAsync()
         {
-            var entry = new LogEntry(await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in SnapshotInfo);
+            var entry = new LogEntry(in SnapshotInfo)
+            {
+                ContentReader = await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false),
+            };
+
             try
             {
                 return await reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token).ConfigureAwait(false);

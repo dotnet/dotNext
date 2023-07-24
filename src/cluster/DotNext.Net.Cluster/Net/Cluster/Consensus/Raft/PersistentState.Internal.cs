@@ -369,18 +369,18 @@ public partial class PersistentState
     private struct LogEntryList : IReadOnlyList<LogEntry>
     {
         private readonly PersistentState state;
-        private readonly long startIndex, endIndex;
+        internal readonly long StartIndex, EndIndex;
         internal readonly int SessionId;
         private readonly bool metadataOnly;
         private readonly Partition? head; // partition containing the first log entry in the list
-        private LogEntry? firstEntry;
         private Partition? cache;
+        internal IAsyncBinaryReader? Snapshot;
 
         internal LogEntryList(PersistentState state, int sessionId, long startIndex, long endIndex, int count, bool metadataOnly)
         {
             this.state = state;
-            this.startIndex = startIndex;
-            this.endIndex = endIndex;
+            StartIndex = startIndex;
+            EndIndex = endIndex;
             this.metadataOnly = metadataOnly;
             if(!state.TryGetPartition(startIndex, ref head))
                 head = state.FirstPartition;
@@ -390,14 +390,10 @@ public partial class PersistentState
             SessionId = sessionId;
         }
 
-        internal readonly long? SnapshotIndex => firstEntry?.SnapshotIndex;
-
-        internal LogEntry FirstEntry
-        {
-            set => firstEntry = value;
-        }
-
         public readonly int Count { get; }
+
+        private readonly LogEntry CreateSnapshotEntry()
+            => new(in state.SnapshotInfo) { ContentReader = Snapshot };
 
         public LogEntry this[int index]
         {
@@ -406,22 +402,26 @@ public partial class PersistentState
                 if (index < 0 || index >= Count)
                     throw new ArgumentOutOfRangeException(nameof(index));
 
-                var absoluteIndex = startIndex;
+                var absoluteIndex = StartIndex;
 
                 if (index is not 0)
                 {
                     absoluteIndex += index;
                 }
-                else if (firstEntry.HasValue)
+                else if (absoluteIndex is 0L)
                 {
-                    return firstEntry.GetValueOrDefault();
+                    return LogEntry.Initial;
+                }
+                else if (absoluteIndex == state.SnapshotInfo.Index)
+                {
+                    return CreateSnapshotEntry();
                 }
                 else
                 {
                     cache = head;
                 }
 
-                Debug.Assert(absoluteIndex <= endIndex);
+                Debug.Assert(absoluteIndex <= EndIndex);
 
                 return state.TryGetPartition(absoluteIndex, ref cache)
                     ? cache.Read(SessionId, absoluteIndex, metadataOnly)
@@ -429,26 +429,23 @@ public partial class PersistentState
             }
         }
 
-        private static IEnumerator<LogEntry> GetEnumerator(PersistentState state, Partition? partition, int sessionId, long startIndex, long endIndex, bool metadataOnly)
-        {
-            while (startIndex <= endIndex && state.TryGetPartition(startIndex, ref partition))
-                yield return partition.Read(sessionId, startIndex++, metadataOnly);
-        }
-
-        private static IEnumerator<LogEntry> GetEnumerator(PersistentState state, LogEntry first, Partition? partition, int sessionId, long startIndex, long endIndex, bool metadataOnly)
-        {
-            yield return first;
-
-            using var enumerator = GetEnumerator(state, partition, sessionId, startIndex + 1L, endIndex, metadataOnly);
-            while (enumerator.MoveNext())
-                yield return enumerator.Current;
-        }
-
         public readonly IEnumerator<LogEntry> GetEnumerator()
         {
-            return firstEntry.HasValue
-                ? GetEnumerator(state, firstEntry.GetValueOrDefault(), head, SessionId, startIndex, endIndex, metadataOnly)
-                : GetEnumerator(state, head, SessionId, startIndex, endIndex, metadataOnly);
+            var runningIndex = StartIndex;
+
+            if (runningIndex is 0L)
+            {
+                yield return LogEntry.Initial;
+                runningIndex = 1L;
+            }
+            else if (runningIndex == state.SnapshotInfo.Index)
+            {
+                yield return CreateSnapshotEntry();
+                runningIndex += 1L;
+            }
+
+            for (Partition? partition = head; runningIndex <= EndIndex && state.TryGetPartition(runningIndex, ref partition); runningIndex++)
+                yield return partition.Read(SessionId, runningIndex, metadataOnly);
         }
 
         readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

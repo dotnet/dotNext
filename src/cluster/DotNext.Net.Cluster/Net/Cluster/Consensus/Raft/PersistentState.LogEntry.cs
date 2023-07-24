@@ -22,7 +22,7 @@ public partial class PersistentState
     [StructLayout(LayoutKind.Auto)]
     protected internal readonly struct LogEntry : IRaftLogEntry
     {
-        // null (if empty), FileReader, or byte[], or MemoryManager<byte>
+        // null (if empty), FileReader, IAsyncBinaryReader, or byte[], or MemoryManager<byte>
         private readonly object? content;
         private readonly int contentOffset, contentLength;
         private readonly LogEntryMetadata metadata;
@@ -31,46 +31,10 @@ public partial class PersistentState
         private readonly long index;
 
         // for regular log entry
-        internal LogEntry(FileReader cachedContent, in LogEntryMetadata metadata, long index)
+        internal LogEntry(in LogEntryMetadata metadata, long index)
         {
             this.metadata = metadata;
-            content = metadata.Length > 0L ? cachedContent : null;
             this.index = index;
-        }
-
-        // for regular log entry cached in memory
-        internal LogEntry(in MemoryOwner<byte> cachedContent, in LogEntryMetadata metadata, long index)
-        {
-            Debug.Assert(cachedContent.IsEmpty || cachedContent.Length == metadata.Length, $"Log entry payload mismatch. Cached payload length: {cachedContent.Length}, length in metadata : {metadata.Length}");
-            this.metadata = metadata;
-            content = null;
-            this.index = index;
-
-            var buffer = cachedContent.Memory;
-            if (MemoryMarshal.TryGetArray<byte>(buffer, out var segment))
-            {
-                content = segment.Array;
-                contentOffset = segment.Offset;
-                contentLength = segment.Count;
-            }
-            else if (MemoryMarshal.TryGetMemoryManager<byte, MemoryManager<byte>>(buffer, out var manager, out contentOffset, out contentLength))
-            {
-                content = manager;
-            }
-            else
-            {
-                content = null;
-            }
-        }
-
-        // for snapshot
-        internal LogEntry(IAsyncBinaryReader cachedContent, in SnapshotMetadata metadata)
-        {
-            Debug.Assert(metadata.Index > 0L);
-
-            this.metadata = metadata.RecordMetadata;
-            content = metadata.RecordMetadata.Length > 0L ? cachedContent : null;
-            index = -metadata.Index;
         }
 
         // for snapshot
@@ -80,6 +44,32 @@ public partial class PersistentState
 
             this.metadata = metadata.RecordMetadata;
             index = -metadata.Index;
+        }
+
+        internal IAsyncBinaryReader? ContentReader
+        {
+            init => content = metadata.Length > 0L ? value : null;
+        }
+
+        internal Memory<byte> ContentBuffer
+        {
+            init
+            {
+                if (MemoryMarshal.TryGetArray<byte>(value, out var segment))
+                {
+                    content = segment.Array;
+                    contentOffset = segment.Offset;
+                    contentLength = segment.Count;
+                }
+                else if (MemoryMarshal.TryGetMemoryManager<byte, MemoryManager<byte>>(value, out var manager, out contentOffset, out contentLength))
+                {
+                    content = manager;
+                }
+                else
+                {
+                    content = null;
+                }
+            }
         }
 
         internal static LogEntry Initial => new();
@@ -117,17 +107,23 @@ public partial class PersistentState
 
         internal bool IsEmpty => Length == 0L;
 
-        private bool TryGetContentAsReader([NotNullWhen(true)] out FileReader? result)
+        private bool TryGetContentAsReader([NotNullWhen(true)] out IAsyncBinaryReader? result)
         {
-            if (content is FileReader reader)
+            switch (content)
             {
-                Adjust(reader, in metadata);
-                result = reader;
-                return true;
+                case FileReader reader:
+                    Adjust(reader, in metadata);
+                    result = reader;
+                    break;
+                case IAsyncBinaryReader reader:
+                    result = reader;
+                    break;
+                default:
+                    result = null;
+                    return false;
             }
 
-            result = null;
-            return false;
+            return true;
 
             static void Adjust(FileReader reader, in LogEntryMetadata metadata)
             {
@@ -302,7 +298,7 @@ public partial class PersistentState
         }
 
         [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
-        private static async ValueTask<object?> DeserializeSlowAsync(FileReader reader, LogEntryMetadata metadata, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
+        private static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
         {
             using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
             await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
@@ -356,7 +352,7 @@ public partial class PersistentState
             return result;
         }
 
-        private static async ValueTask<object?> DeserializeSlowAsync(FileReader reader, LogEntryMetadata metadata, Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
+        private static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
         {
             using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
             await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
