@@ -44,7 +44,6 @@ internal readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<T
         {
             this.consumer = consumer;
             LogEntryMetadataOnly = consumer.LogEntryMetadataOnly;
-            SequentialRead = consumer.SequentialRead;
         }
     }
 
@@ -52,11 +51,6 @@ internal readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<T
     /// Indicates that the consumer has no intention to read the content of the log entries.
     /// </summary>
     public bool LogEntryMetadataOnly { get; init; }
-
-    /// <summary>
-    /// Indicates that the list of log entries is accessed sequentially by <see cref="ReadAsync{TEntryImpl, TList}(TList, long?, CancellationToken)"/> method.
-    /// </summary>
-    public bool SequentialRead { get; init; }
 
     /// <summary>
     /// Reads log entries asynchronously.

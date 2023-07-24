@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -62,7 +61,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
         parallelIO = configuration.ParallelIO;
-        arrayPool = new LogEntryArray[concurrentReads];
 
         syncRoot = new(configuration.MaxConcurrentReads)
         {
@@ -133,76 +131,11 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private partial Partition CreatePartition(long partitionNumber)
         => new(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<TResult> UnsafeRandomAccessReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
+    private ValueTask<TResult> UnsafeReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
         Debug.Assert(LastPartition is not null);
         Debug.Assert(length > 1);
 
-        var entries = GetLogEntryArray(sessionId, length);
-        Debug.Assert(entries.Count >= length);
-
-        try
-        {
-            // try to read snapshot out of the loop
-            if (snapshotRequested)
-            {
-                LogEntry snapshot;
-                if (reader.LogEntryMetadataOnly)
-                {
-                    snapshot = new(in SnapshotInfo);
-                    snapshotRequested = false;
-                }
-                else
-                {
-                    snapshot = new(await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in SnapshotInfo);
-                }
-
-                Debug.Assert(startIndex == snapshot.Index);
-                entries[0] = snapshot;
-
-                // advance to the record next to snapshot
-                startIndex++;
-                length = 1;
-            }
-            else if (startIndex is 0L)
-            {
-                entries[0] = LogEntry.Initial;
-                startIndex = length = 1;
-            }
-            else
-            {
-                length = 0;
-            }
-
-            return await UnsafeReadAsync(reader, entries, sessionId, startIndex, endIndex, ref length, token).ConfigureAwait(false);
-        }
-        finally
-        {
-            if (snapshotRequested)
-                EndReadSnapshot(sessionId);
-
-            entries.AsSpan(0, length).Clear();
-        }
-    }
-
-    private ValueTask<TResult> UnsafeReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, ArraySegment<LogEntry> entries, int sessionId, long startIndex, long endIndex, ref int listIndex, CancellationToken token)
-    {
-        ref var first = ref MemoryMarshal.GetReference(entries.AsSpan());
-
-        // enumerate over partitions in search of log entries
-        for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
-            Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.LogEntryMetadataOnly);
-
-        return reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(entries.Slice(0, listIndex), first.SnapshotIndex, token);
-    }
-
-    private ValueTask<TResult> UnsafeSequentialAccessReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
-    {
-        Debug.Assert(LastPartition is not null);
-        Debug.Assert(length > 1);
-
-        // in contrast to random access read, this method doesn't require async state machine and can go directly to reader without awaits
         var entries = new LogEntryList(this, sessionId, startIndex, endIndex, length, reader.LogEntryMetadataOnly);
         if (startIndex is 0L)
         {
@@ -261,11 +194,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         ReadRateMeter.Add(length, measurementTags);
 
         if (length > 1L && LastPartition is not null)
-        {
-            return reader.SequentialRead
-                ? UnsafeSequentialAccessReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token)
-                : UnsafeRandomAccessReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token);
-        }
+            return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token);
 
         if (startIndex is 0L)
             return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, snapshotIndex: null, token);
@@ -465,16 +394,18 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
-            if (supplier.Current.IsSnapshot)
+            var currentEntry = supplier.Current;
+
+            if (currentEntry.IsSnapshot)
                 throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
 
             if (startIndex > state.CommitIndex)
             {
                 GetOrCreatePartition(startIndex, ref partition);
-                await partition.WriteAsync(supplier.Current, startIndex, token).ConfigureAwait(false);
+                await partition.WriteAsync(currentEntry, startIndex, token).ConfigureAwait(false);
 
                 // flush if last entry is added to the partition or the last entry is consumed from the iterator
-                if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                if (startIndex == partition.LastIndex || supplier.RemainingCount is 0L)
                     await partition.FlushAsync(token).ConfigureAwait(false);
             }
             else if (!skipCommitted)
@@ -1032,7 +963,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             state.Dispose();
             commitEvent.Dispose();
             syncRoot.Dispose();
-            Array.Clear(arrayPool);
         }
 
         base.Dispose(disposing);

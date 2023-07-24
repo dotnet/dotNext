@@ -20,8 +20,6 @@ public partial class PersistentState
             where TEntry : notnull, IRaftLogEntry
             where TList : notnull, IReadOnlyList<TEntry>
             => (await BufferedRaftLogEntryList.CopyAsync<TEntry, TList>(entries, options, token).ConfigureAwait(false), snapshotIndex);
-
-        bool ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>.SequentialRead => true;
     }
 
     private sealed class BufferingLogEntryProducer<TEntry> : ILogEntryProducer<CachedLogEntry>

@@ -358,32 +358,6 @@ public partial class PersistentState
         }
     }
 
-    [StructLayout(LayoutKind.Auto)]
-    private struct LogEntryArray
-    {
-        private LogEntry[]? array;
-
-        internal ArraySegment<LogEntry> GetOrResize(int length)
-        {
-            Debug.Assert(length > 0);
-
-            var result = array;
-            if (result is null || result.Length < length)
-                array = result = new LogEntry[length];
-
-            return new(result, 0, length);
-        }
-    }
-
-    private readonly LogEntryArray[] arrayPool;
-
-    private ArraySegment<LogEntry> GetLogEntryArray(int sessionId, int length)
-    {
-        Debug.Assert(sessionId >= 0 && sessionId < arrayPool.Length);
-
-        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(arrayPool), sessionId).GetOrResize(length);
-    }
-
     // Lazy list of log entries optimized in the following aspects:
     // 1. It doesn't depend on the actual number of log entries in the list
     // 2. It's optimized for sequential reads only, when indexer is accessed for
