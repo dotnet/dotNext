@@ -129,6 +129,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
                 break;
             default:
                 var suspendedCaller = default(ManualResetCompletionSource);
+                ISupplier<TimeSpan, CancellationToken, ValueTask<T>> factory;
                 lock (SyncRoot)
                 {
                     if (IsDisposed)
@@ -149,15 +150,23 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
                         suspendedCaller = resumable ? point : null;
                         point = null;
                         result = new(value);
+                        goto resume_callers;
                     }
                     else
                     {
-                        point = RentExchangePoint(value);
-                        result = point.CreateTask(timeout, token);
+                        factory = point = RentExchangePoint(value);
+                        goto create_task;
                     }
                 }
 
+                break;
+
+            resume_callers:
                 suspendedCaller?.Resume();
+                break;
+
+            create_task:
+                result = factory.Invoke(timeout, token);
                 break;
         }
 
