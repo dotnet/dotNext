@@ -105,7 +105,7 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
                 bufferedBytes += buffered.Length;
         }
 
-        return new BufferedRaftLogEntryList(entries);
+        return new(entries);
     }
 
     /// <inheritdoc />
