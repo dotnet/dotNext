@@ -622,15 +622,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
                 {
                     bool emptySet;
-                    ReplicationWithSenderTermDetector<TEntry>? proxy;
 
-                    if (emptySet = entries.RemainingCount is 0L)
+                    if (entries.RemainingCount is 0L)
                     {
-                        proxy = null;
+                        emptySet = true;
                     }
                     else
                     {
-                        entries = proxy = new(entries, senderTerm);
+                        entries = new ReplicationWithSenderTermDetector<TEntry>(entries, senderTerm);
+                        emptySet = false;
                     }
 
                     // prevent Follower state transition during processing of received log entries
@@ -644,7 +644,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                         * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                         */
                         await auditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, token).ConfigureAwait(false);
-                        result = result with { Value = proxy is { IsReplicatedWithExpectedTerm: true } };
+                        result = result with { Value = entries is ReplicationWithSenderTermDetector<TEntry> { IsReplicatedWithExpectedTerm: true } };
 
                         // process configuration
                         var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
