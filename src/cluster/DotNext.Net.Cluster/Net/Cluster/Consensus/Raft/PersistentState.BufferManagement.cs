@@ -71,6 +71,7 @@ public partial class PersistentState
 
         internal async Task BufferizeAsync()
         {
+            var error = default(Exception);
             try
             {
                 while (await entries.MoveNextAsync().ConfigureAwait(false))
@@ -87,13 +88,13 @@ public partial class PersistentState
 
                     await queue.Writer.WriteAsync(cachedEntry, Token).ConfigureAwait(false);
                 }
-
-                queue.Writer.Complete();
             }
             catch (Exception e)
             {
-                queue.Writer.Complete(e);
+                error = e;
             }
+
+            queue.Writer.Complete(error);
         }
 
         long ILogEntryProducer<CachedLogEntry>.RemainingCount => count;
