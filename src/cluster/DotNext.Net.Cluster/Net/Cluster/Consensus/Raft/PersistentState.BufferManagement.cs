@@ -16,10 +16,27 @@ public partial class PersistentState
         internal BufferingLogEntryConsumer(RaftLogEntriesBufferingOptions options)
             => this.options = options;
 
-        public async ValueTask<(BufferedRaftLogEntryList, long?)> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
-            where TList : notnull, IReadOnlyList<TEntry>
-            => (await BufferedRaftLogEntryList.CopyAsync<TEntry, TList>(entries, options, token).ConfigureAwait(false), snapshotIndex);
+        ValueTask<(BufferedRaftLogEntryList, long?)> ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>.ReadAsync<TEntry, TList>(TList list, long? snapshotIndex, CancellationToken token)
+        {
+            return CopyAsync(BufferedRaftLogEntryList.BufferizeAsync<TEntry, TList>(list, options, token), new BufferedRaftLogEntry[list.Count], snapshotIndex);
+
+            static async ValueTask<(BufferedRaftLogEntryList, long?)> CopyAsync(IAsyncEnumerator<BufferedRaftLogEntry> source, BufferedRaftLogEntry[] destination, long? snapshotIndex)
+            {
+                try
+                {
+                    for (nuint i = 0; await source.MoveNextAsync().ConfigureAwait(false); i++)
+                    {
+                        destination[i] = source.Current;
+                    }
+                }
+                finally
+                {
+                    await source.DisposeAsync().ConfigureAwait(false);
+                }
+
+                return new(new BufferedRaftLogEntryList(destination), snapshotIndex);
+            }
+        }
     }
 
     private sealed class BufferingLogEntryProducer<TEntry> : ILogEntryProducer<CachedLogEntry>

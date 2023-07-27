@@ -21,7 +21,7 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
 {
     private readonly BufferedRaftLogEntry[]? entries;
 
-    private BufferedRaftLogEntryList(BufferedRaftLogEntry[] entries)
+    internal BufferedRaftLogEntryList(BufferedRaftLogEntry[] entries)
         => this.entries = entries;
 
     private BufferedRaftLogEntry[] Entries => entries ?? Array.Empty<BufferedRaftLogEntry>();
@@ -55,26 +55,28 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
     /// <typeparam name="TEntry">The type of the entry in the source sequence.</typeparam>
     /// <returns>The copy of the log entries.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async Task<BufferedRaftLogEntryList> CopyAsync<TEntry>(ILogEntryProducer<TEntry> producer, RaftLogEntriesBufferingOptions options, CancellationToken token = default)
+    public static Task<BufferedRaftLogEntryList> CopyAsync<TEntry>(ILogEntryProducer<TEntry> producer, RaftLogEntriesBufferingOptions options, CancellationToken token = default)
         where TEntry : notnull, IRaftLogEntry
     {
-        var entries = new BufferedRaftLogEntry[producer.RemainingCount];
-        long bufferedBytes = 0L;
-        for (nint index = 0; await producer.MoveNextAsync().ConfigureAwait(false); index++)
+        return CreateListAsync<IAsyncEnumerator<TEntry>>(BufferizeAsync, producer, producer.RemainingCount, options, token);
+
+        static async IAsyncEnumerator<BufferedRaftLogEntry> BufferizeAsync(IAsyncEnumerator<TEntry> enumerator, RaftLogEntriesBufferingOptions options, CancellationToken token)
         {
-            var current = producer.Current;
-            var buffered = await (bufferedBytes < options.MemoryLimit ?
-                BufferedRaftLogEntry.CopyAsync(current, options, token) :
-                BufferedRaftLogEntry.CopyToFileAsync(current, options, current.Length, token)).ConfigureAwait(false);
+            for (var bufferedBytes = 0L; await enumerator.MoveNextAsync().ConfigureAwait(false);)
+            {
+                var buffered = await BufferizeAsync<TEntry>(enumerator.Current, options, bufferedBytes, token).ConfigureAwait(false);
 
-            entries[index] = buffered;
+                if (buffered.InMemory)
+                    bufferedBytes += buffered.Length;
 
-            if (buffered.InMemory)
-                bufferedBytes += buffered.Length;
+                yield return buffered;
+            }
         }
-
-        return new BufferedRaftLogEntryList(entries);
     }
+
+    private static ValueTask<BufferedRaftLogEntry> BufferizeAsync<TEntry>(TEntry entry, RaftLogEntriesBufferingOptions options, long bufferedBytes, CancellationToken token)
+        where TEntry : notnull, IRaftLogEntry
+        => bufferedBytes < options.MemoryLimit ? BufferedRaftLogEntry.CopyAsync(entry, options, token) : BufferedRaftLogEntry.CopyToFileAsync(entry, options, token);
 
     /// <summary>
     /// Constructs bufferized copy of all log entries presented in the list.
@@ -86,26 +88,47 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
     /// <typeparam name="TList">The type of the list of log entries.</typeparam>
     /// <returns>The copy of the log entries.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async Task<BufferedRaftLogEntryList> CopyAsync<TEntry, TList>(TList list, RaftLogEntriesBufferingOptions options, CancellationToken token = default)
+    public static Task<BufferedRaftLogEntryList> CopyAsync<TEntry, TList>(TList list, RaftLogEntriesBufferingOptions options, CancellationToken token = default)
+        where TEntry : notnull, IRaftLogEntry
+        where TList : notnull, IReadOnlyList<TEntry>
+        => CreateListAsync(BufferizeAsync<TEntry, TList>, list, list.Count, options, token);
+
+    internal static async IAsyncEnumerator<BufferedRaftLogEntry> BufferizeAsync<TEntry, TList>(TList list, RaftLogEntriesBufferingOptions options, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
         where TList : notnull, IReadOnlyList<TEntry>
     {
-        var entries = new BufferedRaftLogEntry[list.Count];
-        long bufferedBytes = 0L;
-        for (var index = 0; index < list.Count; index++)
+        var bufferedBytes = 0L;
+        for (var i = 0; i < list.Count; i++)
         {
-            var current = list[index];
-            var buffered = await (bufferedBytes < options.MemoryLimit ?
-                BufferedRaftLogEntry.CopyAsync(current, options, token) :
-                BufferedRaftLogEntry.CopyToFileAsync(current, options, current.Length, token)).ConfigureAwait(false);
-
-            entries[index] = buffered;
+            var buffered = await BufferizeAsync(list[i], options, bufferedBytes, token).ConfigureAwait(false);
 
             if (buffered.InMemory)
                 bufferedBytes += buffered.Length;
-        }
 
-        return new(entries);
+            yield return buffered;
+        }
+    }
+
+    private static Task<BufferedRaftLogEntryList> CreateListAsync<TArg>(Generator<TArg> generator, TArg arg, long count, RaftLogEntriesBufferingOptions options, CancellationToken token)
+    {
+        return CopyAsync(generator(arg, options, token), new BufferedRaftLogEntry[count]);
+
+        static async Task<BufferedRaftLogEntryList> CopyAsync(IAsyncEnumerator<BufferedRaftLogEntry> source, BufferedRaftLogEntry[] destination)
+        {
+            try
+            {
+                for (nuint i = 0; await source.MoveNextAsync().ConfigureAwait(false); i++)
+                {
+                    destination[i] = source.Current;
+                }
+            }
+            finally
+            {
+                await source.DisposeAsync().ConfigureAwait(false);
+            }
+
+            return new(destination);
+        }
     }
 
     /// <inheritdoc />
@@ -126,4 +149,6 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
             entry = default;
         }
     }
+
+    internal delegate IAsyncEnumerator<BufferedRaftLogEntry> Generator<TArg>(TArg arg, RaftLogEntriesBufferingOptions options, CancellationToken token);
 }
