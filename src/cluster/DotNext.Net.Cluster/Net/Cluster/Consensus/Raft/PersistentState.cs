@@ -284,9 +284,17 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         // pass buffered entries to the reader
-        using (bufferedEntries)
+        try
         {
             return await reader.ReadAsync<BufferedRaftLogEntry, BufferedRaftLogEntryList>(bufferedEntries, snapshotIndex, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            bufferedEntries.Dispose();
+
+            // return array back to pool
+            if (bufferedEntries.Entries.Array is { Length: > 0 } arrayToReturn)
+                bufferingConsumer.Add(arrayToReturn);
         }
     }
 
@@ -964,6 +972,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             state.Dispose();
             commitEvent.Dispose();
             syncRoot.Dispose();
+            bufferingConsumer?.Clear();
         }
 
         base.Dispose(disposing);

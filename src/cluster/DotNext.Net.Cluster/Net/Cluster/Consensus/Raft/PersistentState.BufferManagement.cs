@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
 
@@ -9,7 +10,7 @@ using static IO.DataTransferObject;
 
 public partial class PersistentState
 {
-    private sealed class BufferingLogEntryConsumer : ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>
+    internal sealed class BufferingLogEntryConsumer : ConcurrentBag<BufferedRaftLogEntry[]>, ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>
     {
         private readonly RaftLogEntriesBufferingOptions options;
 
@@ -18,13 +19,19 @@ public partial class PersistentState
 
         ValueTask<(BufferedRaftLogEntryList, long?)> ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>.ReadAsync<TEntry, TList>(TList list, long? snapshotIndex, CancellationToken token)
         {
-            return CopyAsync(BufferedRaftLogEntryList.BufferizeAsync<TEntry, TList>(list, options, token), new BufferedRaftLogEntry[list.Count], snapshotIndex);
+            var count = list.Count;
 
-            static async ValueTask<(BufferedRaftLogEntryList, long?)> CopyAsync(IAsyncEnumerator<BufferedRaftLogEntry> source, BufferedRaftLogEntry[] destination, long? snapshotIndex)
+            // make the array available to GC if it has inappropriate length
+            if (!TryTake(out var array) || array.Length < count)
+                array = new BufferedRaftLogEntry[count];
+
+            return CopyAsync(BufferedRaftLogEntryList.BufferizeAsync<TEntry, TList>(list, options, token), new(array, 0, count), snapshotIndex);
+
+            static async ValueTask<(BufferedRaftLogEntryList, long?)> CopyAsync(IAsyncEnumerator<BufferedRaftLogEntry> source, ArraySegment<BufferedRaftLogEntry> destination, long? snapshotIndex)
             {
                 try
                 {
-                    for (nuint i = 0; await source.MoveNextAsync().ConfigureAwait(false); i++)
+                    for (int i = 0; await source.MoveNextAsync().ConfigureAwait(false); i++)
                     {
                         destination[i] = source.Current;
                     }
@@ -156,5 +163,5 @@ public partial class PersistentState
             => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
     }
 
-    private readonly ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? bufferingConsumer;
+    private readonly BufferingLogEntryConsumer? bufferingConsumer;
 }

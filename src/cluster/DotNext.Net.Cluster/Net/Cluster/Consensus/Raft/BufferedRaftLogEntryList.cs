@@ -19,12 +19,10 @@ using IO.Log;
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<BufferedRaftLogEntry>
 {
-    private readonly BufferedRaftLogEntry[]? entries;
+    internal readonly ArraySegment<BufferedRaftLogEntry> Entries;
 
-    internal BufferedRaftLogEntryList(BufferedRaftLogEntry[] entries)
-        => this.entries = entries;
-
-    private BufferedRaftLogEntry[] Entries => entries ?? Array.Empty<BufferedRaftLogEntry>();
+    internal BufferedRaftLogEntryList(ArraySegment<BufferedRaftLogEntry> entries)
+        => Entries = entries;
 
     /// <summary>
     /// Creates asynchronous log entry producer from this list.
@@ -36,7 +34,7 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
     /// Gets buffered log entry by the index.
     /// </summary>
     /// <param name="index">The index of the log entry.</param>
-    public ref readonly BufferedRaftLogEntry this[int index] => ref Entries[index];
+    public ref readonly BufferedRaftLogEntry this[int index] => ref Entries.AsSpan()[index];
 
     /// <inheritdoc />
     BufferedRaftLogEntry IReadOnlyList<BufferedRaftLogEntry>.this[int index] => this[index];
@@ -44,7 +42,7 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
     /// <summary>
     /// Gets the number of buffered log entries.
     /// </summary>
-    public int Count => Entries.Length;
+    public int Count => Entries.Count;
 
     /// <summary>
     /// Constructs bufferized copy of all log entries presented in the sequence.
@@ -143,7 +141,7 @@ public readonly struct BufferedRaftLogEntryList : IDisposable, IReadOnlyList<Buf
     /// </summary>
     public void Dispose()
     {
-        foreach (ref var entry in entries.AsSpan())
+        foreach (ref var entry in Entries.AsSpan())
         {
             entry.Dispose();
             entry = default;
