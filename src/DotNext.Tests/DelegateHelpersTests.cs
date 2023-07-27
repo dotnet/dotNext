@@ -505,4 +505,14 @@ public sealed class DelegateHelpersTests : Test
         static void FillChars(Span<char> dest, string source)
             => source.CopyTo(dest);
     }
+
+    [Fact]
+    public static void ActionWrapper()
+    {
+        var i = 0;
+        Equal(42, new Action<int>(SetLocalValue).Identity<int>().Invoke(42));
+        Equal(42, i);
+
+        void SetLocalValue(int value) => i = value;
+    }
 }

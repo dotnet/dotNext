@@ -66,6 +66,20 @@ public static class Func
     public static Func<T, T> Identity<T>() => Identity<T, T>();
 
     /// <summary>
+    /// Represents <see cref="Action{T}"/> as <see cref="Func{T, TResult}"/> which doesn't modify the input value.
+    /// </summary>
+    /// <typeparam name="T">The type of the element.</typeparam>
+    /// <param name="action">The action to be converted.</param>
+    /// <returns><see cref="Func{T, TResult}"/> that wraps <paramref name="action"/>.</returns>
+    public static Func<T, T> Identity<T>(this Action<T> action) => action.Identity;
+
+    private static T Identity<T>(this Action<T> action, T item)
+    {
+        action(item);
+        return item;
+    }
+
+    /// <summary>
     /// Constructs <see cref="Func{T}"/> returning the same
     /// instance each call.
     /// </summary>
