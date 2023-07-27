@@ -11,11 +11,11 @@ public sealed class LeaderStateContextTests : Test
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => Task.FromException<Result<bool>>(new NotImplementedException());
 
-        Task<Result<bool?>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-            => Task.FromException<Result<bool?>>(new NotImplementedException());
+        Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+            => Task.FromException<Result<HeartbeatResult>>(new NotImplementedException());
 
-        Task<Result<bool?>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-            => Task.FromException<Result<bool?>>(new NotImplementedException());
+        Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+            => Task.FromException<Result<HeartbeatResult>>(new NotImplementedException());
 
         Task<long?> IRaftClusterMember.SynchronizeAsync(long commitIndex, CancellationToken token)
             => Task.FromException<long?>(new NotImplementedException());

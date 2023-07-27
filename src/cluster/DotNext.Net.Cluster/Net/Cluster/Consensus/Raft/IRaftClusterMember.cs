@@ -60,13 +60,9 @@ public interface IRaftClusterMember : IClusterMember
     /// <see langword="false"/> to propose a new configuration.
     /// </param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns>
-    /// <see langword="true"/> if member is replicated successfully, and <paramref name="entries"/> has at least one entry with term equals to <paramref name="term"/>;
-    /// <see langword="false"/> if message is replicated successfully;
-    /// <see langword="null"/> if replication is failed.
-    /// </returns>
+    /// <returns>The processing result.</returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<Result<bool?>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>;
 
@@ -77,13 +73,9 @@ public interface IRaftClusterMember : IClusterMember
     /// <param name="snapshot">The log entry representing the snapshot.</param>
     /// <param name="snapshotIndex">The index of the last included log entry in the snapshot.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns>
-    /// <see langword="true"/> if member is replicated successfully, and term of <paramref name="snapshot"/> equals to <paramref name="term"/>;
-    /// <see langword="false"/> if message is replicated successfully;
-    /// <see langword="null"/> if replication is failed.
-    /// </returns>
+    /// <returns>The processing result.</returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<Result<bool?>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
+    Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
 
     /// <summary>
     /// Starts a new round of heartbeats.

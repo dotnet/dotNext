@@ -75,7 +75,7 @@ internal sealed class ExchangePeer : RaftClusterMember
     private protected override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => SendAsync<Result<PreVoteResult>, PreVoteExchange>(new PreVoteExchange(term, lastLogIndex, lastLogTerm), token);
 
-    private protected override async Task<Result<bool?>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    private protected override async Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
     {
         EmptyClusterConfiguration? configState;
         if (config.Length is 0L)
@@ -90,12 +90,12 @@ internal sealed class ExchangePeer : RaftClusterMember
         }
 
         return await (entries.Count > 0
-            ? SendAsync<Result<bool?>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, configState, pipeConfig), token)
-            : SendAsync<Result<bool?>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex, configState), token)).ConfigureAwait(false);
+            ? SendAsync<Result<HeartbeatResult>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, configState, pipeConfig), token)
+            : SendAsync<Result<HeartbeatResult>, HeartbeatExchange>(new HeartbeatExchange(term, prevLogIndex, prevLogTerm, commitIndex, configState), token)).ConfigureAwait(false);
     }
 
-    private protected override Task<Result<bool?>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-        => SendAsync<Result<bool?>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), token);
+    private protected override Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+        => SendAsync<Result<HeartbeatResult>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), token);
 
     private protected override Task<bool> ResignAsync(CancellationToken token)
         => SendAsync<bool, ResignExchange>(new ResignExchange(), token);

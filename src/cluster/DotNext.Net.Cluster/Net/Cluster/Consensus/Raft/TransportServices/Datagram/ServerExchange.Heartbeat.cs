@@ -17,9 +17,9 @@ internal partial class ServerExchange
 
     private async ValueTask<(PacketHeaders, int, bool)> EndProcessHearbeat(Memory<byte> output)
     {
-        Debug.Assert(task is Task<Result<bool?>>);
+        Debug.Assert(task is Task<Result<HeartbeatResult>>);
 
-        var result = await Cast<Task<Result<bool?>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
-        return (new PacketHeaders(MessageType.Heartbeat, FlowControl.Ack), Result.Write(output.Span, result), false);
+        var result = await Cast<Task<Result<HeartbeatResult>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
+        return (new PacketHeaders(MessageType.Heartbeat, FlowControl.Ack), Result.WriteHeartbeatResult(output.Span, result), false);
     }
 }

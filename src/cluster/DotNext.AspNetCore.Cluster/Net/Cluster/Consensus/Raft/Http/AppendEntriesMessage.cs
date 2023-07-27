@@ -300,11 +300,11 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
     [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
-    internal static new Task SaveResponseAsync(HttpResponse response, in Result<bool?> result, CancellationToken token)
+    internal static Task SaveResponseAsync(HttpResponse response, in Result<HeartbeatResult> result, CancellationToken token)
         => RaftHttpMessage.SaveResponseAsync(response, in result, token);
 }
 
-internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessage<Result<bool?>>
+internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessage<Result<HeartbeatResult>>
     where TEntry : IRaftLogEntry
     where TList : IReadOnlyList<TEntry>
 {
@@ -531,6 +531,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         return configuration.Length.GetValueOrDefault() > 0L ? new ConfigurationWriter(configuration) : null;
     }
 
-    Task<Result<bool?>> IHttpMessage<Result<bool?>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
-        => ParseNullableBoolResponseAsync(response, token);
+    Task<Result<HeartbeatResult>> IHttpMessage<Result<HeartbeatResult>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
+        => ParseEnumResponseAsync<HeartbeatResult>(response, token);
 }

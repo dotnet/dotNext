@@ -30,10 +30,10 @@ internal partial class ProtocolStream
         return WriteToTransportAsync(buffer.Memory.Slice(0, Result.Write(buffer.Span, in result)), token);
     }
 
-    internal ValueTask WriteResponseAsync(in Result<bool?> result, CancellationToken token)
+    internal ValueTask WriteResponseAsync(in Result<HeartbeatResult> result, CancellationToken token)
     {
         Reset();
-        return WriteToTransportAsync(buffer.Memory.Slice(0, Result.Write(buffer.Span, in result)), token);
+        return WriteToTransportAsync(buffer.Memory.Slice(0, Result.WriteHeartbeatResult(buffer.Span, in result)), token);
     }
 
     internal ValueTask WriteResponseAsync(in Result<PreVoteResult> result, CancellationToken token)

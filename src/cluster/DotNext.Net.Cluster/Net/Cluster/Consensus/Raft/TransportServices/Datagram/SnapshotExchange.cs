@@ -6,7 +6,7 @@ using Buffers;
 using IO;
 using static IO.Pipelines.PipeExtensions;
 
-internal sealed class SnapshotExchange : ClientExchange<Result<bool?>>, IAsyncDisposable
+internal sealed class SnapshotExchange : ClientExchange<Result<HeartbeatResult>>, IAsyncDisposable
 {
     private const string Name = "InstallSnapshot";
 
@@ -79,7 +79,7 @@ internal sealed class SnapshotExchange : ClientExchange<Result<bool?>>, IAsyncDi
         }
         else
         {
-            TrySetResult(Result.ReadNullable(payload.Span));
+            TrySetResult(Result.ReadHeartbeatResult(payload.Span));
             result = new(false);
         }
 

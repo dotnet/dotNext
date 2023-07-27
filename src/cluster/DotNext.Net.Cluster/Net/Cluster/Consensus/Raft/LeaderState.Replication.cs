@@ -25,7 +25,7 @@ internal partial class LeaderState<TMember>
         // state
         private long replicationIndex; // reuse as precedingIndex
         private long fingerprint;
-        private ConfiguredTaskAwaitable<Result<bool?>>.ConfiguredTaskAwaiter replicationAwaiter;
+        private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter replicationAwaiter;
 
         // TODO: Replace with required init properties in the next version of C#
         internal Replicator(
@@ -78,13 +78,7 @@ internal partial class LeaderState<TMember>
                 var result = replicationAwaiter.GetResult();
 
                 // analyze result and decrease node index when it is out-of-sync with the current node
-                if (result.Value is { } replicated)
-                {
-                    logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
-                    member.NextIndex = replicationIndex + 1L;
-                    member.ConfigurationFingerprint = fingerprint;
-                }
-                else
+                if (result.Value is HeartbeatResult.Rejected)
                 {
                     member.ConfigurationFingerprint = 0L;
                     var nextIndex = member.NextIndex;
@@ -92,10 +86,15 @@ internal partial class LeaderState<TMember>
                         member.NextIndex = --nextIndex;
 
                     logger.ReplicationFailed(member.EndPoint, nextIndex);
-                    replicated = false;
+                }
+                else
+                {
+                    logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
+                    member.NextIndex = replicationIndex + 1L;
+                    member.ConfigurationFingerprint = fingerprint;
                 }
 
-                SetResult(new(result.Term, replicated));
+                SetResult(new(result.Term, result.Value is HeartbeatResult.ReplicatedWithLeaderTerm));
             }
             catch (OperationCanceledException e)
             {

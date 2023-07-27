@@ -179,12 +179,12 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     private async ValueTask<(PacketHeaders, int, bool)> TransmissionControl(Memory<byte> output, CancellationToken token)
     {
         Debug.Assert(entriesExchangeCoordinator is not null);
-        Debug.Assert(task is Task<Result<bool?>>);
+        Debug.Assert(task is Task<Result<HeartbeatResult>>);
 
         MessageType responseType;
         int count;
         bool isContinueReceiving;
-        var resultTask = Cast<Task<Result<bool?>>>(task);
+        var resultTask = Cast<Task<Result<HeartbeatResult>>>(task);
         var stateTask = entriesExchangeCoordinator.WaitAnyAsync(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry, token);
 
         // wait for result or state transition
@@ -194,7 +194,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             task = null;
             state = State.ReceivingEntriesFinished;
             remainingCount = 0;
-            count = Result.Write(output.Span, resultTask.Result);
+            count = Result.WriteHeartbeatResult(output.Span, resultTask.Result);
             isContinueReceiving = false;
             responseType = MessageType.None;
         }
@@ -205,7 +205,7 @@ internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
             {
                 case State.ReceivingEntriesFinished:
                     var result = await resultTask.ConfigureAwait(false);
-                    count = Result.Write(output.Span, in result);
+                    count = Result.WriteHeartbeatResult(output.Span, in result);
                     isContinueReceiving = false;
                     responseType = MessageType.None;
                     break;

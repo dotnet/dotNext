@@ -45,13 +45,6 @@ internal abstract class RaftHttpMessage : HttpMessage
         return new(term, result);
     }
 
-    private protected static new async Task<Result<bool?>> ParseNullableBoolResponseAsync(HttpResponseMessage response, CancellationToken token)
-    {
-        var result = await HttpMessage.ParseNullableBoolResponseAsync(response, token).ConfigureAwait(false);
-        var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
-        return new(term, result);
-    }
-
     private protected static new async Task<Result<T>> ParseEnumResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
         where T : struct, Enum
     {
@@ -61,12 +54,6 @@ internal abstract class RaftHttpMessage : HttpMessage
     }
 
     private protected static Task SaveResponseAsync(HttpResponse response, in Result<bool> result, CancellationToken token)
-    {
-        response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return HttpMessage.SaveResponseAsync(response, result.Value, token);
-    }
-
-    private protected static Task SaveResponseAsync(HttpResponse response, in Result<bool?> result, CancellationToken token)
     {
         response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
         return HttpMessage.SaveResponseAsync(response, result.Value, token);

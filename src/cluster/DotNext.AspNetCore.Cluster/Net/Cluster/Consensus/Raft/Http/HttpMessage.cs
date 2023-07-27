@@ -73,11 +73,6 @@ internal abstract class HttpMessage
             ? result
             : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
 
-    private protected static async Task<bool?> ParseNullableBoolResponseAsync(HttpResponseMessage response, CancellationToken token)
-        => bool.TryParse(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false), out var result)
-            ? result
-            : null;
-
     private protected static async Task<T> ParseEnumResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
         where T : struct, Enum
         => Enum.TryParse<T>(await response.Content.ReadAsStringAsync(token).ConfigureAwait(false), out var result)
@@ -88,12 +83,6 @@ internal abstract class HttpMessage
     {
         response.StatusCode = StatusCodes.Status200OK;
         return response.WriteAsync(result.ToString(InvariantCulture), token);
-    }
-
-    private protected static Task SaveResponseAsync(HttpResponse response, bool? result, CancellationToken token)
-    {
-        response.StatusCode = StatusCodes.Status200OK;
-        return response.WriteAsync(result?.ToString(InvariantCulture) ?? string.Empty, token);
     }
 
     private protected static Task SaveResponseAsync<T>(HttpResponse response, T result, CancellationToken token)

@@ -2,7 +2,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using Buffers;
 
-internal sealed class HeartbeatExchange : ClientExchange<Result<bool?>>
+internal sealed class HeartbeatExchange : ClientExchange<Result<HeartbeatResult>>
 {
     private const string Name = "Heartbeat";
     private readonly long prevLogIndex, prevLogTerm, commitIndex, currentTerm;
@@ -38,7 +38,7 @@ internal sealed class HeartbeatExchange : ClientExchange<Result<bool?>>
 
     public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {
-        TrySetResult(Result.ReadNullable(payload.Span));
+        TrySetResult(Result.ReadHeartbeatResult(payload.Span));
         return new(false);
     }
 

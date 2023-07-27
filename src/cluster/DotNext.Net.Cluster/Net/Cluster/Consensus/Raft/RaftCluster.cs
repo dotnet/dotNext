@@ -552,10 +552,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="null"/> if snapshot is outdated.</returns>
-    protected async ValueTask<Result<bool?>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+    protected async ValueTask<Result<HeartbeatResult>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         where TSnapshot : notnull, IRaftLogEntry
     {
-        Result<bool?> result;
+        Result<HeartbeatResult> result;
         var lockTaken = false;
         var tokenSource = token.LinkTo(LifecycleToken);
         try
@@ -563,14 +563,17 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             await transitionLock.AcquireAsync(token).ConfigureAwait(false);
             lockTaken = true;
 
-            result = new(Term, value: null);
+            result = new(Term, HeartbeatResult.Rejected);
             if (snapshot.IsSnapshot && senderTerm >= result.Term && snapshotIndex > auditTrail.LastCommittedEntryIndex)
             {
                 Timestamp.Refresh(ref lastUpdated);
                 await StepDown(senderTerm).ConfigureAwait(false);
                 Leader = TryGetMember(sender);
                 await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
-                result = result with { Value = senderTerm == snapshot.Term };
+                result = result with
+                {
+                    Value = senderTerm == snapshot.Term ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated
+                };
             }
         }
         finally
@@ -599,12 +602,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <see langword="false"/> to propose a new configuration.
     /// </param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="null"/> if preceding is not present in local audit trail.</returns>
+    /// <returns>The processing result.</returns>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))] // hot path, avoid allocations
-    protected async ValueTask<Result<bool?>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    protected async ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        Result<bool?> result;
+        Result<HeartbeatResult> result;
         var lockTaken = false;
         var tokenSource = token.LinkTo(LifecycleToken);
         try
@@ -612,7 +615,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             await transitionLock.AcquireAsync(token).ConfigureAwait(false);
             lockTaken = true;
 
-            result = new(Term, value: null);
+            result = new(Term, HeartbeatResult.Rejected);
             if (result.Term <= senderTerm)
             {
                 Timestamp.Refresh(ref lastUpdated);
@@ -644,7 +647,12 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                         * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                         */
                         await auditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, token).ConfigureAwait(false);
-                        result = result with { Value = entries is ReplicationWithSenderTermDetector<TEntry> { IsReplicatedWithExpectedTerm: true } };
+                        result = result with
+                        {
+                            Value = entries is ReplicationWithSenderTermDetector<TEntry> { IsReplicatedWithExpectedTerm: true }
+                                ? HeartbeatResult.ReplicatedWithLeaderTerm
+                                : HeartbeatResult.Replicated
+                        };
 
                         // process configuration
                         var fingerprint = (ConfigurationStorage.ProposedConfiguration ?? ConfigurationStorage.ActiveConfiguration).Fingerprint;
@@ -664,7 +672,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                                 await ConfigurationStorage.ProposeAsync(config, token).ConfigureAwait(false);
                                 goto default;
                             case (false, true):
-                                result = result with { Value = null };
+                                result = result with { Value = HeartbeatResult.Rejected };
                                 goto default;
                             default:
                                 configurationReplicated = false;
