@@ -51,7 +51,7 @@ public partial class PersistentState
             init => content = metadata.Length > 0L ? value : null;
         }
 
-        internal Memory<byte> ContentBuffer
+        internal ReadOnlyMemory<byte> ContentBuffer
         {
             init
             {
