@@ -944,11 +944,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             }
             else if (Leader is { } leader)
             {
-                var commitIndex = await leader.SynchronizeAsync(auditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false);
-                if (commitIndex is null)
+                if (await leader.SynchronizeAsync(auditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false) is not { } commitIndex)
                     continue;
 
-                await auditTrail.WaitForCommitAsync(commitIndex.GetValueOrDefault(), token).ConfigureAwait(false);
+                await auditTrail.WaitForCommitAsync(commitIndex, token).ConfigureAwait(false);
             }
             else
             {
