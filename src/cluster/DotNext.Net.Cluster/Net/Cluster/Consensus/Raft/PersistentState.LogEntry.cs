@@ -55,13 +55,13 @@ public partial class PersistentState
         {
             init
             {
-                if (MemoryMarshal.TryGetArray<byte>(value, out var segment))
+                if (MemoryMarshal.TryGetArray(value, out var segment))
                 {
                     content = segment.Array;
                     contentOffset = segment.Offset;
                     contentLength = segment.Count;
                 }
-                else if (MemoryMarshal.TryGetMemoryManager<byte, MemoryManager<byte>>(value, out var manager, out contentOffset, out contentLength))
+                else if (MemoryMarshal.TryGetMemoryManager(value, out MemoryManager<byte>? manager, out contentOffset, out contentLength))
                 {
                     content = manager;
                 }
