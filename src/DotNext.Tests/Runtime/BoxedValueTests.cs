@@ -24,4 +24,11 @@ public sealed class BoxedValueTests : Test
         obj = string.Empty;
         Throws<ArgumentException>(() => BoxedValue<int>.GetTypedReference(obj));
     }
+
+    [Fact]
+    public static void ToUntypedReference()
+    {
+        ValueType obj = BoxedValue<int>.Box(42);
+        Equal(42, obj);
+    }
 }
