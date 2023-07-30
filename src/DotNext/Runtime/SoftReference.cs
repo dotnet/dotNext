@@ -82,7 +82,12 @@ public sealed class SoftReference<T> : IOptionMonad<T>
         {
             options ??= SoftReferenceOptions.Default;
 
-            if (options.KeepTracking(target))
+            // https://learn.microsoft.com/en-us/dotnet/core/compatibility/core-libraries/8.0/getgeneration-return-value
+            if (GC.GetGeneration(target) is int.MaxValue)
+            {
+                strongRef = target;
+            }
+            else if (options.KeepTracking(target))
             {
                 strongRef = target;
                 var tracker = new Tracker(this, options);
@@ -142,9 +147,8 @@ public sealed class SoftReference<T> : IOptionMonad<T>
         get
         {
             SoftReferenceState state;
-            var target = strongRef;
 
-            if (target is not null)
+            if (strongRef is { } target)
             {
                 state = SoftReferenceState.Strong;
             }
