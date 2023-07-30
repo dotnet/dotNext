@@ -88,6 +88,12 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
         => Unsafe.As<ValueType>(boxedValue);
 
     /// <summary>
+    /// Creates a bitwise copy of the boxed value.
+    /// </summary>
+    /// <returns>A reference to bitwise copy of the boxed value.</returns>
+    public BoxedValue<T> Copy() => Unsafe.As<BoxedValue<T>>(MemberwiseClone());
+
+    /// <summary>
     /// Boxes nullable value type to an object.
     /// </summary>
     /// <param name="value">The value to be boxed.</param>

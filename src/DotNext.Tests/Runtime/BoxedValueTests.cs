@@ -31,4 +31,32 @@ public sealed class BoxedValueTests : Test
         ValueType obj = BoxedValue<int>.Box(42);
         Equal(42, obj);
     }
+
+    private struct MutableStruct
+    {
+        public int Value;
+    }
+
+    [Fact]
+    public static void BitwiseCopyImmutable()
+    {
+        var boxed1 = (BoxedValue<int>)42;
+        var boxed2 = boxed1.Copy();
+        NotSame(boxed1, boxed2);
+        Equal(42, boxed1);
+        Equal(42, boxed2);
+    }
+
+    [Fact]
+    public static void BitwiseCopyMutable()
+    {
+        var boxed1 = (BoxedValue<MutableStruct>)new MutableStruct();
+        var boxed2 = boxed1.Copy();
+        NotSame(boxed1, boxed2);
+
+        boxed1.Value.Value = 42;
+        boxed2.Value.Value = 43;
+
+        NotEqual(boxed1.Value.Value, boxed2.Value.Value);
+    }
 }
