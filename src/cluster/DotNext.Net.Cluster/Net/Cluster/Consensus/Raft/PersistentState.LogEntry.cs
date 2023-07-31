@@ -295,14 +295,14 @@ public partial class PersistentState
             }
 
             return result;
-        }
 
-        [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
-        private static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
-        {
-            using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
-            await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-            return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, options);
+            [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
+            static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
+            {
+                using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
+                await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+                return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, options);
+            }
         }
 
         /// <summary>
@@ -352,7 +352,7 @@ public partial class PersistentState
             return result;
         }
 
-        private static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
+        static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
         {
             using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
             await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
