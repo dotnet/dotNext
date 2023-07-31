@@ -120,7 +120,7 @@ public partial class PersistentState
                 case byte[]:
                     buffer = Unsafe.As<byte[]>(tmp);
                     break;
-                case FileReader reader:
+                case FileReader:
                     Adjust(Unsafe.As<FileReader>(tmp), in metadata);
                     goto default;
                 case MemoryManager<byte>:
