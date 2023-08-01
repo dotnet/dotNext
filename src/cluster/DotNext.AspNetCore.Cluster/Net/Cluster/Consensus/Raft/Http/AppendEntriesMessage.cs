@@ -76,7 +76,9 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         private protected ValueTask SkipAsync()
         {
             consumed = true;
-            return metadata.Length > 0L ? reader.SkipAsync(metadata.Length) : new();
+            return metadata.Length > 0L
+                ? reader.SkipAsync(metadata.Length)
+                : ValueTask.CompletedTask;
         }
 
         // fast path - attempt to consume metadata synchronously
@@ -95,14 +97,15 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         private async ValueTask ConsumeSlowAsync()
         {
             if (metadataBuffer.IsEmpty)
-                metadataBuffer = new(new byte[LogEntryMetadata.Size]);
+                metadataBuffer = new byte[LogEntryMetadata.Size];
 
             await reader.ReadBlockAsync(metadataBuffer).ConfigureAwait(false);
             metadata = new(metadataBuffer);
             consumed = false;
         }
 
-        private protected ValueTask ConsumeAsync() => TryConsume() ? new() : ConsumeSlowAsync();
+        private protected ValueTask ConsumeAsync()
+            => TryConsume() ? ValueTask.CompletedTask : ConsumeSlowAsync();
 
         long? IDataTransferObject.Length => metadata.Length;
 
@@ -155,9 +158,10 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         {
             if (current is not null)
                 await current.DisposeAsync().ConfigureAwait(false);
-            var section = await ReadNextSectionAsync().ConfigureAwait(false);
-            if (section is null)
+
+            if (await ReadNextSectionAsync().ConfigureAwait(false) is not { } section)
                 return false;
+
             current = new(section);
             count -= 1L;
             return true;
