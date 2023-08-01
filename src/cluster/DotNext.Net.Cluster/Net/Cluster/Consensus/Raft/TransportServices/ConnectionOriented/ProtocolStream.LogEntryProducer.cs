@@ -9,7 +9,7 @@ using IO.Log;
 
 internal partial class ProtocolStream
 {
-    internal sealed class ReceivedLogEntries : Disposable, ILogEntryProducer<IRaftLogEntry>, IRaftLogEntry
+    internal sealed class ReceivedLogEntries : Disposable, ILogEntryProducer<ReceivedLogEntries>, IRaftLogEntry
     {
         private readonly ProtocolStream stream;
         private readonly CancellationToken token;
@@ -47,9 +47,9 @@ internal partial class ProtocolStream
             return result;
         }
 
-        long ILogEntryProducer<IRaftLogEntry>.RemainingCount => entriesCount;
+        long ILogEntryProducer<ReceivedLogEntries>.RemainingCount => entriesCount;
 
-        IRaftLogEntry IAsyncEnumerator<IRaftLogEntry>.Current => this;
+        ReceivedLogEntries IAsyncEnumerator<ReceivedLogEntries>.Current => this;
 
         long? IDataTransferObject.Length => metadata.Length;
 
