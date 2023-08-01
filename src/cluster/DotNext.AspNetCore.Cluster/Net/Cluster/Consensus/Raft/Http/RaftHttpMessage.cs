@@ -38,20 +38,18 @@ internal abstract class RaftHttpMessage : HttpMessage
     private static bool TryParseRfc1123FormattedDateTime(string input, out DateTimeOffset result)
         => HeaderUtils.TryParseDate(input, out result);
 
-    private protected static new async Task<Result<bool>> ParseBoolResponseAsync(HttpResponseMessage response, CancellationToken token)
+    private protected static new async Task<Result<bool>> ParseBoolResponseAsync(HttpResponseMessage response, CancellationToken token) => new()
     {
-        var result = await HttpMessage.ParseBoolResponseAsync(response, token).ConfigureAwait(false);
-        var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
-        return new(term, result);
-    }
+        Value = await HttpMessage.ParseBoolResponseAsync(response, token).ConfigureAwait(false),
+        Term = ParseHeader(response.Headers, TermHeader, Int64Parser),
+    };
 
     private protected static new async Task<Result<T>> ParseEnumResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
-        where T : struct, Enum
-    {
-        var result = await HttpMessage.ParseEnumResponseAsync<T>(response, token).ConfigureAwait(false);
-        var term = ParseHeader(response.Headers, TermHeader, Int64Parser);
-        return new(term, result);
-    }
+        where T : struct, Enum => new()
+        {
+            Value = await HttpMessage.ParseEnumResponseAsync<T>(response, token).ConfigureAwait(false),
+            Term = ParseHeader(response.Headers, TermHeader, Int64Parser),
+        };
 
     private protected static Task SaveResponseAsync(HttpResponse response, in Result<bool> result, CancellationToken token)
     {

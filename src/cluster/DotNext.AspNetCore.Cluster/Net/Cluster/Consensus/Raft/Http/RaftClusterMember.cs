@@ -179,7 +179,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             ? Task.FromCanceled<Result<bool>>(token)
             : IsRemote
             ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
-            : Task.FromResult(new Result<bool>(term, true));
+            : Task.FromResult<Result<bool>>(new() { Term = term, Value = true });
     }
 
     Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -188,7 +188,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             ? Task.FromCanceled<Result<PreVoteResult>>(token)
             : IsRemote
             ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
-            : Task.FromResult(new Result<PreVoteResult>(term, PreVoteResult.Accepted));
+            : Task.FromResult<Result<PreVoteResult>>(new() { Term = term, Value = PreVoteResult.Accepted });
     }
 
     Task<bool> IClusterMember.ResignAsync(CancellationToken token)
@@ -236,7 +236,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         }
         else
         {
-            result = Task.FromResult(new Result<HeartbeatResult>(term, HeartbeatResult.ReplicatedWithLeaderTerm));
+            result = Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
         }
 
     exit:
@@ -249,7 +249,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             ? Task.FromCanceled<Result<HeartbeatResult>>(token)
             : IsRemote
             ? SendAsync<Result<HeartbeatResult>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
-            : Task.FromResult(new Result<HeartbeatResult>(term, HeartbeatResult.ReplicatedWithLeaderTerm));
+            : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
     }
 
     async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)

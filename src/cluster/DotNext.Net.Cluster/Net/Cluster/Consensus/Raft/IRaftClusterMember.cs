@@ -42,7 +42,7 @@ public interface IRaftClusterMember : IClusterMember
     /// <returns>Pre-vote result received from the member.</returns>
     /// <seealso href="https://www.openlife.cc/sites/default/files/4-modifications-for-Raft-consensus.pdf">Four modifications for the Raft consensus algorithm.</seealso>
     Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => token.IsCancellationRequested ? Task.FromCanceled<Result<PreVoteResult>>(token) : Task.FromResult<Result<PreVoteResult>>(new(term, PreVoteResult.Accepted));
+        => token.IsCancellationRequested ? Task.FromCanceled<Result<PreVoteResult>>(token) : Task.FromResult<Result<PreVoteResult>>(new() { Term = term, Value = PreVoteResult.Accepted });
 
     /// <summary>
     /// Transfers log entries to the member.

@@ -320,9 +320,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <inheritdoc />
     ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
-        var member = TryGetMember(sender);
-        if (member is null)
-            return ValueTask.FromResult(new Result<bool>(Term, false));
+        if (TryGetMember(sender) is not { } member)
+            return ValueTask.FromResult<Result<bool>>(new() { Term = Term });
 
         member.Touch();
         return VoteAsync(sender, term, lastLogIndex, lastLogTerm, token);

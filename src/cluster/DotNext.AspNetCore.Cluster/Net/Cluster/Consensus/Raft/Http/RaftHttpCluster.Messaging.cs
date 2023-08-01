@@ -262,7 +262,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         Result<bool> result;
         if (sender is null)
         {
-            result = new(Term, false);
+            result = new() { Term = Term };
         }
         else
         {

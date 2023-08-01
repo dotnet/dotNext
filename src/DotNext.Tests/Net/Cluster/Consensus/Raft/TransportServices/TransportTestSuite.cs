@@ -128,7 +128,11 @@ public abstract class TransportTestSuite : RaftTest
                     break;
             }
 
-            return new(43L, HeartbeatResult.ReplicatedWithLeaderTerm);
+            return new()
+            {
+                Term = 43L,
+                Value = HeartbeatResult.ReplicatedWithLeaderTerm,
+            };
         }
 
         ValueTask<Result<HeartbeatResult>> ILocalMember.AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, long? fingerprint, bool applyConfig, CancellationToken token)
@@ -149,7 +153,11 @@ public abstract class TransportTestSuite : RaftTest
             True(snapshot.IsSnapshot);
             var buffer = await snapshot.ToByteArrayAsync(null, token);
             ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.Timestamp, snapshot.IsSnapshot, buffer));
-            return new(43L, HeartbeatResult.ReplicatedWithLeaderTerm);
+            return new()
+            {
+                Term = 43L,
+                Value = HeartbeatResult.ReplicatedWithLeaderTerm,
+            };
         }
 
         ValueTask<Result<bool>> ILocalMember.VoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -158,7 +166,7 @@ public abstract class TransportTestSuite : RaftTest
             Equal(42L, term);
             Equal(1L, lastLogIndex);
             Equal(56L, lastLogTerm);
-            return ValueTask.FromResult(new Result<bool>(43L, true));
+            return ValueTask.FromResult<Result<bool>>(new() { Term = 43L, Value = true });
         }
 
         ValueTask<Result<PreVoteResult>> ILocalMember.PreVoteAsync(ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -167,7 +175,7 @@ public abstract class TransportTestSuite : RaftTest
             Equal(10L, term);
             Equal(2L, lastLogIndex);
             Equal(99L, lastLogTerm);
-            return ValueTask.FromResult(new Result<PreVoteResult>(44L, PreVoteResult.Accepted));
+            return ValueTask.FromResult<Result<PreVoteResult>>(new() { Term = 44L, Value = PreVoteResult.Accepted });
         }
 
         ValueTask<long?> ILocalMember.SynchronizeAsync(long commitIndex, CancellationToken token)

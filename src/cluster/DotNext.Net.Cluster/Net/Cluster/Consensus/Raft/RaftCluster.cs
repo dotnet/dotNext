@@ -563,7 +563,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             await transitionLock.AcquireAsync(token).ConfigureAwait(false);
             lockTaken = true;
 
-            result = new(Term, HeartbeatResult.Rejected);
+            result = new() { Term = Term };
             if (snapshot.IsSnapshot && senderTerm >= result.Term && snapshotIndex > auditTrail.LastCommittedEntryIndex)
             {
                 Timestamp.Refresh(ref lastUpdated);
@@ -615,7 +615,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             await transitionLock.AcquireAsync(token).ConfigureAwait(false);
             lockTaken = true;
 
-            result = new(Term, HeartbeatResult.Rejected);
+            result = new() { Term = Term };
             if (result.Term <= senderTerm)
             {
                 Timestamp.Refresh(ref lastUpdated);
@@ -715,7 +715,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         // PreVote doesn't cause transition to another Raft state so locking not needed
         using (var tokenSource = token.LinkTo(LifecycleToken))
         {
-            result = new(Term, PreVoteResult.RejectedByFollower);
+            result = new() { Term = Term };
 
             // provide leader stickiness
             if (aggressiveStickiness && state is LeaderState<TMember>)
@@ -796,7 +796,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
     protected async ValueTask<Result<bool>> VoteAsync(ClusterMemberId sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
-        var result = new Result<bool>(Term, false);
+        var result = new Result<bool>() { Term = Term };
 
         // provide leader stickiness
         if (result.Term > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))

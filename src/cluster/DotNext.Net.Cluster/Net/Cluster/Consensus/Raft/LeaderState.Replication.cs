@@ -94,7 +94,7 @@ internal partial class LeaderState<TMember>
                     member.ConfigurationFingerprint = fingerprint;
                 }
 
-                SetResult(new(result.Term, result.Value is HeartbeatResult.ReplicatedWithLeaderTerm));
+                SetResult(result.SetValue(result.Value is HeartbeatResult.ReplicatedWithLeaderTerm));
             }
             catch (OperationCanceledException e)
             {
