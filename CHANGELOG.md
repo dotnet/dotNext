@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 07-22-2023
+# 08-02-2023
 <a href="https://www.nuget.org/packages/dotnext/4.13.1">DotNext 4.13.1</a>
 * Removed memory allocation inside of `Sequence.AddAll` extension method
 * Smallish performance improvements of `SingletonList` value type
