@@ -232,7 +232,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         var session = sessionManager.Take();
         try
         {
-            await ApplyCoreAsync(new(this.snapshot[session], in SnapshotInfo)).ConfigureAwait(false);
+            await ApplyCoreAsync(new(in SnapshotInfo) { ContentReader = this.snapshot[session] }).ConfigureAwait(false);
 
             // refresh the current builder
             incrementalBuilder?.Dispose();
@@ -737,7 +737,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             // 1. Apply snapshot if it not empty
             if (SnapshotInfo.Index > 0L)
             {
-                entry = new(snapshot[session], in SnapshotInfo);
+                entry = new(in SnapshotInfo) { ContentReader = snapshot[session] };
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
                 lastTerm.VolatileWrite(entry.Term);
                 startIndex = entry.Index;

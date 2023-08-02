@@ -5,7 +5,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Timestamp = Diagnostics.Timestamp;
 
-[ExcludeFromCodeCoverage]
 public abstract class RaftTest : Test
 {
     [ExcludeFromCodeCoverage]

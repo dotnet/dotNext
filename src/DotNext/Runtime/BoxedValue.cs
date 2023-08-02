@@ -79,6 +79,21 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     public static explicit operator BoxedValue<T>(T value) => Box(value);
 
     /// <summary>
+    /// Converts a typed reference to a boxed value to untyped reference.
+    /// </summary>
+    /// <param name="boxedValue">The boxed value.</param>
+    /// <returns>Untyped refernece to a boxed value.</returns>
+    [return: NotNullIfNotNull(nameof(boxedValue))]
+    public static implicit operator ValueType?(BoxedValue<T>? boxedValue)
+        => Unsafe.As<ValueType>(boxedValue);
+
+    /// <summary>
+    /// Creates a bitwise copy of the boxed value.
+    /// </summary>
+    /// <returns>A reference to bitwise copy of the boxed value.</returns>
+    public BoxedValue<T> Copy() => Unsafe.As<BoxedValue<T>>(MemberwiseClone());
+
+    /// <summary>
     /// Boxes nullable value type to an object.
     /// </summary>
     /// <param name="value">The value to be boxed.</param>

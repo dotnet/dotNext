@@ -32,7 +32,7 @@ public interface ILogEntryConsumer<in TEntry, TResult>
         where TList : notnull, IReadOnlyList<TEntryImpl>;
 
     /// <summary>
-    /// Gets optimization hint that may be used by the audit trail to optimize the query.
+    /// Indicates that the consumer has no intention to read the content of the log entries.
     /// </summary>
-    LogEntryReadOptimizationHint OptimizationHint => LogEntryReadOptimizationHint.None;
+    bool LogEntryMetadataOnly => false;
 }

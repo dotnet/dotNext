@@ -56,18 +56,3 @@ internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExch
             OnCanceled(token);
     }
 }
-
-internal abstract class ClientExchange : ClientExchange<Result<bool>>
-{
-    private protected readonly long currentTerm;
-
-    private protected ClientExchange(string name, long term)
-        : base(name) => currentTerm = term;
-
-    public sealed override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
-    {
-        Debug.Assert(headers.Control == FlowControl.Ack, "Unexpected response", $"Message type {headers.Type} control {headers.Control}");
-        TrySetResult(Result.Read(payload.Span));
-        return new(false);
-    }
-}

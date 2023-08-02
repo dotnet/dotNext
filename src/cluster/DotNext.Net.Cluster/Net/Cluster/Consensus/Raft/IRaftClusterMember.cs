@@ -42,7 +42,7 @@ public interface IRaftClusterMember : IClusterMember
     /// <returns>Pre-vote result received from the member.</returns>
     /// <seealso href="https://www.openlife.cc/sites/default/files/4-modifications-for-Raft-consensus.pdf">Four modifications for the Raft consensus algorithm.</seealso>
     Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
-        => token.IsCancellationRequested ? Task.FromCanceled<Result<PreVoteResult>>(token) : Task.FromResult<Result<PreVoteResult>>(new(term, PreVoteResult.Accepted));
+        => token.IsCancellationRequested ? Task.FromCanceled<Result<PreVoteResult>>(token) : Task.FromResult<Result<PreVoteResult>>(new() { Term = term, Value = PreVoteResult.Accepted });
 
     /// <summary>
     /// Transfers log entries to the member.
@@ -60,9 +60,9 @@ public interface IRaftClusterMember : IClusterMember
     /// <see langword="false"/> to propose a new configuration.
     /// </param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns><see langword="true"/> if message is handled successfully by this member; <see langword="false"/> if message is rejected due to invalid Term/Index number.</returns>
+    /// <returns>The processing result.</returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
+    Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>;
 
@@ -73,9 +73,9 @@ public interface IRaftClusterMember : IClusterMember
     /// <param name="snapshot">The log entry representing the snapshot.</param>
     /// <param name="snapshotIndex">The index of the last included log entry in the snapshot.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns><see langword="true"/> if snapshot is installed successfully; otherwise, <see langword="false"/>.</returns>
+    /// <returns>The processing result.</returns>
     /// <exception cref="MemberUnavailableException">The member is unreachable through the network.</exception>
-    Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
+    Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
 
     /// <summary>
     /// Starts a new round of heartbeats.

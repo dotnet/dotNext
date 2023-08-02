@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 
 namespace DotNext.Text.Json;
@@ -7,7 +6,6 @@ namespace DotNext.Text.Json;
 using IO;
 using Runtime.Serialization;
 
-[ExcludeFromCodeCoverage]
 public sealed class JsonSerializableTests : Test
 {
     private class TestFileReader : FileReader

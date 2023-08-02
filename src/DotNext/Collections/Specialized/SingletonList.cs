@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,7 +12,7 @@ namespace DotNext.Collections.Specialized;
 /// </summary>
 /// <typeparam name="T">The type of the element in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SingletonList<T> : IReadOnlyList<T>, IList<T>
+public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
 {
     /// <summary>
     /// Represents an enumerator over the collection containing a single element.
@@ -90,9 +92,33 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>
     [IndexerName("Element")]
     public T this[int index]
     {
-        readonly get => index == 0 ? Item : throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
-        set => Item = index == 0 ? value : throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
+        readonly get
+        {
+            if (index != 0)
+                ThrowIndexOutOfRangeException();
+
+            return Item;
+        }
+
+        set
+        {
+            if (index != 0)
+                ThrowIndexOutOfRangeException();
+
+            Item = value;
+        }
     }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowIndexOutOfRangeException()
+        => throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
+
+    /// <inheritdoc />
+    object? ITuple.this[int index] => this[index];
+
+    /// <inheritdoc />
+    int ITuple.Length => 1;
 
     /// <inheritdoc />
     readonly bool ICollection<T>.IsReadOnly => true;
@@ -120,7 +146,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>
     readonly void ICollection<T>.Add(T item) => throw new NotSupportedException();
 
     /// <inheritdoc />
-    readonly int IList<T>.IndexOf(T item) => EqualityComparer<T>.Default.Equals(Item, item) ? 0 : -1;
+    readonly int IList<T>.IndexOf(T item) => EqualityComparer<T>.Default.Equals(Item, item).ToInt32() - 1;
 
     /// <inheritdoc />
     readonly void IList<T>.Insert(int index, T item) => throw new NotSupportedException();

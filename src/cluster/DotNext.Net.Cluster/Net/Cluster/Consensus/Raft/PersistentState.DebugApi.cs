@@ -14,7 +14,6 @@ public partial class PersistentState
     /// </remarks>
     /// <param name="index">The index.</param>
     [Conditional("DEBUG")]
-    [Conditional("BENCH")]
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
     [ExcludeFromCodeCoverage]

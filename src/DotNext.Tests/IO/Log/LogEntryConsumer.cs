@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.IO.Log;
@@ -8,32 +10,25 @@ namespace DotNext.IO.Log;
 /// <typeparam name="TEntry">The interface type of the log entries supported by audit trail.</typeparam>
 /// <typeparam name="TResult">The type of the result produced by the reader.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<TEntry, TResult>
+[ExcludeFromCodeCoverage]
+internal readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<TEntry, TResult>
     where TEntry : class, ILogEntry
 {
-    private readonly object? consumer;
+    private readonly object consumer;
 
     /// <summary>
     /// Wraps the delegate instance as a reader of log entries.
     /// </summary>
     /// <param name="consumer">The delegate representing the reader.</param>
-    /// <param name="optimizationHint">Represents optimization hint for the audit trail.</param>
-    public LogEntryConsumer(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> consumer, LogEntryReadOptimizationHint optimizationHint = LogEntryReadOptimizationHint.None)
-    {
-        this.consumer = consumer;
-        OptimizationHint = optimizationHint;
-    }
+    public LogEntryConsumer(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> consumer)
+        => this.consumer = consumer;
 
     /// <summary>
     /// Wraps the delegate instance as a reader of log entries.
     /// </summary>
     /// <param name="consumer">The delegate representing the reader.</param>
-    /// <param name="optimizationHint">Represents optimization hint for the audit trail.</param>
-    public LogEntryConsumer(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> consumer, LogEntryReadOptimizationHint optimizationHint = LogEntryReadOptimizationHint.None)
-    {
-        this.consumer = consumer;
-        OptimizationHint = optimizationHint;
-    }
+    public LogEntryConsumer(Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> consumer)
+        => this.consumer = consumer;
 
     /// <summary>
     /// Wraps the consumer as a reader of log entries.
@@ -41,14 +36,21 @@ public readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<TEn
     /// <param name="consumer">The consumer to be wrapped.</param>
     public LogEntryConsumer(ILogEntryConsumer<TEntry, TResult> consumer)
     {
-        this.consumer = consumer;
-        OptimizationHint = consumer.OptimizationHint;
+        if (consumer is LogEntryConsumer<TEntry, TResult> typedConsumer)
+        {
+            this = typedConsumer;
+        }
+        else
+        {
+            this.consumer = consumer;
+            LogEntryMetadataOnly = consumer.LogEntryMetadataOnly;
+        }
     }
 
     /// <summary>
-    /// Gets optimization hint that may be used by the audit trail to optimize the query.
+    /// Indicates that the consumer has no intention to read the content of the log entries.
     /// </summary>
-    public LogEntryReadOptimizationHint OptimizationHint { get; }
+    public bool LogEntryMetadataOnly { get; init; }
 
     /// <summary>
     /// Reads log entries asynchronously.
@@ -64,9 +66,9 @@ public readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<TEn
         where TList : notnull, IReadOnlyList<TEntryImpl>
         => consumer switch
         {
+            null => ValueTask.FromException<TResult>(new NotSupportedException()),
             Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> func => func(new LogEntryList<ILogEntry, TEntryImpl, TList>(entries), snapshotIndex, token),
             Func<IReadOnlyList<TEntry>, long?, CancellationToken, ValueTask<TResult>> func => func(new LogEntryList<TEntry, TEntryImpl, TList>(entries), snapshotIndex, token),
-            ILogEntryConsumer<TEntry, TResult> c => c.ReadAsync<TEntryImpl, TList>(entries, snapshotIndex, token),
-            _ => token.IsCancellationRequested ? ValueTask.FromCanceled<TResult>(token) : ValueTask.FromException<TResult>(new NotSupportedException(ExceptionMessages.NoConsumerProvided))
+            _ => Unsafe.As<ILogEntryConsumer<TEntry, TResult>>(consumer).ReadAsync<TEntryImpl, TList>(entries, snapshotIndex, token),
         };
 }

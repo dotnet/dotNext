@@ -1,8 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Buffers;
 
-[ExcludeFromCodeCoverage]
 public class ReadOnlySequencePartitionerTests : Test
 {
     [Theory]

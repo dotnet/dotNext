@@ -15,8 +15,7 @@ internal static class AuditTrail
         ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
             => new(entries[0].Term);
 
-        LogEntryReadOptimizationHint ILogEntryConsumer<IRaftLogEntry, long>.OptimizationHint
-            => LogEntryReadOptimizationHint.MetadataOnly;
+        bool ILogEntryConsumer<IRaftLogEntry, long>.LogEntryMetadataOnly => true;
     }
 
     internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)

@@ -18,16 +18,20 @@ public partial class PersistentState
 
     private protected abstract void EndReadSnapshot(int sessionId);
 
-    private ValueTask<TResult> ReadSnapshotAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
+    private ValueTask<TResult> UnsafeReadSnapshotAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, CancellationToken token)
     {
-        return reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly ? ReadMetadataOnlyAsync() : ReadSlowAsync();
+        return reader.LogEntryMetadataOnly ? ReadMetadataOnlyAsync() : ReadSlowAsync();
 
         ValueTask<TResult> ReadMetadataOnlyAsync()
             => reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(new LogEntry(in SnapshotInfo), SnapshotInfo.Index, token);
 
         async ValueTask<TResult> ReadSlowAsync()
         {
-            var entry = new LogEntry(await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in SnapshotInfo);
+            var entry = new LogEntry(in SnapshotInfo)
+            {
+                ContentReader = await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false),
+            };
+
             try
             {
                 return await reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(entry, entry.SnapshotIndex, token).ConfigureAwait(false);

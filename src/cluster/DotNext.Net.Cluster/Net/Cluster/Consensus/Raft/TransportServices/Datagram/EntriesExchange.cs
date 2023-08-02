@@ -7,7 +7,7 @@ using Buffers;
 using static IO.DataTransferObject;
 using static IO.Pipelines.PipeExtensions;
 
-internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDisposable
+internal abstract class EntriesExchange : ClientExchange<Result<HeartbeatResult>>, IAsyncDisposable
 {
     private const string Name = "AppendEntries";
 
@@ -174,7 +174,7 @@ internal sealed class EntriesExchange<TEntry, TList> : EntriesExchange<TEntry>
 
     private void FinalizeTransmission(ReadOnlySpan<byte> input)
     {
-        TrySetResult(Result.Read(input));
+        TrySetResult(Result.ReadHeartbeatResult(input));
         writeSession = null;
     }
 

@@ -44,32 +44,31 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-13-2023
+Release Date: 08-02-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.13.0">DotNext 4.13.0</a>
-* Added of `AlignOf` intrinsic method that allows to obtain alignment requirements for the specified type
-* `ConcurrentCache` recognizes types with atomic write semantics more precisely that allows to avoid memory allocations for certain generic arguments
-* Introduced `TrimLength` overloaded extension method for [Span&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.span-1) data type that allows to retrieve the trimmed part of the span
+<a href="https://www.nuget.org/packages/dotnext/4.13.1">DotNext 4.13.1</a>
+* Removed memory allocation inside of `Sequence.AddAll` extension method
+* Smallish performance improvements of `SingletonList` value type
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.0">DotNext.Metaprogramming 4.13.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.1">DotNext.Metaprogramming 4.13.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.13.0">DotNext.Unsafe 4.13.0</a>
-* `Pointer<T>.IsAligned` property is unmarked as _obsolete_ because it is possible to determine memory alignment correctly
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.13.1">DotNext.Unsafe 4.13.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.13.0">DotNext.Threading 4.13.0</a>
-* Fixed [183](https://github.com/dotnet/dotNext/issues/183)
+<a href="https://www.nuget.org/packages/dotnext.threading/4.13.1">DotNext.Threading 4.13.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.13.0">DotNext.IO 4.13.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/4.13.1">DotNext.IO 4.13.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.13.0">DotNext.Net.Cluster 4.13.0</a>
-* Fixed cancellation of some async methods exposed by Raft implementation and WAL
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.13.1">DotNext.Net.Cluster 4.13.1</a>
+* Fixed [184](https://github.com/dotnet/dotNext/issues/184)
+* Reduced memory allocation when reading single log entry from WAL
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.0">DotNext.AspNetCore.Cluster 4.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.13.1">DotNext.AspNetCore.Cluster 4.13.1</a>
+* Fixed [184](https://github.com/dotnet/dotNext/issues/184)
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

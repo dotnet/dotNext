@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
 
@@ -10,17 +10,40 @@ using static IO.DataTransferObject;
 
 public partial class PersistentState
 {
-    private sealed class BufferingLogEntryConsumer : ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>
+    internal sealed class BufferingLogEntryConsumer : ConcurrentBag<BufferedRaftLogEntry[]>, ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>
     {
         private readonly RaftLogEntriesBufferingOptions options;
 
         internal BufferingLogEntryConsumer(RaftLogEntriesBufferingOptions options)
             => this.options = options;
 
-        public async ValueTask<(BufferedRaftLogEntryList, long?)> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
-            where TList : notnull, IReadOnlyList<TEntry>
-            => (await BufferedRaftLogEntryList.CopyAsync<TEntry, TList>(entries, options, token).ConfigureAwait(false), snapshotIndex);
+        ValueTask<(BufferedRaftLogEntryList, long?)> ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>.ReadAsync<TEntry, TList>(TList list, long? snapshotIndex, CancellationToken token)
+        {
+            var count = list.Count;
+
+            // make the array available to GC if it has inappropriate length
+            if (!TryTake(out var array) || array.Length < count)
+                array = new BufferedRaftLogEntry[count];
+
+            return CopyAsync(BufferedRaftLogEntryList.BufferizeAsync<TEntry, TList>(list, options, token), new(array, 0, count), snapshotIndex);
+
+            static async ValueTask<(BufferedRaftLogEntryList, long?)> CopyAsync(IAsyncEnumerator<BufferedRaftLogEntry> source, ArraySegment<BufferedRaftLogEntry> destination, long? snapshotIndex)
+            {
+                try
+                {
+                    for (int i = 0; await source.MoveNextAsync().ConfigureAwait(false); i++)
+                    {
+                        destination[i] = source.Current;
+                    }
+                }
+                finally
+                {
+                    await source.DisposeAsync().ConfigureAwait(false);
+                }
+
+                return new(new BufferedRaftLogEntryList(destination), snapshotIndex);
+            }
+        }
     }
 
     private sealed class BufferingLogEntryProducer<TEntry> : ILogEntryProducer<CachedLogEntry>
@@ -55,6 +78,7 @@ public partial class PersistentState
 
         internal async Task BufferizeAsync()
         {
+            var error = default(Exception);
             try
             {
                 while (await entries.MoveNextAsync().ConfigureAwait(false))
@@ -71,13 +95,13 @@ public partial class PersistentState
 
                     await queue.Writer.WriteAsync(cachedEntry, Token).ConfigureAwait(false);
                 }
-
-                queue.Writer.Complete();
             }
             catch (Exception e)
             {
-                queue.Writer.Complete(e);
+                error = e;
             }
+
+            queue.Writer.Complete(error);
         }
 
         long ILogEntryProducer<CachedLogEntry>.RemainingCount => count;
@@ -137,9 +161,7 @@ public partial class PersistentState
 
         internal MemoryOwner<CacheRecord> AllocLogEntryCache(int recordsPerPartition)
             => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
-
-        internal MemoryOwner<LogEntry> AllocLogEntryList(int length) => entryAllocator(length);
     }
 
-    private readonly ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? bufferingConsumer;
+    private readonly BufferingLogEntryConsumer? bufferingConsumer;
 }

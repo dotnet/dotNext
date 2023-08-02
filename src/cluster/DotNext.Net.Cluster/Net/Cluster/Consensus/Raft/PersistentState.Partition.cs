@@ -7,7 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using IntegrityException = IO.Log.IntegrityException;
-using LogEntryReadOptimizationHint = IO.Log.LogEntryReadOptimizationHint;
 
 public partial class PersistentState
 {
@@ -176,7 +175,7 @@ public partial class PersistentState
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LogEntry Read(int sessionId, long absoluteIndex, out bool persisted, LogEntryReadOptimizationHint hint)
+        private LogEntry Read(int sessionId, long absoluteIndex, out bool persisted, bool metadataOnly)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
@@ -185,7 +184,7 @@ public partial class PersistentState
 
             ref readonly var cachedContent = ref EmptyRecord;
 
-            if (hint is LogEntryReadOptimizationHint.MetadataOnly)
+            if (metadataOnly)
                 goto return_cached;
 
             if (!entryCache.IsEmpty)
@@ -194,21 +193,21 @@ public partial class PersistentState
             if (cachedContent.Content.IsEmpty && metadata.Length > 0L)
             {
                 persisted = true;
-                return new(GetSessionReader(sessionId), in metadata, absoluteIndex);
+                return new(in metadata, absoluteIndex) { ContentReader = GetSessionReader(sessionId) };
             }
 
         return_cached:
             persisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None;
-            return new(in cachedContent.Content, in metadata, absoluteIndex);
+            return new(in metadata, absoluteIndex) { ContentBuffer = cachedContent.Content.Memory };
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal LogEntry Read(int sessionId, long absoluteIndex, LogEntryReadOptimizationHint hint = LogEntryReadOptimizationHint.None)
-            => Read(sessionId, absoluteIndex, out _, hint);
+        internal LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly = false)
+            => Read(sessionId, absoluteIndex, out _, metadataOnly);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal LogEntry Read(int sessionId, long absoluteIndex, out bool persisted)
-            => Read(sessionId, absoluteIndex, out persisted, LogEntryReadOptimizationHint.None);
+            => Read(sessionId, absoluteIndex, out persisted, metadataOnly: false);
 
         internal ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
         {

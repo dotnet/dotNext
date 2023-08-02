@@ -6,7 +6,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Buffers;
 using Collections.Specialized;
 using IO.Log;
 using static IO.DataTransferObject;
@@ -132,74 +131,61 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private partial Partition CreatePartition(long partitionNumber)
         => new(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, CancellationToken token)
+    private ValueTask<TResult> UnsafeReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
-        var list = bufferManager.AllocLogEntryList(length);
-        Debug.Assert(list.Length >= length);
-        var snapshotRequested = SnapshotInfo.Index > 0L && startIndex <= SnapshotInfo.Index;
+        Debug.Assert(LastPartition is not null);
+        Debug.Assert(length > 1);
 
+        var entries = new LogEntryList(this, sessionId, startIndex, endIndex, length, reader.LogEntryMetadataOnly);
+        long? snapshotIndex;
+
+        switch ((snapshotRequested, reader.LogEntryMetadataOnly))
+        {
+            case (true, false):
+                Debug.Assert(startIndex == SnapshotInfo.Index);
+
+                return UnsafeReadSnapshotAsync(reader, entries, token);
+            case (true, true):
+                Debug.Assert(startIndex == SnapshotInfo.Index);
+
+                snapshotIndex = startIndex;
+                goto default;
+            case (false, _):
+                snapshotIndex = null;
+                goto default;
+            default:
+                return reader.ReadAsync<LogEntry, LogEntryList>(entries, snapshotIndex, token);
+        }
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<TResult> UnsafeReadSnapshotAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, LogEntryList entries, CancellationToken token)
+    {
         try
         {
-            // try to read snapshot out of the loop
-            if (snapshotRequested)
-            {
-                LogEntry snapshot;
-                if (reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
-                {
-                    snapshot = new(in SnapshotInfo);
-                    snapshotRequested = false;
-                }
-                else
-                {
-                    snapshot = new(await BeginReadSnapshotAsync(sessionId, token).ConfigureAwait(false), in SnapshotInfo);
-                }
-
-                BufferHelpers.GetReference(in list) = snapshot;
-
-                // skip squashed log entries
-                startIndex = snapshot.Index + 1L;
-                length = 1;
-            }
-            else if (startIndex is 0L)
-            {
-                BufferHelpers.GetReference(in list) = LogEntry.Initial;
-                startIndex = length = 1;
-            }
-            else
-            {
-                length = 0;
-            }
-
-            return await UnsafeReadAsync(in reader, in list, sessionId, startIndex, endIndex, length, token).ConfigureAwait(false);
+            entries.Snapshot = await BeginReadSnapshotAsync(entries.SessionId, token).ConfigureAwait(false);
+            return await reader.ReadAsync<LogEntry, LogEntryList>(entries, entries.StartIndex, token).ConfigureAwait(false);
         }
         finally
         {
-            list.Dispose();
-
-            if (snapshotRequested)
-                EndReadSnapshot(sessionId);
+            EndReadSnapshot(entries.SessionId);
         }
     }
 
-    private ValueTask<TResult> UnsafeReadAsync<TResult>(in LogEntryConsumer<IRaftLogEntry, TResult> reader, in MemoryOwner<LogEntry> list, int sessionId, long startIndex, long endIndex, int listIndex, CancellationToken token)
+    private ValueTask<TResult> UnsafeReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, CancellationToken token)
     {
-        ref var first = ref BufferHelpers.GetReference(in list);
+        Debug.Assert(endIndex >= startIndex);
 
-        // enumerate over partitions in search of log entries
-        for (Partition? partition = null; startIndex <= endIndex && TryGetPartition(startIndex, ref partition); startIndex++, listIndex++, token.ThrowIfCancellationRequested())
-            Unsafe.Add(ref first, listIndex) = partition.Read(sessionId, startIndex, reader.OptimizationHint);
-
-        return reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), first.SnapshotIndex, token);
-    }
-
-    private ValueTask<TResult> UnsafeReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, CancellationToken token)
-    {
         if (startIndex > state.LastIndex)
             return ValueTask.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(startIndex)));
 
         if (endIndex > state.LastIndex)
             return ValueTask.FromException<TResult>(new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex)));
+
+        bool snapshotRequested;
+        var snapshotIndex = SnapshotInfo.Index;
+        if (snapshotRequested = snapshotIndex > 0L && startIndex <= snapshotIndex)
+            endIndex = Math.Max(startIndex = snapshotIndex, endIndex); // adjust startIndex automatically to avoid growth of length
 
         var length = endIndex - startIndex + 1L;
         if (length > int.MaxValue)
@@ -208,16 +194,20 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         readCounter?.Invoke(length);
         ReadRateMeter.Add(length, measurementTags);
 
-        if (LastPartition is not null)
-            return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, token);
+        if (length > 1L && LastPartition is not null)
+            return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token);
 
-        if (SnapshotInfo.Index > 0L)
-            return ReadSnapshotAsync(reader, sessionId, token);
+        if (startIndex is 0L)
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, snapshotIndex: null, token);
 
-        return ReadInitialOrEmptyEntryAsync(in reader, startIndex == 0L, token);
+        if (snapshotRequested)
+            return UnsafeReadSnapshotAsync(reader, sessionId, token);
 
-        static ValueTask<TResult> ReadInitialOrEmptyEntryAsync(in LogEntryConsumer<IRaftLogEntry, TResult> reader, bool readEphemeralEntry, CancellationToken token)
-            => readEphemeralEntry ? reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+        // read single entry
+        if (TryGetPartition(PartitionOf(startIndex)) is { } partition)
+            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(partition.Read(sessionId, startIndex, reader.LogEntryMetadataOnly), snapshotIndex: null, token);
+
+        return ValueTask.FromException<TResult>(new MissingPartitionException(startIndex));
     }
 
     /// <summary>
@@ -236,7 +226,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <returns>The collection of log entries.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
     /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-    public ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token = default)
+    public ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token = default)
     {
         ValueTask<TResult> result;
         if (IsDisposed)
@@ -247,7 +237,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
         else if (startIndex > endIndex)
             result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
-        else if (bufferingConsumer is null || reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
+        else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, endIndex, token);
         else
             result = ReadBufferedAsync(reader, startIndex, endIndex, token);
@@ -255,33 +245,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         return result;
     }
 
-    /// <inheritdoc />
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
-
-    /// <inheritdoc />
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
-
-    /// <inheritdoc />
-    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, token);
-
-    /// <inheritdoc />
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
-
-    /// <inheritdoc />
-    ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TResult>(Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
-
-    /// <inheritdoc />
-    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(Func<IReadOnlyList<ILogEntry>, long?, CancellationToken, ValueTask<TResult>> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync(new LogEntryConsumer<IRaftLogEntry, TResult>(reader), startIndex, endIndex, token);
-
     // unbuffered read
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<TResult> ReadUnbufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
+    private async ValueTask<TResult> ReadUnbufferedAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
     {
         await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
@@ -298,7 +264,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     // buffered read
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<TResult> ReadBufferedAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
+    private async ValueTask<TResult> ReadBufferedAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long? endIndex, CancellationToken token)
     {
         Debug.Assert(bufferingConsumer is not null);
 
@@ -309,7 +275,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         var session = sessionManager.Take();
         try
         {
-            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(new(bufferingConsumer), session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
+            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(bufferingConsumer, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
         }
         finally
         {
@@ -318,9 +284,17 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         // pass buffered entries to the reader
-        using (bufferedEntries)
+        try
         {
             return await reader.ReadAsync<BufferedRaftLogEntry, BufferedRaftLogEntryList>(bufferedEntries, snapshotIndex, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            bufferedEntries.Dispose();
+
+            // return array back to pool
+            if (bufferedEntries.Entries.Array is { Length: > 0 } arrayToReturn)
+                bufferingConsumer.Add(arrayToReturn);
         }
     }
 
@@ -333,7 +307,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The collection of log entries.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-    public ValueTask<TResult> ReadAsync<TResult>(LogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token = default)
+    public ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token = default)
     {
         ValueTask<TResult> result;
         if (IsDisposed)
@@ -342,7 +316,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (startIndex > state.LastIndex)
             result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
-        else if (bufferingConsumer is null || reader.OptimizationHint is LogEntryReadOptimizationHint.MetadataOnly)
+        else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, null, token);
         else
             result = ReadBufferedAsync(reader, startIndex, null, token);
@@ -367,7 +341,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             result = AppendCachedAsync(supplier, startIndex, writeThrough: true, skipCommitted, token);
         }
-        else if ((supplier.OptimizationHint & LogEntryProducerOptimizationHint.LogEntryPayloadAvailableImmediately) is not 0)
+        else if (supplier.LogEntryPayloadAvailableImmediately)
         {
             result = AppendCachedAsync(supplier, startIndex, writeThrough: false, skipCommitted, token);
         }
@@ -429,16 +403,18 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
-            if (supplier.Current.IsSnapshot)
+            var currentEntry = supplier.Current;
+
+            if (currentEntry.IsSnapshot)
                 throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
 
             if (startIndex > state.CommitIndex)
             {
                 GetOrCreatePartition(startIndex, ref partition);
-                await partition.WriteAsync(supplier.Current, startIndex, token).ConfigureAwait(false);
+                await partition.WriteAsync(currentEntry, startIndex, token).ConfigureAwait(false);
 
                 // flush if last entry is added to the partition or the last entry is consumed from the iterator
-                if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                if (startIndex == partition.LastIndex || supplier.RemainingCount is 0L)
                     await partition.FlushAsync(token).ConfigureAwait(false);
             }
             else if (!skipCommitted)
@@ -996,6 +972,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             state.Dispose();
             commitEvent.Dispose();
             syncRoot.Dispose();
+            bufferingConsumer?.Clear();
         }
 
         base.Dispose(disposing);

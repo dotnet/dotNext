@@ -94,13 +94,13 @@ internal abstract class Server : Disposable, IServer
     private async ValueTask InstallSnapshotAsync(ProtocolStream protocol, CancellationToken token)
     {
         var request = await protocol.ReadInstallSnapshotRequestAsync(token).ConfigureAwait(false);
-        Result<bool> response;
+        Result<HeartbeatResult> response;
         using (request.Snapshot)
         {
             response = await localMember.InstallSnapshotAsync(request.Id, request.Term, request.Snapshot, request.SnapshotIndex, token).ConfigureAwait(false);
         }
 
-        if (!response.Value)
+        if (response.Value is HeartbeatResult.Rejected)
         {
             // skip contents of snapshot
             await protocol.SkipAsync(token).ConfigureAwait(false);
@@ -114,7 +114,7 @@ internal abstract class Server : Disposable, IServer
     private async ValueTask AppendEntriesAsync(ProtocolStream protocol, CancellationToken token)
     {
         var request = await protocol.ReadAppendEntriesRequestAsync(token).ConfigureAwait(false);
-        Result<bool> response;
+        Result<HeartbeatResult> response;
         using (request.Entries)
         {
             using (request.Configuration)

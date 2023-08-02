@@ -155,7 +155,7 @@ public partial class MemoryBasedStateMachine
             where TWriter : IAsyncBinaryWriter;
 
         internal sealed override ValueTask InitializeAsync(int sessionId, SnapshotMetadata metadata)
-            => metadata.Index > 0L ? ApplyAsync(new(Context.Snapshot[sessionId], in metadata)) : ValueTask.CompletedTask;
+            => metadata.Index > 0L ? ApplyAsync(new(in metadata) { ContentReader = Context.Snapshot[sessionId] }) : ValueTask.CompletedTask;
 
         internal sealed override async ValueTask<SnapshotMetadata> BuildAsync(long snapshotIndex)
         {

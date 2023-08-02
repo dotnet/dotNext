@@ -2,14 +2,11 @@ using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.CustomTransport;
 
 using TransportServices;
-
-[ExcludeFromCodeCoverage]
 [Collection(TestCollections.Raft)]
 public sealed class CustomTransportTests : TransportTestSuite
 {

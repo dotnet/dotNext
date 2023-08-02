@@ -217,7 +217,7 @@ public partial class PersistentState
             set;
         }
 
-        internal ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>? CreateBufferingConsumer()
+        internal BufferingLogEntryConsumer? CreateBufferingConsumer()
             => CopyOnReadOptions is null ? null : new BufferingLogEntryConsumer(CopyOnReadOptions);
     }
 }

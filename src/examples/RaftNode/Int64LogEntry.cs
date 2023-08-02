@@ -6,14 +6,9 @@ namespace RaftNode;
 
 internal sealed class Int64LogEntry : BinaryTransferObject<long>, IRaftLogEntry
 {
-    internal Int64LogEntry()
-    {
-        Timestamp = DateTimeOffset.UtcNow;
-    }
-
     bool ILogEntry.IsSnapshot => false;
 
-    public long Term { get; set; }
+    public long Term { get; init; }
 
-    public DateTimeOffset Timestamp { get; }
+    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 }

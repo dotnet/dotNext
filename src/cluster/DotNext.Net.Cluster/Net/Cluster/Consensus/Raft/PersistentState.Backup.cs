@@ -33,7 +33,7 @@ public partial class PersistentState
                 try
                 {
                     sourceHandle = File.OpenHandle(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.Asynchronous | FileOptions.SequentialScan);
-                    source = new(sourceHandle, bufferSize: 8096);
+                    source = new(sourceHandle, bufferSize: 8096, allocator: bufferManager.BufferAllocator);
                     destination = entry.Open();
                     await source.CopyToAsync(destination, token).ConfigureAwait(false);
                 }

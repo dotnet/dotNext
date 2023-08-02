@@ -1,6 +1,32 @@
 Release Notes
 ====
 
+# 08-02-2023
+<a href="https://www.nuget.org/packages/dotnext/4.13.1">DotNext 4.13.1</a>
+* Removed memory allocation inside of `Sequence.AddAll` extension method
+* Smallish performance improvements of `SingletonList` value type
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.1">DotNext.Metaprogramming 4.13.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.13.1">DotNext.Unsafe 4.13.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.13.1">DotNext.Threading 4.13.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.13.1">DotNext.IO 4.13.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.13.1">DotNext.Net.Cluster 4.13.1</a>
+* Fixed [184](https://github.com/dotnet/dotNext/issues/184)
+* Reduced memory allocation when reading single log entry from WAL
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.13.1">DotNext.AspNetCore.Cluster 4.13.1</a>
+* Fixed [184](https://github.com/dotnet/dotNext/issues/184)
+* Updated dependencies
+
 # 07-13-2023
 <a href="https://www.nuget.org/packages/dotnext/4.13.0">DotNext 4.13.0</a>
 * Added of `AlignOf` intrinsic method that allows to obtain alignment requirements for the specified type
@@ -25,7 +51,7 @@ Release Notes
 * Fixed cancellation of some async methods exposed by Raft implementation and WAL
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.12.0">DotNext.AspNetCore.Cluster 4.12.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.13.0">DotNext.AspNetCore.Cluster 4.13.0</a>
 * Updated dependencies
 
 # 07-02-2023

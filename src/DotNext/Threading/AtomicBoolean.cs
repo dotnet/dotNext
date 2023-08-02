@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using static InlineIL.FieldRef;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
+using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
 
 namespace DotNext.Threading;
@@ -61,7 +62,17 @@ public struct AtomicBoolean : IEquatable<bool>
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool CompareExchange(bool update, bool expected)
-        => Interlocked.CompareExchange(ref value, update.ToInt32(), expected.ToInt32()).ToBoolean();
+    {
+        // push this.value
+        Ldarg_0();
+        Ldflda(Field(Type<AtomicBoolean>(), nameof(value)));
+
+        Push(update);
+        Push(expected);
+
+        Call(Method(Type(typeof(Interlocked)), nameof(Interlocked.CompareExchange), Type<int>().MakeByRefType(), Type<int>(), Type<int>()));
+        return Return<bool>();
+    }
 
     /// <summary>
     /// Atomically sets referenced value to the given updated value if the current value == the expected value.

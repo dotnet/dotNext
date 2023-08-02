@@ -179,7 +179,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             ? Task.FromCanceled<Result<bool>>(token)
             : IsRemote
             ? SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
-            : Task.FromResult(new Result<bool>(term, true));
+            : Task.FromResult<Result<bool>>(new() { Term = term, Value = true });
     }
 
     Task<Result<PreVoteResult>> IRaftClusterMember.PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -188,7 +188,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             ? Task.FromCanceled<Result<PreVoteResult>>(token)
             : IsRemote
             ? SendAsync<Result<PreVoteResult>, PreVoteMessage>(new PreVoteMessage(context.LocalMemberId, term, lastLogIndex, lastLogTerm), token)
-            : Task.FromResult(new Result<PreVoteResult>(term, PreVoteResult.Accepted));
+            : Task.FromResult<Result<PreVoteResult>>(new() { Term = term, Value = PreVoteResult.Accepted });
     }
 
     Task<bool> IClusterMember.ResignAsync(CancellationToken token)
@@ -198,7 +198,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             : SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalMemberId), token);
     }
 
-    Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
+    Task<Result<HeartbeatResult>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(
         long term,
         TList entries,
         long prevLogIndex,
@@ -208,11 +208,11 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         bool applyConfig,
         CancellationToken token)
     {
-        Task<Result<bool>> result;
+        Task<Result<HeartbeatResult>> result;
 
         if (token.IsCancellationRequested)
         {
-            result = Task.FromCanceled<Result<bool>>(token);
+            result = Task.FromCanceled<Result<HeartbeatResult>>(token);
         }
         else if (IsRemote)
         {
@@ -228,28 +228,28 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             }
             catch (Exception e)
             {
-                result = Task.FromException<Result<bool>>(e);
+                result = Task.FromException<Result<HeartbeatResult>>(e);
                 goto exit;
             }
 
-            result = SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(message, token);
+            result = SendAsync<Result<HeartbeatResult>, AppendEntriesMessage<TEntry, TList>>(message, token);
         }
         else
         {
-            result = Task.FromResult(new Result<bool>(term, true));
+            result = Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
         }
 
     exit:
         return result;
     }
 
-    Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+    Task<Result<HeartbeatResult>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
     {
         return token.IsCancellationRequested
-            ? Task.FromCanceled<Result<bool>>(token)
+            ? Task.FromCanceled<Result<HeartbeatResult>>(token)
             : IsRemote
-            ? SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
-            : Task.FromResult(new Result<bool>(term, true));
+            ? SendAsync<Result<HeartbeatResult>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalMemberId, term, snapshotIndex, snapshot), token)
+            : Task.FromResult<Result<HeartbeatResult>>(new() { Term = term, Value = HeartbeatResult.ReplicatedWithLeaderTerm });
     }
 
     async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)

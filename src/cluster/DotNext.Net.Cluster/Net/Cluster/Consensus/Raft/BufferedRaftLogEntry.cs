@@ -153,7 +153,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         return new(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
     }
 
-    internal static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, long? length, CancellationToken token)
+    internal static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         var output = new FileStream(options.GetRandomFileName(), new FileStreamOptions
@@ -169,8 +169,8 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         var buffer = options.RentBuffer();
         try
         {
-            if (length.HasValue)
-                output.SetLength(length.GetValueOrDefault());
+            if (entry.Length.TryGetValue(out var length))
+                output.SetLength(length);
 
             await entry.WriteToAsync(output, buffer.Memory, token).ConfigureAwait(false);
             await output.FlushAsync(token).ConfigureAwait(false);
@@ -208,7 +208,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         else if (length <= options.MemoryThreshold)
             result = CopyToMemoryAsync(entry, (int)length, options.MemoryAllocator, token);
         else
-            result = CopyToFileAsync(entry, options, length, token);
+            result = CopyToFileAsync(entry, options, token);
 
         return result;
     }
