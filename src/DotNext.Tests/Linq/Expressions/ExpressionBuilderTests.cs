@@ -659,7 +659,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void MutateRegularStruct()
     {
-        MutationExpression mut = typeof(Net.Cluster.Consensus.Raft.Result<bool>).New(42L.Const(), true.Const()).With(new MemberBindings
+        MutationExpression mut = typeof(Net.Cluster.Consensus.Raft.Result<bool>).New().With(new MemberBindings
             {
                 {nameof(Net.Cluster.Consensus.Raft.Result<bool>.Value), false.Const()}
             });
