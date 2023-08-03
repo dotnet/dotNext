@@ -79,8 +79,10 @@ public partial class PersistentState
         private int ToRelativeIndex(long absoluteIndex)
             => unchecked((int)(absoluteIndex - FirstIndex));
 
+        [MemberNotNullWhen(false, nameof(Previous))]
         internal bool IsFirst => previous is null;
 
+        [MemberNotNullWhen(false, nameof(Next))]
         internal bool IsLast => next is null;
 
         internal Partition? Next => next;
