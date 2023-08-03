@@ -241,7 +241,9 @@ public partial class PersistentState
         {
             try
             {
-                await PersistAsync(content, offset).ConfigureAwait(false);
+                // manually inlined body of PersistAsync method
+                await SetWritePositionAsync(offset).ConfigureAwait(false);
+                await writer.WriteAsync(content).ConfigureAwait(false);
             }
             finally
             {
