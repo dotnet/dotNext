@@ -66,7 +66,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
             if (member.IsRemote)
             {
-                long precedingIndex = Math.Max(0, member.NextIndex - 1);
+                long precedingIndex = Math.Max(0L, member.NextIndex - 1L);
                 minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
 
                 // try to get term from the cache to avoid touching audit trail for each member
