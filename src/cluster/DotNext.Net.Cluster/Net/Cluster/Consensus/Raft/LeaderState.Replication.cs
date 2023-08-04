@@ -76,26 +76,31 @@ internal partial class LeaderState<TMember>
             try
             {
                 var result = replicationAwaiter.GetResult();
+                var replicatedWithCurrentTerm = false;
                 ref var nextIndex = ref member.NextIndex;
                 ref var fingerprint = ref member.ConfigurationFingerprint;
 
                 // analyze result and decrease node index when it is out-of-sync with the current node
-                if (result.Value is HeartbeatResult.Rejected)
+                switch (result.Value)
                 {
-                    fingerprint = 0L;
-                    if (nextIndex > 0L)
-                        nextIndex -= 1L;
+                    case HeartbeatResult.ReplicatedWithLeaderTerm:
+                        replicatedWithCurrentTerm = true;
+                        goto case HeartbeatResult.Replicated;
+                    case HeartbeatResult.Replicated:
+                        logger.ReplicationSuccessful(member.EndPoint, nextIndex);
+                        nextIndex = replicationIndex + 1L;
+                        fingerprint = this.fingerprint;
+                        break;
+                    default:
+                        fingerprint = 0L;
+                        if (nextIndex > 0L)
+                            nextIndex -= 1L;
 
-                    logger.ReplicationFailed(member.EndPoint, nextIndex);
-                }
-                else
-                {
-                    logger.ReplicationSuccessful(member.EndPoint, nextIndex);
-                    nextIndex = replicationIndex + 1L;
-                    fingerprint = this.fingerprint;
+                        logger.ReplicationFailed(member.EndPoint, nextIndex);
+                        break;
                 }
 
-                SetResult(result.SetValue(result.Value is HeartbeatResult.ReplicatedWithLeaderTerm));
+                SetResult(result.SetValue(replicatedWithCurrentTerm));
             }
             catch (OperationCanceledException e)
             {
