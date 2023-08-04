@@ -150,7 +150,7 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 17,
         LogLevel.Debug,
-        "All changes at index {EntryIndex} are committed. The number of committed entries is {LogEntries}",
+        "All changes up to {EntryIndex} index are committed. The number of committed entries is {LogEntries}",
         EventName = $"{EventIdPrefix}.{nameof(CommitSuccessful)}"
     )]
     public static partial void CommitSuccessful(this ILogger logger, long entryIndex, long logEntries);

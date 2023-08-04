@@ -116,7 +116,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             {
                 // majority of nodes accept entries with at least one entry from the current term
                 var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
-                Logger.CommitSuccessful(commitIndex + 1, count);
+                Logger.CommitSuccessful(currentIndex, count);
             }
             else
             {
