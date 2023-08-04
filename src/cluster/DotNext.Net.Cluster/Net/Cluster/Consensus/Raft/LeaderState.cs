@@ -243,7 +243,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         foreach (var member in members)
         {
-            member.NextIndex = transactionLog.LastUncommittedEntryIndex + 1;
+            member.NextIndex = transactionLog.LastUncommittedEntryIndex + 1L;
             member.ConfigurationFingerprint = 0L;
         }
 
