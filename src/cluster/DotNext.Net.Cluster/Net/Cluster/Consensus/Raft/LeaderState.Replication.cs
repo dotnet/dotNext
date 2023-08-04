@@ -76,22 +76,23 @@ internal partial class LeaderState<TMember>
             try
             {
                 var result = replicationAwaiter.GetResult();
+                ref var nextIndex = ref member.NextIndex;
+                ref var fingerprint = ref member.ConfigurationFingerprint;
 
                 // analyze result and decrease node index when it is out-of-sync with the current node
                 if (result.Value is HeartbeatResult.Rejected)
                 {
-                    member.ConfigurationFingerprint = 0L;
-                    var nextIndex = member.NextIndex;
+                    fingerprint = 0L;
                     if (nextIndex > 0L)
-                        member.NextIndex = --nextIndex;
+                        nextIndex -= 1L;
 
                     logger.ReplicationFailed(member.EndPoint, nextIndex);
                 }
                 else
                 {
-                    logger.ReplicationSuccessful(member.EndPoint, member.NextIndex);
-                    member.NextIndex = replicationIndex + 1L;
-                    member.ConfigurationFingerprint = fingerprint;
+                    logger.ReplicationSuccessful(member.EndPoint, nextIndex);
+                    nextIndex = replicationIndex + 1L;
+                    fingerprint = this.fingerprint;
                 }
 
                 SetResult(result.SetValue(result.Value is HeartbeatResult.ReplicatedWithLeaderTerm));
