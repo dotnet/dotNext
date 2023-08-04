@@ -50,7 +50,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     private async ValueTask<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
     {
         long commitIndex = auditTrail.LastCommittedEntryIndex,
-            currentIndex = auditTrail.LastUncommittedEntryIndex,
+            currentIndex = auditTrail.LastEntryIndex,
             term = currentTerm,
             minPrecedingIndex = 0L;
 
@@ -243,7 +243,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         foreach (var member in members)
         {
-            member.NextIndex = transactionLog.LastUncommittedEntryIndex + 1L;
+            member.NextIndex = transactionLog.LastEntryIndex + 1L;
             member.ConfigurationFingerprint = 0L;
         }
 

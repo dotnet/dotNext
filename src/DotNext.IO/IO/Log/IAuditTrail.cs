@@ -17,9 +17,9 @@ public interface IAuditTrail
     long LastCommittedEntryIndex { get; }
 
     /// <summary>
-    /// Gets the index of the last uncommitted log entry.
+    /// Gets the index of the last added log entry (committed or not).
     /// </summary>
-    long LastUncommittedEntryIndex { get; }
+    long LastEntryIndex { get; }
 
     /// <summary>
     /// Waits for the commit.
@@ -223,7 +223,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// Adds uncommitted log entries to the end of this log.
     /// </summary>
     /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.LastUncommittedEntryIndex"/> called with argument of value <see langword="false"/>.
+    /// This method should updates cached value provided by method <see cref="IAuditTrail.LastEntryIndex"/> called with argument of value <see langword="false"/>.
     /// </remarks>
     /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
     /// <param name="entries">The entries to be added into this log.</param>

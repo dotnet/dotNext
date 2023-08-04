@@ -295,9 +295,9 @@ public partial class PersistentState
     }
 
     /// <summary>
-    /// Gets the index of the last uncommitted log entry.
+    /// Gets the index of the last added log entry.
     /// </summary>
-    public long LastUncommittedEntryIndex
+    public long LastEntryIndex
     {
         get => state.LastIndex;
         private protected set => state.LastIndex = value;

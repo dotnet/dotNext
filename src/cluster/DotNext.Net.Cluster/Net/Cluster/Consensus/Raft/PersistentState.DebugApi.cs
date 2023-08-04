@@ -17,5 +17,5 @@ public partial class PersistentState
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
     [ExcludeFromCodeCoverage]
-    public void DbgChangeLastIndex(long index) => state.LastIndex = index;
+    public void DbgChangeLastIndex(long index) => LastEntryIndex = index;
 }

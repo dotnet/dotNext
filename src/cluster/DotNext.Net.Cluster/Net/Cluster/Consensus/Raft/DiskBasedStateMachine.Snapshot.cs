@@ -47,7 +47,7 @@ public partial class DiskBasedStateMachine
 
         var snapshotLength = await InstallSnapshotAsync(snapshot).ConfigureAwait(false);
         LastCommittedEntryIndex = snapshotIndex;
-        LastUncommittedEntryIndex = Math.Max(snapshotIndex, LastUncommittedEntryIndex);
+        LastEntryIndex = Math.Max(snapshotIndex, LastEntryIndex);
         lastTerm.VolatileWrite(snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
         UpdateSnapshotInfo(SnapshotMetadata.Create(snapshot, snapshotIndex, snapshotLength));

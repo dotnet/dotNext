@@ -734,7 +734,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     // pre-vote logic that allow to decide about transition to candidate state
     private async Task<bool> PreVoteAsync(long currentTerm)
     {
-        var lastIndex = auditTrail.LastUncommittedEntryIndex;
+        var lastIndex = auditTrail.LastEntryIndex;
         var lastTerm = await auditTrail.GetTermAsync(lastIndex, LifecycleToken).ConfigureAwait(false);
         var votes = 0;
 

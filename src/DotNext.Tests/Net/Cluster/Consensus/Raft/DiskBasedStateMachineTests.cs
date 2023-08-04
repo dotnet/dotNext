@@ -92,7 +92,7 @@ public sealed class DiskBasedStateMachineTests : Test
         using var auditTrail = new SimpleStateMachine(dir);
         await auditTrail.AppendAsync(new EmptyLogEntry(10));
 
-        Equal(1, auditTrail.LastUncommittedEntryIndex);
+        Equal(1, auditTrail.LastEntryIndex);
         await auditTrail.CommitAsync(1L, CancellationToken.None);
         Equal(1, auditTrail.LastCommittedEntryIndex);
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>

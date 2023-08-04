@@ -139,7 +139,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         using var auditTrail = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
         await auditTrail.AppendAsync(new EmptyLogEntry(10));
 
-        Equal(1, auditTrail.LastUncommittedEntryIndex);
+        Equal(1, auditTrail.LastEntryIndex);
         await auditTrail.CommitAsync(1L, CancellationToken.None);
         Equal(1, auditTrail.LastCommittedEntryIndex);
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
@@ -286,10 +286,10 @@ public sealed class MemoryBasedStateMachineTests : Test
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
         Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
-        Equal(5L, state.LastUncommittedEntryIndex);
+        Equal(5L, state.LastEntryIndex);
         Equal(0L, state.LastCommittedEntryIndex);
         Equal(5L, await state.DropAsync(1L, reuseSpace));
-        Equal(0L, state.LastUncommittedEntryIndex);
+        Equal(0L, state.LastEntryIndex);
         Equal(0L, state.LastCommittedEntryIndex);
     }
 
@@ -306,17 +306,17 @@ public sealed class MemoryBasedStateMachineTests : Test
         using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
         {
             Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
-            Equal(4L, state.LastUncommittedEntryIndex);
+            Equal(4L, state.LastEntryIndex);
             Equal(0L, state.LastCommittedEntryIndex);
             await state.AppendAsync(entry1, 1L);
-            Equal(1L, state.LastUncommittedEntryIndex);
+            Equal(1L, state.LastEntryIndex);
             Equal(0L, state.LastCommittedEntryIndex);
         }
 
         //read again
         using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
         {
-            Equal(1L, state.LastUncommittedEntryIndex);
+            Equal(1L, state.LastEntryIndex);
             Equal(0L, state.LastCommittedEntryIndex);
             checker = async (entries, snapshotIndex, token) =>
             {
@@ -444,7 +444,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(2L, await state.CommitAsync(3L, CancellationToken.None));
             Equal(0L, await state.CommitAsync(2L, CancellationToken.None));
             Equal(3L, state.LastCommittedEntryIndex);
-            Equal(5L, state.LastUncommittedEntryIndex);
+            Equal(5L, state.LastEntryIndex);
 
             await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(entry1, 1L).AsTask());
         }
@@ -453,7 +453,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new MemoryBasedStateMachine.Options { UseCaching = useCaching }))
         {
             Equal(3L, state.LastCommittedEntryIndex);
-            Equal(5L, state.LastUncommittedEntryIndex);
+            Equal(5L, state.LastEntryIndex);
         }
     }
 
@@ -555,7 +555,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             await state.ClearAsync();
 
             Equal(0L, state.LastCommittedEntryIndex);
-            Equal(0L, state.LastUncommittedEntryIndex);
+            Equal(0L, state.LastEntryIndex);
         }
     }
 
@@ -573,15 +573,15 @@ public sealed class MemoryBasedStateMachineTests : Test
         {
             Equal(0L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 1L, false, 0L));
             Equal(0L, state.LastCommittedEntryIndex);
-            Equal(9L, state.LastUncommittedEntryIndex);
+            Equal(9L, state.LastEntryIndex);
 
             Equal(9L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 10L, false, 9L));
             Equal(9L, state.LastCommittedEntryIndex);
-            Equal(18L, state.LastUncommittedEntryIndex);
+            Equal(18L, state.LastEntryIndex);
 
             Equal(9L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 19L, false, 18L));
             Equal(18L, state.LastCommittedEntryIndex);
-            Equal(27L, state.LastUncommittedEntryIndex);
+            Equal(27L, state.LastEntryIndex);
         }
     }
 
@@ -830,7 +830,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
         try
         {
-            Equal(5, state.LastUncommittedEntryIndex);
+            Equal(5, state.LastEntryIndex);
             Equal(2, state.LastCommittedEntryIndex);
             Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, token) =>
             {

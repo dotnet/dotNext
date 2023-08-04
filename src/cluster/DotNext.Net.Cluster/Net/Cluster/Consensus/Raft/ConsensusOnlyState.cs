@@ -265,7 +265,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <summary>
     /// Gets the index of the last uncommitted log entry.
     /// </summary>
-    public long LastUncommittedEntryIndex => index.VolatileRead();
+    public long LastEntryIndex => index.VolatileRead();
 
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
