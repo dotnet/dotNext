@@ -66,9 +66,7 @@ internal partial class LeaderState<TMember>
             Debug.Assert(startIndex == member.NextIndex);
 
             logger.ReplicationStarted(member.EndPoint, startIndex);
-            return currentIndex >= startIndex ?
-                auditTrail.ReadAsync(this, startIndex, token) :
-                ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token);
+            return auditTrail.ReadAsync(this, startIndex, currentIndex, token);
         }
 
         private void Complete()
