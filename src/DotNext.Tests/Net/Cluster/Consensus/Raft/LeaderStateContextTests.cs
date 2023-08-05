@@ -42,9 +42,7 @@ public sealed class LeaderStateContextTests : Test
             remove => throw new NotImplementedException();
         }
 
-        ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
-
-        ref long IRaftClusterMember.ConfigurationFingerprint => throw new NotImplementedException();
+        ref IRaftClusterMember.ReplicationState IRaftClusterMember.State => throw new NotImplementedException();
     }
 
     [Fact]

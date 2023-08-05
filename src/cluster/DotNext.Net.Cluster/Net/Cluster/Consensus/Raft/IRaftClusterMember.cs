@@ -1,4 +1,6 @@
-﻿namespace DotNext.Net.Cluster.Consensus.Raft;
+﻿using System.Runtime.InteropServices;
+
+namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Membership;
 
@@ -89,18 +91,46 @@ public interface IRaftClusterMember : IClusterMember
     Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token);
 
     /// <summary>
-    /// Index of next log entry to send to this node.
+    /// Gets a reference to the replication state.
     /// </summary>
-    ref long NextIndex { get; }
-
-    /// <summary>
-    /// Gets fingerprint of the cluster configuration tracked by replication process.
-    /// </summary>
-    ref long ConfigurationFingerprint { get; }
+    /// <remarks>
+    /// Implementing class should provide memory storage for <see cref="ReplicationState"/> type without
+    /// any special semantics.
+    /// </remarks>
+    protected internal ref ReplicationState State { get; }
 
     /// <summary>
     /// Aborts all active outbound requests asynchronously.
     /// </summary>
     /// <returns>The task representing shutdown operation.</returns>
     ValueTask CancelPendingRequestsAsync();
+
+    /// <summary>
+    /// Represents replication state of the member used internally by Raft implementation.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    protected internal struct ReplicationState
+    {
+        /// <summary>
+        /// Gets or sets replication index of the member.
+        /// </summary>
+        public long NextIndex;
+
+        /// <summary>
+        /// Gets or sets configuration fingerprint associated with the member.
+        /// </summary>
+        public long ConfigurationFingerprint;
+
+        internal readonly long PrecedingIndex
+        {
+            get
+            {
+                var result = NextIndex;
+                if (result > 0L)
+                    result -= 1L;
+
+                return result;
+            }
+        }
+    }
 }

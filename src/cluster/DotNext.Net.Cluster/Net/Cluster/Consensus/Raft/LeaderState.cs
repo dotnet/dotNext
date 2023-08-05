@@ -66,7 +66,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
             if (member.IsRemote)
             {
-                long precedingIndex = Math.Max(0L, member.NextIndex - 1L);
+                var precedingIndex = member.State.PrecedingIndex;
                 minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
 
                 // try to get term from the cache to avoid touching audit trail for each member
@@ -240,11 +240,14 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     {
         var members = Members;
         context = new(members.Count);
+        var state = new IRaftClusterMember.ReplicationState
+        {
+            NextIndex = transactionLog.LastEntryIndex + 1L,
+        };
 
         foreach (var member in members)
         {
-            member.NextIndex = transactionLog.LastEntryIndex + 1L;
-            member.ConfigurationFingerprint = 0L;
+            member.State = state;
         }
 
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);

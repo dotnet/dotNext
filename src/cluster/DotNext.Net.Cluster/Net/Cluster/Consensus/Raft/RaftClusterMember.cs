@@ -27,7 +27,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     private volatile IReadOnlyDictionary<string, string>? metadataCache;
     private AtomicEnum<ClusterMemberStatus> status;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
-    private long nextIndex, fingerprint;
+    private IRaftClusterMember.ReplicationState state;
 
     private protected RaftClusterMember(ILocalMember localMember, EndPoint endPoint)
     {
@@ -102,10 +102,7 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     }
 
     /// <inheritdoc/>
-    ref long IRaftClusterMember.NextIndex => ref nextIndex;
-
-    /// <inheritdoc/>
-    ref long IRaftClusterMember.ConfigurationFingerprint => ref fingerprint;
+    ref IRaftClusterMember.ReplicationState IRaftClusterMember.State => ref state;
 
     /// <summary>
     /// Cancels pending requests scheduled for this member.

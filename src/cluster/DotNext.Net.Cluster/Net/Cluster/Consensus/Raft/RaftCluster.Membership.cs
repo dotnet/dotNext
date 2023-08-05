@@ -161,7 +161,7 @@ public partial class RaftCluster<TMember>
             lockTaken = true;
 
             // assuming that the member is in sync with the leader
-            member.NextIndex = auditTrail.LastEntryIndex + 1;
+            member.State.NextIndex = auditTrail.LastEntryIndex + 1L;
 
             if (!members.TryAdd(member, out members))
                 return false;
@@ -266,13 +266,13 @@ public partial class RaftCluster<TMember>
         try
         {
             // catch up node
-            member.NextIndex = auditTrail.LastEntryIndex + 1;
+            member.State.NextIndex = auditTrail.LastEntryIndex + 1;
             long currentIndex;
             do
             {
                 var commitIndex = auditTrail.LastCommittedEntryIndex;
                 currentIndex = auditTrail.LastEntryIndex;
-                var precedingIndex = Math.Max(0, member.NextIndex - 1);
+                var precedingIndex = member.State.PrecedingIndex;
                 var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
                 var term = Term;
 
@@ -284,7 +284,7 @@ public partial class RaftCluster<TMember>
                 if (!result.Value && result.Term > term)
                     return false;
             }
-            while (--rounds > 0 && currentIndex >= member.NextIndex);
+            while (--rounds > 0 && currentIndex >= member.State.NextIndex);
 
             // ensure that previous configuration has been committed
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);

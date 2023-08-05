@@ -50,7 +50,7 @@ internal partial class LeaderState<TMember>
             configuration = proposedConfig ?? activeConfig;
             fingerprint = configuration.Fingerprint;
 
-            if (member.ConfigurationFingerprint == fingerprint)
+            if (member.State.ConfigurationFingerprint == fingerprint)
             {
                 // This branch is a hot path because configuration changes rarely.
                 // It is reasonable to prevent allocation of empty configuration every time.
@@ -63,7 +63,7 @@ internal partial class LeaderState<TMember>
         internal ValueTask<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
         {
             var startIndex = replicationIndex + 1L;
-            Debug.Assert(startIndex == member.NextIndex);
+            Debug.Assert(startIndex == member.State.NextIndex);
 
             logger.ReplicationStarted(member.EndPoint, startIndex);
             return auditTrail.ReadAsync(this, startIndex, currentIndex, token);
@@ -75,8 +75,7 @@ internal partial class LeaderState<TMember>
             {
                 var result = replicationAwaiter.GetResult();
                 var replicatedWithCurrentTerm = false;
-                ref var nextIndex = ref member.NextIndex;
-                ref var fingerprint = ref member.ConfigurationFingerprint;
+                ref var replicationState = ref member.State;
 
                 // analyze result and decrease node index when it is out-of-sync with the current node
                 switch (result.Value)
@@ -85,16 +84,14 @@ internal partial class LeaderState<TMember>
                         replicatedWithCurrentTerm = true;
                         goto case HeartbeatResult.Replicated;
                     case HeartbeatResult.Replicated:
-                        logger.ReplicationSuccessful(member.EndPoint, nextIndex);
-                        nextIndex = replicationIndex + 1L;
-                        fingerprint = this.fingerprint;
+                        logger.ReplicationSuccessful(member.EndPoint, replicationState.NextIndex);
+                        replicationState.NextIndex = replicationIndex + 1L;
+                        replicationState.ConfigurationFingerprint = fingerprint;
                         break;
                     default:
-                        fingerprint = 0L;
-                        if (nextIndex > 0L)
-                            nextIndex -= 1L;
-
-                        logger.ReplicationFailed(member.EndPoint, nextIndex);
+                        replicationState.ConfigurationFingerprint = 0L;
+                        replicationState.NextIndex = replicationState.PrecedingIndex;
+                        logger.ReplicationFailed(member.EndPoint, replicationState.NextIndex);
                         break;
                 }
 
@@ -140,14 +137,14 @@ internal partial class LeaderState<TMember>
 
             logger.InstallingSnapshot(replicationIndex = snapshotIndex);
             replicationAwaiter = member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
-            fingerprint = member.ConfigurationFingerprint; // keep local version unchanged
+            fingerprint = member.State.ConfigurationFingerprint; // keep local version unchanged
         }
 
         private void ReplicateEntries<TEntry, TList>(TList entries, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
             where TList : notnull, IReadOnlyList<TEntry>
         {
-            logger.ReplicaSize(member.EndPoint, entries.Count, replicationIndex, precedingTerm, member.ConfigurationFingerprint, fingerprint, applyConfig);
+            logger.ReplicaSize(member.EndPoint, entries.Count, replicationIndex, precedingTerm, member.State.ConfigurationFingerprint, fingerprint, applyConfig);
             replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
             replicationIndex += entries.Count;
         }
