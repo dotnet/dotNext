@@ -114,9 +114,7 @@ internal partial class LeaderState<TMember>
             }
         }
 
-        public ValueTask<Result<bool>> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
-            where TList : notnull, IReadOnlyList<TEntry>
+        ValueTask<Result<bool>> ILogEntryConsumer<IRaftLogEntry, Result<bool>>.ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
         {
             if (snapshotIndex.HasValue)
             {
