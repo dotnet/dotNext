@@ -6,7 +6,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Threading;
-using Replication;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
