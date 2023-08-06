@@ -160,7 +160,7 @@ public abstract partial class ManualResetCompletionSource
         if (continuation is { IsValid: true } c)
         {
             continuation = default;
-            c.Invoke(runContinuationsAsynchronously);
+            c.InvokeOnCapturedContext(runContinuationsAsynchronously);
         }
     }
 
@@ -339,8 +339,9 @@ public abstract partial class ManualResetCompletionSource
                 object? schedulingContext = SynchronizationContext.Current;
                 if (schedulingContext is null || schedulingContext.GetType() == typeof(SynchronizationContext))
                 {
-                    var scheduler = TaskScheduler.Current;
-                    schedulingContext = ReferenceEquals(scheduler, TaskScheduler.Default) ? null : scheduler;
+                    schedulingContext = TaskScheduler.Current;
+                    if (ReferenceEquals(schedulingContext, TaskScheduler.Default))
+                        schedulingContext = null;
                 }
 
                 return schedulingContext;
@@ -355,17 +356,21 @@ public abstract partial class ManualResetCompletionSource
             {
                 Invoke();
             }
-            else if (runAsynchronously)
-            {
-                ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
-            }
-            else
+            else if (!runAsynchronously)
             {
                 action(state);
             }
+            else if (context is not null)
+            {
+                ThreadPool.QueueUserWorkItem(action, state, preferLocal: true);
+            }
+            else
+            {
+                ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal: true);
+            }
         }
 
-        public void Invoke(bool runAsynchronously)
+        public void InvokeOnCapturedContext(bool runAsynchronously)
         {
             Debug.Assert(action is not null);
 
@@ -373,19 +378,27 @@ public abstract partial class ManualResetCompletionSource
             {
                 InvokeOnSchedulingContext();
             }
-            else if (runAsynchronously)
-            {
-                ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
-            }
-            else if (context is { } ctx)
-            {
-                // ContextCallback has the same signature as Action<object?> so we
-                // can reinterpret the reference
-                ExecutionContext.Run(ctx, Unsafe.As<ContextCallback>(action), state);
-            }
             else
             {
-                action(state);
+                switch ((runAsynchronously, context is not null))
+                {
+                    case (true, true):
+                        ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
+                        break;
+                    case (true, false):
+                        ThreadPool.UnsafeQueueUserWorkItem(action, state, preferLocal: true);
+                        break;
+                    case (false, true):
+                        Debug.Assert(context is not null);
+
+                        // ContextCallback has the same signature as Action<object?> so we
+                        // can reinterpret the reference
+                        ExecutionContext.Run(context, Unsafe.As<ContextCallback>(action), state);
+                        break;
+                    default:
+                        action(state);
+                        break;
+                }
             }
         }
 
@@ -432,10 +445,11 @@ public abstract partial class ManualResetCompletionSource
 
         void IThreadPoolWorkItem.Execute()
         {
+            Debug.Assert(context is not null);
+
             // ThreadPool restores original execution context automatically
             // See https://github.com/dotnet/runtime/blob/cb30e97f8397e5f87adee13f5b4ba914cc2c0064/src/libraries/System.Private.CoreLib/src/System/Threading/ThreadPoolWorkQueue.cs#L928
-            if (context is { } ctx)
-                ExecutionContext.Restore(ctx);
+            ExecutionContext.Restore(context);
 
             action(state);
         }
