@@ -113,14 +113,9 @@ internal partial class LeaderState<TMember>
 
         ValueTask<Result<bool>> ILogEntryConsumer<IRaftLogEntry, Result<bool>>.ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
         {
-            if (snapshotIndex.HasValue)
-            {
-                ReplicateSnapshot(entries[0], snapshotIndex.GetValueOrDefault(), token);
-            }
-            else
-            {
-                ReplicateEntries<TEntry, TList>(entries, token);
-            }
+            replicationAwaiter = snapshotIndex.HasValue
+                ? ReplicateSnapshot(entries[0], snapshotIndex.GetValueOrDefault(), token)
+                : ReplicateEntries<TEntry, TList>(entries, token);
 
             if (replicationAwaiter.IsCompleted)
                 Complete();
@@ -130,23 +125,25 @@ internal partial class LeaderState<TMember>
             return new(Task);
         }
 
-        private void ReplicateSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+        private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter ReplicateSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : notnull, IRaftLogEntry
         {
             Debug.Assert(snapshot.IsSnapshot);
 
             logger.InstallingSnapshot(replicationIndex = snapshotIndex);
-            replicationAwaiter = member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
+            var result = member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
             fingerprint = member.State.ConfigurationFingerprint; // keep local version unchanged
+            return result;
         }
 
-        private void ReplicateEntries<TEntry, TList>(TList entries, CancellationToken token)
+        private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter ReplicateEntries<TEntry, TList>(TList entries, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
             where TList : notnull, IReadOnlyList<TEntry>
         {
             logger.ReplicaSize(member.EndPoint, entries.Count, replicationIndex, precedingTerm, member.State.ConfigurationFingerprint, fingerprint, applyConfig);
-            replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
+            var result = member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
             replicationIndex += entries.Count;
+            return result;
         }
 
         long IClusterConfiguration.Fingerprint => fingerprint;
