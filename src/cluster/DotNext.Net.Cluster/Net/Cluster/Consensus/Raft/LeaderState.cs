@@ -47,7 +47,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
     // no need to allocate state machine for every round of heartbeats
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    private async ValueTask<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
     {
         long commitIndex = auditTrail.LastCommittedEntryIndex,
             currentIndex = auditTrail.LastEntryIndex,
@@ -60,11 +60,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         var leaseRenewalThreshold = 0;
 
         // send heartbeat in parallel
-        foreach (var member in Members)
+        while (members.MoveNext())
         {
             leaseRenewalThreshold++;
 
-            if (member.IsRemote)
+            if (members.Current is { IsRemote: true } member)
             {
                 var precedingIndex = member.State.PrecedingIndex;
                 minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
@@ -202,30 +202,55 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     }
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, CancellationToken token)
+    private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IReadOnlyCollection<TMember> members, CancellationToken token)
     {
-        using var cancellationSource = token.LinkTo(LeadershipToken);
+        var cancellationSource = token.LinkTo(LeadershipToken);
 
-        for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset())
+        // cached enumerator allows to avoid memory allocation on every GetEnumerator call inside of the loop
+        var enumerator = members.GetEnumerator();
+        try
         {
-            var startTime = new Timestamp();
-
-            // do not resume suspended callers that came after the barrier, resume them in the next iteration
-            replicationQueue.SwitchValve();
-
-            // we want to minimize GC intrusion during replication process
-            // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
-            using (GCLatencyModeScope.SustainedLowLatency)
+            for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset(), AdjustEnumerator(ref members, ref enumerator))
             {
-                if (!await DoHeartbeats(startTime, responsePipe, auditTrail, configurationStorage, token).ConfigureAwait(false))
-                    break;
+                var startTime = new Timestamp();
+
+                // do not resume suspended callers that came after the barrier, resume them in the next iteration
+                replicationQueue.SwitchValve();
+
+                // we want to minimize GC intrusion during replication process
+                // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
+                using (GCLatencyModeScope.SustainedLowLatency)
+                {
+                    if (!await DoHeartbeats(startTime, responsePipe, auditTrail, configurationStorage, enumerator, token).ConfigureAwait(false))
+                        break;
+                }
+
+                // resume all suspended callers added to the queue concurrently before SwitchValve()
+                replicationQueue.Drain();
+
+                // wait for heartbeat timeout or forced replication
+                await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);
             }
+        }
+        finally
+        {
+            cancellationSource?.Dispose();
+            enumerator.Dispose();
+        }
+    }
 
-            // resume all suspended callers added to the queue concurrently before SwitchValve()
-            replicationQueue.Drain();
-
-            // wait for heartbeat timeout or forced replication
-            await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);
+    private void AdjustEnumerator(ref IReadOnlyCollection<TMember> currentList, ref IEnumerator<TMember> enumerator)
+    {
+        var freshList = Members;
+        if (ReferenceEquals(currentList, freshList))
+        {
+            enumerator.Reset();
+        }
+        else
+        {
+            enumerator.Dispose();
+            currentList = freshList;
+            enumerator = freshList.GetEnumerator();
         }
     }
 
@@ -250,7 +275,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             member.State = state;
         }
 
-        heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, token);
+        heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, members, token);
     }
 
     protected override async ValueTask DisposeAsyncCore()
