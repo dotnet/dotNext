@@ -6,6 +6,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Diagnostics;
 using IO.Log;
 using Membership;
 using Threading;
@@ -16,43 +17,48 @@ internal partial class LeaderState<TMember>
 {
     internal sealed class Replicator : IValueTaskSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration
     {
-        private readonly IClusterConfiguration configuration;
-        private readonly TMember member;
-        private readonly MemberContext? context;
-        private readonly long commitIndex, precedingTerm, term;
-        private readonly bool applyConfig;
         private readonly ILogger logger;
+        private readonly Action continuation;
+        internal readonly TMember Member;
+
+        // reusable fields
+        private IClusterConfiguration configuration;
+        private long commitIndex, precedingTerm, term;
+        private bool applyConfig;
 
         // state
-        private long replicationIndex; // reuse as precedingIndex
-        private long fingerprint;
+        private long fingerprint, replicationIndex; // reuse as precedingIndex
         private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter replicationAwaiter;
         private ManualResetValueTaskSourceCore<Result<bool>> completionSource;
 
-        // TODO: Replace with required init properties in the next version of C#
-        internal Replicator(
-            TMember member,
-            MemberContext? context,
+        // contextual fields
+        internal IFailureDetector? FailureDetector;
+
+        internal Replicator(TMember member, ILogger logger)
+        {
+            Debug.Assert(member is not null);
+            Debug.Assert(logger is not null);
+
+            Member = member;
+            this.logger = logger;
+            configuration = this;
+            continuation = Complete;
+        }
+
+        internal void Initialize(
             IClusterConfiguration activeConfig,
             IClusterConfiguration? proposedConfig,
             long commitIndex,
             long term,
             long precedingIndex,
-            long precedingTerm,
-            ILogger logger)
+            long precedingTerm)
         {
-            this.member = member;
-            this.context = context;
-            replicationIndex = precedingIndex;
-            this.precedingTerm = precedingTerm;
-            this.commitIndex = commitIndex;
-            this.term = term;
-            this.logger = logger;
+            Debug.Assert(activeConfig is not null);
 
             configuration = proposedConfig ?? activeConfig;
             fingerprint = configuration.Fingerprint;
 
-            if (member.State.ConfigurationFingerprint == fingerprint)
+            if (Member.State.ConfigurationFingerprint == fingerprint)
             {
                 // This branch is a hot path because configuration changes rarely.
                 // It is reasonable to prevent allocation of empty configuration every time.
@@ -60,14 +66,29 @@ internal partial class LeaderState<TMember>
                 applyConfig = activeConfig.Fingerprint == fingerprint;
                 configuration = this;
             }
+            else
+            {
+                applyConfig = false;
+            }
+
+            this.commitIndex = commitIndex;
+            this.term = term;
+            replicationIndex = precedingIndex;
+            this.precedingTerm = precedingTerm;
+        }
+
+        internal void Reset()
+        {
+            configuration = this;
+            completionSource.Reset();
         }
 
         internal ValueTask<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
         {
             var startIndex = replicationIndex + 1L;
-            Debug.Assert(startIndex == member.State.NextIndex);
+            Debug.Assert(startIndex == Member.State.NextIndex);
 
-            logger.ReplicationStarted(member.EndPoint, startIndex);
+            logger.ReplicationStarted(Member.EndPoint, startIndex);
             return auditTrail.ReadAsync(this, startIndex, currentIndex, token);
         }
 
@@ -77,7 +98,7 @@ internal partial class LeaderState<TMember>
             {
                 var result = replicationAwaiter.GetResult();
                 var replicatedWithCurrentTerm = false;
-                ref var replicationState = ref member.State;
+                ref var replicationState = ref Member.State;
 
                 // analyze result and decrease node index when it is out-of-sync with the current node
                 switch (result.Value)
@@ -86,14 +107,14 @@ internal partial class LeaderState<TMember>
                         replicatedWithCurrentTerm = true;
                         goto case HeartbeatResult.Replicated;
                     case HeartbeatResult.Replicated:
-                        logger.ReplicationSuccessful(member.EndPoint, replicationState.NextIndex);
+                        logger.ReplicationSuccessful(Member.EndPoint, replicationState.NextIndex);
                         replicationState.NextIndex = replicationIndex + 1L;
                         replicationState.ConfigurationFingerprint = fingerprint;
                         break;
                     default:
                         replicationState.ConfigurationFingerprint = 0L;
                         replicationState.NextIndex = replicationState.PrecedingIndex;
-                        logger.ReplicationFailed(member.EndPoint, replicationState.NextIndex);
+                        logger.ReplicationFailed(Member.EndPoint, replicationState.NextIndex);
                         break;
                 }
 
@@ -118,7 +139,7 @@ internal partial class LeaderState<TMember>
             if (replicationAwaiter.IsCompleted)
                 Complete();
             else
-                replicationAwaiter.OnCompleted(Complete);
+                replicationAwaiter.OnCompleted(continuation);
 
             return new(this, completionSource.Version);
         }
@@ -129,8 +150,8 @@ internal partial class LeaderState<TMember>
             Debug.Assert(snapshot.IsSnapshot);
 
             logger.InstallingSnapshot(replicationIndex = snapshotIndex);
-            var result = member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
-            fingerprint = member.State.ConfigurationFingerprint; // keep local version unchanged
+            var result = Member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
+            fingerprint = Member.State.ConfigurationFingerprint; // keep local version unchanged
             return result;
         }
 
@@ -138,8 +159,8 @@ internal partial class LeaderState<TMember>
             where TEntry : notnull, IRaftLogEntry
             where TList : notnull, IReadOnlyList<TEntry>
         {
-            logger.ReplicaSize(member.EndPoint, entries.Count, replicationIndex, precedingTerm, member.State.ConfigurationFingerprint, fingerprint, applyConfig);
-            var result = member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
+            logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, Member.State.ConfigurationFingerprint, fingerprint, applyConfig);
+            var result = Member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
             replicationIndex += entries.Count;
             return result;
         }
@@ -155,8 +176,6 @@ internal partial class LeaderState<TMember>
 
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
             => IDataTransferObject.Empty.TryGetMemory(out memory);
-
-        internal (TMember, MemberContext?) MemberAndContext => (member, context);
 
         void IValueTaskSource<Result<bool>>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
             => completionSource.OnCompleted(continuation, state, token, flags);
@@ -176,19 +195,11 @@ internal partial class LeaderState<TMember>
         private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
 
         internal ReplicationWorkItem(
-            TMember member,
-            MemberContext context,
-            IClusterConfiguration activeConfig,
-            IClusterConfiguration? proposedConfig,
-            long commitIndex,
-            long term,
-            long precedingIndex,
-            long precedingTerm,
-            ILogger logger,
+            Replicator replicator,
             IAuditTrail<IRaftLogEntry> auditTrail,
             long currentIndex,
             CancellationToken token)
-            : base(new Replicator(member, context, activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm, logger), TaskCreationOptions.RunContinuationsAsynchronously)
+            : base(replicator, TaskCreationOptions.RunContinuationsAsynchronously)
         {
             Debug.Assert(auditTrail is not null);
 
@@ -197,11 +208,11 @@ internal partial class LeaderState<TMember>
             this.token = token;
         }
 
-        internal static (TMember, MemberContext?) GetMemberAndContext(Task<Result<bool>> task)
+        internal static Replicator GetReplicator(Task<Result<bool>> task)
         {
             Debug.Assert(task is { IsCompleted: true, AsyncState: Replicator });
 
-            return Unsafe.As<Replicator>(task.AsyncState).MemberAndContext;
+            return Unsafe.As<Replicator>(task.AsyncState);
         }
 
         private void OnCompleted() => Complete(ref awaiter);
@@ -257,6 +268,7 @@ internal partial class LeaderState<TMember>
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
+    private readonly Func<TMember, Replicator> replicatorFactory;
 
     private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
     {
@@ -284,35 +296,26 @@ internal partial class LeaderState<TMember>
         return replicationTask;
     }
 
-    private static Task<Result<bool>> QueueReplication(
+    private Task<Result<bool>> QueueReplication(
         TMember member,
-        MemberContext context,
         IClusterConfiguration activeConfig,
         IClusterConfiguration? proposedConfig,
         long commitIndex,
         long term,
         long precedingIndex,
         long precedingTerm,
-        ILogger logger,
         IAuditTrail<IRaftLogEntry> auditTrail,
         long currentIndex,
         CancellationToken token)
     {
-        var workItem = new ReplicationWorkItem(
-            member,
-            context,
-            activeConfig,
-            proposedConfig,
-            commitIndex,
-            term,
-            precedingIndex,
-            precedingTerm,
-            logger,
-            auditTrail,
-            currentIndex,
-            token);
+        var replicator = context.GetOrCreate(member, replicatorFactory);
+        replicator.Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm);
 
+        var workItem = new ReplicationWorkItem(replicator, auditTrail, currentIndex, token);
         ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
         return workItem.Task;
     }
+
+    private static Replicator CreateReplicator(ILogger logger, TMember member)
+        => new(member, logger);
 }

@@ -37,6 +37,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         context = new();
+
+        unsafe
+        {
+            replicatorFactory = DelegateHelpers.CreateDelegate<ILogger, TMember, Replicator>(&CreateReplicator, stateMachine.Logger);
+        }
     }
 
     internal ILeaderStateMetrics? Metrics
@@ -74,7 +79,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
-                responsePipe.Add(QueueReplication(member, context.GetOrCreate(member), activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm, Logger, auditTrail, currentIndex, token));
+                responsePipe.Add(QueueReplication(member, activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm, auditTrail, currentIndex, token));
             }
         }
 
@@ -136,10 +141,9 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
-        var (member, context) = ReplicationWorkItem.GetMemberAndContext(response);
-
-        var memberDetector = context is not null && detectorFactory is not null
-            ? context.FailureDetector ??= detectorFactory.Invoke(maxLease, member)
+        var replicator = ReplicationWorkItem.GetReplicator(response);
+        var memberDetector = replicator.FailureDetector is null && detectorFactory is not null
+            ? replicator.FailureDetector = detectorFactory(maxLease, replicator.Member)
             : null;
 
         try
@@ -185,16 +189,17 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         finally
         {
             response.Dispose();
+            replicator.Reset();
         }
 
         // report unavailable cluster member
         switch (memberDetector)
         {
             case { IsMonitoring: false }:
-                Logger.UnknownHealthStatus(member.EndPoint);
+                Logger.UnknownHealthStatus(replicator.Member.EndPoint);
                 break;
             case { IsHealthy: false }:
-                UnavailableMemberDetected(member, LeadershipToken);
+                UnavailableMemberDetected(replicator.Member, LeadershipToken);
                 break;
         }
 

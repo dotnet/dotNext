@@ -3,27 +3,21 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Diagnostics;
-
 internal partial class LeaderState<TMember>
 {
-    internal sealed class MemberContext
-    {
-        internal IFailureDetector? FailureDetector;
-    }
-
     private sealed class ContextEntry : Disposable
     {
         private int hashCode;
         internal ContextEntry? Next;
         private DependentHandle handle;
 
-        internal ContextEntry(TMember member, int hashCode, out MemberContext result)
+        internal ContextEntry(TMember member, int hashCode, Func<TMember, Replicator> factory, out Replicator result)
         {
-            handle = new(member, result = new MemberContext());
+            handle = new(member, result = factory.Invoke(member));
             this.hashCode = hashCode;
         }
 
@@ -36,23 +30,23 @@ internal partial class LeaderState<TMember>
         }
 
         [DisallowNull]
-        internal MemberContext? Value
+        internal Replicator? Value
         {
-            get => Unsafe.As<MemberContext>(handle.Dependent);
+            get => Unsafe.As<Replicator>(handle.Dependent);
         }
 
-        internal void Reuse(TMember key, int hashCode, out MemberContext result)
+        internal void Reuse(TMember key, int hashCode, Func<TMember, Replicator> factory, out Replicator result)
         {
             handle.Target = key;
-            handle.Dependent = result = new();
+            handle.Dependent = result = factory.Invoke(key);
             this.hashCode = hashCode;
         }
 
-        internal void Deconstruct(out TMember? key, out MemberContext? context)
+        internal void Deconstruct(out TMember? key, out Replicator? context)
         {
             var pair = handle.TargetAndDependent;
             key = Unsafe.As<TMember>(pair.Target);
-            context = Unsafe.As<MemberContext>(pair.Dependent);
+            context = Unsafe.As<Replicator>(pair.Dependent);
         }
 
         protected override void Dispose(bool disposing)
@@ -140,17 +134,17 @@ internal partial class LeaderState<TMember>
             location = entry;
         }
 
-        public MemberContext GetOrCreate(TMember key)
+        public Replicator GetOrCreate(TMember key, Func<TMember, Replicator> factory)
         {
             Debug.Assert(key is not null);
 
             ref var entry = ref GetEntry(key, out var hashCode);
-            MemberContext? result;
+            Replicator? result;
 
             if (entry is null)
             {
                 // add a new element
-                entry = new(key, hashCode, out result);
+                entry = new(key, hashCode, factory, out result);
             }
             else
             {
@@ -178,13 +172,13 @@ internal partial class LeaderState<TMember>
                 // try to reuse available handle
                 if (entryToReuse is not null)
                 {
-                    entryToReuse.Reuse(key, hashCode, out result);
+                    entryToReuse.Reuse(key, hashCode, factory, out result);
                 }
                 else
                 {
                     // failed to reuse, add a new element
                     ResizeAndRemoveDeadEntries();
-                    Insert(new(key, hashCode, out result));
+                    Insert(new(key, hashCode, factory, out result));
                 }
             }
 
