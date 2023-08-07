@@ -47,6 +47,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 Release Date: 08-07-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.13.2">DotNext 4.13.2</a>
+* Added implicit conversion from [BoxedValue&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.BoxedValue-1.html) to [ValueType](https://learn.microsoft.com/en-us/dotnet/api/system.valuetype)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.2">DotNext.Metaprogramming 4.13.2</a>
