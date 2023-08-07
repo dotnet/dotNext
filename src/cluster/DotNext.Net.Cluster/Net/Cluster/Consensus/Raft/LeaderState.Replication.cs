@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks.Sources;
 using Microsoft.Extensions.Logging;
 using Debug = System.Diagnostics.Debug;
 
@@ -13,7 +14,7 @@ using IDataTransferObject = IO.IDataTransferObject;
 
 internal partial class LeaderState<TMember>
 {
-    internal sealed class Replicator : TaskCompletionSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration
+    internal sealed class Replicator : IValueTaskSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration
     {
         private readonly IClusterConfiguration configuration;
         private readonly TMember member;
@@ -26,6 +27,7 @@ internal partial class LeaderState<TMember>
         private long replicationIndex; // reuse as precedingIndex
         private long fingerprint;
         private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter replicationAwaiter;
+        private ManualResetValueTaskSourceCore<Result<bool>> completionSource;
 
         // TODO: Replace with required init properties in the next version of C#
         internal Replicator(
@@ -95,15 +97,11 @@ internal partial class LeaderState<TMember>
                         break;
                 }
 
-                SetResult(result.SetValue(replicatedWithCurrentTerm));
-            }
-            catch (OperationCanceledException e)
-            {
-                SetCanceled(e.CancellationToken);
+                completionSource.SetResult(result.SetValue(replicatedWithCurrentTerm));
             }
             catch (Exception e)
             {
-                SetException(e);
+                completionSource.SetException(e);
             }
             finally
             {
@@ -122,7 +120,7 @@ internal partial class LeaderState<TMember>
             else
                 replicationAwaiter.OnCompleted(Complete);
 
-            return new(Task);
+            return new(this, completionSource.Version);
         }
 
         private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter ReplicateSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex, CancellationToken token)
@@ -159,6 +157,15 @@ internal partial class LeaderState<TMember>
             => IDataTransferObject.Empty.TryGetMemory(out memory);
 
         internal (TMember, MemberContext?) MemberAndContext => (member, context);
+
+        void IValueTaskSource<Result<bool>>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+            => completionSource.OnCompleted(continuation, state, token, flags);
+
+        ValueTaskSourceStatus IValueTaskSource<Result<bool>>.GetStatus(short token)
+            => completionSource.GetStatus(token);
+
+        Result<bool> IValueTaskSource<Result<bool>>.GetResult(short token)
+            => completionSource.GetResult(token);
     }
 
     private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
