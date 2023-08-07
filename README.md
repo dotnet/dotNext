@@ -44,31 +44,32 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-02-2023
+Release Date: 08-07-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.13.1">DotNext 4.13.1</a>
-* Removed memory allocation inside of `Sequence.AddAll` extension method
-* Smallish performance improvements of `SingletonList` value type
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.1">DotNext.Metaprogramming 4.13.1</a>
+<a href="https://www.nuget.org/packages/dotnext/4.13.2">DotNext 4.13.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/4.13.1">DotNext.Unsafe 4.13.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.2">DotNext.Metaprogramming 4.13.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/4.13.1">DotNext.Threading 4.13.1</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.13.2">DotNext.Unsafe 4.13.2</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/4.13.1">DotNext.IO 4.13.1</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/4.13.2">DotNext.Threading 4.13.2</a>
+* Fixed scheduling of continuation if it is represented by async state machine
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.13.1">DotNext.Net.Cluster 4.13.1</a>
-* Fixed [184](https://github.com/dotnet/dotNext/issues/184)
-* Reduced memory allocation when reading single log entry from WAL
+<a href="https://www.nuget.org/packages/dotnext.io/4.13.2">DotNext.IO 4.13.2</a>
+* Fixed abstract representation of Write-Ahead Log
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.13.1">DotNext.AspNetCore.Cluster 4.13.1</a>
-* Fixed [184](https://github.com/dotnet/dotNext/issues/184)
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.13.2">DotNext.Net.Cluster 4.13.2</a>
+* Fixed [185](https://github.com/dotnet/dotNext/issues/185)
+* Reduced memory allocations by Raft leader
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.13.2">DotNext.AspNetCore.Cluster 4.13.2</a>
+* Fixed [185](https://github.com/dotnet/dotNext/issues/185)
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
