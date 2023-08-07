@@ -29,11 +29,11 @@
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.2" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Misc packages-->
-    <PackageVersion Include="BenchmarkDotNet" Version="0.13.6" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.13.7" />
     <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
     <PackageVersion Include="xunit" Version="2.5.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0"/>
