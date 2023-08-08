@@ -189,7 +189,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         finally
         {
             response.Dispose();
-            replicator.Reset();
         }
 
         // report unavailable cluster member

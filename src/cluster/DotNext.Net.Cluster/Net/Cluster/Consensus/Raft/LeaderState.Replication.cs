@@ -210,27 +210,27 @@ internal partial class LeaderState<TMember>
 
         internal static Replicator GetReplicator(Task<Result<bool>> task)
         {
-            Debug.Assert(task is { IsCompleted: true, AsyncState: Replicator });
+            Debug.Assert(task.AsyncState is Replicator);
 
             return Unsafe.As<Replicator>(task.AsyncState);
         }
+
+        private Replicator AsyncState => GetReplicator(Task);
 
         private void OnCompleted() => Complete(ref awaiter);
 
         void IThreadPoolWorkItem.Execute()
         {
-            var replicator = Unsafe.As<Replicator>(Task.AsyncState);
             var auditTrail = this.auditTrail;
             var token = this.token;
 
-            Debug.Assert(replicator is not null);
             Debug.Assert(auditTrail is not null);
 
             // help GC
             this.auditTrail = null;
             this.token = default;
 
-            var awaiter = replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
+            var awaiter = AsyncState.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
 
             if (awaiter.IsCompleted)
             {
@@ -260,6 +260,7 @@ internal partial class LeaderState<TMember>
             finally
             {
                 awaiter = default; // help GC
+                AsyncState.Reset(); // reuse replicator
             }
         }
     }
