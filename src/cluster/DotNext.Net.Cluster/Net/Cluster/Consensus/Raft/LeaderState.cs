@@ -138,11 +138,12 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
         var replicator = ReplicationWorkItem.GetReplicator(response);
+        var detector = replicator.FailureDetector;
 
         try
         {
             var result = response.GetAwaiter().GetResult();
-            replicator.FailureDetector?.ReportHeartbeat();
+            detector?.ReportHeartbeat();
             term = Math.Max(term, result.Term);
             quorum++;
 
@@ -186,7 +187,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
 
         // report unavailable cluster member
-        switch (replicator.FailureDetector)
+        switch (detector)
         {
             case { IsMonitoring: false }:
                 Logger.UnknownHealthStatus(replicator.Member.EndPoint);
