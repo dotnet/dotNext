@@ -202,7 +202,7 @@ internal partial class LeaderState<TMember>
             IAuditTrail<IRaftLogEntry> auditTrail,
             long currentIndex,
             CancellationToken token)
-            : base(replicator, TaskCreationOptions.RunContinuationsAsynchronously)
+            : base(replicator)
         {
             Debug.Assert(auditTrail is not null);
 
