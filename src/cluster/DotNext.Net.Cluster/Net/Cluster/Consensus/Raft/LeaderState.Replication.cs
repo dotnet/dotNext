@@ -260,7 +260,6 @@ internal partial class LeaderState<TMember>
             finally
             {
                 awaiter = default; // help GC
-                AsyncState.Reset(); // reuse replicator
             }
         }
     }
