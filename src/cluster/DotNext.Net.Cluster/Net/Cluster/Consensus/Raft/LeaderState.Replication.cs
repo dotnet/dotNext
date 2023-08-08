@@ -31,9 +31,6 @@ internal partial class LeaderState<TMember>
         private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter replicationAwaiter;
         private ManualResetValueTaskSourceCore<Result<bool>> completionSource;
 
-        // contextual fields
-        internal IFailureDetector? FailureDetector;
-
         internal Replicator(TMember member, ILogger logger)
         {
             Debug.Assert(member is not null);
@@ -43,6 +40,12 @@ internal partial class LeaderState<TMember>
             this.logger = logger;
             configuration = this;
             continuation = Complete;
+        }
+
+        internal IFailureDetector? FailureDetector
+        {
+            init;
+            get;
         }
 
         internal void Initialize(
@@ -316,6 +319,8 @@ internal partial class LeaderState<TMember>
         return workItem.Task;
     }
 
-    private static Replicator CreateReplicator(ILogger logger, TMember member)
-        => new(member, logger);
+    private Replicator CreateReplicator(TMember member) => new(member, Logger)
+    {
+        FailureDetector = detectorFactory is not null ? detectorFactory.Invoke(maxLease, member) : null,
+    };
 }

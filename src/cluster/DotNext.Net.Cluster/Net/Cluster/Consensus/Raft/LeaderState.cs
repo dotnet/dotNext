@@ -37,11 +37,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         context = new();
-
-        unsafe
-        {
-            replicatorFactory = DelegateHelpers.CreateDelegate<ILogger, TMember, Replicator>(&CreateReplicator, stateMachine.Logger);
-        }
+        replicatorFactory = CreateReplicator;
     }
 
     internal ILeaderStateMetrics? Metrics
@@ -142,14 +138,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
         var replicator = ReplicationWorkItem.GetReplicator(response);
-        var memberDetector = replicator.FailureDetector is null && detectorFactory is not null
-            ? replicator.FailureDetector = detectorFactory(maxLease, replicator.Member)
-            : null;
 
         try
         {
             var result = response.GetAwaiter().GetResult();
-            memberDetector?.ReportHeartbeat();
+            replicator.FailureDetector?.ReportHeartbeat();
             term = Math.Max(term, result.Term);
             quorum++;
 
@@ -193,7 +186,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
 
         // report unavailable cluster member
-        switch (memberDetector)
+        switch (replicator.FailureDetector)
         {
             case { IsMonitoring: false }:
                 Logger.UnknownHealthStatus(replicator.Member.EndPoint);
