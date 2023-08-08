@@ -101,10 +101,8 @@ internal struct SpawningAsyncTaskMethodBuilderCore<TAsyncTaskBuilder>
     {
         if (container is not TContainer result)
         {
-            result = new();
-
-            // modify builder first before storing state machine
-            container = result;
+            // modify builder first before storing state machine to avoid concurrency
+            container = result = new();
             result.StateMachine = stateMachine;
         }
 
