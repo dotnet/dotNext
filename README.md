@@ -48,6 +48,7 @@ Release Date: 08-07-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.13.2">DotNext 4.13.2</a>
 * Added implicit conversion from [BoxedValue&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.BoxedValue-1.html) to [ValueType](https://learn.microsoft.com/en-us/dotnet/api/system.valuetype)
+* [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) reuses the same .NET internals as [AsyncTaskMethodBuilder](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asynctaskmethodbuilder)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.13.2">DotNext.Metaprogramming 4.13.2</a>
