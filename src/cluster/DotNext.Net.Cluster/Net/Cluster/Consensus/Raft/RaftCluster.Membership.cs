@@ -277,7 +277,11 @@ public partial class RaftCluster<TMember>
                 var term = Term;
 
                 // do replication
-                var result = await CatchUpAsync(member, commitIndex, term, precedingIndex, precedingTerm, currentIndex, token).ConfigureAwait(false);
+                var result = await new LeaderState<TMember>.Replicator(member, Logger)
+                    .Initialize(ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, commitIndex, term, precedingIndex, precedingTerm)
+                    .ReplicateAsync(auditTrail, currentIndex, token)
+                    .ConfigureAwait(false);
+
                 if (!result.Value && result.Term > term)
                     return false;
             }
@@ -307,13 +311,6 @@ public partial class RaftCluster<TMember>
             tokenSource?.Dispose();
             membershipState.Value = false;
         }
-    }
-
-    private ValueTask<Result<bool>> CatchUpAsync(TMember member, long commitIndex, long term, long precedingIndex, long precedingTerm, long currentIndex, CancellationToken token)
-    {
-        var replicator = new LeaderState<TMember>.Replicator(member, Logger);
-        replicator.Initialize(ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, commitIndex, term, precedingIndex, precedingTerm);
-        return replicator.ReplicateAsync(auditTrail, currentIndex, token);
     }
 
     /// <summary>

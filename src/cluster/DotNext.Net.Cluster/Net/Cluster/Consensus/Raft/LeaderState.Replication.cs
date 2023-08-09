@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Diagnostics;
 using IO.Log;
 using Membership;
+using Runtime.CompilerServices;
 using Threading;
 using Timestamp = Diagnostics.Timestamp;
 using IDataTransferObject = IO.IDataTransferObject;
@@ -48,7 +49,7 @@ internal partial class LeaderState<TMember>
             get;
         }
 
-        internal void Initialize(
+        internal Replicator Initialize(
             IClusterConfiguration activeConfig,
             IClusterConfiguration? proposedConfig,
             long commitIndex,
@@ -78,6 +79,8 @@ internal partial class LeaderState<TMember>
             this.term = term;
             replicationIndex = precedingIndex;
             this.precedingTerm = precedingTerm;
+
+            return this;
         }
 
         internal void Reset()
@@ -311,8 +314,9 @@ internal partial class LeaderState<TMember>
         long currentIndex,
         CancellationToken token)
     {
-        var replicator = context.GetOrCreate(member, replicatorFactory);
-        replicator.Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm);
+        var replicator = context
+            .GetOrCreate(member, replicatorFactory)
+            .Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm);
 
         var workItem = new ReplicationWorkItem(replicator, auditTrail, currentIndex, token);
         ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
