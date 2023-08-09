@@ -37,7 +37,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
         where TStateMachine : notnull, IAsyncStateMachine
     {
         // force builder to initialize state machine box
-        var workItem = new ContinuationWorkItem();
+        var workItem = new AdvanceStateMachineWorkItem();
         builder.AwaitOnCompleted(ref workItem, ref stateMachine);
         ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: true);
     }
@@ -127,7 +127,7 @@ public struct SpawningAsyncTaskMethodBuilder
         where TStateMachine : notnull, IAsyncStateMachine
     {
         // force builder to initialize state machine box
-        var workItem = new ContinuationWorkItem();
+        var workItem = new AdvanceStateMachineWorkItem();
         builder.AwaitOnCompleted(ref workItem, ref stateMachine);
         ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: true);
     }
@@ -185,7 +185,7 @@ public struct SpawningAsyncTaskMethodBuilder
 
 // TODO: Convert to file-local type
 [StructLayout(LayoutKind.Auto)]
-internal struct ContinuationWorkItem : INotifyCompletion, IThreadPoolWorkItem
+internal struct AdvanceStateMachineWorkItem : INotifyCompletion, IThreadPoolWorkItem
 {
     private Action? moveNext;
 
