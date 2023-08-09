@@ -39,7 +39,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
         // force builder to initialize state machine box
         var workItem = new AdvanceStateMachineWorkItem();
         builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: true);
+        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
     }
 
     /// <summary>
@@ -129,7 +129,7 @@ public struct SpawningAsyncTaskMethodBuilder
         // force builder to initialize state machine box
         var workItem = new AdvanceStateMachineWorkItem();
         builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: true);
+        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
     }
 
     /// <summary>
