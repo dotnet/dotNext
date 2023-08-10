@@ -15,7 +15,7 @@ internal partial class LeaderState<TMember>
         internal ContextEntry? Next;
         private DependentHandle handle;
 
-        internal ContextEntry(TMember member, int hashCode, Func<TMember, Replicator> factory, out Replicator result)
+        internal ContextEntry(TMember member, int hashCode, Func<TMember, ReplicationWorkItem> factory, out ReplicationWorkItem result)
         {
             handle = new(member, result = factory.Invoke(member));
             this.hashCode = hashCode;
@@ -30,12 +30,12 @@ internal partial class LeaderState<TMember>
         }
 
         [DisallowNull]
-        internal Replicator? Value
+        internal ReplicationWorkItem? Value
         {
-            get => Unsafe.As<Replicator>(handle.Dependent);
+            get => Unsafe.As<ReplicationWorkItem>(handle.Dependent);
         }
 
-        internal void Reuse(TMember key, int hashCode, Func<TMember, Replicator> factory, out Replicator result)
+        internal void Reuse(TMember key, int hashCode, Func<TMember, ReplicationWorkItem> factory, out ReplicationWorkItem result)
         {
             handle.Target = key;
             handle.Dependent = result = factory.Invoke(key);
@@ -134,12 +134,12 @@ internal partial class LeaderState<TMember>
             location = entry;
         }
 
-        public Replicator GetOrCreate(TMember key, Func<TMember, Replicator> factory)
+        public ReplicationWorkItem GetOrCreate(TMember key, Func<TMember, ReplicationWorkItem> factory)
         {
             Debug.Assert(key is not null);
 
             ref var entry = ref GetEntry(key, out var hashCode);
-            Replicator? result;
+            ReplicationWorkItem? result;
 
             if (entry is null)
             {

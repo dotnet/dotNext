@@ -15,7 +15,7 @@ using IDataTransferObject = IO.IDataTransferObject;
 
 internal partial class LeaderState<TMember>
 {
-    internal sealed class Replicator : IValueTaskSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration, IResettable
+    internal class Replicator : IValueTaskSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration, IResettable
     {
         private readonly ILogger logger;
         private readonly Action continuation;
@@ -48,7 +48,7 @@ internal partial class LeaderState<TMember>
             get;
         }
 
-        internal Replicator Initialize(
+        internal void Initialize(
             IClusterConfiguration activeConfig,
             IClusterConfiguration? proposedConfig,
             long commitIndex,
@@ -78,15 +78,14 @@ internal partial class LeaderState<TMember>
             this.term = term;
             replicationIndex = precedingIndex;
             this.precedingTerm = precedingTerm;
-
-            return this;
         }
 
-        public void Reset()
+        public virtual void Reset()
         {
             replicationAwaiter = default;
             configuration = this;
             completionSource.Reset();
+            replicationAwaiter = default;
         }
 
         internal ValueTask<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
@@ -189,80 +188,70 @@ internal partial class LeaderState<TMember>
             => completionSource.GetResult(token);
     }
 
-    private sealed class ReplicationWorkItem : TaskCompletionSource<Result<bool>>, IThreadPoolWorkItem
+#if DEBUG
+    internal
+#else
+    private
+#endif
+    sealed class ReplicationWorkItem : Replicator, IThreadPoolWorkItem
     {
-        private readonly long currentIndex;
+        private readonly Action continuation;
+        private readonly Func<Result<bool>> taskWorkload;
+        private long currentIndex;
         private CancellationToken token;
         private IAuditTrail<IRaftLogEntry>? auditTrail;
         private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
+        private Task? task;
 
-        internal ReplicationWorkItem(
-            Replicator replicator,
-            IAuditTrail<IRaftLogEntry> auditTrail,
-            long currentIndex,
-            CancellationToken token)
-            : base(replicator)
+        internal ReplicationWorkItem(TMember member, ILogger logger)
+            : base(member, logger)
+        {
+            continuation = Complete;
+            taskWorkload = GetResult;
+        }
+
+        internal new Task<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
         {
             Debug.Assert(auditTrail is not null);
 
-            this.currentIndex = currentIndex;
             this.auditTrail = auditTrail;
+            this.currentIndex = currentIndex;
             this.token = token;
+
+            var result = new Task<Result<bool>>(taskWorkload, token);
+            task = result;
+
+            ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
+            return result;
         }
-
-        internal static Replicator GetReplicator(Task<Result<bool>> task)
-        {
-            Debug.Assert(task.AsyncState is Replicator);
-
-            return Unsafe.As<Replicator>(task.AsyncState);
-        }
-
-        private Replicator AsyncState => GetReplicator(Task);
-
-        private void OnCompleted() => Complete(ref awaiter);
 
         void IThreadPoolWorkItem.Execute()
         {
-            var auditTrail = this.auditTrail;
-            var token = this.token;
-
             Debug.Assert(auditTrail is not null);
 
-            // help GC
-            this.auditTrail = null;
-            this.token = default;
-
-            var awaiter = AsyncState.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
-
+            var awaiter = base.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
             if (awaiter.IsCompleted)
             {
-                Complete(ref awaiter);
+                Complete();
             }
             else
             {
                 this.awaiter = awaiter;
-                awaiter.UnsafeOnCompleted(OnCompleted);
+                awaiter.UnsafeOnCompleted(continuation);
             }
         }
 
-        private void Complete(ref ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter)
+        private void Complete() => task?.RunSynchronously();
+
+        private Result<bool> GetResult() => awaiter.GetResult();
+
+        public override void Reset()
         {
-            try
-            {
-                SetResult(awaiter.GetResult());
-            }
-            catch (OperationCanceledException e)
-            {
-                SetCanceled(e.CancellationToken);
-            }
-            catch (Exception e)
-            {
-                SetException(e);
-            }
-            finally
-            {
-                awaiter = default; // help GC
-            }
+            auditTrail = null;
+            awaiter = default;
+            token = default;
+            task = null;
+            base.Reset();
         }
     }
 
@@ -270,7 +259,7 @@ internal partial class LeaderState<TMember>
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
-    private readonly Func<TMember, Replicator> replicatorFactory;
+    private readonly Func<TMember, ReplicationWorkItem> replicatorFactory;
 
     private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
     {
@@ -298,28 +287,7 @@ internal partial class LeaderState<TMember>
         return replicationTask;
     }
 
-    private Task<Result<bool>> QueueReplication(
-        TMember member,
-        IClusterConfiguration activeConfig,
-        IClusterConfiguration? proposedConfig,
-        long commitIndex,
-        long term,
-        long precedingIndex,
-        long precedingTerm,
-        IAuditTrail<IRaftLogEntry> auditTrail,
-        long currentIndex,
-        CancellationToken token)
-    {
-        var replicator = context
-            .GetOrCreate(member, replicatorFactory)
-            .Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm);
-
-        var workItem = new ReplicationWorkItem(replicator, auditTrail, currentIndex, token);
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
-        return workItem.Task;
-    }
-
-    private Replicator CreateReplicator(TMember member) => new(member, Logger)
+    private ReplicationWorkItem CreateReplicator(TMember member) => new(member, Logger)
     {
         FailureDetector = detectorFactory?.Invoke(maxLease, member),
     };

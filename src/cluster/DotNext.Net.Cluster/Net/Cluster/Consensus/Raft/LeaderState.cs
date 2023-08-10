@@ -75,7 +75,9 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
-                responsePipe.Add(QueueReplication(member, activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm, auditTrail, currentIndex, token));
+                var replicator = context.GetOrCreate(member, replicatorFactory);
+                replicator.Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm);
+                responsePipe.Add(replicator.ReplicateAsync(auditTrail, currentIndex, token), replicator);
             }
         }
 
@@ -98,9 +100,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
         while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
         {
-            while (responsePipe.TryRead(out var response))
+            while (responsePipe.TryRead(out var response, out var replicator))
             {
-                if (!ProcessMemberResponse(startTime, response, ref term, ref quorum, ref commitQuorum, ref leaseRenewalThreshold))
+                Debug.Assert(replicator is Replicator);
+
+                if (!ProcessMemberResponse(startTime, response, Unsafe.As<Replicator>(replicator), ref term, ref quorum, ref commitQuorum, ref leaseRenewalThreshold))
                     return false;
             }
         }
@@ -135,9 +139,8 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     }
 
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
-    private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
+    private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, Replicator replicator, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
     {
-        var replicator = ReplicationWorkItem.GetReplicator(response);
         var detector = replicator.FailureDetector;
 
         try

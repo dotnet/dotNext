@@ -94,6 +94,6 @@ public sealed class LeaderStateContextTests : Test
         GC.KeepAlive(key5);
     }
 
-    private static LeaderState<DummyRaftClusterMember>.Replicator CreateReplicator(DummyRaftClusterMember member)
+    private static LeaderState<DummyRaftClusterMember>.ReplicationWorkItem CreateReplicator(DummyRaftClusterMember member)
         => new(member, NullLogger.Instance);
 }
