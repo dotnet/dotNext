@@ -9,14 +9,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Diagnostics;
 using IO.Log;
 using Membership;
-using Runtime.CompilerServices;
 using Threading;
 using Timestamp = Diagnostics.Timestamp;
 using IDataTransferObject = IO.IDataTransferObject;
 
 internal partial class LeaderState<TMember>
 {
-    internal sealed class Replicator : IValueTaskSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration
+    internal sealed class Replicator : IValueTaskSource<Result<bool>>, ILogEntryConsumer<IRaftLogEntry, Result<bool>>, IClusterConfiguration, IResettable
     {
         private readonly ILogger logger;
         private readonly Action continuation;
@@ -83,8 +82,9 @@ internal partial class LeaderState<TMember>
             return this;
         }
 
-        internal void Reset()
+        public void Reset()
         {
+            replicationAwaiter = default;
             configuration = this;
             completionSource.Reset();
         }
@@ -129,10 +129,6 @@ internal partial class LeaderState<TMember>
             catch (Exception e)
             {
                 completionSource.SetException(e);
-            }
-            finally
-            {
-                replicationAwaiter = default;
             }
         }
 
