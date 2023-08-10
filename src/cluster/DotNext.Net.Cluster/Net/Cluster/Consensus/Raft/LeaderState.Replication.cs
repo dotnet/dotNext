@@ -325,6 +325,6 @@ internal partial class LeaderState<TMember>
 
     private Replicator CreateReplicator(TMember member) => new(member, Logger)
     {
-        FailureDetector = detectorFactory is not null ? detectorFactory.Invoke(maxLease, member) : null,
+        FailureDetector = detectorFactory?.Invoke(maxLease, member),
     };
 }
