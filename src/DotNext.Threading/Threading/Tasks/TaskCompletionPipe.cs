@@ -68,7 +68,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         }
     }
 
-    private bool TryAdd(T task, out uint currentVersion)
+    private bool TryAdd(T task, out uint currentVersion, object? userData)
     {
         bool result;
         ManualResetCompletionSource? suspendedCaller;
@@ -81,7 +81,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             scheduledTasksCount++;
             currentVersion = version;
             suspendedCaller = (result = task.IsCompleted)
-                ? EnqueueCompletedTask(new(task))
+                ? EnqueueCompletedTask(new(task) { UserData = userData })
                 : null;
         }
 
@@ -97,11 +97,24 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
     public void Add(T task)
+        => Add(task, userData: null);
+
+    /// <summary>
+    /// Adds the task to this pipe.
+    /// </summary>
+    /// <remarks>
+    /// <paramref name="userData"/> can be requested later using <see cref="TryRead(out T?, out object?)"/> method.
+    /// </remarks>
+    /// <param name="task">The task to add.</param>
+    /// <param name="userData">Arbitrary object associated with the task.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
+    /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
+    public void Add(T task, object? userData)
     {
         ArgumentNullException.ThrowIfNull(task);
 
-        if (!TryAdd(task, out var expectedVersion))
-            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion).Invoke);
+        if (!TryAdd(task, out var expectedVersion, userData))
+            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion) { UserData = userData }.Invoke);
     }
 
     /// <summary>
@@ -140,7 +153,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 goto exit;
             }
 
-            if (TryDequeueCompletedTask(out task))
+            if (TryDequeueCompletedTask(out task, out _))
             {
                 result = new(true);
                 goto exit;
@@ -167,10 +180,19 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <param name="task">The completed task.</param>
     /// <returns><see langword="true"/> if a task was read; otherwise, <see langword="false"/>.</returns>
     public bool TryRead([NotNullWhen(true)] out T? task)
+        => TryRead(out task, out _);
+
+    /// <summary>
+    /// Attempts to read the completed task synchronously.
+    /// </summary>
+    /// <param name="task">The completed task.</param>
+    /// <param name="userData">Arbitrary object associated with the task when it was added to the pipe.</param>
+    /// <returns><see langword="true"/> if a task was read; otherwise, <see langword="false"/>.</returns>
+    public bool TryRead([NotNullWhen(true)] out T? task, out object? userData)
     {
         lock (SyncRoot)
         {
-            return TryDequeueCompletedTask(out task);
+            return TryDequeueCompletedTask(out task, out userData);
         }
     }
 

@@ -31,6 +31,7 @@ public class TaskCompletionPipeTests : Test
     [Fact]
     public static async Task StressTest2()
     {
+        var expectedUserData = new object();
         var pipe = new TaskCompletionPipe<Task<int>>();
         for (var i = 0; i < 100; i++)
         {
@@ -38,7 +39,8 @@ public class TaskCompletionPipeTests : Test
             {
                 await Task.Delay(Random.Shared.Next(10, 100));
                 return 42;
-            }));
+            }),
+            expectedUserData);
         }
 
         pipe.Complete();
@@ -46,8 +48,11 @@ public class TaskCompletionPipeTests : Test
         var result = 0;
         while (await pipe.WaitToReadAsync())
         {
-            if (pipe.TryRead(out var task))
+            if (pipe.TryRead(out var task, out var actualUserData))
+            {
                 result += task.Result;
+                Same(expectedUserData, actualUserData);
+            }
         }
 
         Equal(4200, result);
