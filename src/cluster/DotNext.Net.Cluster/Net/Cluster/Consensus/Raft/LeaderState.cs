@@ -77,7 +77,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 // fork replication procedure
                 var replicator = context.GetOrCreate(member, replicatorFactory);
                 replicator.Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm);
-                responsePipe.Add(replicator.ReplicateAsync(auditTrail, currentIndex, token), replicator);
+                responsePipe.Add(SpawnReplicationAsync(replicator, auditTrail, currentIndex, token), replicator);
             }
         }
 

@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Diagnostics;
 using IO.Log;
 using Membership;
+using Runtime.CompilerServices;
 using Threading;
 using Timestamp = Diagnostics.Timestamp;
 using IDataTransferObject = IO.IDataTransferObject;
@@ -188,78 +189,11 @@ internal partial class LeaderState<TMember>
             => completionSource.GetResult(token);
     }
 
-#if DEBUG
-    internal
-#else
-    private
-#endif
-    sealed class ReplicationWorkItem : Replicator, IThreadPoolWorkItem
-    {
-        private readonly Action continuation;
-        private readonly Func<Result<bool>> taskWorkload;
-        private long currentIndex;
-        private CancellationToken token;
-        private IAuditTrail<IRaftLogEntry>? auditTrail;
-        private ConfiguredValueTaskAwaitable<Result<bool>>.ConfiguredValueTaskAwaiter awaiter;
-        private Task? task;
-
-        internal ReplicationWorkItem(TMember member, ILogger logger)
-            : base(member, logger)
-        {
-            continuation = Complete;
-            taskWorkload = GetResult;
-        }
-
-        internal new Task<Result<bool>> ReplicateAsync(IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
-        {
-            Debug.Assert(auditTrail is not null);
-
-            this.auditTrail = auditTrail;
-            this.currentIndex = currentIndex;
-            this.token = token;
-
-            var result = new Task<Result<bool>>(taskWorkload, token);
-            task = result;
-
-            ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
-            return result;
-        }
-
-        void IThreadPoolWorkItem.Execute()
-        {
-            Debug.Assert(auditTrail is not null);
-
-            var awaiter = base.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false).GetAwaiter();
-            if (awaiter.IsCompleted)
-            {
-                Complete();
-            }
-            else
-            {
-                this.awaiter = awaiter;
-                awaiter.UnsafeOnCompleted(continuation);
-            }
-        }
-
-        private void Complete() => task?.RunSynchronously();
-
-        private Result<bool> GetResult() => awaiter.GetResult();
-
-        public override void Reset()
-        {
-            auditTrail = null;
-            awaiter = default;
-            token = default;
-            task = null;
-            base.Reset();
-        }
-    }
-
     private readonly AsyncAutoResetEvent replicationEvent;
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
-    private readonly Func<TMember, ReplicationWorkItem> replicatorFactory;
+    private readonly Func<TMember, Replicator> replicatorFactory;
 
     private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
     {
@@ -287,8 +221,12 @@ internal partial class LeaderState<TMember>
         return replicationTask;
     }
 
-    private ReplicationWorkItem CreateReplicator(TMember member) => new(member, Logger)
+    private Replicator CreateReplicator(TMember member) => new(member, Logger)
     {
         FailureDetector = detectorFactory?.Invoke(maxLease, member),
     };
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private static async Task<Result<bool>> SpawnReplicationAsync(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
+        => await replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false);
 }
