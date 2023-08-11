@@ -32,7 +32,7 @@ internal partial class Client : RaftClusterMember
         }
 
         ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.WriteAppendEntriesRequestAsync<EmptyLogEntry, EmptyLogEntry[]>(localMember.Id, term, Array.Empty<EmptyLogEntry>(), prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token);
+            => protocol.WriteHeartbeatRequestAsync(localMember.Id, term, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token);
 
         static ValueTask<Result<HeartbeatResult>> IClientExchange<Result<HeartbeatResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadHeartbeatResult(token);

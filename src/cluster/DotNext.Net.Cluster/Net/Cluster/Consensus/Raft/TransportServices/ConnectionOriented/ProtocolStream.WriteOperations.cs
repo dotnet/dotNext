@@ -109,12 +109,31 @@ internal partial class ProtocolStream
         }
     }
 
+    internal ValueTask WriteHeartbeatRequestAsync(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, Memory<byte> buffer, CancellationToken token)
+    {
+        Reset();
+        bufferEnd = WriteHeartbeatHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount: 0, applyConfig, config.Fingerprint, config.Length);
+
+        return config.Length > 0L
+            ? WriteConfigurationAndFlushAsync(config, buffer, token)
+            : new(FlushAsync(token));
+    }
+
+    private async ValueTask WriteConfigurationAndFlushAsync(IClusterConfiguration config, Memory<byte> buffer, CancellationToken token)
+    {
+        PrepareForWrite(bufferEnd);
+        await config.WriteToAsync(this, buffer, token).ConfigureAwait(false);
+        WriteFinalFrame();
+
+        await FlushAsync(token).ConfigureAwait(false);
+    }
+
     internal async ValueTask WriteAppendEntriesRequestAsync<TEntry, TList>(ClusterMemberId sender, long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, Memory<byte> buffer, CancellationToken token)
         where TEntry : IRaftLogEntry
         where TList : IReadOnlyList<TEntry>
     {
         Reset();
-        bufferEnd = WriteHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entries.Count, applyConfig, config.Fingerprint, config.Length);
+        bufferEnd = WriteHeartbeatHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entries.Count, applyConfig, config.Fingerprint, config.Length);
 
         // write configuration
         if (config.Length > 0L)
@@ -124,9 +143,11 @@ internal partial class ProtocolStream
             WriteFinalFrame();
         }
 
-        // write log entries
-        foreach (var entry in entries)
+        // write log entries (do not use GetEnumerator() to avoid allocations)
+        for (var i = 0; i < entries.Count; i++)
         {
+            var entry = entries[i];
+
             if (this.buffer.Length - bufferEnd < LogEntryMetadata.Size + FrameHeadersSize + 1)
                 await FlushAsync(token).ConfigureAwait(false);
 
@@ -137,23 +158,23 @@ internal partial class ProtocolStream
 
         await FlushAsync(token).ConfigureAwait(false);
 
-        static int WriteHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount, bool applyConfig, long fingerprint, long configLength)
-        {
-            var writer = new SpanWriter<byte>(buffer);
-            writer.Add((byte)MessageType.AppendEntries);
-            AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
-            writer.Add(applyConfig.ToByte());
-            writer.WriteInt64(fingerprint, true);
-            writer.WriteInt64(configLength, true);
-            return writer.WrittenCount;
-        }
-
         static int WriteLogEntryMetadata(Span<byte> buffer, TEntry entry)
         {
             var writer = new SpanWriter<byte>(buffer);
             LogEntryMetadata.Create(entry).Format(ref writer);
             return writer.WrittenCount;
         }
+    }
+
+    private static int WriteHeartbeatHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount, bool applyConfig, long fingerprint, long configLength)
+    {
+        var writer = new SpanWriter<byte>(buffer);
+        writer.Add((byte)MessageType.AppendEntries);
+        AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
+        writer.Add(applyConfig.ToByte());
+        writer.WriteInt64(fingerprint, true);
+        writer.WriteInt64(configLength, true);
+        return writer.WrittenCount;
     }
 
     internal void PrepareForWrite(int offset = 0)
