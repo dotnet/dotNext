@@ -89,7 +89,7 @@ internal partial class ProtocolStream
         PrepareForWrite();
         await DataTransferObject.WriteToAsync(new MetadataTransferObject(metadata), this, buffer, token).ConfigureAwait(false);
         WriteFinalFrame();
-        await FlushAsync(token).ConfigureAwait(false);
+        await FlushCoreAsync(token).ConfigureAwait(false);
     }
 
     internal async ValueTask WriteInstallSnapshotRequestAsync(ClusterMemberId sender, long term, long snapshotIndex, IRaftLogEntry snapshot, Memory<byte> buffer, CancellationToken token)
@@ -98,7 +98,7 @@ internal partial class ProtocolStream
         PrepareForWrite(bufferEnd = WriteHeaders(this.buffer.Span, in sender, term, snapshotIndex, snapshot));
         await snapshot.WriteToAsync(this, buffer, token).ConfigureAwait(false);
         WriteFinalFrame();
-        await FlushAsync(token).ConfigureAwait(false);
+        await FlushCoreAsync(token).ConfigureAwait(false);
 
         static int WriteHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long snapshotIndex, IRaftLogEntry snapshot)
         {
@@ -116,7 +116,7 @@ internal partial class ProtocolStream
 
         return config.Length > 0L
             ? WriteConfigurationAndFlushAsync(config, buffer, token)
-            : new(FlushAsync(token));
+            : FlushCoreAsync(token);
     }
 
     private async ValueTask WriteConfigurationAndFlushAsync(IClusterConfiguration config, Memory<byte> buffer, CancellationToken token)
@@ -125,7 +125,7 @@ internal partial class ProtocolStream
         await config.WriteToAsync(this, buffer, token).ConfigureAwait(false);
         WriteFinalFrame();
 
-        await FlushAsync(token).ConfigureAwait(false);
+        await FlushCoreAsync(token).ConfigureAwait(false);
     }
 
     internal async ValueTask WriteAppendEntriesRequestAsync<TEntry, TList>(ClusterMemberId sender, long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, Memory<byte> buffer, CancellationToken token)
@@ -149,14 +149,14 @@ internal partial class ProtocolStream
             var entry = entries[i];
 
             if (this.buffer.Length - bufferEnd < LogEntryMetadata.Size + FrameHeadersSize + 1)
-                await FlushAsync(token).ConfigureAwait(false);
+                await FlushCoreAsync(token).ConfigureAwait(false);
 
             PrepareForWrite(bufferEnd += WriteLogEntryMetadata(this.buffer.Span.Slice(bufferEnd), entry));
             await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
             WriteFinalFrame();
         }
 
-        await FlushAsync(token).ConfigureAwait(false);
+        await FlushCoreAsync(token).ConfigureAwait(false);
 
         static int WriteLogEntryMetadata(Span<byte> buffer, TEntry entry)
         {
@@ -239,14 +239,21 @@ internal partial class ProtocolStream
         Write(new ReadOnlySpan<byte>(buffer, offset, count));
     }
 
-    private async Task FlushCoreAsync(CancellationToken token)
+    private ValueTask FlushCoreAsync(CancellationToken token)
     {
-        await WriteToTransportAsync(buffer.Memory.Slice(0, bufferEnd), token).ConfigureAwait(false);
-        bufferStart = bufferEnd = 0;
+        if (bufferEnd > 0)
+        {
+            var bufferToPass = buffer.Memory.Slice(0, bufferEnd);
+            bufferStart = bufferEnd = 0;
+            return WriteToTransportAsync(bufferToPass, token);
+        }
+
+        return ValueTask.CompletedTask;
     }
 
+    // don't use this method internally to avoid allocation of Task, use FlushCoreAsync instead
     public sealed override Task FlushAsync(CancellationToken token)
-        => bufferEnd > 0 ? FlushCoreAsync(token) : Task.CompletedTask;
+        => FlushCoreAsync(token).AsTask();
 
     internal void WriteFinalFrame()
     {
