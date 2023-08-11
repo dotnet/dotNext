@@ -241,19 +241,14 @@ internal partial class ProtocolStream
 
     private ValueTask FlushCoreAsync(CancellationToken token)
     {
-        if (bufferEnd > 0)
-        {
-            var bufferToPass = buffer.Memory.Slice(0, bufferEnd);
-            bufferStart = bufferEnd = 0;
-            return WriteToTransportAsync(bufferToPass, token);
-        }
-
-        return ValueTask.CompletedTask;
+        var bufferToPass = buffer.Memory.Slice(0, bufferEnd);
+        bufferStart = bufferEnd = 0;
+        return WriteToTransportAsync(bufferToPass, token);
     }
 
     // don't use this method internally to avoid allocation of Task, use FlushCoreAsync instead
     public sealed override Task FlushAsync(CancellationToken token)
-        => FlushCoreAsync(token).AsTask();
+        => bufferEnd > 0 ? FlushCoreAsync(token).AsTask() : Task.CompletedTask;
 
     internal void WriteFinalFrame()
     {
