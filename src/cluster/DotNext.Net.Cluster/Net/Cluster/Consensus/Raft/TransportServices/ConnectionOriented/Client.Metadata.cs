@@ -15,7 +15,7 @@ internal partial class Client : RaftClusterMember
         {
         }
 
-        ValueTask IClientExchange<IReadOnlyDictionary<string, string>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask IClientExchange<IReadOnlyDictionary<string, string>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteMetadataRequestAsync(token);
 
         static ValueTask<IReadOnlyDictionary<string, string>> IClientExchange<IReadOnlyDictionary<string, string>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)

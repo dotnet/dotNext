@@ -15,7 +15,7 @@ internal partial class Client : RaftClusterMember
 
         internal SynchronizeExchange(long commitIndex) => this.commitIndex = commitIndex;
 
-        ValueTask IClientExchange<long?>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask IClientExchange<long?>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteSynchronizeRequestAsync(commitIndex, token);
 
         static ValueTask<long?> IClientExchange<long?>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)

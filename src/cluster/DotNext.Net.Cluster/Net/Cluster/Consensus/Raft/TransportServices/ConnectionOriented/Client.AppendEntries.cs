@@ -16,18 +16,15 @@ internal partial class Client : RaftClusterMember
     {
         private const string Name = "AppendEntries";
 
-        private readonly ILocalMember localMember;
         private readonly long term, prevLogIndex, prevLogTerm, commitIndex;
         private readonly TList entries;
         private readonly IClusterConfiguration config;
         private readonly bool applyConfig;
 
-        internal AppendEntriesExchange(ILocalMember localMember, long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig)
+        internal AppendEntriesExchange(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig)
         {
-            Debug.Assert(localMember is not null);
             Debug.Assert(config is not null);
 
-            this.localMember = localMember;
             this.term = term;
             this.entries = entries;
             this.prevLogIndex = prevLogIndex;
@@ -37,7 +34,7 @@ internal partial class Client : RaftClusterMember
             this.applyConfig = applyConfig;
         }
 
-        ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.WriteAppendEntriesRequestAsync<TEntry, TList>(localMember.Id, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig, buffer, token);
 
         static ValueTask<Result<HeartbeatResult>> IClientExchange<Result<HeartbeatResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
@@ -48,5 +45,5 @@ internal partial class Client : RaftClusterMember
 
     [RequiresPreviewFeatures]
     private protected sealed override Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-        => RequestAsync<Result<HeartbeatResult>, AppendEntriesExchange<TEntry, TList>>(new(localMember, term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig), token);
+        => RequestAsync<Result<HeartbeatResult>, AppendEntriesExchange<TEntry, TList>>(new(term, entries, prevLogIndex, prevLogTerm, commitIndex, config, applyConfig), token);
 }

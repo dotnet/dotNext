@@ -19,7 +19,7 @@ internal abstract partial class Client : RaftClusterMember
     [RequiresPreviewFeatures]
     private interface IClientExchange<TResponse>
     {
-        ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
+        ValueTask RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
         static abstract ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
@@ -64,7 +64,7 @@ internal abstract partial class Client : RaftClusterMember
             context ??= await ConnectAsync(requestDurationTracker.Token).ConfigureAwait(false);
 
             context.Protocol.Reset();
-            await exchange.RequestAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            await exchange.RequestAsync(localMember, context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
             context.Protocol.Reset();
             var result = await TExchange.ResponseAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
             Touch();
