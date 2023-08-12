@@ -67,6 +67,7 @@ Release Date: 08-07-2023
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.13.2">DotNext.Net.Cluster 4.13.2</a>
 * Fixed [185](https://github.com/dotnet/dotNext/issues/185)
+* Fixed [186](https://github.com/dotnet/dotNext/issues/186)
 * Reduced memory allocations by Raft leader
 * Updated dependencies
 
