@@ -291,7 +291,7 @@ internal partial class ProtocolStream
         return Read(buffer.AsSpan(offset, count));
     }
 
-    private async ValueTask StartFrameAsync(CancellationToken token)
+    private ValueTask StartFrameAsync(CancellationToken token)
     {
         BeginReadFrame();
 
@@ -300,8 +300,15 @@ internal partial class ProtocolStream
 
         // frame header is not yet in the buffer
         if (frameHeaderRemainingBytes > 0)
-            bufferEnd = await ReadFromTransportAsync(frameHeaderRemainingBytes, buffer.Memory.Slice(bufferEnd), token).ConfigureAwait(false);
+            return StartFrameAsync(frameHeaderRemainingBytes, token);
 
+        EndReadFrame();
+        return ValueTask.CompletedTask;
+    }
+
+    private async ValueTask StartFrameAsync(int frameHeaderRemainingBytes, CancellationToken token)
+    {
+        bufferEnd += await ReadFromTransportAsync(frameHeaderRemainingBytes, buffer.Memory.Slice(bufferEnd), token).ConfigureAwait(false);
         EndReadFrame();
     }
 
@@ -335,13 +342,13 @@ internal partial class ProtocolStream
     {
         while (true)
         {
-            switch ((readState, frameSize is 0))
+            switch ((readState, frameSize))
             {
-                case (ReadState.FrameStarted, true):
+                case (ReadState.FrameStarted, 0):
                 case (ReadState.FrameNotStarted, _):
                     await StartFrameAsync(token).ConfigureAwait(false);
                     continue; // skip empty frames
-                case (ReadState.EndOfStreamReached, true):
+                case (ReadState.EndOfStreamReached, 0):
                     return;
                 default:
                     if (bufferStart == bufferEnd)
