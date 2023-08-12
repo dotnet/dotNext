@@ -273,7 +273,8 @@ internal partial class ProtocolStream
 
     public sealed override void Flush()
     {
-        WriteToTransport(buffer.Span.Slice(0, bufferEnd));
+        var bufferToPass = buffer.Span.Slice(0, bufferEnd);
         bufferStart = bufferEnd = 0;
+        WriteToTransport(bufferToPass);
     }
 }
