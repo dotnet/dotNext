@@ -95,7 +95,7 @@ internal partial class ProtocolStream
     internal async ValueTask WriteInstallSnapshotRequestAsync(ClusterMemberId sender, long term, long snapshotIndex, IRaftLogEntry snapshot, Memory<byte> buffer, CancellationToken token)
     {
         Reset();
-        PrepareForWrite(bufferEnd = WriteHeaders(this.buffer.Span, in sender, term, snapshotIndex, snapshot));
+        PrepareForWrite(WriteHeaders(this.buffer.Span, in sender, term, snapshotIndex, snapshot));
         await snapshot.WriteToAsync(this, buffer, token).ConfigureAwait(false);
         WriteFinalFrame();
         await FlushCoreAsync(token).ConfigureAwait(false);
@@ -151,7 +151,7 @@ internal partial class ProtocolStream
             if (this.buffer.Length - bufferEnd < LogEntryMetadata.Size + FrameHeadersSize + 1)
                 await FlushCoreAsync(token).ConfigureAwait(false);
 
-            PrepareForWrite(bufferEnd += WriteLogEntryMetadata(this.buffer.Span.Slice(bufferEnd), entry));
+            PrepareForWrite(bufferEnd + WriteLogEntryMetadata(this.buffer.Span.Slice(bufferEnd), entry));
             await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
             WriteFinalFrame();
         }
@@ -177,7 +177,12 @@ internal partial class ProtocolStream
         return writer.WrittenCount;
     }
 
-    internal void PrepareForWrite(int offset = 0)
+#if DEBUG
+    internal
+#else
+    private
+#endif
+    void PrepareForWrite(int offset = 0)
         => bufferEnd = (bufferStart = offset) + FrameHeadersSize;
 
     private void WriteFrameHeaders(int chunkSize, bool finalBlock)
