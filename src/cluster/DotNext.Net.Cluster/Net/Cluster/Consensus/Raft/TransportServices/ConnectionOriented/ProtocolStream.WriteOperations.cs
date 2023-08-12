@@ -1,3 +1,6 @@
+using System.Buffers.Binary;
+using System.Diagnostics;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Buffers;
@@ -185,11 +188,15 @@ internal partial class ProtocolStream
     void PrepareForWrite(int offset = 0)
         => bufferEnd = (bufferStart = offset) + FrameHeadersSize;
 
+    // highest bit in a frame header indicates final block
     private void WriteFrameHeaders(int chunkSize, bool finalBlock)
     {
-        var writer = new SpanWriter<byte>(buffer.Span.Slice(bufferStart));
-        writer.WriteInt32(chunkSize, true);
-        writer.Add(finalBlock.ToByte());
+        Debug.Assert(chunkSize >= 0);
+
+        if (finalBlock)
+            chunkSize |= int.MinValue;
+
+        BinaryPrimitives.WriteInt32LittleEndian(buffer.Span.Slice(bufferStart), chunkSize);
     }
 
     private int WriteToBuffer(ReadOnlySpan<byte> input)
@@ -255,7 +262,7 @@ internal partial class ProtocolStream
     public sealed override Task FlushAsync(CancellationToken token)
         => bufferEnd > 0 ? FlushCoreAsync(token).AsTask() : Task.CompletedTask;
 
-    internal void WriteFinalFrame()
+    private void WriteFinalFrame()
     {
         WriteFrameHeaders(bufferEnd - bufferStart - FrameHeadersSize, finalBlock: true);
         bufferStart = bufferEnd;

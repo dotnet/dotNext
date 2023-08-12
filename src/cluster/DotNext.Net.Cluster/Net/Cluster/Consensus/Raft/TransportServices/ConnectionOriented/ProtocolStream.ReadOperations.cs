@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -217,14 +218,15 @@ internal partial class ProtocolStream
 
     private void EndReadFrame()
     {
-        (frameSize, var finalBlock) = ParseFrameHeaders(buffer.Span);
+        (frameSize, var finalBlock) = ReadFrameHeaders(buffer.Span);
         readState = finalBlock ? ReadState.EndOfStreamReached : ReadState.FrameStarted;
         bufferStart += FrameHeadersSize;
 
-        static (int, bool) ParseFrameHeaders(ReadOnlySpan<byte> input)
+        // see WriteFrameHeaders
+        static (int, bool) ReadFrameHeaders(ReadOnlySpan<byte> input)
         {
-            var reader = new SpanReader<byte>(input);
-            return (reader.ReadInt32(true), ValueTypeExtensions.ToBoolean(reader.Read()));
+            var chunkSize = BinaryPrimitives.ReadInt32LittleEndian(input);
+            return (chunkSize & int.MaxValue, chunkSize < 0);
         }
     }
 
@@ -314,24 +316,26 @@ internal partial class ProtocolStream
 
     public sealed override async ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token)
     {
-        check_state:
-        switch ((readState, frameSize is 0))
+        while (true)
         {
-            case (ReadState.FrameStarted, true):
-            case (ReadState.FrameNotStarted, _):
-                await StartFrameAsync(token).ConfigureAwait(false);
-                goto check_state; // skip empty frames
-            case (ReadState.EndOfStreamReached, true):
-                return 0;
-            default:
-                if (bufferStart == bufferEnd)
-                {
-                    bufferStart = 0;
-                    bufferEnd = await ReadFromTransportAsync(buffer.Memory, token).ConfigureAwait(false);
-                }
+            switch ((readState, frameSize))
+            {
+                case (ReadState.FrameStarted, 0):
+                case (ReadState.FrameNotStarted, _):
+                    await StartFrameAsync(token).ConfigureAwait(false);
+                    continue; // skip empty frames
+                case (ReadState.EndOfStreamReached, 0):
+                    return 0;
+                default:
+                    if (bufferStart == bufferEnd)
+                    {
+                        bufferStart = 0;
+                        bufferEnd = await ReadFromTransportAsync(buffer.Memory, token).ConfigureAwait(false);
+                    }
 
-                // we can copy no more than remaining frame
-                return ReadFrame(output.Span);
+                    // we can copy no more than remaining frame
+                    return ReadFrame(output.Span);
+            }
         }
     }
 

@@ -10,7 +10,7 @@ using Buffers;
 /// </summary>
 internal abstract partial class ProtocolStream : Stream, IResettable
 {
-    private const int FrameHeadersSize = sizeof(int) + sizeof(byte);
+    private const int FrameHeadersSize = sizeof(int);
 
     private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long) + sizeof(long);
 
