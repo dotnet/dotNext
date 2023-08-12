@@ -151,7 +151,10 @@ internal partial class ProtocolStream
         {
             var entry = entries[i];
 
-            if (this.buffer.Length - bufferEnd < LogEntryMetadata.Size + FrameHeadersSize + 1)
+            // remaining buffer should have free space enough for placing a frame with
+            // log entry metadata and at least 1 byte for the payload
+            const int minimumBufferSizeForLogEntry = LogEntryMetadata.Size + FrameHeadersSize + 1;
+            if (this.buffer.Length - bufferEnd < minimumBufferSizeForLogEntry)
                 await FlushCoreAsync(token).ConfigureAwait(false);
 
             PrepareForWrite(bufferEnd + WriteLogEntryMetadata(this.buffer.Span.Slice(bufferEnd), entry));
