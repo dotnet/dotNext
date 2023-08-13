@@ -181,6 +181,8 @@ public sealed class TypeMapTests : Test
     {
         yield return new object[] { new TypeMap() };
         yield return new object[] { new TypeMap(1) };
+        yield return new object[] { new ConcurrentTypeMap() };
+        yield return new object[] { new ConcurrentTypeMap(1) };
     }
 
     [Theory]
