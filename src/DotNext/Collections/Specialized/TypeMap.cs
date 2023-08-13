@@ -276,7 +276,7 @@ public partial class TypeMap : ITypeMap
             throw new GenericArgumentException<T>(ExceptionMessages.KeyAlreadyExists);
     }
 
-    private bool TryAdd<T>(int index, T value)
+    private bool TryAdd(int index, object value)
     {
         EnsureCapacity(index);
         ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
@@ -291,7 +291,7 @@ public partial class TypeMap : ITypeMap
     public void Set<T>([DisallowNull] T value)
         => Set(ITypeMap.GetIndex<T>(), value);
 
-    private void Set<T>(int index, T value)
+    private void Set(int index, object value)
     {
         EnsureCapacity(index);
         Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index) = value;
@@ -324,7 +324,7 @@ public partial class TypeMap : ITypeMap
         return Contains(entries, ITypeMap.GetIndex<T>());
 
         static bool Contains(object?[] entries, int index)
-            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index) is not null;
+            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index) is T;
     }
 
     private bool Remove(int index)
