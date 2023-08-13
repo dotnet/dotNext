@@ -605,7 +605,7 @@ public class ConcurrentTypeMap : ITypeMap
     public bool AddOrUpdate<T>([DisallowNull] T value)
         => AddOrUpdate(ITypeMap.GetIndex<T>(), value);
 
-    private bool Set<T>(int index, object newValue, [MaybeNullWhen(false)] out T oldValue)
+    private bool Set<T>(int index, object newValue, [NotNullWhen(true)] out T? oldValue)
     {
         for (Entry[] entries; ;)
         {
@@ -630,7 +630,7 @@ public class ConcurrentTypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
-    public bool Set<T>([DisallowNull] T newValue, [MaybeNullWhen(false)] out T oldValue)
+    public bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue)
         => Set(ITypeMap.GetIndex<T>(), newValue, out oldValue);
 
     private bool Remove(int index)
@@ -652,7 +652,7 @@ public class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="ITypeMap.Remove{T}()"/>
     public bool Remove<T>() => Remove(ITypeMap.GetIndex<T>());
 
-    private bool Remove<T>(int index, [MaybeNullWhen(false)] out T value)
+    private bool Remove<T>(int index, [NotNullWhen(true)] out T? value)
     {
         for (Entry[] entries; ;)
         {
@@ -677,7 +677,7 @@ public class ConcurrentTypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="ITypeMap.Remove{T}(out T)"/>
-    public bool Remove<T>([MaybeNullWhen(false)] out T value)
+    public bool Remove<T>([NotNullWhen(true)] out T? value)
         => Remove(ITypeMap.GetIndex<T>(), out value);
 
     /// <inheritdoc cref="ITypeMap.Clear()"/>
@@ -689,7 +689,7 @@ public class ConcurrentTypeMap : ITypeMap
         }
     }
 
-    private bool TryGetValue<T>(int index, [MaybeNullWhen(false)] out T value)
+    private bool TryGetValue<T>(int index, [NotNullWhen(true)] out T? value)
     {
         for (Entry[] entries; ;)
         {
@@ -714,6 +714,6 @@ public class ConcurrentTypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="IReadOnlyTypeMap.TryGetValue{T}(out T)"/>
-    public bool TryGetValue<T>([MaybeNullWhen(false)] out T value)
+    public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
         => TryGetValue(ITypeMap.GetIndex<T>(), out value);
 }

@@ -43,5 +43,5 @@ public interface IReadOnlyTypeMap
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value stored in the set.</param>
     /// <returns><see langword="true"/> if the value of type <typeparamref name="T"/> exists in this set; otherwise, <see langword="false"/>.</returns>
-    bool TryGetValue<T>([MaybeNullWhen(false)] out T value);
+    bool TryGetValue<T>([NotNullWhen(true)] out T? value);
 }

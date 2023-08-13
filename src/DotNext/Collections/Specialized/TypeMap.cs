@@ -298,10 +298,10 @@ public partial class TypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
-    public bool Set<T>([DisallowNull] T newValue, [MaybeNullWhen(false)] out T oldValue)
+    public bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue)
         => Set(ITypeMap.GetIndex<T>(), newValue, out oldValue);
 
-    private bool Set<T>(int index, T newValue, [MaybeNullWhen(false)] out T oldValue)
+    private bool Set<T>(int index, T newValue, [NotNullWhen(true)] out T? oldValue)
     {
         EnsureCapacity(index);
         ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
@@ -348,7 +348,7 @@ public partial class TypeMap : ITypeMap
     public bool Remove<T>()
         => Remove(ITypeMap.GetIndex<T>());
 
-    private bool Remove<T>(int index, [MaybeNullWhen(false)] out T value)
+    private bool Remove<T>(int index, [NotNullWhen(true)] out T? value)
     {
         if ((uint)index < (uint)entries.Length)
         {
@@ -367,10 +367,10 @@ public partial class TypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="ITypeMap.Remove{T}(out T)"/>
-    public bool Remove<T>([MaybeNullWhen(false)] out T value)
+    public bool Remove<T>([NotNullWhen(true)] out T? value)
         => Remove(ITypeMap.GetIndex<T>(), out value);
 
-    private bool TryGetValue<T>(int index, [MaybeNullWhen(false)] out T value)
+    private bool TryGetValue<T>(int index, [NotNullWhen(true)] out T? value)
     {
         if ((uint)index < (uint)entries.Length)
         {
@@ -387,7 +387,7 @@ public partial class TypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="IReadOnlyTypeMap.TryGetValue{T}(out T)"/>
-    public bool TryGetValue<T>([MaybeNullWhen(false)] out T value)
+    public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
         => TryGetValue(ITypeMap.GetIndex<T>(), out value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

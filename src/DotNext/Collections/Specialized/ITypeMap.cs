@@ -133,7 +133,7 @@ public interface ITypeMap : IReadOnlyTypeMap
     /// <param name="newValue">The value to set.</param>
     /// <param name="oldValue">The replaced value.</param>
     /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
-    bool Set<T>([DisallowNull] T newValue, [MaybeNullWhen(false)] out T oldValue);
+    bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue);
 
     /// <summary>
     /// Attempts to remove the value of type <typeparamref name="T"/> from this set.
@@ -148,7 +148,7 @@ public interface ITypeMap : IReadOnlyTypeMap
     /// <typeparam name="T">The type which value should be removed.</typeparam>
     /// <param name="value">Removed value.</param>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    bool Remove<T>([MaybeNullWhen(false)] out T value);
+    bool Remove<T>([NotNullWhen(true)] out T? value);
 
     /// <summary>
     /// Removes all elements from this set.
