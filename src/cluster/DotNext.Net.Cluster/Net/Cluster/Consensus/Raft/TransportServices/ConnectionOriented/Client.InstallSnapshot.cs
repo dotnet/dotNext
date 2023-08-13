@@ -1,14 +1,14 @@
-using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using IO;
+
 internal partial class Client : RaftClusterMember
 {
-    [StructLayout(LayoutKind.Auto)]
     [RequiresPreviewFeatures]
-    private readonly struct InstallSnapshotExchange : IClientExchange<Result<HeartbeatResult>>
+    private sealed class InstallSnapshotExchange : IClientExchange<Result<HeartbeatResult>>
     {
         private const string Name = "InstallSnapshot";
 
@@ -25,8 +25,21 @@ internal partial class Client : RaftClusterMember
             this.snapshotIndex = snapshotIndex;
         }
 
-        ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.WriteInstallSnapshotRequestAsync(localMember.Id, term, snapshotIndex, snapshot, buffer, token);
+        async ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        {
+            protocol.Advance(WriteHeaders(protocol, in localMember.Id));
+            protocol.StartFrameWrite();
+            await snapshot.WriteToAsync(protocol, buffer, token).ConfigureAwait(false);
+            protocol.WriteFinalFrame();
+            await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
+        }
+
+        private int WriteHeaders(ProtocolStream protocol, in ClusterMemberId sender)
+        {
+            var writer = protocol.BeginRequestMessage(MessageType.InstallSnapshot);
+            SnapshotMessage.Write(ref writer, in sender, term, snapshotIndex, snapshot);
+            return writer.WrittenCount;
+        }
 
         static ValueTask<Result<HeartbeatResult>> IClientExchange<Result<HeartbeatResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadHeartbeatResult(token);

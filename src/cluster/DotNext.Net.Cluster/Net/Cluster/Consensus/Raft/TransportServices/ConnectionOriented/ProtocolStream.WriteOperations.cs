@@ -5,191 +5,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 using Buffers;
 using IO;
-using IClusterConfiguration = Membership.IClusterConfiguration;
 
 internal partial class ProtocolStream
 {
-    internal ValueTask WriteVoteRequestAsync(in ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    internal SpanWriter<byte> BeginRequestMessage(MessageType type)
     {
         Reset();
+
         var writer = new SpanWriter<byte>(buffer.Span);
-        writer.Write((byte)MessageType.Vote);
-        VoteMessage.Write(ref writer, in sender, term, lastLogIndex, lastLogTerm);
-        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
+        writer.Write((byte)type);
+        return writer;
     }
 
-    internal ValueTask WritePreVoteRequestAsync(in ClusterMemberId sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+    internal void StartFrameWrite()
     {
-        Reset();
-        var writer = new SpanWriter<byte>(buffer.Span);
-        writer.Write((byte)MessageType.PreVote);
-        PreVoteMessage.Write(ref writer, in sender, term, lastLogIndex, lastLogTerm);
-        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
+        bufferStart = bufferEnd;
+        bufferEnd = bufferStart + FrameHeadersSize;
     }
 
-    internal ValueTask WriteResponseAsync(in Result<bool> result, CancellationToken token)
+    internal void WriteFinalFrame()
     {
-        Reset();
-        return WriteToTransportAsync(buffer.Memory.Slice(0, Result.Write(buffer.Span, in result)), token);
+        WriteFrameHeaders(bufferEnd - bufferStart - FrameHeadersSize, finalBlock: true);
+        bufferStart = bufferEnd;
     }
 
-    internal ValueTask WriteResponseAsync(in Result<HeartbeatResult> result, CancellationToken token)
-    {
-        Reset();
-        return WriteToTransportAsync(buffer.Memory.Slice(0, Result.WriteHeartbeatResult(buffer.Span, in result)), token);
-    }
+    internal void Advance(int count)
+        => bufferEnd += count;
 
-    internal ValueTask WriteResponseAsync(in Result<PreVoteResult> result, CancellationToken token)
-    {
-        Reset();
-        return WriteToTransportAsync(buffer.Memory.Slice(0, Result.WritePreVoteResult(buffer.Span, in result)), token);
-    }
-
-    internal ValueTask WriteResponseAsync(bool value, CancellationToken token)
-    {
-        Reset();
-        var buffer = this.buffer.Memory.Slice(0, 1);
-        buffer.Span[0] = value.ToByte();
-        return WriteToTransportAsync(buffer, token);
-    }
-
-    internal ValueTask WriteResponseAsync(in long? value, CancellationToken token)
-    {
-        Reset();
-        var writer = new SpanWriter<byte>(buffer.Span);
-        writer.Add(value.HasValue.ToByte());
-        writer.WriteInt64(value.GetValueOrDefault(), true);
-        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
-    }
-
-    internal ValueTask WriteResignRequestAsync(CancellationToken token)
-    {
-        Reset();
-        var buffer = this.buffer.Memory.Slice(0, 1);
-        buffer.Span[0] = (byte)MessageType.Resign;
-        return WriteToTransportAsync(buffer, token);
-    }
-
-    internal ValueTask WriteSynchronizeRequestAsync(long commitIndex, CancellationToken token)
-    {
-        Reset();
-        var writer = new SpanWriter<byte>(buffer.Span);
-        writer.Write((byte)MessageType.Synchronize);
-        writer.WriteInt64(commitIndex, true);
-        return WriteToTransportAsync(buffer.Memory.Slice(0, writer.WrittenCount), token);
-    }
-
-    internal ValueTask WriteMetadataRequestAsync(CancellationToken token)
-    {
-        Reset();
-        var buffer = this.buffer.Memory.Slice(0, 1);
-        buffer.Span[0] = (byte)MessageType.Metadata;
-        return WriteToTransportAsync(buffer, token);
-    }
-
-    internal async ValueTask WriteMetadataResponseAsync(IReadOnlyDictionary<string, string> metadata, Memory<byte> buffer, CancellationToken token)
-    {
-        PrepareForWrite();
-        await DataTransferObject.WriteToAsync(new MetadataTransferObject(metadata), this, buffer, token).ConfigureAwait(false);
-        WriteFinalFrame();
-        await FlushCoreAsync(token).ConfigureAwait(false);
-    }
-
-    internal async ValueTask WriteInstallSnapshotRequestAsync(ClusterMemberId sender, long term, long snapshotIndex, IRaftLogEntry snapshot, Memory<byte> buffer, CancellationToken token)
-    {
-        Reset();
-        PrepareForWrite(WriteHeaders(this.buffer.Span, in sender, term, snapshotIndex, snapshot));
-        await snapshot.WriteToAsync(this, buffer, token).ConfigureAwait(false);
-        WriteFinalFrame();
-        await FlushCoreAsync(token).ConfigureAwait(false);
-
-        static int WriteHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long snapshotIndex, IRaftLogEntry snapshot)
-        {
-            var writer = new SpanWriter<byte>(buffer);
-            writer.Add((byte)MessageType.InstallSnapshot);
-            SnapshotMessage.Write(ref writer, in sender, term, snapshotIndex, snapshot);
-            return writer.WrittenCount;
-        }
-    }
-
-    internal ValueTask WriteHeartbeatRequestAsync(ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, Memory<byte> buffer, CancellationToken token)
-    {
-        Reset();
-        bufferEnd = WriteHeartbeatHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount: 0, applyConfig, config.Fingerprint, config.Length);
-
-        return config.Length > 0L
-            ? WriteConfigurationAndFlushAsync(config, buffer, token)
-            : FlushCoreAsync(token);
-    }
-
-    private async ValueTask WriteConfigurationAndFlushAsync(IClusterConfiguration config, Memory<byte> buffer, CancellationToken token)
-    {
-        PrepareForWrite(bufferEnd);
-        await config.WriteToAsync(this, buffer, token).ConfigureAwait(false);
-        WriteFinalFrame();
-
-        await FlushCoreAsync(token).ConfigureAwait(false);
-    }
-
-    internal async ValueTask WriteAppendEntriesRequestAsync<TEntry, TList>(ClusterMemberId sender, long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, Memory<byte> buffer, CancellationToken token)
-        where TEntry : IRaftLogEntry
-        where TList : IReadOnlyList<TEntry>
-    {
-        Reset();
-        bufferEnd = WriteHeartbeatHeaders(this.buffer.Span, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entries.Count, applyConfig, config.Fingerprint, config.Length);
-
-        // write configuration
-        if (config.Length > 0L)
-        {
-            PrepareForWrite(bufferEnd);
-            await config.WriteToAsync(this, buffer, token).ConfigureAwait(false);
-            WriteFinalFrame();
-        }
-
-        // write log entries (do not use GetEnumerator() to avoid allocations)
-        for (var i = 0; i < entries.Count; i++)
-        {
-            var entry = entries[i];
-
-            // remaining buffer should have free space enough for placing a frame with
-            // log entry metadata and at least 1 byte for the payload
-            const int minimumBufferSizeForLogEntry = LogEntryMetadata.Size + FrameHeadersSize + 1;
-            if (this.buffer.Length - bufferEnd < minimumBufferSizeForLogEntry)
-                await FlushCoreAsync(token).ConfigureAwait(false);
-
-            PrepareForWrite(bufferEnd + WriteLogEntryMetadata(this.buffer.Span.Slice(bufferEnd), entry));
-            await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
-            WriteFinalFrame();
-        }
-
-        await FlushCoreAsync(token).ConfigureAwait(false);
-
-        static int WriteLogEntryMetadata(Span<byte> buffer, TEntry entry)
-        {
-            var writer = new SpanWriter<byte>(buffer);
-            LogEntryMetadata.Create(entry).Format(ref writer);
-            return writer.WrittenCount;
-        }
-    }
-
-    private static int WriteHeartbeatHeaders(Span<byte> buffer, in ClusterMemberId sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount, bool applyConfig, long fingerprint, long configLength)
-    {
-        var writer = new SpanWriter<byte>(buffer);
-        writer.Add((byte)MessageType.AppendEntries);
-        AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
-        writer.Add(applyConfig.ToByte());
-        writer.WriteInt64(fingerprint, true);
-        writer.WriteInt64(configLength, true);
-        return writer.WrittenCount;
-    }
-
-#if DEBUG
-    internal
-#else
-    private
-#endif
-    void PrepareForWrite(int offset = 0)
-        => bufferEnd = (bufferStart = offset) + FrameHeadersSize;
+    internal bool CanWriteFrameSynchronously(int frameSize)
+        => buffer.Length - bufferEnd >= frameSize + FrameHeadersSize;
 
     // highest bit in a frame header indicates final block
     private void WriteFrameHeaders(int chunkSize, bool finalBlock)
@@ -254,22 +98,16 @@ internal partial class ProtocolStream
         Write(new ReadOnlySpan<byte>(buffer, offset, count));
     }
 
-    private ValueTask FlushCoreAsync(CancellationToken token)
+    internal ValueTask WriteToTransportAsync(CancellationToken token)
     {
         var bufferToPass = buffer.Memory.Slice(0, bufferEnd);
         bufferStart = bufferEnd = 0;
         return WriteToTransportAsync(bufferToPass, token);
     }
 
-    // don't use this method internally to avoid allocation of Task, use FlushCoreAsync instead
+    // don't use this method internally to avoid allocation of Task, use WriteToTransportAsync instead
     public sealed override Task FlushAsync(CancellationToken token)
-        => bufferEnd > 0 ? FlushCoreAsync(token).AsTask() : Task.CompletedTask;
-
-    private void WriteFinalFrame()
-    {
-        WriteFrameHeaders(bufferEnd - bufferStart - FrameHeadersSize, finalBlock: true);
-        bufferStart = bufferEnd;
-    }
+        => bufferEnd > 0 ? WriteToTransportAsync(token).AsTask() : Task.CompletedTask;
 
     public sealed override void Flush()
     {

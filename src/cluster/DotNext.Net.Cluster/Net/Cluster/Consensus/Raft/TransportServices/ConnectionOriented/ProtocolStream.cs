@@ -108,7 +108,9 @@ internal abstract partial class ProtocolStream : Stream, IResettable
         return result;
     }
 
-    private int BufferLength => buffer.Length;
+    internal Memory<byte> RemainingBuffer => buffer.Memory.Slice(bufferEnd);
+
+    internal Span<byte> RemainingBufferSpan => buffer.Span.Slice(bufferEnd);
 
     public void Reset()
     {

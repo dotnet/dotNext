@@ -1,15 +1,11 @@
-using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 internal partial class Client : RaftClusterMember
 {
-    // TODO: Change to required init properties in C# 11
-    [StructLayout(LayoutKind.Auto)]
     [RequiresPreviewFeatures]
-    private readonly struct VoteExchange : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
+    private sealed class VoteExchange : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
     {
         private readonly long term, lastLogIndex, lastLogTerm;
 
@@ -21,7 +17,12 @@ internal partial class Client : RaftClusterMember
         }
 
         ValueTask IClientExchange<Result<bool>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.WriteVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token);
+        {
+            var writer = protocol.BeginRequestMessage(MessageType.Vote);
+            VoteMessage.Write(ref writer, in localMember.Id, term, lastLogIndex, lastLogTerm);
+            protocol.Advance(writer.WrittenCount);
+            return protocol.WriteToTransportAsync(token);
+        }
 
         static ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadResultAsync(token);
@@ -29,7 +30,12 @@ internal partial class Client : RaftClusterMember
         static string IClientExchange<Result<bool>>.Name => "Vote";
 
         ValueTask IClientExchange<Result<PreVoteResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.WritePreVoteRequestAsync(in localMember.Id, term, lastLogIndex, lastLogTerm, token);
+        {
+            var writer = protocol.BeginRequestMessage(MessageType.PreVote);
+            PreVoteMessage.Write(ref writer, in localMember.Id, term, lastLogIndex, lastLogTerm);
+            protocol.Advance(writer.WrittenCount);
+            return protocol.WriteToTransportAsync(token);
+        }
 
         static ValueTask<Result<PreVoteResult>> IClientExchange<Result<PreVoteResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadPreVoteResultAsync(token);
