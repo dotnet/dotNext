@@ -85,7 +85,7 @@ internal abstract partial class Server : Disposable, IServer
     private async ValueTask SynchronizeAsync(ProtocolStream protocol, CancellationToken token)
     {
         await protocol.ReadAsync(sizeof(long), token).ConfigureAwait(false);
-        var response = await localMember.SynchronizeAsync(BinaryPrimitives.ReadInt32LittleEndian(protocol.WrittenBufferSpan), token).ConfigureAwait(false);
+        var response = await localMember.SynchronizeAsync(BinaryPrimitives.ReadInt64LittleEndian(protocol.WrittenBufferSpan), token).ConfigureAwait(false);
         protocol.Reset();
         await protocol.WriteNullableInt64Async(in response, token).ConfigureAwait(false);
     }
