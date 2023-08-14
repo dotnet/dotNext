@@ -90,7 +90,6 @@ internal abstract partial class Server : Disposable, IServer
         await protocol.WriteNullableInt64Async(in response, token).ConfigureAwait(false);
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask GetMetadataAsync(ProtocolStream protocol, CancellationToken token)
     {
         using var buffer = BufferAllocator(length: 512);
@@ -98,7 +97,6 @@ internal abstract partial class Server : Disposable, IServer
         await protocol.WriteDictionaryAsync(localMember.Metadata, buffer.Memory, token).ConfigureAwait(false);
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask ResignAsync(ProtocolStream protocol, CancellationToken token)
     {
         var response = await localMember.ResignAsync(token).ConfigureAwait(false);
