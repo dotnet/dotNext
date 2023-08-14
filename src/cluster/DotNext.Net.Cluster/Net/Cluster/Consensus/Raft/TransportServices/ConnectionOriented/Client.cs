@@ -106,9 +106,9 @@ internal abstract partial class Client : RaftClusterMember
 
             requestDurationTracker.Dispose();
 
-            if (exchange is IResettable resettable)
+            if (exchange is IResettable)
             {
-                resettable.Reset();
+                ((IResettable)exchange).Reset();
                 exchangeCache.TryAdd(exchange);
             }
         }
