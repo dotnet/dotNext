@@ -51,14 +51,22 @@ internal partial class Server
             if (result = entriesCount > 0)
             {
                 // read metadata
-                metadata = await ReadLogEntryMetadataAsync(stream, token).ConfigureAwait(false);
+                await stream.ReadAsync(LogEntryMetadata.Size, token).ConfigureAwait(false);
+                metadata = ParseLogEntryMetadata(stream.WrittenBufferSpan);
                 stream.AdvanceReadCursor(LogEntryMetadata.Size);
+
                 consumed = false;
                 stream.ResetReadState();
                 entriesCount--;
             }
 
             return result;
+
+            static LogEntryMetadata ParseLogEntryMetadata(ReadOnlySpan<byte> responseData)
+            {
+                var reader = new SpanReader<byte>(responseData);
+                return LogEntryMetadata.Parse(ref reader);
+            }
         }
 
         long ILogEntryProducer<ReceivedLogEntries>.RemainingCount => entriesCount;
@@ -106,17 +114,5 @@ internal partial class Server
         }
 
         ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
-
-        private static async ValueTask<LogEntryMetadata> ReadLogEntryMetadataAsync(ProtocolStream protocol, CancellationToken token)
-        {
-            await protocol.ReadAsync(LogEntryMetadata.Size, token).ConfigureAwait(false);
-            return Read(protocol.WrittenBufferSpan);
-
-            static LogEntryMetadata Read(ReadOnlySpan<byte> responseData)
-            {
-                var reader = new SpanReader<byte>(responseData);
-                return LogEntryMetadata.Parse(ref reader);
-            }
-        }
     }
 }
