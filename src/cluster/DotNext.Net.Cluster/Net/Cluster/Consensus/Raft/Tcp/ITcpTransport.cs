@@ -9,7 +9,7 @@ internal interface ITcpTransport : INetworkTransport
     private protected const int MinTransmissionBlockSize = 300;
     private protected const int DefaultTtl = 64;
 
-    internal static int ValidateTranmissionBlockSize(int value)
+    internal static int ValidateTransmissionBlockSize(int value)
         => value >= MinTransmissionBlockSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
 
     int TransmissionBlockSize { get; init; }

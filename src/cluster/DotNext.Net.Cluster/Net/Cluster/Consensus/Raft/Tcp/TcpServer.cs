@@ -62,7 +62,7 @@ internal sealed class TcpServer : Server, ITcpTransport
     public int TransmissionBlockSize
     {
         get => transmissionBlockSize;
-        init => transmissionBlockSize = ITcpTransport.ValidateTranmissionBlockSize(value);
+        init => transmissionBlockSize = ITcpTransport.ValidateTransmissionBlockSize(value);
     }
 
     public byte Ttl
