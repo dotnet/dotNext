@@ -19,7 +19,6 @@ internal sealed class TcpServer : Server, ITcpTransport
     private readonly CancellationToken lifecycleToken;
     private readonly TimeSpan receiveTimeout;
     private readonly LingerOption linger;
-    private readonly MemoryAllocator<byte> allocator;
     private readonly int gracefulShutdownTimeout;
     private readonly TaskCompletionSource noPendingConnectionsEvent;
 
@@ -35,7 +34,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         transmissionState = new();
         lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
         linger = ITcpTransport.CreateDefaultLingerOption();
-        this.allocator = allocator;
+        BufferAllocator = allocator;
         gracefulShutdownTimeout = 1000;
         ttl = ITcpTransport.DefaultTtl;
         transmissionBlockSize = ITcpTransport.MinTransmissionBlockSize;
@@ -58,7 +57,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         init;
     }
 
-    private protected override MemoryOwner<byte> AllocateBuffer(int bufferSize) => allocator(bufferSize);
+    private protected override MemoryAllocator<byte> BufferAllocator { get; }
 
     public int TransmissionBlockSize
     {
@@ -94,7 +93,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         // TLS handshake
         if (SslOptions is null)
         {
-            protocol = new(transport, allocator, transmissionBlockSize);
+            protocol = new(transport, BufferAllocator, transmissionBlockSize);
         }
         else
         {
@@ -117,7 +116,7 @@ internal sealed class TcpServer : Server, ITcpTransport
                 timeoutSource.Dispose();
             }
 
-            protocol = new(ssl, allocator, transmissionBlockSize);
+            protocol = new(ssl, BufferAllocator, transmissionBlockSize);
         }
 
         Interlocked.Increment(ref connections);

@@ -16,7 +16,6 @@ internal sealed class GenericServer : Server
 {
     private readonly IConnectionListenerFactory factory;
     private readonly CancellationToken lifecycleToken;
-    private readonly MemoryAllocator<byte> defaultAllocator;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private volatile CancellationTokenSource? transmissionState;
@@ -31,7 +30,7 @@ internal sealed class GenericServer : Server
         transmissionState = new();
         lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
         factory = listenerFactory;
-        this.defaultAllocator = defaultAllocator;
+        BufferAllocator = defaultAllocator;
     }
 
     public override TimeSpan ReceiveTimeout
@@ -40,8 +39,7 @@ internal sealed class GenericServer : Server
         init;
     }
 
-    private protected override MemoryOwner<byte> AllocateBuffer(int bufferSize)
-        => defaultAllocator(bufferSize);
+    private protected override MemoryAllocator<byte> BufferAllocator { get; }
 
     private async void HandleConnection(ConnectionContext connection, int transmissionSize, EndPoint? clientAddress, MemoryAllocator<byte> allocator)
     {
@@ -175,7 +173,7 @@ internal sealed class GenericServer : Server
         {
             return connection.Features.Get<MemoryAllocator<byte>>()
                 ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool?.ToAllocator()
-                ?? server.defaultAllocator;
+                ?? server.BufferAllocator;
         }
 
         void IThreadPoolWorkItem.Execute()

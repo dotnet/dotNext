@@ -29,7 +29,7 @@ internal partial class ProtocolStream
         bufferStart = bufferEnd;
     }
 
-    internal void Advance(int count)
+    internal void AdvanceWriteCursor(int count)
         => bufferEnd += count;
 
     internal bool CanWriteFrameSynchronously(int frameSize)

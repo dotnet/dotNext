@@ -2,6 +2,8 @@ using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using Buffers;
+
 internal partial class Client : RaftClusterMember
 {
     [RequiresPreviewFeatures]
@@ -20,12 +22,12 @@ internal partial class Client : RaftClusterMember
         {
             var writer = protocol.BeginRequestMessage(MessageType.Vote);
             VoteMessage.Write(ref writer, in localMember.Id, term, lastLogIndex, lastLogTerm);
-            protocol.Advance(writer.WrittenCount);
+            protocol.AdvanceWriteCursor(writer.WrittenCount);
             return protocol.WriteToTransportAsync(token);
         }
 
         static ValueTask<Result<bool>> IClientExchange<Result<bool>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.ReadResultAsync(token);
+            => protocol.ReadBoolResultAsync(token);
 
         static string IClientExchange<Result<bool>>.Name => "Vote";
 
@@ -33,7 +35,7 @@ internal partial class Client : RaftClusterMember
         {
             var writer = protocol.BeginRequestMessage(MessageType.PreVote);
             PreVoteMessage.Write(ref writer, in localMember.Id, term, lastLogIndex, lastLogTerm);
-            protocol.Advance(writer.WrittenCount);
+            protocol.AdvanceWriteCursor(writer.WrittenCount);
             return protocol.WriteToTransportAsync(token);
         }
 

@@ -42,7 +42,7 @@ internal partial class Client : RaftClusterMember
             Debug.Assert(config is not null);
 
             // write header
-            protocol.Advance(WriteHeaders(protocol, in localMember.Id, entriesCount: 0));
+            protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id, entriesCount: 0));
 
             // write config
             if (config.Length > 0L)
@@ -74,7 +74,7 @@ internal partial class Client : RaftClusterMember
         }
 
         static ValueTask<Result<HeartbeatResult>> IClientExchange<Result<HeartbeatResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.ReadHeartbeatResult(token);
+            => protocol.ReadHeartbeatResultAsync(token);
 
         static string IClientExchange<Result<HeartbeatResult>>.Name => Name;
     }
@@ -104,7 +104,7 @@ internal partial class Client : RaftClusterMember
             Debug.Assert(entries is not null);
 
             // write header
-            protocol.Advance(WriteHeaders(protocol, in localMember.Id, entries.Count));
+            protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id, entries.Count));
 
             // write config
             if (config.Length > 0L)
@@ -124,7 +124,7 @@ internal partial class Client : RaftClusterMember
                 if (protocol.CanWriteFrameSynchronously(LogEntryMetadata.Size + 1) is false)
                     await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
 
-                protocol.Advance(WriteLogEntryMetadata(protocol.RemainingBufferSpan, entry));
+                protocol.AdvanceWriteCursor(WriteLogEntryMetadata(protocol.RemainingBufferSpan, entry));
                 protocol.StartFrameWrite();
                 await entry.WriteToAsync(protocol, buffer, token).ConfigureAwait(false);
                 protocol.WriteFinalFrame();

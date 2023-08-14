@@ -12,8 +12,6 @@ internal abstract partial class ProtocolStream : Stream, IResettable
 {
     private const int FrameHeadersSize = sizeof(int);
 
-    private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long) + sizeof(long);
-
     private readonly MemoryAllocator<byte> allocator;
     private MemoryOwner<byte> buffer;
 
@@ -112,10 +110,18 @@ internal abstract partial class ProtocolStream : Stream, IResettable
 
     internal Span<byte> RemainingBufferSpan => buffer.Span.Slice(bufferEnd);
 
+    internal ReadOnlySpan<byte> WrittenBufferSpan => buffer.Span[bufferStart..bufferEnd];
+
     public void Reset()
     {
-        bufferStart = bufferEnd = frameSize = 0;
+        bufferStart = bufferEnd = 0;
+        ResetReadState();
+    }
+
+    internal void ResetReadState()
+    {
         readState = ReadState.FrameNotStarted;
+        frameSize = 0;
     }
 
     protected override void Dispose(bool disposing)

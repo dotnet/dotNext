@@ -21,7 +21,7 @@ internal partial class Client : RaftClusterMember
         {
             var writer = protocol.BeginRequestMessage(MessageType.Synchronize);
             writer.WriteInt64(commitIndex, true);
-            protocol.Advance(writer.WrittenCount);
+            protocol.AdvanceWriteCursor(writer.WrittenCount);
 
             return protocol.WriteToTransportAsync(token);
         }

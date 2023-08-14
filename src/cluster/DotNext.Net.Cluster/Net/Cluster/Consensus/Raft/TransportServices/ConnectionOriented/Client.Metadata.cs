@@ -17,12 +17,12 @@ internal partial class Client : RaftClusterMember
 
         ValueTask IClientExchange<IReadOnlyDictionary<string, string>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
-            protocol.Advance(protocol.BeginRequestMessage(MessageType.Metadata).WrittenCount);
+            protocol.AdvanceWriteCursor(protocol.BeginRequestMessage(MessageType.Metadata).WrittenCount);
             return protocol.WriteToTransportAsync(token);
         }
 
         static ValueTask<IReadOnlyDictionary<string, string>> IClientExchange<IReadOnlyDictionary<string, string>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.ReadMetadataResponseAsync(buffer, token);
+            => protocol.ReadDictionaryAsync(buffer, token);
 
         static string IClientExchange<IReadOnlyDictionary<string, string>>.Name => Name;
     }

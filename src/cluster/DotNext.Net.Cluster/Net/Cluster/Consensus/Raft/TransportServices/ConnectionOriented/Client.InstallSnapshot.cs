@@ -27,7 +27,7 @@ internal partial class Client : RaftClusterMember
 
         async ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
-            protocol.Advance(WriteHeaders(protocol, in localMember.Id));
+            protocol.AdvanceWriteCursor(WriteHeaders(protocol, in localMember.Id));
             protocol.StartFrameWrite();
             await snapshot.WriteToAsync(protocol, buffer, token).ConfigureAwait(false);
             protocol.WriteFinalFrame();
@@ -42,7 +42,7 @@ internal partial class Client : RaftClusterMember
         }
 
         static ValueTask<Result<HeartbeatResult>> IClientExchange<Result<HeartbeatResult>>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.ReadHeartbeatResult(token);
+            => protocol.ReadHeartbeatResultAsync(token);
 
         static string IClientExchange<Result<HeartbeatResult>>.Name => Name;
     }
