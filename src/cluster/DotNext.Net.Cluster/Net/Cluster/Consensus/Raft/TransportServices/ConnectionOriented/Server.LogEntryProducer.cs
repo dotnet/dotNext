@@ -97,7 +97,11 @@ internal partial class Server
 
         protected override void Dispose(bool disposing)
         {
-            Configuration.Dispose();
+            if (disposing)
+            {
+                Configuration.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
