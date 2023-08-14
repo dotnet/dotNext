@@ -36,8 +36,8 @@ internal partial class Server
             var configLength = reader.ReadInt64(true);
 
             Configuration = configLength > 0L
-                ? new(fingerprint)
-                : new(allocator(checked((int)configLength)), fingerprint);
+                ? new(allocator(checked((int)configLength)), fingerprint)
+                : new(fingerprint);
             this.allocator = allocator;
         }
 
