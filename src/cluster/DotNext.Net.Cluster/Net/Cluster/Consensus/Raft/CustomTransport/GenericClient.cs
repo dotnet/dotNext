@@ -27,7 +27,7 @@ internal sealed class GenericClient : Client
                 ?? defaultAllocator;
             buffer = allocator(bufferSize);
             transport = context;
-            protocol = new ProtocolPipeStream(context.Transport, allocator, bufferSize);
+            protocol = new(context.Transport, allocator, bufferSize);
         }
 
         Memory<byte> IConnectionContext.Buffer => buffer.Memory;
