@@ -106,6 +106,20 @@ public static class MemoryAllocator
     }
 
     /// <summary>
+    /// Returns an allocator of pinned arrays.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the array.</typeparam>
+    /// <returns>The array allocator.</returns>
+    public static MemoryAllocator<T> GetPinnedArrayAllocator<T>()
+        where T : unmanaged
+    {
+        return AllocateArray;
+
+        static MemoryOwner<T> AllocateArray(int length)
+            => new(GC.AllocateUninitializedArray<T>(length, pinned: true));
+    }
+
+    /// <summary>
     /// Rents a block of memory from <see cref="ArrayPool{T}.Shared"/> pool.
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
