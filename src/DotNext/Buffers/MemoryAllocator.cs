@@ -89,7 +89,15 @@ public static class MemoryAllocator
     /// </summary>
     /// <typeparam name="T">The type of elements in the array.</typeparam>
     /// <returns>The array allocator.</returns>
-    public static MemoryAllocator<T> CreateArrayAllocator<T>()
+    [Obsolete("Use GetArrayAllocator<T>() method instead.")]
+    public static MemoryAllocator<T> CreateArrayAllocator<T>() => GetArrayAllocator<T>();
+
+    /// <summary>
+    /// Returns array allocator.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the array.</typeparam>
+    /// <returns>The array allocator.</returns>
+    public static MemoryAllocator<T> GetArrayAllocator<T>()
     {
         return AllocateArray;
 

@@ -159,7 +159,7 @@ public sealed class SpanTests : Test
     public static IEnumerable<object[]> TestAllocators()
     {
         yield return new object[] { null };
-        yield return new object[] { MemoryAllocator.CreateArrayAllocator<char>() };
+        yield return new object[] { MemoryAllocator.GetArrayAllocator<char>() };
         yield return new object[] { ArrayPool<char>.Shared.ToAllocator() };
     }
 

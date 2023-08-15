@@ -69,8 +69,14 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ArrayAllocation()
     {
-        using var owner = MemoryAllocator.CreateArrayAllocator<int>().Invoke(4, false);
+        using var owner = MemoryAllocator.GetArrayAllocator<int>().Invoke(4, false);
         Equal(4, owner.Length);
+    }
+
+    [Fact]
+    public static void ArrayAllocatorCache()
+    {
+        Same(MemoryAllocator.GetArrayAllocator<byte>(), MemoryAllocator.GetArrayAllocator<byte>());
     }
 
     [Fact]
@@ -103,7 +109,7 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ResizeBuffer()
     {
-        var allocator = MemoryAllocator.CreateArrayAllocator<byte>();
+        var allocator = MemoryAllocator.GetArrayAllocator<byte>();
         var buffer = default(MemoryOwner<byte>);
 
         buffer.Resize(10, false, allocator);

@@ -12,7 +12,7 @@ public sealed class ProtocolStreamTests : Test
     {
         using var source = new MemoryStream(512);
         var expected = RandomBytes(512);
-        using var protocol = new TcpProtocolStream(source, MemoryAllocator.CreateArrayAllocator<byte>(), 17);
+        using var protocol = new TcpProtocolStream(source, MemoryAllocator.GetArrayAllocator<byte>(), 17);
         protocol.StartFrameWrite();
         protocol.Write(expected);
         protocol.WriteFinalFrame();
@@ -33,7 +33,7 @@ public sealed class ProtocolStreamTests : Test
     {
         using var source = new MemoryStream(512);
         var expected = RandomBytes(512);
-        using var protocol = new TcpProtocolStream(source, MemoryAllocator.CreateArrayAllocator<byte>(), 17);
+        using var protocol = new TcpProtocolStream(source, MemoryAllocator.GetArrayAllocator<byte>(), 17);
         protocol.StartFrameWrite();
         await protocol.WriteAsync(expected);
         protocol.WriteFinalFrame();
