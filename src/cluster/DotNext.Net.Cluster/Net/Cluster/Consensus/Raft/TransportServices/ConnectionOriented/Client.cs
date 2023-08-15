@@ -35,7 +35,14 @@ internal abstract partial class Client : RaftClusterMember
     private protected Client(ILocalMember localMember, EndPoint endPoint)
         : base(localMember, endPoint)
     {
-        accessLock = new();
+        accessLock = new()
+        {
+            MeasurementTags = new()
+            {
+                { IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString() },
+            },
+        };
+
         connectTimeout = TimeSpan.FromSeconds(1);
         exchangeCache = new();
     }
