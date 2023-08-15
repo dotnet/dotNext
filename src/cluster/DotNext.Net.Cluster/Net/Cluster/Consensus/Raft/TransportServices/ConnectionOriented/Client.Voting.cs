@@ -1,11 +1,13 @@
 using System.Runtime.Versioning;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 internal partial class Client : RaftClusterMember
 {
     [RequiresPreviewFeatures]
-    private sealed class VoteExchange : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct VoteExchange : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
     {
         private readonly long term, lastLogIndex, lastLogTerm;
 
