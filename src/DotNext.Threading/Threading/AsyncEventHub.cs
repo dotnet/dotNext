@@ -15,7 +15,6 @@ public partial class AsyncEventHub : IResettable
 {
     private readonly object accessLock;
     private readonly TaskCompletionSource[] sources;
-    private readonly Converter<Task, int> indexConverter;
 
     /// <summary>
     /// Initializes a new collection of asynchronous events.
@@ -33,15 +32,13 @@ public partial class AsyncEventHub : IResettable
 
         for (var i = 0; i < sources.Length; i++)
             sources[i] = new(i, TaskCreationOptions.RunContinuationsAsynchronously);
+    }
 
-        indexConverter = GetIndex;
+    private static int GetIndex(Task task)
+    {
+        Debug.Assert(task.AsyncState is int);
 
-        static int GetIndex(Task task)
-        {
-            Debug.Assert(task.AsyncState is int);
-
-            return (int)task.AsyncState;
-        }
+        return (int)task.AsyncState;
     }
 
     private static void ResetIfNeeded(ref TaskCompletionSource source)
@@ -397,7 +394,7 @@ public partial class AsyncEventHub : IResettable
                 Monitor.Exit(accessLock);
         }
 
-        return result.WaitAsync(timeout, token).Convert(indexConverter);
+        return result.WaitAsync(timeout, token).Convert(GetIndex);
     }
 
     private Task<int> WaitAnyCoreAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token)
@@ -420,7 +417,7 @@ public partial class AsyncEventHub : IResettable
                 Monitor.Exit(accessLock);
         }
 
-        return result.WaitAsync(token).Convert(indexConverter);
+        return result.WaitAsync(token).Convert(GetIndex);
     }
 
     /// <summary>
@@ -489,7 +486,7 @@ public partial class AsyncEventHub : IResettable
                     Monitor.Exit(accessLock);
             }
 
-            return result.WaitAsync(timeout, token).Convert(indexConverter);
+            return result.WaitAsync(timeout, token).Convert(GetIndex);
         }
     }
 
@@ -519,7 +516,7 @@ public partial class AsyncEventHub : IResettable
                 Monitor.Exit(accessLock);
         }
 
-        return result.WaitAsync(token).Convert(indexConverter);
+        return result.WaitAsync(token).Convert(GetIndex);
     }
 
     private Task WaitAllCoreAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token)
