@@ -773,8 +773,35 @@ public static partial class ExpressionBuilder
     /// <param name="property">Property metadata.</param>
     /// <param name="indicies">Indexer indicies.</param>
     /// <returns>Property access expression.</returns>
-    public static Expression Property(this Expression instance, PropertyInfo property, params Expression[] indicies)
-        => indicies.LongLength == 0 ? Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
+    [Obsolete("Use alternative overloads.", error: true)]
+    public static Expression Property(Expression instance, PropertyInfo property, Expression[] indicies)
+        => indicies.LongLength == 0L ? instance.Property(property) : instance.Property(property, indicies[0], indicies[1..]);
+
+    /// <summary>
+    /// Constructs instance property access expression.
+    /// </summary>
+    /// <remarks>
+    /// The equivalent code is <c>a.b</c>.
+    /// </remarks>
+    /// <param name="instance"><c>this</c> argument.</param>
+    /// <param name="property">Property metadata.</param>
+    /// <returns>Property access expression.</returns>
+    public static MemberExpression Property(this Expression instance, PropertyInfo property)
+        => Expression.Property(instance, property);
+
+    /// <summary>
+    /// Constructs instance indexer access expression.
+    /// </summary>
+    /// <remarks>
+    /// The equivalent code is <c>a.b[i]</c>.
+    /// </remarks>
+    /// <param name="instance"><c>this</c> argument.</param>
+    /// <param name="property">Property metadata.</param>
+    /// <param name="index0">The first index.</param>
+    /// <param name="indicies">The rest of the indexer arguments.</param>
+    /// <returns>Property access expression.</returns>
+    public static IndexExpression Property(this Expression instance, PropertyInfo property, Expression index0, params Expression[] indicies)
+        => Expression.Property(instance, property, indicies.Prepend(index0));
 
     /// <summary>
     /// Constructs instance property or indexer access expression declared in the given interface or base type.
@@ -787,10 +814,47 @@ public static partial class ExpressionBuilder
     /// <param name="propertyName">The name of the instance property or indexer.</param>
     /// <param name="indicies">Indexer indicies.</param>
     /// <returns>Property access expression.</returns>
-    public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
+    [Obsolete("Use alternative overloads.", error: true)]
+    public static Expression Property(Expression instance, Type interfaceType, string propertyName, Expression[] indicies)
     {
         return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
-            ? instance.Property(property, indicies)
+            ? Property(instance, property, indicies)
+            : throw new MissingMemberException(interfaceType.FullName, propertyName);
+    }
+
+    /// <summary>
+    /// Constructs instance property access expression declared in the given interface or base type.
+    /// </summary>
+    /// <remarks>
+    /// The equivalent code is <c>a.b</c>.
+    /// </remarks>
+    /// <param name="instance"><c>this</c> argument.</param>
+    /// <param name="interfaceType">The interface or base class declaring property.</param>
+    /// <param name="propertyName">The name of the instance property.</param>
+    /// <returns>Property access expression.</returns>
+    public static MemberExpression Property(this Expression instance, Type interfaceType, string propertyName)
+    {
+        return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
+            ? Property(instance, property)
+            : throw new MissingMemberException(interfaceType.FullName, propertyName);
+    }
+
+    /// <summary>
+    /// Constructs instance property or indexer access expression declared in the given interface or base type.
+    /// </summary>
+    /// <remarks>
+    /// The equivalent code is <c>a.b[i]</c>.
+    /// </remarks>
+    /// <param name="instance"><c>this</c> argument.</param>
+    /// <param name="interfaceType">The interface or base class declaring property.</param>
+    /// <param name="propertyName">The name of the instance property or indexer.</param>
+    /// <param name="index0">The first index.</param>
+    /// <param name="indicies">The rest of the indexer arguments.</param>
+    /// <returns>Property access expression.</returns>
+    public static IndexExpression Property(this Expression instance, Type interfaceType, string propertyName, Expression index0, params Expression[] indicies)
+    {
+        return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
+            ? Property(instance, property, index0, indicies)
             : throw new MissingMemberException(interfaceType.FullName, propertyName);
     }
 
@@ -804,8 +868,35 @@ public static partial class ExpressionBuilder
     /// <param name="propertyName">The name of the instance property or indexer.</param>
     /// <param name="indicies">Indexer indicies.</param>
     /// <returns>Property access expression.</returns>
-    public static Expression Property(this Expression instance, string propertyName, params Expression[] indicies)
+    [Obsolete("Use alternative overloads.", error: true)]
+    public static Expression Property(Expression instance, string propertyName, Expression[] indicies)
         => Expression.Property(instance, propertyName, indicies);
+
+    /// <summary>
+    /// Constructs instance property or indexer access expression.
+    /// </summary>
+    /// <remarks>
+    /// The equivalent code is <c>a.b</c>.
+    /// </remarks>
+    /// <param name="instance"><c>this</c> argument.</param>
+    /// <param name="propertyName">The name of the instance property.</param>
+    /// <returns>Property access expression.</returns>
+    public static MemberExpression Property(this Expression instance, string propertyName)
+        => Expression.Property(instance, propertyName);
+
+    /// <summary>
+    /// Constructs instance property or indexer access expression.
+    /// </summary>
+    /// <remarks>
+    /// The equivalent code is <c>a.b[i]</c>.
+    /// </remarks>
+    /// <param name="instance"><c>this</c> argument.</param>
+    /// <param name="propertyName">The name of the instance indexer.</param>
+    /// <param name="index0">The first index.</param>
+    /// <param name="indicies">The rest of the indexer arguments.</param>
+    /// <returns>Property access expression.</returns>
+    public static IndexExpression Property(this Expression instance, string propertyName, Expression index0, params Expression[] indicies)
+        => Expression.Property(instance, propertyName, index0.Concat(indicies));
 
     /// <summary>
     /// Constructs instance field access expression.
