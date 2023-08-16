@@ -50,6 +50,7 @@ Release Date: 08-07-2023
 * Added implicit conversion from [BoxedValue&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.BoxedValue-1.html) to [ValueType](https://learn.microsoft.com/en-us/dotnet/api/system.valuetype)
 * [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) reuses the same .NET internals as [AsyncTaskMethodBuilder](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asynctaskmethodbuilder)
 * Added non-generic `TypeMap` and `ConcurrentTypeMap` implementations acting as a set in contrast to existing generic counterparts
+* Introduced `Optional<T>.ValueOrDefault` property which is linked with existing `HasValue` property be means of nullability analysis
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.14.0">DotNext.Metaprogramming 4.14.0</a>
