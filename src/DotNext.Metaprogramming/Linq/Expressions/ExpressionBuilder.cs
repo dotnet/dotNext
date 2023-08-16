@@ -774,6 +774,7 @@ public static partial class ExpressionBuilder
     /// <param name="indicies">Indexer indicies.</param>
     /// <returns>Property access expression.</returns>
     [Obsolete("Use alternative overloads.", error: true)]
+    [ExcludeFromCodeCoverage]
     public static Expression Property(Expression instance, PropertyInfo property, Expression[] indicies)
         => indicies.LongLength == 0L ? instance.Property(property) : instance.Property(property, indicies[0], indicies[1..]);
 
@@ -815,6 +816,7 @@ public static partial class ExpressionBuilder
     /// <param name="indicies">Indexer indicies.</param>
     /// <returns>Property access expression.</returns>
     [Obsolete("Use alternative overloads.", error: true)]
+    [ExcludeFromCodeCoverage]
     public static Expression Property(Expression instance, Type interfaceType, string propertyName, Expression[] indicies)
     {
         return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
@@ -869,6 +871,7 @@ public static partial class ExpressionBuilder
     /// <param name="indicies">Indexer indicies.</param>
     /// <returns>Property access expression.</returns>
     [Obsolete("Use alternative overloads.", error: true)]
+    [ExcludeFromCodeCoverage]
     public static Expression Property(Expression instance, string propertyName, Expression[] indicies)
         => Expression.Property(instance, propertyName, indicies);
 

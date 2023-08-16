@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
@@ -37,6 +38,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <exception cref="ArgumentException"><paramref name="valueFactory"/> is <see langword="null"/>.</exception>
     [Obsolete("Use another constructor that accepts a factory with CancellationToken support.", error: true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
         => throw new NotImplementedException();
 
@@ -141,6 +143,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [EditorBrowsable(EditorBrowsableState.Never)]
     [Obsolete("Use WithCancellation(CancellationToken) method instead.", error: true)]
+    [ExcludeFromCodeCoverage]
     public Task<T> Task => WithCancellation(CancellationToken.None);
 
     /// <summary>
@@ -168,6 +171,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <returns>The task awaiter.</returns>
     [Obsolete("Use WithCancellation(CancellationToken) method instead.", error: true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     public TaskAwaiter<T> GetAwaiter() => Task.GetAwaiter();
 
     /// <summary>
@@ -177,6 +181,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <returns>An object used to await asynchronous lazy initialization.</returns>
     [Obsolete("Use WithCancellation(CancellationToken) method instead.", error: true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
     public ConfiguredTaskAwaitable<T> ConfigureAwait(bool continueOnCapturedContext)
         => Task.ConfigureAwait(continueOnCapturedContext);
 
