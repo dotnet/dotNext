@@ -130,9 +130,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void AssignToIndexer()
     {
-        var item = typeof(IList<int>).GetProperty("Item");
-        NotNull(item);
-        var indexer = Expression.MakeIndex(Expression.Constant(new int[0]), item, new[] { 0.Const() });
+        var indexer = Array.Empty<int>().Const().Property(typeof(IList<int>), "Item", 0.Const());
         var expr = indexer.Assign(42.Const());
         Equal(ExpressionType.Assign, expr.NodeType);
         Equal(ExpressionType.Constant, expr.Right.NodeType);
@@ -141,6 +139,14 @@ public sealed class ExpressionBuilderTests : Test
         Equal(ExpressionType.Assign, expr.NodeType);
         Equal(ExpressionType.Default, expr.Right.NodeType);
         Equal(ExpressionType.Index, expr.Left.NodeType);
+    }
+
+    [Fact]
+    public static void IndexerAccess()
+    {
+        var indexer = new List<int>().Const().Property("Item", 0.Const());
+        NotEmpty(indexer.Arguments);
+        Equal(ExpressionType.Constant, indexer.Arguments[0].NodeType);
     }
 
     [Fact]

@@ -29,7 +29,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private AtomicEnum<ClusterMemberStatus> status;
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
-    private long nextIndex, fingerprint;
+    private IRaftClusterMember.ReplicationState state;
 
     [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
     internal IClientMetricsCollector? Metrics;
@@ -308,9 +308,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         return SendSignalAsync(request, token);
     }
 
-    ref long IRaftClusterMember.NextIndex => ref nextIndex;
-
-    ref long IRaftClusterMember.ConfigurationFingerprint => ref fingerprint;
+    ref IRaftClusterMember.ReplicationState IRaftClusterMember.State => ref state;
 
     public override string? ToString() => BaseAddress?.ToString();
 }

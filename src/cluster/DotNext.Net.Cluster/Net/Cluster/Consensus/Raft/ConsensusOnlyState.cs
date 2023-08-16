@@ -6,7 +6,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Threading;
-using Replication;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
@@ -265,7 +264,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <summary>
     /// Gets the index of the last uncommitted log entry.
     /// </summary>
-    public long LastUncommittedEntryIndex => index.VolatileRead();
+    public long LastEntryIndex => index.VolatileRead();
 
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.ComponentModel;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming;
@@ -31,6 +32,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg1">The expression representing the first argument.</param>
     /// <param name="arg2">The expression representing the second argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2)
     {
         var lambda = Lambda;
@@ -45,6 +47,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg2">The expression representing the second argument.</param>
     /// <param name="arg3">The expression representing the third argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3)
     {
         var lambda = Lambda;
@@ -61,6 +64,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg3">The expression representing the third argument.</param>
     /// <param name="arg4">The expression representing the fourth argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4)
     {
         var lambda = Lambda;
@@ -79,6 +83,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg4">The expression representing the fourth argument.</param>
     /// <param name="arg5">The expression representing the fifth argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5)
     {
         var lambda = Lambda;
@@ -99,6 +104,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg5">The expression representing the fifth argument.</param>
     /// <param name="arg6">The expression representing the sixth argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6)
     {
         var lambda = Lambda;
@@ -121,6 +127,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg6">The expression representing the sixth argument.</param>
     /// <param name="arg7">The expression representing the seventh argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7)
     {
         var lambda = Lambda;
@@ -145,6 +152,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg7">The expression representing the seventh argument.</param>
     /// <param name="arg8">The expression representing the eighth argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8)
     {
         var lambda = Lambda;
@@ -171,6 +179,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg8">The expression representing the eighth argument.</param>
     /// <param name="arg9">The expression representing the ninth argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8, out ParameterExpression arg9)
     {
         var lambda = Lambda;
@@ -199,6 +208,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
     /// <param name="arg9">The expression representing the ninth argument.</param>
     /// <param name="arg10">The expression representing the tenth argument.</param>
     /// <exception cref="ObjectDisposedException">This context is no longer available.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public void Deconstruct(out ParameterExpression arg1, out ParameterExpression arg2, out ParameterExpression arg3, out ParameterExpression arg4, out ParameterExpression arg5, out ParameterExpression arg6, out ParameterExpression arg7, out ParameterExpression arg8, out ParameterExpression arg9, out ParameterExpression arg10)
     {
         var lambda = Lambda;

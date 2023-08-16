@@ -161,7 +161,7 @@ public partial class RaftCluster<TMember>
             lockTaken = true;
 
             // assuming that the member is in sync with the leader
-            member.NextIndex = auditTrail.LastUncommittedEntryIndex + 1;
+            member.State.NextIndex = auditTrail.LastEntryIndex + 1L;
 
             if (!members.TryAdd(member, out members))
                 return false;
@@ -266,25 +266,23 @@ public partial class RaftCluster<TMember>
         try
         {
             // catch up node
-            member.NextIndex = auditTrail.LastUncommittedEntryIndex + 1;
+            member.State.NextIndex = auditTrail.LastEntryIndex + 1;
             long currentIndex;
             do
             {
                 var commitIndex = auditTrail.LastCommittedEntryIndex;
-                currentIndex = auditTrail.LastUncommittedEntryIndex;
-                var precedingIndex = Math.Max(0, member.NextIndex - 1);
+                currentIndex = auditTrail.LastEntryIndex;
+                var precedingIndex = member.State.PrecedingIndex;
                 var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
                 var term = Term;
 
                 // do replication
-                var result = await new LeaderState<TMember>.Replicator(member, context: null, ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, commitIndex, term, precedingIndex, precedingTerm, Logger)
-                    .ReplicateAsync(auditTrail, currentIndex, token)
-                    .ConfigureAwait(false);
+                var result = await CatchUpAsync(member, commitIndex, term, precedingIndex, precedingTerm, currentIndex, token).ConfigureAwait(false);
 
                 if (!result.Value && result.Term > term)
                     return false;
             }
-            while (--rounds > 0 && currentIndex >= member.NextIndex);
+            while (--rounds > 0 && currentIndex >= member.State.NextIndex);
 
             // ensure that previous configuration has been committed
             await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
@@ -310,6 +308,13 @@ public partial class RaftCluster<TMember>
             tokenSource?.Dispose();
             membershipState.Value = false;
         }
+    }
+
+    private ValueTask<Result<bool>> CatchUpAsync(TMember member, long commitIndex, long term, long precedingIndex, long precedingTerm, long currentIndex, CancellationToken token)
+    {
+        var replicator = new LeaderState<TMember>.Replicator(member, Logger);
+        replicator.Initialize(ConfigurationStorage.ActiveConfiguration, ConfigurationStorage.ProposedConfiguration, commitIndex, term, precedingIndex, precedingTerm);
+        return replicator.ReplicateAsync(auditTrail, currentIndex, token);
     }
 
     /// <summary>

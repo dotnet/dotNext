@@ -12,7 +12,7 @@ public sealed class TypeMapTests : Test
 
     [Theory]
     [MemberData(nameof(GetMaps))]
-    public static void InterfaceMethods(ITypeMap<int> map)
+    public static void MapInterfaceMethods(ITypeMap<int> map)
     {
         False(map.ContainsKey<string>());
 
@@ -45,7 +45,7 @@ public sealed class TypeMapTests : Test
     }
 
     [Fact]
-    public static void GetValueRefOrAddDefaultMethod()
+    public static void GetValueRefOrAddDefaultMapMethod()
     {
         var map = new TypeMap<long>();
         ref var value = ref map.GetValueRefOrAddDefault<string>(out var exists);
@@ -59,7 +59,7 @@ public sealed class TypeMapTests : Test
     }
 
     [Fact]
-    public static void ConcurrentMethods()
+    public static void ConcurrentMapMethods()
     {
         var map = new ConcurrentTypeMap<long>();
         True(map.TryAdd<string>(42L));
@@ -109,21 +109,21 @@ public sealed class TypeMapTests : Test
     }
 
     [Fact]
-    public static void DefaultEnumerator()
+    public static void DefaultMapEnumerator()
     {
         var enumerator = default(TypeMap<int>.Enumerator);
         False(enumerator.MoveNext());
     }
 
     [Fact]
-    public static void DefaultConcurrentEnumerator()
+    public static void DefaultConcurrentMapEnumerator()
     {
         var enumerator = default(ConcurrentTypeMap<int>.Enumerator);
         False(enumerator.MoveNext());
     }
 
     [Fact]
-    public static void EmptyEnumerator()
+    public static void EmptyMapEnumerator()
     {
         var count = 0;
         foreach (ref var item in new TypeMap<int>())
@@ -133,7 +133,7 @@ public sealed class TypeMapTests : Test
     }
 
     [Fact]
-    public static void EmptyConcurrentEnumerator()
+    public static void EmptyConcurrentMapEnumerator()
     {
         var count = 0;
         foreach (var item in new ConcurrentTypeMap<int>())
@@ -143,7 +143,7 @@ public sealed class TypeMapTests : Test
     }
 
     [Fact]
-    public static void NotEmptyEnumerator()
+    public static void NotEmptyMapEnumerator()
     {
         var map = new TypeMap<int>();
         map.Set<double>(42);
@@ -162,7 +162,7 @@ public sealed class TypeMapTests : Test
     }
 
     [Fact]
-    public static void NotEmptyConcurrentEnumerator()
+    public static void NotEmptyConcurrentMapEnumerator()
     {
         var map = new ConcurrentTypeMap<int>();
         map.Set<double>(42);
@@ -175,5 +175,83 @@ public sealed class TypeMapTests : Test
         }
 
         Equal(1, count);
+    }
+
+    public static IEnumerable<object[]> GetSets()
+    {
+        yield return new object[] { new TypeMap() };
+        yield return new object[] { new TypeMap(1) };
+        yield return new object[] { new ConcurrentTypeMap() };
+        yield return new object[] { new ConcurrentTypeMap(1) };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetSets))]
+    public static void SetInterfaceMethods(ITypeMap set)
+    {
+        False(set.Contains<int>());
+
+        set.Add(42);
+        True(set.Contains<int>());
+
+        True(set.TryGetValue<int>(out var result));
+        Equal(42, result);
+
+        False(set.Contains<string>());
+
+        set.Clear();
+        False(set.Contains<int>());
+
+        set.Set<int>(50);
+        True(set.Remove<int>(out result));
+        Equal(50, result);
+
+        False(set.Set<int>(42, out _));
+        True(set.TryGetValue<int>(out result));
+        Equal(42, result);
+
+        True(set.Set<int>(50, out var tmp));
+        Equal(42, tmp);
+        True(set.TryGetValue<int>(out result));
+        Equal(50, result);
+
+        True(set.Remove<int>());
+        False(set.Contains<int>());
+    }
+
+    [Fact]
+    public static void GetValueRefOrAddDefaultSetMethod()
+    {
+        var map = new TypeMap();
+        ref var value = ref map.GetValueRefOrAddDefault<long>(out var exists);
+        False(exists);
+        Equal(0L, value);
+        value = 42L;
+
+        value = ref map.GetValueRefOrAddDefault<long>(out exists);
+        True(exists);
+        Equal(42L, value);
+    }
+
+    [Theory]
+    [MemberData(nameof(GetSets))]
+    public static void ResizeSet(ITypeMap map)
+    {
+        map.Set(42);
+        map.Set(43L);
+        map.Set(44F);
+        map.Set(45D);
+
+        True(map.TryGetValue(out int i));
+        Equal(42, i);
+
+        True(map.TryGetValue(out long l));
+        Equal(43L, l);
+
+        True(map.TryGetValue(out float f));
+        Equal(44F, f);
+
+        True(map.TryGetValue(out double d));
+        Equal(45, d);
     }
 }

@@ -66,11 +66,24 @@ public sealed class MemoryOwnerTests : Test
         Equal(10, array[2]);
     }
 
-    [Fact]
-    public static void ArrayAllocation()
+    public static IEnumerable<object[]> GetArrayAllocators()
     {
-        using var owner = MemoryAllocator.CreateArrayAllocator<int>().Invoke(4, false);
+        yield return new[] { MemoryAllocator.GetArrayAllocator<int>() };
+        yield return new[] { MemoryAllocator.GetPinnedArrayAllocator<int>() };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetArrayAllocators))]
+    public static void ArrayAllocation(MemoryAllocator<int> allocator)
+    {
+        using var owner = allocator.Invoke(4, false);
         Equal(4, owner.Length);
+    }
+
+    [Fact]
+    public static void ArrayAllocatorCache()
+    {
+        Same(MemoryAllocator.GetArrayAllocator<byte>(), MemoryAllocator.GetArrayAllocator<byte>());
     }
 
     [Fact]
@@ -103,7 +116,7 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ResizeBuffer()
     {
-        var allocator = MemoryAllocator.CreateArrayAllocator<byte>();
+        var allocator = MemoryAllocator.GetArrayAllocator<byte>();
         var buffer = default(MemoryOwner<byte>);
 
         buffer.Resize(10, false, allocator);

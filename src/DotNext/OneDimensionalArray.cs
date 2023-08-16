@@ -301,7 +301,7 @@ public static class OneDimensionalArray
     public static ArraySegment<T> Slice<T>(this T[] input, Range range)
     {
         var (start, length) = range.GetOffsetAndLength(input.Length);
-        return new ArraySegment<T>(input, start, length);
+        return new(input, start, length);
     }
 
     /// <summary>

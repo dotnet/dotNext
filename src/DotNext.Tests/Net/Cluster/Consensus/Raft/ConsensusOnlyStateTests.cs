@@ -22,7 +22,7 @@ public sealed class ConsensusOnlyStateTests : Test
     {
         IPersistentState auditTrail = new ConsensusOnlyState();
         await auditTrail.AppendAsync(new EmptyLogEntry(10));
-        Equal(1, auditTrail.LastUncommittedEntryIndex);
+        Equal(1, auditTrail.LastEntryIndex);
         await auditTrail.CommitAsync(1L);
         Equal(1, auditTrail.LastCommittedEntryIndex);
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
@@ -41,13 +41,13 @@ public sealed class ConsensusOnlyStateTests : Test
     public static async Task Appending()
     {
         IPersistentState auditTrail = new ConsensusOnlyState();
-        Equal(0, auditTrail.LastUncommittedEntryIndex);
+        Equal(0, auditTrail.LastEntryIndex);
         Equal(0, auditTrail.LastCommittedEntryIndex);
         var entry1 = new EmptyLogEntry(41);
         var entry2 = new EmptyLogEntry(42);
         Equal(1, await auditTrail.AppendAsync(new LogEntryList(entry1, entry2)));
         Equal(0, auditTrail.LastCommittedEntryIndex);
-        Equal(2, auditTrail.LastUncommittedEntryIndex);
+        Equal(2, auditTrail.LastEntryIndex);
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
         {
             Null(snapshotIndex);
@@ -73,7 +73,7 @@ public sealed class ConsensusOnlyStateTests : Test
             return default;
         };
         await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, 2, CancellationToken.None);
-        Equal(2, auditTrail.LastUncommittedEntryIndex);
+        Equal(2, auditTrail.LastEntryIndex);
         Equal(0, auditTrail.LastCommittedEntryIndex);
         //commit all entries
         Equal(2, await auditTrail.CommitAsync(CancellationToken.None));
@@ -82,7 +82,7 @@ public sealed class ConsensusOnlyStateTests : Test
         //check overlapping with committed entries
         await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2).AsTask());
         await auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2, true);
-        Equal(3, auditTrail.LastUncommittedEntryIndex);
+        Equal(3, auditTrail.LastEntryIndex);
         Equal(2, auditTrail.LastCommittedEntryIndex);
         checker = static (entries, snapshotIndex, token) =>
         {

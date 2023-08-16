@@ -118,12 +118,12 @@ public sealed class OptionalTest : Test
     public static void OrDefault()
     {
         var opt = new Optional<int>(10);
-        Equal(10, opt.OrDefault());
+        Equal(10, opt.ValueOrDefault);
         True(opt.Equals(10));
         True(opt.Equals((object)10));
         True(opt.Equals(10, EqualityComparer<int>.Default));
         opt = default;
-        Equal(0, opt.OrDefault());
+        Equal(0, opt.ValueOrDefault);
         False(opt.Equals(0));
         False(opt.Equals((object)0));
         False(opt.Equals(0, EqualityComparer<int>.Default));

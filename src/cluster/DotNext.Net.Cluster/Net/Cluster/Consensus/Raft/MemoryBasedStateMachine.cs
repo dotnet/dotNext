@@ -227,7 +227,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         // Apply snapshot to the underlying state machine
         LastCommittedEntryIndex = snapshotIndex;
-        LastUncommittedEntryIndex = Math.Max(snapshotIndex, LastUncommittedEntryIndex);
+        LastEntryIndex = Math.Max(snapshotIndex, LastEntryIndex);
 
         var session = sessionManager.Take();
         try
@@ -270,7 +270,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         var session = sessionManager.Take();
         try
         {
-            if (startIndex > LastUncommittedEntryIndex + 1L)
+            if (startIndex > LastEntryIndex + 1L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
 
             // start commit task in parallel

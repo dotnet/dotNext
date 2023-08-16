@@ -22,6 +22,12 @@ public partial class TaskCompletionPipe<T>
             nextOrOwner = owner;
         }
 
+        internal object? UserData
+        {
+            get;
+            init;
+        }
+
         internal LinkedTaskNode? Next
         {
             get
@@ -108,13 +114,14 @@ public partial class TaskCompletionPipe<T>
         suspendedCaller?.Resume();
     }
 
-    private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task)
+    private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task, out object? userData)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         if (firstTask is not null)
         {
             task = firstTask.Task;
+            userData = firstTask.UserData;
             var next = firstTask.Next;
             firstTask.Next = null; // help GC
             if ((firstTask = next) is null)
@@ -123,7 +130,7 @@ public partial class TaskCompletionPipe<T>
             return true;
         }
 
-        task = null;
+        userData = task = null;
         return false;
     }
 

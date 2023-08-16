@@ -1,6 +1,39 @@
 Release Notes
 ====
 
+# 08-16-2023
+<a href="https://www.nuget.org/packages/dotnext/4.14.0">DotNext 4.14.0</a>
+* Added implicit conversion from [BoxedValue&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.BoxedValue-1.html) to [ValueType](https://learn.microsoft.com/en-us/dotnet/api/system.valuetype)
+* [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) reuses the same .NET internals as [AsyncTaskMethodBuilder](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.asynctaskmethodbuilder)
+* Added non-generic `TypeMap` and `ConcurrentTypeMap` implementations acting as a set in contrast to existing generic counterparts
+* Introduced `Optional<T>.ValueOrDefault` property which is linked with existing `HasValue` property be means of nullability analysis
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.14.0">DotNext.Metaprogramming 4.14.0</a>
+* Fixed [187](https://github.com/dotnet/dotNext/issues/187)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/4.14.0">DotNext.Unsafe 4.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.14.0">DotNext.Threading 4.14.0</a>
+* Fixed scheduling of continuation if it is represented by async state machine
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/4.14.0">DotNext.IO 4.14.0</a>
+* Fixed abstract representation of Write-Ahead Log
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.0">DotNext.Net.Cluster 4.14.0</a>
+* Fixed [185](https://github.com/dotnet/dotNext/issues/185)
+* Fixed [186](https://github.com/dotnet/dotNext/issues/186)
+* Reduced memory allocations by Raft leader
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.0">DotNext.AspNetCore.Cluster 4.14.0</a>
+* Fixed [185](https://github.com/dotnet/dotNext/issues/185)
+* Updated dependencies
+
 # 08-02-2023
 <a href="https://www.nuget.org/packages/dotnext/4.13.1">DotNext 4.13.1</a>
 * Removed memory allocation inside of `Sequence.AddAll` extension method

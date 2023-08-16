@@ -3,6 +3,8 @@ using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using Buffers;
+
 internal partial class Client : RaftClusterMember
 {
     [StructLayout(LayoutKind.Auto)]
@@ -15,8 +17,14 @@ internal partial class Client : RaftClusterMember
 
         internal SynchronizeExchange(long commitIndex) => this.commitIndex = commitIndex;
 
-        ValueTask IClientExchange<long?>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.WriteSynchronizeRequestAsync(commitIndex, token);
+        ValueTask IClientExchange<long?>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        {
+            var writer = protocol.BeginRequestMessage(MessageType.Synchronize);
+            writer.WriteInt64(commitIndex, true);
+            protocol.AdvanceWriteCursor(writer.WrittenCount);
+
+            return protocol.WriteToTransportAsync(token);
+        }
 
         static ValueTask<long?> IClientExchange<long?>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadNullableInt64Async(token);

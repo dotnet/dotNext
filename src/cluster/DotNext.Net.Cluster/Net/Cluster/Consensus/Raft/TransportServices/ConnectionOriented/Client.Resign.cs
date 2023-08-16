@@ -15,8 +15,11 @@ internal partial class Client : RaftClusterMember
         {
         }
 
-        ValueTask IClientExchange<bool>.RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-            => protocol.WriteResignRequestAsync(token);
+        ValueTask IClientExchange<bool>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
+        {
+            protocol.AdvanceWriteCursor(protocol.BeginRequestMessage(MessageType.Resign).WrittenCount);
+            return protocol.WriteToTransportAsync(token);
+        }
 
         static ValueTask<bool> IClientExchange<bool>.ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
             => protocol.ReadBoolAsync(token);

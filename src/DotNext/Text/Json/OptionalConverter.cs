@@ -24,7 +24,7 @@ public sealed class OptionalConverter<[DynamicallyAccessedMembers(DynamicallyAcc
                 break;
             default:
                 // TODO: Attempt to extract IJsonTypeInfo resolver for type T in .NET 7 to avoid Reflection
-                JsonSerializer.Serialize<T?>(writer, value.OrDefault(), options);
+                JsonSerializer.Serialize<T?>(writer, value.ValueOrDefault, options);
                 break;
         }
     }

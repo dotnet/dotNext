@@ -67,7 +67,7 @@ public partial struct UserDataStorage
             ref Optional<TValue> valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
             if (valueRef.HasValue)
             {
-                value = valueRef.OrDefault()!;
+                value = valueRef.ValueOrDefault;
             }
             else
             {
@@ -254,7 +254,7 @@ public partial struct UserDataStorage
             var valueHolder = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(tables), typeIndex);
             var result = valueHolder.Get<TValue>(valueIndex);
 
-            return result.HasValue ? result.OrDefault() : valueHolder.GetOrAdd(valueIndex, valueFactory.Invoke());
+            return result.HasValue ? result.ValueOrDefault : valueHolder.GetOrAdd(valueIndex, valueFactory.Invoke());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -23,12 +23,12 @@ internal static class AuditTrail
 
     internal static async ValueTask<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
     {
-        var localIndex = auditTrail.LastUncommittedEntryIndex;
+        var localIndex = auditTrail.LastEntryIndex;
         return index >= localIndex && term >= await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
     }
 
     internal static async ValueTask<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
-        => index <= auditTrail.LastUncommittedEntryIndex && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
+        => index <= auditTrail.LastEntryIndex && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
 
     internal static ValueTask<long> AppendNoOpEntry(this IPersistentState auditTrail, CancellationToken token)
         => auditTrail.AppendAsync(new EmptyLogEntry(auditTrail.Term), token);

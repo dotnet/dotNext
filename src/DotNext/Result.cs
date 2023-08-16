@@ -155,7 +155,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// <returns>The converted optional value.</returns>
     public static Result<T> FromOptional(in Optional<T> optional) => optional switch
     {
-        { HasValue: true } => new(optional.OrDefault()!),
+        { HasValue: true } => new(optional.ValueOrDefault),
         { IsNull: true } => default,
         _ => new(new InvalidOperationException(ExceptionMessages.OptionalNoValue))
     };

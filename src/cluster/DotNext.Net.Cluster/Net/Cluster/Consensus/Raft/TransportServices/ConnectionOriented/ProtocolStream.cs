@@ -8,11 +8,9 @@ using Buffers;
 /// Provides encoding/decoding routines for transmitting Raft-specific
 /// RPC calls over stream-oriented network transports.
 /// </summary>
-internal abstract partial class ProtocolStream : Stream
+internal abstract partial class ProtocolStream : Stream, IResettable
 {
-    private const int FrameHeadersSize = sizeof(int) + sizeof(byte);
-
-    private static int AppendEntriesHeadersSize => AppendEntriesMessage.Size + sizeof(byte) + sizeof(long) + sizeof(long);
+    private const int FrameHeadersSize = sizeof(int);
 
     private readonly MemoryAllocator<byte> allocator;
     private MemoryOwner<byte> buffer;
@@ -108,12 +106,22 @@ internal abstract partial class ProtocolStream : Stream
         return result;
     }
 
-    private int BufferLength => buffer.Length;
+    internal Memory<byte> RemainingBuffer => buffer.Memory.Slice(bufferEnd);
 
-    internal void Reset()
+    internal Span<byte> RemainingBufferSpan => buffer.Span.Slice(bufferEnd);
+
+    internal ReadOnlySpan<byte> WrittenBufferSpan => buffer.Span[bufferStart..bufferEnd];
+
+    public void Reset()
     {
-        bufferStart = bufferEnd = frameSize = 0;
+        bufferStart = bufferEnd = 0;
+        ResetReadState();
+    }
+
+    internal void ResetReadState()
+    {
         readState = ReadState.FrameNotStarted;
+        frameSize = 0;
     }
 
     protected override void Dispose(bool disposing)

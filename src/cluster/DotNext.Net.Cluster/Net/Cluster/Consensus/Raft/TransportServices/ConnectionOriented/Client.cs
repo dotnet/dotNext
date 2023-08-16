@@ -1,9 +1,12 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Threading;
+using ConcurrentTypeMap = Collections.Specialized.ConcurrentTypeMap;
 using Timestamp = Diagnostics.Timestamp;
 
 internal abstract partial class Client : RaftClusterMember
@@ -19,7 +22,7 @@ internal abstract partial class Client : RaftClusterMember
     [RequiresPreviewFeatures]
     private interface IClientExchange<TResponse>
     {
-        ValueTask RequestAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
+        ValueTask RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
         static abstract ValueTask<TResponse> ResponseAsync(ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
 
@@ -28,13 +31,26 @@ internal abstract partial class Client : RaftClusterMember
 
     private readonly AsyncExclusiveLock accessLock;
     private readonly TimeSpan connectTimeout;
+    private readonly ConcurrentTypeMap exchangeCache;
+
+    // connection context and its devirtualized members
     private IConnectionContext? context;
+    private Memory<byte> bufferCache;
+    private ProtocolStream? protocolCache;
 
     private protected Client(ILocalMember localMember, EndPoint endPoint)
         : base(localMember, endPoint)
     {
-        accessLock = new();
+        accessLock = new()
+        {
+            MeasurementTags = new()
+            {
+                { IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString() },
+            },
+        };
+
         connectTimeout = TimeSpan.FromSeconds(1);
+        exchangeCache = new();
     }
 
     internal TimeSpan ConnectTimeout
@@ -61,20 +77,28 @@ internal abstract partial class Client : RaftClusterMember
             await accessLock.AcquireAsync(requestDurationTracker.Token).ConfigureAwait(false);
             lockTaken = true;
 
-            context ??= await ConnectAsync(requestDurationTracker.Token).ConfigureAwait(false);
+            if (context is null)
+            {
+                context = await ConnectAsync(requestDurationTracker.Token).ConfigureAwait(false);
+                bufferCache = context.Buffer;
+                protocolCache = context.Protocol;
+            }
+            else
+            {
+                Debug.Assert(protocolCache is not null);
+            }
 
-            context.Protocol.Reset();
-            await exchange.RequestAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
-            context.Protocol.Reset();
-            var result = await TExchange.ResponseAsync(context.Protocol, context.Buffer, requestDurationTracker.Token).ConfigureAwait(false);
+            protocolCache.Reset();
+            await exchange.RequestAsync(localMember, protocolCache, bufferCache, requestDurationTracker.Token).ConfigureAwait(false);
+            protocolCache.Reset();
+            var result = await TExchange.ResponseAsync(protocolCache, bufferCache, requestDurationTracker.Token).ConfigureAwait(false);
             Touch();
             return result;
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested)
         {
             // canceled by caller
-            context?.Dispose();
-            context = null;
+            ClearContext();
             throw;
         }
         catch (Exception e)
@@ -83,8 +107,7 @@ internal abstract partial class Client : RaftClusterMember
             Status = ClusterMemberStatus.Unavailable;
 
             // detect broken socket
-            context?.Dispose();
-            context = null;
+            ClearContext();
             throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
         }
         finally
@@ -102,6 +125,12 @@ internal abstract partial class Client : RaftClusterMember
                 cachedRemoteAddressAttribute);
 
             requestDurationTracker.Dispose();
+
+            if (exchange is IResettable)
+            {
+                ((IResettable)exchange).Reset();
+                exchangeCache.TryAdd(exchange);
+            }
         }
     }
 
@@ -114,8 +143,20 @@ internal abstract partial class Client : RaftClusterMember
         }
         finally
         {
-            context = null;
+            ClearContext();
             accessLock.Release();
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ClearContext()
+    {
+        if (context is not null)
+        {
+            context.Dispose();
+            context = null;
+            protocolCache = null;
+            bufferCache = default;
         }
     }
 
@@ -123,8 +164,7 @@ internal abstract partial class Client : RaftClusterMember
     {
         if (disposing)
         {
-            context?.Dispose();
-            context = null;
+            ClearContext();
             accessLock.Dispose();
         }
 
