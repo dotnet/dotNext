@@ -142,6 +142,14 @@ public sealed class ExpressionBuilderTests : Test
     }
 
     [Fact]
+    public static void IndexerAccess()
+    {
+        var indexer = new List<int>().Const().Property("Item", 0.Const());
+        NotEmpty(indexer.Arguments);
+        Equal(ExpressionType.Constant, indexer.Arguments[0].NodeType);
+    }
+
+    [Fact]
     public static void AssignToVariable()
     {
         var expr = Expression.Parameter(typeof(long)).AssignDefault();
