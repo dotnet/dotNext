@@ -53,6 +53,7 @@ Release Date: 08-07-2023
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.14.0">DotNext.Metaprogramming 4.14.0</a>
+* Fixed [187](https://github.com/dotnet/dotNext/issues/187)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/4.14.0">DotNext.Unsafe 4.14.0</a>
