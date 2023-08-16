@@ -896,7 +896,7 @@ public static partial class ExpressionBuilder
     /// <param name="indicies">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
     public static IndexExpression Property(this Expression instance, string propertyName, Expression index0, params Expression[] indicies)
-        => Expression.Property(instance, propertyName, index0.Concat(indicies));
+        => Expression.Property(instance, propertyName, indicies.Insert(index0, 0L));
 
     /// <summary>
     /// Constructs instance field access expression.
