@@ -50,21 +50,13 @@ internal readonly struct CompletedTask<T>
     /// Creates task that has completed with a specified exception.
     /// </summary>
     /// <param name="failure">The exception with which to complete the task.</param>
-    public CompletedTask(Exception failure)
-    {
-        this.failure = failure;
-        result = default;
-    }
+    public CompletedTask(Exception failure) => this.failure = failure;
 
     /// <summary>
     /// Creates task that has completed successfully with a specified result.
     /// </summary>
     /// <param name="result">The task result.</param>
-    public CompletedTask(T result)
-    {
-        failure = null;
-        this.result = result;
-    }
+    public CompletedTask(T result) => this.result = result;
 
     /// <summary>
     /// Obtains <see cref="Task{TResult}"/> completed synchronously.
