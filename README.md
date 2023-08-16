@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-07-2023
+Release Date: 08-16-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.14.0">DotNext 4.14.0</a>
 * Added implicit conversion from [BoxedValue&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.BoxedValue-1.html) to [ValueType](https://learn.microsoft.com/en-us/dotnet/api/system.valuetype)
