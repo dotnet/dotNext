@@ -119,7 +119,7 @@ internal abstract class HttpMessage
     {
         var result = ParseHeaderCore(headers, headerName, parser);
         return result.HasValue
-            ? result.OrDefault()!
+            ? result.ValueOrDefault
             : throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
     }
 
@@ -150,7 +150,7 @@ internal abstract class HttpMessage
     {
         var result = ParseHeaderCore(headers, headerName, parser);
         return result.HasValue
-            ? result.OrDefault()!
+            ? result.ValueOrDefault
             : throw new RaftProtocolException(ExceptionMessages.MissingHeader(headerName));
     }
 

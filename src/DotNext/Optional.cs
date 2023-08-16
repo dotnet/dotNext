@@ -86,7 +86,7 @@ public static class Optional
     /// <param name="task">The task returning optional value.</param>
     /// <returns>The value, if present, otherwise default.</returns>
     public static async Task<T?> OrDefault<T>(this Task<Optional<T>> task)
-        => (await task.ConfigureAwait(false)).OrDefault();
+        => (await task.ConfigureAwait(false)).ValueOrDefault;
 
     /// <summary>
     /// If a value is present, and the value matches the given predicate,
@@ -131,7 +131,7 @@ public static class Optional
     /// <returns>Nullable value.</returns>
     public static T? OrNull<T>(this in Optional<T> value)
         where T : struct
-        => value.HasValue ? value.OrDefault() : null;
+        => value.HasValue ? value.ValueOrDefault : null;
 
     /// <summary>
     /// Returns the second value if the first is empty.
@@ -311,7 +311,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </returns>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static bool IsValueDefined([NotNullWhen(true)] T? value)
-        => value is not null && (!IsOptional || GetKindUnsafe(ref value) == NotEmptyValue);
+        => value is not null && (!IsOptional || GetKindUnsafe(ref value) is NotEmptyValue);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref readonly T? GetReference(in Optional<T> optional)
@@ -333,13 +333,14 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// equal to <see langword="false"/>.
     /// </remarks>
     [MemberNotNullWhen(true, nameof(value))]
-    public bool HasValue => kind == NotEmptyValue;
+    [MemberNotNullWhen(true, nameof(ValueOrDefault))]
+    public bool HasValue => kind is NotEmptyValue;
 
     /// <summary>
     /// Indicates that the value is undefined.
     /// </summary>
     /// <seealso cref="None"/>
-    public bool IsUndefined => kind == UndefinedValue;
+    public bool IsUndefined => kind is UndefinedValue;
 
     /// <summary>
     /// Indicates that the value is <see langword="null"/>.
@@ -348,7 +349,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// This property returns <see langword="true"/> only if this instance
     /// was constructed using <see cref="Optional{T}(T)"/> with <see langword="null"/> argument.
     /// </remarks>
-    public bool IsNull => kind == NullValue;
+    public bool IsNull => kind is NullValue;
 
     /// <summary>
     /// Boxes value encapsulated by this object.
@@ -405,11 +406,13 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <typeparam name="TException">Type of exception to throw.</typeparam>
     /// <returns>The value, if present.</returns>
     [return: NotNull]
+    [MemberNotNull(nameof(ValueOrDefault))]
     public T OrThrow<TException>()
         where TException : Exception, new()
         => OrThrow<Activator<TException>>(new Activator<TException>());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MemberNotNull(nameof(ValueOrDefault))]
     [return: NotNull]
     private T OrThrow<TFactory>(TFactory exceptionFactory)
         where TFactory : struct, ISupplier<Exception>
@@ -419,6 +422,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     }
 
     [MemberNotNull(nameof(value))]
+    [MemberNotNull(nameof(ValueOrDefault))]
     internal void Validate<TFactory>(TFactory exceptionFactory)
         where TFactory : struct, ISupplier<Exception>
     {
@@ -435,6 +439,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <param name="exceptionFactory">Exception factory.</param>
     /// <returns>The value, if present.</returns>
+    [MemberNotNull(nameof(ValueOrDefault))]
     [return: NotNull]
     public T OrThrow(Func<Exception> exceptionFactory)
         => OrThrow<DelegatingSupplier<Exception>>(exceptionFactory);
@@ -444,8 +449,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <param name="exceptionFactory">Exception factory.</param>
     /// <returns>The value, if present.</returns>
-    [return: NotNull]
     [CLSCompliant(false)]
+    [MemberNotNull(nameof(ValueOrDefault))]
+    [return: NotNull]
     public unsafe T OrThrow(delegate*<Exception> exceptionFactory)
         => OrThrow<Supplier<Exception>>(exceptionFactory);
 
@@ -473,7 +479,17 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// If a value is present, returns the value, otherwise return default value.
     /// </summary>
     /// <returns>The value, if present, otherwise default.</returns>
-    public T? OrDefault() => value;
+    [Obsolete("Use ValueOrDefault property instead.")]
+    public T? OrDefault() => ValueOrDefault;
+
+    /// <summary>
+    /// If a value is present, returns the value, otherwise default value.
+    /// </summary>
+    /// <value>The value, if present, otherwise default.</value>
+    public T? ValueOrDefault => value;
+
+    /// <inheritdoc />
+    T? IOptionMonad<T>.OrDefault() => ValueOrDefault;
 
     /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
@@ -729,6 +745,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <param name="optional">The container to check.</param>
     /// <returns><see langword="true"/> if this container has value; otherwise, <see langword="false"/>.</returns>
     /// <see cref="HasValue"/>
+    [MemberNotNullWhen(true, nameof(ValueOrDefault))]
     public static bool operator true(in Optional<T> optional) => optional.HasValue;
 
     /// <summary>
@@ -737,6 +754,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <param name="optional">The container to check.</param>
     /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
     /// <see cref="HasValue"/>
+    [MemberNotNullWhen(false, nameof(ValueOrDefault))]
     public static bool operator false(in Optional<T> optional) => optional.kind < NotEmptyValue;
 }
 #pragma warning restore CA2252
