@@ -226,4 +226,16 @@ public static class TypeExtensions
             return obj;
         throw new InvalidCastException();
     }
+
+    /// <summary>
+    /// Gets default value for the specified type.
+    /// </summary>
+    /// <remarks>
+    /// The method returns <see langword="null"/> for all reference and pointer types
+    /// and default boxed value for value types.
+    /// </remarks>
+    /// <param name="type">The type for which default value should be returned.</param>
+    /// <returns>The default value of type <paramref name="type"/>.</returns>
+    public static object? GetDefaultValue([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] this Type type)
+        => type.IsValueType ? RuntimeHelpers.GetUninitializedObject(type) : null;
 }
