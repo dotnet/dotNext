@@ -323,7 +323,7 @@ public partial class AsyncEventHub : IResettable
 
         lock (accessLock)
         {
-            foreach (ref var source in sources.AsSpan())
+            foreach (var source in sources)
             {
                 if (source.TrySetResult())
                     count += 1;
@@ -347,14 +347,12 @@ public partial class AsyncEventHub : IResettable
         if (flags.Length < sources.Length)
             throw new ArgumentOutOfRangeException(nameof(flags));
 
-        var i = 0;
-
         lock (accessLock)
         {
             ref var state = ref MemoryMarshal.GetReference(flags);
 
-            foreach (ref var source in sources.AsSpan())
-                Unsafe.Add(ref state, i++) = source.TrySetResult();
+            for (var i = 0; i < sources.Length; i++)
+                Unsafe.Add(ref state, i) = sources[i].TrySetResult();
         }
     }
 
