@@ -13,7 +13,6 @@ using static Tasks.Conversion;
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
 public partial class AsyncEventHub : IResettable
 {
-    private readonly object accessLock;
     private readonly TaskCompletionSource[] sources;
 
     /// <summary>
@@ -25,8 +24,6 @@ public partial class AsyncEventHub : IResettable
     {
         if (count < 1)
             throw new ArgumentOutOfRangeException(nameof(count));
-
-        accessLock = new();
 
         sources = new TaskCompletionSource[count];
 
@@ -62,7 +59,7 @@ public partial class AsyncEventHub : IResettable
         var start = new Timestamp();
         try
         {
-            lockTaken = Monitor.TryEnter(accessLock, timeout);
+            lockTaken = Monitor.TryEnter(sources, timeout);
             result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
                 ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).Task
                 : throw new TimeoutException();
@@ -74,7 +71,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(timeout, token);
@@ -89,7 +86,7 @@ public partial class AsyncEventHub : IResettable
         var lockTaken = false;
         try
         {
-            Monitor.Enter(accessLock, ref lockTaken);
+            Monitor.Enter(sources, ref lockTaken);
             result = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).Task;
         }
         catch (Exception e)
@@ -99,7 +96,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(token);
@@ -141,7 +138,7 @@ public partial class AsyncEventHub : IResettable
     /// </summary>
     public void Reset()
     {
-        lock (accessLock)
+        lock (sources)
         {
             foreach (ref var source in sources.AsSpan())
                 ResetIfNeeded(ref source);
@@ -160,7 +157,7 @@ public partial class AsyncEventHub : IResettable
             throw new ArgumentOutOfRangeException(nameof(eventIndex));
 
         var result = false;
-        lock (accessLock)
+        lock (sources)
         {
             for (var i = 0; i < sources.Length; i++)
             {
@@ -191,7 +188,7 @@ public partial class AsyncEventHub : IResettable
         if ((uint)eventIndex >= (uint)sources.Length)
             throw new ArgumentOutOfRangeException(nameof(eventIndex));
 
-        lock (accessLock)
+        lock (sources)
         {
             return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).TrySetResult();
         }
@@ -206,7 +203,7 @@ public partial class AsyncEventHub : IResettable
     {
         var count = 0;
 
-        lock (accessLock)
+        lock (sources)
         {
             for (var i = 0; i < sources.Length; i++)
             {
@@ -241,7 +238,7 @@ public partial class AsyncEventHub : IResettable
         if (eventIndexes.Length != flags.Length)
             throw new ArgumentOutOfRangeException(nameof(flags));
 
-        lock (accessLock)
+        lock (sources)
         {
             for (var i = 0; i < sources.Length; i++)
             {
@@ -273,7 +270,7 @@ public partial class AsyncEventHub : IResettable
         if (eventIndexes.IsEmpty)
             goto exit;
 
-        lock (accessLock)
+        lock (sources)
         {
             foreach (var index in eventIndexes)
             {
@@ -304,7 +301,7 @@ public partial class AsyncEventHub : IResettable
         if (eventIndexes.IsEmpty)
             return;
 
-        lock (accessLock)
+        lock (sources)
         {
             foreach (var index in eventIndexes)
             {
@@ -321,7 +318,7 @@ public partial class AsyncEventHub : IResettable
     {
         var count = 0;
 
-        lock (accessLock)
+        lock (sources)
         {
             foreach (var source in sources)
             {
@@ -347,7 +344,7 @@ public partial class AsyncEventHub : IResettable
         if (flags.Length < sources.Length)
             throw new ArgumentOutOfRangeException(nameof(flags));
 
-        lock (accessLock)
+        lock (sources)
         {
             ref var state = ref MemoryMarshal.GetReference(flags);
 
@@ -377,7 +374,7 @@ public partial class AsyncEventHub : IResettable
         var start = new Timestamp();
         try
         {
-            lockTaken = Monitor.TryEnter(accessLock, timeout);
+            lockTaken = Monitor.TryEnter(sources, timeout);
             result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
                 ? Task.WhenAny(GetTasks(eventIndexes))
                 : throw new TimeoutException();
@@ -389,7 +386,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(timeout, token).Convert(GetIndex);
@@ -402,7 +399,7 @@ public partial class AsyncEventHub : IResettable
         var lockTaken = false;
         try
         {
-            Monitor.Enter(accessLock, ref lockTaken);
+            Monitor.Enter(sources, ref lockTaken);
             result = Task.WhenAny(GetTasks(eventIndexes));
         }
         catch (Exception e)
@@ -412,7 +409,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(token).Convert(GetIndex);
@@ -469,7 +466,7 @@ public partial class AsyncEventHub : IResettable
             var start = new Timestamp();
             try
             {
-                lockTaken = Monitor.TryEnter(accessLock, timeout);
+                lockTaken = Monitor.TryEnter(sources, timeout);
                 result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
                     ? Task.WhenAny(GetTasks())
                     : throw new TimeoutException();
@@ -481,7 +478,7 @@ public partial class AsyncEventHub : IResettable
             finally
             {
                 if (lockTaken)
-                    Monitor.Exit(accessLock);
+                    Monitor.Exit(sources);
             }
 
             return result.WaitAsync(timeout, token).Convert(GetIndex);
@@ -501,7 +498,7 @@ public partial class AsyncEventHub : IResettable
         var lockTaken = false;
         try
         {
-            Monitor.Enter(accessLock, ref lockTaken);
+            Monitor.Enter(sources, ref lockTaken);
             result = Task.WhenAny(GetTasks());
         }
         catch (Exception e)
@@ -511,7 +508,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(token).Convert(GetIndex);
@@ -524,7 +521,7 @@ public partial class AsyncEventHub : IResettable
         var lockTaken = false;
         try
         {
-            Monitor.Enter(accessLock, ref lockTaken);
+            Monitor.Enter(sources, ref lockTaken);
             result = Task.WhenAll(GetTasks(eventIndexes));
         }
         catch (Exception e)
@@ -534,7 +531,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(token);
@@ -548,7 +545,7 @@ public partial class AsyncEventHub : IResettable
         var start = new Timestamp();
         try
         {
-            lockTaken = Monitor.TryEnter(accessLock, timeout);
+            lockTaken = Monitor.TryEnter(sources, timeout);
             result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
                 ? Task.WhenAll(GetTasks(eventIndexes))
                 : throw new TimeoutException();
@@ -560,7 +557,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(timeout, token);
@@ -613,7 +610,7 @@ public partial class AsyncEventHub : IResettable
             var start = new Timestamp();
             try
             {
-                lockTaken = Monitor.TryEnter(accessLock, timeout);
+                lockTaken = Monitor.TryEnter(sources, timeout);
                 result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
                     ? Task.WhenAll(GetTasks())
                     : throw new TimeoutException();
@@ -625,7 +622,7 @@ public partial class AsyncEventHub : IResettable
             finally
             {
                 if (lockTaken)
-                    Monitor.Exit(accessLock);
+                    Monitor.Exit(sources);
             }
 
             return result.WaitAsync(timeout, token);
@@ -645,7 +642,7 @@ public partial class AsyncEventHub : IResettable
         var lockTaken = false;
         try
         {
-            Monitor.Enter(accessLock, ref lockTaken);
+            Monitor.Enter(sources, ref lockTaken);
             result = Task.WhenAll(GetTasks());
         }
         catch (Exception e)
@@ -655,7 +652,7 @@ public partial class AsyncEventHub : IResettable
         finally
         {
             if (lockTaken)
-                Monitor.Exit(accessLock);
+                Monitor.Exit(sources);
         }
 
         return result.WaitAsync(token);
@@ -671,7 +668,7 @@ public partial class AsyncEventHub : IResettable
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        lock (accessLock)
+        lock (sources)
         {
             foreach (var source in sources)
                 source.TrySetCanceled(token);
