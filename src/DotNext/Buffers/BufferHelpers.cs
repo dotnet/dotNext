@@ -79,12 +79,7 @@ public static partial class BufferHelpers
                 ToReadOnlySequence(array.AsSpan(), ref head, ref tail);
                 break;
             default:
-                foreach (var str in strings)
-                {
-                    if (str is { Length: > 0 })
-                        Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
-                }
-
+                ToReadOnlySequenceSlow(strings, ref head, ref tail);
                 break;
         }
 
@@ -97,6 +92,15 @@ public static partial class BufferHelpers
         return Chunk<char>.CreateSequence(head, tail);
 
         static void ToReadOnlySequence(ReadOnlySpan<string?> strings, ref Chunk<char>? head, ref Chunk<char>? tail)
+        {
+            foreach (var str in strings)
+            {
+                if (str is { Length: > 0 })
+                    Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
+            }
+        }
+
+        static void ToReadOnlySequenceSlow(IEnumerable<string?> strings, ref Chunk<char>? head, ref Chunk<char>? tail)
         {
             foreach (var str in strings)
             {
