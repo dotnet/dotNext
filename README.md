@@ -44,16 +44,16 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-22-2023
+Release Date: 08-23-2023
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.14.1">DotNext.Threading 4.14.1</a>
 * Optimized `AsyncEventHub` and `Scheduler` performance
 * Fixed regression: reuse `CancellationTokenSource` used for timeout tracking by all async locks
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.0">DotNext.Net.Cluster 4.14.1</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.1">DotNext.Net.Cluster 4.14.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.0">DotNext.AspNetCore.Cluster 4.14.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.1">DotNext.AspNetCore.Cluster 4.14.1</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
