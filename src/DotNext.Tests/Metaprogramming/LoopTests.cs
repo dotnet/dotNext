@@ -156,13 +156,13 @@ public sealed class LoopTests : Test
             Loop(() =>
             {
                 If((Expression)(arg.AsDynamic() > 1L))
-                    .Then(new Action(() =>
+                    .Then(() =>
                     {
                         Assign(result, result.AsDynamic() * arg);
                         Assign((ParameterExpression)arg, arg.AsDynamic() - 1L);
-                    }))
+                    })
                     .Else(Break)
-                    .End();
+                .End();
             });
         })
         .Compile();

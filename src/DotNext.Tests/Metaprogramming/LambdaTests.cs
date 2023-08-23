@@ -46,19 +46,19 @@ public sealed class LambdaTests : Test
         var result = new StrongBox<int>();
         var lambda = AsyncLambda<Func<StrongBox<int>, Task>>(fun =>
         {
-            Try(new Action(() =>
+            Try(() =>
             {
                 Await(Expression.Call(typeof(Task), nameof(Task.Yield), Type.EmptyTypes));
                 Throw<InvalidOperationException>();
-            }))
+            })
             .Catch(typeof(InvalidOperationException), e =>
             {
                 Throw<ArithmeticException>();
             })
-            .Finally(new Action(() =>
+            .Finally(() =>
             {
                 Assign(Expression.Field(fun[0], "Value"), 45.Const());
-            }))
+            })
             .End();
         }).Compile();
 
@@ -189,13 +189,13 @@ public sealed class LambdaTests : Test
         {
             var arg = fun[0];
             If((Expression)(arg.AsDynamic() > 10L))
-                .Then(new Action(() => Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await())))
-                .Else(new Action(() =>
+                .Then(() => Return(Expression.Call(null, sumMethod, arg, 10L.Const()).Await()))
+                .Else(() =>
                 {
                     var local = DeclareVariable<long>("myVar");
                     Assign(local, Expression.Call(null, sumMethod, arg, 90L.Const()).Await());
                     Return(local);
-                }))
+                })
                 .End();
         });
         var fn = lambda.Compile();
@@ -232,7 +232,7 @@ public sealed class LambdaTests : Test
     {
         var lambda = AsyncLambda<Func<Task, Action, Task>>(static fun =>
         {
-            Try(new Action(() => Await(fun[0]))).Finally(fun[1].Invoke()).End();
+            Try(() => Await(fun[0])).Finally(fun[1].Invoke()).End();
         });
 
         var fn = lambda.Compile();
@@ -251,12 +251,12 @@ public sealed class LambdaTests : Test
         var lambda = AsyncLambda<Func<long, Task<long>>>(fun =>
         {
             var arg = fun[0];
-            Try(new Action(() =>
+            Try(() =>
             {
-                If((Expression)(arg.AsDynamic() < 0L)).Then(new Action(Throw<InvalidOperationException>)).End();
-                If((Expression)(arg.AsDynamic() > 10L)).Then(new Action(Throw<ArgumentException>)).Else(new Action(() => Return(arg))).End();
-            }))
-            .Catch<ArgumentException>(new Action(() => Return((-42L).Const())))
+                If((Expression)(arg.AsDynamic() < 0L)).Then(Throw<InvalidOperationException>).End();
+                If((Expression)(arg.AsDynamic() > 10L)).Then(Throw<ArgumentException>).Else(() => Return(arg)).End();
+            })
+            .Catch<ArgumentException>(() => Return((-42L).Const()))
             .Catch<InvalidOperationException>(Rethrow)
             .End();
         });
@@ -417,17 +417,17 @@ public sealed class LambdaTests : Test
 
         var asyncTryCatchExpression = AsyncLambda<Func<Task<string>>>((lambdaContext, result) =>
         {
-            Try(new Action(() =>
-                {
-                    Assign(result, Expression.Call(null, exprThrowException).Await());
-                    Return(result);
-                }))
-                .Catch<Exception>(() =>
-                {
-                    Assign(result, Expression.Call(null, exprReprocess).Await());
-                    Return(result);
-                })
-                .End();
+            Try(() =>
+            {
+                Assign(result, Expression.Call(null, exprThrowException).Await());
+                Return(result);
+            })
+            .Catch<Exception>(() =>
+            {
+                Assign(result, Expression.Call(null, exprReprocess).Await());
+                Return(result);
+            })
+            .End();
         });
 
         var asyncTryCatchFunc = asyncTryCatchExpression.Compile();

@@ -11,37 +11,6 @@ using Seq = Collections.Generic.Sequence;
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch statement</seealso>
 public sealed class SwitchBuilder : ExpressionBuilder<SwitchExpression>
 {
-    internal sealed class CaseStatement : Statement, ILexicalScope<SwitchBuilder, Action>
-    {
-        private readonly SwitchBuilder builder;
-        private readonly IEnumerable<Expression> testValues;
-
-        internal CaseStatement(SwitchBuilder builder, IEnumerable<Expression> testValues)
-        {
-            this.builder = builder;
-            this.testValues = testValues;
-        }
-
-        public SwitchBuilder Build(Action body)
-        {
-            body();
-            return builder.Case(testValues, Build());
-        }
-    }
-
-    internal sealed class DefaultStatement : Statement, ILexicalScope<SwitchBuilder, Action>
-    {
-        private readonly SwitchBuilder builder;
-
-        internal DefaultStatement(SwitchBuilder builder) => this.builder = builder;
-
-        public SwitchBuilder Build(Action scope)
-        {
-            scope();
-            return builder.Default(Build());
-        }
-    }
-
     private readonly Expression switchValue;
     private readonly ICollection<SwitchCase> cases;
     private Expression? defaultExpression;
@@ -53,8 +22,6 @@ public sealed class SwitchBuilder : ExpressionBuilder<SwitchExpression>
         defaultExpression = Expression.Empty();
         switchValue = expression;
     }
-
-    internal CaseStatement Case(IEnumerable<Expression> testValues) => new(this, testValues);
 
     /// <summary>
     /// Specifies a pattern to compare to the match expression
@@ -72,12 +39,34 @@ public sealed class SwitchBuilder : ExpressionBuilder<SwitchExpression>
 
     /// <summary>
     /// Specifies a pattern to compare to the match expression
+    /// and action to be executed if matching is successful.
+    /// </summary>
+    /// <param name="testValues">A list of test values.</param>
+    /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
+    /// <returns>Modified selection builder.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public SwitchBuilder Case(IEnumerable<Expression> testValues, Action body)
+        => Case(body => Case(testValues, body), body);
+
+    /// <summary>
+    /// Specifies a pattern to compare to the match expression
     /// and expression to be returned if matching is successful.
     /// </summary>
     /// <param name="test">Single test value.</param>
     /// <param name="body">The expression to be returned from selection statement.</param>
     /// <returns><c>this</c> builder.</returns>
     public SwitchBuilder Case(Expression test, Expression body) => Case(Seq.Singleton(test), body);
+
+    /// <summary>
+    /// Specifies a pattern to compare to the match expression
+    /// and action to be executed if matching is successful.
+    /// </summary>
+    /// <param name="test">Single test value.</param>
+    /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
+    /// <returns>Modified selection builder.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public SwitchBuilder Case(Expression test, Action body)
+        => Case(body => Case(test, body), body);
 
     /// <summary>
     /// Specifies the switch section to execute if the match expression
@@ -92,7 +81,20 @@ public sealed class SwitchBuilder : ExpressionBuilder<SwitchExpression>
         return this;
     }
 
-    internal DefaultStatement Default() => new(this);
+    /// <summary>
+    /// Specifies the switch section to execute if the match expression
+    /// doesn't match any other cases.
+    /// </summary>
+    /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
+    /// <returns>Modified selection builder.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public SwitchBuilder Default(Action body) => Case(Default, body);
+
+    private SwitchBuilder Case(Func<Expression, SwitchBuilder> @case, Action body)
+    {
+        using var statement = new CaseStatement(Default);
+        return statement.Build(body);
+    }
 
     private protected override SwitchExpression Build() => Expression.Switch(Type, switchValue, defaultExpression, null, cases);
 
@@ -101,5 +103,19 @@ public sealed class SwitchBuilder : ExpressionBuilder<SwitchExpression>
         cases.Clear();
         defaultExpression = null;
         base.Cleanup();
+    }
+
+    private sealed class CaseStatement : Statement, ILexicalScope<SwitchBuilder, Action>
+    {
+        private readonly Func<Expression, SwitchBuilder> builder;
+
+        internal CaseStatement(Func<Expression, SwitchBuilder> builder)
+            => this.builder = builder;
+
+        public SwitchBuilder Build(Action body)
+        {
+            body();
+            return builder(Build());
+        }
     }
 }

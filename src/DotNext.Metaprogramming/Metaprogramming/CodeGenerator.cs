@@ -7,7 +7,6 @@ namespace DotNext.Metaprogramming;
 
 using Linq.Expressions;
 using LambdaExpressionTree = System.Linq.Expressions.LambdaExpression;
-using Seq = Collections.Generic.Sequence;
 using TaskType = Runtime.CompilerServices.TaskType;
 
 /// <summary>
@@ -533,32 +532,6 @@ public static class CodeGenerator
     public static ConditionalBuilder If(Expression test) => new(test, LexicalScope.Current);
 
     /// <summary>
-    /// Constructs positive branch of the conditional expression.
-    /// </summary>
-    /// <param name="builder">Conditional statement builder.</param>
-    /// <param name="body">Branch builder.</param>
-    /// <returns>Conditional expression builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static ConditionalBuilder Then(this ConditionalBuilder builder, Action body)
-    {
-        using var statement = BranchStatement.Positive(builder);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Constructs negative branch of the conditional expression.
-    /// </summary>
-    /// <param name="builder">Conditional statement builder.</param>
-    /// <param name="body">Branch builder.</param>
-    /// <returns>Conditional expression builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static ConditionalBuilder Else(this ConditionalBuilder builder, Action body)
-    {
-        using var statement = BranchStatement.Negative(builder);
-        return statement.Build(body);
-    }
-
-    /// <summary>
     /// Adds if-then statement to this scope.
     /// </summary>
     /// <param name="test">Test expression.</param>
@@ -768,7 +741,7 @@ public static class CodeGenerator
     /// <exception cref="InvalidOperationException">Attempts to call this method out of catch clause.</exception>
     public static void Rethrow()
     {
-        if (LexicalScope.IsInScope<CatchStatement>())
+        if (TryBuilder.IsInCatchStatement)
             Statement(Expression.Rethrow());
         else
             throw new InvalidOperationException(ExceptionMessages.InvalidRethrow);
@@ -886,272 +859,6 @@ public static class CodeGenerator
     public static MatchBuilder Match(Expression value) => new(value, LexicalScope.Current);
 
     /// <summary>
-    /// Defines pattern matching.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="pattern">The condition representing pattern.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
-    {
-        using var statement = builder.Case(pattern);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Defines pattern matching based on the expected type of value.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="expectedType">The expected type of the value.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case(this MatchBuilder builder, Type expectedType, Action<ParameterExpression> body)
-    {
-        using var statement = builder.Case(expectedType);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Defines pattern matching based on the expected type of value.
-    /// </summary>
-    /// <typeparam name="T">The expected type of the value.</typeparam>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case<T>(this MatchBuilder builder, Action<ParameterExpression> body)
-        => Case(builder, typeof(T), body);
-
-    /// <summary>
-    /// Defines pattern matching based on the expected type of value.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="expectedType">The expected type of the value.</param>
-    /// <param name="pattern">Additional condition associated with the value.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case(this MatchBuilder builder, Type expectedType, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
-    {
-        using var statement = builder.Case(expectedType, pattern);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Defines pattern matching based on the expected type of value.
-    /// </summary>
-    /// <typeparam name="T">The expected type of the value.</typeparam>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="pattern">Additional condition associated with the value.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case<T>(this MatchBuilder builder, MatchBuilder.Pattern pattern, Action<ParameterExpression> body)
-        => Case(builder, typeof(T), pattern, body);
-
-    /// <summary>
-    /// Defines pattern matching based on structural matching.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="structPattern">The structure pattern represented by instance of anonymous type.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case(this MatchBuilder builder, object structPattern, Action<ParameterExpression> body)
-    {
-        using var statement = builder.Case(structPattern);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Defines pattern matching based on structural matching.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="memberName">The name of the field or property.</param>
-    /// <param name="memberValue">The expected value of the field or property.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case(this MatchBuilder builder, string memberName, Expression memberValue, Action<MemberExpression> body)
-    {
-        using var statement = builder.Case(memberName, memberValue);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Defines pattern matching based on structural matching.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="memberName1">The name of the first field or property.</param>
-    /// <param name="memberValue1">The expected value of the first field or property.</param>
-    /// <param name="memberName2">The name of the second field or property.</param>
-    /// <param name="memberValue2">The expected value of the second field or property.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case(this MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, Action<MemberExpression, MemberExpression> body)
-    {
-        using var statement = builder.Case(memberName1, memberValue1, memberName2, memberValue2);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Defines pattern matching based on structural matching.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="memberName1">The name of the first field or property.</param>
-    /// <param name="memberValue1">The expected value of the first field or property.</param>
-    /// <param name="memberName2">The name of the second field or property.</param>
-    /// <param name="memberValue2">The expected value of the second field or property.</param>
-    /// <param name="memberName3">The name of the third field or property.</param>
-    /// <param name="memberValue3">The expected value of the third field or property.</param>
-    /// <param name="body">The action to be executed if object matches to the pattern.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Case(this MatchBuilder builder, string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Action<MemberExpression, MemberExpression, MemberExpression> body)
-    {
-        using var statement = builder.Case(memberName1, memberValue1, memberName2, memberValue2, memberName3, memberValue3);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Defines default behavior in case when all defined patterns are false positive.
-    /// </summary>
-    /// <param name="builder">Pattern matching builder.</param>
-    /// <param name="body">The body to be executed as default case.</param>
-    /// <returns><c>this</c> builder.</returns>
-    public static MatchBuilder Default(this MatchBuilder builder, Action<ParameterExpression> body)
-    {
-        using var statement = builder.Default();
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Specifies a pattern to compare to the match expression
-    /// and action to be executed if matching is successful.
-    /// </summary>
-    /// <param name="builder">Selection builder.</param>
-    /// <param name="testValues">A list of test values.</param>
-    /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
-    /// <returns>Modified selection builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static SwitchBuilder Case(this SwitchBuilder builder, IEnumerable<Expression> testValues, Action body)
-    {
-        using var statement = builder.Case(testValues);
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Specifies a pattern to compare to the match expression
-    /// and action to be executed if matching is successful.
-    /// </summary>
-    /// <param name="builder">Selection builder.</param>
-    /// <param name="test">Single test value.</param>
-    /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
-    /// <returns>Modified selection builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static SwitchBuilder Case(this SwitchBuilder builder, Expression test, Action body)
-        => Case(builder, Seq.Singleton(test), body);
-
-    /// <summary>
-    /// Specifies the switch section to execute if the match expression
-    /// doesn't match any other cases.
-    /// </summary>
-    /// <param name="builder">Selection builder.</param>
-    /// <param name="body">The block code to be executed if input value is equal to one of test values.</param>
-    /// <returns>Modified selection builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static SwitchBuilder Default(this SwitchBuilder builder, Action body)
-    {
-        using var statement = builder.Default();
-        return statement.Build(body);
-    }
-
-    /// <summary>
-    /// Constructs exception handling section.
-    /// </summary>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="exceptionType">Expected exception.</param>
-    /// <param name="filter">Additional filter to be applied to the caught exception.</param>
-    /// <param name="handler">Exception handling block.</param>
-    /// <returns>Structured exception handler builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, TryBuilder.Filter? filter, Action<ParameterExpression> handler)
-    {
-        using var statement = new CatchStatement(builder, exceptionType, filter);
-        return statement.Build(handler);
-    }
-
-    /// <summary>
-    /// Constructs exception handling section.
-    /// </summary>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="exceptionType">Expected exception.</param>
-    /// <param name="handler">Exception handling block.</param>
-    /// <returns>Structured exception handler.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action handler)
-    {
-        using var statement = new CatchStatement(builder, exceptionType);
-        return statement.Build(handler);
-    }
-
-    /// <summary>
-    /// Constructs exception handling section.
-    /// </summary>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="exceptionType">Expected exception.</param>
-    /// <param name="handler">Exception handling block.</param>
-    /// <returns>Structured exception handler.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Catch(this TryBuilder builder, Type exceptionType, Action<ParameterExpression> handler)
-        => Catch(builder, exceptionType, null, handler);
-
-    /// <summary>
-    /// Constructs exception handling section.
-    /// </summary>
-    /// <typeparam name="TException">Expected exception.</typeparam>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="handler">Exception handling block.</param>
-    /// <returns>Structured exception handler.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Catch<TException>(this TryBuilder builder, Action<ParameterExpression> handler)
-        where TException : Exception
-        => Catch(builder, typeof(TException), handler);
-
-    /// <summary>
-    /// Constructs exception handling section.
-    /// </summary>
-    /// <typeparam name="TException">Expected exception.</typeparam>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="handler">Exception handling block.</param>
-    /// <returns>Structured exception handler.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Catch<TException>(this TryBuilder builder, Action handler)
-        where TException : Exception
-        => Catch(builder, typeof(TException), handler);
-
-    /// <summary>
-    /// Constructs exception handling section that may capture any exception.
-    /// </summary>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="handler">Exception handling block.</param>
-    /// <returns>Structured exception handler.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Catch(this TryBuilder builder, Action handler)
-    {
-        using var statement = new CatchStatement(builder);
-        return statement.Build(handler);
-    }
-
-    /// <summary>
-    /// Constructs block of code which will be executed in case
-    /// of any exception.
-    /// </summary>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="fault">Fault handling block.</param>
-    /// <returns><c>this</c> builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Fault(this TryBuilder builder, Action fault)
-    {
-        using var statement = new FaultStatement(builder);
-        return statement.Build(fault);
-    }
-
-    /// <summary>
     /// Adds structured exception handling statement.
     /// </summary>
     /// <param name="scope"><c>try</c> block builder.</param>
@@ -1172,19 +879,6 @@ public static class CodeGenerator
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/try-catch-finally">try-catch-finally Statement</seealso>
     public static TryBuilder Try(Expression body) => new(body, LexicalScope.Current);
-
-    /// <summary>
-    /// Constructs block of code run when control leaves a <c>try</c> statement.
-    /// </summary>
-    /// <param name="builder">Structured exception handling builder.</param>
-    /// <param name="body">The block of code to be executed.</param>
-    /// <returns><c>this</c> builder.</returns>
-    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static TryBuilder Finally(this TryBuilder builder, Action body)
-    {
-        using var statement = new FinallyStatement(builder);
-        return statement.Build(body);
-    }
 
     /// <summary>
     /// Restarts execution of the loop.
