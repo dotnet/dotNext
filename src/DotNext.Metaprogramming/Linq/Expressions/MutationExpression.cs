@@ -30,7 +30,7 @@ public sealed class MutationExpression : CustomExpression
                 cloneMethodOrCtor = recordStruct.GetConstructor(ctorFlags, new[] { recordStruct }) ?? recordStruct.GetConstructor(ctorFlags, Type.EmptyTypes);
                 break;
             case { IsClass: true } recordClass:
-                const BindingFlags methodFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+                const BindingFlags methodFlags = BindingFlags.Public | ctorFlags;
                 cloneMethodOrCtor = recordClass.GetMethod(CloneMethodName, methodFlags, Type.EmptyTypes);
                 if (cloneMethodOrCtor is null)
                     goto default;

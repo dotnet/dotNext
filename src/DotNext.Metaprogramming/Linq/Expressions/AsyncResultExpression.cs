@@ -80,7 +80,7 @@ public sealed class AsyncResultExpression : CustomExpression
             failedTask = completedTask.Type.New(caughtException);
         }
 
-        return AsyncResult is ConstantExpression || AsyncResult is DefaultExpression ?
+        return AsyncResult is ConstantExpression or DefaultExpression ?
             completedTask.Convert(taskType) :
             TryCatch(completedTask, Catch(caughtException, failedTask)).Convert(taskType);
     }
