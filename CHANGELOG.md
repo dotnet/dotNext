@@ -2,6 +2,11 @@ Release Notes
 ====
 
 # 08-23-2023
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.15.0">DotNext.Metaprogramming 4.15.0</a>
+* Fixed broken compatibility introduced in C# 10 at language level. See [189](https://github.com/dotnet/dotNext/discussions/189) discussion
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.threading/4.14.1">DotNext.Threading 4.14.1</a>
 * Optimized `AsyncEventHub` and `Scheduler` performance
 * Fixed regression: reuse `CancellationTokenSource` used for timeout tracking by all async locks
