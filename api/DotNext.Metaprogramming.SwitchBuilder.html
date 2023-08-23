@@ -128,10 +128,87 @@ list of candidates based on a pattern matching.</p>
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Action_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable%7BSystem.Linq.Expressions.Expression%7D%2CSystem.Action)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_SwitchBuilder_Case_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case*"></a>
+  <h4 id="DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Action_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression},System.Action)">Case(IEnumerable&lt;Expression&gt;, Action)</h4>
+  <div class="markdown level1 summary"><p>Specifies a pattern to compare to the match expression
+and action to be executed if matching is successful.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public SwitchBuilder Case(IEnumerable&lt;Expression&gt; testValues, Action body)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>&gt;</td>
+        <td><span class="parametername">testValues</span></td>
+        <td><p>A list of test values.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="parametername">body</span></td>
+        <td><p>The block code to be executed if input value is equal to one of test values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Metaprogramming.SwitchBuilder.html">SwitchBuilder</a></td>
+        <td><p>Modified selection builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Attempts to call this method out of lexical scope.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Action__seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch statement</a></span></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable%7BSystem.Linq.Expressions.Expression%7D%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L66">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_SwitchBuilder_Case_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case*"></a>
   <h4 id="DotNext_Metaprogramming_SwitchBuilder_Case_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Linq_Expressions_Expression_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case(System.Collections.Generic.IEnumerable{System.Linq.Expressions.Expression},System.Linq.Expressions.Expression)">Case(IEnumerable&lt;Expression&gt;, Expression)</h4>
@@ -189,10 +266,87 @@ and expression to be returned if matching is successful.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_SwitchBuilder_Case_System_Linq_Expressions_Expression_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.SwitchBuilder.Case(System.Linq.Expressions.Expression%2CSystem.Action)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L68">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_SwitchBuilder_Case_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case*"></a>
+  <h4 id="DotNext_Metaprogramming_SwitchBuilder_Case_System_Linq_Expressions_Expression_System_Action_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case(System.Linq.Expressions.Expression,System.Action)">Case(Expression, Action)</h4>
+  <div class="markdown level1 summary"><p>Specifies a pattern to compare to the match expression
+and action to be executed if matching is successful.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public SwitchBuilder Case(Expression test, Action body)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">test</span></td>
+        <td><p>Single test value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="parametername">body</span></td>
+        <td><p>The block code to be executed if input value is equal to one of test values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Metaprogramming.SwitchBuilder.html">SwitchBuilder</a></td>
+        <td><p>Modified selection builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Attempts to call this method out of lexical scope.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Metaprogramming_SwitchBuilder_Case_System_Linq_Expressions_Expression_System_Action__seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch statement</a></span></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_SwitchBuilder_Case_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.SwitchBuilder.Case(System.Linq.Expressions.Expression%2CSystem.Linq.Expressions.Expression)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_SwitchBuilder_Case_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case*"></a>
   <h4 id="DotNext_Metaprogramming_SwitchBuilder_Case_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Case(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)">Case(Expression, Expression)</h4>
@@ -250,10 +404,81 @@ and expression to be returned if matching is successful.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_SwitchBuilder_Default_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.SwitchBuilder.Default(System.Action)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L91">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_SwitchBuilder_Default_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Default*"></a>
+  <h4 id="DotNext_Metaprogramming_SwitchBuilder_Default_System_Action_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Default(System.Action)">Default(Action)</h4>
+  <div class="markdown level1 summary"><p>Specifies the switch section to execute if the match expression
+doesn't match any other cases.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public SwitchBuilder Default(Action body)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="parametername">body</span></td>
+        <td><p>The block code to be executed if input value is equal to one of test values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Metaprogramming.SwitchBuilder.html">SwitchBuilder</a></td>
+        <td><p>Modified selection builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>Attempts to call this method out of lexical scope.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Metaprogramming_SwitchBuilder_Default_System_Action__seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch statement</a></span></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_SwitchBuilder_Default_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.SwitchBuilder.Default(System.Linq.Expressions.Expression)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L88">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/SwitchBuilder.cs/#L77">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_SwitchBuilder_Default_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Default*"></a>
   <h4 id="DotNext_Metaprogramming_SwitchBuilder_Default_System_Linq_Expressions_Expression_" data-uid="DotNext.Metaprogramming.SwitchBuilder.Default(System.Linq.Expressions.Expression)">Default(Expression)</h4>
@@ -313,15 +538,6 @@ doesn't match any other cases.</p>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_SwitchBuilder_System_Collections_Generic_IEnumerable_System_Linq_Expressions_Expression__System_Action_">CodeGenerator.Case(SwitchBuilder, IEnumerable&lt;Expression&gt;, Action)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Case_DotNext_Metaprogramming_SwitchBuilder_System_Linq_Expressions_Expression_System_Action_">CodeGenerator.Case(SwitchBuilder, Expression, Action)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Default_DotNext_Metaprogramming_SwitchBuilder_System_Action_">CodeGenerator.Default(SwitchBuilder, Action)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
