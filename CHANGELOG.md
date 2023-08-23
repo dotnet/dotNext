@@ -1,6 +1,22 @@
 Release Notes
 ====
 
+# 08-23-2023
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.15.0">DotNext.Metaprogramming 4.15.0</a>
+* Fixed broken compatibility introduced in C# 10 at language level. See [189](https://github.com/dotnet/dotNext/discussions/189) discussion
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.14.1">DotNext.Threading 4.14.1</a>
+* Optimized `AsyncEventHub` and `Scheduler` performance
+* Fixed regression: reuse `CancellationTokenSource` used for timeout tracking by all async locks
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.1">DotNext.Net.Cluster 4.14.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.1">DotNext.AspNetCore.Cluster 4.14.1</a>
+* Updated dependencies
+
 # 08-16-2023
 <a href="https://www.nuget.org/packages/dotnext/4.14.0">DotNext 4.14.0</a>
 * Added implicit conversion from [BoxedValue&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Runtime.BoxedValue-1.html) to [ValueType](https://learn.microsoft.com/en-us/dotnet/api/system.valuetype)

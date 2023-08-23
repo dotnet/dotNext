@@ -2,10 +2,6 @@
 
 internal sealed class TryStatement : Statement, ILexicalScope<TryBuilder, Action>
 {
-    internal TryStatement()
-    {
-    }
-
     public TryBuilder Build(Action scope)
     {
         scope();

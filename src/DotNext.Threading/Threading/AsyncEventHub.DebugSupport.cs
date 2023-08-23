@@ -32,7 +32,7 @@ public partial class AsyncEventHub
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public void CaptureState(Span<bool> states)
     {
-        lock (accessLock)
+        lock (sources)
         {
             for (var i = 0; i < Math.Min(states.Length, Count); i++)
                 Unsafe.Add(ref MemoryMarshal.GetReference(states), i) = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), i).Task.IsCompleted;

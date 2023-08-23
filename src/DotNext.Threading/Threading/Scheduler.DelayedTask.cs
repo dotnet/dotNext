@@ -20,6 +20,7 @@ public static partial class Scheduler
         private protected readonly CancellationToken token; // cached token to avoid ObjectDisposedException
         private volatile CancellationTokenSource? tokenSource;
         private protected uint state;
+        private Action? continuation;
 
         private protected DelayedTask(CancellationToken token)
             => this.token = (tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token)).Token;
@@ -76,21 +77,23 @@ public static partial class Scheduler
 
         private protected abstract void SetException(Exception e);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected static unsafe void MoveNext<T>(T stateMachine, delegate*<T, void> stateMachineAction)
-            where T : DelayedTask
-        {
-            Debug.Assert(stateMachineAction != null);
+        private protected abstract void AdvanceStateMachine();
 
+        private protected void Await<TAwaiter>(ref TAwaiter awaiter)
+            where TAwaiter : struct, INotifyCompletion
+            => awaiter.OnCompleted(continuation ??= MoveNext);
+
+        private void MoveNext()
+        {
             try
             {
-                stateMachineAction(stateMachine);
+                AdvanceStateMachine();
             }
             catch (Exception e)
             {
-                stateMachine.Cleanup();
+                Cleanup();
 
-                if (stateMachine.state is DelayState && e is OperationCanceledException canceledEx)
+                if (state is DelayState && e is OperationCanceledException canceledEx)
                 {
                     e = new DelayedTaskCanceledException(canceledEx);
 
@@ -100,9 +103,12 @@ public static partial class Scheduler
                         ExceptionDispatchInfo.SetCurrentStackTrace(e);
                 }
 
-                stateMachine.SetException(e);
+                SetException(e);
             }
         }
+
+        private protected static void Start(DelayedTask stateMachine)
+            => stateMachine.MoveNext();
     }
 
     private sealed class ImmediateTask<TArgs> : DelayedTask
@@ -114,9 +120,11 @@ public static partial class Scheduler
         public override Task Task { get; }
 
         private protected override void SetException(Exception e) => Debug.Fail("Should not be called");
+
+        private protected override void AdvanceStateMachine() => Debug.Fail("Should not be called");
     }
 
-    private sealed class DelayedTaskStateMachine<TArgs> : DelayedTask, IAsyncStateMachine
+    private sealed class DelayedTaskStateMachine<TArgs> : DelayedTask
     {
         private readonly Func<TArgs, CancellationToken, ValueTask> callback;
         private readonly TArgs args;
@@ -134,49 +142,42 @@ public static partial class Scheduler
             this.delay = delay;
             this.args = args;
             builder = AsyncTaskMethodBuilder.Create();
+            GC.KeepAlive(builder.Task); // initialize promise task immediately
         }
 
         internal static DelayedTask Start(Func<TArgs, CancellationToken, ValueTask> callback, TArgs args, TimeSpan delay, CancellationToken token)
         {
             var machine = new DelayedTaskStateMachine<TArgs>(callback, args, delay, token);
-            machine.builder.Start(ref machine);
+            Start(machine);
             return machine;
         }
 
         public override Task Task => builder.Task;
 
-        void IAsyncStateMachine.MoveNext()
+        private protected override void AdvanceStateMachine()
         {
-            unsafe
+            switch (state)
             {
-                MoveNext(this, &AdvanceStateMachine);
-            }
-
-            static void AdvanceStateMachine(DelayedTaskStateMachine<TArgs> machine)
-            {
-                switch (machine.state)
-                {
-                    case InitialState:
-                        machine.delayAwaiter = Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
-                        machine.state = DelayState;
-                        if (machine.delayAwaiter.IsCompleted)
-                            goto case DelayState;
-                        machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
-                        break;
-                    case DelayState:
-                        GetResultAndClear(ref machine.delayAwaiter);
-                        machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
-                        if (machine.callbackAwaiter.IsCompleted)
-                            goto default;
-                        machine.state = DelayState + 1U;
-                        machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
-                        break;
-                    default:
-                        machine.callbackAwaiter.GetResult();
-                        machine.builder.SetResult();
-                        machine.Cleanup();
-                        break;
-                }
+                case InitialState:
+                    delayAwaiter = Task.Delay(delay, token).ConfigureAwait(false).GetAwaiter();
+                    state = DelayState;
+                    if (delayAwaiter.IsCompleted)
+                        goto case DelayState;
+                    Await(ref delayAwaiter);
+                    break;
+                case DelayState:
+                    GetResultAndClear(ref delayAwaiter);
+                    callbackAwaiter = callback.Invoke(args, token).ConfigureAwait(false).GetAwaiter();
+                    if (callbackAwaiter.IsCompleted)
+                        goto default;
+                    state = DelayState + 1U;
+                    Await(ref callbackAwaiter);
+                    break;
+                default:
+                    callbackAwaiter.GetResult();
+                    builder.SetResult();
+                    Cleanup();
+                    break;
             }
         }
 
@@ -188,9 +189,6 @@ public static partial class Scheduler
         }
 
         private protected override void SetException(Exception e) => builder.SetException(e);
-
-        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
-            => builder.SetStateMachine(stateMachine);
     }
 
     /// <summary>
@@ -234,9 +232,11 @@ public static partial class Scheduler
         public override Task<TResult> Task { get; }
 
         private protected override void SetException(Exception e) => Debug.Fail("Should not be called");
+
+        private protected override void AdvanceStateMachine() => Debug.Fail("Should not be called");
     }
 
-    private sealed class DelayedTaskStateMachine<TArgs, TResult> : DelayedTask<TResult>, IAsyncStateMachine
+    private sealed class DelayedTaskStateMachine<TArgs, TResult> : DelayedTask<TResult>
     {
         private readonly Func<TArgs, CancellationToken, ValueTask<TResult>> callback;
         private readonly TArgs args;
@@ -254,48 +254,41 @@ public static partial class Scheduler
             this.delay = delay;
             this.args = args;
             builder = AsyncTaskMethodBuilder<TResult>.Create();
+            GC.KeepAlive(builder.Task); // initialize promise task immediately
         }
 
         internal static DelayedTask<TResult> Start(Func<TArgs, CancellationToken, ValueTask<TResult>> callback, TArgs args, TimeSpan delay, CancellationToken token)
         {
             var machine = new DelayedTaskStateMachine<TArgs, TResult>(callback, args, delay, token);
-            machine.builder.Start(ref machine);
+            Start(machine);
             return machine;
         }
 
         public override Task<TResult> Task => builder.Task;
 
-        void IAsyncStateMachine.MoveNext()
+        private protected override void AdvanceStateMachine()
         {
-            unsafe
+            switch (state)
             {
-                MoveNext(this, &AdvanceStateMachine);
-            }
-
-            static void AdvanceStateMachine(DelayedTaskStateMachine<TArgs, TResult> machine)
-            {
-                switch (machine.state)
-                {
-                    case InitialState:
-                        machine.delayAwaiter = System.Threading.Tasks.Task.Delay(machine.delay, machine.token).ConfigureAwait(false).GetAwaiter();
-                        machine.state = DelayState;
-                        if (machine.delayAwaiter.IsCompleted)
-                            goto case DelayState;
-                        machine.builder.AwaitOnCompleted(ref machine.delayAwaiter, ref machine);
-                        break;
-                    case DelayState:
-                        GetResultAndClear(ref machine.delayAwaiter);
-                        machine.callbackAwaiter = machine.callback.Invoke(machine.args, machine.token).ConfigureAwait(false).GetAwaiter();
-                        if (machine.callbackAwaiter.IsCompleted)
-                            goto default;
-                        machine.state = DelayState + 1U;
-                        machine.builder.AwaitOnCompleted(ref machine.callbackAwaiter, ref machine);
-                        break;
-                    default:
-                        machine.builder.SetResult(machine.callbackAwaiter.GetResult());
-                        machine.Cleanup();
-                        break;
-                }
+                case InitialState:
+                    delayAwaiter = System.Threading.Tasks.Task.Delay(delay, token).ConfigureAwait(false).GetAwaiter();
+                    state = DelayState;
+                    if (delayAwaiter.IsCompleted)
+                        goto case DelayState;
+                    Await(ref delayAwaiter);
+                    break;
+                case DelayState:
+                    GetResultAndClear(ref delayAwaiter);
+                    callbackAwaiter = callback.Invoke(args, token).ConfigureAwait(false).GetAwaiter();
+                    if (callbackAwaiter.IsCompleted)
+                        goto default;
+                    state = DelayState + 1U;
+                    Await(ref callbackAwaiter);
+                    break;
+                default:
+                    builder.SetResult(callbackAwaiter.GetResult());
+                    Cleanup();
+                    break;
             }
         }
 
@@ -307,9 +300,6 @@ public static partial class Scheduler
         }
 
         private protected override void SetException(Exception e) => builder.SetException(e);
-
-        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
-            => builder.SetStateMachine(stateMachine);
     }
 
     /// <summary>

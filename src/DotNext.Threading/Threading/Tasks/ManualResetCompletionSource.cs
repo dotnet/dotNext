@@ -586,10 +586,16 @@ public abstract partial class ManualResetCompletionSource
             {
                 tokenTracker = tokenTracker,
                 timeoutTracker = timeoutTracker,
-                timeoutSource = timeoutSource is { } ts && !ts.TryReset() ? ts : null,
             };
 
-            this = default;
+            // reuse CTS for timeout if possible
+            if (timeoutSource is { } ts && !ts.TryReset())
+            {
+                copy.timeoutSource = ts;
+                timeoutSource = null;
+            }
+
+            timeoutTracker = tokenTracker = default;
             return copy;
         }
 

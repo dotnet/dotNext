@@ -121,4 +121,14 @@ public sealed class TypeExtensionsTests : Test
         NotNull(Reflector.MemberOf<MethodInfo, Func<decimal, decimal>>(static x => -x));
         Null(Reflector.MemberOf<MemberInfo, Func<int, int>>(static i => -i));
     }
+
+    [Fact]
+    public static unsafe void DefaultValues()
+    {
+        Null(typeof(string).GetDefaultValue());
+        Null(typeof(void*).GetDefaultValue());
+        Equal(0, typeof(int).GetDefaultValue());
+        Equal((nuint)0, typeof(nuint).GetDefaultValue());
+        Equal(Guid.Empty, typeof(Guid).GetDefaultValue());
+    }
 }

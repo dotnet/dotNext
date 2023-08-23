@@ -35,7 +35,9 @@ public sealed class TryBuilder : ExpressionBuilder<TryExpression>
         handlers = new LinkedList<CatchBlock>();
     }
 
-    internal TryBuilder Catch(ParameterExpression exception, Expression? filter, Expression handler)
+    internal static bool IsInCatchStatement => LexicalScope.IsInScope<CatchStatement>();
+
+    private TryBuilder Catch(ParameterExpression exception, Expression? filter, Expression handler)
     {
         VerifyCaller();
         handlers.Add(Expression.MakeCatchBlock(exception.Type, exception, handler, filter));
@@ -80,6 +82,77 @@ public sealed class TryBuilder : ExpressionBuilder<TryExpression>
     public TryBuilder Catch(Expression handler) => Catch(Expression.Variable(typeof(Exception), "e"), null, handler);
 
     /// <summary>
+    /// Constructs exception handling section.
+    /// </summary>
+    /// <param name="exceptionType">Expected exception.</param>
+    /// <param name="filter">Additional filter to be applied to the caught exception.</param>
+    /// <param name="handler">Exception handling block.</param>
+    /// <returns>Structured exception handler builder.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Catch(Type exceptionType, Filter? filter, Action<ParameterExpression> handler)
+    {
+        using var statement = new CatchStatement(this, exceptionType, filter);
+        return statement.Build(handler);
+    }
+
+    /// <summary>
+    /// Constructs exception handling section.
+    /// </summary>
+    /// <param name="exceptionType">Expected exception.</param>
+    /// <param name="handler">Exception handling block.</param>
+    /// <returns>Structured exception handler.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Catch(Type exceptionType, Action handler)
+    {
+        using var statement = new CatchStatement(this, exceptionType);
+        return statement.Build(handler);
+    }
+
+    /// <summary>
+    /// Constructs exception handling section.
+    /// </summary>
+    /// <param name="exceptionType">Expected exception.</param>
+    /// <param name="handler">Exception handling block.</param>
+    /// <returns>Structured exception handler.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Catch(Type exceptionType, Action<ParameterExpression> handler)
+        => Catch(exceptionType, null, handler);
+
+    /// <summary>
+    /// Constructs exception handling section.
+    /// </summary>
+    /// <typeparam name="TException">Expected exception.</typeparam>
+    /// <param name="handler">Exception handling block.</param>
+    /// <returns>Structured exception handler.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Catch<TException>(Action<ParameterExpression> handler)
+        where TException : Exception
+        => Catch(typeof(TException), handler);
+
+    /// <summary>
+    /// Constructs exception handling section.
+    /// </summary>
+    /// <typeparam name="TException">Expected exception.</typeparam>
+    /// <param name="handler">Exception handling block.</param>
+    /// <returns>Structured exception handler.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Catch<TException>(Action handler)
+        where TException : Exception
+        => Catch(typeof(TException), handler);
+
+    /// <summary>
+    /// Constructs exception handling section that may capture any exception.
+    /// </summary>
+    /// <param name="handler">Exception handling block.</param>
+    /// <returns>Structured exception handler.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Catch(Action handler)
+    {
+        using var statement = new CatchStatement(this);
+        return statement.Build(handler);
+    }
+
+    /// <summary>
     /// Associates expression to be returned from structured exception handling block
     /// in case of any exception.
     /// </summary>
@@ -90,6 +163,19 @@ public sealed class TryBuilder : ExpressionBuilder<TryExpression>
         VerifyCaller();
         faultBlock = fault;
         return this;
+    }
+
+    /// <summary>
+    /// Constructs block of code which will be executed in case
+    /// of any exception.
+    /// </summary>
+    /// <param name="fault">Fault handling block.</param>
+    /// <returns><c>this</c> builder.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Fault(Action fault)
+    {
+        using var statement = new FaultStatement(this);
+        return statement.Build(fault);
     }
 
     /// <summary>
@@ -104,6 +190,18 @@ public sealed class TryBuilder : ExpressionBuilder<TryExpression>
         return this;
     }
 
+    /// <summary>
+    /// Constructs block of code run when control leaves a <c>try</c> statement.
+    /// </summary>
+    /// <param name="body">The block of code to be executed.</param>
+    /// <returns><c>this</c> builder.</returns>
+    /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    public TryBuilder Finally(Action body)
+    {
+        using var statement = new FinallyStatement(this);
+        return statement.Build(body);
+    }
+
     private protected override TryExpression Build() => Expression.MakeTry(Type, tryBlock, finallyBlock, faultBlock, handlers);
 
     private protected override void Cleanup()
@@ -111,5 +209,57 @@ public sealed class TryBuilder : ExpressionBuilder<TryExpression>
         handlers.Clear();
         faultBlock = finallyBlock = null;
         base.Cleanup();
+    }
+
+    private sealed class CatchStatement : Statement, ILexicalScope<TryBuilder, Action<ParameterExpression>>, ILexicalScope<TryBuilder, Action>
+    {
+        private readonly TryBuilder builder;
+        private readonly ParameterExpression exception;
+        private readonly Expression? filter;
+
+        internal CatchStatement(TryBuilder builder, Type? exceptionType = null, Filter? filter = null)
+        {
+            this.builder = builder;
+            exception = Expression.Variable(exceptionType ?? typeof(Exception), "e");
+            this.filter = filter?.Invoke(exception);
+        }
+
+        public TryBuilder Build(Action<ParameterExpression> scope)
+        {
+            scope(exception);
+            return builder.Catch(exception, filter, Build());
+        }
+
+        public TryBuilder Build(Action scope)
+        {
+            scope();
+            return builder.Catch(exception, filter, Build());
+        }
+    }
+
+    private sealed class FaultStatement : Statement, ILexicalScope<TryBuilder, Action>
+    {
+        private readonly TryBuilder builder;
+
+        internal FaultStatement(TryBuilder builder) => this.builder = builder;
+
+        public TryBuilder Build(Action scope)
+        {
+            scope();
+            return builder.Fault(Build());
+        }
+    }
+
+    private sealed class FinallyStatement : Statement, ILexicalScope<TryBuilder, Action>
+    {
+        private readonly TryBuilder builder;
+
+        internal FinallyStatement(TryBuilder builder) => this.builder = builder;
+
+        public TryBuilder Build(Action scope)
+        {
+            scope();
+            return builder.Finally(Build());
+        }
     }
 }
