@@ -102,7 +102,7 @@ public abstract partial class ManualResetCompletionSource
         var stateCopy = ResetCore(out var token);
         ExitLock();
 
-        stateCopy.Cleanup();
+        stateCopy.Dispose();
         Cleanup();
         return token;
     }
@@ -122,7 +122,7 @@ public abstract partial class ManualResetCompletionSource
             var stateCopy = ResetCore(out token);
             ExitLock();
 
-            stateCopy.Cleanup();
+            stateCopy.Dispose();
             Cleanup();
         }
         else
@@ -155,7 +155,7 @@ public abstract partial class ManualResetCompletionSource
     /// </summary>
     internal void Resume()
     {
-        state.Detach().Cleanup();
+        state.Detach().Dispose();
 
         if (continuation is { IsValid: true } c)
         {
@@ -547,9 +547,9 @@ public abstract partial class ManualResetCompletionSource
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct CancellationState
+    private struct CancellationState : IDisposable
     {
-        private CancellationTokenRegistration tokenTracker, timeoutTracker;
+        private CancellationTokenRegistration tokenTracker;
         private CancellationTokenSource? timeoutSource;
 
         internal void Initialize(ref VersionAndStatus vs, Action<object?, CancellationToken> callback, TimeSpan timeout, CancellationToken token)
@@ -560,19 +560,21 @@ public abstract partial class ManualResetCompletionSource
             if (token.CanBeCanceled)
             {
                 tokenTracker = token.UnsafeRegister(callback, cachedVersion = vs.Version);
-                Interlocked.MemoryBarrier();
             }
 
             // This method may cause deadlock if token becomes canceled within the lock.
             // In this case, registration calls the callback synchronously.
             // The callback tries to acquire the lock but stuck.
-            // To avoid that, change the status later using write barrier and check the token later
+            // To avoid that, change the status later and check the token after calling this method
             vs.Status = ManualResetCompletionSourceStatus.Activated;
 
             if (timeout > default(TimeSpan) && !token.IsCancellationRequested)
             {
                 timeoutSource ??= new();
-                timeoutTracker = timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? vs.Version);
+
+                // TryReset() or Dispose() destroys active registration so it's not necessary
+                // to keep CancellationTokenRegistration to save memory
+                timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? vs.Version);
                 timeoutSource.CancelAfter(timeout);
             }
         }
@@ -585,7 +587,6 @@ public abstract partial class ManualResetCompletionSource
             var copy = new CancellationState
             {
                 tokenTracker = tokenTracker,
-                timeoutTracker = timeoutTracker,
             };
 
             // reuse CTS for timeout if possible
@@ -595,15 +596,14 @@ public abstract partial class ManualResetCompletionSource
                 timeoutSource = null;
             }
 
-            timeoutTracker = tokenTracker = default;
+            tokenTracker = default;
             return copy;
         }
 
-        internal readonly void Cleanup()
+        public readonly void Dispose()
         {
             // Unregister() doesn't block the caller in contrast to Dispose()
             tokenTracker.Unregister();
-            timeoutTracker.Unregister();
             timeoutSource?.Dispose();
         }
     }
