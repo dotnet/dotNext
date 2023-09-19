@@ -1315,4 +1315,104 @@ public static partial class StreamExtensions
         for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
             yield return buffer.Slice(0, count);
     }
+
+    /// <summary>
+    /// Decodes null-terminated string asynchronously.
+    /// </summary>
+    /// <param name="stream">The stream containing encoded string.</param>
+    /// <param name="context">The decoding context.</param>
+    /// <param name="buffer">The buffer used to read from stream.</param>
+    /// <param name="output">The output buffer for decoded characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The number of used bytes in <paramref name="buffer"/>.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="stream"/> is <see langword="null"/>;
+    /// or <paramref name="output"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask<int> ReadStringAsync(this Stream stream, DecodingContext context, Memory<byte> buffer, IBufferWriter<char> output, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(output);
+
+        if (context.Encoding.GetMaxCharCount(buffer.Length) is 0)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        var decoder = context.GetDecoder();
+        var result = 0;
+        bool completed;
+
+        do
+        {
+            var bytesRead = await stream.ReadAsync(buffer, token).ConfigureAwait(false);
+            var input = buffer.Slice(0, bytesRead);
+
+            var nullCharIndex = input.Span.IndexOf(DecodingContext.StringTerminationByte);
+            if (nullCharIndex >= 0)
+            {
+                result = nullCharIndex + 1;
+                input = input.Slice(0, nullCharIndex);
+                completed = true;
+            }
+            else
+            {
+                completed = input.IsEmpty;
+            }
+
+            decoder.Convert(input.Span, output, completed, out _, out _);
+        }
+        while (!completed);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Decodes null-terminated string synchronously.
+    /// </summary>
+    /// <param name="stream">The stream containing encoded string.</param>
+    /// <param name="context">The decoding context.</param>
+    /// <param name="buffer">The buffer used to read from stream.</param>
+    /// <param name="output">The output buffer for decoded characters.</param>
+    /// <returns>The number of used bytes in <paramref name="buffer"/>.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="stream"/> is <see langword="null"/>;
+    /// or <paramref name="output"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
+    public static int ReadString(this Stream stream, in DecodingContext context, Span<byte> buffer, IBufferWriter<char> output)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(output);
+
+        if (context.Encoding.GetMaxCharCount(buffer.Length) is 0)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        var decoder = context.GetDecoder();
+        var result = 0;
+        bool completed;
+
+        do
+        {
+            var bytesRead = stream.Read(buffer);
+            var input = buffer.Slice(0, bytesRead);
+
+            var nullCharIndex = input.IndexOf(DecodingContext.StringTerminationByte);
+            if (nullCharIndex >= 0)
+            {
+                result = nullCharIndex + 1;
+                input = input.Slice(0, nullCharIndex);
+                completed = true;
+            }
+            else
+            {
+                completed = input.IsEmpty;
+            }
+
+            decoder.Convert(input, output, completed, out _, out _);
+        }
+        while (!completed);
+
+        return result;
+    }
 }

@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using static System.Buffers.Binary.BinaryPrimitives;
+using static System.Text.EncodingExtensions;
 using Missing = System.Reflection.Missing;
 
 namespace DotNext.IO.Pipelines;
@@ -753,5 +754,51 @@ public static partial class PipeExtensions
             }
         }
         while (!result.IsCompleted);
+    }
+
+    /// <summary>
+    /// Decodes null-terminated string.
+    /// </summary>
+    /// <param name="reader">The pipe reader.</param>
+    /// <param name="context">The text decoding context.</param>
+    /// <param name="output">The output buffer for decoded characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="reader"/> is <see langword="null"/>;
+    /// or <paramref name="output"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask ReadStringAsync(this PipeReader reader, DecodingContext context, IBufferWriter<char> output, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+        ArgumentNullException.ThrowIfNull(output);
+
+        var decoder = context.GetDecoder();
+        SequencePosition consumed;
+        bool completed;
+
+        do
+        {
+            var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
+            var buffer = readResult.Buffer;
+
+            if (buffer.PositionOf(DecodingContext.StringTerminationByte).TryGetValue(out consumed))
+            {
+                buffer = buffer.Slice(0, consumed);
+                completed = true;
+                consumed = readResult.Buffer.GetPosition(1L, consumed);
+            }
+            else
+            {
+                completed = buffer.IsEmpty;
+                consumed = buffer.End;
+            }
+
+            decoder.Convert(in buffer, output, readResult.IsCompleted, out _, out _);
+            readResult.ThrowIfCancellationRequested(reader, token);
+            reader.AdvanceTo(consumed);
+        }
+        while (!completed);
     }
 }

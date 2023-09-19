@@ -674,4 +674,40 @@ public sealed class StreamExtensionsTests : Test
 
         Equal(bytes, destination.ToArray());
     }
+
+    [Theory]
+    [InlineData(8)]
+    [InlineData(16)]
+    [InlineData(32)]
+    public static async Task DecodeNullTerminatedStringAsync(int bufferSize)
+    {
+        using var ms = new MemoryStream();
+        ms.Write("Привет, мир!"u8);
+        ms.WriteByte(0);
+        ms.WriteByte(0);
+        ms.Position = 0L;
+
+        var buffer = new byte[bufferSize];
+        var writer = new ArrayBufferWriter<char>();
+        await ms.ReadStringAsync(Encoding.UTF8, buffer, writer);
+        Equal("Привет, мир!", writer.WrittenSpan.ToString());
+    }
+
+    [Theory]
+    [InlineData(8)]
+    [InlineData(16)]
+    [InlineData(32)]
+    public static void DecodeNullTerminatedString(int bufferSize)
+    {
+        using var ms = new MemoryStream();
+        ms.Write("Привет, мир!"u8);
+        ms.WriteByte(0);
+        ms.WriteByte(0);
+        ms.Position = 0L;
+
+        var buffer = new byte[bufferSize];
+        var writer = new ArrayBufferWriter<char>();
+        ms.ReadString(Encoding.UTF8, buffer, writer);
+        Equal("Привет, мир!", writer.WrittenSpan.ToString());
+    }
 }

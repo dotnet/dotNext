@@ -14,6 +14,8 @@ namespace DotNext.Text;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct DecodingContext : ICloneable, IResettable
 {
+    internal const byte StringTerminationByte = 0;
+
     private readonly Encoding encoding;
     private readonly Decoder? decoder;
 
