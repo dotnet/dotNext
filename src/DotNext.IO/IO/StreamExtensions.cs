@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
+using Utf8 = System.Text.Unicode.Utf8;
 
 namespace DotNext.IO;
 
@@ -1317,10 +1318,9 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Decodes null-terminated string asynchronously.
+    /// Decodes null-terminated UTF-8 encoded string asynchronously.
     /// </summary>
     /// <param name="stream">The stream containing encoded string.</param>
-    /// <param name="context">The decoding context.</param>
     /// <param name="buffer">The buffer used to read from stream.</param>
     /// <param name="output">The output buffer for decoded characters.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -1331,47 +1331,30 @@ public static partial class StreamExtensions
     /// </exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async ValueTask<int> ReadStringAsync(this Stream stream, DecodingContext context, Memory<byte> buffer, IBufferWriter<char> output, CancellationToken token = default)
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public static async ValueTask<int> ReadUtf8Async(this Stream stream, Memory<byte> buffer, IBufferWriter<char> output, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(output);
 
-        if (context.Encoding.GetMaxCharCount(buffer.Length) is 0)
+        if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
-        var decoder = context.GetDecoder();
-        var result = 0;
-        bool completed;
+        int consumedBufferBytes, bytesRead, bufferOffset = 0;
 
         do
         {
-            var bytesRead = await stream.ReadAsync(buffer, token).ConfigureAwait(false);
-            var input = buffer.Slice(0, bytesRead);
-
-            var nullCharIndex = input.Span.IndexOf(DecodingContext.StringTerminationByte);
-            if (nullCharIndex >= 0)
-            {
-                result = nullCharIndex + 1;
-                input = input.Slice(0, nullCharIndex);
-                completed = true;
-            }
-            else
-            {
-                completed = input.IsEmpty;
-            }
-
-            decoder.Convert(input.Span, output, completed, out _, out _);
+            bytesRead = await stream.ReadAsync(buffer.Slice(bufferOffset), token).ConfigureAwait(false);
         }
-        while (!completed);
+        while (!ConvertToUtf8(buffer.Span.Slice(0, bufferOffset + bytesRead), output, out consumedBufferBytes, out bufferOffset));
 
-        return result;
+        return consumedBufferBytes;
     }
 
     /// <summary>
-    /// Decodes null-terminated string synchronously.
+    /// Decodes null-terminated UTF-8 encoded string synchronously.
     /// </summary>
     /// <param name="stream">The stream containing encoded string.</param>
-    /// <param name="context">The decoding context.</param>
     /// <param name="buffer">The buffer used to read from stream.</param>
     /// <param name="output">The output buffer for decoded characters.</param>
     /// <returns>The number of used bytes in <paramref name="buffer"/>.</returns>
@@ -1380,39 +1363,60 @@ public static partial class StreamExtensions
     /// or <paramref name="output"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
-    public static int ReadString(this Stream stream, in DecodingContext context, Span<byte> buffer, IBufferWriter<char> output)
+    public static int ReadUtf8(this Stream stream, Span<byte> buffer, IBufferWriter<char> output)
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(output);
 
-        if (context.Encoding.GetMaxCharCount(buffer.Length) is 0)
+        if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
-        var decoder = context.GetDecoder();
-        var result = 0;
-        bool completed;
+        int consumedBufferBytes, bytesRead, bufferOffset = 0;
 
         do
         {
-            var bytesRead = stream.Read(buffer);
-            var input = buffer.Slice(0, bytesRead);
-
-            var nullCharIndex = input.IndexOf(DecodingContext.StringTerminationByte);
-            if (nullCharIndex >= 0)
-            {
-                result = nullCharIndex + 1;
-                input = input.Slice(0, nullCharIndex);
-                completed = true;
-            }
-            else
-            {
-                completed = input.IsEmpty;
-            }
-
-            decoder.Convert(input, output, completed, out _, out _);
+            bytesRead = stream.Read(buffer.Slice(bufferOffset));
         }
-        while (!completed);
+        while (!ConvertToUtf8(buffer.Slice(0, bufferOffset + bytesRead), output, out consumedBufferBytes, out bufferOffset));
 
-        return result;
+        return consumedBufferBytes;
+    }
+
+    private static bool ConvertToUtf8(Span<byte> buffer, IBufferWriter<char> output, out int consumedCount, out int bufferOffset)
+    {
+        bool flush;
+        var nullCharIndex = buffer.IndexOf(DecodingContext.Utf8NullChar);
+
+        if (nullCharIndex >= 0)
+        {
+            consumedCount = nullCharIndex + 1;
+            buffer = buffer.Slice(0, nullCharIndex);
+            flush = true;
+        }
+        else
+        {
+            consumedCount = buffer.Length;
+            flush = buffer.IsEmpty;
+        }
+
+        var chars = output.GetSpan(Encoding.UTF8.GetMaxCharCount(buffer.Length));
+
+        switch (Utf8.ToUtf16(buffer, chars, out var bytesRead, out var charsWritten, replaceInvalidSequences: false, flush))
+        {
+            case OperationStatus.NeedMoreData:
+                // we need more data, copy undecoded bytes to the beginning of the buffer
+                var bufferTail = buffer.Slice(bytesRead);
+                bufferOffset = bufferTail.Length;
+                bufferTail.CopyTo(buffer);
+                break;
+            case OperationStatus.Done:
+                bufferOffset = 0;
+                break;
+            default:
+                throw new DecoderFallbackException();
+        }
+
+        output.Advance(charsWritten);
+        return flush;
     }
 }

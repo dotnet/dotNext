@@ -682,15 +682,15 @@ public sealed class StreamExtensionsTests : Test
     public static async Task DecodeNullTerminatedStringAsync(int bufferSize)
     {
         using var ms = new MemoryStream();
-        ms.Write("Привет, мир!"u8);
+        ms.Write("Привет, \u263A!"u8);
         ms.WriteByte(0);
         ms.WriteByte(0);
         ms.Position = 0L;
 
-        var buffer = new byte[bufferSize];
+        Memory<byte> buffer = new byte[bufferSize];
         var writer = new ArrayBufferWriter<char>();
-        await ms.ReadStringAsync(Encoding.UTF8, buffer, writer);
-        Equal("Привет, мир!", writer.WrittenSpan.ToString());
+        await ms.ReadUtf8Async(buffer, writer);
+        Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
     }
 
     [Theory]
@@ -700,14 +700,29 @@ public sealed class StreamExtensionsTests : Test
     public static void DecodeNullTerminatedString(int bufferSize)
     {
         using var ms = new MemoryStream();
-        ms.Write("Привет, мир!"u8);
+        ms.Write("Привет, \u263A!"u8);
         ms.WriteByte(0);
         ms.WriteByte(0);
         ms.Position = 0L;
 
-        var buffer = new byte[bufferSize];
+        Span<byte> buffer = stackalloc byte[bufferSize];
         var writer = new ArrayBufferWriter<char>();
-        ms.ReadString(Encoding.UTF8, buffer, writer);
-        Equal("Привет, мир!", writer.WrittenSpan.ToString());
+        ms.ReadUtf8(buffer, writer);
+        Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
+    }
+
+    [Fact]
+    public static void DecodeNullTerminatedEmptyString()
+    {
+        using var ms = new MemoryStream();
+        ms.Write("\0"u8);
+        ms.WriteByte(0);
+        ms.WriteByte(0);
+        ms.Position = 0L;
+
+        Span<byte> buffer = stackalloc byte[8];
+        var writer = new ArrayBufferWriter<char>();
+        ms.ReadUtf8(buffer, writer);
+        Equal(string.Empty, writer.WrittenSpan.ToString());
     }
 }

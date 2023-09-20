@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
+using System.Text;
 using static System.Buffers.Binary.BinaryPrimitives;
-using static System.Text.EncodingExtensions;
 using Missing = System.Reflection.Missing;
 
 namespace DotNext.IO.Pipelines;
@@ -757,10 +757,9 @@ public static partial class PipeExtensions
     }
 
     /// <summary>
-    /// Decodes null-terminated string.
+    /// Decodes null-terminated UTF-8 encoded string.
     /// </summary>
     /// <param name="reader">The pipe reader.</param>
-    /// <param name="context">The text decoding context.</param>
     /// <param name="output">The output buffer for decoded characters.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
@@ -769,12 +768,12 @@ public static partial class PipeExtensions
     /// or <paramref name="output"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async ValueTask ReadStringAsync(this PipeReader reader, DecodingContext context, IBufferWriter<char> output, CancellationToken token = default)
+    public static async ValueTask ReadUtf8Async(this PipeReader reader, IBufferWriter<char> output, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(reader);
         ArgumentNullException.ThrowIfNull(output);
 
-        var decoder = context.GetDecoder();
+        var decoder = Encoding.UTF8.GetDecoder();
         SequencePosition consumed;
         bool completed;
 
@@ -783,7 +782,7 @@ public static partial class PipeExtensions
             var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
             var buffer = readResult.Buffer;
 
-            if (buffer.PositionOf(DecodingContext.StringTerminationByte).TryGetValue(out consumed))
+            if (buffer.PositionOf(DecodingContext.Utf8NullChar).TryGetValue(out consumed))
             {
                 buffer = buffer.Slice(0, consumed);
                 completed = true;

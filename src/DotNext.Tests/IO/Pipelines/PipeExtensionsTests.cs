@@ -367,7 +367,7 @@ public sealed class PipeExtensionsTests : Test
         pipe.Writer.Complete();
 
         var writer = new ArrayBufferWriter<char>();
-        await pipe.Reader.ReadStringAsync(Encoding.UTF8, writer);
+        await pipe.Reader.ReadUtf8Async(writer);
         Equal("Привет, мир!", writer.WrittenSpan.ToString());
     }
 }
