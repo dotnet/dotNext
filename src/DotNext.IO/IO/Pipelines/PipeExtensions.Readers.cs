@@ -780,9 +780,9 @@ public static partial class PipeExtensions
         {
             result = await reader.ReadAsync(token).ConfigureAwait(false);
         }
-        while (!ConvertToUtf8(decoder, reader, in result, output, token));
+        while (!Decode(decoder, reader, in result, output, token));
 
-        static bool ConvertToUtf8(Decoder decoder, PipeReader reader, in ReadResult result, IBufferWriter<char> output, CancellationToken token)
+        static bool Decode(Decoder decoder, PipeReader reader, in ReadResult result, IBufferWriter<char> output, CancellationToken token)
         {
             bool completed;
             var buffer = result.Buffer;

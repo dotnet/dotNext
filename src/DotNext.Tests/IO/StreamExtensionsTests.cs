@@ -687,10 +687,32 @@ public sealed class StreamExtensionsTests : Test
         ms.WriteByte(0);
         ms.Position = 0L;
 
-        Memory<byte> buffer = new byte[bufferSize];
         var writer = new ArrayBufferWriter<char>();
-        await ms.ReadUtf8Async(buffer, writer);
+        await ms.ReadUtf8Async(new byte[bufferSize], writer);
         Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
+    }
+
+    [Theory]
+    [InlineData(8)]
+    [InlineData(16)]
+    [InlineData(32)]
+    public static async Task DecodeNullTerminatedString2Async(int bufferSize)
+    {
+        using var ms = new MemoryStream();
+        ms.Write("Привет, \u263A!"u8);
+        ms.WriteByte(0);
+        ms.WriteByte(0);
+        ms.Position = 0L;
+
+        var writer = new StringBuilder();
+        await ms.ReadUtf8Async(new byte[bufferSize], new char[Encoding.UTF8.GetMaxCharCount(bufferSize)], Write, writer);
+        Equal("Привет, \u263A!", writer.ToString());
+
+        static ValueTask Write(ReadOnlyMemory<char> input, StringBuilder output, CancellationToken token)
+        {
+            output.Append(input.Span);
+            return ValueTask.CompletedTask;
+        }
     }
 
     [Theory]
@@ -705,10 +727,29 @@ public sealed class StreamExtensionsTests : Test
         ms.WriteByte(0);
         ms.Position = 0L;
 
-        Span<byte> buffer = stackalloc byte[bufferSize];
         var writer = new ArrayBufferWriter<char>();
-        ms.ReadUtf8(buffer, writer);
+        ms.ReadUtf8(stackalloc byte[bufferSize], writer);
         Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
+    }
+
+    [Theory]
+    [InlineData(8)]
+    [InlineData(16)]
+    [InlineData(32)]
+    public static void DecodeNullTerminatedString2(int bufferSize)
+    {
+        using var ms = new MemoryStream();
+        ms.Write("Привет, \u263A!"u8);
+        ms.WriteByte(0);
+        ms.WriteByte(0);
+        ms.Position = 0L;
+
+        var writer = new StringBuilder();
+        ms.ReadUtf8(stackalloc byte[bufferSize], new char[Encoding.UTF8.GetMaxCharCount(bufferSize)], Write, writer);
+        Equal("Привет, \u263A!", writer.ToString());
+
+        static void Write(ReadOnlySpan<char> input, StringBuilder output)
+            => output.Append(input);
     }
 
     [Theory]
@@ -721,9 +762,8 @@ public sealed class StreamExtensionsTests : Test
         ms.Write("Привет, \u263A!"u8);
         ms.Position = 0L;
 
-        Span<byte> buffer = stackalloc byte[bufferSize];
         var writer = new ArrayBufferWriter<char>();
-        ms.ReadUtf8(buffer, writer);
+        ms.ReadUtf8(stackalloc byte[bufferSize], writer);
         Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
     }
 
@@ -736,9 +776,8 @@ public sealed class StreamExtensionsTests : Test
         ms.WriteByte(0);
         ms.Position = 0L;
 
-        Span<byte> buffer = stackalloc byte[8];
         var writer = new ArrayBufferWriter<char>();
-        ms.ReadUtf8(buffer, writer);
+        ms.ReadUtf8(stackalloc byte[8], writer);
         Equal(string.Empty, writer.WrittenSpan.ToString());
     }
 }
