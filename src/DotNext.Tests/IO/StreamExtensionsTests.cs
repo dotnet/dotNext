@@ -711,6 +711,22 @@ public sealed class StreamExtensionsTests : Test
         Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
     }
 
+    [Theory]
+    [InlineData(8)]
+    [InlineData(16)]
+    [InlineData(32)]
+    public static void DecodeNullTerminatedStringNoTrailinigZeroByte(int bufferSize)
+    {
+        using var ms = new MemoryStream();
+        ms.Write("Привет, \u263A!"u8);
+        ms.Position = 0L;
+
+        Span<byte> buffer = stackalloc byte[bufferSize];
+        var writer = new ArrayBufferWriter<char>();
+        ms.ReadUtf8(buffer, writer);
+        Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
+    }
+
     [Fact]
     public static void DecodeNullTerminatedEmptyString()
     {
