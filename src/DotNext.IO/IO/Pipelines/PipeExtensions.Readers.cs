@@ -774,30 +774,36 @@ public static partial class PipeExtensions
         ArgumentNullException.ThrowIfNull(output);
 
         var decoder = Encoding.UTF8.GetDecoder();
-        SequencePosition consumed;
-        bool completed;
+        ReadResult result;
 
         do
         {
-            var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-            var buffer = readResult.Buffer;
+            result = await reader.ReadAsync(token).ConfigureAwait(false);
+        }
+        while (!ConvertToUtf8(decoder, reader, in result, output, token));
 
-            if (buffer.PositionOf(DecodingContext.Utf8NullChar).TryGetValue(out consumed))
+        static bool ConvertToUtf8(Decoder decoder, PipeReader reader, in ReadResult result, IBufferWriter<char> output, CancellationToken token)
+        {
+            bool completed;
+            var buffer = result.Buffer;
+
+            if (buffer.PositionOf(DecodingContext.Utf8NullChar).TryGetValue(out var consumed))
             {
                 buffer = buffer.Slice(0, consumed);
                 completed = true;
-                consumed = readResult.Buffer.GetPosition(1L, consumed);
+                consumed = result.Buffer.GetPosition(1L, consumed);
             }
             else
             {
-                completed = buffer.IsEmpty;
+                completed = result.IsCompleted;
                 consumed = buffer.End;
             }
 
-            decoder.Convert(in buffer, output, readResult.IsCompleted, out _, out _);
-            readResult.ThrowIfCancellationRequested(reader, token);
+            decoder.Convert(in buffer, output, completed, out _, out _);
+            result.ThrowIfCancellationRequested(reader, token);
             reader.AdvanceTo(consumed);
+
+            return completed;
         }
-        while (!completed);
     }
 }
