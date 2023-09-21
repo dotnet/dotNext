@@ -759,6 +759,9 @@ public static partial class PipeExtensions
     /// <summary>
     /// Decodes null-terminated UTF-8 encoded string.
     /// </summary>
+    /// <remarks>
+    /// This method returns when writer side completed or null char reached.
+    /// </remarks>
     /// <param name="reader">The pipe reader.</param>
     /// <param name="output">The output buffer for decoded characters.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>

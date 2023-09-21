@@ -1321,6 +1321,9 @@ public static partial class StreamExtensions
     /// <summary>
     /// Decodes null-terminated UTF-8 encoded string asynchronously.
     /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
     /// <param name="stream">The stream containing encoded string.</param>
     /// <param name="buffer">The buffer used to read from stream.</param>
     /// <param name="output">The output buffer for decoded characters.</param>
@@ -1352,6 +1355,9 @@ public static partial class StreamExtensions
     /// <summary>
     /// Decodes null-terminated UTF-8 encoded string asynchronously.
     /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
     /// <typeparam name="TArg">The type of the argument to be passed to <paramref name="action"/>.</typeparam>
     /// <param name="stream">The stream containing encoded string.</param>
     /// <param name="bytesBuf">The buffer used to read from stream.</param>
@@ -1395,6 +1401,9 @@ public static partial class StreamExtensions
     /// <summary>
     /// Decodes null-terminated UTF-8 encoded string synchronously.
     /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
     /// <param name="stream">The stream containing encoded string.</param>
     /// <param name="buffer">The buffer used to read from stream.</param>
     /// <param name="output">The output buffer for decoded characters.</param>
@@ -1423,6 +1432,9 @@ public static partial class StreamExtensions
     /// <summary>
     /// Decodes null-terminated UTF-8 encoded string synchronously.
     /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
     /// <typeparam name="TArg">The type of the argument to be passed to <paramref name="action"/>.</typeparam>
     /// <param name="stream">The stream containing encoded string.</param>
     /// <param name="bytesBuf">The buffer used to read from stream.</param>
