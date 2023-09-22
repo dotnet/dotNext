@@ -1384,13 +1384,13 @@ public static partial class StreamExtensions
         if (charsBuf.IsEmpty)
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(charsBuf));
 
-        int consumedBufferBytes, bytesRead, bufferOffset = 0;
+        int consumedBufferBytes, bufferOffset = 0;
         bool completed;
 
         do
         {
-            bytesRead = await stream.ReadAsync(bytesBuf.Slice(bufferOffset), token).ConfigureAwait(false);
-            completed = DecodeUtf8(bytesBuf.Span, charsBuf.Span, out consumedBufferBytes, out bufferOffset, out var charsWritten);
+            var bytesRead = await stream.ReadAsync(bytesBuf.Slice(bufferOffset), token).ConfigureAwait(false);
+            completed = DecodeUtf8(bytesBuf.Span.Slice(0, bytesRead + bufferOffset), charsBuf.Span, out consumedBufferBytes, out bufferOffset, out var charsWritten);
             await action(charsBuf.Slice(0, charsWritten), arg, token).ConfigureAwait(false);
         }
         while (!completed);
