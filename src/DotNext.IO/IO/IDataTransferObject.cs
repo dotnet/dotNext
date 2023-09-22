@@ -8,6 +8,10 @@ using Buffers;
 /// <summary>
 /// Represents structured data unit that can be transferred over wire.
 /// </summary>
+/// <remarks>
+/// Typically, this interface is used for variable-length data units while
+/// <see cref="Buffers.IBinaryFormattable{TSelf}"/> can be used for simple fixed-length structures.
+/// </remarks>
 /// <seealso cref="IAsyncBinaryReader"/>
 /// <seealso cref="IAsyncBinaryWriter"/>
 public interface IDataTransferObject
