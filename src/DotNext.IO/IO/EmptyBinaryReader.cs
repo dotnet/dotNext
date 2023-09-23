@@ -70,8 +70,8 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader
     ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
         => EndOfStream<BigInteger>();
 
-    ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
-        => length == 0 ? new() : EndOfStream();
+    ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token)
+        => length is 0L ? new() : EndOfStream();
 
     bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
     {

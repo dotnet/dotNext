@@ -179,19 +179,27 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
-    ValueTask SkipAsync(int length, CancellationToken token = default)
+    ValueTask SkipAsync(long length, CancellationToken token = default)
     {
         return length switch
         {
-            < 0 => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length))),
-            0 => ValueTask.CompletedTask,
+            < 0L => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length))),
+            0L => ValueTask.CompletedTask,
             _ => SkipAsync(),
         };
 
         async ValueTask SkipAsync()
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
-            await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
+            const int tempBufferSize = 4096;
+
+            // fixed-size buffer to avoid OOM
+            using var buffer = MemoryAllocator.Allocate<byte>((int)Math.Min(tempBufferSize, length), exactSize: false);
+            for (var bytesToRead = buffer.Length; length > 0L; length -= bytesToRead)
+            {
+                bytesToRead = (int)Math.Min(bytesToRead, length);
+                var block = buffer.Memory.Slice(0, bytesToRead);
+                await ReadAsync(block, token).ConfigureAwait(false);
+            }
         }
     }
 

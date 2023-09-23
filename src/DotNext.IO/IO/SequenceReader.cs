@@ -146,9 +146,9 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     /// <param name="length">The number of bytes to skip.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-    public void Skip(int length)
+    public void Skip(long length)
     {
-        if (length < 0)
+        if (length < 0L)
             throw new ArgumentOutOfRangeException(nameof(length));
 
         try
@@ -459,7 +459,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     }
 
     /// <inheritdoc/>
-    ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+    ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token)
     {
         ValueTask result;
 

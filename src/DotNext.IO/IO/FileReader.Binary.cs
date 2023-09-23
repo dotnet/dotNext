@@ -423,7 +423,7 @@ public partial class FileReader : IAsyncBinaryReader
         => ReadBlockAsync(output, token);
 
     /// <inheritdoc />
-    ValueTask IAsyncBinaryReader.SkipAsync(int bytes, CancellationToken token)
+    ValueTask IAsyncBinaryReader.SkipAsync(long bytes, CancellationToken token)
     {
         ValueTask result;
         if (token.IsCancellationRequested)
