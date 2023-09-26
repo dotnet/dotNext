@@ -23,7 +23,7 @@ using IReplicationCluster = Replication.IReplicationCluster;
 public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveClusterMemberRemovalSupport, IStandbyModeSupport, IRaftStateMachine<TMember>, IAsyncDisposable
     where TMember : class, IRaftClusterMember, IDisposable
 {
-    private readonly bool allowPartitioning, aggressiveStickiness;
+    private readonly bool aggressiveStickiness;
     private readonly ElectionTimeout electionTimeoutProvider;
     private readonly CancellationTokenSource transitionCancellation;
     private readonly double heartbeatThreshold, clockDriftBound;
@@ -64,7 +64,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         electionTimeoutProvider = config.ElectionTimeout;
         random = new();
         electionTimeout = electionTimeoutProvider.RandomTimeout(random);
-        allowPartitioning = config.Partitioning;
         members = IMemberList.Empty;
         transitionLock = new() { MeasurementTags = measurementTags };
         transitionCancellation = new();
@@ -1106,7 +1105,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             long currentTerm;
             if (state is CandidateState<TMember> candidateState && callerState.IsValid(candidateState) && candidateState.Term == (currentTerm = Term))
             {
-                var newState = new LeaderState<TMember>(this, allowPartitioning, currentTerm, LeaderLeaseDuration)
+                var newState = new LeaderState<TMember>(this, currentTerm, LeaderLeaseDuration)
                 {
 #pragma warning disable CS0618
                     Metrics = Metrics,

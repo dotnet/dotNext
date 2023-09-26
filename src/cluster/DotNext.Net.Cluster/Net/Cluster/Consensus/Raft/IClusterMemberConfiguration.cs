@@ -10,7 +10,8 @@ public interface IClusterMemberConfiguration
     /// <summary>
     /// Indicates that each part of cluster in partitioned network allow to elect its own leader.
     /// </summary>
-    bool Partitioning { get; }
+    [Obsolete("This property is no longer supported.", error: true)]
+    bool Partitioning => false;
 
     /// <summary>
     /// Gets or sets threshold of the heartbeat timeout.

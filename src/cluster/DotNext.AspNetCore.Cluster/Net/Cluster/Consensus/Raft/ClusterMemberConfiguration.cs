@@ -73,6 +73,7 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     /// <see langword="false"/> value allows to build CA distributed cluster
     /// while <see langword="true"/> value allows to build CP/AP distributed cluster.
     /// </remarks>
+    [Obsolete("This property is no longer supported.", error: true)]
     public bool Partitioning { get; set; }
 
     /// <summary>

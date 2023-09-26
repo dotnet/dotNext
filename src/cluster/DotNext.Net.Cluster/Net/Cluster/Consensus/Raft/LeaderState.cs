@@ -19,17 +19,15 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 {
     private const int MaxTermCacheSize = 100;
     private readonly long currentTerm;
-    private readonly bool allowPartitioning;
     private readonly CancellationTokenSource timerCancellation;
     internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
 
     private Task? heartbeatTask;
 
-    internal LeaderState(IRaftStateMachine<TMember> stateMachine, bool allowPartitioning, long term, TimeSpan maxLease)
+    internal LeaderState(IRaftStateMachine<TMember> stateMachine, long term, TimeSpan maxLease)
         : base(stateMachine)
     {
         currentTerm = term;
-        this.allowPartitioning = allowPartitioning;
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
         this.maxLease = maxLease;
@@ -113,7 +111,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
         LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
 
-        if (term <= currentTerm && (quorum > 0 || allowPartitioning))
+        if (term <= currentTerm && quorum > 0)
         {
             Debug.Assert(quorum >= commitQuorum);
 
