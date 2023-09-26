@@ -51,6 +51,7 @@ Release Date: 09-26-2023
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.3">DotNext.Net.Cluster 4.14.3</a>
+* Deprecation of `partitioning` configuration property
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.3">DotNext.AspNetCore.Cluster 4.14.3</a>
