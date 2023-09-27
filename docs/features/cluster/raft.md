@@ -75,6 +75,8 @@ It's not possible to remove or add multiple members at a time. Instead, you need
 
 When a new node is added, it passes through warmup procedure. The leader node attempts to replicate as much as possible log entries to the added node. The number of rounds for catch up can be configured by `WarmupRounds` configuration property. When the leader node decided that the new node is in sync then it adds the address of that node to the proposed configuration. When the proposed configuration becomes the active configuration, readiness probe of the added node turning into the signaled state.
 
+A new member can be proposed using [IRaftHttpCluster.AddMemberAsync](xref:DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster) method for ASP.NET Core application or [RaftCluster.AddMemberAsync](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) method for application without DI support.
+
 # Network Transport
 .NEXT supports the following network transports:
 * HTTP 1.1, HTTP 2.0, and HTTP 3.0
