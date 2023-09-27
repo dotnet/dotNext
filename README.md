@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-26-2023
+Release Date: 09-27-2023
 
 <a href="https://www.nuget.org/packages/dotnext.io/4.15.0">DotNext.IO 4.15.0</a>
 * Added fast UTF-8 decoding for [streams](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader)
