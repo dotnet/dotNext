@@ -39,26 +39,26 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
         => StreamExtensions.ReadBlockAsync(Stream, output, token);
 
-    private async ValueTask SkipSlowAsync(int length, CancellationToken token)
+    private async ValueTask SkipSlowAsync(long length, CancellationToken token)
     {
-        for (int bytesRead; length > 0; length -= bytesRead)
+        for (int bytesRead; length > 0L; length -= bytesRead)
         {
-            bytesRead = await Stream.ReadAsync(length < buffer.Length ? buffer.Slice(0, length) : buffer, token).ConfigureAwait(false);
+            bytesRead = await Stream.ReadAsync(length < buffer.Length ? buffer.Slice(0, (int)length) : buffer, token).ConfigureAwait(false);
             if (bytesRead is 0)
                 throw new EndOfStreamException();
         }
     }
 
-    ValueTask IAsyncBinaryReader.SkipAsync(int length, CancellationToken token)
+    ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token)
     {
         ValueTask result;
 
         switch (length)
         {
-            case < 0:
+            case < 0L:
                 result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length)));
                 break;
-            case 0:
+            case 0L:
                 result = ValueTask.CompletedTask;
                 break;
             default:

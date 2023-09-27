@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security.Cryptography;
+using System.Text;
 using static System.Buffers.Binary.BinaryPrimitives;
 using Missing = System.Reflection.Missing;
 
@@ -753,5 +754,59 @@ public static partial class PipeExtensions
             }
         }
         while (!result.IsCompleted);
+    }
+
+    /// <summary>
+    /// Decodes null-terminated UTF-8 encoded string.
+    /// </summary>
+    /// <remarks>
+    /// This method returns when writer side completed or null char reached.
+    /// </remarks>
+    /// <param name="reader">The pipe reader.</param>
+    /// <param name="output">The output buffer for decoded characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="reader"/> is <see langword="null"/>;
+    /// or <paramref name="output"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask ReadUtf8Async(this PipeReader reader, IBufferWriter<char> output, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+        ArgumentNullException.ThrowIfNull(output);
+
+        var decoder = Encoding.UTF8.GetDecoder();
+        ReadResult result;
+
+        do
+        {
+            result = await reader.ReadAsync(token).ConfigureAwait(false);
+        }
+        while (!Decode(decoder, reader, in result, output, token));
+
+        static bool Decode(Decoder decoder, PipeReader reader, in ReadResult result, IBufferWriter<char> output, CancellationToken token)
+        {
+            bool completed;
+            var buffer = result.Buffer;
+
+            if (buffer.PositionOf(DecodingContext.Utf8NullChar).TryGetValue(out var consumed))
+            {
+                buffer = buffer.Slice(0, consumed);
+                completed = true;
+                consumed = result.Buffer.GetPosition(1L, consumed);
+            }
+            else
+            {
+                completed = result.IsCompleted;
+                consumed = buffer.End;
+            }
+
+            decoder.Convert(in buffer, output, completed, out _, out _);
+            result.ThrowIfCancellationRequested(reader, token);
+            reader.AdvanceTo(consumed);
+
+            return completed;
+        }
     }
 }

@@ -357,4 +357,17 @@ public sealed class PipeExtensionsTests : Test
             False(await enumerator.MoveNextAsync());
         }
     }
+
+    [Fact]
+    public static async Task DecodeNullTerminatedStringAsync()
+    {
+        var pipe = new Pipe();
+        pipe.Writer.Write("Привет, мир!"u8);
+        pipe.Writer.Write(stackalloc byte[] { 0, 0 });
+        pipe.Writer.Complete();
+
+        var writer = new ArrayBufferWriter<char>();
+        await pipe.Reader.ReadUtf8Async(writer);
+        Equal("Привет, мир!", writer.WrittenSpan.ToString());
+    }
 }

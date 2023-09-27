@@ -1,10 +1,32 @@
 Release Notes
 ====
 
-# 08-23-2023
+# 09-27-2023
+<a href="https://www.nuget.org/packages/dotnext.io/4.15.0">DotNext.IO 4.15.0</a>
+* Added fast UTF-8 decoding for [streams](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader)
+* Updated dependencies
 
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.3">DotNext.Net.Cluster 4.14.3</a>
+* Deprecation of `partitioning` configuration property
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.3">DotNext.AspNetCore.Cluster 4.14.3</a>
+* Updated dependencies
+
+# 08-25-2023
+<a href="https://www.nuget.org/packages/dotnext.threading/4.14.2">DotNext.Threading 4.14.2</a>
+* Removed redundant memory barrier from async locks and reduced size of wait nodes
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.2">DotNext.Net.Cluster 4.14.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.2">DotNext.AspNetCore.Cluster 4.14.2</a>
+* Updated dependencies
+
+# 08-23-2023
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/4.15.0">DotNext.Metaprogramming 4.15.0</a>
-* Fixed broken compatibility introduced in C# 10 at language level. See [189](https://github.com/dotnet/dotNext/discussions/189) discussion
+* Fixed broken compatibility introduced in C# 10 at language level. See [189](https://github.com/dotnet/dotNext/discussions/189) discussion. The change provides backward compatibility at source code level, but it's binary compatible. This means that all you need is to rebuild your project without any code changes
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/4.14.1">DotNext.Threading 4.14.1</a>

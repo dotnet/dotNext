@@ -24,10 +24,13 @@ public static partial class BufferHelpers
         switch (chunks)
         {
             case ReadOnlyMemory<T>[] array:
-                ToReadOnlySequence(array.AsSpan(), ref head, ref tail);
+                FromSpan(array.AsSpan(), ref head, ref tail);
                 break;
             case List<ReadOnlyMemory<T>> list:
-                ToReadOnlySequence(CollectionsMarshal.AsSpan(list), ref head, ref tail);
+                FromSpan(CollectionsMarshal.AsSpan(list), ref head, ref tail);
+                break;
+            case LinkedList<ReadOnlyMemory<T>> list:
+                FromLinkedList(list, ref head, ref tail);
                 break;
             default:
                 ToReadOnlySequenceSlow(chunks, ref head, ref tail);
@@ -51,10 +54,20 @@ public static partial class BufferHelpers
             }
         }
 
-        static void ToReadOnlySequence(ReadOnlySpan<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
+        static void FromSpan(ReadOnlySpan<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
         {
             foreach (ref readonly var segment in chunks)
             {
+                if (!segment.IsEmpty)
+                    Chunk<T>.AddChunk(segment, ref head, ref tail);
+            }
+        }
+
+        static void FromLinkedList(LinkedList<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
+        {
+            for (var current = chunks.First; current is not null; current = current.Next)
+            {
+                ref readonly var segment = ref current.ValueRef;
                 if (!segment.IsEmpty)
                     Chunk<T>.AddChunk(segment, ref head, ref tail);
             }

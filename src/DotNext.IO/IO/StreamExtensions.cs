@@ -1,9 +1,11 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
+using Utf8 = System.Text.Unicode.Utf8;
 
 namespace DotNext.IO;
 
@@ -1314,5 +1316,211 @@ public static partial class StreamExtensions
 
         for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
             yield return buffer.Slice(0, count);
+    }
+
+    /// <summary>
+    /// Decodes null-terminated UTF-8 encoded string asynchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
+    /// <param name="stream">The stream containing encoded string.</param>
+    /// <param name="buffer">The buffer used to read from stream.</param>
+    /// <param name="output">The output buffer for decoded characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The number of used bytes in <paramref name="buffer"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> or <paramref name="output"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public static async ValueTask<int> ReadUtf8Async(this Stream stream, Memory<byte> buffer, IBufferWriter<char> output, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(output);
+
+        if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        int consumedBufferBytes, bytesRead, bufferOffset = 0;
+
+        do
+        {
+            bytesRead = await stream.ReadAsync(buffer.Slice(bufferOffset), token).ConfigureAwait(false);
+        }
+        while (!DecodeUtf8(buffer.Span.Slice(0, bufferOffset + bytesRead), output, out consumedBufferBytes, out bufferOffset));
+
+        return consumedBufferBytes;
+    }
+
+    /// <summary>
+    /// Decodes null-terminated UTF-8 encoded string asynchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
+    /// <typeparam name="TArg">The type of the argument to be passed to <paramref name="action"/>.</typeparam>
+    /// <param name="stream">The stream containing encoded string.</param>
+    /// <param name="bytesBuf">The buffer used to read from stream.</param>
+    /// <param name="charsBuf">The buffer used to place decoded characters.</param>
+    /// <param name="action">The callback to be executed for each decoded portion of char data.</param>
+    /// <param name="arg">The argument to be passed to <paramref name="action"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The number of used bytes in <paramref name="bytesBuf"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> or <paramref name="action"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="bytesBuf"/> is too small to decode at least one character;
+    /// or <paramref name="charsBuf"/> is empty.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public static async ValueTask<int> ReadUtf8Async<TArg>(this Stream stream, Memory<byte> bytesBuf, Memory<char> charsBuf, Func<ReadOnlyMemory<char>, TArg, CancellationToken, ValueTask> action, TArg arg, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(action);
+
+        if (Encoding.UTF8.GetMaxCharCount(bytesBuf.Length) is 0)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(bytesBuf));
+
+        if (charsBuf.IsEmpty)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(charsBuf));
+
+        int consumedBufferBytes, bufferOffset = 0;
+        bool completed;
+
+        do
+        {
+            var bytesRead = await stream.ReadAsync(bytesBuf.Slice(bufferOffset), token).ConfigureAwait(false);
+            completed = DecodeUtf8(bytesBuf.Span.Slice(0, bytesRead + bufferOffset), charsBuf.Span, out consumedBufferBytes, out bufferOffset, out var charsWritten);
+            await action(charsBuf.Slice(0, charsWritten), arg, token).ConfigureAwait(false);
+        }
+        while (!completed);
+
+        return consumedBufferBytes;
+    }
+
+    /// <summary>
+    /// Decodes null-terminated UTF-8 encoded string synchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
+    /// <param name="stream">The stream containing encoded string.</param>
+    /// <param name="buffer">The buffer used to read from stream.</param>
+    /// <param name="output">The output buffer for decoded characters.</param>
+    /// <returns>The number of used bytes in <paramref name="buffer"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> or <paramref name="output"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to decode at least one character.</exception>
+    public static int ReadUtf8(this Stream stream, Span<byte> buffer, IBufferWriter<char> output)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(output);
+
+        if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        int consumedBufferBytes, bytesRead, bufferOffset = 0;
+
+        do
+        {
+            bytesRead = stream.Read(buffer.Slice(bufferOffset));
+        }
+        while (!DecodeUtf8(buffer.Slice(0, bufferOffset + bytesRead), output, out consumedBufferBytes, out bufferOffset));
+
+        return consumedBufferBytes;
+    }
+
+    /// <summary>
+    /// Decodes null-terminated UTF-8 encoded string synchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method returns when end of stream or null char reached.
+    /// </remarks>
+    /// <typeparam name="TArg">The type of the argument to be passed to <paramref name="action"/>.</typeparam>
+    /// <param name="stream">The stream containing encoded string.</param>
+    /// <param name="bytesBuf">The buffer used to read from stream.</param>
+    /// <param name="charsBuf">The buffer used to place decoded characters.</param>
+    /// <param name="action">The callback to be executed for each decoded portion of char data.</param>
+    /// <param name="arg">The argument to be passed to <paramref name="action"/>.</param>
+    /// <returns>The number of used bytes in <paramref name="bytesBuf"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="stream"/> or <paramref name="action"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="bytesBuf"/> is too small to decode at least one character;
+    /// or <paramref name="charsBuf"/> is empty.
+    /// </exception>
+    public static int ReadUtf8<TArg>(this Stream stream, Span<byte> bytesBuf, Span<char> charsBuf, ReadOnlySpanAction<char, TArg> action, TArg arg)
+    {
+        ArgumentNullException.ThrowIfNull(stream);
+        ArgumentNullException.ThrowIfNull(action);
+
+        if (Encoding.UTF8.GetMaxCharCount(bytesBuf.Length) is 0)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(bytesBuf));
+
+        if (charsBuf.IsEmpty)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(charsBuf));
+
+        int consumedBufferBytes, bytesRead, bufferOffset = 0;
+
+        do
+        {
+            bytesRead = stream.Read(bytesBuf.Slice(bufferOffset));
+        }
+        while (!Decode(bytesBuf.Slice(0, bufferOffset + bytesRead), charsBuf, action, arg, out consumedBufferBytes, out bufferOffset));
+
+        return consumedBufferBytes;
+
+        static bool Decode(Span<byte> input, Span<char> output, ReadOnlySpanAction<char, TArg> action, TArg arg, out int inputBytes, out int inputOffset)
+        {
+            var result = DecodeUtf8(input, output, out inputBytes, out inputOffset, out var charsWritten);
+            action(output.Slice(0, charsWritten), arg);
+            return result;
+        }
+    }
+
+    private static bool DecodeUtf8(Span<byte> input, IBufferWriter<char> output, out int inputBytes, out int inputOffset)
+    {
+        var result = DecodeUtf8(
+            input,
+            output.GetSpan(Encoding.UTF8.GetMaxCharCount(input.Length)),
+            out inputBytes,
+            out inputOffset,
+            out var charsWritten);
+
+        output.Advance(charsWritten);
+        return result;
+    }
+
+    private static bool DecodeUtf8(Span<byte> input, Span<char> output, out int inputBytes, out int inputOffset, out int charsWritten)
+    {
+        bool flush;
+        var nullCharIndex = input.IndexOf(DecodingContext.Utf8NullChar);
+
+        if (nullCharIndex >= 0)
+        {
+            inputBytes = nullCharIndex + 1;
+            input = input.Slice(0, nullCharIndex);
+            flush = true;
+        }
+        else
+        {
+            inputBytes = input.Length;
+            flush = input.IsEmpty;
+        }
+
+        switch (Utf8.ToUtf16(input, output, out var bytesRead, out charsWritten, replaceInvalidSequences: false, flush))
+        {
+            case OperationStatus.NeedMoreData:
+                // we need more data, copy undecoded bytes to the beginning of the buffer
+                var bufferTail = input.Slice(bytesRead);
+                inputOffset = bufferTail.Length;
+                bufferTail.CopyTo(input);
+                break;
+            case OperationStatus.Done:
+                inputOffset = 0;
+                break;
+            default:
+                throw new DecoderFallbackException();
+        }
+
+        return flush;
     }
 }
