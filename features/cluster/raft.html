@@ -136,6 +136,7 @@ of the latest committed write. For instance, if the client performs <em>Write</e
 <p>In-memory configuration storage is not recommended for production use. In case of node failures, the configuration will not survive the node restart.</p>
 </div>
 <p>When a new node is added, it passes through warmup procedure. The leader node attempts to replicate as much as possible log entries to the added node. The number of rounds for catch up can be configured by <code>WarmupRounds</code> configuration property. When the leader node decided that the new node is in sync then it adds the address of that node to the proposed configuration. When the proposed configuration becomes the active configuration, readiness probe of the added node turning into the signaled state.</p>
+<p>A new member can be proposed using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster.html">IRaftHttpCluster.AddMemberAsync</a> method for ASP.NET Core application or <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster.AddMemberAsync</a> method for application without DI support.</p>
 <h1 id="network-transport">Network Transport</h1>
 <p>.NEXT supports the following network transports:</p>
 <ul>
@@ -183,12 +184,6 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <td>No</td>
 <td>The same as <code>HostEndPoint</code></td>
 <td>Allows to specify real IP address of the host where cluster node launched. Usually it is needed when node executed inside of Docker container. If this parameter is not specified then cluster node may fail to detect itself because network interfaces inside of Docker container have different addresses in comparison with real host network interfaces</td>
-</tr>
-<tr>
-<td>Partitioning</td>
-<td>No</td>
-<td>false</td>
-<td><code>true</code> if partitioning supported. In this case, each cluster partition may have its own leader, i.e. it is possible to have more that one leader for external observer. However, single partition cannot have more than 1 leader. <code>false</code> if partitioning is not supported and only one partition with majority of nodes can have leader. Note that cluster may be totally unavailable even if there are operating members presented</td>
 </tr>
 <tr>
 <td>HeartbeatThreshold</td>
@@ -322,7 +317,6 @@ IHost host = new HostBuilder()
 <h3 id="configuration">Configuration</h3>
 <p>The application should be configured properly to work as a cluster node. The following JSON represents the example of configuration:</p>
 <pre><code class="lang-json">{
-	&quot;partitioning&quot; : false,
 	&quot;lowerElectionTimeout&quot; : 150,
 	&quot;upperElectionTimeout&quot; : 300,
 	&quot;metadata&quot; :
@@ -360,12 +354,6 @@ IHost host = new HostBuilder()
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>partitioning</td>
-<td>No</td>
-<td>false</td>
-<td><code>true</code> if partitioning supported. In this case, each cluster partition may have its own leader, i.e. it is possible to have more that one leader for external observer. However, single partition cannot have more than 1 leader. <code>false</code> if partitioning is not supported and only one partition with majority of nodes can have leader. Note that cluster may be totally unavailable even if there are operating members presented</td>
-</tr>
 <tr>
 <td>lowerElectionTimeout, upperElectionTimeout</td>
 <td>No</td>
@@ -924,7 +912,7 @@ sealed class ClusterMember : Disposable, IRaftClusterMember
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/cluster/raft.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/cluster/raft.md/#L1" class="contribution-link">Edit this page</a>
                   </li>
                 </ul>
               </div>
@@ -942,7 +930,7 @@ sealed class ClusterMember : Disposable, IRaftClusterMember
               </div>
 
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In This Article</h5>
+              <h5>In this article</h5>
               <div></div>
               <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
               </nav>
