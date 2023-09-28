@@ -127,7 +127,8 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
         if (sizeHint < 0)
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
-        CheckAndResizeBuffer(sizeHint);
+        ThrowIfDisposed();
+        CheckAndResizeBuffer(sizeHint, buffer.Length);
         return buffer.Memory.Slice(position);
     }
 

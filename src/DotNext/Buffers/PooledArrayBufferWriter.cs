@@ -378,7 +378,8 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         if (sizeHint < 0)
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
-        CheckAndResizeBuffer(sizeHint);
+        ThrowIfDisposed();
+        CheckAndResizeBuffer(sizeHint, buffer.Length);
         return buffer.AsMemory(position);
     }
 
@@ -394,7 +395,8 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         if (sizeHint < 0)
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
-        CheckAndResizeBuffer(sizeHint);
+        ThrowIfDisposed();
+        CheckAndResizeBuffer(sizeHint, buffer.Length);
         return buffer.AsSpan(position);
     }
 
@@ -410,7 +412,8 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         if (sizeHint < 0)
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
-        CheckAndResizeBuffer(sizeHint);
+        ThrowIfDisposed();
+        CheckAndResizeBuffer(sizeHint, buffer.Length);
         return new ArraySegment<T>(buffer, position, buffer.Length - position);
     }
 
@@ -423,7 +426,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         if (count <= 0)
             return;
 
-        CheckAndResizeBuffer(count);
+        CheckAndResizeBuffer(count, buffer.Length);
         items.CopyTo(buffer, position);
         position += count;
     }

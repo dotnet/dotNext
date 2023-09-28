@@ -275,13 +275,9 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <param name="newSize">A new size of internal buffer.</param>
     private protected abstract void Resize(int newSize);
 
-    /// <summary>
-    /// Ensures capacity of internal buffer.
-    /// </summary>
-    /// <param name="sizeHint">The requested size of the buffer.</param>
-    private protected void CheckAndResizeBuffer(int sizeHint)
+    private protected void CheckAndResizeBuffer(int sizeHint, int capacity)
     {
-        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position, out sizeHint))
+        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, capacity, position, out sizeHint))
             Resize(sizeHint);
     }
 
