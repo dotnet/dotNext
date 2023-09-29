@@ -414,7 +414,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
 
         ThrowIfDisposed();
         CheckAndResizeBuffer(sizeHint, buffer.Length);
-        return new ArraySegment<T>(buffer, position, buffer.Length - position);
+        return new(buffer, position, buffer.Length - position);
     }
 
     /// <inheritdoc/>
