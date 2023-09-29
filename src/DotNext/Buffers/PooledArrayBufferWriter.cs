@@ -494,7 +494,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     private protected override void Resize(int newSize)
     {
         var newBuffer = pool.Rent(newSize);
-        buffer.CopyTo(newBuffer, 0);
+        buffer.CopyTo(newBuffer.AsSpan());
         ReleaseBuffer();
         buffer = newBuffer;
 #pragma warning disable CS0618
