@@ -271,11 +271,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <inheritdoc />
     public override int Capacity
     {
-        get
-        {
-            ThrowIfDisposed();
-            return buffer.Length;
-        }
+        get => buffer.Length;
 
         init
         {
@@ -366,6 +362,16 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         return result;
     }
 
+    private T[] GetRawArray(int sizeHint)
+    {
+        if (sizeHint < 0)
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
+        ThrowIfDisposed();
+        CheckAndResizeBuffer(sizeHint);
+        return buffer;
+    }
+
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
     /// </summary>
@@ -374,14 +380,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Memory<T> GetMemory(int sizeHint = 0)
-    {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
-        ThrowIfDisposed();
-        CheckAndResizeBuffer(sizeHint, buffer.Length);
-        return buffer.AsMemory(position);
-    }
+        => GetRawArray(sizeHint).AsMemory(position);
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
@@ -391,14 +390,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Span<T> GetSpan(int sizeHint = 0)
-    {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
-        ThrowIfDisposed();
-        CheckAndResizeBuffer(sizeHint, buffer.Length);
-        return buffer.AsSpan(position);
-    }
+        => GetRawArray(sizeHint).AsSpan(position);
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
@@ -408,14 +400,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public ArraySegment<T> GetArray(int sizeHint = 0)
-    {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
-        ThrowIfDisposed();
-        CheckAndResizeBuffer(sizeHint, buffer.Length);
-        return new(buffer, position, buffer.Length - position);
-    }
+        => new(GetRawArray(sizeHint), position, FreeCapacity);
 
     /// <inheritdoc/>
     public override void AddAll(ICollection<T> items)
@@ -426,7 +411,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         if (count <= 0)
             return;
 
-        CheckAndResizeBuffer(count, buffer.Length);
+        CheckAndResizeBuffer(count);
         items.CopyTo(buffer, position);
         position += count;
     }

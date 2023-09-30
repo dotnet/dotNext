@@ -60,11 +60,7 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     /// <inheritdoc />
     public override int Capacity
     {
-        get
-        {
-            ThrowIfDisposed();
-            return buffer.Length;
-        }
+        get => buffer.Length;
 
         init
         {
@@ -128,7 +124,7 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
         ThrowIfDisposed();
-        CheckAndResizeBuffer(sizeHint, buffer.Length);
+        CheckAndResizeBuffer(sizeHint);
         return buffer.Memory.Slice(position);
     }
 
