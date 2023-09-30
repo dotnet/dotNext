@@ -82,15 +82,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <summary>
     /// Gets the amount of data written to the underlying memory so far.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public int WrittenCount
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return position;
-        }
-    }
+    public int WrittenCount => position;
 
     /// <inheritdoc />
     long IGrowableBuffer<T>.WrittenCount => WrittenCount;
@@ -200,21 +192,12 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// Gets or sets the total amount of space within the underlying memory.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than zero.</exception>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public abstract int Capacity { get; init; }
 
     /// <summary>
     /// Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public int FreeCapacity
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return Capacity - WrittenCount;
-        }
-    }
+    public int FreeCapacity => Capacity - WrittenCount;
 
     /// <summary>
     /// Clears the data written to the underlying memory.
@@ -275,10 +258,17 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <param name="newSize">A new size of internal buffer.</param>
     private protected abstract void Resize(int newSize);
 
-    private protected void CheckAndResizeBuffer(int sizeHint, int capacity)
+    private protected void CheckAndResizeBuffer(int sizeHint)
     {
-        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, capacity, position, out sizeHint))
+        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position, out sizeHint))
             Resize(sizeHint);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        position = 0;
+        base.Dispose(disposing);
     }
 
     /// <summary>
