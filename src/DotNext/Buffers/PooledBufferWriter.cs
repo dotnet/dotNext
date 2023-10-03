@@ -111,22 +111,23 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
         position = 0;
     }
 
-    /// <summary>
-    /// Returns the memory to write to that is at least the requested size.
-    /// </summary>
-    /// <param name="sizeHint">The minimum length of the returned memory.</param>
-    /// <returns>The memory block of at least the size <paramref name="sizeHint"/>.</returns>
-    /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public override Memory<T> GetMemory(int sizeHint = 0)
+    private ref readonly MemoryOwner<T> GetBuffer(int sizeHint)
     {
         if (sizeHint < 0)
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
         ThrowIfDisposed();
         CheckAndResizeBuffer(sizeHint);
-        return buffer.Memory.Slice(position);
+        return ref buffer;
     }
+
+    /// <inheritdoc/>
+    public override Memory<T> GetMemory(int sizeHint = 0)
+        => GetBuffer(sizeHint).Memory.Slice(position);
+
+    /// <inheritdoc/>
+    public override Span<T> GetSpan(int sizeHint = 0)
+        => GetBuffer(sizeHint).Span.Slice(position);
 
     /// <inheritdoc />
     public override MemoryOwner<T> DetachBuffer()
