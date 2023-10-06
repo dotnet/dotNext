@@ -67,7 +67,22 @@ public ref struct SpanWriter<T>
     /// <summary>
     /// Gets the number of occupied elements in the underlying span.
     /// </summary>
-    public readonly int WrittenCount => position;
+    public int WrittenCount
+    {
+        readonly get => position;
+        set
+        {
+            if ((uint)value > span.Length)
+                ThrowArgumentOutOfRangeException();
+
+            position = value;
+
+            [DoesNotReturn]
+            [StackTraceHidden]
+            static void ThrowArgumentOutOfRangeException()
+                => throw new ArgumentOutOfRangeException(nameof(value));
+        }
+    }
 
     /// <summary>
     /// Gets the remaining part of the span.

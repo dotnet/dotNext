@@ -311,4 +311,56 @@ public sealed class SpanReaderTests : Test
         Equal(2, writer.WrittenCount);
         Equal("2A", new string(writer.WrittenSpan));
     }
+
+    [Fact]
+    public static void ChangeWrittenCount()
+    {
+        var writer = new SpanWriter<char>(stackalloc char[32]);
+        Equal(0, writer.WrittenCount);
+
+        writer.WrittenCount = 10;
+        Equal(10, writer.WrittenCount);
+
+        writer.WrittenCount = 32;
+        Equal(32, writer.WrittenCount);
+        True(writer.RemainingSpan.IsEmpty);
+
+        var raised = false;
+        try
+        {
+            writer.WrittenCount = -1;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            raised = true;
+        }
+
+        True(raised);
+    }
+
+    [Fact]
+    public static void ChangeConsumedCount()
+    {
+        var writer = new SpanReader<char>(stackalloc char[32]);
+        Equal(0, writer.ConsumedCount);
+
+        writer.ConsumedCount = 10;
+        Equal(10, writer.ConsumedCount);
+
+        writer.ConsumedCount = 32;
+        Equal(32, writer.ConsumedCount);
+        True(writer.RemainingSpan.IsEmpty);
+
+        var raised = false;
+        try
+        {
+            writer.ConsumedCount = -1;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            raised = true;
+        }
+
+        True(raised);
+    }
 }

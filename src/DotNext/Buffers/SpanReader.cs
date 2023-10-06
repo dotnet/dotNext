@@ -62,7 +62,22 @@ public ref struct SpanReader<T>
     /// <summary>
     /// Gets the number of consumed elements.
     /// </summary>
-    public readonly int ConsumedCount => position;
+    public int ConsumedCount
+    {
+        readonly get => position;
+        set
+        {
+            if ((uint)value > (uint)span.Length)
+                ThrowArgumentOutOfRangeException();
+
+            position = value;
+
+            [StackTraceHidden]
+            [DoesNotReturn]
+            static void ThrowArgumentOutOfRangeException()
+                => throw new ArgumentOutOfRangeException(nameof(value));
+        }
+    }
 
     /// <summary>
     /// Gets the number of unread elements.

@@ -80,9 +80,25 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => WrittenMemory;
 
     /// <summary>
-    /// Gets the amount of data written to the underlying memory so far.
+    /// Gets or sets the amount of data written to the underlying memory so far.
     /// </summary>
-    public int WrittenCount => position;
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public int WrittenCount
+    {
+        get => position;
+        set
+        {
+            if ((uint)value > (uint)Capacity)
+                ThrowArgumentOutOfRangeException();
+
+            position = value;
+
+            [DoesNotReturn]
+            [StackTraceHidden]
+            static void ThrowArgumentOutOfRangeException()
+                => throw new ArgumentOutOfRangeException(nameof(value));
+        }
+    }
 
     /// <inheritdoc />
     long IGrowableBuffer<T>.WrittenCount => WrittenCount;

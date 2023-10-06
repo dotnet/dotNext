@@ -280,4 +280,31 @@ public sealed class BufferWriterSlimTests : Test
         buffer.Advance(1);
         Equal(42, buffer[0]);
     }
+
+    [Fact]
+    public static void ChangeWrittenCount()
+    {
+        var buffer = new BufferWriterSlim<int>(stackalloc int[3]);
+
+        var raised = false;
+        try
+        {
+            buffer.WrittenCount = 4;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            raised = true;
+        }
+
+        True(raised);
+
+        buffer.Add(42);
+        Equal(1, buffer.WrittenCount);
+
+        buffer.WrittenCount = 0;
+        Equal(0, buffer.WrittenCount);
+
+        buffer.WrittenCount = 1;
+        Equal(42, buffer[0]);
+    }
 }

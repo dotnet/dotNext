@@ -71,7 +71,22 @@ public ref partial struct BufferWriterSlim<T>
     /// <summary>
     /// Gets the amount of data written to the underlying memory so far.
     /// </summary>
-    public readonly int WrittenCount => position;
+    public int WrittenCount
+    {
+        readonly get => position;
+        set
+        {
+            if ((uint)value > (uint)Capacity)
+                ThrowArgumentOutOfRangeException();
+
+            position = value;
+
+            [DoesNotReturn]
+            [StackTraceHidden]
+            static void ThrowArgumentOutOfRangeException()
+                => throw new ArgumentOutOfRangeException(nameof(value));
+        }
+    }
 
     /// <summary>
     /// Gets the total amount of space within the underlying memory.

@@ -307,4 +307,21 @@ public sealed class BufferWriterTests : Test
         writer.Concat(("Hello, ", "world!").AsReadOnlySpan());
         Equal("Hello, world!", writer.BuildString());
     }
+
+    [Fact]
+    public static void ChangeWrittenCount()
+    {
+        using var buffer = new PooledArrayBufferWriter<int>();
+
+        Throws<ArgumentOutOfRangeException>(() => buffer.WrittenCount = 1);
+
+        buffer.Add(42);
+        Equal(1, buffer.WrittenCount);
+
+        buffer.WrittenCount = 0;
+        Equal(0, buffer.WrittenCount);
+
+        buffer.WrittenCount = 1;
+        Equal(42, buffer[0]);
+    }
 }
