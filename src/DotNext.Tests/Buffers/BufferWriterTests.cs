@@ -324,4 +324,21 @@ public sealed class BufferWriterTests : Test
         buffer.WrittenCount = 1;
         Equal(42, buffer[0]);
     }
+
+    [Fact]
+    public static void AdvanceRewind()
+    {
+        var buffer = new PooledArrayBufferWriter<int>();
+
+        Throws<ArgumentOutOfRangeException>(() => buffer.Rewind(1));
+
+        buffer.Add(42);
+        Equal(1, buffer.WrittenCount);
+
+        buffer.Rewind(1);
+        Equal(0, buffer.WrittenCount);
+
+        buffer.Advance(1);
+        Equal(42, buffer[0]);
+    }
 }

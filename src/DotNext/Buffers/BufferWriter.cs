@@ -243,6 +243,20 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     }
 
     /// <summary>
+    /// Moves the writer back the specified number of items.
+    /// </summary>
+    /// <param name="count">The number of items.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
+    public void Rewind(int count)
+    {
+        ThrowIfDisposed();
+        if ((uint)count > (uint)position)
+            throw new ArgumentOutOfRangeException(nameof(count));
+
+        position -= count;
+    }
+
+    /// <summary>
     /// Returns the memory to write to that is at least the requested size.
     /// </summary>
     /// <param name="sizeHint">The minimum length of the returned memory.</param>
