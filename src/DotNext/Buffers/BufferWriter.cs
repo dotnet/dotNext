@@ -233,13 +233,18 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     {
         ThrowIfDisposed();
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowCountOutOfRangeException();
 
         var newPosition = position + count;
         if (newPosition > Capacity)
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
 
         position = newPosition;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidOperationException()
+            => throw new InvalidOperationException();
     }
 
     /// <summary>
@@ -252,10 +257,15 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     {
         ThrowIfDisposed();
         if ((uint)count > (uint)position)
-            throw new ArgumentOutOfRangeException(nameof(count));
+            ThrowCountOutOfRangeException();
 
         position -= count;
     }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowCountOutOfRangeException()
+        => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.

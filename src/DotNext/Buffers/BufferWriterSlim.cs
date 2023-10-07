@@ -171,10 +171,11 @@ public ref partial struct BufferWriterSlim<T>
         if (count < 0)
             ThrowCountOutOfRangeException();
 
-        if (position > Capacity - count)
+        var newPosition = position + count;
+        if (newPosition > Capacity)
             ThrowInvalidOperationException();
 
-        position += count;
+        position = newPosition;
 
         [DoesNotReturn]
         [StackTraceHidden]
@@ -238,7 +239,16 @@ public ref partial struct BufferWriterSlim<T>
     /// <param name="item">The last added item.</param>
     /// <returns><see langword="true"/> if this buffer is not empty; otherwise, <see langword="false"/>.</returns>
     public readonly bool TryPeek([MaybeNullWhen(false)] out T? item)
-        => WrittenSpan.LastOrNone().TryGet(out item);
+    {
+        if (position > 0)
+        {
+            item = Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), position - 1);
+            return true;
+        }
+
+        item = default;
+        return false;
+    }
 
     /// <summary>
     /// Attempts to remove the last added item.
