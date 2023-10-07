@@ -234,9 +234,12 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
         ThrowIfDisposed();
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
-        if (position > Capacity - count)
+
+        var newPosition = position + count;
+        if (newPosition > Capacity)
             throw new InvalidOperationException();
-        position += count;
+
+        position = newPosition;
     }
 
     /// <summary>
