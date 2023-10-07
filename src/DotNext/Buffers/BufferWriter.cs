@@ -246,6 +246,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// Moves the writer back the specified number of items.
     /// </summary>
     /// <param name="count">The number of items.</param>
+    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
     public void Rewind(int count)
     {
