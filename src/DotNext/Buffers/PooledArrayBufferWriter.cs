@@ -103,7 +103,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
 
     /// <inheritdoc/>
     void ICollection<T>.CopyTo(T[] array, int arrayIndex)
-        => WrittenMemory.CopyTo(array.AsMemory(arrayIndex));
+        => Array.Copy(buffer, 0, array, arrayIndex, position);
 
     /// <summary>
     /// Gets the element at the specified index.
@@ -297,7 +297,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         get
         {
             ThrowIfDisposed();
-            return new Memory<T>(buffer, 0, position);
+            return new(buffer, 0, position);
         }
     }
 
@@ -310,17 +310,19 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         get
         {
             ThrowIfDisposed();
-            return new ArraySegment<T>(buffer, 0, position);
+            return new(buffer, 0, position);
         }
     }
 
     /// <inheritdoc/>
     ArraySegment<T> ISupplier<ArraySegment<T>>.Invoke() => WrittenArray;
 
+    private void ReturnBuffer() => pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+
     private void ReleaseBuffer()
     {
         if (GetLength(buffer) > 0)
-            pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+            ReturnBuffer();
     }
 
     /// <summary>
@@ -332,9 +334,13 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     {
         ThrowIfDisposed();
 
-        if (!reuseBuffer)
+        if (GetLength(buffer) is 0)
         {
-            ReleaseBuffer();
+            // nothing to do
+        }
+        else if (!reuseBuffer)
+        {
+            ReturnBuffer();
             buffer = Array.Empty<T>();
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
@@ -352,7 +358,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         MemoryOwner<T> result;
         if (position > 0)
         {
-            result = new MemoryOwner<T>(pool, buffer, position);
+            result = new(pool, buffer, position);
             buffer = Array.Empty<T>();
             position = 0;
         }
