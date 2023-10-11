@@ -192,6 +192,9 @@ public ref partial struct BufferWriterSlim<T>
         if ((uint)count > (uint)position)
             ThrowCountOutOfRangeException();
 
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            Buffer.Slice(count).Clear();
+
         position -= count;
     }
 
