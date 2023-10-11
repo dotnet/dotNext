@@ -150,9 +150,11 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     private void RemoveAt(int index)
     {
         Array.Copy(buffer, index + 1L, buffer, index, position - index - 1L);
-        buffer[position - 1] = default!;
 
-        if (--position == 0)
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            buffer[position - 1] = default!;
+
+        if (--position is 0)
         {
             ReleaseBuffer();
             buffer = Array.Empty<T>();
