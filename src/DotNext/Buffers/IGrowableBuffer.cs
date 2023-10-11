@@ -111,15 +111,17 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
         if (sizeHint is 0)
             sizeHint = 1;
 
-        bool result;
-        if (result = sizeHint > capacity - writtenCount)
+        if (sizeHint > capacity - writtenCount)
         {
-            var growBy = Math.Max(capacity is 0 ? DefaultInitialBufferSize : capacity, sizeHint);
-            if ((uint)(newSize = capacity + growBy) > (uint)Array.MaxLength && (uint)(newSize = capacity + sizeHint) > (uint)Array.MaxLength)
+            var growBy = capacity is 0 ? DefaultInitialBufferSize : capacity;
+            if ((sizeHint > growBy || (uint)(growBy += capacity) > (uint)Array.MaxLength) && (uint)(growBy = capacity + sizeHint) > (uint)Array.MaxLength)
                 throw new InsufficientMemoryException();
+
+            newSize = growBy;
+            return true;
         }
 
         Unsafe.SkipInit(out newSize);
-        return result;
+        return false;
     }
 }
