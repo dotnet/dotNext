@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
@@ -236,7 +237,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
             ThrowCountOutOfRangeException();
 
         var newPosition = position + count;
-        if (newPosition > Capacity)
+        if ((uint)newPosition > (uint)Capacity)
             ThrowInvalidOperationException();
 
         position = newPosition;
@@ -302,6 +303,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <param name="newSize">A new size of internal buffer.</param>
     private protected abstract void Resize(int newSize);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void CheckAndResizeBuffer(int sizeHint)
     {
         if (IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position, out sizeHint))
