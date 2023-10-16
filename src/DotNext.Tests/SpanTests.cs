@@ -518,4 +518,12 @@ public sealed class SpanTests : Test
         Equal(chars.ToString(), head.ToString());
         Equal(string.Empty, rest.ToString());
     }
+
+    [Fact]
+    public static void SwapElements()
+    {
+        Span<int> array = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
+        array[0..3].Swap(array[3..6]);
+        Equal(new int[] { 4, 5, 6, 1, 2, 3 }, array.ToArray());
+    }
 }
