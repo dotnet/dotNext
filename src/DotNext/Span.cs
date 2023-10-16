@@ -762,34 +762,35 @@ public static partial class Span
     /// <param name="x">The first span.</param>
     /// <param name="y">The second span.</param>
     /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="y"/> is not of the same length as <paramref name="x"/>.</exception>
-    public static unsafe void Swap<T>(this Span<T> x, Span<T> y)
+    public static void Swap<T>(this Span<T> x, Span<T> y)
     {
         if (x.Length != y.Length)
             throw new ArgumentOutOfRangeException(nameof(y));
 
         var bufferSize = Math.Min(MemoryRental<T>.StackallocThreshold, x.Length);
-        MemoryRental<T> buffer;
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            buffer = new(bufferSize);
+            T[] buffer = ArrayPool<T>.Shared.Rent(bufferSize);
+            Swap(x, y, buffer);
+            ArrayPool<T>.Shared.Return(buffer, clearArray: true);
         }
         else
         {
-            // Only T without references inside can be allocated on the stack.
-            // GC cannot track references placed on the stack using `localloc` IL instruction.
-            void* ptr = stackalloc byte[checked(Unsafe.SizeOf<T>() * bufferSize)];
-            buffer = new Span<T>(ptr, bufferSize);
+            unsafe
+            {
+                // Only T without references inside can be allocated on the stack.
+                // GC cannot track references placed on the stack using `localloc` IL instruction.
+                void* buffer = stackalloc byte[checked(Unsafe.SizeOf<T>() * bufferSize)];
+                Swap(x, y, new Span<T>(buffer, bufferSize));
+            }
         }
-
-        Swap(x, y, buffer.Span);
-        buffer.Dispose();
 
         static void Swap(Span<T> x, Span<T> y, Span<T> buffer)
         {
             Debug.Assert(x.Length == y.Length);
             Debug.Assert(buffer.IsEmpty is false);
 
-            while (x.Length > buffer.Length)
+            while (x.Length >= buffer.Length)
             {
                 SwapCore(TrimLengthCore(x, buffer.Length, out x), TrimLengthCore(y, buffer.Length, out y), buffer);
             }
