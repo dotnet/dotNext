@@ -161,6 +161,8 @@ public ref struct MemoryRental<T>
     {
         switch (owner)
         {
+            case null:
+                break;
             case IDisposable disposable:
                 disposable.Dispose();
                 break;
