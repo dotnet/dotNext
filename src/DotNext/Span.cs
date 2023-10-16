@@ -320,22 +320,24 @@ public static partial class Span
                 throw new ArgumentOutOfRangeException(nameof(maxLength));
             case 0:
                 rest = span;
-                span = default;
-                break;
+                return Span<T>.Empty;
             default:
-                var length = span.Length;
-                if (length > maxLength)
-                {
-                    ref var ptr = ref MemoryMarshal.GetReference(span);
-                    span = MemoryMarshal.CreateSpan(ref ptr, maxLength);
-                    rest = MemoryMarshal.CreateSpan(ref Add(ref ptr, maxLength), length - maxLength);
-                }
-                else
-                {
-                    rest = default;
-                }
+                return TrimLengthCore(span, maxLength, out rest);
+        }
+    }
 
-                break;
+    private static Span<T> TrimLengthCore<T>(Span<T> span, int maxLength, out Span<T> rest)
+    {
+        var length = span.Length;
+        if (length > maxLength)
+        {
+            ref var ptr = ref MemoryMarshal.GetReference(span);
+            span = MemoryMarshal.CreateSpan(ref ptr, maxLength);
+            rest = MemoryMarshal.CreateSpan(ref Add(ref ptr, maxLength), length - maxLength);
+        }
+        else
+        {
+            rest = default;
         }
 
         return span;
@@ -752,4 +754,59 @@ public static partial class Span
         where T : class?, TBase
         where TBase : class?
         => MemoryMarshal.CreateReadOnlySpan(ref As<T, TBase>(ref MemoryMarshal.GetReference(span)), span.Length);
+
+    /// <summary>
+    /// Swaps contents of the two spans.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the span.</typeparam>
+    /// <param name="x">The first span.</param>
+    /// <param name="y">The second span.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="y"/> is not of the same length as <paramref name="x"/>.</exception>
+    public static unsafe void Swap<T>(this Span<T> x, Span<T> y)
+    {
+        if (x.Length != y.Length)
+            throw new ArgumentOutOfRangeException(nameof(y));
+
+        var bufferSize = Math.Min(MemoryRental<T>.StackallocThreshold, x.Length);
+        MemoryRental<T> buffer;
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        {
+            buffer = new(bufferSize);
+        }
+        else
+        {
+            // Only T without references inside can be allocated on the stack.
+            // GC cannot track references placed on the stack using `localloc` IL instruction.
+            void* ptr = stackalloc byte[checked(Unsafe.SizeOf<T>() * bufferSize)];
+            buffer = new Span<T>(ptr, bufferSize);
+        }
+
+        Swap(x, y, buffer.Span);
+        buffer.Dispose();
+
+        static void Swap(Span<T> x, Span<T> y, Span<T> buffer)
+        {
+            Debug.Assert(x.Length == y.Length);
+            Debug.Assert(buffer.IsEmpty is false);
+
+            while (x.Length > buffer.Length)
+            {
+                SwapCore(TrimLengthCore(x, buffer.Length, out x), TrimLengthCore(y, buffer.Length, out y), buffer);
+            }
+
+            if (!x.IsEmpty)
+            {
+                Debug.Assert(x.Length <= buffer.Length);
+
+                SwapCore(x, y, buffer.Slice(0, x.Length));
+            }
+        }
+
+        static void SwapCore(Span<T> x, Span<T> y, Span<T> buffer)
+        {
+            x.CopyTo(buffer);
+            y.CopyTo(x);
+            buffer.CopyTo(y);
+        }
+    }
 }
