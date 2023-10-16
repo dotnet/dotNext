@@ -522,8 +522,11 @@ public sealed class SpanTests : Test
     [Fact]
     public static void SwapElements()
     {
-        Span<int> array = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
-        array[0..3].Swap(array[3..6]);
-        Equal(new int[] { 4, 5, 6, 1, 2, 3 }, array.ToArray());
+        Span<byte> expected = RandomBytes(MemoryRental<byte>.StackallocThreshold * 4 + 2);
+        Span<byte> actual = expected.ToArray();
+        var midpoint = actual.Length >> 1;
+        actual.Slice(0, midpoint).Swap(actual.Slice(midpoint));
+        Equal(expected.Slice(midpoint).ToArray(), actual.Slice(0, midpoint).ToArray());
+        Equal(expected.Slice(0, midpoint).ToArray(), actual.Slice(midpoint).ToArray());
     }
 }
