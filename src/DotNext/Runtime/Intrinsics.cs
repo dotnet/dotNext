@@ -374,12 +374,7 @@ public static class Intrinsics
     [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1107", Justification = "Unaligned is a prefix instruction")]
     public static unsafe void CopyUnaligned<T>([In] T* input, [Out] T* output)
         where T : unmanaged
-    {
-        Push(output);
-        Push(input);
-        Unaligned(1); Ldobj<T>();
-        Unaligned(1); Stobj<T>();
-    }
+        => Unsafe.WriteUnaligned(output, Unsafe.ReadUnaligned<T>(input));
 
     /// <summary>
     /// Copies one value into another.
