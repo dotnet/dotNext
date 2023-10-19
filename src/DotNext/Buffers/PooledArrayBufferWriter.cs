@@ -400,7 +400,13 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Span<T> GetSpan(int sizeHint = 0)
-        => GetRawArray(sizeHint).AsSpan(position);
+    {
+        var array = GetRawArray(sizeHint);
+        Debug.Assert(position <= array.Length);
+
+        // Perf: skip redundant checks implemented internally by MemoryExtensions.AsSpan() extension method
+        return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), position), array.Length - position);
+    }
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
