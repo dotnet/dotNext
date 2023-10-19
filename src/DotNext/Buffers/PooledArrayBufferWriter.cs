@@ -104,7 +104,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
 
     /// <inheritdoc/>
     void ICollection<T>.CopyTo(T[] array, int arrayIndex)
-        => Array.Copy(buffer, 0, array, arrayIndex, position);
+        => buffer.CopyTo(array.AsSpan(arrayIndex, position));
 
     /// <summary>
     /// Gets the element at the specified index.
@@ -151,7 +151,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     private void RemoveAt(int index)
     {
         Debug.Assert(buffer.Length > 0);
-        Array.Copy(buffer, index + 1L, buffer, index, position - index - 1L);
+        CopyFast(buffer, index + 1, buffer, index, position - index - 1);
 
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
             buffer[position - 1] = default!;
@@ -211,15 +211,15 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         }
         else if (position + items.Length <= GetLength(buffer))
         {
-            Array.Copy(buffer, index, buffer, index + items.Length, position - index);
+            CopyFast(buffer, index, buffer, index + items.Length, position - index);
         }
         else
         {
             Debug.Assert(buffer.Length > 0);
 
             var newBuffer = pool.Rent(buffer.Length + items.Length);
-            Array.Copy(buffer, 0, newBuffer, 0, index);
-            Array.Copy(buffer, index, newBuffer, index + items.Length, buffer.LongLength - index);
+            CopyFast(buffer, newBuffer, index);
+            CopyFast(buffer, index, newBuffer, index + items.Length, buffer.Length - index);
             ReturnBuffer();
             buffer = newBuffer;
         }
@@ -258,7 +258,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
             Debug.Assert(buffer.Length > 0);
 
             var newBuffer = pool.Rent(index + items.Length);
-            Array.Copy(buffer, 0, newBuffer, 0, index);
+            CopyFast(buffer, newBuffer, index);
             ReturnBuffer();
             buffer = newBuffer;
         }
@@ -495,13 +495,35 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void CopyFast(T[] source, T[] destination, int length)
+    {
+        Debug.Assert(length <= source.Length);
+        Debug.Assert(length <= destination.Length);
+
+        source.CopyTo(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetArrayDataReference(destination), length));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void CopyFast(T[] source, int sourceIndex, T[] destination, int destinationIndex, int length)
+    {
+        Debug.Assert(sourceIndex < source.Length);
+        Debug.Assert(length <= source.Length - sourceIndex);
+        Debug.Assert(destinationIndex < destination.Length);
+        Debug.Assert(length <= destination.Length - destinationIndex);
+
+        var src = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(source), sourceIndex), length);
+        var dest = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(destination), destinationIndex), length);
+        src.CopyTo(dest);
+    }
+
     /// <inheritdoc/>
     private protected override void Resize(int newSize)
     {
         var newBuffer = pool.Rent(newSize);
         if (GetLength(buffer) > 0)
         {
-            Array.Copy(buffer, 0, newBuffer, 0, position);
+            CopyFast(buffer, newBuffer, position);
             ReturnBuffer();
         }
 
