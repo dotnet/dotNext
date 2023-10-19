@@ -836,21 +836,18 @@ public static partial class Span
         var (start1, length1) = range1.GetOffsetAndLength(span.Length);
         var (start2, length2) = range2.GetOffsetAndLength(span.Length);
 
-        // sort ranges
-        if (start1 > start2)
-        {
-            Intrinsics.Swap(ref start1, ref start2);
-            Intrinsics.Swap(ref length1, ref length2);
-        }
-
         if (length1 == length2)
         {
             // handle trivial case that allows to avoid allocation of a large buffer
             Span.SwapCore(span.Slice(start1, length1), span.Slice(start2, length2));
         }
-        else
+        else if (start1 < start2)
         {
             SwapCore(span, start1, length1, start2, length2);
+        }
+        else
+        {
+            SwapCore(span, start2, length2, start1, length1);
         }
 
         static void SwapCore(Span<T> span, int start1, int length1, int start2, int length2)
