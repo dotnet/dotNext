@@ -767,8 +767,19 @@ public static partial class Span
         if (x.Length != y.Length)
             throw new ArgumentOutOfRangeException(nameof(y));
 
+        SwapCore(x, y);
+    }
+
+    private static void SwapCore<T>(Span<T> x, Span<T> y)
+    {
+        Debug.Assert(x.Length == y.Length);
+
         var bufferSize = Math.Min(MemoryRental<T>.StackallocThreshold, x.Length);
-        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+        if (bufferSize is 0)
+        {
+            return;
+        }
+        else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
             T[] buffer = ArrayPool<T>.Shared.Rent(bufferSize);
             Swap(x, y, buffer);
@@ -792,22 +803,104 @@ public static partial class Span
 
             while (x.Length >= buffer.Length)
             {
-                SwapCore(TrimLengthCore(x, buffer.Length, out x), TrimLengthCore(y, buffer.Length, out y), buffer);
+                SwapMemory(TrimLengthCore(x, buffer.Length, out x), TrimLengthCore(y, buffer.Length, out y), buffer);
             }
 
             if (!x.IsEmpty)
             {
                 Debug.Assert(x.Length <= buffer.Length);
 
-                SwapCore(x, y, buffer.Slice(0, x.Length));
+                SwapMemory(x, y, buffer.Slice(0, x.Length));
             }
         }
 
-        static void SwapCore(Span<T> x, Span<T> y, Span<T> buffer)
+        static void SwapMemory(Span<T> x, Span<T> y, Span<T> buffer)
         {
             x.CopyTo(buffer);
             y.CopyTo(x);
             buffer.CopyTo(y);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="span"></param>
+    /// <param name="range1"></param>
+    /// <param name="range2"></param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="range1"/> or <paramref name="range2"/> is out of valid range.</exception>
+    /// <exception cref="ArgumentException"><paramref name="range2"/> is overlapped with <paramref name="range1"/>.</exception>
+    public static void Swap<T>(this Span<T> span, Range range1, Range range2)
+    {
+        var (start1, length1) = range1.GetOffsetAndLength(span.Length);
+        var (start2, length2) = range2.GetOffsetAndLength(span.Length);
+
+        // sort ranges
+        if (start1 > start2)
+        {
+            Intrinsics.Swap(ref start1, ref start2);
+            Intrinsics.Swap(ref length1, ref length2);
+        }
+
+        var shift = length1 - length2;
+        if (shift is 0)
+        {
+            // handle trivial case that allows to avoid allocation of a large buffer
+            Span.SwapCore(span.Slice(start1, length1), span.Slice(start2, length2));
+        }
+        else
+        {
+            SwapCore(span, start1, length1, start2, length2, shift);
+        }
+
+        static void SwapCore(Span<T> span, int start1, int length1, int start2, int length2, int shift)
+        {
+            // check for overlapping
+            var endOfLeftSegment = start1 + length1;
+            if (endOfLeftSegment > start2)
+                throw new ArgumentException(ExceptionMessages.OverlappedRange, nameof(range2));
+
+            // calc space between first range and second range
+            var spaceBetweenRanges = start2 - endOfLeftSegment;
+            Debug.Assert(spaceBetweenRanges >= 0);
+
+            // prepare buffer
+            var bufferSize = shift >= 0 ? length1 : length2;
+            MemoryRental<T> buffer;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || bufferSize > MemoryRental<T>.StackallocThreshold)
+            {
+                buffer = new(bufferSize);
+            }
+            else
+            {
+                unsafe
+                {
+                    void* bufferPtr = stackalloc byte[checked(Unsafe.SizeOf<T>() * bufferSize)];
+                    buffer = new Span<T>(bufferPtr, bufferSize);
+                }
+            }
+
+            // rearrange elements
+            if (shift < 0)
+            {
+                // length1 < length2
+                shift = -shift;
+                span.Slice(start2, length2).CopyTo(buffer.Span); // save right part to buffer
+                span.Slice(endOfLeftSegment, spaceBetweenRanges).CopyTo(span.Slice(endOfLeftSegment + shift, spaceBetweenRanges)); // shift input to the right
+                span.Slice(start1, length1).CopyTo(span.Slice(start2 + shift, length1)); // copy left to right
+                buffer.Span.Slice(0, length2).CopyTo(span.Slice(start1, length2)); // copy right to left
+            }
+            else
+            {
+                // length1 > length2
+                span.Slice(start1, length1).CopyTo(buffer.Span); // save left part to buffer
+                span.Slice(endOfLeftSegment, spaceBetweenRanges).CopyTo(span.Slice(endOfLeftSegment - shift, spaceBetweenRanges)); // shift input to the left
+                span.Slice(start2, length2).CopyTo(span.Slice(start1, length2)); // copy right to left
+                buffer.Span.Slice(0, length1).CopyTo(span.Slice(start2 - shift, length1)); // copy left to right
+            }
+
+            buffer.Dispose();
         }
     }
 }

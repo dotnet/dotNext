@@ -529,4 +529,33 @@ public sealed class SpanTests : Test
         Equal(expected.Slice(midpoint).ToArray(), actual.Slice(0, midpoint).ToArray());
         Equal(expected.Slice(0, midpoint).ToArray(), actual.Slice(midpoint).ToArray());
     }
+
+    [Fact]
+    public static void TransformElements()
+    {
+        // left < right
+        Span<int> input = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..2, 3..6);
+        Equal(new int[] { 4, 5, 6, 3, 1, 2 }, input.ToArray());
+
+        // left > right
+        input = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..3, 4..6);
+        Equal(new int[] { 5, 6, 4, 1, 2, 3 }, input.ToArray());
+
+        // left is zero length
+        input = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(1..1, 3..6);
+        Equal(new int[] { 1, 4, 5, 6, 2, 3 }, input.ToArray());
+
+        // no space between ranges
+        input = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..2, 2..6);
+        Equal(new int[] { 3, 4, 5, 6, 1, 2 }, input.ToArray());
+
+        // left == right
+        input = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..3, 3..6);
+        Equal(new int[] { 4, 5, 6, 1, 2, 3 }, input.ToArray());
+    }
 }
