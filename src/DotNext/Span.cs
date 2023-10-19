@@ -823,12 +823,12 @@ public static partial class Span
     }
 
     /// <summary>
-    /// 
+    /// Swaps two ranges within the same span.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="span"></param>
-    /// <param name="range1"></param>
-    /// <param name="range2"></param>
+    /// <typeparam name="T">The type of the elements in the span.</typeparam>
+    /// <param name="span">The source span.</param>
+    /// <param name="range1">The first range.</param>
+    /// <param name="range2">The second range.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="range1"/> or <paramref name="range2"/> is out of valid range.</exception>
     /// <exception cref="ArgumentException"><paramref name="range2"/> is overlapped with <paramref name="range1"/>.</exception>
     public static void Swap<T>(this Span<T> span, Range range1, Range range2)
