@@ -83,7 +83,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <summary>
     /// Gets or sets the amount of data written to the underlying memory so far.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is greater than <see cref="Capacity"/>.</exception>
     public int WrittenCount
     {
         get => position;
