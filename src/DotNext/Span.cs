@@ -843,62 +843,70 @@ public static partial class Span
             Intrinsics.Swap(ref length1, ref length2);
         }
 
-        var shift = length1 - length2;
-        if (shift is 0)
+        if (length1 == length2)
         {
             // handle trivial case that allows to avoid allocation of a large buffer
             Span.SwapCore(span.Slice(start1, length1), span.Slice(start2, length2));
         }
         else
         {
-            SwapCore(span, start1, length1, start2, length2, shift);
+            SwapCore(span, start1, length1, start2, length2);
         }
 
-        static void SwapCore(Span<T> span, int start1, int length1, int start2, int length2, int shift)
+        static void SwapCore(Span<T> span, int start1, int length1, int start2, int length2)
         {
             // check for overlapping
             var endOfLeftSegment = start1 + length1;
             if (endOfLeftSegment > start2)
                 throw new ArgumentException(ExceptionMessages.OverlappedRange, nameof(range2));
 
-            // calc space between first range and second range
-            var spaceBetweenRanges = start2 - endOfLeftSegment;
-            Debug.Assert(spaceBetweenRanges >= 0);
+            Span<T> sourceLarge,
+                    sourceSmall,
+                    destLarge,
+                    destSmall;
+
+            // prepare buffers
+            var shift = length1 - length2;
+            if (shift < 0)
+            {
+                // length1 < length2
+                sourceLarge = span.Slice(start2, length2);
+                destLarge = span.Slice(start1, length2);
+
+                sourceSmall = span.Slice(start1, length1);
+                destSmall = span.Slice(start2 - shift, length1); // -shift = start2 + -shift, shift is negative here
+            }
+            else
+            {
+                // length1 > length2
+                sourceLarge = span.Slice(start1, length1);
+                destLarge = span.Slice(start2 - shift, length1);
+
+                sourceSmall = span.Slice(start2, length2);
+                destSmall = span.Slice(start1, length2);
+            }
 
             // prepare buffer
-            var bufferSize = shift >= 0 ? length1 : length2;
             MemoryRental<T> buffer;
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || bufferSize > MemoryRental<T>.StackallocThreshold)
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || sourceLarge.Length > MemoryRental<T>.StackallocThreshold)
             {
-                buffer = new(bufferSize);
+                buffer = new(sourceLarge.Length);
             }
             else
             {
                 unsafe
                 {
-                    void* bufferPtr = stackalloc byte[checked(Unsafe.SizeOf<T>() * bufferSize)];
-                    buffer = new Span<T>(bufferPtr, bufferSize);
+                    void* bufferPtr = stackalloc byte[checked(Unsafe.SizeOf<T>() * sourceLarge.Length)];
+                    buffer = new Span<T>(bufferPtr, sourceLarge.Length);
                 }
             }
 
             // rearrange elements
-            if (shift < 0)
-            {
-                // length1 < length2
-                shift = -shift;
-                span.Slice(start2, length2).CopyTo(buffer.Span); // save right part to buffer
-                span.Slice(endOfLeftSegment, spaceBetweenRanges).CopyTo(span.Slice(endOfLeftSegment + shift, spaceBetweenRanges)); // shift input to the right
-                span.Slice(start1, length1).CopyTo(span.Slice(start2 + shift, length1)); // copy left to right
-                buffer.Span.Slice(0, length2).CopyTo(span.Slice(start1, length2)); // copy right to left
-            }
-            else
-            {
-                // length1 > length2
-                span.Slice(start1, length1).CopyTo(buffer.Span); // save left part to buffer
-                span.Slice(endOfLeftSegment, spaceBetweenRanges).CopyTo(span.Slice(endOfLeftSegment - shift, spaceBetweenRanges)); // shift input to the left
-                span.Slice(start2, length2).CopyTo(span.Slice(start1, length2)); // copy right to left
-                buffer.Span.Slice(0, length1).CopyTo(span.Slice(start2 - shift, length1)); // copy left to right
-            }
+            sourceLarge.CopyTo(buffer.Span);
+            var spaceBetweenRanges = start2 - endOfLeftSegment;
+            span.Slice(endOfLeftSegment, spaceBetweenRanges).CopyTo(span.Slice(endOfLeftSegment - shift, spaceBetweenRanges));
+            sourceSmall.CopyTo(destSmall);
+            buffer.Span.CopyTo(destLarge);
 
             buffer.Dispose();
         }
