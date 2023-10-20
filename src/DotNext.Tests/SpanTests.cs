@@ -557,5 +557,10 @@ public sealed class SpanTests : Test
         input = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
         input.Swap(0..3, 3..6);
         Equal(new int[] { 4, 5, 6, 1, 2, 3 }, input.ToArray());
+
+        // left and right are empty
+        input = stackalloc int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(1..1, 5..5);
+        Equal(new int[] { 1, 2, 3, 4, 5, 6 }, input.ToArray());
     }
 }
