@@ -159,16 +159,13 @@ public ref struct MemoryRental<T>
     /// </summary>
     public void Dispose()
     {
-        switch (owner)
+        if (owner is T[] array)
         {
-            case null:
-                break;
-            case IDisposable disposable:
-                disposable.Dispose();
-                break;
-            case T[] array:
-                ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
-                break;
+            ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        }
+        else
+        {
+            Unsafe.As<IDisposable>(owner)?.Dispose();
         }
 
         this = default;
