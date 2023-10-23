@@ -883,6 +883,9 @@ public static partial class Span
                 destSmall = span.Slice(start1, length2);
             }
 
+            Debug.Assert(sourceLarge.Length == destLarge.Length);
+            Debug.Assert(sourceSmall.Length == destSmall.Length);
+
             // prepare buffer
             MemoryRental<T> buffer;
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || sourceLarge.Length > MemoryRental<T>.StackallocThreshold)
