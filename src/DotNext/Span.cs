@@ -762,10 +762,14 @@ public static partial class Span
     /// <param name="x">The first span.</param>
     /// <param name="y">The second span.</param>
     /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="y"/> is not of the same length as <paramref name="x"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="x"/> overlaps with <paramref name="y"/>.</exception>
     public static void Swap<T>(this Span<T> x, Span<T> y)
     {
         if (x.Length != y.Length)
             throw new ArgumentOutOfRangeException(nameof(y));
+
+        if (x.Overlaps(y))
+            throw new ArgumentException(ExceptionMessages.OverlappedRange, nameof(y));
 
         SwapCore(x, y);
     }
@@ -836,27 +840,28 @@ public static partial class Span
         var (start1, length1) = range1.GetOffsetAndLength(span.Length);
         var (start2, length2) = range2.GetOffsetAndLength(span.Length);
 
+        if (start1 > start2)
+        {
+            Intrinsics.Swap(ref start1, ref start2);
+            Intrinsics.Swap(ref length1, ref length2);
+        }
+
+        var endOfLeftSegment = start1 + length1;
+        if (endOfLeftSegment > start2)
+            throw new ArgumentException(ExceptionMessages.OverlappedRange, nameof(range2));
+
         if (length1 == length2)
         {
             // handle trivial case that allows to avoid allocation of a large buffer
             Span.SwapCore(span.Slice(start1, length1), span.Slice(start2, length2));
         }
-        else if (start1 < start2)
-        {
-            SwapCore(span, start1, length1, start2, length2);
-        }
         else
         {
-            SwapCore(span, start2, length2, start1, length1);
+            SwapCore(span, start1, length1, start2, length2, endOfLeftSegment);
         }
 
-        static void SwapCore(Span<T> span, int start1, int length1, int start2, int length2)
+        static void SwapCore(Span<T> span, int start1, int length1, int start2, int length2, int endOfLeftSegment)
         {
-            // check for overlapping
-            var endOfLeftSegment = start1 + length1;
-            if (endOfLeftSegment > start2)
-                throw new ArgumentException(ExceptionMessages.OverlappedRange, nameof(range2));
-
             Span<T> sourceLarge,
                     sourceSmall,
                     destLarge,
@@ -903,10 +908,98 @@ public static partial class Span
 
             // rearrange elements
             sourceLarge.CopyTo(buffer.Span);
-            var spaceBetweenRanges = start2 - endOfLeftSegment;
-            span.Slice(endOfLeftSegment, spaceBetweenRanges).CopyTo(span.Slice(endOfLeftSegment - shift, spaceBetweenRanges));
+            span[endOfLeftSegment..start2].CopyTo(span.Slice(start1 + length2));
             sourceSmall.CopyTo(destSmall);
             buffer.Span.CopyTo(destLarge);
+
+            buffer.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Moves the range within the span to the specified index.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the span.</typeparam>
+    /// <param name="span">The span of elements to modify.</param>
+    /// <param name="range">The range of elements within <paramref name="span"/> to move.</param>
+    /// <param name="destinationIndex">The index of the element before which <paramref name="range"/> of elements will be placed.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="destinationIndex"/> is not a valid index within <paramref name="span"/>.</exception>
+    public static void Move<T>(this Span<T> span, Range range, Index destinationIndex)
+    {
+        var (sourceIndex, length) = range.GetOffsetAndLength(span.Length);
+
+        if (length is not 0)
+            MoveCore(span, sourceIndex, destinationIndex.GetOffset(span.Length), length);
+
+        static void MoveCore(Span<T> span, int sourceIndex, int destinationIndex, int length)
+        {
+            // prepare buffers
+            Span<T> source = span.Slice(sourceIndex, length),
+                destination,
+                sourceGap,
+                destinationGap;
+            if (sourceIndex > destinationIndex)
+            {
+                sourceGap = span[destinationIndex..sourceIndex];
+                destinationGap = span.Slice(destinationIndex + length);
+
+                destination = span.Slice(destinationIndex, length);
+            }
+            else
+            {
+                var endOfLeftSegment = sourceIndex + length;
+                switch (endOfLeftSegment.CompareTo(destinationIndex))
+                {
+                    case 0:
+                        return;
+                    case > 0:
+                        throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+                    case < 0:
+                        sourceGap = span[endOfLeftSegment..destinationIndex];
+                        destinationGap = span.Slice(sourceIndex);
+
+                        destination = span.Slice(destinationIndex - length, length);
+                        break;
+                }
+            }
+
+            // Perf: allocate buffer for smallest part of the span
+            if (source.Length > sourceGap.Length)
+            {
+                length = sourceGap.Length;
+
+                var temp = source;
+                source = sourceGap;
+                sourceGap = temp;
+
+                temp = destination;
+                destination = destinationGap;
+                destinationGap = temp;
+            }
+            else
+            {
+                Debug.Assert(length == source.Length);
+            }
+
+            // prepare buffer
+            MemoryRental<T> buffer;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || length > MemoryRental<T>.StackallocThreshold)
+            {
+                buffer = new(length);
+            }
+            else
+            {
+                unsafe
+                {
+                    void* bufferPtr = stackalloc byte[checked(Unsafe.SizeOf<T>() * length)];
+                    buffer = new Span<T>(bufferPtr, length);
+                }
+            }
+
+            // rearrange buffers
+            source.CopyTo(buffer.Span);
+            sourceGap.CopyTo(destinationGap);
+            buffer.Span.CopyTo(destination);
 
             buffer.Dispose();
         }
