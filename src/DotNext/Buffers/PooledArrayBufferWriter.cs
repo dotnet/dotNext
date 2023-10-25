@@ -104,7 +104,10 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
 
     /// <inheritdoc/>
     void ICollection<T>.CopyTo(T[] array, int arrayIndex)
-        => buffer.CopyTo(array.AsSpan(arrayIndex, position));
+    {
+        var source = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetArrayDataReference(buffer), position);
+        source.CopyTo(array.AsSpan(arrayIndex));
+    }
 
     /// <summary>
     /// Gets the element at the specified index.
