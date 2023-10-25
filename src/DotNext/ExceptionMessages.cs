@@ -54,4 +54,6 @@ internal static class ExceptionMessages
         => string.Format(Resources.GetString("NoResult")!, errorCode);
 
     internal static string EndOfBuffer(long remaining) => string.Format(Resources.GetString("EndOfBuffer")!, remaining);
+
+    internal static string OverlappedRange => Resources.GetString("OverlappedRange")!;
 }

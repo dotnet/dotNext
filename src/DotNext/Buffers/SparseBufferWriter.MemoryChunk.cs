@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace DotNext.Buffers;
 
 public partial class SparseBufferWriter<T>
@@ -69,13 +71,16 @@ public partial class SparseBufferWriter<T>
 
         internal override Memory<T> FreeMemory => owner.Memory.Slice(writtenCount);
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private Span<T> FreeSpan => owner.Span.Slice(writtenCount);
+
         internal override int FreeCapacity => owner.Length - writtenCount;
 
         internal override ReadOnlyMemory<T> WrittenMemory => owner.Memory.Slice(0, writtenCount);
 
         internal override int Write(ReadOnlySpan<T> input)
         {
-            input.CopyTo(FreeMemory.Span, out var count);
+            input.CopyTo(FreeSpan, out var count);
             writtenCount += count;
             return count;
         }

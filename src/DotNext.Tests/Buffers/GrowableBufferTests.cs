@@ -54,7 +54,7 @@ public sealed class GrowableBufferTests : Test
     [Fact]
     public static void ReadWriteUsingPooledArrayBufferWriter()
     {
-        using var writer = new PooledArrayBufferWriter<byte>();
+        using var writer = new PooledArrayBufferWriter<byte>() { Capacity = 8 };
         Null(writer.As<IGrowableBuffer<byte>>().Capacity);
         ReadWriteTest(writer);
     }

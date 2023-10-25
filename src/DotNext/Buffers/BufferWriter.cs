@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Tracing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
@@ -80,15 +81,23 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => WrittenMemory;
 
     /// <summary>
-    /// Gets the amount of data written to the underlying memory so far.
+    /// Gets or sets the amount of data written to the underlying memory so far.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is greater than <see cref="Capacity"/>.</exception>
     public int WrittenCount
     {
-        get
+        get => position;
+        set
         {
-            ThrowIfDisposed();
-            return position;
+            if ((uint)value > (uint)Capacity)
+                ThrowArgumentOutOfRangeException();
+
+            position = value;
+
+            [DoesNotReturn]
+            [StackTraceHidden]
+            static void ThrowArgumentOutOfRangeException()
+                => throw new ArgumentOutOfRangeException(nameof(value));
         }
     }
 
@@ -200,21 +209,12 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// Gets or sets the total amount of space within the underlying memory.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than zero.</exception>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public abstract int Capacity { get; init; }
 
     /// <summary>
     /// Gets the amount of space available that can still be written into without forcing the underlying buffer to grow.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public int FreeCapacity
-    {
-        get
-        {
-            ThrowIfDisposed();
-            return Capacity - WrittenCount;
-        }
-    }
+    public int FreeCapacity => Capacity - WrittenCount;
 
     /// <summary>
     /// Clears the data written to the underlying memory.
@@ -234,11 +234,39 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     {
         ThrowIfDisposed();
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (position > Capacity - count)
-            throw new InvalidOperationException();
-        position += count;
+            ThrowCountOutOfRangeException();
+
+        var newPosition = position + count;
+        if ((uint)newPosition > (uint)Capacity)
+            ThrowInvalidOperationException();
+
+        position = newPosition;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidOperationException()
+            => throw new InvalidOperationException();
     }
+
+    /// <summary>
+    /// Moves the writer back the specified number of items.
+    /// </summary>
+    /// <param name="count">The number of items.</param>
+    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
+    public void Rewind(int count)
+    {
+        ThrowIfDisposed();
+        if ((uint)count > (uint)position)
+            ThrowCountOutOfRangeException();
+
+        position -= count;
+    }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowCountOutOfRangeException()
+        => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
@@ -275,14 +303,18 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <param name="newSize">A new size of internal buffer.</param>
     private protected abstract void Resize(int newSize);
 
-    /// <summary>
-    /// Ensures capacity of internal buffer.
-    /// </summary>
-    /// <param name="sizeHint">The requested size of the buffer.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private protected void CheckAndResizeBuffer(int sizeHint)
     {
         if (IGrowableBuffer<T>.GetBufferSize(sizeHint, Capacity, position, out sizeHint))
             Resize(sizeHint);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        position = 0;
+        base.Dispose(disposing);
     }
 
     /// <summary>

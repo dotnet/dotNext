@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -103,7 +104,10 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
 
     /// <inheritdoc/>
     void ICollection<T>.CopyTo(T[] array, int arrayIndex)
-        => WrittenMemory.CopyTo(array.AsMemory(arrayIndex));
+    {
+        var source = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetArrayDataReference(buffer), position);
+        source.CopyTo(array.AsSpan(arrayIndex));
+    }
 
     /// <summary>
     /// Gets the element at the specified index.
@@ -149,12 +153,15 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
 
     private void RemoveAt(int index)
     {
-        Array.Copy(buffer, index + 1L, buffer, index, position - index - 1L);
-        buffer[position - 1] = default!;
+        Debug.Assert(buffer.Length > 0);
+        CopyFast(buffer, index + 1, buffer, index, position - index - 1);
 
-        if (--position == 0)
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            buffer[position - 1] = default!;
+
+        if (--position is 0)
         {
-            ReleaseBuffer();
+            ReturnBuffer();
             buffer = Array.Empty<T>();
         }
     }
@@ -165,6 +172,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         ThrowIfDisposed();
         if ((uint)index >= (uint)position)
             throw new ArgumentOutOfRangeException(nameof(index));
+
         RemoveAt(index);
     }
 
@@ -191,7 +199,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <param name="items">The span whose elements should be inserted into this buffer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public void Insert(int index, scoped ReadOnlySpan<T> items)
+    public void Insert(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
         if ((uint)index > (uint)position)
@@ -200,20 +208,22 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         if (items.IsEmpty)
             goto exit;
 
-        if (GetLength(buffer) == 0)
+        if (GetLength(buffer) is 0)
         {
             buffer = pool.Rent(items.Length);
         }
         else if (position + items.Length <= GetLength(buffer))
         {
-            Array.Copy(buffer, index, buffer, index + items.Length, position - index);
+            CopyFast(buffer, index, buffer, index + items.Length, position - index);
         }
         else
         {
+            Debug.Assert(buffer.Length > 0);
+
             var newBuffer = pool.Rent(buffer.Length + items.Length);
-            Array.Copy(buffer, 0, newBuffer, 0, index);
-            Array.Copy(buffer, index, newBuffer, index + items.Length, buffer.LongLength - index);
-            ReleaseBuffer();
+            CopyFast(buffer, newBuffer, index);
+            CopyFast(buffer, index, newBuffer, index + items.Length, buffer.Length - index);
+            ReturnBuffer();
             buffer = newBuffer;
         }
 
@@ -231,7 +241,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <param name="items">The span whose elements should be added into this buffer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public void Overwrite(int index, scoped ReadOnlySpan<T> items)
+    public void Overwrite(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
         if ((uint)index > (uint)position)
@@ -248,9 +258,11 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         }
         else
         {
+            Debug.Assert(buffer.Length > 0);
+
             var newBuffer = pool.Rent(index + items.Length);
-            Array.Copy(buffer, 0, newBuffer, 0, index);
-            ReleaseBuffer();
+            CopyFast(buffer, newBuffer, index);
+            ReturnBuffer();
             buffer = newBuffer;
         }
 
@@ -271,11 +283,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <inheritdoc />
     public override int Capacity
     {
-        get
-        {
-            ThrowIfDisposed();
-            return buffer.Length;
-        }
+        get => buffer.Length;
 
         init
         {
@@ -299,7 +307,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         get
         {
             ThrowIfDisposed();
-            return new Memory<T>(buffer, 0, position);
+            return new(buffer, 0, position);
         }
     }
 
@@ -312,18 +320,15 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         get
         {
             ThrowIfDisposed();
-            return new ArraySegment<T>(buffer, 0, position);
+            return new(buffer, 0, position);
         }
     }
 
     /// <inheritdoc/>
     ArraySegment<T> ISupplier<ArraySegment<T>>.Invoke() => WrittenArray;
 
-    private void ReleaseBuffer()
-    {
-        if (GetLength(buffer) > 0)
-            pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ReturnBuffer() => pool.Return(buffer, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
 
     /// <summary>
     /// Clears the data written to the underlying memory.
@@ -334,9 +339,13 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     {
         ThrowIfDisposed();
 
-        if (!reuseBuffer)
+        if (GetLength(buffer) is 0)
         {
-            ReleaseBuffer();
+            // nothing to do
+        }
+        else if (!reuseBuffer)
+        {
+            ReturnBuffer();
             buffer = Array.Empty<T>();
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
@@ -354,7 +363,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         MemoryOwner<T> result;
         if (position > 0)
         {
-            result = new MemoryOwner<T>(pool, buffer, position);
+            result = new(pool, buffer, position);
             buffer = Array.Empty<T>();
             position = 0;
         }
@@ -366,6 +375,16 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         return result;
     }
 
+    private T[] GetRawArray(int sizeHint)
+    {
+        if (sizeHint < 0)
+            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+
+        ThrowIfDisposed();
+        CheckAndResizeBuffer(sizeHint);
+        return buffer;
+    }
+
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
     /// </summary>
@@ -374,13 +393,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Memory<T> GetMemory(int sizeHint = 0)
-    {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
-        CheckAndResizeBuffer(sizeHint);
-        return buffer.AsMemory(position);
-    }
+        => GetRawArray(sizeHint).AsMemory(position);
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.
@@ -391,11 +404,11 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override Span<T> GetSpan(int sizeHint = 0)
     {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
+        var array = GetRawArray(sizeHint);
+        Debug.Assert(position <= array.Length);
 
-        CheckAndResizeBuffer(sizeHint);
-        return buffer.AsSpan(position);
+        // Perf: skip redundant checks implemented internally by MemoryExtensions.AsSpan() extension method
+        return MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), position), array.Length - position);
     }
 
     /// <summary>
@@ -406,13 +419,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public ArraySegment<T> GetArray(int sizeHint = 0)
-    {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
-        CheckAndResizeBuffer(sizeHint);
-        return new ArraySegment<T>(buffer, position, buffer.Length - position);
-    }
+        => new(GetRawArray(sizeHint), position, FreeCapacity);
 
     /// <inheritdoc/>
     public override void AddAll(ICollection<T> items)
@@ -436,13 +443,17 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void RemoveLast(int count)
     {
+        ThrowIfDisposed();
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
-        ThrowIfDisposed();
 
-        if (count >= position)
+        if (GetLength(buffer) is 0)
         {
-            ReleaseBuffer();
+            // nothing to do
+        }
+        else if (count >= position)
+        {
+            ReturnBuffer();
             buffer = Array.Empty<T>();
             position = 0;
         }
@@ -466,33 +477,67 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void RemoveFirst(int count)
     {
+        ThrowIfDisposed();
         if (count < 0)
             throw new ArgumentOutOfRangeException(nameof(count));
-        ThrowIfDisposed();
 
-        if (count >= position)
+        if (GetLength(buffer) is 0)
         {
-            ReleaseBuffer();
+            // nothing to do
+        }
+        else if (count >= position)
+        {
+            ReturnBuffer();
             buffer = Array.Empty<T>();
             position = 0;
         }
         else if (count > 0)
         {
+            Debug.Assert(buffer.Length > 0);
+
             var newSize = position - count;
             var newBuffer = pool.Rent(newSize);
             Array.Copy(buffer, count, newBuffer, 0, newSize);
-            ReleaseBuffer();
+            ReturnBuffer();
             buffer = newBuffer;
             position = newSize;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void CopyFast(T[] source, T[] destination, int length)
+    {
+        Debug.Assert(length <= source.Length);
+        Debug.Assert(length <= destination.Length);
+
+        var src = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetArrayDataReference(source), length);
+        var dest = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetArrayDataReference(destination), length);
+        src.CopyTo(dest);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static void CopyFast(T[] source, int sourceIndex, T[] destination, int destinationIndex, int length)
+    {
+        Debug.Assert(sourceIndex < source.Length);
+        Debug.Assert(length <= source.Length - sourceIndex);
+        Debug.Assert(destinationIndex < destination.Length);
+        Debug.Assert(length <= destination.Length - destinationIndex);
+
+        var src = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(source), sourceIndex), length);
+        var dest = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(destination), destinationIndex), length);
+        src.CopyTo(dest);
     }
 
     /// <inheritdoc/>
     private protected override void Resize(int newSize)
     {
         var newBuffer = pool.Rent(newSize);
-        buffer.CopyTo(newBuffer, 0);
-        ReleaseBuffer();
+        if (GetLength(buffer) > 0)
+        {
+            CopyFast(buffer, newBuffer, position);
+            ReturnBuffer();
+        }
+
         buffer = newBuffer;
 #pragma warning disable CS0618
         AllocationCounter?.WriteMetric(newBuffer.LongLength);
@@ -508,8 +553,11 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
 #pragma warning disable CS0618
             BufferSizeCallback?.Invoke(buffer.Length);
 #pragma warning restore CS0618
-            ReleaseBuffer();
-            buffer = Array.Empty<T>();
+            if (GetLength(buffer) > 0)
+            {
+                ReturnBuffer();
+                buffer = Array.Empty<T>();
+            }
         }
 
         base.Dispose(disposing);

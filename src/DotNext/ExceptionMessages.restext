@@ -19,3 +19,4 @@ KeyAlreadyExists=The key already exists
 ObjectMustNotBeArray=The object must not be represented by the array
 NoResult=The result of the operation is unavailable. Error code is {0}
 EndOfBuffer=The buffer has no data to read but the caller expects {0} extra elements
+OverlappedRange=The ranges are overlapped

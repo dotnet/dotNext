@@ -518,4 +518,78 @@ public sealed class SpanTests : Test
         Equal(chars.ToString(), head.ToString());
         Equal(string.Empty, rest.ToString());
     }
+
+    [Fact]
+    public static void SwapElements()
+    {
+        Span<byte> expected = RandomBytes(MemoryRental<byte>.StackallocThreshold * 4 + 2);
+        Span<byte> actual = expected.ToArray();
+        var midpoint = actual.Length >> 1;
+        actual.Slice(0, midpoint).Swap(actual.Slice(midpoint));
+        Equal(expected.Slice(midpoint).ToArray(), actual.Slice(0, midpoint).ToArray());
+        Equal(expected.Slice(0, midpoint).ToArray(), actual.Slice(midpoint).ToArray());
+    }
+
+    [Fact]
+    public static void TransformElements()
+    {
+        // left < right
+        Span<int> input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..2, 3..6);
+        Equal(new int[] { 4, 5, 6, 3, 1, 2 }, input.ToArray());
+
+        // left > right
+        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..3, 4..6);
+        Equal(new int[] { 5, 6, 4, 1, 2, 3 }, input.ToArray());
+
+        // left is zero length
+        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(1..1, 3..6);
+        Equal(new int[] { 1, 4, 5, 6, 2, 3 }, input.ToArray());
+
+        // right is zero length
+        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..2, 3..3);
+        Equal(new int[] { 3, 1, 2, 4, 5, 6 }, input.ToArray());
+
+        // no space between ranges
+        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..2, 2..6);
+        Equal(new int[] { 3, 4, 5, 6, 1, 2 }, input.ToArray());
+
+        // left == right
+        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(0..3, 3..6);
+        Equal(new int[] { 4, 5, 6, 1, 2, 3 }, input.ToArray());
+
+        // left and right are empty
+        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Swap(1..1, 5..5);
+        Equal(new int[] { 1, 2, 3, 4, 5, 6 }, input.ToArray());
+
+        // overlapping
+        Throws<ArgumentException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Swap(0..2, 1..3));
+    }
+
+    [Fact]
+    public static void MoveRange()
+    {
+        // move from left to right
+        Span<int> input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Move(0..2, 3);
+        Equal(new int[] { 3, 1, 2, 4, 5, 6 }, input.ToArray());
+
+        // move from left to right
+        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input.Move(1..3, 6);
+        Equal(new int[] { 1, 4, 5, 6, 2, 3 }, input.ToArray());
+
+        // move from right to left
+        input.Move(4..6, 1);
+        Equal(new int[] { 1, 2, 3, 4, 5, 6 }, input.ToArray());
+
+        // out of range
+        Throws<ArgumentOutOfRangeException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Move(0..2, 1));
+    }
 }

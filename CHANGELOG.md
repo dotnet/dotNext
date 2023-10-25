@@ -1,6 +1,12 @@
 Release Notes
 ====
 
+# 10-25-2023
+<a href="https://www.nuget.org/packages/dotnext/4.15.0">DotNext 4.15.0</a>
+* Optimized performance of `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes as a result of discussion in [192](https://github.com/dotnet/dotNext/issues/192)
+* Added `Span.Swap` and `Span.Move` extension methods
+* Updated dependencies
+
 # 09-27-2023
 <a href="https://www.nuget.org/packages/dotnext.io/4.15.0">DotNext.IO 4.15.0</a>
 * Added fast UTF-8 decoding for [streams](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader)
