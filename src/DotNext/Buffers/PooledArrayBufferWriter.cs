@@ -196,7 +196,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <param name="items">The span whose elements should be inserted into this buffer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public void Insert(int index, scoped ReadOnlySpan<T> items)
+    public void Insert(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
         if ((uint)index > (uint)position)
@@ -238,7 +238,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     /// <param name="items">The span whose elements should be added into this buffer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
-    public void Overwrite(int index, scoped ReadOnlySpan<T> items)
+    public void Overwrite(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
         if ((uint)index > (uint)position)
