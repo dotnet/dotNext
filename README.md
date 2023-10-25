@@ -44,11 +44,11 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-20-2023
+Release Date: 10-25-2023
 
 <a href="https://www.nuget.org/packages/dotnext/4.15.0">DotNext 4.15.0</a>
 * Optimized performance of `PooledArrayBufferWriter<T>` and `PooledBufferWriter<T>` classes as a result of discussion in [192](https://github.com/dotnet/dotNext/issues/192)
-* Added `Span.Swap` as proposed and discussed in [193](https://github.com/dotnet/dotNext/issues/193)
+* Added `Span.Swap` and `Span.Move` extension methods
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
