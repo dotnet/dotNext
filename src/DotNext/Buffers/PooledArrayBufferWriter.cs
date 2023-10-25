@@ -507,7 +507,9 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
         Debug.Assert(length <= source.Length);
         Debug.Assert(length <= destination.Length);
 
-        source.CopyTo(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetArrayDataReference(destination), length));
+        var src = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetArrayDataReference(source), length);
+        var dest = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetArrayDataReference(destination), length);
+        src.CopyTo(dest);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
