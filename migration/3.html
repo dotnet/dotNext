@@ -192,6 +192,7 @@ var typedClient = new MessagingClient(client)
 <p>These methods are callable on leader node only. It's possible to automate announcement of a new node. <code>ClusterMemberAnnouncer&lt;TAddress&gt;</code> delegate instance can be registered in DI container and then called automatically when the node started in <em>Announcement</em> mode. In case of HTTP, the announcer can utilize redirection to leader capability and send the announcement to the leader node. Then, the announcement endpoint on the leader node can call <code>AddMemberAsync</code> method to propose and commit a new cluster configuration. Read <a href="../features/cluster/raft.html">this</a> for more information.</p>
 <h2 id="persistent-wal">Persistent WAL</h2>
 <p><a class="xref" href="../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class exists but cannot be inherited directly anymore. Now this is a base type for disk-based and memory-based state machine. Derive from <a class="xref" href="../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a> class to migrate existing code.</p>
+
 </article>
           </div>
 
@@ -200,7 +201,7 @@ var typedClient = new MessagingClient(client)
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/migration/3.md/#L1" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/steffen-wilke/darkfx/blob/gh-pages/docs/migration/3.md/#L1" class="contribution-link">Edit this page</a>
                   </li>
                 </ul>
               </div>

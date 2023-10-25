@@ -136,6 +136,7 @@ using Stream readStream = StreamSource.AsStream(writer.WrittenMemory);
 </code></pre>
 <h1 id="tuning">Tuning</h1>
 <p>Many operations in .NEXT use stack-allocated memory in combination with <code>MemoryRental&lt;T&gt;</code> type for better performance. It's possible to configure the size of stack-allocated memory used as initial buffer using <code>DOTNEXT_STACK_ALLOC_THRESHOLD</code> environment variable. By default, it is equal to <em>512</em> bytes. It means that if the size of the data inside of I/O operations is less that this value then stack memory will be used. Otherwise, the buffer will be rented from the pool.</p>
+
 </article>
           </div>
 
@@ -144,7 +145,7 @@ using Stream readStream = StreamSource.AsStream(writer.WrittenMemory);
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/io/rental.md/#L1" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/steffen-wilke/darkfx/blob/gh-pages/docs/features/io/rental.md/#L1" class="contribution-link">Edit this page</a>
                   </li>
                 </ul>
               </div>

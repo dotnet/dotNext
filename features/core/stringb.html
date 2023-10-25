@@ -83,6 +83,7 @@ Span&lt;char&gt; writtenSpan = writer.WrittenSpan;
 string result = writer.ToString();
 </code></pre>
 <p><code>BufferWriterSlim&lt;char&gt;</code> is ref-like <strong>struct</strong> so it's not suitable for async scenarios. However, it's possible to use <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;char&gt;</a> as a dynamic buffer of characters for building strings. Read <a href="../io/buffers.html">this</a> article to find a workaround.</p>
+
 </article>
           </div>
 
@@ -91,7 +92,7 @@ string result = writer.ToString();
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/core/stringb.md/#L1" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/steffen-wilke/darkfx/blob/gh-pages/docs/features/core/stringb.md/#L1" class="contribution-link">Edit this page</a>
                   </li>
                 </ul>
               </div>
