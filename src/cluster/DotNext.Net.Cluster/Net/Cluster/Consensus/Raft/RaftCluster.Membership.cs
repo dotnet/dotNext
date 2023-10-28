@@ -291,14 +291,12 @@ public partial class RaftCluster<TMember>
             // proposes a new member
             if (await configurationStorage.AddMemberAsync(addressProvider(member), token).ConfigureAwait(false))
             {
-                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false)) ;
+                await ReplicateAsync(token).ConfigureAwait(false);
 
                 // ensure that the newly added member has been committed
                 await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
                 return true;
             }
-
-            return false;
         }
         catch (OperationCanceledException e)
         {
@@ -312,6 +310,8 @@ public partial class RaftCluster<TMember>
             tokenSource?.Dispose();
             membershipState.Value = false;
         }
+
+        return false;
     }
 
     private ValueTask<Result<bool>> CatchUpAsync(TMember member, long commitIndex, long term, long precedingIndex, long precedingTerm, long currentIndex, CancellationToken token)
@@ -354,7 +354,7 @@ public partial class RaftCluster<TMember>
                 // remove the existing member
                 if (await configurationStorage.RemoveMemberAsync(addressProvider(member), token).ConfigureAwait(false))
                 {
-                    while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
+                    await ReplicateAsync(token).ConfigureAwait(false);
 
                     // ensure that the removed member has been committed
                     await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
