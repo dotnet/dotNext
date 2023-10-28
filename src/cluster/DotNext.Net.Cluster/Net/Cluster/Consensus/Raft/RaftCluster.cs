@@ -1234,7 +1234,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             tokenSource?.Dispose();
         }
 
-        return auditTrail.Term == entry.Term;
+        return Term == entry.Term;
     }
 
     private async ValueTask ReplicateAsync(CancellationToken token)
