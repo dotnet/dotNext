@@ -262,7 +262,8 @@ public partial class RaftCluster<TMember>
         if (!membershipState.FalseToTrue())
             throw new ConcurrentMembershipModificationException();
 
-        var tokenSource = token.LinkTo(LeadershipToken);
+        var leadershipToken = LeadershipToken;
+        var tokenSource = token.LinkTo(leadershipToken);
         try
         {
             // catch up node
@@ -290,7 +291,7 @@ public partial class RaftCluster<TMember>
             // proposes a new member
             if (await configurationStorage.AddMemberAsync(addressProvider(member), token).ConfigureAwait(false))
             {
-                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false));
+                while (!await ReplicateAsync(new EmptyLogEntry(Term), token).ConfigureAwait(false)) ;
 
                 // ensure that the newly added member has been committed
                 await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
@@ -299,9 +300,12 @@ public partial class RaftCluster<TMember>
 
             return false;
         }
-        catch (OperationCanceledException e) when (tokenSource is not null)
+        catch (OperationCanceledException e)
         {
-            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
+            throw token == leadershipToken
+                ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
+                : new OperationCanceledException(e.Message, e, token);
         }
         finally
         {
@@ -340,7 +344,8 @@ public partial class RaftCluster<TMember>
 
         if (members.TryGetValue(id, out var member))
         {
-            var tokenSource = token.LinkTo(LeadershipToken);
+            var leadershipToken = LeadershipToken;
+            var tokenSource = token.LinkTo(leadershipToken);
             try
             {
                 // ensure that previous configuration has been committed
@@ -356,9 +361,12 @@ public partial class RaftCluster<TMember>
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e)
             {
-                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+                token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
+                throw token == leadershipToken
+                    ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
+                    : new OperationCanceledException(e.Message, e, token);
             }
             finally
             {
