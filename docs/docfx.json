@@ -48,7 +48,13 @@
       "_appTitle": ".NEXT",
       "_appLogoPath": "doc_logo.png",
       "_appFaviconPath": "fav.ico",
-      "_appFooter": "Supported by the <a href=\"https://dotnetfoundation.org\">.NET Foundation</a>"
+      "_appFooter": "Supported by the <a href=\"https://dotnetfoundation.org\">.NET Foundation</a>",
+      "_gitContribute":
+      {
+        "repo": "https://github.com/dotnet/dotNext.git",
+        "branch": "gh-pages"
+      },
+      "_gitUrlPattern": "github"
     },
     "content": [
       {
