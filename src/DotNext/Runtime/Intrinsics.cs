@@ -459,7 +459,7 @@ public static class Intrinsics
     /// <param name="second">The second managed pointer.</param>
     /// <returns><see langword="true"/>, if both managed pointers are equal; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool AreSame<T>(in T first, in T second)
+    public static bool AreSame<T>(in T first, in T second) // TODO: Replace 'in' with 'ref readonly' in C# 12
     {
         PushInRef(in first);
         PushInRef(in second);

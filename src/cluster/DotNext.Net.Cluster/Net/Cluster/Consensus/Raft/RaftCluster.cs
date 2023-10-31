@@ -1234,7 +1234,20 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             tokenSource?.Dispose();
         }
 
-        return auditTrail.Term == entry.Term;
+        return Term == entry.Term;
+    }
+
+    private async ValueTask ReplicateAsync(CancellationToken token)
+    {
+        EmptyLogEntry entry;
+        do
+        {
+            entry = new(Term);
+            var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
+            await ForceReplicationAsync(token).ConfigureAwait(false);
+            await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
+        }
+        while (Term != entry.Term);
     }
 
     private TMember? TryGetPeer(EndPoint peer)
