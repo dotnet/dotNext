@@ -52,7 +52,8 @@
       "_gitContribute":
       {
         "repo": "https://github.com/dotnet/dotNext.git",
-        "branch": "gh-pages"
+        "branch": "gh-pages",
+        "apiSpecFolder": "docs/api"
       },
       "_gitUrlPattern": "github"
     },
@@ -80,7 +81,7 @@
     "overwrite": [
       {
         "files": [
-          "apidoc/**.md"
+          "api/new/**.md"
         ],
         "exclude": [
           "obj/**",

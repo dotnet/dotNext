@@ -1,0 +1,1 @@
+This folder can be used to place customized API documentation.
