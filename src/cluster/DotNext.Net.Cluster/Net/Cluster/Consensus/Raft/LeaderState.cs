@@ -145,19 +145,16 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         {
             var result = response.GetAwaiter().GetResult();
             detector?.ReportHeartbeat();
-            term = Math.Max(term, result.Term);
             quorum++;
+            commitQuorum += result.Value ? +1 : -1;
 
-            if (result.Value)
+            if (term < result.Term)
             {
-                if (--leaseRenewalThreshold is 0)
-                    RenewLease(startTime.Elapsed);
-
-                commitQuorum++;
+                term = result.Term;
             }
-            else
+            else if (term == currentTerm && --leaseRenewalThreshold is 0)
             {
-                commitQuorum--;
+                RenewLease(startTime.Elapsed);
             }
         }
         catch (MemberUnavailableException)
