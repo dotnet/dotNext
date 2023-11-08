@@ -1,6 +1,14 @@
 Release Notes
 ====
 
+# 11-08-2023
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.5">DotNext.Net.Cluster 4.14.5</a>
+* Fixed leader lease renewal
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.5">DotNext.AspNetCore.Cluster 4.14.5</a>
+* Updated dependencies
+
 # 10-29-2023
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.4">DotNext.Net.Cluster 4.14.4</a>
 * Clarified exception type when `AddMemberAsync` or `RemoveMemberAsync` is called on Follower node
