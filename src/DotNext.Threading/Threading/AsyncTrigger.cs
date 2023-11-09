@@ -306,7 +306,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     private struct ConditionalLockManager<TCondition> : ILockManager<DefaultWaitNode>
         where TCondition : notnull, ISupplier<bool>
     {
-        internal TCondition Condition;
+        internal TCondition Condition; // TODO: Change to required in C# 12
 
         bool ILockManager.IsLockAllowed => Condition.Invoke();
 
