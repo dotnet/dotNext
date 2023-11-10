@@ -30,7 +30,7 @@ public static class TypeExtensions
     {
         switch (type)
         {
-            case { IsGenericType: true } or { IsGenericTypeDefinition: true } or { IsGenericParameter: true }:
+            case { IsGenericTypeDefinition: true }:
                 foreach (var attribute in type.GetCustomAttributesData())
                 {
                     if (attribute.AttributeType.FullName == IsUnmanagedAttributeName)
