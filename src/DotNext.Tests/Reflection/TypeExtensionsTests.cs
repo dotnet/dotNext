@@ -58,8 +58,10 @@ public sealed class TypeExtensionsTests : Test
         True(typeof(bool).IsUnmanaged());
         True(typeof(Guid).IsUnmanaged());
         True(typeof(DateTime).IsUnmanaged());
-        False(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged());
+        True(typeof((int, int)).IsUnmanaged());
+        True(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged());
         False(typeof(ManagedStruct).IsUnmanaged());
+        False(typeof((int, string)).IsUnmanaged());
         var method = new Func<int>(SizeOf<long>).Method;
         method = method.GetGenericMethodDefinition();
         True(method.GetGenericArguments()[0].IsUnmanaged());
