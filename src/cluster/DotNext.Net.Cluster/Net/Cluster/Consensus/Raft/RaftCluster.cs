@@ -145,6 +145,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.LeadershipToken ?? new(true);
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private LeaderState<TMember> LeaderStateOrException
+        => state as LeaderState<TMember> ?? throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+
     /// <summary>
     /// Associates audit trail with the current instance.
     /// </summary>
@@ -1188,14 +1192,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Forces replication.
     /// </summary>
+    /// <remarks>
+    /// This methods waits for responses from all available cluster members, not from the majority of them.
+    /// </remarks>
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask ForceReplicationAsync(CancellationToken token = default)
-        => state is LeaderState<TMember> leaderState
-            ? leaderState.ForceReplicationAsync(token)
-            : ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+        => (state as LeaderState<TMember>)?.ForceReplicationAsync(token) ?? ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
 
     /// <summary>
     /// Appends a new log entry and ensures that it is replicated and committed.
@@ -1213,21 +1218,25 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         ThrowIfDisposed();
 
-        var tokenSource = token.LinkTo(LifecycleToken);
+        var leaderState = LeaderStateOrException;
+        var tokenSource = token.LinkTo(leaderState.LeadershipToken);
         try
         {
             // 1 - append entry to the log
             var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
 
             // 2 - force replication
-            await ForceReplicationAsync(token).ConfigureAwait(false);
+            leaderState.ForceReplication();
 
             // 3 - wait for commit
             await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
         }
-        catch (OperationCanceledException e) when (tokenSource is not null)
+        catch (OperationCanceledException e)
         {
-            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+            token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
+            throw token == leaderState.LeadershipToken
+                ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
+                : new OperationCanceledException(e.Message, e, token);
         }
         finally
         {
@@ -1237,14 +1246,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return Term == entry.Term;
     }
 
-    private async ValueTask ReplicateAsync(CancellationToken token)
+    private async ValueTask ReplicateAsync(LeaderState<TMember> state, CancellationToken token)
     {
         EmptyLogEntry entry;
         do
         {
             entry = new(Term);
             var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
-            await ForceReplicationAsync(token).ConfigureAwait(false);
+            state.ForceReplication();
             await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
         }
         while (Term != entry.Term);
