@@ -49,11 +49,11 @@ Release Date: 11-08-2023
 <a href="https://www.nuget.org/packages/dotnext.io/4.15.1">DotNext.IO 4.15.1</a>
 * Merged PR [203](https://github.com/dotnet/dotNext/pull/203)
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.5">DotNext.Net.Cluster 4.14.5</a>
-* Fixed leader lease renewal
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.0">DotNext.Net.Cluster 4.15.0</a>
+* Raft performance: improved throughput of `IRaftCluster.ReplicateAsync` method when cluster minority is not accessible (faulty node). Now the leader waits for replication from majority of nodes only instead of all nodes
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.5">DotNext.AspNetCore.Cluster 4.14.5</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.0">DotNext.AspNetCore.Cluster 4.15.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
