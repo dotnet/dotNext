@@ -38,7 +38,6 @@ public static class TypeExtensions
                 }
 
                 break;
-
             case { IsPrimitive: true } or { IsPointer: true } or { IsEnum: true }:
                 return true;
 
