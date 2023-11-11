@@ -46,6 +46,9 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 11-08-2023
 
+<a href="https://www.nuget.org/packages/dotnext.io/4.15.1">DotNext.IO 4.15.1</a>
+* Merged PR [203](https://github.com/dotnet/dotNext/pull/203)
+
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.5">DotNext.Net.Cluster 4.14.5</a>
 * Fixed leader lease renewal
 * Updated dependencies
