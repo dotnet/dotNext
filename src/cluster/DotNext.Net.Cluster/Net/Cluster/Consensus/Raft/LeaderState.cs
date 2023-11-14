@@ -47,12 +47,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         init;
     }
 
-    // no need to allocate state machine for every round of heartbeats
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
+    // highly unlikely that this method completes asynchronously
+    private async ValueTask<(long, long, int)> SendHeartbeatsAsync(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
     {
-        Task<Result<bool>>? response;
-        Replicator? replicator;
+        Replicator replicator;
+        Task<Result<bool>> response;
         long commitIndex = auditTrail.LastCommittedEntryIndex,
             currentIndex = auditTrail.LastEntryIndex,
             minPrecedingIndex = 0L;
@@ -95,63 +94,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         else
             precedingTermCache.Clear();
 
-        int quorum = 0, commitQuorum = 0;
-        bool remainsLeader;
-        Unsafe.SkipInit(out replicator);
-        while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
-        {
-            while (responsePipe.TryRead(out response, out Unsafe.As<Replicator?, object?>(ref replicator)))
-            {
-                Debug.Assert(replicator is not null);
-
-                switch (ProcessMemberResponse(response, replicator, out var result))
-                {
-                    case MemberResponse.Exception:
-                        continue;
-                    case MemberResponse.HigherTermDetected:
-                        MoveToFollowerState(randomizeTimeout: false, result.Term);
-                        goto case MemberResponse.Canceled;
-                    case MemberResponse.Canceled:
-                        remainsLeader = false;
-                        goto exit;
-                }
-
-                if (++quorum == majority)
-                {
-                    RenewLease(startTime.Elapsed);
-                    UpdateLeaderStickiness();
-                    await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
-                }
-
-                if (result.Value && ++commitQuorum == majority)
-                {
-                    // majority of nodes accept entries with at least one entry from the current term
-                    var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
-                    Logger.CommitSuccessful(currentIndex, count);
-                }
-            }
-        }
-
-        if (commitQuorum < majority)
-        {
-            Logger.CommitFailed(quorum, commitIndex);
-        }
-
-        if (quorum >= majority)
-        {
-            remainsLeader = true;
-        }
-        else
-        {
-            MoveToFollowerState(randomizeTimeout: false);
-            remainsLeader = false;
-        }
-
-    exit:
-        var broadcastTime = startTime.ElapsedMilliseconds;
-        Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
-        LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
-        return remainsLeader;
+        return (currentIndex, commitIndex, majority);
     }
 
     private MemberResponse ProcessMemberResponse(Task<Result<bool>> response, Replicator replicator, out Result<bool> result)
@@ -219,10 +162,64 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
                 // we want to minimize GC intrusion during replication process
                 // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
-                using (GCLatencyModeScope.SustainedLowLatency)
+                var scope = GCLatencyModeScope.SustainedLowLatency;
+                try
                 {
-                    if (!await DoHeartbeats(startTime, responsePipe, auditTrail, configurationStorage, enumerator, token).ConfigureAwait(false))
-                        break;
+                    // Perf: the code in this block is inlined instead of moved to separated method because
+                    // we want to prevent allocation of state machine on every call
+                    (long currentIndex, long commitIndex, int majority) = await SendHeartbeatsAsync(responsePipe, auditTrail, configurationStorage, enumerator, token).ConfigureAwait(false);
+                    int quorum = 0, commitQuorum = 0;
+
+                    while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
+                    {
+                        while (responsePipe.TryRead(out var response, out var replicator))
+                        {
+                            Debug.Assert(replicator is Replicator);
+
+                            switch (ProcessMemberResponse(response, Unsafe.As<Replicator>(replicator), out var result))
+                            {
+                                case MemberResponse.Exception:
+                                    continue;
+                                case MemberResponse.HigherTermDetected:
+                                    MoveToFollowerState(randomizeTimeout: false, result.Term);
+                                    goto case MemberResponse.Canceled;
+                                case MemberResponse.Canceled:
+                                    return;
+                            }
+
+                            if (++quorum == majority)
+                            {
+                                RenewLease(startTime.Elapsed);
+                                UpdateLeaderStickiness();
+                                await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                            }
+
+                            if (result.Value && ++commitQuorum == majority)
+                            {
+                                // majority of nodes accept entries with at least one entry from the current term
+                                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
+                                Logger.CommitSuccessful(currentIndex, count);
+                            }
+                        }
+                    }
+
+                    if (commitQuorum < majority)
+                    {
+                        Logger.CommitFailed(quorum, commitIndex);
+                    }
+
+                    if (quorum < majority)
+                    {
+                        MoveToFollowerState(randomizeTimeout: false);
+                        return;
+                    }
+                }
+                finally
+                {
+                    var broadcastTime = startTime.ElapsedMilliseconds;
+                    scope.Dispose();
+                    Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
+                    LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
                 }
 
                 // resume all suspended callers added to the queue concurrently before SwitchValve()
