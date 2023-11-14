@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks.Sources;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -39,7 +40,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
         // force builder to initialize state machine box
         var workItem = new AdvanceStateMachineWorkItem();
         builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
+        workItem.Execute();
     }
 
     /// <summary>
@@ -129,7 +130,7 @@ public struct SpawningAsyncTaskMethodBuilder
         // force builder to initialize state machine box
         var workItem = new AdvanceStateMachineWorkItem();
         builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
+        workItem.Execute();
     }
 
     /// <summary>
@@ -187,10 +188,65 @@ public struct SpawningAsyncTaskMethodBuilder
 [StructLayout(LayoutKind.Auto)]
 internal struct AdvanceStateMachineWorkItem : INotifyCompletion, IThreadPoolWorkItem
 {
+    private static readonly Action<object?>? SpecialWorkItem;
     private Action? moveNext;
+
+    static AdvanceStateMachineWorkItem()
+    {
+        // Pref: trying to extract ThreadPool.s_invokeAsyncStateMachineBox cached delegate
+        // that can be used to execute IAsyncStateMachineBox.MoveNext()
+        // without instantiation of IThreadPoolWorkItem
+        var detector = new SpecialCallbackDetector();
+        var awaiter = new ValueTask(detector, 0).ConfigureAwait(false).GetAwaiter();
+        var machine = new FakeStateMachine();
+        AsyncTaskMethodBuilder.Create().AwaitUnsafeOnCompleted(ref awaiter, ref machine);
+        SpecialWorkItem = detector.Callback;
+    }
 
     void INotifyCompletion.OnCompleted(Action continuation)
         => moveNext = continuation;
 
     readonly void IThreadPoolWorkItem.Execute() => moveNext?.Invoke();
+
+    internal readonly void Execute()
+    {
+        if (SpecialWorkItem is null || moveNext?.Target is not Task stateMachineBox)
+        {
+            ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
+        }
+        else
+        {
+            // Perf: UnsafeQueueUserWorkItem<T>(Action<T>, T, bool) overload knows about special work item callback
+            // and executes StateMachineBox directly so we don't need to box AdvanceStateMachineWorkItem object
+            ThreadPool.UnsafeQueueUserWorkItem(SpecialWorkItem, stateMachineBox, preferLocal: false);
+        }
+    }
+
+    private sealed class SpecialCallbackDetector : IValueTaskSource
+    {
+        internal Action<object?>? Callback;
+
+        void IValueTaskSource.GetResult(short token)
+        {
+        }
+
+        ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => ValueTaskSourceStatus.Pending;
+
+        void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+        {
+            Callback = state is Task && !ReferenceEquals(continuation.Target, state) ? continuation : null;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct FakeStateMachine : IAsyncStateMachine
+    {
+        void IAsyncStateMachine.MoveNext()
+        {
+        }
+
+        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
+        {
+        }
+    }
 }
