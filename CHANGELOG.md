@@ -1,8 +1,19 @@
 Release Notes
 ====
 
+# 11-15-2023
+<a href="https://www.nuget.org/packages/dotnext/4.15.2">DotNext 4.15.2</a>
+* Reduced memory allocation caused by async methods using [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) state machine builder
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.2">DotNext.Net.Cluster 4.15.2</a>
+* Raft performance: reduced memory allocation caused by heartbeat round
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.2">DotNext.AspNetCore.Cluster 4.15.2</a>
+* Updated dependencies
+
 # 11-13-2023
-<a href="https://www.nuget.org/packages/dotnext.io/4.15.1">DotNext.IO 4.15.1</a>
+<a href="https://www.nuget.org/packages/dotnext/4.15.1">DotNext 4.15.1</a>
 * Merged PR [203](https://github.com/dotnet/dotNext/pull/203)
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.0">DotNext.Net.Cluster 4.15.0</a>
