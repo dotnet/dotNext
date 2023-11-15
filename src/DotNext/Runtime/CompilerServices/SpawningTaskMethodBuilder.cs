@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks.Sources;
@@ -37,10 +38,9 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : notnull, IAsyncStateMachine
     {
-        // force builder to initialize state machine box
-        var workItem = new AdvanceStateMachineWorkItem();
-        builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        workItem.Execute();
+        var awaiter = SpawningAsyncTaskMethodBuilder.Awaiter;
+        builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+        SpawningAsyncTaskMethodBuilder.Schedule();
     }
 
     /// <summary>
@@ -106,6 +106,11 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
 [StructLayout(LayoutKind.Auto)]
 public struct SpawningAsyncTaskMethodBuilder
 {
+    internal static readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter Awaiter = new ValueTask(new SpecialCallbackDetector(), 0).ConfigureAwait(false).GetAwaiter();
+
+    [ThreadStatic]
+    private static (Action<object?> WorkItem, object? State) capturedArgs;
+
     private AsyncTaskMethodBuilder builder;
 
     /// <summary>
@@ -127,10 +132,9 @@ public struct SpawningAsyncTaskMethodBuilder
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : notnull, IAsyncStateMachine
     {
-        // force builder to initialize state machine box
-        var workItem = new AdvanceStateMachineWorkItem();
-        builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        workItem.Execute();
+        var awaiter = Awaiter;
+        builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+        Schedule();
     }
 
     /// <summary>
@@ -182,50 +186,16 @@ public struct SpawningAsyncTaskMethodBuilder
     /// Gets the task representing the builder's asynchronous operation.
     /// </summary>
     public Task Task => builder.Task;
-}
 
-// TODO: Convert to file-local type
-[StructLayout(LayoutKind.Auto)]
-internal struct AdvanceStateMachineWorkItem : INotifyCompletion, IThreadPoolWorkItem
-{
-    private static readonly Action<object?>? SpecialWorkItem;
-    private Action? moveNext;
-
-    static AdvanceStateMachineWorkItem()
+    internal static void Schedule()
     {
-        // Pref: trying to extract ThreadPool.s_invokeAsyncStateMachineBox cached delegate
-        // that can be used to execute IAsyncStateMachineBox.MoveNext()
-        // without instantiation of IThreadPoolWorkItem
-        var detector = new SpecialCallbackDetector();
-        var awaiter = new ValueTask(detector, 0).ConfigureAwait(false).GetAwaiter();
-        var machine = new FakeStateMachine();
-        AsyncTaskMethodBuilder.Create().AwaitUnsafeOnCompleted(ref awaiter, ref machine);
-        SpecialWorkItem = detector.Callback;
-    }
-
-    void INotifyCompletion.OnCompleted(Action continuation)
-        => moveNext = continuation;
-
-    readonly void IThreadPoolWorkItem.Execute() => moveNext?.Invoke();
-
-    internal readonly void Execute()
-    {
-        if (SpecialWorkItem is null || moveNext?.Target is not Task stateMachineBox)
-        {
-            ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
-        }
-        else
-        {
-            // Perf: UnsafeQueueUserWorkItem<T>(Action<T>, T, bool) overload knows about special work item callback
-            // and executes StateMachineBox directly so we don't need to box AdvanceStateMachineWorkItem object
-            ThreadPool.UnsafeQueueUserWorkItem(SpecialWorkItem, stateMachineBox, preferLocal: false);
-        }
+        var (continuation, state) = capturedArgs;
+        capturedArgs = default;
+        ThreadPool.UnsafeQueueUserWorkItem(continuation, state, preferLocal: false);
     }
 
     private sealed class SpecialCallbackDetector : IValueTaskSource
     {
-        internal Action<object?>? Callback;
-
         void IValueTaskSource.GetResult(short token)
         {
         }
@@ -233,20 +203,6 @@ internal struct AdvanceStateMachineWorkItem : INotifyCompletion, IThreadPoolWork
         ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => ValueTaskSourceStatus.Pending;
 
         void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-        {
-            Callback = state is Task && !ReferenceEquals(continuation.Target, state) ? continuation : null;
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct FakeStateMachine : IAsyncStateMachine
-    {
-        void IAsyncStateMachine.MoveNext()
-        {
-        }
-
-        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine)
-        {
-        }
+            => capturedArgs = new(continuation, state);
     }
 }
