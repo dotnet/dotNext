@@ -8,7 +8,7 @@ namespace DotNext.ComponentModel.DataAnnotations;
 /// Checks whether the data field of type <see cref="Optional{T}"/> has a value.
 /// </summary>
 /// <typeparam name="T">The type of <see cref="Optional{T}"/> value.</typeparam>
-public sealed class ValueRequiredAttribute<T> : RequiredAttribute
+public sealed class RequiredAttribute<T> : RequiredAttribute
 {
     /// <summary>
     /// Specifies whether <see cref="Optional{T}"/> may contain <see langword="null"/> value.

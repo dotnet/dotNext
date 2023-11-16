@@ -7,7 +7,7 @@ public sealed class OptionalStringLengthAttributeTests : Test
     public sealed class DataModel
     {
         [OptionalStringLength(100, MinimumLength = 5)]
-        [ValueRequired<string>]
+        [Required<string>]
         public Optional<string> StringProperty { get; set; }
     }
 
