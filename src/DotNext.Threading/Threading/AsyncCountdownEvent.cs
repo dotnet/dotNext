@@ -186,17 +186,33 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Resets the <see cref="CurrentCount"/> to the value of <see cref="InitialCount"/>.
     /// </summary>
+    /// <remarks>
+    /// All suspended callers will be resumed with <see cref="PendingTaskInterruptedException"/> exception.
+    /// </remarks>
     /// <returns><see langword="true"/>, if state of this object changed from signaled to non-signaled state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Reset()
     {
         ThrowIfDisposed();
-        return ResetCore(1L);
+        bool result;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
+        {
+            result = manager.Current is 0L;
+            manager.Current = manager.Initial;
+            suspendedCallers = DetachWaitQueue()?.SetException(new PendingTaskInterruptedException(), out _);
+        }
+
+        suspendedCallers?.Unwind();
+        return result;
     }
 
     /// <summary>
     /// Resets the <see cref="InitialCount"/> property to a specified value.
     /// </summary>
+    /// <remarks>
+    /// All suspended callers will be resumed with <see cref="PendingTaskInterruptedException"/> exception.
+    /// </remarks>
     /// <param name="count">The number of signals required to set this event.</param>
     /// <returns><see langword="true"/>, if state of this object changed from signaled to non-signaled state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
@@ -207,21 +223,16 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(count));
 
         ThrowIfDisposed();
-        return ResetCore(count);
-    }
-
-    private bool ResetCore(long count)
-    {
-        Debug.Assert(count >= 0L);
-
         bool result;
-        Monitor.Enter(SyncRoot);
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
+        {
+            result = manager.Current is 0L;
+            manager.Current = manager.Initial = count;
+            suspendedCallers = DetachWaitQueue()?.SetException(new PendingTaskInterruptedException(), out _);
+        }
 
-        // the following code never throws, avoid try-finally overhead
-        result = manager.Current is 0L;
-        manager.Current = manager.Initial = count;
-
-        Monitor.Exit(SyncRoot);
+        suspendedCallers?.Unwind();
         return result;
     }
 
