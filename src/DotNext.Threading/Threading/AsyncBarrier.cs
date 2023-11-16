@@ -79,7 +79,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
             case 0L:
                 return CurrentPhaseNumber;
             default:
-                countdown.TryAddCount(participantCount, true);  // always returns true if autoReset==true
+                countdown.AddCountAndReset(participantCount);
                 participants.AddAndGet(participantCount);
                 goto case 0L;
         }

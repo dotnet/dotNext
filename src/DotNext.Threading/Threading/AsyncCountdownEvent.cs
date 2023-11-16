@@ -23,9 +23,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         internal StateManager(long initialCount)
             => Current = Initial = initialCount;
 
-        bool ILockManager.IsLockAllowed => Current is 0L;
+        readonly bool ILockManager.IsLockAllowed => Current is 0L;
 
         internal void Increment(long value) => Current = checked(Current + value);
+
+        internal void IncrementInitial(long value)
+            => Current = Initial = checked(Current + value);
 
         internal bool Decrement(long value = 1L)
             => (Current = Math.Max(0L, Current - value)) is 0L;
@@ -104,18 +107,29 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// </summary>
     public bool IsSet => CurrentCount is 0L;
 
-    internal bool TryAddCount(long signalCount, bool autoReset)
+    internal void AddCountAndReset(long signalCount)
     {
         Debug.Assert(signalCount > 0L);
 
-        lock (SyncRoot)
-        {
-            if (manager.Current is 0L && !autoReset)
-                return false;
+        Monitor.Enter(SyncRoot);
+        manager.IncrementInitial(signalCount);
+        Monitor.Exit(SyncRoot);
+    }
 
+    private bool TryAddCountCore(long signalCount)
+    {
+        Debug.Assert(signalCount > 0L);
+
+        bool result;
+        Monitor.Enter(SyncRoot);
+
+        if (result = manager.Current is not 0L)
+        {
             manager.Increment(signalCount);
-            return true;
         }
+
+        Monitor.Exit(SyncRoot);
+        return result;
     }
 
     /// <summary>
@@ -133,7 +147,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             < 0L => throw new ArgumentOutOfRangeException(nameof(signalCount)),
             0L => true,
-            _ => TryAddCount(signalCount, autoReset: false),
+            _ => TryAddCountCore(signalCount),
         };
     }
 
@@ -146,7 +160,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         ThrowIfDisposed();
 
-        return TryAddCount(1L, autoReset: false);
+        return TryAddCountCore(1L);
     }
 
     /// <summary>
@@ -174,7 +188,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// </summary>
     /// <returns><see langword="true"/>, if state of this object changed from signaled to non-signaled state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    public bool Reset() => Reset(manager.Initial);
+    public bool Reset()
+    {
+        ThrowIfDisposed();
+        return ResetCore(1L);
+    }
 
     /// <summary>
     /// Resets the <see cref="InitialCount"/> property to a specified value.
@@ -189,22 +207,21 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(count));
 
         ThrowIfDisposed();
+        return ResetCore(count);
+    }
+
+    private bool ResetCore(long count)
+    {
+        Debug.Assert(count >= 0L);
 
         bool result;
-        lock (SyncRoot)
-        {
-            // in signaled state
-            if (manager.Current is not 0L)
-            {
-                result = false;
-            }
-            else
-            {
-                manager.Current = manager.Initial = count;
-                result = true;
-            }
-        }
+        Monitor.Enter(SyncRoot);
 
+        // the following code never throws, avoid try-finally overhead
+        result = manager.Current is 0L;
+        manager.Current = manager.Initial = count;
+
+        Monitor.Exit(SyncRoot);
         return result;
     }
 
