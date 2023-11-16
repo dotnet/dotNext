@@ -1,9 +1,14 @@
 Release Notes
 ====
 
-# 11-15-2023
+# 11-16-2023
 <a href="https://www.nuget.org/packages/dotnext/4.15.2">DotNext 4.15.2</a>
 * Reduced memory allocation caused by async methods using [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) state machine builder
+* Fixed [204](https://github.com/dotnet/dotNext/issues/204)
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.15.2">DotNext.Threading 4.15.2</a>
+* Fixed [205](https://github.com/dotnet/dotNext/issues/205)
+* `AsyncCountdownEvent.Reset` now throws `PendingTaskInterruptedException` on every caller suspended by `WaitAsync`
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.2">DotNext.Net.Cluster 4.15.2</a>
 * Raft performance: reduced memory allocation caused by heartbeat round
