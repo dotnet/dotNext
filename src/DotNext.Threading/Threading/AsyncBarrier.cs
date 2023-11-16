@@ -77,9 +77,9 @@ public class AsyncBarrier : Disposable, IAsyncEvent
             case < 0L:
                 throw new ArgumentOutOfRangeException(nameof(participantCount));
             case 0L:
-                return currentPhase;
+                return CurrentPhaseNumber;
             default:
-                countdown.TryAddCount(participantCount, true);  // always returns true if autoReset==true
+                countdown.AddCountAndReset(participantCount);
                 participants.AddAndGet(participantCount);
                 goto case 0L;
         }

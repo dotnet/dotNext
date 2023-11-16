@@ -193,7 +193,7 @@ internal partial class LeaderState<TMember>
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
-    private readonly Func<TMember, Replicator> replicatorFactory;
+    private readonly Func<TMember, Replicator> replicatorFactory, localReplicatorFactory;
 
     private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
     {
@@ -221,10 +221,25 @@ internal partial class LeaderState<TMember>
         return replicationTask;
     }
 
+    // synchronous version that doesn't wait for the end of replication round
+    internal void ForceReplication()
+    {
+        try
+        {
+            replicationEvent.Set();
+        }
+        catch (ObjectDisposedException e)
+        {
+            throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+        }
+    }
+
     private Replicator CreateReplicator(TMember member) => new(member, Logger)
     {
         FailureDetector = detectorFactory?.Invoke(maxLease, member),
     };
+
+    private Replicator CreateLocalMemberReplicator(TMember member) => new(member, Logger);
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
     private static async Task<Result<bool>> SpawnReplicationAsync(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)

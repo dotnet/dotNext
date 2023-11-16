@@ -262,8 +262,8 @@ public partial class RaftCluster<TMember>
         if (!membershipState.FalseToTrue())
             throw new ConcurrentMembershipModificationException();
 
-        var leadershipToken = LeadershipToken;
-        var tokenSource = token.LinkTo(leadershipToken);
+        var leaderState = LeaderStateOrException;
+        var tokenSource = token.LinkTo(leaderState.LeadershipToken);
         try
         {
             // catch up node
@@ -291,7 +291,7 @@ public partial class RaftCluster<TMember>
             // proposes a new member
             if (await configurationStorage.AddMemberAsync(addressProvider(member), token).ConfigureAwait(false))
             {
-                await ReplicateAsync(token).ConfigureAwait(false);
+                await ReplicateAsync(leaderState, token).ConfigureAwait(false);
 
                 // ensure that the newly added member has been committed
                 await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
@@ -301,7 +301,7 @@ public partial class RaftCluster<TMember>
         catch (OperationCanceledException e)
         {
             token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-            throw token == leadershipToken
+            throw token == leaderState.LeadershipToken
                 ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
                 : new OperationCanceledException(e.Message, e, token);
         }
@@ -344,8 +344,8 @@ public partial class RaftCluster<TMember>
 
         if (members.TryGetValue(id, out var member))
         {
-            var leadershipToken = LeadershipToken;
-            var tokenSource = token.LinkTo(leadershipToken);
+            var leaderState = LeaderStateOrException;
+            var tokenSource = token.LinkTo(leaderState.LeadershipToken);
             try
             {
                 // ensure that previous configuration has been committed
@@ -354,7 +354,7 @@ public partial class RaftCluster<TMember>
                 // remove the existing member
                 if (await configurationStorage.RemoveMemberAsync(addressProvider(member), token).ConfigureAwait(false))
                 {
-                    await ReplicateAsync(token).ConfigureAwait(false);
+                    await ReplicateAsync(leaderState, token).ConfigureAwait(false);
 
                     // ensure that the removed member has been committed
                     await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
@@ -364,7 +364,7 @@ public partial class RaftCluster<TMember>
             catch (OperationCanceledException e)
             {
                 token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-                throw token == leadershipToken
+                throw token == leaderState.LeadershipToken
                     ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
                     : new OperationCanceledException(e.Message, e, token);
             }

@@ -21,6 +21,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     private readonly long currentTerm;
     private readonly CancellationTokenSource timerCancellation;
     internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
+    private readonly Task<Result<bool>> localMemberResponse;
 
     private Task? heartbeatTask;
 
@@ -28,6 +29,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         : base(stateMachine)
     {
         currentTerm = term;
+        localMemberResponse = Task.FromResult(new Result<bool> { Term = term, Value = true });
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
         this.maxLease = maxLease;
@@ -36,6 +38,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         context = new();
         replicatorFactory = CreateReplicator;
+        localReplicatorFactory = CreateLocalMemberReplicator;
     }
 
     internal ILeaderStateMetrics? Metrics
@@ -44,26 +47,22 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         init;
     }
 
-    // no need to allocate state machine for every round of heartbeats
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<bool> DoHeartbeats(Timestamp startTime, TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
+    // highly unlikely that this method completes asynchronously
+    private async ValueTask<(long, long, int)> SendHeartbeatsAsync(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
     {
+        Replicator replicator;
+        Task<Result<bool>> response;
         long commitIndex = auditTrail.LastCommittedEntryIndex,
             currentIndex = auditTrail.LastEntryIndex,
-            term = currentTerm,
             minPrecedingIndex = 0L;
 
-        var activeConfig = configurationStorage.ActiveConfiguration;
-        var proposedConfig = configurationStorage.ProposedConfiguration;
-
-        var leaseRenewalThreshold = 0;
+        var majority = 0;
 
         // send heartbeat in parallel
-        while (members.MoveNext())
+        for (IClusterConfiguration? activeConfig = configurationStorage.ActiveConfiguration, proposedConfig = configurationStorage.ProposedConfiguration; members.MoveNext(); responsePipe.Add(response, replicator), majority++)
         {
-            leaseRenewalThreshold++;
-
-            if (members.Current is { IsRemote: true } member)
+            var member = members.Current;
+            if (member.IsRemote)
             {
                 var precedingIndex = member.State.PrecedingIndex;
                 minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
@@ -73,13 +72,19 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
-                var replicator = context.GetOrCreate(member, replicatorFactory);
-                replicator.Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex, precedingTerm);
-                responsePipe.Add(SpawnReplicationAsync(replicator, auditTrail, currentIndex, token), replicator);
+                replicator = context.GetOrCreate(member, replicatorFactory);
+                replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex, precedingTerm);
+                response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, token);
+            }
+            else
+            {
+                replicator = context.GetOrCreate(member, localReplicatorFactory);
+                response = localMemberResponse;
             }
         }
 
         responsePipe.Complete();
+        majority = (majority >> 1) + 1;
 
         // Clear cache:
         // 1. Best case: remove all entries from the cache up to the minimal observed index (those entries will never be requested)
@@ -89,96 +94,29 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         else
             precedingTermCache.Clear();
 
-        // update lease if the cluster contains only one local node
-        if (leaseRenewalThreshold is 1)
-            RenewLease(startTime.Elapsed);
-        else
-            leaseRenewalThreshold = (leaseRenewalThreshold >> 1) + 1;
-
-        int quorum = 1, commitQuorum = 1; // because we know that the entry is replicated in this node
-        while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
-        {
-            while (responsePipe.TryRead(out var response, out var replicator))
-            {
-                Debug.Assert(replicator is Replicator);
-
-                if (!ProcessMemberResponse(startTime, response, Unsafe.As<Replicator>(replicator), ref term, ref quorum, ref commitQuorum, ref leaseRenewalThreshold))
-                    return false;
-            }
-        }
-
-        var broadcastTime = startTime.ElapsedMilliseconds;
-        Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
-        LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
-
-        if (term <= currentTerm && quorum > 0)
-        {
-            Debug.Assert(quorum >= commitQuorum);
-
-            if (commitQuorum > 0)
-            {
-                // majority of nodes accept entries with at least one entry from the current term
-                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
-                Logger.CommitSuccessful(currentIndex, count);
-            }
-            else
-            {
-                Logger.CommitFailed(quorum, commitIndex);
-            }
-
-            await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
-            UpdateLeaderStickiness();
-            return true;
-        }
-
-        // it is partitioned network with absolute majority, not possible to have more than one leader
-        MoveToFollowerState(randomizeTimeout: false, term);
-        return false;
+        return (currentIndex, commitIndex, majority);
     }
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
-    private bool ProcessMemberResponse(Timestamp startTime, Task<Result<bool>> response, Replicator replicator, ref long term, ref int quorum, ref int commitQuorum, ref int leaseRenewalThreshold)
+    private MemberResponse ProcessMemberResponse(Task<Result<bool>> response, Replicator replicator, out Result<bool> result)
     {
         var detector = replicator.FailureDetector;
-
         try
         {
-            var result = response.GetAwaiter().GetResult();
+            result = response.GetAwaiter().GetResult();
             detector?.ReportHeartbeat();
-            term = Math.Max(term, result.Term);
-            quorum++;
-
-            if (result.Value)
-            {
-                if (--leaseRenewalThreshold is 0)
-                    RenewLease(startTime.Elapsed);
-
-                commitQuorum++;
-            }
-            else
-            {
-                commitQuorum--;
-            }
+            return currentTerm >= result.Term ? MemberResponse.Successful : MemberResponse.HigherTermDetected;
         }
         catch (MemberUnavailableException)
         {
-            quorum -= 1;
-            commitQuorum -= 1;
+            // goto method epilogue
         }
         catch (OperationCanceledException)
         {
-            // leading was canceled
-            var broadcastTime = startTime.ElapsedMilliseconds;
-            Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
-            LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
-
-            return false;
+            Unsafe.SkipInit(out result);
+            return MemberResponse.Canceled;
         }
         catch (Exception e)
         {
-            // treat any exception as faulty member
-            quorum -= 1;
-            commitQuorum -= 1;
             Logger.LogError(e, ExceptionMessages.UnexpectedError);
         }
         finally
@@ -187,18 +125,23 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicator.Reset();
         }
 
-        // report unavailable cluster member
+        Unsafe.SkipInit(out result);
+        CheckMemberHealthStatus(detector, replicator.Member);
+        return MemberResponse.Exception;
+    }
+
+    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
+    private void CheckMemberHealthStatus(IFailureDetector? detector, TMember member)
+    {
         switch (detector)
         {
             case { IsMonitoring: false }:
-                Logger.UnknownHealthStatus(replicator.Member.EndPoint);
+                Logger.UnknownHealthStatus(member.EndPoint);
                 break;
             case { IsHealthy: false }:
-                UnavailableMemberDetected(replicator.Member, LeadershipToken);
+                UnavailableMemberDetected(member, LeadershipToken);
                 break;
         }
-
-        return true;
     }
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
@@ -210,7 +153,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         var enumerator = members.GetEnumerator();
         try
         {
-            for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset(), AdjustEnumerator(ref members, ref enumerator))
+            for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset(), ReuseEnumerator(ref members, ref enumerator))
             {
                 var startTime = new Timestamp();
 
@@ -219,10 +162,64 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
                 // we want to minimize GC intrusion during replication process
                 // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
-                using (GCLatencyModeScope.SustainedLowLatency)
+                var scope = GCLatencyModeScope.SustainedLowLatency;
+                try
                 {
-                    if (!await DoHeartbeats(startTime, responsePipe, auditTrail, configurationStorage, enumerator, token).ConfigureAwait(false))
-                        break;
+                    // Perf: the code in this block is inlined instead of moved to separated method because
+                    // we want to prevent allocation of state machine on every call
+                    (long currentIndex, long commitIndex, int majority) = await SendHeartbeatsAsync(responsePipe, auditTrail, configurationStorage, enumerator, token).ConfigureAwait(false);
+                    int quorum = 0, commitQuorum = 0;
+
+                    while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
+                    {
+                        while (responsePipe.TryRead(out var response, out var replicator))
+                        {
+                            Debug.Assert(replicator is Replicator);
+
+                            switch (ProcessMemberResponse(response, Unsafe.As<Replicator>(replicator), out var result))
+                            {
+                                case MemberResponse.Exception:
+                                    continue;
+                                case MemberResponse.HigherTermDetected:
+                                    MoveToFollowerState(randomizeTimeout: false, result.Term);
+                                    goto case MemberResponse.Canceled;
+                                case MemberResponse.Canceled:
+                                    return;
+                            }
+
+                            if (++quorum == majority)
+                            {
+                                RenewLease(startTime.Elapsed);
+                                UpdateLeaderStickiness();
+                                await configurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                            }
+
+                            if (result.Value && ++commitQuorum == majority)
+                            {
+                                // majority of nodes accept entries with at least one entry from the current term
+                                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
+                                Logger.CommitSuccessful(currentIndex, count);
+                            }
+                        }
+                    }
+
+                    if (commitQuorum < majority)
+                    {
+                        Logger.CommitFailed(quorum, commitIndex);
+                    }
+
+                    if (quorum < majority)
+                    {
+                        MoveToFollowerState(randomizeTimeout: false);
+                        return;
+                    }
+                }
+                finally
+                {
+                    var broadcastTime = startTime.ElapsedMilliseconds;
+                    scope.Dispose();
+                    Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
+                    LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
                 }
 
                 // resume all suspended callers added to the queue concurrently before SwitchValve()
@@ -239,7 +236,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
     }
 
-    private void AdjustEnumerator(ref IReadOnlyCollection<TMember> currentList, ref IEnumerator<TMember> enumerator)
+    private void ReuseEnumerator(ref IReadOnlyCollection<TMember> currentList, ref IEnumerator<TMember> enumerator)
     {
         var freshList = Members;
         if (ReferenceEquals(currentList, freshList))
@@ -314,6 +311,14 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
 
         base.Dispose(disposing);
+    }
+
+    private enum MemberResponse
+    {
+        Successful = 0,
+        HigherTermDetected,
+        Exception,
+        Canceled,
     }
 }
 

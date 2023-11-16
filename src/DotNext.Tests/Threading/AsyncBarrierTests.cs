@@ -85,4 +85,25 @@ public sealed class AsyncBarrierTests : Test
         Equal(24, result[0]);
         Equal(42, result[1]);
     }
+
+    [Fact]
+    public static async Task RegressionIssue205()
+    {
+        using var barrier = new AsyncBarrier(1);
+        barrier.AddParticipant();
+
+        var task1 = Task.Run(async () =>
+        {
+            await barrier.SignalAndWaitAsync();
+            Equal(2L, barrier.ParticipantsRemaining);
+        });
+
+        var task2 = Task.Run(async () =>
+        {
+            await barrier.SignalAndWaitAsync();
+            Equal(2L, barrier.ParticipantsRemaining);
+        });
+
+        await Task.WhenAll(task1, task2);
+    }
 }

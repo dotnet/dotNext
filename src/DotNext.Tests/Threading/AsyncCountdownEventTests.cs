@@ -61,4 +61,13 @@ public sealed class AsyncCountdownEventTests : Test
         True(ev.Reset());
         Equal(ev.InitialCount, ev.CurrentCount);
     }
+
+    [Fact]
+    public static async Task AbortSuspendedCallers()
+    {
+        using var countdown = new AsyncCountdownEvent(4);
+        var task = countdown.WaitAsync().AsTask();
+        countdown.Reset();
+        await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task));
+    }
 }

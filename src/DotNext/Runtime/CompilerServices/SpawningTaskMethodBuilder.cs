@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks.Sources;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -36,10 +38,9 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : notnull, IAsyncStateMachine
     {
-        // force builder to initialize state machine box
-        var workItem = new AdvanceStateMachineWorkItem();
-        builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
+        var awaiter = SpawningAsyncTaskMethodBuilder.Awaiter;
+        builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+        SpawningAsyncTaskMethodBuilder.Schedule();
     }
 
     /// <summary>
@@ -105,6 +106,11 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
 [StructLayout(LayoutKind.Auto)]
 public struct SpawningAsyncTaskMethodBuilder
 {
+    internal static readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter Awaiter = new ValueTask(new SpecialCallbackDetector(), 0).ConfigureAwait(false).GetAwaiter();
+
+    [ThreadStatic]
+    private static (Action<object?> WorkItem, object? State) capturedArgs;
+
     private AsyncTaskMethodBuilder builder;
 
     /// <summary>
@@ -126,10 +132,9 @@ public struct SpawningAsyncTaskMethodBuilder
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
         where TStateMachine : notnull, IAsyncStateMachine
     {
-        // force builder to initialize state machine box
-        var workItem = new AdvanceStateMachineWorkItem();
-        builder.AwaitOnCompleted(ref workItem, ref stateMachine);
-        ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
+        var awaiter = Awaiter;
+        builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+        Schedule();
     }
 
     /// <summary>
@@ -181,16 +186,23 @@ public struct SpawningAsyncTaskMethodBuilder
     /// Gets the task representing the builder's asynchronous operation.
     /// </summary>
     public Task Task => builder.Task;
-}
 
-// TODO: Convert to file-local type
-[StructLayout(LayoutKind.Auto)]
-internal struct AdvanceStateMachineWorkItem : INotifyCompletion, IThreadPoolWorkItem
-{
-    private Action? moveNext;
+    internal static void Schedule()
+    {
+        var (continuation, state) = capturedArgs;
+        capturedArgs = default;
+        ThreadPool.UnsafeQueueUserWorkItem(continuation, state, preferLocal: false);
+    }
 
-    void INotifyCompletion.OnCompleted(Action continuation)
-        => moveNext = continuation;
+    private sealed class SpecialCallbackDetector : IValueTaskSource
+    {
+        void IValueTaskSource.GetResult(short token)
+        {
+        }
 
-    readonly void IThreadPoolWorkItem.Execute() => moveNext?.Invoke();
+        ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => ValueTaskSourceStatus.Pending;
+
+        void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+            => capturedArgs = new(continuation, state);
+    }
 }

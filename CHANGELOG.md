@@ -1,6 +1,41 @@
 Release Notes
 ====
 
+# 11-16-2023
+<a href="https://www.nuget.org/packages/dotnext/4.15.2">DotNext 4.15.2</a>
+* Reduced memory allocation caused by async methods using [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) state machine builder
+* Fixed [204](https://github.com/dotnet/dotNext/issues/204)
+
+<a href="https://www.nuget.org/packages/dotnext.threading/4.15.2">DotNext.Threading 4.15.2</a>
+* Fixed [205](https://github.com/dotnet/dotNext/issues/205)
+* `AsyncCountdownEvent.Reset` now throws `PendingTaskInterruptedException` on every caller suspended by `WaitAsync`
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.2">DotNext.Net.Cluster 4.15.2</a>
+* Raft performance: reduced memory allocation caused by heartbeat round
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.2">DotNext.AspNetCore.Cluster 4.15.2</a>
+* Updated dependencies
+
+# 11-13-2023
+<a href="https://www.nuget.org/packages/dotnext/4.15.1">DotNext 4.15.1</a>
+* Merged PR [203](https://github.com/dotnet/dotNext/pull/203)
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.0">DotNext.Net.Cluster 4.15.0</a>
+* Raft performance: improved throughput of `IRaftCluster.ReplicateAsync` method when cluster minority is not accessible (faulty node). Now the leader waits for replication from majority of nodes instead of all nodes
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.0">DotNext.AspNetCore.Cluster 4.15.0</a>
+* Updated dependencies
+
+# 11-08-2023
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.5">DotNext.Net.Cluster 4.14.5</a>
+* Fixed leader lease renewal
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.14.5">DotNext.AspNetCore.Cluster 4.14.5</a>
+* Updated dependencies
+
 # 10-29-2023
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/4.14.4">DotNext.Net.Cluster 4.14.4</a>
 * Clarified exception type when `AddMemberAsync` or `RemoveMemberAsync` is called on Follower node
