@@ -1,126 +1,89 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Class AtomicUInt32
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class AtomicUInt32
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Class AtomicUInt32
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class AtomicUInt32
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AtomicUInt32">
 
-        <article data-uid="DotNext.Threading.AtomicUInt32">
 
 
-
-  <h1 id="DotNext_Threading_AtomicUInt32" data-uid="DotNext.Threading.AtomicUInt32" class="text-break">
-    Class AtomicUInt32
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L14"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Various atomic operations for <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a> data type
+  <h1 id="DotNext_Threading_AtomicUInt32" data-uid="DotNext.Threading.AtomicUInt32" class="text-break">Class AtomicUInt32
+</h1>
+  <div class="markdown level0 summary"><p>Various atomic operations for <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a> data type
 accessible as extension methods.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static class AtomicUInt32</code></pre>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">AtomicUInt32</span></div>
   </div>
-
-
-
-
-  <dl class="typelist inheritance">
-    <dt>Inheritance</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-      <div><span class="xref">AtomicUInt32</span></div>
-    </dd>
-  </dl>
-
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
@@ -142,1188 +105,1506 @@ public static class AtomicUInt32</code></pre>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
-  </dd></dl>
-
-
-
-
-  <h2 id="DotNext_Threading_AtomicUInt32_remarks">Remarks</h2>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Threading_AtomicUInt32_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static class AtomicUInt32</code></pre>
+  </div>
+  <h5 id="DotNext_Threading_AtomicUInt32_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Methods exposed by this class provide volatile read/write
 of the field even if it is not declared as volatile field.</p>
 </div>
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.AccumulateAndGet(System.UInt32%40%2CSystem.UInt32%2C)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L238">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicUInt32.AccumulateAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.AccumulateAndGet(System.UInt32@,System.UInt32,)">
-  AccumulateAndGet(ref uint, uint, delegate*&lt;uint, uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L238"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.AccumulateAndGet(System.UInt32@,System.UInt32,)">AccumulateAndGet(ref uint, uint, delegate*&lt;uint, uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint AccumulateAndGet(this ref uint value, uint x, delegate*&lt;uint, uint, uint&gt; accumulator)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>x</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Accumulator operand.</p>
-</dd>
-    <dt><code>accumulator</code> delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function of two arguments.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The updated value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32___remarks">Remarks</h4>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.AccumulateAndGet(System.UInt32%40%2CSystem.UInt32%2CSystem.Func%7BSystem.UInt32%2CSystem.UInt32%2CSystem.UInt32%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L223">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicUInt32.AccumulateAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.AccumulateAndGet(System.UInt32@,System.UInt32,System.Func{System.UInt32,System.UInt32,System.UInt32})">
-  AccumulateAndGet(ref uint, uint, Func&lt;uint, uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L223"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.AccumulateAndGet(System.UInt32@,System.UInt32,System.Func{System.UInt32,System.UInt32,System.UInt32})">AccumulateAndGet(ref uint, uint, Func&lt;uint, uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint AccumulateAndGet(this ref uint value, uint x, Func&lt;uint, uint, uint&gt; accumulator)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>x</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Accumulator operand.</p>
-</dd>
-    <dt><code>accumulator</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function of two arguments.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The updated value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32___remarks">Remarks</h4>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 id="DotNext_Threading_AtomicUInt32_AccumulateAndGet_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_AddAndGet_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.AddAndGet(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L82">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_AddAndGet_" data-uid="DotNext.Threading.AtomicUInt32.AddAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_AddAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.AddAndGet(System.UInt32@,System.UInt32)">
-  AddAndGet(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L82"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_AddAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.AddAndGet(System.UInt32@,System.UInt32)">AddAndGet(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Adds two 32-bit integers and replaces referenced integer with the sum,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint AddAndGet(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be added to the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Result of sum operation.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be added to the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>Result of sum operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_AddAndGet_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_BitwiseAndAndGet_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.BitwiseAndAndGet(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L115">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_BitwiseAndAndGet_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseAndAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_BitwiseAndAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseAndAndGet(System.UInt32@,System.UInt32)">
-  BitwiseAndAndGet(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L115"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_BitwiseAndAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseAndAndGet(System.UInt32@,System.UInt32)">BitwiseAndAndGet(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Bitwise &quot;ands&quot; two 32-bit integers and replaces referenced integer with the result,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint BitwiseAndAndGet(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be combined with the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The modified value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The modified value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_BitwiseAndAndGet_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_BitwiseOrAndGet_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.BitwiseOrAndGet(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L137">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_BitwiseOrAndGet_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseOrAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_BitwiseOrAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseOrAndGet(System.UInt32@,System.UInt32)">
-  BitwiseOrAndGet(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L137"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_BitwiseOrAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseOrAndGet(System.UInt32@,System.UInt32)">BitwiseOrAndGet(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Bitwise &quot;ors&quot; two 32-bit integers and replaces referenced integer with the result,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint BitwiseOrAndGet(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be combined with the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The modified value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The modified value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_BitwiseOrAndGet_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_BitwiseXorAndGet_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.BitwiseXorAndGet(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L159">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_BitwiseXorAndGet_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseXorAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_BitwiseXorAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseXorAndGet(System.UInt32@,System.UInt32)">
-  BitwiseXorAndGet(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L159"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_BitwiseXorAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.BitwiseXorAndGet(System.UInt32@,System.UInt32)">BitwiseXorAndGet(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Bitwise &quot;xors&quot; two 32-bit integers and replaces referenced integer with the result,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint BitwiseXorAndGet(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be combined with the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The modified value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The modified value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_BitwiseXorAndGet_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_CompareAndSet_System_UInt32__System_UInt32_System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.CompareAndSet(System.UInt32%40%2CSystem.UInt32%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L71">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_CompareAndSet_" data-uid="DotNext.Threading.AtomicUInt32.CompareAndSet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_CompareAndSet_System_UInt32__System_UInt32_System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.CompareAndSet(System.UInt32@,System.UInt32,System.UInt32)">
-  CompareAndSet(ref uint, uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L71"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_CompareAndSet_System_UInt32__System_UInt32_System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.CompareAndSet(System.UInt32@,System.UInt32,System.UInt32)">CompareAndSet(ref uint, uint, uint)</h4>
   <div class="markdown level1 summary"><p>Atomically sets the referenced value to the given updated value if the current value == the expected value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool CompareAndSet(this ref uint value, uint expected, uint update)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>expected</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The expected value.</p>
-</dd>
-    <dt><code>update</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The new value.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if successful. <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> return indicates that the actual value was not equal to the expected value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">expected</span></td>
+        <td><p>The expected value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>The new value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if successful. <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> return indicates that the actual value was not equal to the expected value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_CompareAndSet_System_UInt32__System_UInt32_System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_DecrementAndGet_System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.DecrementAndGet(System.UInt32%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L60">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_DecrementAndGet_" data-uid="DotNext.Threading.AtomicUInt32.DecrementAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_DecrementAndGet_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.DecrementAndGet(System.UInt32@)">
-  DecrementAndGet(ref uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L60"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_DecrementAndGet_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.DecrementAndGet(System.UInt32@)">DecrementAndGet(ref uint)</h4>
   <div class="markdown level1 summary"><p>Atomically decrements the referenced value by one.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint DecrementAndGet(this ref uint value)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Decremented value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>Decremented value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_DecrementAndGet_System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndAccumulate(System.UInt32%40%2CSystem.UInt32%2C)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L268">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicUInt32.GetAndAccumulate*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.GetAndAccumulate(System.UInt32@,System.UInt32,)">
-  GetAndAccumulate(ref uint, uint, delegate*&lt;uint, uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L268"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.GetAndAccumulate(System.UInt32@,System.UInt32,)">GetAndAccumulate(ref uint, uint, delegate*&lt;uint, uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndAccumulate(this ref uint value, uint x, delegate*&lt;uint, uint, uint&gt; accumulator)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>x</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Accumulator operand.</p>
-</dd>
-    <dt><code>accumulator</code> delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function of two arguments.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32___remarks">Remarks</h4>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndAccumulate(System.UInt32%40%2CSystem.UInt32%2CSystem.Func%7BSystem.UInt32%2CSystem.UInt32%2CSystem.UInt32%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L253">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicUInt32.GetAndAccumulate*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.GetAndAccumulate(System.UInt32@,System.UInt32,System.Func{System.UInt32,System.UInt32,System.UInt32})">
-  GetAndAccumulate(ref uint, uint, Func&lt;uint, uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L253"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.GetAndAccumulate(System.UInt32@,System.UInt32,System.Func{System.UInt32,System.UInt32,System.UInt32})">GetAndAccumulate(ref uint, uint, Func&lt;uint, uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndAccumulate(this ref uint value, uint x, Func&lt;uint, uint, uint&gt; accumulator)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>x</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Accumulator operand.</p>
-</dd>
-    <dt><code>accumulator</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function of two arguments.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32___remarks">Remarks</h4>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndAccumulate_System_UInt32__System_UInt32_System_Func_System_UInt32_System_UInt32_System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndAdd_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndAdd(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L93">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndAdd_" data-uid="DotNext.Threading.AtomicUInt32.GetAndAdd*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndAdd_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndAdd(System.UInt32@,System.UInt32)">
-  GetAndAdd(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L93"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndAdd_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndAdd(System.UInt32@,System.UInt32)">GetAndAdd(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Adds two 32-bit integers and replaces referenced integer with the sum,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndAdd(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be added to the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be added to the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndAdd_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndBitwiseAnd_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndBitwiseAnd(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L104">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndBitwiseAnd_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseAnd*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseAnd_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseAnd(System.UInt32@,System.UInt32)">
-  GetAndBitwiseAnd(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L104"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseAnd_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseAnd(System.UInt32@,System.UInt32)">GetAndBitwiseAnd(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Bitwise &quot;ands&quot; two 32-bit integers and replaces referenced integer with the result,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndBitwiseAnd(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be combined with the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseAnd_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndBitwiseOr_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndBitwiseOr(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L126">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndBitwiseOr_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseOr*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseOr_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseOr(System.UInt32@,System.UInt32)">
-  GetAndBitwiseOr(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L126"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseOr_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseOr(System.UInt32@,System.UInt32)">GetAndBitwiseOr(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Bitwise &quot;ors&quot; two 32-bit integers and replaces referenced integer with the result,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndBitwiseOr(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be combined with the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseOr_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndBitwiseXor_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndBitwiseXor(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L148">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndBitwiseXor_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseXor*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseXor_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseXor(System.UInt32@,System.UInt32)">
-  GetAndBitwiseXor(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L148"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseXor_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndBitwiseXor(System.UInt32@,System.UInt32)">GetAndBitwiseXor(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Bitwise &quot;xors&quot; two 32-bit integers and replaces referenced integer with the result,
 as an atomic operation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndBitwiseXor(this ref uint value, uint operand)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>operand</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to be combined with the currently stored integer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be combined with the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndBitwiseXor_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndSet_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndSet(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L169">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndSet_" data-uid="DotNext.Threading.AtomicUInt32.GetAndSet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndSet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndSet(System.UInt32@,System.UInt32)">
-  GetAndSet(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L169"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndSet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.GetAndSet(System.UInt32@,System.UInt32)">GetAndSet(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Modifies the referenced value atomically.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndSet(this ref uint value, uint update)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>update</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>A new value to be stored into managed pointer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Original value before modification.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored into managed pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>Original value before modification.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndSet_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndUpdate(System.UInt32%40%2C)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L312">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndUpdate_" data-uid="DotNext.Threading.AtomicUInt32.GetAndUpdate*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32___" data-uid="DotNext.Threading.AtomicUInt32.GetAndUpdate(System.UInt32@,)">
-  GetAndUpdate(ref uint, delegate*&lt;uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L312"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32___" data-uid="DotNext.Threading.AtomicUInt32.GetAndUpdate(System.UInt32@,)">GetAndUpdate(ref uint, delegate*&lt;uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndUpdate(this ref uint value, delegate*&lt;uint, uint&gt; updater)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>updater</code> delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32____seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32__System_Func_System_UInt32_System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.GetAndUpdate(System.UInt32%40%2CSystem.Func%7BSystem.UInt32%2CSystem.UInt32%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L301">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_GetAndUpdate_" data-uid="DotNext.Threading.AtomicUInt32.GetAndUpdate*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32__System_Func_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.GetAndUpdate(System.UInt32@,System.Func{System.UInt32,System.UInt32})">
-  GetAndUpdate(ref uint, Func&lt;uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L301"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32__System_Func_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.GetAndUpdate(System.UInt32@,System.Func{System.UInt32,System.UInt32})">GetAndUpdate(ref uint, Func&lt;uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint GetAndUpdate(this ref uint value, Func&lt;uint, uint&gt; updater)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>updater</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The original value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_GetAndUpdate_System_UInt32__System_Func_System_UInt32_System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_IncrementAndGet_System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.IncrementAndGet(System.UInt32%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L51">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_IncrementAndGet_" data-uid="DotNext.Threading.AtomicUInt32.IncrementAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_IncrementAndGet_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.IncrementAndGet(System.UInt32@)">
-  IncrementAndGet(ref uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L51"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_IncrementAndGet_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.IncrementAndGet(System.UInt32@)">IncrementAndGet(ref uint)</h4>
   <div class="markdown level1 summary"><p>Atomically increments the referenced value by one.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint IncrementAndGet(this ref uint value)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Incremented value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>Incremented value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_IncrementAndGet_System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_SetAndGet_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.SetAndGet(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L179">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_SetAndGet_" data-uid="DotNext.Threading.AtomicUInt32.SetAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_SetAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.SetAndGet(System.UInt32@,System.UInt32)">
-  SetAndGet(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L179"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_SetAndGet_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.SetAndGet(System.UInt32@,System.UInt32)">SetAndGet(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Modifies the referenced value atomically.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint SetAndGet(this ref uint value, uint update)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>update</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>A new value to be stored into managed pointer.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>A new value passed as argument.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored into managed pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>A new value passed as argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_SetAndGet_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.UpdateAndGet(System.UInt32%40%2C)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L290">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_UpdateAndGet_" data-uid="DotNext.Threading.AtomicUInt32.UpdateAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32___" data-uid="DotNext.Threading.AtomicUInt32.UpdateAndGet(System.UInt32@,)">
-  UpdateAndGet(ref uint, delegate*&lt;uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L290"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32___" data-uid="DotNext.Threading.AtomicUInt32.UpdateAndGet(System.UInt32@,)">UpdateAndGet(ref uint, delegate*&lt;uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint UpdateAndGet(this ref uint value, delegate*&lt;uint, uint&gt; updater)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>updater</code> delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The updated value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32____seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32__System_Func_System_UInt32_System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.UpdateAndGet(System.UInt32%40%2CSystem.Func%7BSystem.UInt32%2CSystem.UInt32%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L279">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_UpdateAndGet_" data-uid="DotNext.Threading.AtomicUInt32.UpdateAndGet*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32__System_Func_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.UpdateAndGet(System.UInt32@,System.Func{System.UInt32,System.UInt32})">
-  UpdateAndGet(ref uint, Func&lt;uint, uint&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L279"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32__System_Func_System_UInt32_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.UpdateAndGet(System.UInt32@,System.Func{System.UInt32,System.UInt32})">UpdateAndGet(ref uint, Func&lt;uint, uint&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint UpdateAndGet(this ref uint value, Func&lt;uint, uint&gt; updater)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>Reference to a value to be modified.</p>
-</dd>
-    <dt><code>updater</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</dt>
-    <dd><p>A side-effect-free function.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The updated value.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_UpdateAndGet_System_UInt32__System_Func_System_UInt32_System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_VolatileRead_System_UInt32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.VolatileRead(System.UInt32%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L29">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_VolatileRead_" data-uid="DotNext.Threading.AtomicUInt32.VolatileRead*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_VolatileRead_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.VolatileRead(System.UInt32@)">
-  VolatileRead(in uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L29"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_VolatileRead_System_UInt32__" data-uid="DotNext.Threading.AtomicUInt32.VolatileRead(System.UInt32@)">VolatileRead(in uint)</h4>
   <div class="markdown level1 summary"><p>Reads the value of the specified field. On systems that require it, inserts a
 memory barrier that prevents the processor from reordering memory operations
 as follows: If a read or write appears after this method in the code, the processor
 cannot move it before this method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static uint VolatileRead(this in uint value)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The field to read.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value that was read. This value is the latest written by any processor in
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The field to read.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><p>The value that was read. This value is the latest written by any processor in
 the computer, regardless of the number of processors or the state of processor
 cache.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_VolatileRead_System_UInt32___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32_VolatileWrite_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32.VolatileWrite(System.UInt32%40%2CSystem.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L43">View Source</a>
+  </span>
   <a id="DotNext_Threading_AtomicUInt32_VolatileWrite_" data-uid="DotNext.Threading.AtomicUInt32.VolatileWrite*"></a>
-
-  <h3 id="DotNext_Threading_AtomicUInt32_VolatileWrite_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.VolatileWrite(System.UInt32@,System.UInt32)">
-  VolatileWrite(ref uint, uint)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L43"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Threading_AtomicUInt32_VolatileWrite_System_UInt32__System_UInt32_" data-uid="DotNext.Threading.AtomicUInt32.VolatileWrite(System.UInt32@,System.UInt32)">VolatileWrite(ref uint, uint)</h4>
   <div class="markdown level1 summary"><p>Writes the specified value to the specified field. On systems that require it,
 inserts a memory barrier that prevents the processor from reordering memory operations
 as follows: If a read or write appears before this method in the code, the processor
 cannot move it after this method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void VolatileWrite(this ref uint value, uint newValue)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>value</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The field where the value is written.</p>
-</dd>
-    <dt><code>newValue</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
-    <dd><p>The value to write. The value is written immediately so that it is visible to
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The field where the value is written.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
+        <td><span class="parametername">newValue</span></td>
+        <td><p>The value to write. The value is written immediately so that it is visible to
 all processors in the computer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
-    </dd>
-  </dl>
-
-
-  <h2 id="seealso">See Also</h2>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicUInt32_VolatileWrite_System_UInt32__System_UInt32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
+  <h3 id="seealso">See Also</h3>
   <div class="seealso">
       <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
   </div>
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L14" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AtomicUInt32.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicUInt32%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicUInt32.cs/#L14" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

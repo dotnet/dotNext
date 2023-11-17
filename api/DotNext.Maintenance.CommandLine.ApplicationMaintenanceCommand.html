@@ -1,135 +1,97 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Class ApplicationMaintenanceCommand
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ApplicationMaintenanceCommand
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Class ApplicationMaintenanceCommand
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ApplicationMaintenanceCommand
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand">
 
-        <article data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand">
 
 
-
-  <h1 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand" class="text-break">
-    Class ApplicationMaintenanceCommand
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L10"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Maintenance.html">Maintenance</a>.<a class="xref" href="DotNext.Maintenance.CommandLine.html">CommandLine</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.MaintenanceServices.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Represents application maintenance command.</p>
+  <h1 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand" class="text-break">Class ApplicationMaintenanceCommand
+</h1>
+  <div class="markdown level0 summary"><p>Represents application maintenance command.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class ApplicationMaintenanceCommand : Command, ICompletionSource, IEnumerable&lt;Symbol&gt;, IEnumerable</code></pre>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol">Symbol</a></div>
+    <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.identifiersymbol">IdentifierSymbol</a></div>
+    <div class="level3"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command">Command</a></div>
+    <div class="level4"><span class="xref">ApplicationMaintenanceCommand</span></div>
   </div>
-
-
-
-
-  <dl class="typelist inheritance">
-    <dt>Inheritance</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol">Symbol</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.identifiersymbol">IdentifierSymbol</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command">Command</a></div>
-      <div><span class="xref">ApplicationMaintenanceCommand</span></div>
-    </dd>
-  </dl>
-
-  <dl class="typelist implements">
-    <dt>Implements</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.completions.icompletionsource">ICompletionSource</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol">Symbol</a>&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
-    </dd>
-  </dl>
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.completions.icompletionsource">ICompletionSource</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol">Symbol</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.addargument">Command.AddArgument(Argument)</a>
     </div>
@@ -220,11 +182,304 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </dd></dl>
-
-  <dl class="typelist extensionMethods">
-    <dt>Extension Methods</dt>
-    <dd>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Maintenance.html">Maintenance</a>.<a class="xref" href="DotNext.Maintenance.CommandLine.html">CommandLine</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.MaintenanceServices.dll</h6>
+  <h5 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class ApplicationMaintenanceCommand : Command, ICompletionSource, IEnumerable&lt;Symbol&gt;, IEnumerable</code></pre>
+  </div>
+  <h5 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>All registered singleton services of this type in DI container will be automatically
+discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html">CommandLineMaintenanceInterfaceHost</a>.</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_System_String_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.%23ctor(System.String%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L24">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.#ctor*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_System_String_System_String_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.#ctor(System.String,System.String)">ApplicationMaintenanceCommand(string, string?)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new maintenance command.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ApplicationMaintenanceCommand(string name, string? description = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">name</span></td>
+        <td><p>The name of the command.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">description</span></td>
+        <td><p>The description of the command.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_DotNext_Diagnostics_IApplicationStatusProvider_.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create(DotNext.Diagnostics.IApplicationStatusProvider)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L18">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_DotNext_Diagnostics_IApplicationStatusProvider_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create(DotNext.Diagnostics.IApplicationStatusProvider)">Create(IApplicationStatusProvider)</h4>
+  <div class="markdown level1 summary"><p>Creates a command that can be used to execute members of <a class="xref" href="DotNext.Diagnostics.IApplicationStatusProvider.html">IApplicationStatusProvider</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand Create(IApplicationStatusProvider provider)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.IApplicationStatusProvider.html">IApplicationStatusProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The status provider.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></td>
+        <td><p>A new command.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">provider</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L13">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand">EnterInteractiveModeCommand()</h4>
+  <div class="markdown level1 summary"><p>Creates a command that allows to enter interactive mode.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand EnterInteractiveModeCommand()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></td>
+        <td><p>A new command.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.GCCommand.cs/#L83">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand">GCCommand()</h4>
+  <div class="markdown level1 summary"><p>Creates a command that allows to force Garbage Collection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand GCCommand()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></td>
+        <td><p>A new command.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands">GetDefaultCommands()</h4>
+  <div class="markdown level1 summary"><p>Gets a collection of default commands.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;ApplicationMaintenanceCommand&gt; GetDefaultCommands()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a>&gt;</td>
+        <td><p>A collection of default commands.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand">GCCommand()</a></div>
+      <div><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand">EnterInteractiveModeCommand()</a></div>
+      <div><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand">LeaveInteractiveModeCommand()</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L30">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand">LeaveInteractiveModeCommand()</h4>
+  <div class="markdown level1 summary"><p>Creates a command that allows to leave interactive mode.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand LeaveInteractiveModeCommand()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></td>
+        <td><p>A new command.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="events">Events
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Authorization.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Authorization%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L32">View Source</a>
+  </span>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Authorization" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Authorization">Authorization</h4>
+  <div class="markdown level1 summary"><p>Allows to attach custom authorization rules for this command.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public event AuthorizationCallback Authorization</code></pre>
+  </div>
+  <h5 class="eventType">Event Type</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback.html">AuthorizationCallback</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.completions.icompletionsource">ICompletionSource</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -324,302 +579,75 @@
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
   </div>
-  </dd></dl>
-
-
-
-  <h2 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_remarks">Remarks</h2>
-  <div class="markdown level0 remarks"><p>All registered singleton services of this type in DI container will be automatically
-discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html">CommandLineMaintenanceInterfaceHost</a>.</p>
-</div>
-
-
-  <h2 class="section" id="constructors">Constructors
-</h2>
-
-
-  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.#ctor*"></a>
-
-  <h3 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_System_String_System_String_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.#ctor(System.String,System.String)">
-  ApplicationMaintenanceCommand(string, string?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L24"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new maintenance command.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ApplicationMaintenanceCommand(string name, string? description = null)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>name</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the command.</p>
-</dd>
-    <dt><code>description</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The description of the command.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
-  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create*"></a>
-
-  <h3 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_DotNext_Diagnostics_IApplicationStatusProvider_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create(DotNext.Diagnostics.IApplicationStatusProvider)">
-  Create(IApplicationStatusProvider)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L18"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates a command that can be used to execute members of <a class="xref" href="DotNext.Diagnostics.IApplicationStatusProvider.html">IApplicationStatusProvider</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand Create(IApplicationStatusProvider provider)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>provider</code> <a class="xref" href="DotNext.Diagnostics.IApplicationStatusProvider.html">IApplicationStatusProvider</a></dt>
-    <dd><p>The status provider.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></dt>
-    <dd><p>A new command.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p><code class="paramref">provider</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand*"></a>
-
-  <h3 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand">
-  EnterInteractiveModeCommand()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L13"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates a command that allows to enter interactive mode.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand EnterInteractiveModeCommand()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></dt>
-    <dd><p>A new command.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand*"></a>
-
-  <h3 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand">
-  GCCommand()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.GCCommand.cs/#L83"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates a command that allows to force Garbage Collection.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand GCCommand()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></dt>
-    <dd><p>A new command.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands*"></a>
-
-  <h3 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands">
-  GetDefaultCommands()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L48"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a collection of default commands.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;ApplicationMaintenanceCommand&gt; GetDefaultCommands()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a>&gt;</dt>
-    <dd><p>A collection of default commands.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand">GCCommand()</a></div>
-    <div><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand">EnterInteractiveModeCommand()</a></div>
-    <div><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand">LeaveInteractiveModeCommand()</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand*"></a>
-
-  <h3 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand">
-  LeaveInteractiveModeCommand()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L30"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates a command that allows to leave interactive mode.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand LeaveInteractiveModeCommand()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></dt>
-    <dd><p>A new command.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <h2 class="section" id="events">Events
-</h2>
-
-
-
-  <h3 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Authorization" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Authorization">
-  Authorization
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L32"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Allows to attach custom authorization rules for this command.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public event AuthorizationCallback Authorization</code></pre>
-  </div>
-
-
-
-
-
-
-  <h4 class="section">Event Type</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback.html">AuthorizationCallback</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L10" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L10" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

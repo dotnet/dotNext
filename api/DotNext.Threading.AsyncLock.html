@@ -1,125 +1,89 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Struct AsyncLock
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct AsyncLock
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Struct AsyncLock
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct AsyncLock
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncLock">
 
-        <article data-uid="DotNext.Threading.AsyncLock">
 
 
-
-  <h1 id="DotNext_Threading_AsyncLock" data-uid="DotNext.Threading.AsyncLock" class="text-break">
-    Struct AsyncLock
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L18"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.Threading.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Unified representation of asynchronous exclusive lock, semaphore lock, read lock, write lock or upgradeable read lock.</p>
+  <h1 id="DotNext_Threading_AsyncLock" data-uid="DotNext.Threading.AsyncLock" class="text-break">Struct AsyncLock
+</h1>
+  <div class="markdown level0 summary"><p>Unified representation of asynchronous exclusive lock, semaphore lock, read lock, write lock or upgradeable read lock.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct AsyncLock : IDisposable, IEquatable&lt;AsyncLock&gt;, IAsyncDisposable</code></pre>
+  <div class="markdown level0 conceptual"></div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
   </div>
-
-
-
-
-
-  <dl class="typelist implements">
-    <dt>Implements</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
-    </dd>
-  </dl>
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
@@ -129,11 +93,1217 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </dd></dl>
-
-  <dl class="typelist extensionMethods">
-    <dt>Extension Methods</dt>
-    <dd>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Threading_AsyncLock_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct AsyncLock : IDisposable, IEquatable&lt;AsyncLock&gt;, IAsyncDisposable</code></pre>
+  </div>
+  <h5 id="DotNext_Threading_AsyncLock_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Lock acquisition is asynchronous operation. Note that non-blocking asynchronous locks are not intersected with
+their blocking alternatives except semaphore. It means that exclusive lock obtained in blocking manner doesn't
+prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
+</div>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.AcquireAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L204">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync(System.Threading.CancellationToken)">AcquireAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Acquires the lock asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ValueTask&lt;AsyncLock.Holder&gt; AcquireAsync(CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to abort acquisition operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</td>
+        <td><p>The task returning the acquired lock holder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_AcquireAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.AcquireAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L237">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_AcquireAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync(System.TimeSpan,System.Threading.CancellationToken)">AcquireAsync(TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Acquires the lock asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ValueTask&lt;AsyncLock.Holder&gt; AcquireAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The interval to wait for the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to abort acquisition operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</td>
+        <td><p>The task returning the acquired lock holder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_AcquireAsync_System_TimeSpan_System_Threading_CancellationToken__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L323">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Dispose_" data-uid="DotNext.Threading.AsyncLock.Dispose*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Dispose" data-uid="DotNext.Threading.AsyncLock.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Destroy this lock and dispose underlying lock object if it is owned by the given lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <h5 id="DotNext_Threading_AsyncLock_Dispose_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the given lock is an owner of the underlying lock object then this method will call <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> on it;
+otherwise, the underlying lock object will not be destroyed.
+As a result, this lock is not usable after calling of this method.</p>
+</div>
+  <h5 id="DotNext_Threading_AsyncLock_Dispose_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L340">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_DisposeAsync_" data-uid="DotNext.Threading.AsyncLock.DisposeAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_DisposeAsync" data-uid="DotNext.Threading.AsyncLock.DisposeAsync">DisposeAsync()</h4>
+  <div class="markdown level1 summary"><p>Destroy this lock and asynchronously dispose underlying lock object if it is owned by the given lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_DisposeAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If the given lock is an owner of the underlying lock object then this method will
+call <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable.disposeasync">DisposeAsync()</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> on it;
+otherwise, the underlying lock object will not be destroyed.
+As a result, this lock is not usable after calling of this method.</p>
+</div>
+  <h5 id="DotNext_Threading_AsyncLock_DisposeAsync_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L368">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Equals_" data-uid="DotNext.Threading.AsyncLock.Equals*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_" data-uid="DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)">Equals(AsyncLock)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this lock object is the same as other lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool Equals(AsyncLock other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other lock to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this lock is the same as the specified lock; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L375">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Equals_" data-uid="DotNext.Threading.AsyncLock.Equals*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Equals_System_Object_" data-uid="DotNext.Threading.AsyncLock.Equals(System.Object)">Equals(object?)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this lock object is the same as other lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly bool Equals(object? other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other lock to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this lock is the same as the specified lock; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a></div>
+  <h5 id="DotNext_Threading_AsyncLock_Equals_System_Object__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Exclusive.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L126">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Exclusive" data-uid="DotNext.Threading.AsyncLock.Exclusive">Exclusive()</h4>
+  <div class="markdown level1 summary"><p>Creates exclusive asynchronous lock but doesn't acquire it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock Exclusive()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>Exclusive asynchronous lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_Exclusive_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Constructed lock owns the exclusive lock instance.</p>
+</div>
+  <h5 id="DotNext_Threading_AsyncLock_Exclusive_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L134">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock_" data-uid="DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)">Exclusive(AsyncExclusiveLock)</h4>
+  <div class="markdown level1 summary"><p>Wraps exclusive lock into the unified representation of asynchronous lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock Exclusive(AsyncExclusiveLock @lock)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></td>
+        <td><span class="parametername">lock</span></td>
+        <td><p>The lock object to be wrapped.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>Exclusive asynchronous lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">lock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncSharedLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncSharedLock)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L186">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncSharedLock_" data-uid="DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncSharedLock)">Exclusive(AsyncSharedLock)</h4>
+  <div class="markdown level1 summary"><p>Creates strong (exclusive) lock but doesn't acquire it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock Exclusive(AsyncSharedLock @lock)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncSharedLock.html">AsyncSharedLock</a></td>
+        <td><span class="parametername">lock</span></td>
+        <td><p>The shared lock instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>Exclusive lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">lock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncSharedLock__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L381">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_GetHashCode_" data-uid="DotNext.Threading.AsyncLock.GetHashCode*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_GetHashCode" data-uid="DotNext.Threading.AsyncLock.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Computes hash code of this lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The hash code of this lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a></div>
+  <h5 id="DotNext_Threading_AsyncLock_GetHashCode_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L164">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_ReadLock_" data-uid="DotNext.Threading.AsyncLock.ReadLock*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock_" data-uid="DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock)">ReadLock(AsyncReaderWriterLock)</h4>
+  <div class="markdown level1 summary"><p>Creates read lock but doesn't acquire it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
+        <td><span class="parametername">rwLock</span></td>
+        <td><p>Read/write lock source.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>Reader lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">rwLock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Semaphore(System.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L155">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Semaphore_" data-uid="DotNext.Threading.AsyncLock.Semaphore*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32_" data-uid="DotNext.Threading.AsyncLock.Semaphore(System.Int32,System.Int32)">Semaphore(int, int)</h4>
+  <div class="markdown level1 summary"><p>Creates semaphore-based lock but doesn't acquire the lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock Semaphore(int initialCount, int maxCount)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">initialCount</span></td>
+        <td><p>The initial number of requests for the semaphore that can be granted concurrently.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">maxCount</span></td>
+        <td><p>The maximum number of requests for the semaphore that can be granted concurrently.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>The lock representing semaphore.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Constructed lock owns the semaphore instance.</p>
+</div>
+  <h5 id="DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Semaphore_System_Threading_SemaphoreSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L143">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Semaphore_" data-uid="DotNext.Threading.AsyncLock.Semaphore*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Semaphore_System_Threading_SemaphoreSlim_" data-uid="DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)">Semaphore(SemaphoreSlim)</h4>
+  <div class="markdown level1 summary"><p>Wraps semaphore instance into the unified representation of the lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock Semaphore(SemaphoreSlim semaphore)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a></td>
+        <td><span class="parametername">semaphore</span></td>
+        <td><p>The semaphore to wrap into lock object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>The lock representing semaphore.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">semaphore</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_Semaphore_System_Threading_SemaphoreSlim__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_ToString.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L387">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_ToString_" data-uid="DotNext.Threading.AsyncLock.ToString*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_ToString" data-uid="DotNext.Threading.AsyncLock.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Returns actual type of this lock in the form of the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><p>The actual type of this lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+  <h5 id="DotNext_Threading_AsyncLock_ToString_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquireAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L311">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync(System.Threading.CancellationToken)">TryAcquireAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to acquire lock asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AcquireAsync(CancellationToken) instead.&quot;)]
+public readonly ValueTask&lt;AsyncLock.Holder&gt; TryAcquireAsync(CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to abort acquisition operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</td>
+        <td><p>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquireAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L303">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync(System.TimeSpan,System.Threading.CancellationToken)">TryAcquireAsync(TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to acquire the lock asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ValueTask&lt;AsyncLock.Holder&gt; TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The interval to wait for the lock.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to abort acquisition operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</td>
+        <td><p>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_Weak_DotNext_Threading_AsyncSharedLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Weak(DotNext.Threading.AsyncSharedLock)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L195">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Weak_" data-uid="DotNext.Threading.AsyncLock.Weak*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Weak_DotNext_Threading_AsyncSharedLock_" data-uid="DotNext.Threading.AsyncLock.Weak(DotNext.Threading.AsyncSharedLock)">Weak(AsyncSharedLock)</h4>
+  <div class="markdown level1 summary"><p>Creates weak lock but doesn't acquire it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock Weak(AsyncSharedLock @lock)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncSharedLock.html">AsyncSharedLock</a></td>
+        <td><span class="parametername">lock</span></td>
+        <td><p>The shared lock instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>Weak lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">lock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_Weak_DotNext_Threading_AsyncSharedLock__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L177">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_WriteLock_" data-uid="DotNext.Threading.AsyncLock.WriteLock*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean_" data-uid="DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock,System.Boolean)">WriteLock(AsyncReaderWriterLock, bool)</h4>
+  <div class="markdown level1 summary"><p>Creates write lock but doesn't acquire it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock, bool upgrade = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></td>
+        <td><span class="parametername">rwLock</span></td>
+        <td><p>Read/write lock source.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">upgrade</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to upgrade from read lock;
+otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>Write-only lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">rwLock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <h3 id="operators">Operators
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock%40%2CDotNext.Threading.AsyncLock%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L395">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_op_Equality_" data-uid="DotNext.Threading.AsyncLock.op_Equality*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__" data-uid="DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)">operator ==(in AsyncLock, in AsyncLock)</h4>
+  <div class="markdown level1 summary"><p>Determines whether two locks are the same.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(in AsyncLock first, in AsyncLock second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first lock to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second lock to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both are the same; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock%40%2CDotNext.Threading.AsyncLock%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L404">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_op_Inequality_" data-uid="DotNext.Threading.AsyncLock.op_Inequality*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__" data-uid="DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)">operator !=(in AsyncLock, in AsyncLock)</h4>
+  <div class="markdown level1 summary"><p>Determines whether two locks are not the same.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(in AsyncLock first, in AsyncLock second)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first lock to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second lock to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both are not the same; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
+  </div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
@@ -146,1009 +1316,79 @@
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
   </div>
-  </dd></dl>
-
-
-
-  <h2 id="DotNext_Threading_AsyncLock_remarks">Remarks</h2>
-  <div class="markdown level0 remarks"><p>Lock acquisition is asynchronous operation. Note that non-blocking asynchronous locks are not intersected with
-their blocking alternatives except semaphore. It means that exclusive lock obtained in blocking manner doesn't
-prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
-</div>
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
-  <a id="DotNext_Threading_AsyncLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync(System.Threading.CancellationToken)">
-  AcquireAsync(CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L204"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Acquires the lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly ValueTask&lt;AsyncLock.Holder&gt; AcquireAsync(CancellationToken token)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
-    <dd><p>The token that can be used to abort acquisition operation.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</dt>
-    <dd><p>The task returning the acquired lock holder.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></dt>
-    <dd><p>The operation has been canceled.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_AcquireAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync(System.TimeSpan,System.Threading.CancellationToken)">
-  AcquireAsync(TimeSpan, CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L237"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Acquires the lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly ValueTask&lt;AsyncLock.Holder&gt; AcquireAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>timeout</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></dt>
-    <dd><p>The interval to wait for the lock.</p>
-</dd>
-    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
-    <dd><p>The token that can be used to abort acquisition operation.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</dt>
-    <dd><p>The task returning the acquired lock holder.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></dt>
-    <dd><p>The lock cannot be acquired during the specified amount of time.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></dt>
-    <dd><p>The operation has been canceled.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Dispose_" data-uid="DotNext.Threading.AsyncLock.Dispose*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Dispose" data-uid="DotNext.Threading.AsyncLock.Dispose">
-  Dispose()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L323"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Destroy this lock and dispose underlying lock object if it is owned by the given lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
-  </div>
-
-
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AsyncLock_Dispose_remarks">Remarks</h4>
-  <div class="markdown level1 remarks"><p>If the given lock is an owner of the underlying lock object then this method will call <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> on it;
-otherwise, the underlying lock object will not be destroyed.
-As a result, this lock is not usable after calling of this method.</p>
-</div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_DisposeAsync_" data-uid="DotNext.Threading.AsyncLock.DisposeAsync*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_DisposeAsync" data-uid="DotNext.Threading.AsyncLock.DisposeAsync">
-  DisposeAsync()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L340"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Destroy this lock and asynchronously dispose underlying lock object if it is owned by the given lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></dt>
-    <dd><p>The task representing asynchronous execution of this method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AsyncLock_DisposeAsync_remarks">Remarks</h4>
-  <div class="markdown level1 remarks"><p>If the given lock is an owner of the underlying lock object then this method will
-call <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable.disposeasync">DisposeAsync()</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> on it;
-otherwise, the underlying lock object will not be destroyed.
-As a result, this lock is not usable after calling of this method.</p>
-</div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Equals_" data-uid="DotNext.Threading.AsyncLock.Equals*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_" data-uid="DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)">
-  Equals(AsyncLock)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L368"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Determines whether this lock object is the same as other lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly bool Equals(AsyncLock other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>Other lock to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this lock is the same as the specified lock; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Equals_" data-uid="DotNext.Threading.AsyncLock.Equals*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Equals_System_Object_" data-uid="DotNext.Threading.AsyncLock.Equals(System.Object)">
-  Equals(object?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L375"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Determines whether this lock object is the same as other lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override readonly bool Equals(object? other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
-    <dd><p>Other lock to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this lock is the same as the specified lock; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Exclusive" data-uid="DotNext.Threading.AsyncLock.Exclusive">
-  Exclusive()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L126"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates exclusive asynchronous lock but doesn't acquire it.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock Exclusive()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>Exclusive asynchronous lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AsyncLock_Exclusive_remarks">Remarks</h4>
-  <div class="markdown level1 remarks"><p>Constructed lock owns the exclusive lock instance.</p>
-</div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock_" data-uid="DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)">
-  Exclusive(AsyncExclusiveLock)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L134"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Wraps exclusive lock into the unified representation of asynchronous lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock Exclusive(AsyncExclusiveLock @lock)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>lock</code> <a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></dt>
-    <dd><p>The lock object to be wrapped.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>Exclusive asynchronous lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p><code class="paramref">lock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncSharedLock_" data-uid="DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncSharedLock)">
-  Exclusive(AsyncSharedLock)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L186"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates strong (exclusive) lock but doesn't acquire it.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock Exclusive(AsyncSharedLock @lock)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>lock</code> <a class="xref" href="DotNext.Threading.AsyncSharedLock.html">AsyncSharedLock</a></dt>
-    <dd><p>The shared lock instance.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>Exclusive lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p><code class="paramref">lock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_GetHashCode_" data-uid="DotNext.Threading.AsyncLock.GetHashCode*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_GetHashCode" data-uid="DotNext.Threading.AsyncLock.GetHashCode">
-  GetHashCode()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L381"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Computes hash code of this lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override readonly int GetHashCode()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The hash code of this lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_ReadLock_" data-uid="DotNext.Threading.AsyncLock.ReadLock*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock_" data-uid="DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock)">
-  ReadLock(AsyncReaderWriterLock)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L164"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates read lock but doesn't acquire it.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock ReadLock(AsyncReaderWriterLock rwLock)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>rwLock</code> <a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></dt>
-    <dd><p>Read/write lock source.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>Reader lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p><code class="paramref">rwLock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Semaphore_" data-uid="DotNext.Threading.AsyncLock.Semaphore*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32_" data-uid="DotNext.Threading.AsyncLock.Semaphore(System.Int32,System.Int32)">
-  Semaphore(int, int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L155"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates semaphore-based lock but doesn't acquire the lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock Semaphore(int initialCount, int maxCount)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>initialCount</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The initial number of requests for the semaphore that can be granted concurrently.</p>
-</dd>
-    <dt><code>maxCount</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The maximum number of requests for the semaphore that can be granted concurrently.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>The lock representing semaphore.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32__remarks">Remarks</h4>
-  <div class="markdown level1 remarks"><p>Constructed lock owns the semaphore instance.</p>
-</div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Semaphore_" data-uid="DotNext.Threading.AsyncLock.Semaphore*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Semaphore_System_Threading_SemaphoreSlim_" data-uid="DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)">
-  Semaphore(SemaphoreSlim)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L143"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Wraps semaphore instance into the unified representation of the lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock Semaphore(SemaphoreSlim semaphore)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>semaphore</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a></dt>
-    <dd><p>The semaphore to wrap into lock object.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>The lock representing semaphore.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p><code class="paramref">semaphore</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_ToString_" data-uid="DotNext.Threading.AsyncLock.ToString*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_ToString" data-uid="DotNext.Threading.AsyncLock.ToString">
-  ToString()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L387"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns actual type of this lock in the form of the string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The actual type of this lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync(System.Threading.CancellationToken)">
-  TryAcquireAsync(CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L311"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Tries to acquire lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use AcquireAsync(CancellationToken) instead.&quot;)]
-public readonly ValueTask&lt;AsyncLock.Holder&gt; TryAcquireAsync(CancellationToken token)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
-    <dd><p>The token that can be used to abort acquisition operation.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</dt>
-    <dd><p>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync(System.TimeSpan,System.Threading.CancellationToken)">
-  TryAcquireAsync(TimeSpan, CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L303"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Tries to acquire the lock asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly ValueTask&lt;AsyncLock.Holder&gt; TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>timeout</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></dt>
-    <dd><p>The interval to wait for the lock.</p>
-</dd>
-    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
-    <dd><p>The token that can be used to abort acquisition operation.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>.<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">Holder</a>&gt;</dt>
-    <dd><p>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></dt>
-    <dd><p>The operation has been canceled.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_Weak_" data-uid="DotNext.Threading.AsyncLock.Weak*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_Weak_DotNext_Threading_AsyncSharedLock_" data-uid="DotNext.Threading.AsyncLock.Weak(DotNext.Threading.AsyncSharedLock)">
-  Weak(AsyncSharedLock)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L195"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates weak lock but doesn't acquire it.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock Weak(AsyncSharedLock @lock)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>lock</code> <a class="xref" href="DotNext.Threading.AsyncSharedLock.html">AsyncSharedLock</a></dt>
-    <dd><p>The shared lock instance.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>Weak lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p><code class="paramref">lock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_WriteLock_" data-uid="DotNext.Threading.AsyncLock.WriteLock*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean_" data-uid="DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock,System.Boolean)">
-  WriteLock(AsyncReaderWriterLock, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L177"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates write lock but doesn't acquire it.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock WriteLock(AsyncReaderWriterLock rwLock, bool upgrade = false)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>rwLock</code> <a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></dt>
-    <dd><p>Read/write lock source.</p>
-</dd>
-    <dt><code>upgrade</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to upgrade from read lock;
-otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>Write-only lock.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p><code class="paramref">rwLock</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <h2 class="section" id="operators">Operators
-</h2>
-
-
-  <a id="DotNext_Threading_AsyncLock_op_Equality_" data-uid="DotNext.Threading.AsyncLock.op_Equality*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__" data-uid="DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)">
-  operator ==(in AsyncLock, in AsyncLock)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L395"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Determines whether two locks are the same.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator ==(in AsyncLock first, in AsyncLock second)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>first</code> <a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>The first lock to compare.</p>
-</dd>
-    <dt><code>second</code> <a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>The second lock to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both are the same; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Threading_AsyncLock_op_Inequality_" data-uid="DotNext.Threading.AsyncLock.op_Inequality*"></a>
-
-  <h3 id="DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__" data-uid="DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)">
-  operator !=(in AsyncLock, in AsyncLock)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L404"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Determines whether two locks are not the same.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator !=(in AsyncLock first, in AsyncLock second)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>first</code> <a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>The first lock to compare.</p>
-</dd>
-    <dt><code>second</code> <a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></dt>
-    <dd><p>The second lock to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both are not the same; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
-    </dd>
-  </dl>
-
-
-  <h2 id="seealso">See Also</h2>
+  <h3 id="seealso">See Also</h3>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></div>
   </div>
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L18" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L18" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

@@ -1,124 +1,88 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Class Type&lt;T&gt;.Method
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Type&lt;T&gt;.Method
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Class Type&lt;T&gt;.Method
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Type&lt;T&gt;.Method
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Type`1.Method">
 
-        <article data-uid="DotNext.Reflection.Type`1.Method">
 
 
-
-  <h1 id="DotNext_Reflection_Type_1_Method" data-uid="DotNext.Reflection.Type`1.Method" class="text-break">
-    Class Type&lt;T&gt;.Method
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L158"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Reflection.html">Reflection</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.Reflection.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Provides access to methods declared in type <code class="typeparamref">T</code>.</p>
+  <h1 id="DotNext_Reflection_Type_1_Method" data-uid="DotNext.Reflection.Type`1.Method" class="text-break">Class Type&lt;T&gt;.Method
+</h1>
+  <div class="markdown level0 summary"><p>Provides access to methods declared in type <code class="typeparamref">T</code>.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Type&lt;T&gt;.Method</code></pre>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">Type&lt;T&gt;.Method</span></div>
   </div>
-
-
-
-
-  <dl class="typelist inheritance">
-    <dt>Inheritance</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-      <div><span class="xref">Type&lt;T&gt;.Method</span></div>
-    </dd>
-  </dl>
-
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
@@ -140,543 +104,844 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
-  </dd></dl>
-
-
-
-
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Reflection.html">Reflection</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
+  <h5 id="DotNext_Reflection_Type_1_Method_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class Type&lt;T&gt;.Method</code></pre>
+  </div>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_Get_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Get(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L203">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_Get_" data-uid="DotNext.Reflection.Type`1.Method.Get*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_Get_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get(System.String,System.Boolean)">
-  Get(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L203"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_Get_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get(System.String,System.Boolean)">Get(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects instance parameterless method without return type as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Action&lt;T&gt;&gt;? Get(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;&gt;</dt>
-    <dd><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;&gt;</td>
+        <td><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_GetStatic_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.GetStatic(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L222">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_GetStatic_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_GetStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic(System.String,System.Boolean)">
-  GetStatic(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L222"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_GetStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic(System.String,System.Boolean)">GetStatic(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects static parameterless method without return type as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Action&gt;? GetStatic(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a>&gt;</dt>
-    <dd><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a>&gt;</td>
+        <td><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_GetStatic__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.GetStatic%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L263">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_GetStatic_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_GetStatic__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic``1(System.String,System.Boolean)">
-  GetStatic&lt;TResult&gt;(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L263"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_GetStatic__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.GetStatic``1(System.String,System.Boolean)">GetStatic&lt;TResult&gt;(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects static parameterless method which as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func&lt;TResult&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Func&lt;TResult&gt;&gt;? GetStatic&lt;TResult&gt;(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TResult&gt;&gt;</dt>
-    <dd><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TResult</code></dt>
-    <dd><p>The method return type.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TResult&gt;&gt;</td>
+        <td><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The method return type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Get%60%601(System.String%2CDotNext.Reflection.MethodLookup%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L174">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_Get_" data-uid="DotNext.Reflection.Type`1.Method.Get*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get``1(System.String,DotNext.Reflection.MethodLookup,System.Boolean)">
-  Get&lt;TSignature&gt;(string, MethodLookup, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L174"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get``1(System.String,DotNext.Reflection.MethodLookup,System.Boolean)">Get&lt;TSignature&gt;(string, MethodLookup, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects class method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;TSignature&gt;? Get&lt;TSignature&gt;(string methodName, MethodLookup methodType, bool nonPublic = false) where TSignature : MulticastDelegate</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>methodType</code> <a class="xref" href="DotNext.Reflection.MethodLookup.html">MethodLookup</a></dt>
-    <dd><p>The type of the method to be resolved.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;TSignature&gt;</dt>
-    <dd><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TSignature</code></dt>
-    <dd><p>The delegate describing signature of the requested method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean__remarks">Remarks</h4>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MethodLookup.html">MethodLookup</a></td>
+        <td><span class="parametername">methodType</span></td>
+        <td><p>The type of the method to be resolved.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;TSignature&gt;</td>
+        <td><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TSignature</span></td>
+        <td><p>The delegate describing signature of the requested method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method supports special types of delegates: <a class="xref" href="DotNext.Function-3.html">Function&lt;T, TArgs, TResult&gt;</a> or <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a> for instance methods,
 <a class="xref" href="DotNext.Function-2.html">Function&lt;TArgs, TResult&gt;</a> or <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> for static methods.
 The value returned by this method is cached by the given delegate type and method name.
 Two calls of this method with the same arguments will return the same object.</p>
 </div>
-
-
-
-
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_Get__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Get%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L242">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_Get_" data-uid="DotNext.Reflection.Type`1.Method.Get*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get``1(System.String,System.Boolean)">
-  Get&lt;TResult&gt;(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L242"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_Get__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Get``1(System.String,System.Boolean)">Get&lt;TResult&gt;(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects instance parameterless method which as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Func&lt;T, TResult&gt;&gt;? Get&lt;TResult&gt;(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult&gt;&gt;</dt>
-    <dd><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TResult</code></dt>
-    <dd><p>The method return type.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult&gt;&gt;</td>
+        <td><p>The reflected method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The method return type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_Require_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Require(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L213">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_Require_" data-uid="DotNext.Reflection.Type`1.Method.Require*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_Require_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require(System.String,System.Boolean)">
-  Require(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L213"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_Require_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require(System.String,System.Boolean)">Require(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects instance parameterless method without return type as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Action&lt;T&gt;&gt; Require(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;&gt;</dt>
-    <dd><p>The reflected method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
-    <dd><p>The requested method doesn't exist.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;&gt;</td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_RequireStatic_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.RequireStatic(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L232">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_RequireStatic_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_RequireStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic(System.String,System.Boolean)">
-  RequireStatic(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L232"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_RequireStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic(System.String,System.Boolean)">RequireStatic(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects static parameterless method without return type as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Action&gt; RequireStatic(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a>&gt;</dt>
-    <dd><p>The reflected method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
-    <dd><p>The requested method doesn't exist.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a>&gt;</td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_RequireStatic__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.RequireStatic%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L274">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_RequireStatic_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_RequireStatic__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic``1(System.String,System.Boolean)">
-  RequireStatic&lt;TResult&gt;(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L274"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_RequireStatic__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.RequireStatic``1(System.String,System.Boolean)">RequireStatic&lt;TResult&gt;(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects static parameterless method which as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func&lt;TResult&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Func&lt;TResult&gt;&gt; RequireStatic&lt;TResult&gt;(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TResult&gt;&gt;</dt>
-    <dd><p>The reflected method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TResult</code></dt>
-    <dd><p>The method return type.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
-    <dd><p>The requested method doesn't exist.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TResult&gt;&gt;</td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The method return type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Require%60%601(System.String%2CDotNext.Reflection.MethodLookup%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L193">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_Require_" data-uid="DotNext.Reflection.Type`1.Method.Require*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require``1(System.String,DotNext.Reflection.MethodLookup,System.Boolean)">
-  Require&lt;TSignature&gt;(string, MethodLookup, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L193"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require``1(System.String,DotNext.Reflection.MethodLookup,System.Boolean)">Require&lt;TSignature&gt;(string, MethodLookup, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects class method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;TSignature&gt; Require&lt;TSignature&gt;(string methodName, MethodLookup methodType, bool nonPublic = false) where TSignature : MulticastDelegate</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>methodType</code> <a class="xref" href="DotNext.Reflection.MethodLookup.html">MethodLookup</a></dt>
-    <dd><p>The type of the method to be resolved.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;TSignature&gt;</dt>
-    <dd><p>The reflected method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TSignature</code></dt>
-    <dd><p>The delegate describing signature of the requested method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean__remarks">Remarks</h4>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MethodLookup.html">MethodLookup</a></td>
+        <td><span class="parametername">methodType</span></td>
+        <td><p>The type of the method to be resolved.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;TSignature&gt;</td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TSignature</span></td>
+        <td><p>The delegate describing signature of the requested method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_DotNext_Reflection_MethodLookup_System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method supports special types of delegates: <a class="xref" href="DotNext.Function-3.html">Function&lt;T, TArgs, TResult&gt;</a> or <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a> for instance methods,
 <a class="xref" href="DotNext.Function-2.html">Function&lt;TArgs, TResult&gt;</a> or <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> for static methods.
 The value returned by this method is cached by the given delegate type and method name.
 Two calls of this method with the same arguments will return the same object.</p>
 </div>
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
-    <dd><p>The requested method doesn't exist.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method_Require__1_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method.Require%60%601(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L253">View Source</a>
+  </span>
   <a id="DotNext_Reflection_Type_1_Method_Require_" data-uid="DotNext.Reflection.Type`1.Method.Require*"></a>
-
-  <h3 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require``1(System.String,System.Boolean)">
-  Require&lt;TResult&gt;(string, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L253"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_Reflection_Type_1_Method_Require__1_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Method.Require``1(System.String,System.Boolean)">Require&lt;TResult&gt;(string, bool)</h4>
   <div class="markdown level1 summary"><p>Reflects instance parameterless method which as delegate type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;Func&lt;T, TResult&gt;&gt; Require&lt;TResult&gt;(string methodName, bool nonPublic = false)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>methodName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The name of the method.</p>
-</dd>
-    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult&gt;&gt;</dt>
-    <dd><p>The reflected method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TResult</code></dt>
-    <dd><p>The method return type.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
-    <dd><p>The requested method doesn't exist.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">methodName</span></td>
+        <td><p>The name of the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">nonPublic</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult&gt;&gt;</td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The method return type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
+        <td><p>The requested method doesn't exist.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L158" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Method.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Method%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Methods.cs/#L158" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

@@ -1,117 +1,83 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Struct UserDataStorage
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct UserDataStorage
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Struct UserDataStorage
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct UserDataStorage
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.UserDataStorage">
 
-        <article data-uid="DotNext.UserDataStorage">
 
 
-
-  <h1 id="DotNext_UserDataStorage" data-uid="DotNext.UserDataStorage" class="text-break">
-    Struct UserDataStorage
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.DebugSupport.cs/#L9"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Provides access to user data associated with the object.</p>
+  <h1 id="DotNext_UserDataStorage" data-uid="DotNext.UserDataStorage" class="text-break">Struct UserDataStorage
+</h1>
+  <div class="markdown level0 summary"><p>Provides access to user data associated with the object.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly ref struct UserDataStorage</code></pre>
-  </div>
-
-
-
-
-
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
@@ -121,1180 +87,1785 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </dd></dl>
-
-
-
-
-  <h2 id="DotNext_UserDataStorage_remarks">Remarks</h2>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_UserDataStorage_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ref struct UserDataStorage</code></pre>
+  </div>
+  <h5 id="DotNext_UserDataStorage_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This is by-ref struct because user data should have
 the same lifetime as its owner.</p>
 </div>
-
-
-  <h2 class="section" id="properties">Properties
-</h2>
-
-
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_IsValid.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.IsValid%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L120">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_IsValid_" data-uid="DotNext.UserDataStorage.IsValid*"></a>
-
-  <h3 id="DotNext_UserDataStorage_IsValid" data-uid="DotNext.UserDataStorage.IsValid">
-  IsValid
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L120"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_IsValid" data-uid="DotNext.UserDataStorage.IsValid">IsValid</h4>
   <div class="markdown level1 summary"><p>Gets a value indicating that this storage is valid.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool IsValid { get; }</code></pre>
   </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_Capture.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Capture%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.DebugSupport.cs/#L30">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_Capture_" data-uid="DotNext.UserDataStorage.Capture*"></a>
-
-  <h3 id="DotNext_UserDataStorage_Capture" data-uid="DotNext.UserDataStorage.Capture">
-  Capture()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.DebugSupport.cs/#L30"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_Capture" data-uid="DotNext.UserDataStorage.Capture">Capture()</h4>
   <div class="markdown level1 summary"><p>Extracts a copy of all custom data in this storage.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public IReadOnlyDictionary&lt;string, object&gt; Capture()</code></pre>
   </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</dt>
-    <dd><p>The copy of all custom data.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_UserDataStorage_Capture_remarks">Remarks</h4>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</td>
+        <td><p>The copy of all custom data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_UserDataStorage_Capture_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method is useful for debugging purposes to observe the data associated
 with arbitrary object.</p>
 </div>
-
-
-
-
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_CopyTo_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.CopyTo(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L369">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_CopyTo_" data-uid="DotNext.UserDataStorage.CopyTo*"></a>
-
-  <h3 id="DotNext_UserDataStorage_CopyTo_System_Object_" data-uid="DotNext.UserDataStorage.CopyTo(System.Object)">
-  CopyTo(object)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L369"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_CopyTo_System_Object_" data-uid="DotNext.UserDataStorage.CopyTo(System.Object)">CopyTo(object)</h4>
   <div class="markdown level1 summary"><p>Replaces user data of the object with the copy of the current one.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void CopyTo(object obj)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>obj</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
-    <dd><p>The object which user data has to be replaced with the copy of the current one.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object which user data has to be replaced with the copy of the current one.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L402">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_Equals_" data-uid="DotNext.UserDataStorage.Equals*"></a>
-
-  <h3 id="DotNext_UserDataStorage_Equals_System_Object_" data-uid="DotNext.UserDataStorage.Equals(System.Object)">
-  Equals(object?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L402"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_Equals_System_Object_" data-uid="DotNext.UserDataStorage.Equals(System.Object)">Equals(object?)</h4>
   <div class="markdown level1 summary"><p>Determines whether this storage is attached to
 the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public override bool Equals(object? other)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
-    <dd><p>Other object to check.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if this storage is attached to <code class="paramref">other</code> object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other object to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if this storage is attached to <code class="paramref">other</code> object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L394">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetHashCode_" data-uid="DotNext.UserDataStorage.GetHashCode*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetHashCode" data-uid="DotNext.UserDataStorage.GetHashCode">
-  GetHashCode()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L394"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetHashCode" data-uid="DotNext.UserDataStorage.GetHashCode">GetHashCode()</h4>
   <div class="markdown level1 summary"><p>Computes identity hash code for this storage.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
   </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The identity hash code for this storage.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The identity hash code for this storage.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L174">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0})">
-  GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L174"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0})">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot) where TValue : notnull, new()</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0___.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L209">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0___" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},)">
-  GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, delegate*&lt;TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L209"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0___" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},)">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, delegate*&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public TValue GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, delegate*&lt;TValue&gt; valueFactory)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>valueFactory</code> delegate*&lt;TValue&gt;</dt>
-    <dd><p>The value supplier which is called when no user data exists.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;TValue&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The value supplier which is called when no user data exists.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__System_Func___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2CSystem.Func%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L198">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__System_Func___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},System.Func{``0})">
-  GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, Func&lt;TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L198"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__1_DotNext_UserDataSlot___0__System_Func___0__" data-uid="DotNext.UserDataStorage.GetOrSet``1(DotNext.UserDataSlot{``0},System.Func{``0})">GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, Func&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, Func&lt;TValue&gt; valueFactory)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>valueFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TValue&gt;</dt>
-    <dd><p>The value supplier which is called when no user data exists.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The value supplier which is called when no user data exists.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L186">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0})">
-  GetOrSet&lt;TBase, T&gt;(UserDataSlot&lt;TBase&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L186"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0})">GetOrSet&lt;TBase, T&gt;(UserDataSlot&lt;TBase&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TBase GetOrSet&lt;TBase, T&gt;(UserDataSlot&lt;TBase&gt; slot) where T : class, TBase, new()</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TBase&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TBase</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TBase</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-    <dt><code>T</code></dt>
-    <dd><p>The derived type with public parameterless constructor.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TBase&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TBase</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TBase</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The derived type with public parameterless constructor.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0____1_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%600%7D%2C%60%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L280">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0____1_" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0},``1)">
-  GetOrSet&lt;TValue, TFactory&gt;(UserDataSlot&lt;TValue&gt;, TFactory)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L280"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___0____1_" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``0},``1)">GetOrSet&lt;TValue, TFactory&gt;(UserDataSlot&lt;TValue&gt;, TFactory)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;TValue, TFactory&gt;(UserDataSlot&lt;TValue&gt; slot, TFactory valueFactory) where TFactory : struct, ISupplier&lt;TValue&gt;</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>valueFactory</code> <span class="xref">TFactory</span></dt>
-    <dd><p>The value supplier which is called when no user data exists.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-    <dt><code>TFactory</code></dt>
-    <dd><p>The type of the factory.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TFactory</span></td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The value supplier which is called when no user data exists.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TFactory</span></td>
+        <td><p>The type of the factory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%601%7D%2C%60%600%2C)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L236">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,)">
-  GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, delegate*&lt;T, TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L236"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,)">GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, delegate*&lt;T, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public TValue GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T arg, delegate*&lt;T, TValue&gt; valueFactory)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>arg</code> <span class="xref">T</span></dt>
-    <dd><p>The argument to be passed into factory.</p>
-</dd>
-    <dt><code>valueFactory</code> delegate*&lt;T, TValue&gt;</dt>
-    <dd><p>The value supplier which is called when no user data exists.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T</code></dt>
-    <dd><p>The type of the argument to be passed into factory.</p>
-</dd>
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;T, TValue&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The value supplier which is called when no user data exists.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_System_Func___0___1__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%602(DotNext.UserDataSlot%7B%60%601%7D%2C%60%600%2CSystem.Func%7B%60%600%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L223">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_System_Func___0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,System.Func{``0,``1})">
-  GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, Func&lt;T, TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L223"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__2_DotNext_UserDataSlot___1____0_System_Func___0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``2(DotNext.UserDataSlot{``1},``0,System.Func{``0,``1})">GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt;, T, Func&lt;T, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;T, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T arg, Func&lt;T, TValue&gt; valueFactory)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>arg</code> <span class="xref">T</span></dt>
-    <dd><p>The argument to be passed into factory.</p>
-</dd>
-    <dt><code>valueFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TValue&gt;</dt>
-    <dd><p>The value supplier which is called when no user data exists.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T</code></dt>
-    <dd><p>The type of the argument to be passed into factory.</p>
-</dd>
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TValue&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The value supplier which is called when no user data exists.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%603(DotNext.UserDataSlot%7B%60%602%7D%2C%60%600%2C%60%601%2C)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L267">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,)">
-  GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, delegate*&lt;T1, T2, TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L267"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,)">GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, delegate*&lt;T1, T2, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public TValue GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T1 arg1, T2 arg2, delegate*&lt;T1, T2, TValue&gt; valueFactory)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>arg1</code> <span class="xref">T1</span></dt>
-    <dd><p>The first argument to be passed into factory.</p>
-</dd>
-    <dt><code>arg2</code> <span class="xref">T2</span></dt>
-    <dd><p>The second argument to be passed into factory.</p>
-</dd>
-    <dt><code>valueFactory</code> delegate*&lt;T1, T2, TValue&gt;</dt>
-    <dd><p>The value supplier which is called when no user data exists.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T1</code></dt>
-    <dd><p>The type of the first argument to be passed into factory.</p>
-</dd>
-    <dt><code>T2</code></dt>
-    <dd><p>The type of the second argument to be passed into factory.</p>
-</dd>
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td>delegate*&lt;T1, T2, TValue&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The value supplier which is called when no user data exists.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_System_Func___0___1___2__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.GetOrSet%60%603(DotNext.UserDataSlot%7B%60%602%7D%2C%60%600%2C%60%601%2CSystem.Func%7B%60%600%2C%60%601%2C%60%602%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L252">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_GetOrSet_" data-uid="DotNext.UserDataStorage.GetOrSet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_System_Func___0___1___2__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,System.Func{``0,``1,``2})">
-  GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, Func&lt;T1, T2, TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L252"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_GetOrSet__3_DotNext_UserDataSlot___2____0___1_System_Func___0___1___2__" data-uid="DotNext.UserDataStorage.GetOrSet``3(DotNext.UserDataSlot{``2},``0,``1,System.Func{``0,``1,``2})">GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt;, T1, T2, Func&lt;T1, T2, TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets existing user data or creates a new data and return it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TValue GetOrSet&lt;T1, T2, TValue&gt;(UserDataSlot&lt;TValue&gt; slot, T1 arg1, T2 arg2, Func&lt;T1, T2, TValue&gt; valueFactory)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>arg1</code> <span class="xref">T1</span></dt>
-    <dd><p>The first argument to be passed into factory.</p>
-</dd>
-    <dt><code>arg2</code> <span class="xref">T2</span></dt>
-    <dd><p>The second argument to be passed into factory.</p>
-</dd>
-    <dt><code>valueFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, TValue&gt;</dt>
-    <dd><p>The value supplier which is called when no user data exists.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>The data associated with the slot.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T1</code></dt>
-    <dd><p>The type of the first argument to be passed into factory.</p>
-</dd>
-    <dt><code>T2</code></dt>
-    <dd><p>The type of the second argument to be passed into factory.</p>
-</dd>
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data associated with arbitrary object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, TValue&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The value supplier which is called when no user data exists.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>The data associated with the slot.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second argument to be passed into factory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data associated with arbitrary object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Get%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L159">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_Get_" data-uid="DotNext.UserDataStorage.Get*"></a>
-
-  <h3 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0})">
-  Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L159"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0})">Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Gets user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TValue? Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>User data; or <code>default(V)</code> if there is no user data associated with <code class="paramref">slot</code>.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>Type of data.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>User data; or <code>default(V)</code> if there is no user data associated with <code class="paramref">slot</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>Type of data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Get%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L143">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_Get_" data-uid="DotNext.UserDataStorage.Get*"></a>
-
-  <h3 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0},``0)">
-  Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L143"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_Get__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Get``1(DotNext.UserDataSlot{``0},``0)">Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue?)</h4>
   <div class="markdown level1 summary"><p>Gets user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public TValue? Get&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, TValue? defaultValue)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>defaultValue</code> <span class="xref">TValue</span></dt>
-    <dd><p>Default value to be returned if no user data contained in this collection.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TValue</span></dt>
-    <dd><p>User data.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>Type of data.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">defaultValue</span></td>
+        <td><p>Default value to be returned if no user data contained in this collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><p>User data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>Type of data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Remove%60%601(DotNext.UserDataSlot%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L334">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_Remove_" data-uid="DotNext.UserDataStorage.Remove*"></a>
-
-  <h3 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0})">
-  Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L334"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0})">Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;)</h4>
   <div class="markdown level1 summary"><p>Removes user data slot.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if data is removed from this collection.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if data is removed from this collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Remove%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L350">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_Remove_" data-uid="DotNext.UserDataStorage.Remove*"></a>
-
-  <h3 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0},``0@)">
-  Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L350"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_Remove__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.Remove``1(DotNext.UserDataSlot{``0},``0@)">Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)</h4>
   <div class="markdown level1 summary"><p>Removes user data slot.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Remove&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, out TValue userData)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>userData</code> <span class="xref">TValue</span></dt>
-    <dd><p>Remove user data.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if data is removed from this collection.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>The type of user data.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">userData</span></td>
+        <td><p>Remove user data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if data is removed from this collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of user data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.Set%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L319">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_Set_" data-uid="DotNext.UserDataStorage.Set*"></a>
-
-  <h3 id="DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Set``1(DotNext.UserDataSlot{``0},``0)">
-  Set&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L319"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_Set__1_DotNext_UserDataSlot___0____0_" data-uid="DotNext.UserDataStorage.Set``1(DotNext.UserDataSlot{``0},``0)">Set&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, TValue)</h4>
   <div class="markdown level1 summary"><p>Sets user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Set&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, TValue userData)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>userData</code> <span class="xref">TValue</span></dt>
-    <dd><p>User data to be saved in this collection.</p>
-</dd>
-  </dl>
-
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>Type of data.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">userData</span></td>
+        <td><p>User data to be saved in this collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>Type of data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_ToString.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L408">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_ToString_" data-uid="DotNext.UserDataStorage.ToString*"></a>
-
-  <h3 id="DotNext_UserDataStorage_ToString" data-uid="DotNext.UserDataStorage.ToString">
-  ToString()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L408"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_ToString" data-uid="DotNext.UserDataStorage.ToString">ToString()</h4>
   <div class="markdown level1 summary"><p>Returns textual representation of this storage.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
   </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The textual representation of this storage.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><p>The textual representation of this storage.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.TryGet%60%601(DotNext.UserDataSlot%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L297">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_TryGet_" data-uid="DotNext.UserDataStorage.TryGet*"></a>
-
-  <h3 id="DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.TryGet``1(DotNext.UserDataSlot{``0},``0@)">
-  TryGet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L297"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_TryGet__1_DotNext_UserDataSlot___0____0__" data-uid="DotNext.UserDataStorage.TryGet``1(DotNext.UserDataSlot{``0},``0@)">TryGet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt;, out TValue)</h4>
   <div class="markdown level1 summary"><p>Tries to get user data.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool TryGet&lt;TValue&gt;(UserDataSlot&lt;TValue&gt; slot, out TValue userData)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>slot</code> <a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</dt>
-    <dd><p>The slot identifying user data.</p>
-</dd>
-    <dt><code>userData</code> <span class="xref">TValue</span></dt>
-    <dd><p>User data.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if user data slot exists in this collection.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TValue</code></dt>
-    <dd><p>Type of data.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
-    <dd><p><code class="paramref">slot</code> is not allocated.</p>
-</dd>
-  </dl>
-
-
-
-  <h2 class="section" id="operators">Operators
-</h2>
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot</a>&lt;TValue&gt;</td>
+        <td><span class="parametername">slot</span></td>
+        <td><p>The slot identifying user data.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">userData</span></td>
+        <td><p>User data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if user data slot exists in this collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>Type of data.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">slot</code> is not allocated.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage%2CDotNext.UserDataStorage)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L416">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_op_Equality_" data-uid="DotNext.UserDataStorage.op_Equality*"></a>
-
-  <h3 id="DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage,DotNext.UserDataStorage)">
-  operator ==(UserDataStorage, UserDataStorage)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L416"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage,DotNext.UserDataStorage)">operator ==(UserDataStorage, UserDataStorage)</h4>
   <div class="markdown level1 summary"><p>Determines whether two stores are for the same object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool operator ==(UserDataStorage first, UserDataStorage second)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>first</code> <a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></dt>
-    <dd><p>The first storage to compare.</p>
-</dd>
-    <dt><code>second</code> <a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></dt>
-    <dd><p>The second storage to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if two stores are for the same object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first storage to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second storage to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if two stores are for the same object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage_op_Inequality_DotNext_UserDataStorage_DotNext_UserDataStorage_.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage.op_Inequality(DotNext.UserDataStorage%2CDotNext.UserDataStorage)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L425">View Source</a>
+  </span>
   <a id="DotNext_UserDataStorage_op_Inequality_" data-uid="DotNext.UserDataStorage.op_Inequality*"></a>
-
-  <h3 id="DotNext_UserDataStorage_op_Inequality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Inequality(DotNext.UserDataStorage,DotNext.UserDataStorage)">
-  operator !=(UserDataStorage, UserDataStorage)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.cs/#L425"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
+  <h4 id="DotNext_UserDataStorage_op_Inequality_DotNext_UserDataStorage_DotNext_UserDataStorage_" data-uid="DotNext.UserDataStorage.op_Inequality(DotNext.UserDataStorage,DotNext.UserDataStorage)">operator !=(UserDataStorage, UserDataStorage)</h4>
   <div class="markdown level1 summary"><p>Determines whether two stores are not for the same object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-
+  <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool operator !=(UserDataStorage first, UserDataStorage second)</code></pre>
   </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>first</code> <a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></dt>
-    <dd><p>The first storage to compare.</p>
-</dd>
-    <dt><code>second</code> <a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></dt>
-    <dd><p>The second storage to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if two stores are not for the same object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first storage to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second storage to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if two stores are not for the same object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.DebugSupport.cs/#L9" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_UserDataStorage.md&amp;value=---%0Auid%3A%20DotNext.UserDataStorage%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/UserDataStorage.DebugSupport.cs/#L9" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

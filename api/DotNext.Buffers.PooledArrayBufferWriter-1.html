@@ -1,154 +1,110 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Class PooledArrayBufferWriter&lt;T&gt;
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class PooledArrayBufferWriter&lt;T&gt;
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Class PooledArrayBufferWriter&lt;T&gt;
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class PooledArrayBufferWriter&lt;T&gt;
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1">
 
-        <article data-uid="DotNext.Buffers.PooledArrayBufferWriter`1">
 
 
-
-  <h1 id="DotNext_Buffers_PooledArrayBufferWriter_1" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1" class="text-break">
-    Class PooledArrayBufferWriter&lt;T&gt;
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L18"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Represents memory writer that is backed by the array obtained from the pool.</p>
+  <h1 id="DotNext_Buffers_PooledArrayBufferWriter_1" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1" class="text-break">Class PooledArrayBufferWriter&lt;T&gt;
+</h1>
+  <div class="markdown level0 summary"><p>Represents memory writer that is backed by the array obtained from the pool.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;&gt;&gt;, IReadOnlyList&lt;T&gt;, IReadOnlyCollection&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IDisposable, IResettable, ISupplier&lt;ArraySegment&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ArraySegment&lt;T&gt;&gt;&gt;, IList&lt;T&gt;, ICollection&lt;T&gt;, IEnumerable&lt;T&gt;, IEnumerable</code></pre>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><a class="xref" href="DotNext.Buffers.BufferWriter-1.html">BufferWriter</a>&lt;T&gt;</div>
+    <div class="level3"><span class="xref">PooledArrayBufferWriter&lt;T&gt;</span></div>
   </div>
-
-
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T</code></dt>
-    <dd><p>The data type that can be written.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist inheritance">
-    <dt>Inheritance</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-      <div><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
-      <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html">BufferWriter</a>&lt;T&gt;</div>
-      <div><span class="xref">PooledArrayBufferWriter&lt;T&gt;</span></div>
-    </dd>
-  </dl>
-
-  <dl class="typelist implements">
-    <dt>Implements</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
-      <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
-      <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;T&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;T&gt;</div>
-      <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;T&gt;</div>
-      <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;T&gt;</div>
-      <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</div>
-      <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-      <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
-      <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;</div>
-      <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;T&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
-    </dd>
-  </dl>
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_AllocationCounter">BufferWriter&lt;T&gt;.AllocationCounter</a>
     </div>
@@ -209,11 +165,1222 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </dd></dl>
-
-  <dl class="typelist extensionMethods">
-    <dt>Extension Methods</dt>
-    <dd>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class PooledArrayBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;&gt;&gt;, IReadOnlyList&lt;T&gt;, IReadOnlyCollection&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IDisposable, IResettable, ISupplier&lt;ArraySegment&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ArraySegment&lt;T&gt;&gt;&gt;, IList&lt;T&gt;, ICollection&lt;T&gt;, IEnumerable&lt;T&gt;, IEnumerable</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The data type that can be written.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This class provides additional methods for access to array segments in contrast to <a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a>.</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L67">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor">PooledArrayBufferWriter()</h4>
+  <div class="markdown level1 summary"><p>Initializes a new writer with the default initial capacity and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>
+as the array pooling mechanism.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PooledArrayBufferWriter()</code></pre>
+  </div>
+  <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool">BufferPool</a></div>
+      <div><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity">Capacity</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L42">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0})">PooledArrayBufferWriter(ArrayPool&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new writer with the default initial capacity.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use init-only properties to set the capacity and pool&quot;)]
+public PooledArrayBufferWriter(ArrayPool&lt;T&gt; pool)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</td>
+        <td><span class="parametername">pool</span></td>
+        <td><p>The array pool.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L29">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)">PooledArrayBufferWriter(ArrayPool&lt;T&gt;, int)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new writer with the specified initial capacity.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use init-only properties to set the capacity and allocator&quot;)]
+public PooledArrayBufferWriter(ArrayPool&lt;T&gt; pool, int initialCapacity)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</td>
+        <td><span class="parametername">pool</span></td>
+        <td><p>The array pool.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">initialCapacity</span></td>
+        <td><p>The initial capacity of the writer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">initialCapacity</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L55">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Int32)">PooledArrayBufferWriter(int)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new writer with the specified initial capacity and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>
+as the array pooling mechanism.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use init-only properties to set the capacity and pool&quot;)]
+public PooledArrayBufferWriter(int initialCapacity)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">initialCapacity</span></td>
+        <td><p>The initial capacity of the writer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">initialCapacity</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.BufferPool%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L80">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.BufferPool*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.BufferPool">BufferPool</h4>
+  <div class="markdown level1 summary"><p>Sets the array pool that will be used to rent the internal buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArrayPool&lt;T&gt;? BufferPool { init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It is recommended to initialize this property before <a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity">Capacity</a>.
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> value is the same as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Capacity%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L284">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the total amount of space within the underlying memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int Capacity { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_Capacity">BufferWriter&lt;T&gt;.Capacity</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">value</code> is less than zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Item(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L119">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int32)">this[int]</h4>
+  <div class="markdown level1 summary"><p>Gets the element at the specified index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ref T this[int index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the element to retrieve.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The element at the specified index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">index</code> the index is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Item(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L128">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int64_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int64)">this[long]</h4>
+  <div class="markdown level1 summary"><p>Gets the element at the specified index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ref T this[long index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the element to retrieve.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The element at the specified index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">index</code> the index is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.WrittenArray%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L318">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray">WrittenArray</h4>
+  <div class="markdown level1 summary"><p>Gets the data written to the underlying array so far.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArraySegment&lt;T&gt; WrittenArray { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.WrittenMemory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L305">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory">WrittenMemory</h4>
+  <div class="markdown level1 summary"><p>Gets the data written to the underlying buffer so far.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override ReadOnlyMemory&lt;T&gt; WrittenMemory { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_WrittenMemory">BufferWriter&lt;T&gt;.WrittenMemory</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_System_Collections_Generic_ICollection__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.AddAll(System.Collections.Generic.ICollection%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L425">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.AddAll*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_System_Collections_Generic_ICollection__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.AddAll(System.Collections.Generic.ICollection{`0})">AddAll(ICollection&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Writes multiple elements.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void AddAll(ICollection&lt;T&gt; items)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;T&gt;</td>
+        <td><span class="parametername">items</span></td>
+        <td><p>The collection of elements to be copied.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_AddAll_System_Collections_Generic_ICollection__0__">BufferWriter&lt;T&gt;.AddAll(ICollection&lt;T&gt;)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Clear_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Clear(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L338">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear(System.Boolean)">Clear(bool)</h4>
+  <div class="markdown level1 summary"><p>Clears the data written to the underlying memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Clear(bool reuseBuffer = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">reuseBuffer</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reuse the internal buffer; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to destroy the internal buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_Clear_System_Boolean_">BufferWriter&lt;T&gt;.Clear(bool)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.DetachBuffer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L360">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DetachBuffer*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DetachBuffer">DetachBuffer()</h4>
+  <div class="markdown level1 summary"><p>Transfers ownership of the written memory from this writer to the caller.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MemoryOwner&lt;T&gt; DetachBuffer()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
+        <td><p>The object representing all written content.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_DetachBuffer">BufferWriter&lt;T&gt;.DetachBuffer()</a></div>
+  <h5 id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The caller is responsible for the lifetime of the returned buffer. The current
+state of this writer will be reset.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L549">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose(System.Boolean)">Dispose(bool)</h4>
+  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_Dispose_System_Boolean_">BufferWriter&lt;T&gt;.Dispose(bool)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetArray(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L421">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray(System.Int32)">GetArray(int)</h4>
+  <div class="markdown level1 summary"><p>Returns the memory to write to that is at least the requested size.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ArraySegment&lt;T&gt; GetArray(int sizeHint = 0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">sizeHint</span></td>
+        <td><p>The minimum length of the returned memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;</td>
+        <td><p>The memory block of at least the size <code class="paramref">sizeHint</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.outofmemoryexception">OutOfMemoryException</a></td>
+        <td><p>The requested buffer size is not available.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetMemory(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L395">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory(System.Int32)">GetMemory(int)</h4>
+  <div class="markdown level1 summary"><p>Returns the memory to write to that is at least the requested size.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Memory&lt;T&gt; GetMemory(int sizeHint = 0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">sizeHint</span></td>
+        <td><p>The minimum length of the returned memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;</td>
+        <td><p>The memory block of at least the size <code class="paramref">sizeHint</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_GetMemory_System_Int32_">BufferWriter&lt;T&gt;.GetMemory(int)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.outofmemoryexception">OutOfMemoryException</a></td>
+        <td><p>The requested buffer size is not available.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.GetSpan(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L405">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan(System.Int32)">GetSpan(int)</h4>
+  <div class="markdown level1 summary"><p>Returns the memory to write to that is at least the requested size.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Span&lt;T&gt; GetSpan(int sizeHint = 0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">sizeHint</span></td>
+        <td><p>The minimum length of the returned memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><p>The memory block of at least the size <code class="paramref">sizeHint</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_GetSpan_System_Int32_">BufferWriter&lt;T&gt;.GetSpan(int)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.outofmemoryexception">OutOfMemoryException</a></td>
+        <td><p>The requested buffer size is not available.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Insert_System_Int32_System_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Insert(System.Int32%2CSystem.ReadOnlySpan%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L202">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Insert_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Insert*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Insert_System_Int32_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Insert(System.Int32,System.ReadOnlySpan{`0})">Insert(int, ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Inserts the elements into this buffer at the specified index.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Insert(int index, ReadOnlySpan&lt;T&gt; items)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The zero-based index at which the new elements should be inserted.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">items</span></td>
+        <td><p>The span whose elements should be inserted into this buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">index</code> the index is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_System_Int32_System_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.Overwrite(System.Int32%2CSystem.ReadOnlySpan%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L244">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Overwrite*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_System_Int32_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Overwrite(System.Int32,System.ReadOnlySpan{`0})">Overwrite(int, ReadOnlySpan&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Overwrites the elements in this buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Overwrite(int index, ReadOnlySpan&lt;T&gt; items)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The zero-based index at which the new elements should be rewritten.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">items</span></td>
+        <td><p>The span whose elements should be added into this buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">index</code> the index is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.RemoveFirst(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L478">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveFirst*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveFirst(System.Int32)">RemoveFirst(int)</h4>
+  <div class="markdown level1 summary"><p>Removes the specified number of elements from the head of this buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RemoveFirst(int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of elements to be removed from the head of this buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">count</code> is less than 0.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601.RemoveLast(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L444">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveLast*"></a>
+  <h4 id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveLast(System.Int32)">RemoveLast(int)</h4>
+  <div class="markdown level1 summary"><p>Removes the specified number of elements from the tail of this buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void RemoveLast(int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of elements to be removed from the tail of this buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">count</code> is less than 0.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This writer has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -370,920 +1537,75 @@
   <div>
       <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IReadOnlyList___0__">List.IndexerGetter&lt;T&gt;(IReadOnlyList&lt;T&gt;)</a>
   </div>
-  </dd></dl>
-
-
-
-  <h2 id="DotNext_Buffers_PooledArrayBufferWriter_1_remarks">Remarks</h2>
-  <div class="markdown level0 remarks"><p>This class provides additional methods for access to array segments in contrast to <a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a>.</p>
-</div>
-
-
-  <h2 class="section" id="constructors">Constructors
-</h2>
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor">
-  PooledArrayBufferWriter()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L67"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new writer with the default initial capacity and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>
-as the array pooling mechanism.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public PooledArrayBufferWriter()</code></pre>
-  </div>
-
-
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool">BufferPool</a></div>
-    <div><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity">Capacity</a></div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0})">
-  PooledArrayBufferWriter(ArrayPool&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L42"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new writer with the default initial capacity.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use init-only properties to set the capacity and pool&quot;)]
-public PooledArrayBufferWriter(ArrayPool&lt;T&gt; pool)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>pool</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</dt>
-    <dd><p>The array pool.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)">
-  PooledArrayBufferWriter(ArrayPool&lt;T&gt;, int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L29"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new writer with the specified initial capacity.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use init-only properties to set the capacity and allocator&quot;)]
-public PooledArrayBufferWriter(ArrayPool&lt;T&gt; pool, int initialCapacity)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>pool</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</dt>
-    <dd><p>The array pool.</p>
-</dd>
-    <dt><code>initialCapacity</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The initial capacity of the writer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">initialCapacity</code> is less than or equal to zero.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Int32)">
-  PooledArrayBufferWriter(int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L55"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new writer with the specified initial capacity and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>
-as the array pooling mechanism.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use init-only properties to set the capacity and pool&quot;)]
-public PooledArrayBufferWriter(int initialCapacity)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>initialCapacity</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The initial capacity of the writer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">initialCapacity</code> is less than or equal to zero.</p>
-</dd>
-  </dl>
-
-
-
-  <h2 class="section" id="properties">Properties
-</h2>
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.BufferPool*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.BufferPool">
-  BufferPool
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L80"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Sets the array pool that will be used to rent the internal buffer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ArrayPool&lt;T&gt;? BufferPool { init; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-  <h4 class="section" id="DotNext_Buffers_PooledArrayBufferWriter_1_BufferPool_remarks">Remarks</h4>
-  <div class="markdown level1 remarks"><p>It is recommended to initialize this property before <a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity">Capacity</a>.
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> value is the same as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>.</p>
-</div>
-
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Capacity">
-  Capacity
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L284"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets or sets the total amount of space within the underlying memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int Capacity { get; init; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">value</code> is less than zero.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int32)">
-  this[int]
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L119"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the element at the specified index.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ref T this[int index] { get; }</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The index of the element to retrieve.</p>
-</dd>
-  </dl>
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><span class="xref">T</span></dt>
-    <dd><p>The element at the specified index.</p>
-</dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">index</code> the index is invalid.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_Item_System_Int64_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Item(System.Int64)">
-  this[long]
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L128"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the element at the specified index.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ref T this[long index] { get; }</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The index of the element to retrieve.</p>
-</dd>
-  </dl>
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><span class="xref">T</span></dt>
-    <dd><p>The element at the specified index.</p>
-</dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">index</code> the index is invalid.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray">
-  WrittenArray
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L318"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the data written to the underlying array so far.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ArraySegment&lt;T&gt; WrittenArray { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory">
-  WrittenMemory
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L305"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the data written to the underlying buffer so far.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override ReadOnlyMemory&lt;T&gt; WrittenMemory { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.AddAll*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_AddAll_System_Collections_Generic_ICollection__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.AddAll(System.Collections.Generic.ICollection{`0})">
-  AddAll(ICollection&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L425"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Writes multiple elements.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void AddAll(ICollection&lt;T&gt; items)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>items</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;T&gt;</dt>
-    <dd><p>The collection of elements to be copied.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Clear(System.Boolean)">
-  Clear(bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L338"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Clears the data written to the underlying memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void Clear(bool reuseBuffer = false)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>reuseBuffer</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reuse the internal buffer; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to destroy the internal buffer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DetachBuffer*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.DetachBuffer">
-  DetachBuffer()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L360"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Transfers ownership of the written memory from this writer to the caller.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MemoryOwner&lt;T&gt; DetachBuffer()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</dt>
-    <dd><p>The object representing all written content.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-  <h4 class="section" id="DotNext_Buffers_PooledArrayBufferWriter_1_DetachBuffer_remarks">Remarks</h4>
-  <div class="markdown level1 remarks"><p>The caller is responsible for the lifetime of the returned buffer. The current
-state of this writer will be reset.</p>
-</div>
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Dispose(System.Boolean)">
-  Dispose(bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L549"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>disposing</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetArray(System.Int32)">
-  GetArray(int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L421"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns the memory to write to that is at least the requested size.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ArraySegment&lt;T&gt; GetArray(int sizeHint = 0)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>sizeHint</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The minimum length of the returned memory.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;</dt>
-    <dd><p>The memory block of at least the size <code class="paramref">sizeHint</code>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.outofmemoryexception">OutOfMemoryException</a></dt>
-    <dd><p>The requested buffer size is not available.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory(System.Int32)">
-  GetMemory(int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L395"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns the memory to write to that is at least the requested size.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Memory&lt;T&gt; GetMemory(int sizeHint = 0)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>sizeHint</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The minimum length of the returned memory.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;</dt>
-    <dd><p>The memory block of at least the size <code class="paramref">sizeHint</code>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.outofmemoryexception">OutOfMemoryException</a></dt>
-    <dd><p>The requested buffer size is not available.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan(System.Int32)">
-  GetSpan(int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L405"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns the memory to write to that is at least the requested size.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Span&lt;T&gt; GetSpan(int sizeHint = 0)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>sizeHint</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The minimum length of the returned memory.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</dt>
-    <dd><p>The memory block of at least the size <code class="paramref">sizeHint</code>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.outofmemoryexception">OutOfMemoryException</a></dt>
-    <dd><p>The requested buffer size is not available.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Insert_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Insert*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_Insert_System_Int32_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Insert(System.Int32,System.ReadOnlySpan{`0})">
-  Insert(int, ReadOnlySpan&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L202"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Inserts the elements into this buffer at the specified index.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Insert(int index, ReadOnlySpan&lt;T&gt; items)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The zero-based index at which the new elements should be inserted.</p>
-</dd>
-    <dt><code>items</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</dt>
-    <dd><p>The span whose elements should be inserted into this buffer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">index</code> the index is invalid.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Overwrite*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_Overwrite_System_Int32_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.Overwrite(System.Int32,System.ReadOnlySpan{`0})">
-  Overwrite(int, ReadOnlySpan&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L244"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Overwrites the elements in this buffer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Overwrite(int index, ReadOnlySpan&lt;T&gt; items)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The zero-based index at which the new elements should be rewritten.</p>
-</dd>
-    <dt><code>items</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</dt>
-    <dd><p>The span whose elements should be added into this buffer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">index</code> the index is invalid.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveFirst*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveFirst_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveFirst(System.Int32)">
-  RemoveFirst(int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L478"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Removes the specified number of elements from the head of this buffer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void RemoveFirst(int count)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>count</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The number of elements to be removed from the head of this buffer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">count</code> is less than 0.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveLast*"></a>
-
-  <h3 id="DotNext_Buffers_PooledArrayBufferWriter_1_RemoveLast_System_Int32_" data-uid="DotNext.Buffers.PooledArrayBufferWriter`1.RemoveLast(System.Int32)">
-  RemoveLast(int)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L444"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Removes the specified number of elements from the tail of this buffer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void RemoveLast(int count)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>count</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The number of elements to be removed from the tail of this buffer.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">count</code> is less than 0.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>This writer has been disposed.</p>
-</dd>
-  </dl>
-
-
-
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L18" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PooledArrayBufferWriter_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PooledArrayBufferWriter%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PooledArrayBufferWriter.cs/#L18" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

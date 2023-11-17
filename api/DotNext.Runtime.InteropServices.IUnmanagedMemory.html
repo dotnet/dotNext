@@ -1,117 +1,83 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Interface IUnmanagedMemory
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IUnmanagedMemory
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Interface IUnmanagedMemory
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IUnmanagedMemory
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory">
 
-        <article data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory">
 
 
-
-  <h1 id="DotNext_Runtime_InteropServices_IUnmanagedMemory" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory" class="text-break">
-    Interface IUnmanagedMemory
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L8"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.InteropServices.html">InteropServices</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.Unsafe.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Represents common interface for the wrapper of the unmanaged memory.</p>
+  <h1 id="DotNext_Runtime_InteropServices_IUnmanagedMemory" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory" class="text-break">Interface IUnmanagedMemory
+</h1>
+  <div class="markdown level0 summary"><p>Represents common interface for the wrapper of the unmanaged memory.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemory : IDisposable, ISupplier&lt;Stream&gt;, IFunctional&lt;Func&lt;Stream&gt;&gt;</code></pre>
-  </div>
-
-
-
-
-
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">IDisposable.Dispose()</a>
     </div>
@@ -121,11 +87,723 @@
     <div>
       <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;Stream&gt;&gt;.ToDelegate()</a>
     </div>
-  </dd></dl>
-
-  <dl class="typelist extensionMethods">
-    <dt>Extension Methods</dt>
-    <dd>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.InteropServices.html">InteropServices</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
+  <h5 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemory : IDisposable, ISupplier&lt;Stream&gt;, IFunctional&lt;Func&lt;Stream&gt;&gt;</code></pre>
+  </div>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.Bytes%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L31">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Bytes*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Bytes">Bytes</h4>
+  <div class="markdown level1 summary"><p>Gets a span of bytes from the current instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Span&lt;byte&gt; Bytes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.Pointer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L25">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Pointer*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Pointer">Pointer</h4>
+  <div class="markdown level1 summary"><p>Gets a pointer to the allocated unmanaged memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Pointer&lt;byte&gt; Pointer { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_Size.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.Size%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L13">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Size_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Size*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Size" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Size">Size</h4>
+  <div class="markdown level1 summary"><p>Gets size of referenced unmanaged memory, in bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">long Size { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_AsStream.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.AsStream%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L38">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_AsStream_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.AsStream*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_AsStream" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.AsStream">AsStream()</h4>
+  <div class="markdown level1 summary"><p>Represents unmanaged memory as stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Stream AsStream()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><p>The stream of unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseCompare_DotNext_Runtime_InteropServices_IUnmanagedMemory_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseCompare(DotNext.Runtime.InteropServices.IUnmanagedMemory)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L104">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseCompare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseCompare_DotNext_Runtime_InteropServices_IUnmanagedMemory_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseCompare(DotNext.Runtime.InteropServices.IUnmanagedMemory)">BitwiseCompare(IUnmanagedMemory)</h4>
+  <div class="markdown level1 summary"><p>Bitwise comparison of the memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int BitwiseCompare(IUnmanagedMemory other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The block of memory to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>Comparison result which has the semantics as return type of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable.compareto">CompareTo(object)</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseEquals_DotNext_Runtime_InteropServices_IUnmanagedMemory_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseEquals(DotNext.Runtime.InteropServices.IUnmanagedMemory)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L96">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseEquals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseEquals_DotNext_Runtime_InteropServices_IUnmanagedMemory_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseEquals(DotNext.Runtime.InteropServices.IUnmanagedMemory)">BitwiseEquals(IUnmanagedMemory)</h4>
+  <div class="markdown level1 summary"><p>Computes bitwise equality between two blocks of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool BitwiseEquals(IUnmanagedMemory other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The block of memory to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both memory blocks have the same bytes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_Clear.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L19">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Clear_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Clear*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Clear" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Clear">Clear()</h4>
+  <div class="markdown level1 summary"><p>Sets all bits of allocated memory to zero.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Clear()</code></pre>
+  </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_DotNext_Runtime_InteropServices_Pointer_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom(DotNext.Runtime.InteropServices.Pointer%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L88">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_DotNext_Runtime_InteropServices_Pointer_System_Byte__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom(DotNext.Runtime.InteropServices.Pointer{System.Byte})">ReadFrom(Pointer&lt;byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the source memory to the memory identified by this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void ReadFrom(Pointer&lt;byte&gt; source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The pointer to the source unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom(System.IO.Stream)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L65">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom(System.IO.Stream)">ReadFrom(Stream)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the given stream to the memory location identified by this object asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">long ReadFrom(Stream source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The source stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFromAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFromAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L74">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFromAsync_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFromAsync*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFromAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFromAsync(System.IO.Stream,System.Threading.CancellationToken)">ReadFromAsync(Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the given stream to the memory location identified by this object asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; ReadFromAsync(Stream source, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The source stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_DotNext_Runtime_InteropServices_Pointer_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo(DotNext.Runtime.InteropServices.Pointer%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L81">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_DotNext_Runtime_InteropServices_Pointer_System_Byte__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo(DotNext.Runtime.InteropServices.Pointer{System.Byte})">WriteTo(Pointer&lt;byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the current memory location to the specified memory location.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void WriteTo(Pointer&lt;byte&gt; destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The target memory location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo(System.IO.Stream)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo(System.IO.Stream)">WriteTo(Stream)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the memory location to the stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void WriteTo(Stream destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The destination stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L58">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteToAsync_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteToAsync*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteToAsync(System.IO.Stream,System.Threading.CancellationToken)">WriteToAsync(Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the memory location to the stream asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask WriteToAsync(Stream destination, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The destination stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task instance representing asynchronous state of the copying process.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -177,574 +855,75 @@
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
-  </dd></dl>
-
-
-
-
-
-  <h2 class="section" id="properties">Properties
-</h2>
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Bytes*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Bytes">
-  Bytes
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L31"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a span of bytes from the current instance.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Span&lt;byte&gt; Bytes { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Pointer*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Pointer" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Pointer">
-  Pointer
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L25"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a pointer to the allocated unmanaged memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Pointer&lt;byte&gt; Pointer { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Size_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Size*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Size" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Size">
-  Size
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L13"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets size of referenced unmanaged memory, in bytes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">long Size { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_AsStream_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.AsStream*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_AsStream" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.AsStream">
-  AsStream()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L38"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Represents unmanaged memory as stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Stream AsStream()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
-    <dd><p>The stream of unmanaged memory.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseCompare*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseCompare_DotNext_Runtime_InteropServices_IUnmanagedMemory_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseCompare(DotNext.Runtime.InteropServices.IUnmanagedMemory)">
-  BitwiseCompare(IUnmanagedMemory)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L104"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Bitwise comparison of the memory blocks.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">int BitwiseCompare(IUnmanagedMemory other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></dt>
-    <dd><p>The block of memory to be compared.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>Comparison result which has the semantics as return type of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable.compareto">CompareTo(object)</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseEquals*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_BitwiseEquals_DotNext_Runtime_InteropServices_IUnmanagedMemory_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.BitwiseEquals(DotNext.Runtime.InteropServices.IUnmanagedMemory)">
-  BitwiseEquals(IUnmanagedMemory)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L96"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Computes bitwise equality between two blocks of memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool BitwiseEquals(IUnmanagedMemory other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></dt>
-    <dd><p>The block of memory to be compared.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both memory blocks have the same bytes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Clear_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Clear*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_Clear" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.Clear">
-  Clear()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L19"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Sets all bits of allocated memory to zero.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void Clear()</code></pre>
-  </div>
-
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_DotNext_Runtime_InteropServices_Pointer_System_Byte__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom(DotNext.Runtime.InteropServices.Pointer{System.Byte})">
-  ReadFrom(Pointer&lt;byte&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L88"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies bytes from the source memory to the memory identified by this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void ReadFrom(Pointer&lt;byte&gt; source)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>source</code> <a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
-    <dd><p>The pointer to the source unmanaged memory.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFrom_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFrom(System.IO.Stream)">
-  ReadFrom(Stream)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L65"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies bytes from the given stream to the memory location identified by this object asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">long ReadFrom(Stream source)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
-    <dd><p>The source stream.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFromAsync_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFromAsync*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_ReadFromAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.ReadFromAsync(System.IO.Stream,System.Threading.CancellationToken)">
-  ReadFromAsync(Stream, CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L74"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies bytes from the given stream to the memory location identified by this object asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; ReadFromAsync(Stream source, CancellationToken token = default)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>source</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
-    <dd><p>The source stream.</p>
-</dd>
-    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
-    <dd><p>The token that can be used to cancel operation.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></dt>
-    <dd><p>The operation has been canceled.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_DotNext_Runtime_InteropServices_Pointer_System_Byte__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo(DotNext.Runtime.InteropServices.Pointer{System.Byte})">
-  WriteTo(Pointer&lt;byte&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L81"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the current memory location to the specified memory location.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void WriteTo(Pointer&lt;byte&gt; destination)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>destination</code> <a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
-    <dd><p>The target memory location.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteTo_System_IO_Stream_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteTo(System.IO.Stream)">
-  WriteTo(Stream)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L48"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies bytes from the memory location to the stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void WriteTo(Stream destination)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>destination</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
-    <dd><p>The destination stream.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteToAsync_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteToAsync*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_WriteToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteToAsync(System.IO.Stream,System.Threading.CancellationToken)">
-  WriteToAsync(Stream, CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L58"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies bytes from the memory location to the stream asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask WriteToAsync(Stream destination, CancellationToken token = default)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>destination</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
-    <dd><p>The destination stream.</p>
-</dd>
-    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
-    <dd><p>The token that can be used to cancel operation.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></dt>
-    <dd><p>The task instance representing asynchronous state of the copying process.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></dt>
-    <dd><p>The operation has been canceled.</p>
-</dd>
-  </dl>
-
-
-
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L8" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L8" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

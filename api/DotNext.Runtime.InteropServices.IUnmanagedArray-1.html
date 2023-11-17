@@ -1,124 +1,84 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Interface IUnmanagedArray&lt;T&gt;
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IUnmanagedArray&lt;T&gt;
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Interface IUnmanagedArray&lt;T&gt;
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IUnmanagedArray&lt;T&gt;
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1">
 
-        <article data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1">
 
 
-
-  <h1 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1" class="text-break">
-    Interface IUnmanagedArray&lt;T&gt;
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L8"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.InteropServices.html">InteropServices</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.Unsafe.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Provides access to the array allocated
+  <h1 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1" class="text-break">Interface IUnmanagedArray&lt;T&gt;
+</h1>
+  <div class="markdown level0 summary"><p>Provides access to the array allocated
 in the unmanaged memory.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IUnmanagedArray&lt;T&gt; : IUnmanagedMemory, IDisposable, ISupplier&lt;Stream&gt;, IFunctional&lt;Func&lt;Stream&gt;&gt;, IEnumerable&lt;T&gt;, IEnumerable, ICloneable, ISupplier&lt;T[]&gt;, IFunctional&lt;Func&lt;T[]&gt;&gt; where T : unmanaged</code></pre>
-  </div>
-
-
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>T</code></dt>
-    <dd><p>The type of the array elements.</p>
-</dd>
-  </dl>
-
-
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_Size">IUnmanagedMemory.Size</a>
     </div>
@@ -176,11 +136,1036 @@ in the unmanaged memory.</p>
     <div>
       <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;T[]&gt;&gt;.ToDelegate()</a>
     </div>
-  </dd></dl>
-
-  <dl class="typelist extensionMethods">
-    <dt>Extension Methods</dt>
-    <dd>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.InteropServices.html">InteropServices</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
+  <h5 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IUnmanagedArray&lt;T&gt; : IUnmanagedMemory, IDisposable, ISupplier&lt;Stream&gt;, IFunctional&lt;Func&lt;Stream&gt;&gt;, IEnumerable&lt;T&gt;, IEnumerable, ICloneable, ISupplier&lt;T[]&gt;, IFunctional&lt;Func&lt;T[]&gt;&gt; where T : unmanaged</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the array elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.Item(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L32">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_System_Int32_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item(System.Int32)">this[int]</h4>
+  <div class="markdown level1 summary"><p>Gets element of the unmanaged array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use indexer overload with native-sized integer parameter&quot;)]
+ref T this[int index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the element to get.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The pointer to the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.indexoutofrangeexception">IndexOutOfRangeException</a></td>
+        <td><p><code class="paramref">index</code> is out of range.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.Item(System.IntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L41">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item(System.IntPtr)">this[nint]</h4>
+  <div class="markdown level1 summary"><p>Gets element of the unmanaged array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ref T this[nint index] { get; }</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.intptr">nint</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the element to get.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The pointer to the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.indexoutofrangeexception">IndexOutOfRangeException</a></td>
+        <td><p><code class="paramref">index</code> is out of range.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L14">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length">Length</h4>
+  <div class="markdown level1 summary"><p>Gets the number of elements in the unmanaged memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int Length { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_Pointer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.Pointer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L19">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Pointer_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Pointer" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer">Pointer</h4>
+  <div class="markdown level1 summary"><p>Gets a pointer to the allocated unmanaged memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Pointer&lt;T&gt; Pointer { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.Span%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L24">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Span_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Span" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span">Span</h4>
+  <div class="markdown level1 summary"><p>Gets a span from the current instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Span&lt;T&gt; Span { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L160">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0})">BitwiseCompare(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Bitwise comparison of the memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int BitwiseCompare(Pointer&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The block of memory to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>Comparison result which has the semantics as return type of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable.compareto">CompareTo(object)</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.BitwiseCompare(%600%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L168">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare(`0[])">BitwiseCompare(T[])</h4>
+  <div class="markdown level1 summary"><p>Bitwise comparison of the memory blocks.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+int BitwiseCompare(T[] other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>Comparison result which has the semantics as return type of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable.compareto">CompareTo(object)</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L143">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0})">BitwiseEquals(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Computes bitwise equality between two blocks of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool BitwiseEquals(Pointer&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The block of memory to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both memory blocks have the same bytes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.BitwiseEquals(%600%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L151">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals(`0[])">BitwiseEquals(T[])</h4>
+  <div class="markdown level1 summary"><p>Computes bitwise equality between this array and the specified managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+bool BitwiseEquals(T[] other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The array to be compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both memory blocks have the same bytes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.ReadFrom(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L120">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.Pointer{`0})">ReadFrom(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Copies bytes from the source memory to the memory identified by this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+void ReadFrom(Pointer&lt;T&gt; source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The pointer to the source unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.ReadFrom(%600%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L100">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom(`0[])">ReadFrom(T[])</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the memory location to the managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+long ReadFrom(T[] source)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The source array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><p>The actual number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom__0___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.ReadFrom(%600%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L91">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom__0___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom(`0[],System.Int64,System.Int64)">ReadFrom(T[], long, long)</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the specified array into
+the memory block identified by this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+long ReadFrom(T[] source, long offset, long count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>The source array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The position in the source array from which copying begins.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of elements of type <code class="typeparamref">T</code> to be copied.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><p>Actual number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_ToArray.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.ToArray%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L77">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ToArray_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ToArray*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ToArray" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ToArray">ToArray()</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the unmanaged array into managed heap.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">T[] ToArray()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><p>The array allocated in managed heap containing copied elements from unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_IUnmanagedArray__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.WriteTo(DotNext.Runtime.InteropServices.IUnmanagedArray%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L129">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_IUnmanagedArray__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.IUnmanagedArray{`0})">WriteTo(IUnmanagedArray&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the current memory location to the specified memory location.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+long WriteTo(IUnmanagedArray&lt;T&gt; destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedArray-1.html">IUnmanagedArray</a>&lt;T&gt;</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The target memory location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><p>The actual number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.WriteTo(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L112">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.Pointer{`0})">WriteTo(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the current memory location to the specified memory location.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+void WriteTo(Pointer&lt;T&gt; destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The target memory location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo__0___.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.WriteTo(%600%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L69">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(`0[])">WriteTo(T[])</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the memory location to the managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+long WriteTo(T[] destination)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The destination array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><p>The actual number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo__0___System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601.WriteTo(%600%5B%5D%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L60">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo__0___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(`0[],System.Int64,System.Int64)">WriteTo(T[], long, long)</h4>
+  <div class="markdown level1 summary"><p>Copies elements from the memory location to the managed array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
+long WriteTo(T[] destination, long offset, long count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T[]</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>The destination array.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The position in the destination array from which copying begins.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of array elements to be copied.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><p>The actual number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The underlying unmanaged memory has been released.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -283,773 +1268,75 @@ in the unmanaged memory.</p>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
   </div>
-  </dd></dl>
-
-
-
-
-
-  <h2 class="section" id="properties">Properties
-</h2>
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_System_Int32_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item(System.Int32)">
-  this[int]
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L32"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets element of the unmanaged array.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use indexer overload with native-sized integer parameter&quot;)]
-ref T this[int index] { get; }</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The index of the element to get.</p>
-</dd>
-  </dl>
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><span class="xref">T</span></dt>
-    <dd><p>The pointer to the array element.</p>
-</dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.indexoutofrangeexception">IndexOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">index</code> is out of range.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Item_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Item(System.IntPtr)">
-  this[nint]
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L41"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets element of the unmanaged array.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ref T this[nint index] { get; }</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>index</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.intptr">nint</a></dt>
-    <dd><p>The index of the element to get.</p>
-</dd>
-  </dl>
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><span class="xref">T</span></dt>
-    <dd><p>The pointer to the array element.</p>
-</dd>
-  </dl>
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.indexoutofrangeexception">IndexOutOfRangeException</a></dt>
-    <dd><p><code class="paramref">index</code> is out of range.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length">
-  Length
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L14"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the number of elements in the unmanaged memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">int Length { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Pointer_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Pointer" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer">
-  Pointer
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L19"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a pointer to the allocated unmanaged memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Pointer&lt;T&gt; Pointer { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Span_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_Span" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span">
-  Span
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L24"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a span from the current instance.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Span&lt;T&gt; Span { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0})">
-  BitwiseCompare(Pointer&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L160"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Bitwise comparison of the memory blocks.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">int BitwiseCompare(Pointer&lt;T&gt; other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</dt>
-    <dd><p>The block of memory to be compared.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>Comparison result which has the semantics as return type of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable.compareto">CompareTo(object)</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseCompare__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseCompare(`0[])">
-  BitwiseCompare(T[])
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L168"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Bitwise comparison of the memory blocks.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-int BitwiseCompare(T[] other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> T[]</dt>
-    <dd><p>The array to be compared.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>Comparison result which has the semantics as return type of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable.compareto">CompareTo(object)</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals(DotNext.Runtime.InteropServices.Pointer{`0})">
-  BitwiseEquals(Pointer&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L143"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Computes bitwise equality between two blocks of memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool BitwiseEquals(Pointer&lt;T&gt; other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</dt>
-    <dd><p>The block of memory to be compared.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both memory blocks have the same bytes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_BitwiseEquals__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.BitwiseEquals(`0[])">
-  BitwiseEquals(T[])
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L151"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Computes bitwise equality between this array and the specified managed array.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-bool BitwiseEquals(T[] other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> T[]</dt>
-    <dd><p>The array to be compared.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both memory blocks have the same bytes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom(DotNext.Runtime.InteropServices.Pointer{`0})">
-  ReadFrom(Pointer&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L120"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies bytes from the source memory to the memory identified by this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-void ReadFrom(Pointer&lt;T&gt; source)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>source</code> <a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</dt>
-    <dd><p>The pointer to the source unmanaged memory.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom(`0[])">
-  ReadFrom(T[])
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L100"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the memory location to the managed array.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-long ReadFrom(T[] source)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>source</code> T[]</dt>
-    <dd><p>The source array.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The actual number of copied elements.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ReadFrom__0___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ReadFrom(`0[],System.Int64,System.Int64)">
-  ReadFrom(T[], long, long)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L91"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the specified array into
-the memory block identified by this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-long ReadFrom(T[] source, long offset, long count)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>source</code> T[]</dt>
-    <dd><p>The source array.</p>
-</dd>
-    <dt><code>offset</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The position in the source array from which copying begins.</p>
-</dd>
-    <dt><code>count</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The number of elements of type <code class="typeparamref">T</code> to be copied.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>Actual number of copied elements.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ToArray_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ToArray*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_ToArray" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.ToArray">
-  ToArray()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L77"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the unmanaged array into managed heap.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">T[] ToArray()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt>T[]</dt>
-    <dd><p>The array allocated in managed heap containing copied elements from unmanaged memory.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_IUnmanagedArray__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.IUnmanagedArray{`0})">
-  WriteTo(IUnmanagedArray&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L129"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the current memory location to the specified memory location.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-long WriteTo(IUnmanagedArray&lt;T&gt; destination)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>destination</code> <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedArray-1.html">IUnmanagedArray</a>&lt;T&gt;</dt>
-    <dd><p>The target memory location.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The actual number of copied elements.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(DotNext.Runtime.InteropServices.Pointer{`0})">
-  WriteTo(Pointer&lt;T&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L112"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the current memory location to the specified memory location.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-void WriteTo(Pointer&lt;T&gt; destination)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>destination</code> <a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</dt>
-    <dd><p>The target memory location.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo__0___" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(`0[])">
-  WriteTo(T[])
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L69"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the memory location to the managed array.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-long WriteTo(T[] destination)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>destination</code> T[]</dt>
-    <dd><p>The destination array.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The actual number of copied elements.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo*"></a>
-
-  <h3 id="DotNext_Runtime_InteropServices_IUnmanagedArray_1_WriteTo__0___System_Int64_System_Int64_" data-uid="DotNext.Runtime.InteropServices.IUnmanagedArray`1.WriteTo(`0[],System.Int64,System.Int64)">
-  WriteTo(T[], long, long)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L60"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Copies elements from the memory location to the managed array.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use Span property instead&quot;)]
-long WriteTo(T[] destination, long offset, long count)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>destination</code> T[]</dt>
-    <dd><p>The destination array.</p>
-</dd>
-    <dt><code>offset</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The position in the destination array from which copying begins.</p>
-</dd>
-    <dt><code>count</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The number of array elements to be copied.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
-    <dd><p>The actual number of copied elements.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
-    <dd><p>The underlying unmanaged memory has been released.</p>
-</dd>
-  </dl>
-
-
-
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L8" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_IUnmanagedArray_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedArray%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedArray.cs/#L8" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

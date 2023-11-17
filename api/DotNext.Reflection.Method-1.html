@@ -1,146 +1,102 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Class Method&lt;TSignature&gt;
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Method&lt;TSignature&gt;
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Class Method&lt;TSignature&gt;
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Method&lt;TSignature&gt;
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Method`1">
 
-        <article data-uid="DotNext.Reflection.Method`1">
 
 
-
-  <h1 id="DotNext_Reflection_Method_1" data-uid="DotNext.Reflection.Method`1" class="text-break">
-    Class Method&lt;TSignature&gt;
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L12"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Reflection.html">Reflection</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.Reflection.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Represents reflected method.</p>
+  <h1 id="DotNext_Reflection_Method_1" data-uid="DotNext.Reflection.Method`1" class="text-break">Class Method&lt;TSignature&gt;
+</h1>
+  <div class="markdown level0 summary"><p>Represents reflected method.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class Method&lt;TSignature&gt; : MethodInfo, IMethod&lt;TSignature&gt;, IMethod&lt;MethodInfo, TSignature&gt;, IMember&lt;MethodInfo, TSignature&gt;, IMember&lt;MethodInfo&gt;, ICustomAttributeProvider, ISupplier&lt;TSignature&gt;, IFunctional&lt;Func&lt;TSignature&gt;&gt;, IEquatable&lt;MethodInfo?&gt; where TSignature : MulticastDelegate</code></pre>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a></div>
+    <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase">MethodBase</a></div>
+    <div class="level3"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></div>
+    <div class="level4"><span class="xref">Method&lt;TSignature&gt;</span></div>
   </div>
-
-
-
-  <h4 class="section">Type Parameters</h4>
-  <dl class="parameters">
-    <dt><code>TSignature</code></dt>
-    <dd><p>Type of delegate describing signature of the reflected method.</p>
-</dd>
-  </dl>
-
-  <dl class="typelist inheritance">
-    <dt>Inheritance</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase">MethodBase</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></div>
-      <div><span class="xref">Method&lt;TSignature&gt;</span></div>
-    </dd>
-  </dl>
-
-  <dl class="typelist implements">
-    <dt>Implements</dt>
-    <dd>
-      <div><a class="xref" href="DotNext.Reflection.IMethod-1.html">IMethod</a>&lt;TSignature&gt;</div>
-      <div><a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, TSignature&gt;</div>
-      <div><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, TSignature&gt;</div>
-      <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
-      <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;TSignature&gt;</div>
-      <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TSignature&gt;&gt;</div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
-    </dd>
-  </dl>
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Reflection.IMethod-1.html">IMethod</a>&lt;TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IMember-2.html">IMember</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>, TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Reflection.IMember-1.html">IMember</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></div>
+    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;TSignature&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TSignature&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.createdelegate#system-reflection-methodinfo-createdelegate-1">MethodInfo.CreateDelegate&lt;T&gt;()</a>
     </div>
@@ -216,11 +172,1588 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </dd></dl>
-
-  <dl class="typelist extensionMethods">
-    <dt>Extension Methods</dt>
-    <dd>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Reflection.html">Reflection</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
+  <h5 id="DotNext_Reflection_Method_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class Method&lt;TSignature&gt; : MethodInfo, IMethod&lt;TSignature&gt;, IMethod&lt;MethodInfo, TSignature&gt;, IMember&lt;MethodInfo, TSignature&gt;, IMember&lt;MethodInfo&gt;, ICustomAttributeProvider, ISupplier&lt;TSignature&gt;, IFunctional&lt;Func&lt;TSignature&gt;&gt;, IEquatable&lt;MethodInfo?&gt; where TSignature : MulticastDelegate</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TSignature</span></td>
+        <td><p>Type of delegate describing signature of the reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_Attributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.Attributes%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L61">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_Attributes_" data-uid="DotNext.Reflection.Method`1.Attributes*"></a>
+  <h4 id="DotNext_Reflection_Method_1_Attributes" data-uid="DotNext.Reflection.Method`1.Attributes">Attributes</h4>
+  <div class="markdown level1 summary"><p>Gets the attributes associated with this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MethodAttributes Attributes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodattributes">MethodAttributes</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.attributes">MethodBase.Attributes</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_CallingConvention.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.CallingConvention%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L66">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_CallingConvention_" data-uid="DotNext.Reflection.Method`1.CallingConvention*"></a>
+  <h4 id="DotNext_Reflection_Method_1_CallingConvention" data-uid="DotNext.Reflection.Method`1.CallingConvention">CallingConvention</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating the calling conventions for this constructor.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override CallingConventions CallingConvention { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.callingconventions">CallingConventions</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.callingconvention">MethodBase.CallingConvention</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_ContainsGenericParameters.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.ContainsGenericParameters%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L71">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_ContainsGenericParameters_" data-uid="DotNext.Reflection.Method`1.ContainsGenericParameters*"></a>
+  <h4 id="DotNext_Reflection_Method_1_ContainsGenericParameters" data-uid="DotNext.Reflection.Method`1.ContainsGenericParameters">ContainsGenericParameters</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the generic method contains unassigned generic type parameters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool ContainsGenericParameters { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.containsgenericparameters">MethodBase.ContainsGenericParameters</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_CustomAttributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.CustomAttributes%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L91">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_CustomAttributes_" data-uid="DotNext.Reflection.Method`1.CustomAttributes*"></a>
+  <h4 id="DotNext_Reflection_Method_1_CustomAttributes" data-uid="DotNext.Reflection.Method`1.CustomAttributes">CustomAttributes</h4>
+  <div class="markdown level1 summary"><p>Gets a collection that contains this member's custom attributes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override IEnumerable&lt;CustomAttributeData&gt; CustomAttributes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.customattributedata">CustomAttributeData</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.customattributes">MemberInfo.CustomAttributes</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_DeclaringType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.DeclaringType%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L96">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_DeclaringType_" data-uid="DotNext.Reflection.Method`1.DeclaringType*"></a>
+  <h4 id="DotNext_Reflection_Method_1_DeclaringType" data-uid="DotNext.Reflection.Method`1.DeclaringType">DeclaringType</h4>
+  <div class="markdown level1 summary"><p>Gets the class that declares this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Type? DeclaringType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.declaringtype">MemberInfo.DeclaringType</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_IsGenericMethod.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.IsGenericMethod%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L179">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_IsGenericMethod_" data-uid="DotNext.Reflection.Method`1.IsGenericMethod*"></a>
+  <h4 id="DotNext_Reflection_Method_1_IsGenericMethod" data-uid="DotNext.Reflection.Method`1.IsGenericMethod">IsGenericMethod</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the method is generic.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool IsGenericMethod { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.isgenericmethod">MethodBase.IsGenericMethod</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_IsGenericMethodDefinition.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.IsGenericMethodDefinition%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L184">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_IsGenericMethodDefinition_" data-uid="DotNext.Reflection.Method`1.IsGenericMethodDefinition*"></a>
+  <h4 id="DotNext_Reflection_Method_1_IsGenericMethodDefinition" data-uid="DotNext.Reflection.Method`1.IsGenericMethodDefinition">IsGenericMethodDefinition</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the method is a generic method definition.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool IsGenericMethodDefinition { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.isgenericmethoddefinition">MethodBase.IsGenericMethodDefinition</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_IsSecurityCritical.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.IsSecurityCritical%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L190">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_IsSecurityCritical_" data-uid="DotNext.Reflection.Method`1.IsSecurityCritical*"></a>
+  <h4 id="DotNext_Reflection_Method_1_IsSecurityCritical" data-uid="DotNext.Reflection.Method`1.IsSecurityCritical">IsSecurityCritical</h4>
+  <div class="markdown level1 summary"><p>Gets a value that indicates whether the method is security-critical or security-safe-critical at the current trust level,
+and therefore can perform critical operations.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool IsSecurityCritical { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.issecuritycritical">MethodBase.IsSecurityCritical</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_IsSecuritySafeCritical.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.IsSecuritySafeCritical%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L196">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_IsSecuritySafeCritical_" data-uid="DotNext.Reflection.Method`1.IsSecuritySafeCritical*"></a>
+  <h4 id="DotNext_Reflection_Method_1_IsSecuritySafeCritical" data-uid="DotNext.Reflection.Method`1.IsSecuritySafeCritical">IsSecuritySafeCritical</h4>
+  <div class="markdown level1 summary"><p>Gets a value that indicates whether the method is security-safe-critical at the current trust level; that is,
+whether it can perform critical operations and can be accessed by transparent code.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool IsSecuritySafeCritical { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.issecuritysafecritical">MethodBase.IsSecuritySafeCritical</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_IsSecurityTransparent.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.IsSecurityTransparent%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L202">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_IsSecurityTransparent_" data-uid="DotNext.Reflection.Method`1.IsSecurityTransparent*"></a>
+  <h4 id="DotNext_Reflection_Method_1_IsSecurityTransparent" data-uid="DotNext.Reflection.Method`1.IsSecurityTransparent">IsSecurityTransparent</h4>
+  <div class="markdown level1 summary"><p>Gets a value that indicates whether the current method is transparent at the current trust level,
+and therefore cannot perform critical operations.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool IsSecurityTransparent { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.issecuritytransparent">MethodBase.IsSecurityTransparent</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_MemberType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.MemberType%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L215">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_MemberType_" data-uid="DotNext.Reflection.Method`1.MemberType*"></a>
+  <h4 id="DotNext_Reflection_Method_1_MemberType" data-uid="DotNext.Reflection.Method`1.MemberType">MemberType</h4>
+  <div class="markdown level1 summary"><p>Always returns <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.membertypes#system-reflection-membertypes-method">Method</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MemberTypes MemberType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.membertypes">MemberTypes</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.membertype">MethodInfo.MemberType</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_MetadataToken.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.MetadataToken%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L220">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_MetadataToken_" data-uid="DotNext.Reflection.Method`1.MetadataToken*"></a>
+  <h4 id="DotNext_Reflection_Method_1_MetadataToken" data-uid="DotNext.Reflection.Method`1.MetadataToken">MetadataToken</h4>
+  <div class="markdown level1 summary"><p>Gets a value that identifies a metadata element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int MetadataToken { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.metadatatoken">MemberInfo.MetadataToken</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_MethodHandle.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.MethodHandle%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L225">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_MethodHandle_" data-uid="DotNext.Reflection.Method`1.MethodHandle*"></a>
+  <h4 id="DotNext_Reflection_Method_1_MethodHandle" data-uid="DotNext.Reflection.Method`1.MethodHandle">MethodHandle</h4>
+  <div class="markdown level1 summary"><p>Gets a handle to the internal metadata representation of a method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override RuntimeMethodHandle MethodHandle { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtimemethodhandle">RuntimeMethodHandle</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.methodhandle">MethodBase.MethodHandle</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_MethodImplementationFlags.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.MethodImplementationFlags%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L230">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_MethodImplementationFlags_" data-uid="DotNext.Reflection.Method`1.MethodImplementationFlags*"></a>
+  <h4 id="DotNext_Reflection_Method_1_MethodImplementationFlags" data-uid="DotNext.Reflection.Method`1.MethodImplementationFlags">MethodImplementationFlags</h4>
+  <div class="markdown level1 summary"><p>Gets method implementation attributes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MethodImplAttributes MethodImplementationFlags { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodimplattributes">MethodImplAttributes</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.methodimplementationflags">MethodBase.MethodImplementationFlags</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_Module.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.Module%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L235">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_Module_" data-uid="DotNext.Reflection.Method`1.Module*"></a>
+  <h4 id="DotNext_Reflection_Method_1_Module" data-uid="DotNext.Reflection.Method`1.Module">Module</h4>
+  <div class="markdown level1 summary"><p>Gets the module in which the type that declares the method represented by the current instance is defined.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Module Module { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.module">Module</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.module">MemberInfo.Module</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_Name.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.Name%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L240">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_Name_" data-uid="DotNext.Reflection.Method`1.Name*"></a>
+  <h4 id="DotNext_Reflection_Method_1_Name" data-uid="DotNext.Reflection.Method`1.Name">Name</h4>
+  <div class="markdown level1 summary"><p>Gets name of this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string Name { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.name">MemberInfo.Name</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_ReflectedType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.ReflectedType%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L245">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_ReflectedType_" data-uid="DotNext.Reflection.Method`1.ReflectedType*"></a>
+  <h4 id="DotNext_Reflection_Method_1_ReflectedType" data-uid="DotNext.Reflection.Method`1.ReflectedType">ReflectedType</h4>
+  <div class="markdown level1 summary"><p>Gets the class object that was used to obtain this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Type? ReflectedType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.reflectedtype">MemberInfo.ReflectedType</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_ReturnParameter.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.ReturnParameter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L250">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_ReturnParameter_" data-uid="DotNext.Reflection.Method`1.ReturnParameter*"></a>
+  <h4 id="DotNext_Reflection_Method_1_ReturnParameter" data-uid="DotNext.Reflection.Method`1.ReturnParameter">ReturnParameter</h4>
+  <div class="markdown level1 summary"><p>Gets information about the return type of the method, such as whether the return type has custom modifiers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override ParameterInfo ReturnParameter { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.parameterinfo">ParameterInfo</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.returnparameter">MethodInfo.ReturnParameter</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_ReturnType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.ReturnType%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L255">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_ReturnType_" data-uid="DotNext.Reflection.Method`1.ReturnType*"></a>
+  <h4 id="DotNext_Reflection_Method_1_ReturnType" data-uid="DotNext.Reflection.Method`1.ReturnType">ReturnType</h4>
+  <div class="markdown level1 summary"><p>Gets the return type of this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Type ReturnType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.returntype">MethodInfo.ReturnType</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_ReturnTypeCustomAttributes.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.ReturnTypeCustomAttributes%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L260">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_ReturnTypeCustomAttributes_" data-uid="DotNext.Reflection.Method`1.ReturnTypeCustomAttributes*"></a>
+  <h4 id="DotNext_Reflection_Method_1_ReturnTypeCustomAttributes" data-uid="DotNext.Reflection.Method`1.ReturnTypeCustomAttributes">ReturnTypeCustomAttributes</h4>
+  <div class="markdown level1 summary"><p>Gets the custom attributes for the return type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override ICustomAttributeProvider ReturnTypeCustomAttributes { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.returntypecustomattributes">MethodInfo.ReturnTypeCustomAttributes</a></div>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_CreateDelegate_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.CreateDelegate(System.Type)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_CreateDelegate_" data-uid="DotNext.Reflection.Method`1.CreateDelegate*"></a>
+  <h4 id="DotNext_Reflection_Method_1_CreateDelegate_System_Type_" data-uid="DotNext.Reflection.Method`1.CreateDelegate(System.Type)">CreateDelegate(Type)</h4>
+  <div class="markdown level1 summary"><p>Creates a delegate of the specified type from this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Delegate CreateDelegate(Type delegateType)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">delegateType</span></td>
+        <td><p>The type of the delegate to create.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.delegate">Delegate</a></td>
+        <td><p>The delegate for this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.createdelegate#system-reflection-methodinfo-createdelegate(system-type)">MethodInfo.CreateDelegate(Type)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_CreateDelegate_System_Type_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.CreateDelegate(System.Type%2CSystem.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L86">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_CreateDelegate_" data-uid="DotNext.Reflection.Method`1.CreateDelegate*"></a>
+  <h4 id="DotNext_Reflection_Method_1_CreateDelegate_System_Type_System_Object_" data-uid="DotNext.Reflection.Method`1.CreateDelegate(System.Type,System.Object)">CreateDelegate(Type, object?)</h4>
+  <div class="markdown level1 summary"><p>Creates a delegate of the specified type from this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Delegate CreateDelegate(Type delegateType, object? target)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">delegateType</span></td>
+        <td><p>The type of the delegate to create.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">target</span></td>
+        <td><p>The object targeted by the delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.delegate">Delegate</a></td>
+        <td><p>The delegate for this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.createdelegate#system-reflection-methodinfo-createdelegate(system-type-system-object)">MethodInfo.CreateDelegate(Type, object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L274">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_Equals_" data-uid="DotNext.Reflection.Method`1.Equals*"></a>
+  <h4 id="DotNext_Reflection_Method_1_Equals_System_Object_" data-uid="DotNext.Reflection.Method`1.Equals(System.Object)">Equals(object?)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this method is equal to the given method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object? other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other constructor to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this object reflects the same method as the specified object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.equals">MethodInfo.Equals(object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_Equals_System_Reflection_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.Equals(System.Reflection.MethodInfo)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L267">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_Equals_" data-uid="DotNext.Reflection.Method`1.Equals*"></a>
+  <h4 id="DotNext_Reflection_Method_1_Equals_System_Reflection_MethodInfo_" data-uid="DotNext.Reflection.Method`1.Equals(System.Reflection.MethodInfo)">Equals(MethodInfo?)</h4>
+  <div class="markdown level1 summary"><p>Determines whether this method is equal to the given method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(MethodInfo? other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>Other constructor to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this object reflects the same method as the specified object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetBaseDefinition.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetBaseDefinition%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetBaseDefinition_" data-uid="DotNext.Reflection.Method`1.GetBaseDefinition*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetBaseDefinition" data-uid="DotNext.Reflection.Method`1.GetBaseDefinition">GetBaseDefinition()</h4>
+  <div class="markdown level1 summary"><p>Returns the method on the direct or indirect base class in which the method represented by this instance was first declared.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MethodInfo GetBaseDefinition()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><p>The first implementation of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.getbasedefinition">MethodInfo.GetBaseDefinition()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetCustomAttributes_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetCustomAttributes(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L109">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetCustomAttributes_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetCustomAttributes_System_Boolean_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes(System.Boolean)">GetCustomAttributes(bool)</h4>
+  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override object[] GetCustomAttributes(bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to search this member's inheritance chain to find the attributes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</td>
+        <td><p>An array that contains all the custom attributes applied to this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.getcustomattributes#system-reflection-memberinfo-getcustomattributes(system-boolean)">MemberInfo.GetCustomAttributes(bool)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetCustomAttributes_System_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetCustomAttributes(System.Type%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetCustomAttributes_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetCustomAttributes_System_Type_System_Boolean_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes(System.Type,System.Boolean)">GetCustomAttributes(Type, bool)</h4>
+  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override object[] GetCustomAttributes(Type attributeType, bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">attributeType</span></td>
+        <td><p>The type of attribute to search for. Only attributes that are assignable to this type are returned.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to search this member's inheritance chain to find the attributes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</td>
+        <td><p>An array that contains all the custom attributes applied to this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.getcustomattributes#system-reflection-memberinfo-getcustomattributes(system-type-system-boolean)">MemberInfo.GetCustomAttributes(Type, bool)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetCustomAttributesData.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetCustomAttributesData%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L123">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetCustomAttributesData_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributesData*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetCustomAttributesData" data-uid="DotNext.Reflection.Method`1.GetCustomAttributesData">GetCustomAttributesData()</h4>
+  <div class="markdown level1 summary"><p>Returns a list of custom attributes that have been applied to the target method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override IList&lt;CustomAttributeData&gt; GetCustomAttributesData()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.customattributedata">CustomAttributeData</a>&gt;</td>
+        <td><p>The data about the attributes that have been applied to the target method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.getcustomattributesdata">MemberInfo.GetCustomAttributesData()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetGenericArguments.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetGenericArguments%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L129">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetGenericArguments_" data-uid="DotNext.Reflection.Method`1.GetGenericArguments*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetGenericArguments" data-uid="DotNext.Reflection.Method`1.GetGenericArguments">GetGenericArguments()</h4>
+  <div class="markdown level1 summary"><p>Returns the type arguments of a generic method or the type parameters of a generic method definition.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Type[] GetGenericArguments()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a>[]</td>
+        <td><p>The list of generic arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.getgenericarguments">MethodInfo.GetGenericArguments()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetGenericMethodDefinition.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetGenericMethodDefinition%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L135">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetGenericMethodDefinition_" data-uid="DotNext.Reflection.Method`1.GetGenericMethodDefinition*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetGenericMethodDefinition" data-uid="DotNext.Reflection.Method`1.GetGenericMethodDefinition">GetGenericMethodDefinition()</h4>
+  <div class="markdown level1 summary"><p>Returns generic method definition from which the current method can be constructed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MethodInfo GetGenericMethodDefinition()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><p>Generic method definition from which the current method can be constructed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.getgenericmethoddefinition">MethodInfo.GetGenericMethodDefinition()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L286">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetHashCode_" data-uid="DotNext.Reflection.Method`1.GetHashCode*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetHashCode" data-uid="DotNext.Reflection.Method`1.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Computes hash code uniquely identifies the reflected method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The hash code of the method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.gethashcode">MethodInfo.GetHashCode()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetMethodBody.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetMethodBody%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L141">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetMethodBody_" data-uid="DotNext.Reflection.Method`1.GetMethodBody*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetMethodBody" data-uid="DotNext.Reflection.Method`1.GetMethodBody">GetMethodBody()</h4>
+  <div class="markdown level1 summary"><p>Provides access to the MSIL stream, local variables, and exceptions for the current method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MethodBody? GetMethodBody()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbody">MethodBody</a></td>
+        <td><p>An object that provides access to the MSIL stream, local variables, and exceptions for the current method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.getmethodbody">MethodBase.GetMethodBody()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetMethodImplementationFlags.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetMethodImplementationFlags%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L147">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetMethodImplementationFlags_" data-uid="DotNext.Reflection.Method`1.GetMethodImplementationFlags*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetMethodImplementationFlags" data-uid="DotNext.Reflection.Method`1.GetMethodImplementationFlags">GetMethodImplementationFlags()</h4>
+  <div class="markdown level1 summary"><p>Gets method implementation attributes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MethodImplAttributes GetMethodImplementationFlags()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodimplattributes">MethodImplAttributes</a></td>
+        <td><p>Implementation attributes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.getmethodimplementationflags">MethodBase.GetMethodImplementationFlags()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_GetParameters.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.GetParameters%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L153">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_GetParameters_" data-uid="DotNext.Reflection.Method`1.GetParameters*"></a>
+  <h4 id="DotNext_Reflection_Method_1_GetParameters" data-uid="DotNext.Reflection.Method`1.GetParameters">GetParameters()</h4>
+  <div class="markdown level1 summary"><p>Gets method parameters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override ParameterInfo[] GetParameters()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.parameterinfo">ParameterInfo</a>[]</td>
+        <td><p>The array of method parameters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.getparameters">MethodBase.GetParameters()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_Invoke_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.Invoke(System.Object%2CSystem.Reflection.BindingFlags%2CSystem.Reflection.Binder%2CSystem.Object%5B%5D%2CSystem.Globalization.CultureInfo)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L164">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_Invoke_" data-uid="DotNext.Reflection.Method`1.Invoke*"></a>
+  <h4 id="DotNext_Reflection_Method_1_Invoke_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_" data-uid="DotNext.Reflection.Method`1.Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)">Invoke(object?, BindingFlags, Binder?, object?[]?, CultureInfo?)</h4>
+  <div class="markdown level1 summary"><p>Invokes this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override object? Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object on which to invoke the method.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.bindingflags">BindingFlags</a></td>
+        <td><span class="parametername">invokeAttr</span></td>
+        <td><p>Specifies the type of binding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.binder">Binder</a></td>
+        <td><span class="parametername">binder</span></td>
+        <td><p>Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</td>
+        <td><span class="parametername">parameters</span></td>
+        <td><p>A list of method arguments.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></td>
+        <td><span class="parametername">culture</span></td>
+        <td><p>Used to govern the coercion of types.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><p>The return value of the invoked method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbase.invoke#system-reflection-methodbase-invoke(system-object-system-reflection-bindingflags-system-reflection-binder-system-object()-system-globalization-cultureinfo)">MethodBase.Invoke(object, BindingFlags, Binder, object[], CultureInfo)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_IsDefined_System_Type_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.IsDefined(System.Type%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L173">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_IsDefined_" data-uid="DotNext.Reflection.Method`1.IsDefined*"></a>
+  <h4 id="DotNext_Reflection_Method_1_IsDefined_System_Type_System_Boolean_" data-uid="DotNext.Reflection.Method`1.IsDefined(System.Type,System.Boolean)">IsDefined(Type, bool)</h4>
+  <div class="markdown level1 summary"><p>Determines whether one or more attributes of the specified type or of its derived types is applied to this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool IsDefined(Type attributeType, bool inherit)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">attributeType</span></td>
+        <td><p>The type of custom attribute to search for. The search includes derived types.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">inherit</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to search this member's inheritance chain to find the attributes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if one or more instances of <code class="paramref">attributeType</code> or any of its derived types is applied to this method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.memberinfo.isdefined">MemberInfo.IsDefined(Type, bool)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_MakeGenericMethod_System_Type___.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.MakeGenericMethod(System.Type%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L210">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_MakeGenericMethod_" data-uid="DotNext.Reflection.Method`1.MakeGenericMethod*"></a>
+  <h4 id="DotNext_Reflection_Method_1_MakeGenericMethod_System_Type___" data-uid="DotNext.Reflection.Method`1.MakeGenericMethod(System.Type[])">MakeGenericMethod(params Type[])</h4>
+  <div class="markdown level1 summary"><p>Substitutes the elements of an array of types for the type parameters of the current generic method definition,
+and returns  the resulting constructed method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override MethodInfo MakeGenericMethod(params Type[] typeArguments)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a>[]</td>
+        <td><span class="parametername">typeArguments</span></td>
+        <td><p>An array of types to be substituted for the type parameters of the current generic method definition.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><p>The constructed method formed by substituting the elements of <code class="paramref">typeArguments</code> for the type parameters of the current generic method definition.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo.makegenericmethod">MethodInfo.MakeGenericMethod(params Type[])</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L305">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_ToString_" data-uid="DotNext.Reflection.Method`1.ToString*"></a>
+  <h4 id="DotNext_Reflection_Method_1_ToString" data-uid="DotNext.Reflection.Method`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Returns textual representation of this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><p>The textual representation of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a></div>
+  <h3 id="operators">Operators
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1_op_Implicit_DotNext_Reflection_Method__0____0.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601.op_Implicit(DotNext.Reflection.Method%7B%600%7D)~%600%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L292">View Source</a>
+  </span>
+  <a id="DotNext_Reflection_Method_1_op_Implicit_" data-uid="DotNext.Reflection.Method`1.op_Implicit*"></a>
+  <h4 id="DotNext_Reflection_Method_1_op_Implicit_DotNext_Reflection_Method__0____0" data-uid="DotNext.Reflection.Method`1.op_Implicit(DotNext.Reflection.Method{`0})~`0">implicit operator TSignature?(Method&lt;TSignature&gt;?)</h4>
+  <div class="markdown level1 summary"><p>Gets a delegate representing this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator TSignature?(Method&lt;TSignature&gt;? method)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;TSignature&gt;</td>
+        <td><span class="parametername">method</span></td>
+        <td><p>The reflected method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TSignature</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IMethod-1.html">IMethod&lt;TSignature&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IMethod-2.html">IMethod&lt;TMethod, TSignature&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IMember-2.html">IMember&lt;TMember, TInvoker&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Reflection.IMember-1.html">IMember&lt;TMember&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -296,1397 +1829,75 @@
   <div>
       <a class="xref" href="DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect__1_System_Reflection_MethodInfo_">Reflector.Unreflect&lt;TDelegate&gt;(MethodInfo)</a>
   </div>
-  </dd></dl>
-
-
-
-
-
-  <h2 class="section" id="properties">Properties
-</h2>
-
-
-  <a id="DotNext_Reflection_Method_1_Attributes_" data-uid="DotNext.Reflection.Method`1.Attributes*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_Attributes" data-uid="DotNext.Reflection.Method`1.Attributes">
-  Attributes
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L61"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the attributes associated with this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MethodAttributes Attributes { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodattributes">MethodAttributes</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_CallingConvention_" data-uid="DotNext.Reflection.Method`1.CallingConvention*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_CallingConvention" data-uid="DotNext.Reflection.Method`1.CallingConvention">
-  CallingConvention
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L66"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value indicating the calling conventions for this constructor.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override CallingConventions CallingConvention { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.callingconventions">CallingConventions</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_ContainsGenericParameters_" data-uid="DotNext.Reflection.Method`1.ContainsGenericParameters*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_ContainsGenericParameters" data-uid="DotNext.Reflection.Method`1.ContainsGenericParameters">
-  ContainsGenericParameters
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L71"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value indicating whether the generic method contains unassigned generic type parameters.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool ContainsGenericParameters { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_CustomAttributes_" data-uid="DotNext.Reflection.Method`1.CustomAttributes*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_CustomAttributes" data-uid="DotNext.Reflection.Method`1.CustomAttributes">
-  CustomAttributes
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L91"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a collection that contains this member's custom attributes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override IEnumerable&lt;CustomAttributeData&gt; CustomAttributes { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.customattributedata">CustomAttributeData</a>&gt;</dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_DeclaringType_" data-uid="DotNext.Reflection.Method`1.DeclaringType*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_DeclaringType" data-uid="DotNext.Reflection.Method`1.DeclaringType">
-  DeclaringType
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L96"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the class that declares this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Type? DeclaringType { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_IsGenericMethod_" data-uid="DotNext.Reflection.Method`1.IsGenericMethod*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_IsGenericMethod" data-uid="DotNext.Reflection.Method`1.IsGenericMethod">
-  IsGenericMethod
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L179"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value indicating whether the method is generic.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool IsGenericMethod { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_IsGenericMethodDefinition_" data-uid="DotNext.Reflection.Method`1.IsGenericMethodDefinition*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_IsGenericMethodDefinition" data-uid="DotNext.Reflection.Method`1.IsGenericMethodDefinition">
-  IsGenericMethodDefinition
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L184"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value indicating whether the method is a generic method definition.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool IsGenericMethodDefinition { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_IsSecurityCritical_" data-uid="DotNext.Reflection.Method`1.IsSecurityCritical*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_IsSecurityCritical" data-uid="DotNext.Reflection.Method`1.IsSecurityCritical">
-  IsSecurityCritical
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L190"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value that indicates whether the method is security-critical or security-safe-critical at the current trust level,
-and therefore can perform critical operations.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool IsSecurityCritical { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_IsSecuritySafeCritical_" data-uid="DotNext.Reflection.Method`1.IsSecuritySafeCritical*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_IsSecuritySafeCritical" data-uid="DotNext.Reflection.Method`1.IsSecuritySafeCritical">
-  IsSecuritySafeCritical
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L196"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value that indicates whether the method is security-safe-critical at the current trust level; that is,
-whether it can perform critical operations and can be accessed by transparent code.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool IsSecuritySafeCritical { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_IsSecurityTransparent_" data-uid="DotNext.Reflection.Method`1.IsSecurityTransparent*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_IsSecurityTransparent" data-uid="DotNext.Reflection.Method`1.IsSecurityTransparent">
-  IsSecurityTransparent
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L202"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value that indicates whether the current method is transparent at the current trust level,
-and therefore cannot perform critical operations.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool IsSecurityTransparent { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_MemberType_" data-uid="DotNext.Reflection.Method`1.MemberType*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_MemberType" data-uid="DotNext.Reflection.Method`1.MemberType">
-  MemberType
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L215"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Always returns <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.membertypes#system-reflection-membertypes-method">Method</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MemberTypes MemberType { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.membertypes">MemberTypes</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_MetadataToken_" data-uid="DotNext.Reflection.Method`1.MetadataToken*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_MetadataToken" data-uid="DotNext.Reflection.Method`1.MetadataToken">
-  MetadataToken
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L220"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a value that identifies a metadata element.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int MetadataToken { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_MethodHandle_" data-uid="DotNext.Reflection.Method`1.MethodHandle*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_MethodHandle" data-uid="DotNext.Reflection.Method`1.MethodHandle">
-  MethodHandle
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L225"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a handle to the internal metadata representation of a method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override RuntimeMethodHandle MethodHandle { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtimemethodhandle">RuntimeMethodHandle</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_MethodImplementationFlags_" data-uid="DotNext.Reflection.Method`1.MethodImplementationFlags*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_MethodImplementationFlags" data-uid="DotNext.Reflection.Method`1.MethodImplementationFlags">
-  MethodImplementationFlags
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L230"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets method implementation attributes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MethodImplAttributes MethodImplementationFlags { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodimplattributes">MethodImplAttributes</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_Module_" data-uid="DotNext.Reflection.Method`1.Module*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_Module" data-uid="DotNext.Reflection.Method`1.Module">
-  Module
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L235"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the module in which the type that declares the method represented by the current instance is defined.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Module Module { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.module">Module</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_Name_" data-uid="DotNext.Reflection.Method`1.Name*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_Name" data-uid="DotNext.Reflection.Method`1.Name">
-  Name
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L240"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets name of this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override string Name { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_ReflectedType_" data-uid="DotNext.Reflection.Method`1.ReflectedType*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_ReflectedType" data-uid="DotNext.Reflection.Method`1.ReflectedType">
-  ReflectedType
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L245"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the class object that was used to obtain this instance.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Type? ReflectedType { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_ReturnParameter_" data-uid="DotNext.Reflection.Method`1.ReturnParameter*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_ReturnParameter" data-uid="DotNext.Reflection.Method`1.ReturnParameter">
-  ReturnParameter
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L250"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets information about the return type of the method, such as whether the return type has custom modifiers.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override ParameterInfo ReturnParameter { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.parameterinfo">ParameterInfo</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_ReturnType_" data-uid="DotNext.Reflection.Method`1.ReturnType*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_ReturnType" data-uid="DotNext.Reflection.Method`1.ReturnType">
-  ReturnType
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L255"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the return type of this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Type ReturnType { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_ReturnTypeCustomAttributes_" data-uid="DotNext.Reflection.Method`1.ReturnTypeCustomAttributes*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_ReturnTypeCustomAttributes" data-uid="DotNext.Reflection.Method`1.ReturnTypeCustomAttributes">
-  ReturnTypeCustomAttributes
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L260"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets the custom attributes for the return type.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override ICustomAttributeProvider ReturnTypeCustomAttributes { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.icustomattributeprovider">ICustomAttributeProvider</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
-  <a id="DotNext_Reflection_Method_1_CreateDelegate_" data-uid="DotNext.Reflection.Method`1.CreateDelegate*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_CreateDelegate_System_Type_" data-uid="DotNext.Reflection.Method`1.CreateDelegate(System.Type)">
-  CreateDelegate(Type)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L78"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates a delegate of the specified type from this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Delegate CreateDelegate(Type delegateType)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>delegateType</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd><p>The type of the delegate to create.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.delegate">Delegate</a></dt>
-    <dd><p>The delegate for this method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_CreateDelegate_" data-uid="DotNext.Reflection.Method`1.CreateDelegate*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_CreateDelegate_System_Type_System_Object_" data-uid="DotNext.Reflection.Method`1.CreateDelegate(System.Type,System.Object)">
-  CreateDelegate(Type, object?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L86"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Creates a delegate of the specified type from this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Delegate CreateDelegate(Type delegateType, object? target)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>delegateType</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd><p>The type of the delegate to create.</p>
-</dd>
-    <dt><code>target</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
-    <dd><p>The object targeted by the delegate.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.delegate">Delegate</a></dt>
-    <dd><p>The delegate for this method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_Equals_" data-uid="DotNext.Reflection.Method`1.Equals*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_Equals_System_Object_" data-uid="DotNext.Reflection.Method`1.Equals(System.Object)">
-  Equals(object?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L274"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Determines whether this method is equal to the given method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool Equals(object? other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
-    <dd><p>Other constructor to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this object reflects the same method as the specified object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_Equals_" data-uid="DotNext.Reflection.Method`1.Equals*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_Equals_System_Reflection_MethodInfo_" data-uid="DotNext.Reflection.Method`1.Equals(System.Reflection.MethodInfo)">
-  Equals(MethodInfo?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L267"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Determines whether this method is equal to the given method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(MethodInfo? other)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>other</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></dt>
-    <dd><p>Other constructor to compare.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this object reflects the same method as the specified object; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetBaseDefinition_" data-uid="DotNext.Reflection.Method`1.GetBaseDefinition*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetBaseDefinition" data-uid="DotNext.Reflection.Method`1.GetBaseDefinition">
-  GetBaseDefinition()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L102"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns the method on the direct or indirect base class in which the method represented by this instance was first declared.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MethodInfo GetBaseDefinition()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></dt>
-    <dd><p>The first implementation of this method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetCustomAttributes_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetCustomAttributes_System_Boolean_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes(System.Boolean)">
-  GetCustomAttributes(bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L109"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override object[] GetCustomAttributes(bool inherit)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>inherit</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to search this member's inheritance chain to find the attributes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</dt>
-    <dd><p>An array that contains all the custom attributes applied to this method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetCustomAttributes_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetCustomAttributes_System_Type_System_Boolean_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributes(System.Type,System.Boolean)">
-  GetCustomAttributes(Type, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L117"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns an array of all custom attributes applied to this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override object[] GetCustomAttributes(Type attributeType, bool inherit)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>attributeType</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd><p>The type of attribute to search for. Only attributes that are assignable to this type are returned.</p>
-</dd>
-    <dt><code>inherit</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to search this member's inheritance chain to find the attributes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</dt>
-    <dd><p>An array that contains all the custom attributes applied to this method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetCustomAttributesData_" data-uid="DotNext.Reflection.Method`1.GetCustomAttributesData*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetCustomAttributesData" data-uid="DotNext.Reflection.Method`1.GetCustomAttributesData">
-  GetCustomAttributesData()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L123"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns a list of custom attributes that have been applied to the target method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override IList&lt;CustomAttributeData&gt; GetCustomAttributesData()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.customattributedata">CustomAttributeData</a>&gt;</dt>
-    <dd><p>The data about the attributes that have been applied to the target method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetGenericArguments_" data-uid="DotNext.Reflection.Method`1.GetGenericArguments*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetGenericArguments" data-uid="DotNext.Reflection.Method`1.GetGenericArguments">
-  GetGenericArguments()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L129"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns the type arguments of a generic method or the type parameters of a generic method definition.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Type[] GetGenericArguments()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a>[]</dt>
-    <dd><p>The list of generic arguments.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetGenericMethodDefinition_" data-uid="DotNext.Reflection.Method`1.GetGenericMethodDefinition*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetGenericMethodDefinition" data-uid="DotNext.Reflection.Method`1.GetGenericMethodDefinition">
-  GetGenericMethodDefinition()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L135"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns generic method definition from which the current method can be constructed.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MethodInfo GetGenericMethodDefinition()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></dt>
-    <dd><p>Generic method definition from which the current method can be constructed.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetHashCode_" data-uid="DotNext.Reflection.Method`1.GetHashCode*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetHashCode" data-uid="DotNext.Reflection.Method`1.GetHashCode">
-  GetHashCode()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L286"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Computes hash code uniquely identifies the reflected method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
-    <dd><p>The hash code of the method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetMethodBody_" data-uid="DotNext.Reflection.Method`1.GetMethodBody*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetMethodBody" data-uid="DotNext.Reflection.Method`1.GetMethodBody">
-  GetMethodBody()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L141"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Provides access to the MSIL stream, local variables, and exceptions for the current method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MethodBody? GetMethodBody()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodbody">MethodBody</a></dt>
-    <dd><p>An object that provides access to the MSIL stream, local variables, and exceptions for the current method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetMethodImplementationFlags_" data-uid="DotNext.Reflection.Method`1.GetMethodImplementationFlags*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetMethodImplementationFlags" data-uid="DotNext.Reflection.Method`1.GetMethodImplementationFlags">
-  GetMethodImplementationFlags()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L147"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets method implementation attributes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MethodImplAttributes GetMethodImplementationFlags()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodimplattributes">MethodImplAttributes</a></dt>
-    <dd><p>Implementation attributes.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_GetParameters_" data-uid="DotNext.Reflection.Method`1.GetParameters*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_GetParameters" data-uid="DotNext.Reflection.Method`1.GetParameters">
-  GetParameters()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L153"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets method parameters.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override ParameterInfo[] GetParameters()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.parameterinfo">ParameterInfo</a>[]</dt>
-    <dd><p>The array of method parameters.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_Invoke_" data-uid="DotNext.Reflection.Method`1.Invoke*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_Invoke_System_Object_System_Reflection_BindingFlags_System_Reflection_Binder_System_Object___System_Globalization_CultureInfo_" data-uid="DotNext.Reflection.Method`1.Invoke(System.Object,System.Reflection.BindingFlags,System.Reflection.Binder,System.Object[],System.Globalization.CultureInfo)">
-  Invoke(object?, BindingFlags, Binder?, object?[]?, CultureInfo?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L164"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Invokes this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override object? Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[]? parameters, CultureInfo? culture)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>obj</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
-    <dd><p>The object on which to invoke the method.</p>
-</dd>
-    <dt><code>invokeAttr</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.bindingflags">BindingFlags</a></dt>
-    <dd><p>Specifies the type of binding.</p>
-</dd>
-    <dt><code>binder</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.binder">Binder</a></dt>
-    <dd><p>Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</p>
-</dd>
-    <dt><code>parameters</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>[]</dt>
-    <dd><p>A list of method arguments.</p>
-</dd>
-    <dt><code>culture</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo">CultureInfo</a></dt>
-    <dd><p>Used to govern the coercion of types.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
-    <dd><p>The return value of the invoked method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_IsDefined_" data-uid="DotNext.Reflection.Method`1.IsDefined*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_IsDefined_System_Type_System_Boolean_" data-uid="DotNext.Reflection.Method`1.IsDefined(System.Type,System.Boolean)">
-  IsDefined(Type, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L173"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Determines whether one or more attributes of the specified type or of its derived types is applied to this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool IsDefined(Type attributeType, bool inherit)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>attributeType</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd><p>The type of custom attribute to search for. The search includes derived types.</p>
-</dd>
-    <dt><code>inherit</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to search this member's inheritance chain to find the attributes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if one or more instances of <code class="paramref">attributeType</code> or any of its derived types is applied to this method; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_MakeGenericMethod_" data-uid="DotNext.Reflection.Method`1.MakeGenericMethod*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_MakeGenericMethod_System_Type___" data-uid="DotNext.Reflection.Method`1.MakeGenericMethod(System.Type[])">
-  MakeGenericMethod(params Type[])
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L210"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Substitutes the elements of an array of types for the type parameters of the current generic method definition,
-and returns  the resulting constructed method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override MethodInfo MakeGenericMethod(params Type[] typeArguments)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>typeArguments</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a>[]</dt>
-    <dd><p>An array of types to be substituted for the type parameters of the current generic method definition.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></dt>
-    <dd><p>The constructed method formed by substituting the elements of <code class="paramref">typeArguments</code> for the type parameters of the current generic method definition.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <a id="DotNext_Reflection_Method_1_ToString_" data-uid="DotNext.Reflection.Method`1.ToString*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_ToString" data-uid="DotNext.Reflection.Method`1.ToString">
-  ToString()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L305"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Returns textual representation of this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
-    <dd><p>The textual representation of this method.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
-  <h2 class="section" id="operators">Operators
-</h2>
-
-
-  <a id="DotNext_Reflection_Method_1_op_Implicit_" data-uid="DotNext.Reflection.Method`1.op_Implicit*"></a>
-
-  <h3 id="DotNext_Reflection_Method_1_op_Implicit_DotNext_Reflection_Method__0____0" data-uid="DotNext.Reflection.Method`1.op_Implicit(DotNext.Reflection.Method{`0})~`0">
-  implicit operator TSignature?(Method&lt;TSignature&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L292"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Gets a delegate representing this method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static implicit operator TSignature?(Method&lt;TSignature&gt;? method)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>method</code> <a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;TSignature&gt;</dt>
-    <dd><p>The reflected method.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><span class="xref">TSignature</span></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L12" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Method_1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Method%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Method.cs/#L12" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>

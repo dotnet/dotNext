@@ -1,126 +1,90 @@
 ﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
 <html>
+
   <head>
     <meta charset="utf-8">
-      <title>Class AsyncResultExpression
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class AsyncResultExpression
  | .NEXT </title>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="title" content="Class AsyncResultExpression
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class AsyncResultExpression
  | .NEXT ">
-      
-      <link rel="icon" href="../fav.ico">
-      <link rel="stylesheet" href="../public/docfx.min.css">
-      <link rel="stylesheet" href="../public/main.css">
-      <meta name="docfx:navrel" content="../toc.json">
-      <meta name="docfx:tocrel" content="toc.json">
-      
-      
-      
-      
-      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
-      <meta name="loc:inThisArticle" content="In this article">
-      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
-      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
-      <meta name="loc:tocFilter" content="Filter by title">
-      <meta name="loc:nextArticle" content="Next">
-      <meta name="loc:prevArticle" content="Previous">
-      <meta name="loc:themeLight" content="Light">
-      <meta name="loc:themeDark" content="Dark">
-      <meta name="loc:themeAuto" content="Auto">
-      <meta name="loc:changeTheme" content="Change theme">
-      <meta name="loc:copy" content="Copy">
-      <meta name="loc:downloadPdf" content="Download PDF">
-  </head>
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
 
-  <script type="module" src="./../public/docfx.min.js"></script>
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
 
-  <script>
-    const theme = localStorage.getItem('theme') || 'auto'
-    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
-  </script>
-
-
-  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
-    <header class="bg-body border-bottom">
-      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
-        <div class="container-xxl flex-nowrap">
-          <a class="navbar-brand" href="../index.html">
-            <img id="logo" class="svg" src="../doc_logo.png" alt="">
-            
-          </a>
-          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-three-dots"></i>
-          </button>
-          <div class="collapse navbar-collapse" id="navpanel">
-            <div id="navbar">
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      </nav>
-    </header>
+        </nav>
 
-    <main class="container-xxl">
-      <div class="toc-offcanvas">
-        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <nav class="toc" id="toc"></nav>
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
           </div>
         </div>
-      </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
 
-      <div class="content">
-        <div class="actionbar">
-          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
-            <i class="bi bi-list"></i>
-          </button>
-
-          <nav id="breadcrumb"></nav>
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
         </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Linq.Expressions.AsyncResultExpression">
 
-        <article data-uid="DotNext.Linq.Expressions.AsyncResultExpression">
 
 
-
-  <h1 id="DotNext_Linq_Expressions_AsyncResultExpression" data-uid="DotNext.Linq.Expressions.AsyncResultExpression" class="text-break">
-    Class AsyncResultExpression
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L15"><i class="bi bi-code-slash"></i></a>
-  </h1>
-
-  <div class="facts text-secondary">
-    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Linq.html">Linq</a>.<a class="xref" href="DotNext.Linq.Expressions.html">Expressions</a></dd></dl>
-  <dl><dt>Assembly</dt><dd>DotNext.Metaprogramming.dll</dd></dl>
-  </div>
-
-  <div class="markdown summary"><p>Represents return from asynchronous lambda function.</p>
+  <h1 id="DotNext_Linq_Expressions_AsyncResultExpression" data-uid="DotNext.Linq.Expressions.AsyncResultExpression" class="text-break">Class AsyncResultExpression
+</h1>
+  <div class="markdown level0 summary"><p>Represents return from asynchronous lambda function.</p>
 </div>
-  <div class="markdown conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class AsyncResultExpression : CustomExpression</code></pre>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></div>
+    <div class="level2"><a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html">CustomExpression</a></div>
+    <div class="level3"><span class="xref">AsyncResultExpression</span></div>
   </div>
-
-
-
-
-  <dl class="typelist inheritance">
-    <dt>Inheritance</dt>
-    <dd>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></div>
-      <div><a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html">CustomExpression</a></div>
-      <div><span class="xref">AsyncResultExpression</span></div>
-    </dd>
-  </dl>
-
-
-
-  <dl class="typelist derived">
-    <dt>Inherited Members</dt>
-    <dd>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
     <div>
       <a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html#DotNext_Linq_Expressions_CustomExpression_NodeType">CustomExpression.NodeType</a>
     </div>
@@ -1078,11 +1042,275 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </dd></dl>
-
-  <dl class="typelist extensionMethods">
-    <dt>Extension Methods</dt>
-    <dd>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Linq.html">Linq</a>.<a class="xref" href="DotNext.Linq.Expressions.html">Expressions</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class AsyncResultExpression : CustomExpression</code></pre>
+  </div>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This expression turns async state machine into final state.</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.%23ctor(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L45">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor*"></a>
+  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Boolean_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor(System.Boolean)">AsyncResultExpression(bool)</h4>
+  <div class="markdown level1 summary"><p>Constructs void return from asynchronous lambda function.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncResultExpression(bool valueTask)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">valueTask</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, to represent the result as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Boolean__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Linq_Expressions_Expression_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.%23ctor(System.Linq.Expressions.Expression%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L35">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor*"></a>
+  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Linq_Expressions_Expression_System_Boolean_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor(System.Linq.Expressions.Expression,System.Boolean)">AsyncResultExpression(Expression, bool)</h4>
+  <div class="markdown level1 summary"><p>Constructs non-void return from asynchronous lambda function.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncResultExpression(Expression result, bool valueTask)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><span class="parametername">result</span></td>
+        <td><p>An expression representing result to be returned from asynchronous lambda function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">valueTask</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, to represent the result as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;TResult&gt;</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Linq_Expressions_Expression_System_Boolean__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
+  </div>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_AsyncResult.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.AsyncResult%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L53">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_AsyncResultExpression_AsyncResult_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.AsyncResult*"></a>
+  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_AsyncResult" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.AsyncResult">AsyncResult</h4>
+  <div class="markdown level1 summary"><p>An expression representing result to be returned from asynchronous lambda function.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Expression AsyncResult { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_AsyncResult_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_Type.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.Type%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L61">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_AsyncResultExpression_Type_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Type*"></a>
+  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_Type" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Type">Type</h4>
+  <div class="markdown level1 summary"><p>Type of this expression.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Type Type { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression.type">Expression.Type</a></div>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_Type_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The type of this expression is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;TResult&gt;</a>.</p>
+</div>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_Type_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
+  </div>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_Reduce.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.Reduce%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L68">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_AsyncResultExpression_Reduce_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Reduce*"></a>
+  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_Reduce" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Reduce">Reduce()</h4>
+  <div class="markdown level1 summary"><p>Translates this expression into predefined set of expressions
+using Lowering technique.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Expression Reduce()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
+        <td><p>Translated expression.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Linq.Expressions.CustomExpression.html#DotNext_Linq_Expressions_CustomExpression_Reduce">CustomExpression.Reduce()</a></div>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_Reduce_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L101">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren*"></a>
+  <h4 id="DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)">VisitChildren(ExpressionVisitor)</h4>
+  <div class="markdown level1 summary"><p>Visit children expressions.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override AsyncResultExpression VisitChildren(ExpressionVisitor visitor)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expressionvisitor">ExpressionVisitor</a></td>
+        <td><span class="parametername">visitor</span></td>
+        <td><p>Expression visitor.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Linq.Expressions.AsyncResultExpression.html">AsyncResultExpression</a></td>
+        <td><p>Potentially modified expression if one of children expressions is modified during visit.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression.visitchildren">Expression.VisitChildren(ExpressionVisitor)</a></div>
+  <h5 id="DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor__seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -1362,298 +1590,79 @@
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Xor_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_">ExpressionBuilder.Xor(Expression, Expression)</a>
   </div>
-  </dd></dl>
-
-
-
-  <h2 id="DotNext_Linq_Expressions_AsyncResultExpression_remarks">Remarks</h2>
-  <div class="markdown level0 remarks"><p>This expression turns async state machine into final state.</p>
-</div>
-
-
-  <h2 class="section" id="constructors">Constructors
-</h2>
-
-
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor*"></a>
-
-  <h3 id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Boolean_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor(System.Boolean)">
-  AsyncResultExpression(bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L45"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Constructs void return from asynchronous lambda function.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AsyncResultExpression(bool valueTask)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>valueTask</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, to represent the result as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor*"></a>
-
-  <h3 id="DotNext_Linq_Expressions_AsyncResultExpression__ctor_System_Linq_Expressions_Expression_System_Boolean_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.#ctor(System.Linq.Expressions.Expression,System.Boolean)">
-  AsyncResultExpression(Expression, bool)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L35"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Constructs non-void return from asynchronous lambda function.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AsyncResultExpression(Expression result, bool valueTask)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>result</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></dt>
-    <dd><p>An expression representing result to be returned from asynchronous lambda function.</p>
-</dd>
-    <dt><code>valueTask</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
-    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, to represent the result as <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;TResult&gt;</a>.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
-    </dd>
-  </dl>
-
-
-  <h2 class="section" id="properties">Properties
-</h2>
-
-
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression_AsyncResult_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.AsyncResult*"></a>
-
-  <h3 id="DotNext_Linq_Expressions_AsyncResultExpression_AsyncResult" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.AsyncResult">
-  AsyncResult
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L53"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>An expression representing result to be returned from asynchronous lambda function.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Expression AsyncResult { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression_Type_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Type*"></a>
-
-  <h3 id="DotNext_Linq_Expressions_AsyncResultExpression_Type" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Type">
-  Type
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L61"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Type of this expression.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Type Type { get; }</code></pre>
-  </div>
-
-
-
-
-
-  <h4 class="section">Property Value</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></dt>
-    <dd></dd>
-  </dl>
-
-
-
-
-  <h4 class="section" id="DotNext_Linq_Expressions_AsyncResultExpression_Type_remarks">Remarks</h4>
-  <div class="markdown level1 remarks"><p>The type of this expression is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask&lt;TResult&gt;</a>.</p>
-</div>
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
-    </dd>
-  </dl>
-
-
-  <h2 class="section" id="methods">Methods
-</h2>
-
-
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression_Reduce_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Reduce*"></a>
-
-  <h3 id="DotNext_Linq_Expressions_AsyncResultExpression_Reduce" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.Reduce">
-  Reduce()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L68"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Translates this expression into predefined set of expressions
-using Lowering technique.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Expression Reduce()</code></pre>
-  </div>
-
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></dt>
-    <dd><p>Translated expression.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
-    </dd>
-  </dl>
-
-
-  <a id="DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren*"></a>
-
-  <h3 id="DotNext_Linq_Expressions_AsyncResultExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_" data-uid="DotNext.Linq.Expressions.AsyncResultExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)">
-  VisitChildren(ExpressionVisitor)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L101"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Visit children expressions.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override AsyncResultExpression VisitChildren(ExpressionVisitor visitor)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>visitor</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expressionvisitor">ExpressionVisitor</a></dt>
-    <dd><p>Expression visitor.</p>
-</dd>
-  </dl>
-
-  <h4 class="section">Returns</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="DotNext.Linq.Expressions.AsyncResultExpression.html">AsyncResultExpression</a></dt>
-    <dd><p>Potentially modified expression if one of children expressions is modified during visit.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <dl class="typelist seealso">
-    <dt>See Also</dt>
-    <dd>
-    <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
-    </dd>
-  </dl>
-
-
-  <h2 id="seealso">See Also</h2>
+  <h3 id="seealso">See Also</h3>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_AsyncLambda__1_System_Action_DotNext_Metaprogramming_LambdaContext__">AsyncLambda</a>&lt;TDelegate&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="DotNext.Metaprogramming.LambdaContext.html">LambdaContext</a>&gt;)</div>
   </div>
 
 </article>
+          </div>
 
-        <div class="contribution d-print-none">
-          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L15" class="edit-link">Edit this page</a>
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_AsyncResultExpression.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.AsyncResultExpression%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/AsyncResultExpression.cs/#L15" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
         </div>
-
-
       </div>
 
-      <div class="affix">
-        <nav id="affix"></nav>
-      </div>
-    </main>
-
-
-    <footer class="border-top text-secondary">
-      <div class="container-xxl">
-        <div class="flex-fill">
-          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </footer>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
   </body>
 </html>
