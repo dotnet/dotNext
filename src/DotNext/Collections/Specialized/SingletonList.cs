@@ -115,10 +115,10 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
         => throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
 
     /// <inheritdoc />
-    object? ITuple.this[int index] => this[index];
+    readonly object? ITuple.this[int index] => this[index];
 
     /// <inheritdoc />
-    int ITuple.Length => 1;
+    readonly int ITuple.Length => 1;
 
     /// <inheritdoc />
     readonly bool ICollection<T>.IsReadOnly => true;
