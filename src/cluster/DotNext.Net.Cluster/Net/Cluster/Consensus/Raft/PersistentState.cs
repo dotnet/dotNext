@@ -194,20 +194,29 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         readCounter?.Invoke(length);
         ReadRateMeter.Add(length, measurementTags);
 
+        SingletonList<LogEntry> list;
         if (length > 1L && LastPartition is not null)
+        {
             return UnsafeReadAsync(reader, sessionId, startIndex, endIndex, (int)length, snapshotRequested, token);
-
-        if (startIndex is 0L)
-            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(LogEntry.Initial, snapshotIndex: null, token);
-
-        if (snapshotRequested)
+        }
+        else if (startIndex is 0L)
+        {
+            list = LogEntry.Initial;
+        }
+        else if (snapshotRequested)
+        {
             return UnsafeReadSnapshotAsync(reader, sessionId, token);
+        }
+        else if (TryGetPartition(PartitionOf(startIndex)) is { } partition)
+        {
+            list = partition.Read(sessionId, startIndex, reader.LogEntryMetadataOnly);
+        }
+        else
+        {
+            return ValueTask.FromException<TResult>(new MissingPartitionException(startIndex));
+        }
 
-        // read single entry
-        if (TryGetPartition(PartitionOf(startIndex)) is { } partition)
-            return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(partition.Read(sessionId, startIndex, reader.LogEntryMetadataOnly), snapshotIndex: null, token);
-
-        return ValueTask.FromException<TResult>(new MissingPartitionException(startIndex));
+        return reader.ReadAsync<LogEntry, SingletonList<LogEntry>>(list, snapshotIndex: null, token);
     }
 
     /// <summary>
