@@ -1,95 +1,133 @@
 ﻿<!DOCTYPE html>
-<!--[if IE]><![endif]-->
 <html>
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class RaftClusterHttpHost
+      <title>Class RaftClusterHttpHost
  | .NEXT </title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class RaftClusterHttpHost
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class RaftClusterHttpHost
  | .NEXT ">
-    <meta name="generator" content="docfx ">
-  
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.json">
-    <meta property="docfx:tocrel" content="toc.json">
-  
-  
-  
-  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
-    <div id="wrapper">
-      <header>
+      
+      <link rel="icon" href="../fav.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.json">
+      <meta name="docfx:tocrel" content="toc.json">
+      
+      
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
 
-        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
+  <script type="module" src="./../public/docfx.min.js"></script>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
-              </a>
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../doc_logo.png" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
             </div>
-            <div class="collapse navbar-collapse" id="navbar">
-              <form class="navbar-form navbar-right" role="search" id="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
-                </div>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        <div class="subnav navbar navbar-default">
-          <div class="container hide-when-search" id="breadcrumb">
-            <ul class="breadcrumb">
-              <li></li>
-            </ul>
           </div>
         </div>
-      </header>
-      <div role="main" class="container body-content hide-when-search">
+      </nav>
+    </header>
 
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
           </div>
         </div>
-        <div class="article row grid-right">
-          <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost">
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost">
 
 
 
-  <h1 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost" class="text-break">Class RaftClusterHttpHost
-</h1>
-  <div class="markdown level0 summary"><p>Represents a host of local Raft cluster node.</p>
+  <h1 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost" class="text-break">
+    Class RaftClusterHttpHost
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L22"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.html">Http</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>DotNext.AspNetCore.Cluster.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Represents a host of local Raft cluster node.</p>
 </div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
-    <div class="level2"><span class="xref">RaftClusterHttpHost</span></div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class RaftClusterHttpHost : Disposable, IDisposable, IHostedService, IAsyncDisposable</code></pre>
   </div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">IHostedService</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+      <div><span class="xref">RaftClusterHttpHost</span></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">IHostedService</a></div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist derived">
+    <dt>Inherited Members</dt>
+    <dd>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
@@ -153,410 +191,11 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.html">Http</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.AspNetCore.Cluster.dll</h6>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class RaftClusterHttpHost : Disposable, IDisposable, IHostedService, IAsyncDisposable</code></pre>
-  </div>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>This class is useful when you want to host multiple Raft clusters inside of the same application.
-For instance, if you want to implement sharding.</p>
-</div>
-  <h3 id="constructors">Constructors
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.%23ctor(System.IServiceProvider%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L83">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.#ctor*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.#ctor(System.IServiceProvider,System.String)">RaftClusterHttpHost(IServiceProvider, string)</h4>
-  <div class="markdown level1 summary"><p>Creates a new unstarted Raft cluster locally.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RaftClusterHttpHost(IServiceProvider activationContext, string loggingCategory)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></td>
-        <td><span class="parametername">activationContext</span></td>
-        <td><p>A provider of services required for initialization of <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster.html">IRaftHttpCluster</a> implementation.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">loggingCategory</span></td>
-        <td><p>The category of the logs to be produced by the implementation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>A list of required services that must be provided by <code class="paramref">activationContext</code>:</p>
-<table><tbody><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.options.ioptionsmonitor-1">IOptionsMonitor&lt;TOptions&gt;</a> of type <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.HttpClusterMemberConfiguration.html">HttpClusterMemberConfiguration</a></td><td class="description">Provides configuration of the local cluster member.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory">ILoggerFactory</a></td><td class="description">Provides logging infrastructure.</td></tr></tbody></table>
-A list of optional services that may be provided by <code class="paramref">activationContext</code>:
-<table><tbody><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a></td><td class="description">Provides custom message processing.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.html">IClusterMemberLifetime</a></td><td class="description">Provides instance lifetime hooks.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html">IClusterConfigurationStorage&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td class="description">Provides cluster configuration storage.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.ihttpmessagehandlerfactory">IHttpMessageHandlerFactory</a></td><td class="description">
-Provides <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpmessagehandler">HttpMessageHandler</a> implementation used by the local
-node to communicate with other cluster members.
-This is a key interface that can be used to share the same HTTP connection between
-multiple cluster instances when accessing the same node.
-</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a></td><td class="description">Allows to capture runtime metrics associated with the local node.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterMemberAnnouncer-1.html">ClusterMemberAnnouncer&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td class="description">Allows to announce a new node the cluster leader.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func&lt;T1, T2, TResult&gt;</a> with generic arguments <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>, <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html">IRaftClusterMember</a>, and <a class="xref" href="DotNext.Diagnostics.IFailureDetector.html">IFailureDetector</a></td><td class="description">Provides failure detection mechanism that allows the leader to remove unresponsive members from the cluster.</td></tr></tbody></table>
-You can supply these services from the implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a> interface provided
-by Dependency Injection container or override some of the supplied services using <a class="xref" href="DotNext.ServiceProviderFactory.html">ServiceProviderFactory</a>.
-</div>
-  <h3 id="properties">Properties
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L110">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster">Cluster</h4>
-  <div class="markdown level1 summary"><p>Gets a local view of Raft cluster.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IRaftHttpCluster Cluster { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster.html">IRaftHttpCluster</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L104">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path">Path</h4>
-  <div class="markdown level1 summary"><p>Gets relative URL path of Raft protocol handler.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public PathString Path { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.http.pathstring">PathString</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_Microsoft_AspNetCore_Http_HttpContext_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync(Microsoft.AspNetCore.Http.HttpContext)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L121">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_Microsoft_AspNetCore_Http_HttpContext_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync(Microsoft.AspNetCore.Http.HttpContext)">DispatchAsync(HttpContext)</h4>
-  <div class="markdown level1 summary"><p>Dispatches HTTP request to this instance.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public Task DispatchAsync(HttpContext context)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.http.httpcontext">HttpContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>HTTP request context.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous dispatch.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_Microsoft_AspNetCore_Http_HttpContext__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is useful only when you want to host multiple Raft clusters inside of the same application.
-For instance, if you want to implement sharding.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L139">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose(System.Boolean)">Dispose(bool)</h4>
-  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">disposing</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L156">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync">DisposeAsync()</h4>
-  <div class="markdown level1 summary"><p>Stops hosting of local Raft node and releases all managed resources.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous operation result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L150">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore">DisposeAsyncCore()</h4>
-  <div class="markdown level1 summary"><p>Releases managed resources associated with this object asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override ValueTask DisposeAsyncCore()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous execution of this method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a></div>
-  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L129">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync(System.Threading.CancellationToken)">StartAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Starts hosting of local Raft node.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task StartAsync(CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous operation result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L136">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync(System.Threading.CancellationToken)">StopAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Stops hosting of local Raft node.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task StopAsync(CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous operation result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostedservice">IHostedService</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
-  </div>
-  <h3 id="extensionmethods">Extension Methods</h3>
+  </dd></dl>
+
+  <dl class="typelist extensionMethods">
+    <dt>Extension Methods</dt>
+    <dd>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -608,75 +247,388 @@ For instance, if you want to implement sharding.</p>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  </dd></dl>
+
+
+
+  <h2 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>This class is useful when you want to host multiple Raft clusters inside of the same application.
+For instance, if you want to implement sharding.</p>
+</div>
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.#ctor*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.#ctor(System.IServiceProvider,System.String)">
+  RaftClusterHttpHost(IServiceProvider, string)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L83"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Creates a new unstarted Raft cluster locally.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RaftClusterHttpHost(IServiceProvider activationContext, string loggingCategory)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>activationContext</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a></dt>
+    <dd><p>A provider of services required for initialization of <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster.html">IRaftHttpCluster</a> implementation.</p>
+</dd>
+    <dt><code>loggingCategory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The category of the logs to be produced by the implementation.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String__remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>A list of required services that must be provided by <code class="paramref">activationContext</code>:</p>
+<table><tbody><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.options.ioptionsmonitor-1">IOptionsMonitor&lt;TOptions&gt;</a> of type <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.HttpClusterMemberConfiguration.html">HttpClusterMemberConfiguration</a></td><td class="description">Provides configuration of the local cluster member.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory">ILoggerFactory</a></td><td class="description">Provides logging infrastructure.</td></tr></tbody></table>
+A list of optional services that may be provided by <code class="paramref">activationContext</code>:
+<table><tbody><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a></td><td class="description">Provides custom message processing.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.html">IClusterMemberLifetime</a></td><td class="description">Provides instance lifetime hooks.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html">IClusterConfigurationStorage&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td class="description">Provides cluster configuration storage.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.ihttpmessagehandlerfactory">IHttpMessageHandlerFactory</a></td><td class="description">
+Provides <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpmessagehandler">HttpMessageHandler</a> implementation used by the local
+node to communicate with other cluster members.
+This is a key interface that can be used to share the same HTTP connection between
+multiple cluster instances when accessing the same node.
+</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a></td><td class="description">Allows to capture runtime metrics associated with the local node.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterMemberAnnouncer-1.html">ClusterMemberAnnouncer&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td class="description">Allows to announce a new node the cluster leader.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func&lt;T1, T2, TResult&gt;</a> with generic arguments <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>, <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html">IRaftClusterMember</a>, and <a class="xref" href="DotNext.Diagnostics.IFailureDetector.html">IFailureDetector</a></td><td class="description">Provides failure detection mechanism that allows the leader to remove unresponsive members from the cluster.</td></tr></tbody></table>
+You can supply these services from the implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a> interface provided
+by Dependency Injection container or override some of the supplied services using <a class="xref" href="DotNext.ServiceProviderFactory.html">ServiceProviderFactory</a>.
+</div>
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster">
+  Cluster
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L110"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets a local view of Raft cluster.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IRaftHttpCluster Cluster { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster.html">IRaftHttpCluster</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path">
+  Path
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L104"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets relative URL path of Raft protocol handler.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public PathString Path { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.http.pathstring">PathString</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_Microsoft_AspNetCore_Http_HttpContext_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync(Microsoft.AspNetCore.Http.HttpContext)">
+  DispatchAsync(HttpContext)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L121"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Dispatches HTTP request to this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public Task DispatchAsync(HttpContext context)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>context</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.http.httpcontext">HttpContext</a></dt>
+    <dd><p>HTTP request context.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></dt>
+    <dd><p>The task representing asynchronous dispatch.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_Microsoft_AspNetCore_Http_HttpContext__remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>This method is useful only when you want to host multiple Raft clusters inside of the same application.
+For instance, if you want to implement sharding.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose(System.Boolean)">
+  Dispose(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L139"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>disposing</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync">
+  DisposeAsync()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L156"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Stops hosting of local Raft node and releases all managed resources.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></dt>
+    <dd><p>The task representing asynchronous operation result.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore">
+  DisposeAsyncCore()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L150"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Releases managed resources associated with this object asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override ValueTask DisposeAsyncCore()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></dt>
+    <dd><p>The task representing asynchronous execution of this method.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync(System.Threading.CancellationToken)">
+  StartAsync(CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L129"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Starts hosting of local Raft node.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task StartAsync(CancellationToken token)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd><p>The token that can be used to cancel the operation.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></dt>
+    <dd><p>The task representing asynchronous operation result.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync*"></a>
+
+  <h3 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync(System.Threading.CancellationToken)">
+  StopAsync(CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L136"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Stops hosting of local Raft node.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task StopAsync(CancellationToken token)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd><p>The token that can be used to cancel the operation.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></dt>
+    <dd><p>The task representing asynchronous operation result.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
 
 </article>
-          </div>
 
-          <div class="hidden-sm col-md-2" role="complementary">
-            <div class="sideaffix">
-              <div class="contribution">
-                <ul class="nav">
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L22" class="contribution-link">View Source</a>
-                  </li>
-                </ul>
-              </div>
-              <div class="toggle-mode">
-                <div class="icon">
-                  <i aria-hidden="true">☀</i>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="switch-style">
-                  <span class="slider round"></span>
-                </label>
-                <div class="icon">
-                  <i aria-hidden="true">☾</i>
-                </div>
-              </div>
-
-              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In this article</h5>
-              <div></div>
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
-              </nav>
-            </div>
-          </div>
+        <div class="contribution d-print-none">
+          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L22" class="edit-link">Edit this page</a>
         </div>
+
+
       </div>
 
-      <footer>
-        <div class="grad-bottom"></div>
-        <div class="footer">
-          <div class="container">
-            <span class="pull-right">
-              <a href="#top">Back to top</a>
-            </span>
-            <div class="pull-left">
-        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-        
-            </div>
-            <div class="toggle-mode pull-right visible-sm visible-xs">
-              <div class="icon">
-                <i aria-hidden="true">☀</i>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="switch-style-m">
-                <span class="slider round"></span>
-              </label>
-              <div class="icon">
-                <i aria-hidden="true">☾</i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
-      </footer>    </div>
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

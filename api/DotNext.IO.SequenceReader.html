@@ -1,88 +1,124 @@
 ﻿<!DOCTYPE html>
-<!--[if IE]><![endif]-->
 <html>
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct SequenceReader
+      <title>Struct SequenceReader
  | .NEXT </title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct SequenceReader
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Struct SequenceReader
  | .NEXT ">
-    <meta name="generator" content="docfx ">
-  
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.json">
-    <meta property="docfx:tocrel" content="toc.json">
-  
-  
-  
-  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
-    <div id="wrapper">
-      <header>
+      
+      <link rel="icon" href="../fav.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.json">
+      <meta name="docfx:tocrel" content="toc.json">
+      
+      
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
 
-        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
+  <script type="module" src="./../public/docfx.min.js"></script>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
-              </a>
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../doc_logo.png" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
             </div>
-            <div class="collapse navbar-collapse" id="navbar">
-              <form class="navbar-form navbar-right" role="search" id="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
-                </div>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        <div class="subnav navbar navbar-default">
-          <div class="container hide-when-search" id="breadcrumb">
-            <ul class="breadcrumb">
-              <li></li>
-            </ul>
           </div>
         </div>
-      </header>
-      <div role="main" class="container body-content hide-when-search">
+      </nav>
+    </header>
 
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
           </div>
         </div>
-        <div class="article row grid-right">
-          <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.IO.SequenceReader">
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DotNext.IO.SequenceReader">
 
 
 
-  <h1 id="DotNext_IO_SequenceReader" data-uid="DotNext.IO.SequenceReader" class="text-break">Struct SequenceReader
-</h1>
-  <div class="markdown level0 summary"><p>Represents binary reader for the sequence of bytes.</p>
-</div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></div>
-    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
+  <h1 id="DotNext_IO_SequenceReader" data-uid="DotNext.IO.SequenceReader" class="text-break">
+    Struct SequenceReader
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L20"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.IO.html">IO</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>DotNext.IO.dll</dd></dl>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
+
+  <div class="markdown summary"><p>Represents binary reader for the sequence of bytes.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct SequenceReader : IAsyncBinaryReader, IResettable</code></pre>
+  </div>
+
+
+
+
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></div>
+      <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist derived">
+    <dt>Inherited Members</dt>
+    <dd>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a>
     </div>
@@ -98,1605 +134,1223 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.IO.html">IO</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
-  <h5 id="DotNext_IO_SequenceReader_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct SequenceReader : IAsyncBinaryReader, IResettable</code></pre>
-  </div>
-  <h3 id="constructors">Constructors
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader__ctor_System_Buffers_ReadOnlySequence_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.%23ctor(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L30">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader__ctor_" data-uid="DotNext.IO.SequenceReader.#ctor*"></a>
-  <h4 id="DotNext_IO_SequenceReader__ctor_System_Buffers_ReadOnlySequence_System_Byte__" data-uid="DotNext.IO.SequenceReader.#ctor(System.Buffers.ReadOnlySequence{System.Byte})">SequenceReader(ReadOnlySequence&lt;byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new sequence reader.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public SequenceReader(ReadOnlySequence&lt;byte&gt; sequence)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">sequence</span></td>
-        <td><p>A sequence of elements.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader__ctor_System_Buffers_ReadOnlySequence_System_Byte___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <h3 id="properties">Properties
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Position%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L54">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Position_" data-uid="DotNext.IO.SequenceReader.Position*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Position" data-uid="DotNext.IO.SequenceReader.Position">Position</h4>
-  <div class="markdown level1 summary"><p>Gets position in the underlying sequence.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly SequencePosition Position { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.sequenceposition">SequencePosition</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_Position_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_RemainingSequence.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.RemainingSequence%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L49">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_RemainingSequence_" data-uid="DotNext.IO.SequenceReader.RemainingSequence*"></a>
-  <h4 id="DotNext_IO_SequenceReader_RemainingSequence" data-uid="DotNext.IO.SequenceReader.RemainingSequence">RemainingSequence</h4>
-  <div class="markdown level1 summary"><p>Gets unread part of the sequence.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly ReadOnlySequence&lt;byte&gt; RemainingSequence { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_RemainingSequence_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Parse__1.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Parse%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L105">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Parse_" data-uid="DotNext.IO.SequenceReader.Parse*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Parse__1" data-uid="DotNext.IO.SequenceReader.Parse``1">Parse&lt;T&gt;()</h4>
-  <div class="markdown level1 summary"><p>Parses the value encoded as a sequence of bytes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T Parse&lt;T&gt;() where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_Parse__1_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Parse__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Parse%60%601(DotNext.Parser%7B%60%600%7D%2CDotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%40%2CSystem.IFormatProvider)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L83">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Parse_" data-uid="DotNext.IO.SequenceReader.Parse*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Parse__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_IFormatProvider_" data-uid="DotNext.IO.SequenceReader.Parse``1(DotNext.Parser{``0},DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@,System.IFormatProvider)">Parse&lt;T&gt;(Parser&lt;T&gt;, LengthFormat, in DecodingContext, IFormatProvider?)</h4>
-  <div class="markdown level1 summary"><p>Parses the value encoded as a set of characters.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T Parse&lt;T&gt;(Parser&lt;T&gt; parser, LengthFormat lengthFormat, in DecodingContext context, IFormatProvider? provider = null) where T : notnull</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Parser-1.html">Parser</a>&lt;T&gt;</td>
-        <td><span class="parametername">parser</span></td>
-        <td><p>The parser.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
-        <td><span class="parametername">provider</span></td>
-        <td><p>The format provider.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The parsed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The string is in wrong format.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_Parse__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_IFormatProvider__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Read_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Read(DotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L171">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Read_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.SequenceReader.Read(DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Byte})">Read(LengthFormat, MemoryAllocator&lt;byte&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Reads length-prefixed block of bytes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;byte&gt; Read(LengthFormat lengthFormat, MemoryAllocator&lt;byte&gt;? allocator = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the block length encoded in the underlying stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">allocator</span></td>
-        <td><p>The memory allocator used to place the decoded block of bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><p>The decoded block of bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>Unexpected end of sequence.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_Read_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L134">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Read_System_Span_System_Byte__" data-uid="DotNext.IO.SequenceReader.Read(System.Span{System.Byte})">Read(Span&lt;byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Copies the bytes from the sequence into contiguous block of memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Read(Span&lt;byte&gt; output)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The block of memory to fill.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>Unexpected end of sequence.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_Read_System_Span_System_Byte___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadBigInteger_DotNext_IO_LengthFormat_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadBigInteger(DotNext.IO.LengthFormat%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L306">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadBigInteger_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadBigInteger_DotNext_IO_LengthFormat_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger(DotNext.IO.LengthFormat,System.Boolean)">ReadBigInteger(LengthFormat, bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes an arbitrary large integer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BigInteger ReadBigInteger(LengthFormat lengthFormat, bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the value length encoded in the underlying stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadBigInteger_DotNext_IO_LengthFormat_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadBigInteger_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadBigInteger(System.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L276">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadBigInteger_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadBigInteger_System_Int32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger(System.Int32,System.Boolean)">ReadBigInteger(int, bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes an arbitrary large integer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BigInteger ReadBigInteger(int length, bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The length of the value, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadBigInteger_System_Int32_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadInt16(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L248">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadInt16_" data-uid="DotNext.IO.SequenceReader.ReadInt16*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadInt16_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt16(System.Boolean)">ReadInt16(bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes 16-bit signed integer using the specified endianness.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public short ReadInt16(bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int16">short</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadInt16_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadInt32(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L221">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadInt32_" data-uid="DotNext.IO.SequenceReader.ReadInt32*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadInt32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt32(System.Boolean)">ReadInt32(bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes 32-bit signed integer using the specified endianness.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int ReadInt32(bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadInt32_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadInt64(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L194">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadInt64_" data-uid="DotNext.IO.SequenceReader.ReadInt64*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadInt64_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt64(System.Boolean)">ReadInt64(bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes 64-bit signed integer using the specified endianness.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long ReadInt64(bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadInt64_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L398">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@)">ReadString(LengthFormat, in DecodingContext)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string ReadString(LengthFormat lengthFormat, in DecodingContext context)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>The decoded string.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%40%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L409">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@,DotNext.Buffers.MemoryAllocator{System.Char})">ReadString(LengthFormat, in DecodingContext, MemoryAllocator&lt;char&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;char&gt; ReadString(LengthFormat lengthFormat, in DecodingContext context, MemoryAllocator&lt;char&gt;? allocator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td><span class="parametername">allocator</span></td>
-        <td><p>The allocator of the buffer of characters.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td><p>The buffer of characters.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(System.Int32%2CDotNext.Text.DecodingContext%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L316">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceReader.ReadString(System.Int32,DotNext.Text.DecodingContext@)">ReadString(int, in DecodingContext)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public string ReadString(int length, in DecodingContext context)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The length of the encoded string, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>The decoded string.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadString(System.Int32%2CDotNext.Text.DecodingContext%40%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L347">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.IO.SequenceReader.ReadString(System.Int32,DotNext.Text.DecodingContext@,DotNext.Buffers.MemoryAllocator{System.Char})">ReadString(int, in DecodingContext, MemoryAllocator&lt;char&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;char&gt; ReadString(int length, in DecodingContext context, MemoryAllocator&lt;char&gt;? allocator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The length of the encoded string, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td><span class="parametername">allocator</span></td>
-        <td><p>The allocator of the buffer of characters.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td><p>The buffer of characters.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadUInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadUInt16(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L261">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadUInt16_" data-uid="DotNext.IO.SequenceReader.ReadUInt16*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadUInt16_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt16(System.Boolean)">ReadUInt16(bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes 16-bit unsigned integer using the specified endianness.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public ushort ReadUInt16(bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint16">ushort</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadUInt16_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadUInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadUInt32(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L234">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadUInt32_" data-uid="DotNext.IO.SequenceReader.ReadUInt32*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadUInt32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt32(System.Boolean)">ReadUInt32(bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes 32-bit unsigned integer using the specified endianness.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public uint ReadUInt32(bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadUInt32_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ReadUInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ReadUInt64(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L207">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ReadUInt64_" data-uid="DotNext.IO.SequenceReader.ReadUInt64*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ReadUInt64_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt64(System.Boolean)">ReadUInt64(bool)</h4>
-  <div class="markdown level1 summary"><p>Decodes 64-bit unsigned integer using the specified endianness.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public ulong ReadUInt64(bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint64">ulong</a></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_ReadUInt64_System_Boolean__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Read__1.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Read%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L120">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Read__1" data-uid="DotNext.IO.SequenceReader.Read``1">Read&lt;T&gt;()</h4>
-  <div class="markdown level1 summary"><p>Decodes the value of blittable type from the sequence of bytes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T Read&lt;T&gt;() where T : unmanaged</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The decoded value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the value to decode.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>Unexpected end of sequence.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_Read__1_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Reset.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L44">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Reset_" data-uid="DotNext.IO.SequenceReader.Reset*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Reset" data-uid="DotNext.IO.SequenceReader.Reset">Reset()</h4>
-  <div class="markdown level1 summary"><p>Resets the reader so it can be used again.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
-  </div>
-  <h5 id="DotNext_IO_SequenceReader_Reset_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_Skip_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.Skip(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L149">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_Skip_" data-uid="DotNext.IO.SequenceReader.Skip*"></a>
-  <h4 id="DotNext_IO_SequenceReader_Skip_System_Int64_" data-uid="DotNext.IO.SequenceReader.Skip(System.Int64)">Skip(long)</h4>
-  <div class="markdown level1 summary"><p>Skips the specified number of bytes.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Skip(long length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The number of bytes to skip.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">length</code> is less than zero.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>Unexpected end of sequence.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_SequenceReader_Skip_System_Int64__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader_ToString.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L853">View Source</a>
-  </span>
-  <a id="DotNext_IO_SequenceReader_ToString_" data-uid="DotNext.IO.SequenceReader.ToString*"></a>
-  <h4 id="DotNext_IO_SequenceReader_ToString" data-uid="DotNext.IO.SequenceReader.ToString">ToString()</h4>
-  <div class="markdown level1 summary"><p>Returns the fully qualified type name of this instance.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>The fully qualified type name.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
-  <h5 id="DotNext_IO_SequenceReader_ToString_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-      <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
-  </div>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
-  </div>
-  <h3 id="extensionmethods">Extension Methods</h3>
+  </dd></dl>
+
+  <dl class="typelist extensionMethods">
+    <dt>Extension Methods</dt>
+    <dd>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
-  <h3 id="seealso">See Also</h3>
+  </dd></dl>
+
+
+
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="DotNext_IO_SequenceReader__ctor_" data-uid="DotNext.IO.SequenceReader.#ctor*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader__ctor_System_Buffers_ReadOnlySequence_System_Byte__" data-uid="DotNext.IO.SequenceReader.#ctor(System.Buffers.ReadOnlySequence{System.Byte})">
+  SequenceReader(ReadOnlySequence&lt;byte&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L30"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new sequence reader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public SequenceReader(ReadOnlySequence&lt;byte&gt; sequence)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>sequence</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
+    <dd><p>A sequence of elements.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="DotNext_IO_SequenceReader_Position_" data-uid="DotNext.IO.SequenceReader.Position*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Position" data-uid="DotNext.IO.SequenceReader.Position">
+  Position
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L54"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets position in the underlying sequence.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly SequencePosition Position { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.sequenceposition">SequencePosition</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_RemainingSequence_" data-uid="DotNext.IO.SequenceReader.RemainingSequence*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_RemainingSequence" data-uid="DotNext.IO.SequenceReader.RemainingSequence">
+  RemainingSequence
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L49"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets unread part of the sequence.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ReadOnlySequence&lt;byte&gt; RemainingSequence { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="DotNext_IO_SequenceReader_Parse_" data-uid="DotNext.IO.SequenceReader.Parse*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Parse__1" data-uid="DotNext.IO.SequenceReader.Parse``1">
+  Parse&lt;T&gt;()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L105"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Parses the value encoded as a sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Parse&lt;T&gt;() where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The parsed value.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the result.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_Parse_" data-uid="DotNext.IO.SequenceReader.Parse*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Parse__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_IFormatProvider_" data-uid="DotNext.IO.SequenceReader.Parse``1(DotNext.Parser{``0},DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@,System.IFormatProvider)">
+  Parse&lt;T&gt;(Parser&lt;T&gt;, LengthFormat, in DecodingContext, IFormatProvider?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L83"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Parses the value encoded as a set of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Parse&lt;T&gt;(Parser&lt;T&gt; parser, LengthFormat lengthFormat, in DecodingContext context, IFormatProvider? provider = null) where T : notnull</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>parser</code> <a class="xref" href="DotNext.Parser-1.html">Parser</a>&lt;T&gt;</dt>
+    <dd><p>The parser.</p>
+</dd>
+    <dt><code>lengthFormat</code> <a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></dt>
+    <dd><p>The format of the string length encoded in the stream.</p>
+</dd>
+    <dt><code>context</code> <a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></dt>
+    <dd><p>The decoding context containing string characters encoding.</p>
+</dd>
+    <dt><code>provider</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></dt>
+    <dd><p>The format provider.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The parsed value.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the result.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.formatexception">FormatException</a></dt>
+    <dd><p>The string is in wrong format.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Read_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.SequenceReader.Read(DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Byte})">
+  Read(LengthFormat, MemoryAllocator&lt;byte&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L171"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Reads length-prefixed block of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;byte&gt; Read(LengthFormat lengthFormat, MemoryAllocator&lt;byte&gt;? allocator = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>lengthFormat</code> <a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></dt>
+    <dd><p>The format of the block length encoded in the underlying stream.</p>
+</dd>
+    <dt><code>allocator</code> <a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
+    <dd><p>The memory allocator used to place the decoded block of bytes.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
+    <dd><p>The decoded block of bytes.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>Unexpected end of sequence.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Read_System_Span_System_Byte__" data-uid="DotNext.IO.SequenceReader.Read(System.Span{System.Byte})">
+  Read(Span&lt;byte&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L134"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Copies the bytes from the sequence into contiguous block of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Read(Span&lt;byte&gt; output)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>output</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</dt>
+    <dd><p>The block of memory to fill.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>Unexpected end of sequence.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadBigInteger_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadBigInteger_DotNext_IO_LengthFormat_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger(DotNext.IO.LengthFormat,System.Boolean)">
+  ReadBigInteger(LengthFormat, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L306"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes an arbitrary large integer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BigInteger ReadBigInteger(LengthFormat lengthFormat, bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>lengthFormat</code> <a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></dt>
+    <dd><p>The format of the value length encoded in the underlying stream.</p>
+</dd>
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadBigInteger_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadBigInteger_System_Int32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadBigInteger(System.Int32,System.Boolean)">
+  ReadBigInteger(int, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L276"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes an arbitrary large integer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BigInteger ReadBigInteger(int length, bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>length</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>The length of the value, in bytes.</p>
+</dd>
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadInt16_" data-uid="DotNext.IO.SequenceReader.ReadInt16*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadInt16_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt16(System.Boolean)">
+  ReadInt16(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L248"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes 16-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public short ReadInt16(bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int16">short</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadInt32_" data-uid="DotNext.IO.SequenceReader.ReadInt32*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadInt32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt32(System.Boolean)">
+  ReadInt32(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L221"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes 32-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int ReadInt32(bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadInt64_" data-uid="DotNext.IO.SequenceReader.ReadInt64*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadInt64_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadInt64(System.Boolean)">
+  ReadInt64(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L194"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes 64-bit signed integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ReadInt64(bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@)">
+  ReadString(LengthFormat, in DecodingContext)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L398"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ReadString(LengthFormat lengthFormat, in DecodingContext context)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>lengthFormat</code> <a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></dt>
+    <dd><p>The format of the string length encoded in the stream.</p>
+</dd>
+    <dt><code>context</code> <a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></dt>
+    <dd><p>The decoding context containing string characters encoding.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The decoded string.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadString_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.IO.SequenceReader.ReadString(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext@,DotNext.Buffers.MemoryAllocator{System.Char})">
+  ReadString(LengthFormat, in DecodingContext, MemoryAllocator&lt;char&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L409"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;char&gt; ReadString(LengthFormat lengthFormat, in DecodingContext context, MemoryAllocator&lt;char&gt;? allocator)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>lengthFormat</code> <a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></dt>
+    <dd><p>The format of the string length encoded in the stream.</p>
+</dd>
+    <dt><code>context</code> <a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></dt>
+    <dd><p>The decoding context containing string characters encoding.</p>
+</dd>
+    <dt><code>allocator</code> <a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</dt>
+    <dd><p>The allocator of the buffer of characters.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</dt>
+    <dd><p>The buffer of characters.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__" data-uid="DotNext.IO.SequenceReader.ReadString(System.Int32,DotNext.Text.DecodingContext@)">
+  ReadString(int, in DecodingContext)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L316"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ReadString(int length, in DecodingContext context)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>length</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>The length of the encoded string, in bytes.</p>
+</dd>
+    <dt><code>context</code> <a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></dt>
+    <dd><p>The decoding context containing string characters encoding.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The decoded string.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadString_" data-uid="DotNext.IO.SequenceReader.ReadString*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadString_System_Int32_DotNext_Text_DecodingContext__DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.IO.SequenceReader.ReadString(System.Int32,DotNext.Text.DecodingContext@,DotNext.Buffers.MemoryAllocator{System.Char})">
+  ReadString(int, in DecodingContext, MemoryAllocator&lt;char&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L347"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes the string.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryOwner&lt;char&gt; ReadString(int length, in DecodingContext context, MemoryAllocator&lt;char&gt;? allocator)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>length</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>The length of the encoded string, in bytes.</p>
+</dd>
+    <dt><code>context</code> <a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></dt>
+    <dd><p>The decoding context containing string characters encoding.</p>
+</dd>
+    <dt><code>allocator</code> <a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</dt>
+    <dd><p>The allocator of the buffer of characters.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</dt>
+    <dd><p>The buffer of characters.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadUInt16_" data-uid="DotNext.IO.SequenceReader.ReadUInt16*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadUInt16_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt16(System.Boolean)">
+  ReadUInt16(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L261"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes 16-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public ushort ReadUInt16(bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint16">ushort</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadUInt32_" data-uid="DotNext.IO.SequenceReader.ReadUInt32*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadUInt32_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt32(System.Boolean)">
+  ReadUInt32(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L234"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes 32-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public uint ReadUInt32(bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ReadUInt64_" data-uid="DotNext.IO.SequenceReader.ReadUInt64*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ReadUInt64_System_Boolean_" data-uid="DotNext.IO.SequenceReader.ReadUInt64(System.Boolean)">
+  ReadUInt64(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L207"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes 64-bit unsigned integer using the specified endianness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public ulong ReadUInt64(bool littleEndian)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>littleEndian</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint64">ulong</a></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>The underlying sequence doesn't contain necessary amount of bytes to decode the value.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_Read_" data-uid="DotNext.IO.SequenceReader.Read*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Read__1" data-uid="DotNext.IO.SequenceReader.Read``1">
+  Read&lt;T&gt;()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L120"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Decodes the value of blittable type from the sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Read&lt;T&gt;() where T : unmanaged</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The decoded value.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the value to decode.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>Unexpected end of sequence.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_Reset_" data-uid="DotNext.IO.SequenceReader.Reset*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Reset" data-uid="DotNext.IO.SequenceReader.Reset">
+  Reset()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L44"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Resets the reader so it can be used again.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_Skip_" data-uid="DotNext.IO.SequenceReader.Skip*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_Skip_System_Int64_" data-uid="DotNext.IO.SequenceReader.Skip(System.Int64)">
+  Skip(long)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L149"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Skips the specified number of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Skip(long length)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>length</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
+    <dd><p>The number of bytes to skip.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
+    <dd><p><code class="paramref">length</code> is less than zero.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></dt>
+    <dd><p>Unexpected end of sequence.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_IO_SequenceReader_ToString_" data-uid="DotNext.IO.SequenceReader.ToString*"></a>
+
+  <h3 id="DotNext_IO_SequenceReader_ToString" data-uid="DotNext.IO.SequenceReader.ToString">
+  ToString()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L853"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the fully qualified type name of this instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly string ToString()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The fully qualified type name.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <h2 id="seealso">See Also</h2>
   <div class="seealso">
       <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_Buffers_ReadOnlySequence_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
       <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html#DotNext_IO_IAsyncBinaryReader_Create_System_ReadOnlyMemory_System_Byte__">Create</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;)</div>
   </div>
 
 </article>
-          </div>
 
-          <div class="hidden-sm col-md-2" role="complementary">
-            <div class="sideaffix">
-              <div class="contribution">
-                <ul class="nav">
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_SequenceReader.md&amp;value=---%0Auid%3A%20DotNext.IO.SequenceReader%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L20" class="contribution-link">View Source</a>
-                  </li>
-                </ul>
-              </div>
-              <div class="toggle-mode">
-                <div class="icon">
-                  <i aria-hidden="true">☀</i>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="switch-style">
-                  <span class="slider round"></span>
-                </label>
-                <div class="icon">
-                  <i aria-hidden="true">☾</i>
-                </div>
-              </div>
-
-              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In this article</h5>
-              <div></div>
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
-              </nav>
-            </div>
-          </div>
+        <div class="contribution d-print-none">
+          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/SequenceReader.cs/#L20" class="edit-link">Edit this page</a>
         </div>
+
+
       </div>
 
-      <footer>
-        <div class="grad-bottom"></div>
-        <div class="footer">
-          <div class="container">
-            <span class="pull-right">
-              <a href="#top">Back to top</a>
-            </span>
-            <div class="pull-left">
-        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-        
-            </div>
-            <div class="toggle-mode pull-right visible-sm visible-xs">
-              <div class="icon">
-                <i aria-hidden="true">☀</i>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="switch-style-m">
-                <span class="slider round"></span>
-              </label>
-              <div class="icon">
-                <i aria-hidden="true">☾</i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
-      </footer>    </div>
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

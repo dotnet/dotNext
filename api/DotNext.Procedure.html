@@ -1,88 +1,124 @@
 ﻿<!DOCTYPE html>
-<!--[if IE]><![endif]-->
 <html>
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Procedure
+      <title>Class Procedure
  | .NEXT </title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Procedure
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class Procedure
  | .NEXT ">
-    <meta name="generator" content="docfx ">
-  
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.json">
-    <meta property="docfx:tocrel" content="toc.json">
-  
-  
-  
-  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
-    <div id="wrapper">
-      <header>
+      
+      <link rel="icon" href="../fav.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.json">
+      <meta name="docfx:tocrel" content="toc.json">
+      
+      
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure.md&amp;value=---%0Auid%3A%20DotNext.Procedure%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
 
-        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
+  <script type="module" src="./../public/docfx.min.js"></script>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
-              </a>
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../doc_logo.png" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
             </div>
-            <div class="collapse navbar-collapse" id="navbar">
-              <form class="navbar-form navbar-right" role="search" id="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
-                </div>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        <div class="subnav navbar navbar-default">
-          <div class="container hide-when-search" id="breadcrumb">
-            <ul class="breadcrumb">
-              <li></li>
-            </ul>
           </div>
         </div>
-      </header>
-      <div role="main" class="container body-content hide-when-search">
+      </nav>
+    </header>
 
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
           </div>
         </div>
-        <div class="article row grid-right">
-          <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Procedure">
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DotNext.Procedure">
 
 
 
-  <h1 id="DotNext_Procedure" data-uid="DotNext.Procedure" class="text-break">Class Procedure
-</h1>
-  <div class="markdown level0 summary"><p>Provides extension methods for delegates <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> and <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a>.</p>
-</div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">Procedure</span></div>
+  <h1 id="DotNext_Procedure" data-uid="DotNext.Procedure" class="text-break">
+    Class Procedure
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L28"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>DotNext.Reflection.dll</dd></dl>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
+
+  <div class="markdown summary"><p>Provides extension methods for delegates <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> and <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a>.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class Procedure</code></pre>
+  </div>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">Procedure</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist derived">
+    <dt>Inherited Members</dt>
+    <dd>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
@@ -104,2609 +140,1699 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
-  <h5 id="DotNext_Procedure_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Procedure</code></pre>
-  </div>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_ArgList__1_DotNext_Procedure___0__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.ArgList%60%601(DotNext.Procedure%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L65">View Source</a>
-  </span>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
   <a id="DotNext_Procedure_ArgList_" data-uid="DotNext.Procedure.ArgList*"></a>
-  <h4 id="DotNext_Procedure_ArgList__1_DotNext_Procedure___0__" data-uid="DotNext.Procedure.ArgList``1(DotNext.Procedure{``0})">ArgList&lt;TArgs&gt;(Procedure&lt;TArgs&gt;)</h4>
+
+  <h3 id="DotNext_Procedure_ArgList__1_DotNext_Procedure___0__" data-uid="DotNext.Procedure.ArgList``1(DotNext.Procedure{``0})">
+  ArgList&lt;TArgs&gt;(Procedure&lt;TArgs&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L65"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Allocates list of arguments on the stack.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;TArgs&gt;(this Procedure&lt;TArgs&gt; procedure) where TArgs : struct</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;TArgs&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure instance.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TArgs</span></td>
-        <td><p>Allocated list of arguments.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TArgs</span></td>
-        <td><p>The type representing list of arguments.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_ArgList__2_DotNext_Procedure___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.ArgList%60%602(DotNext.Procedure%7B%60%600%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L76">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;TArgs&gt;</dt>
+    <dd><p>The procedure instance.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">TArgs</span></dt>
+    <dd><p>Allocated list of arguments.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TArgs</code></dt>
+    <dd><p>The type representing list of arguments.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_ArgList_" data-uid="DotNext.Procedure.ArgList*"></a>
-  <h4 id="DotNext_Procedure_ArgList__2_DotNext_Procedure___0___1__" data-uid="DotNext.Procedure.ArgList``2(DotNext.Procedure{``0,``1})">ArgList&lt;T, TArgs&gt;(Procedure&lt;T, TArgs&gt;)</h4>
+
+  <h3 id="DotNext_Procedure_ArgList__2_DotNext_Procedure___0___1__" data-uid="DotNext.Procedure.ArgList``2(DotNext.Procedure{``0,``1})">
+  ArgList&lt;T, TArgs&gt;(Procedure&lt;T, TArgs&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L76"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Allocates list of arguments on the stack.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TArgs ArgList&lt;T, TArgs&gt;(this Procedure&lt;T, TArgs&gt; procedure) where TArgs : struct</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, TArgs&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure instance.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TArgs</span></td>
-        <td><p>Allocated list of arguments.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TArgs</span></td>
-        <td><p>The type representing list of arguments.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Bind__2_DotNext_Procedure___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Bind%60%602(DotNext.Procedure%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L55">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, TArgs&gt;</dt>
+    <dd><p>The procedure instance.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">TArgs</span></dt>
+    <dd><p>Allocated list of arguments.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>Type of explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>TArgs</code></dt>
+    <dd><p>The type representing list of arguments.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Bind_" data-uid="DotNext.Procedure.Bind*"></a>
-  <h4 id="DotNext_Procedure_Bind__2_DotNext_Procedure___0___1____0_" data-uid="DotNext.Procedure.Bind``2(DotNext.Procedure{``0,``1},``0)">Bind&lt;T, TArgs&gt;(Procedure&lt;T, TArgs&gt;, T)</h4>
+
+  <h3 id="DotNext_Procedure_Bind__2_DotNext_Procedure___0___1____0_" data-uid="DotNext.Procedure.Bind``2(DotNext.Procedure{``0,``1},``0)">
+  Bind&lt;T, TArgs&gt;(Procedure&lt;T, TArgs&gt;, T)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L55"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Converts <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a> into <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> through
 capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a> delegate.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Procedure&lt;TArgs&gt; Bind&lt;T, TArgs&gt;(this Procedure&lt;T, TArgs&gt; procedure, T @this) where TArgs : struct</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, TArgs&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be converted.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">this</span></td>
-        <td><p>The first argument to be captured.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;TArgs&gt;</td>
-        <td><p>The procedure instance.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of instance to be passed into underlying method.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TArgs</span></td>
-        <td><p>Type of structure with procedure arguments allocated on the stack.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke_DotNext_Procedure_System_ValueTuple__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke(DotNext.Procedure%7BSystem.ValueTuple%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L93">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, TArgs&gt;</dt>
+    <dd><p>The procedure to be converted.</p>
+</dd>
+    <dt><code>this</code> <span class="xref">T</span></dt>
+    <dd><p>The first argument to be captured.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;TArgs&gt;</dt>
+    <dd><p>The procedure instance.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>Type of instance to be passed into underlying method.</p>
+</dd>
+    <dt><code>TArgs</code></dt>
+    <dd><p>Type of structure with procedure arguments allocated on the stack.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke_DotNext_Procedure_System_ValueTuple__" data-uid="DotNext.Procedure.Invoke(DotNext.Procedure{System.ValueTuple})">Invoke(Procedure&lt;ValueTuple&gt;)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke_DotNext_Procedure_System_ValueTuple__" data-uid="DotNext.Procedure.Invoke(DotNext.Procedure{System.ValueTuple})">
+  Invoke(Procedure&lt;ValueTuple&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L93"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke(this Procedure&lt;ValueTuple&gt; procedure)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The function to be invoked.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure_System_ValueTuple___0_____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%7D%7D%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L113">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>&gt;</dt>
+    <dd><p>The function to be invoked.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure_System_ValueTuple___0_____0_" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{System.ValueTuple{``0}},``0)">Invoke&lt;T&gt;(Procedure&lt;ValueTuple&lt;T&gt;&gt;, T)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__1_DotNext_Procedure_System_ValueTuple___0_____0_" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{System.ValueTuple{``0}},``0)">
+  Invoke&lt;T&gt;(Procedure&lt;ValueTuple&lt;T&gt;&gt;, T)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L113"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T&gt;(this Procedure&lt;ValueTuple&lt;T&gt;&gt; procedure, T arg)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-1">ValueTuple</a>&lt;T&gt;&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">arg</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure___0_System_ValueTuple____0__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7D%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L86">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-1">ValueTuple</a>&lt;T&gt;&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg</code> <span class="xref">T</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure___0_System_ValueTuple____0__" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{``0,System.ValueTuple},``0@)">Invoke&lt;T&gt;(Procedure&lt;T, ValueTuple&gt;, in T)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__1_DotNext_Procedure___0_System_ValueTuple____0__" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{``0,System.ValueTuple},``0@)">
+  Invoke&lt;T&gt;(Procedure&lt;T, ValueTuple&gt;, in T)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L86"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T&gt;(this Procedure&lt;T, ValueTuple&gt; procedure, in T instance)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__10_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8___9______0___1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%6010(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2CSystem.ValueTuple%7B%60%607%2C%60%608%2C%60%609%7D%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L473">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__10_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8___9______0___1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Procedure.Invoke``10(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7,``8,``9}}},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__10_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8___9______0___1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Procedure.Invoke``10(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7,``8,``9}}},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)">
+  Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L473"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(this Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt; procedure, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T8</span></td>
-        <td><span class="parametername">arg8</span></td>
-        <td><p>The eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T9</span></td>
-        <td><span class="parametername">arg9</span></td>
-        <td><p>The ninth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T10</span></td>
-        <td><span class="parametername">arg10</span></td>
-        <td><p>The tenth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T8</span></td>
-        <td><p>The type of the eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T9</span></td>
-        <td><p>The type of the ninth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T10</span></td>
-        <td><p>The type of the tenth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__10_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9______0____1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%6010(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2CSystem.ValueTuple%7B%60%608%2C%60%609%7D%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L392">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+    <dt><code>arg8</code> <span class="xref">T8</span></dt>
+    <dd><p>The eighth procedure argument.</p>
+</dd>
+    <dt><code>arg9</code> <span class="xref">T9</span></dt>
+    <dd><p>The ninth procedure argument.</p>
+</dd>
+    <dt><code>arg10</code> <span class="xref">T10</span></dt>
+    <dd><p>The tenth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+    <dt><code>T8</code></dt>
+    <dd><p>The type of the eighth procedure argument.</p>
+</dd>
+    <dt><code>T9</code></dt>
+    <dd><p>The type of the ninth procedure argument.</p>
+</dd>
+    <dt><code>T10</code></dt>
+    <dd><p>The type of the tenth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__10_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9______0____1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Procedure.Invoke``10(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8,``9}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8,``9)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;, in T, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__10_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9______0____1___2___3___4___5___6___7___8___9_" data-uid="DotNext.Procedure.Invoke``10(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8,``9}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8,``9)">
+  Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;, in T, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L392"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(this Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T8</span></td>
-        <td><span class="parametername">arg8</span></td>
-        <td><p>The eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T9</span></td>
-        <td><span class="parametername">arg9</span></td>
-        <td><p>The ninth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T8</span></td>
-        <td><p>The type of the eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T9</span></td>
-        <td><p>The type of the ninth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__11_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9___10______0____1___2___3___4___5___6___7___8___9___10_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%6011(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2CSystem.ValueTuple%7B%60%608%2C%60%609%2C%60%6010%7D%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%2C%60%6010)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L446">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+    <dt><code>arg8</code> <span class="xref">T8</span></dt>
+    <dd><p>The eighth procedure argument.</p>
+</dd>
+    <dt><code>arg9</code> <span class="xref">T9</span></dt>
+    <dd><p>The ninth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+    <dt><code>T8</code></dt>
+    <dd><p>The type of the eighth procedure argument.</p>
+</dd>
+    <dt><code>T9</code></dt>
+    <dd><p>The type of the ninth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__11_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9___10______0____1___2___3___4___5___6___7___8___9___10_" data-uid="DotNext.Procedure.Invoke``11(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8,``9,``10}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;, in T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__11_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8___9___10______0____1___2___3___4___5___6___7___8___9___10_" data-uid="DotNext.Procedure.Invoke``11(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8,``9,``10}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8,``9,``10)">
+  Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;, in T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L446"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(this Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T8</span></td>
-        <td><span class="parametername">arg8</span></td>
-        <td><p>The eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T9</span></td>
-        <td><span class="parametername">arg9</span></td>
-        <td><p>The ninth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T10</span></td>
-        <td><span class="parametername">arg10</span></td>
-        <td><p>The tenth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T8</span></td>
-        <td><p>The type of the eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T9</span></td>
-        <td><p>The type of the ninth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T10</span></td>
-        <td><p>The type of the tenth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__2_DotNext_Procedure_System_ValueTuple___0___1_____0___1_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%602(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%7D%7D%2C%60%600%2C%60%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L137">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+    <dt><code>arg8</code> <span class="xref">T8</span></dt>
+    <dd><p>The eighth procedure argument.</p>
+</dd>
+    <dt><code>arg9</code> <span class="xref">T9</span></dt>
+    <dd><p>The ninth procedure argument.</p>
+</dd>
+    <dt><code>arg10</code> <span class="xref">T10</span></dt>
+    <dd><p>The tenth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+    <dt><code>T8</code></dt>
+    <dd><p>The type of the eighth procedure argument.</p>
+</dd>
+    <dt><code>T9</code></dt>
+    <dd><p>The type of the ninth procedure argument.</p>
+</dd>
+    <dt><code>T10</code></dt>
+    <dd><p>The type of the tenth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__2_DotNext_Procedure_System_ValueTuple___0___1_____0___1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{System.ValueTuple{``0,``1}},``0,``1)">Invoke&lt;T1, T2&gt;(Procedure&lt;(T1, T2)&gt;, T1, T2)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__2_DotNext_Procedure_System_ValueTuple___0___1_____0___1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{System.ValueTuple{``0,``1}},``0,``1)">
+  Invoke&lt;T1, T2&gt;(Procedure&lt;(T1, T2)&gt;, T1, T2)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L137"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2&gt;(this Procedure&lt;(T1, T2)&gt; procedure, T1 arg1, T2 arg2)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__2_DotNext_Procedure___0_System_ValueTuple___1_____0____1_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%602(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%7D%7D%2C%60%600%40%2C%60%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L104">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__2_DotNext_Procedure___0_System_ValueTuple___1_____0____1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{``0,System.ValueTuple{``1}},``0@,``1)">Invoke&lt;T, TParam&gt;(Procedure&lt;T, ValueTuple&lt;TParam&gt;&gt;, in T, TParam)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__2_DotNext_Procedure___0_System_ValueTuple___1_____0____1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{``0,System.ValueTuple{``1}},``0@,``1)">
+  Invoke&lt;T, TParam&gt;(Procedure&lt;T, ValueTuple&lt;TParam&gt;&gt;, in T, TParam)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L104"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, TParam&gt;(this Procedure&lt;T, ValueTuple&lt;TParam&gt;&gt; procedure, in T instance, TParam arg)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-1">ValueTuple</a>&lt;TParam&gt;&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">TParam</span></td>
-        <td><span class="parametername">arg</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TParam</span></td>
-        <td><p>The type of the first function argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__3_DotNext_Procedure_System_ValueTuple___0___1___2_____0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%603(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%7D%7D%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L165">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetuple-1">ValueTuple</a>&lt;TParam&gt;&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg</code> <span class="xref">TParam</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>TParam</code></dt>
+    <dd><p>The type of the first function argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__3_DotNext_Procedure_System_ValueTuple___0___1___2_____0___1___2_" data-uid="DotNext.Procedure.Invoke``3(DotNext.Procedure{System.ValueTuple{``0,``1,``2}},``0,``1,``2)">Invoke&lt;T1, T2, T3&gt;(Procedure&lt;(T1, T2, T3)&gt;, T1, T2, T3)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__3_DotNext_Procedure_System_ValueTuple___0___1___2_____0___1___2_" data-uid="DotNext.Procedure.Invoke``3(DotNext.Procedure{System.ValueTuple{``0,``1,``2}},``0,``1,``2)">
+  Invoke&lt;T1, T2, T3&gt;(Procedure&lt;(T1, T2, T3)&gt;, T1, T2, T3)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L165"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3&gt;(this Procedure&lt;(T1, T2, T3)&gt; procedure, T1 arg1, T2 arg2, T3 arg3)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__3_DotNext_Procedure___0_System_ValueTuple___1___2_____0____1___2_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%603(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%7D%7D%2C%60%600%40%2C%60%601%2C%60%602)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L126">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__3_DotNext_Procedure___0_System_ValueTuple___1___2_____0____1___2_" data-uid="DotNext.Procedure.Invoke``3(DotNext.Procedure{``0,System.ValueTuple{``1,``2}},``0@,``1,``2)">Invoke&lt;T, T1, T2&gt;(Procedure&lt;T, (T1, T2)&gt;, in T, T1, T2)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__3_DotNext_Procedure___0_System_ValueTuple___1___2_____0____1___2_" data-uid="DotNext.Procedure.Invoke``3(DotNext.Procedure{``0,System.ValueTuple{``1,``2}},``0@,``1,``2)">
+  Invoke&lt;T, T1, T2&gt;(Procedure&lt;T, (T1, T2)&gt;, in T, T1, T2)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L126"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2&gt;(this Procedure&lt;T, (T1, T2)&gt; procedure, in T instance, T1 arg1, T2 arg2)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__4_DotNext_Procedure_System_ValueTuple___0___1___2___3_____0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%604(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L197">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__4_DotNext_Procedure_System_ValueTuple___0___1___2___3_____0___1___2___3_" data-uid="DotNext.Procedure.Invoke``4(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3}},``0,``1,``2,``3)">Invoke&lt;T1, T2, T3, T4&gt;(Procedure&lt;(T1, T2, T3, T4)&gt;, T1, T2, T3, T4)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__4_DotNext_Procedure_System_ValueTuple___0___1___2___3_____0___1___2___3_" data-uid="DotNext.Procedure.Invoke``4(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3}},``0,``1,``2,``3)">
+  Invoke&lt;T1, T2, T3, T4&gt;(Procedure&lt;(T1, T2, T3, T4)&gt;, T1, T2, T3, T4)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L197"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3, T4&gt;(this Procedure&lt;(T1, T2, T3, T4)&gt; procedure, T1 arg1, T2 arg2, T3 arg3, T4 arg4)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__4_DotNext_Procedure___0_System_ValueTuple___1___2___3_____0____1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%604(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L152">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__4_DotNext_Procedure___0_System_ValueTuple___1___2___3_____0____1___2___3_" data-uid="DotNext.Procedure.Invoke``4(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3}},``0@,``1,``2,``3)">Invoke&lt;T, T1, T2, T3&gt;(Procedure&lt;T, (T1, T2, T3)&gt;, in T, T1, T2, T3)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__4_DotNext_Procedure___0_System_ValueTuple___1___2___3_____0____1___2___3_" data-uid="DotNext.Procedure.Invoke``4(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3}},``0@,``1,``2,``3)">
+  Invoke&lt;T, T1, T2, T3&gt;(Procedure&lt;T, (T1, T2, T3)&gt;, in T, T1, T2, T3)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L152"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3&gt;(this Procedure&lt;T, (T1, T2, T3)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__5_DotNext_Procedure_System_ValueTuple___0___1___2___3___4_____0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%605(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L233">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__5_DotNext_Procedure_System_ValueTuple___0___1___2___3___4_____0___1___2___3___4_" data-uid="DotNext.Procedure.Invoke``5(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4}},``0,``1,``2,``3,``4)">Invoke&lt;T1, T2, T3, T4, T5&gt;(Procedure&lt;(T1, T2, T3, T4, T5)&gt;, T1, T2, T3, T4, T5)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__5_DotNext_Procedure_System_ValueTuple___0___1___2___3___4_____0___1___2___3___4_" data-uid="DotNext.Procedure.Invoke``5(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4}},``0,``1,``2,``3,``4)">
+  Invoke&lt;T1, T2, T3, T4, T5&gt;(Procedure&lt;(T1, T2, T3, T4, T5)&gt;, T1, T2, T3, T4, T5)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L233"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3, T4, T5&gt;(this Procedure&lt;(T1, T2, T3, T4, T5)&gt; procedure, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__5_DotNext_Procedure___0_System_ValueTuple___1___2___3___4_____0____1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%605(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L182">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__5_DotNext_Procedure___0_System_ValueTuple___1___2___3___4_____0____1___2___3___4_" data-uid="DotNext.Procedure.Invoke``5(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4}},``0@,``1,``2,``3,``4)">Invoke&lt;T, T1, T2, T3, T4&gt;(Procedure&lt;T, (T1, T2, T3, T4)&gt;, in T, T1, T2, T3, T4)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__5_DotNext_Procedure___0_System_ValueTuple___1___2___3___4_____0____1___2___3___4_" data-uid="DotNext.Procedure.Invoke``5(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4}},``0@,``1,``2,``3,``4)">
+  Invoke&lt;T, T1, T2, T3, T4&gt;(Procedure&lt;T, (T1, T2, T3, T4)&gt;, in T, T1, T2, T3, T4)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L182"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3, T4&gt;(this Procedure&lt;T, (T1, T2, T3, T4)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__6_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5_____0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%606(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L273">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__6_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5_____0___1___2___3___4___5_" data-uid="DotNext.Procedure.Invoke``6(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5}},``0,``1,``2,``3,``4,``5)">Invoke&lt;T1, T2, T3, T4, T5, T6&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6)&gt;, T1, T2, T3, T4, T5, T6)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__6_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5_____0___1___2___3___4___5_" data-uid="DotNext.Procedure.Invoke``6(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5}},``0,``1,``2,``3,``4,``5)">
+  Invoke&lt;T1, T2, T3, T4, T5, T6&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6)&gt;, T1, T2, T3, T4, T5, T6)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L273"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3, T4, T5, T6&gt;(this Procedure&lt;(T1, T2, T3, T4, T5, T6)&gt; procedure, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__6_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5_____0____1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%606(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L216">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__6_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5_____0____1___2___3___4___5_" data-uid="DotNext.Procedure.Invoke``6(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5}},``0@,``1,``2,``3,``4,``5)">Invoke&lt;T, T1, T2, T3, T4, T5&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5)&gt;, in T, T1, T2, T3, T4, T5)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__6_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5_____0____1___2___3___4___5_" data-uid="DotNext.Procedure.Invoke``6(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5}},``0@,``1,``2,``3,``4,``5)">
+  Invoke&lt;T, T1, T2, T3, T4, T5&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5)&gt;, in T, T1, T2, T3, T4, T5)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L216"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3, T4, T5&gt;(this Procedure&lt;T, (T1, T2, T3, T4, T5)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__7_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_____0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%607(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L317">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__7_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_____0___1___2___3___4___5___6_" data-uid="DotNext.Procedure.Invoke``7(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6}},``0,``1,``2,``3,``4,``5,``6)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7)&gt;, T1, T2, T3, T4, T5, T6, T7)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__7_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_____0___1___2___3___4___5___6_" data-uid="DotNext.Procedure.Invoke``7(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6}},``0,``1,``2,``3,``4,``5,``6)">
+  Invoke&lt;T1, T2, T3, T4, T5, T6, T7&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7)&gt;, T1, T2, T3, T4, T5, T6, T7)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L317"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3, T4, T5, T6, T7&gt;(this Procedure&lt;(T1, T2, T3, T4, T5, T6, T7)&gt; procedure, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__7_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6_____0____1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%607(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L254">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__7_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6_____0____1___2___3___4___5___6_" data-uid="DotNext.Procedure.Invoke``7(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6}},``0@,``1,``2,``3,``4,``5,``6)">Invoke&lt;T, T1, T2, T3, T4, T5, T6&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6)&gt;, in T, T1, T2, T3, T4, T5, T6)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__7_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6_____0____1___2___3___4___5___6_" data-uid="DotNext.Procedure.Invoke``7(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6}},``0@,``1,``2,``3,``4,``5,``6)">
+  Invoke&lt;T, T1, T2, T3, T4, T5, T6&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6)&gt;, in T, T1, T2, T3, T4, T5, T6)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L254"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3, T4, T5, T6&gt;(this Procedure&lt;T, (T1, T2, T3, T4, T5, T6)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__8_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7______0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%608(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2CSystem.ValueTuple%7B%60%607%7D%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L365">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__8_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7______0___1___2___3___4___5___6___7_" data-uid="DotNext.Procedure.Invoke``8(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7}}},``0,``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8)&gt;, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__8_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7______0___1___2___3___4___5___6___7_" data-uid="DotNext.Procedure.Invoke``8(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7}}},``0,``1,``2,``3,``4,``5,``6,``7)">
+  Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8)&gt;, T1, T2, T3, T4, T5, T6, T7, T8)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L365"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(this Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8)&gt; procedure, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7, T8)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T8</span></td>
-        <td><span class="parametername">arg8</span></td>
-        <td><p>The eighth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T8</span></td>
-        <td><p>The type of the eighth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__8_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_____0____1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%608(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L296">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7, T8)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+    <dt><code>arg8</code> <span class="xref">T8</span></dt>
+    <dd><p>The eighth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+    <dt><code>T8</code></dt>
+    <dd><p>The type of the eighth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__8_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_____0____1___2___3___4___5___6___7_" data-uid="DotNext.Procedure.Invoke``8(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7}},``0@,``1,``2,``3,``4,``5,``6,``7)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7)&gt;, in T, T1, T2, T3, T4, T5, T6, T7)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__8_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_____0____1___2___3___4___5___6___7_" data-uid="DotNext.Procedure.Invoke``8(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7}},``0@,``1,``2,``3,``4,``5,``6,``7)">
+  Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7)&gt;, in T, T1, T2, T3, T4, T5, T6, T7)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L296"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7&gt;(this Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__9_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8______0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%609(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2CSystem.ValueTuple%7B%60%607%2C%60%608%7D%7D%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L417">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__9_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8______0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Procedure.Invoke``9(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7,``8}}},``0,``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__9_DotNext_Procedure_System_ValueTuple___0___1___2___3___4___5___6_System_ValueTuple___7___8______0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Procedure.Invoke``9(DotNext.Procedure{System.ValueTuple{``0,``1,``2,``3,``4,``5,``6,System.ValueTuple{``7,``8}}},``0,``1,``2,``3,``4,``5,``6,``7,``8)">
+  Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L417"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(this Procedure&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt; procedure, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T8</span></td>
-        <td><span class="parametername">arg8</span></td>
-        <td><p>The eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T9</span></td>
-        <td><span class="parametername">arg9</span></td>
-        <td><p>The ninth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T8</span></td>
-        <td><p>The type of the eighth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T9</span></td>
-        <td><p>The type of the ninth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure_Invoke__9_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8______0____1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%609(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2CSystem.ValueTuple%7B%60%608%7D%7D%7D%2C%60%600%40%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L342">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;(T1, T2, T3, T4, T5, T6, T7, T8, T9)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+    <dt><code>arg8</code> <span class="xref">T8</span></dt>
+    <dd><p>The eighth procedure argument.</p>
+</dd>
+    <dt><code>arg9</code> <span class="xref">T9</span></dt>
+    <dd><p>The ninth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+    <dt><code>T8</code></dt>
+    <dd><p>The type of the eighth procedure argument.</p>
+</dd>
+    <dt><code>T9</code></dt>
+    <dd><p>The type of the ninth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__9_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8______0____1___2___3___4___5___6___7___8_" data-uid="DotNext.Procedure.Invoke``9(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8)">Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8)&gt;, in T, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+
+  <h3 id="DotNext_Procedure_Invoke__9_DotNext_Procedure___0_System_ValueTuple___1___2___3___4___5___6___7_System_ValueTuple___8______0____1___2___3___4___5___6___7___8_" data-uid="DotNext.Procedure.Invoke``9(DotNext.Procedure{``0,System.ValueTuple{``1,``2,``3,``4,``5,``6,``7,System.ValueTuple{``8}}},``0@,``1,``2,``3,``4,``5,``6,``7,``8)">
+  Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8&gt;(Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8)&gt;, in T, T1, T2, T3, T4, T5, T6, T7, T8)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L342"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, T1, T2, T3, T4, T5, T6, T7, T8&gt;(this Procedure&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8)&gt; procedure, in T instance, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8)&gt;</td>
-        <td><span class="parametername">procedure</span></td>
-        <td><p>The procedure to be invoked.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">instance</span></td>
-        <td><p>Explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T1</span></td>
-        <td><span class="parametername">arg1</span></td>
-        <td><p>The first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T2</span></td>
-        <td><span class="parametername">arg2</span></td>
-        <td><p>The second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T3</span></td>
-        <td><span class="parametername">arg3</span></td>
-        <td><p>The third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T4</span></td>
-        <td><span class="parametername">arg4</span></td>
-        <td><p>The fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T5</span></td>
-        <td><span class="parametername">arg5</span></td>
-        <td><p>The fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T6</span></td>
-        <td><span class="parametername">arg6</span></td>
-        <td><p>The sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T7</span></td>
-        <td><span class="parametername">arg7</span></td>
-        <td><p>The seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T8</span></td>
-        <td><span class="parametername">arg8</span></td>
-        <td><p>The eighth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the explicit <code>this</code> argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T1</span></td>
-        <td><p>The type of the first procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T2</span></td>
-        <td><p>The type of the second procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T3</span></td>
-        <td><p>The type of the third procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T4</span></td>
-        <td><p>The type of the fourth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T5</span></td>
-        <td><p>The type of the fifth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T6</span></td>
-        <td><p>The type of the sixth procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T7</span></td>
-        <td><p>The type of the seventh procedure argument.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T8</span></td>
-        <td><p>The type of the eighth procedure argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>procedure</code> <a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, (T1, T2, T3, T4, T5, T6, T7, T8)&gt;</dt>
+    <dd><p>The procedure to be invoked.</p>
+</dd>
+    <dt><code>instance</code> <span class="xref">T</span></dt>
+    <dd><p>Explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>arg1</code> <span class="xref">T1</span></dt>
+    <dd><p>The first procedure argument.</p>
+</dd>
+    <dt><code>arg2</code> <span class="xref">T2</span></dt>
+    <dd><p>The second procedure argument.</p>
+</dd>
+    <dt><code>arg3</code> <span class="xref">T3</span></dt>
+    <dd><p>The third procedure argument.</p>
+</dd>
+    <dt><code>arg4</code> <span class="xref">T4</span></dt>
+    <dd><p>The fourth procedure argument.</p>
+</dd>
+    <dt><code>arg5</code> <span class="xref">T5</span></dt>
+    <dd><p>The fifth procedure argument.</p>
+</dd>
+    <dt><code>arg6</code> <span class="xref">T6</span></dt>
+    <dd><p>The sixth procedure argument.</p>
+</dd>
+    <dt><code>arg7</code> <span class="xref">T7</span></dt>
+    <dd><p>The seventh procedure argument.</p>
+</dd>
+    <dt><code>arg8</code> <span class="xref">T8</span></dt>
+    <dd><p>The eighth procedure argument.</p>
+</dd>
+  </dl>
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>The type of the explicit <code>this</code> argument.</p>
+</dd>
+    <dt><code>T1</code></dt>
+    <dd><p>The type of the first procedure argument.</p>
+</dd>
+    <dt><code>T2</code></dt>
+    <dd><p>The type of the second procedure argument.</p>
+</dd>
+    <dt><code>T3</code></dt>
+    <dd><p>The type of the third procedure argument.</p>
+</dd>
+    <dt><code>T4</code></dt>
+    <dd><p>The type of the fourth procedure argument.</p>
+</dd>
+    <dt><code>T5</code></dt>
+    <dd><p>The type of the fifth procedure argument.</p>
+</dd>
+    <dt><code>T6</code></dt>
+    <dd><p>The type of the sixth procedure argument.</p>
+</dd>
+    <dt><code>T7</code></dt>
+    <dd><p>The type of the seventh procedure argument.</p>
+</dd>
+    <dt><code>T8</code></dt>
+    <dd><p>The type of the eighth procedure argument.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
 
 </article>
-          </div>
 
-          <div class="hidden-sm col-md-2" role="complementary">
-            <div class="sideaffix">
-              <div class="contribution">
-                <ul class="nav">
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Procedure.md&amp;value=---%0Auid%3A%20DotNext.Procedure%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L28" class="contribution-link">View Source</a>
-                  </li>
-                </ul>
-              </div>
-              <div class="toggle-mode">
-                <div class="icon">
-                  <i aria-hidden="true">☀</i>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="switch-style">
-                  <span class="slider round"></span>
-                </label>
-                <div class="icon">
-                  <i aria-hidden="true">☾</i>
-                </div>
-              </div>
-
-              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In this article</h5>
-              <div></div>
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
-              </nav>
-            </div>
-          </div>
+        <div class="contribution d-print-none">
+          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L28" class="edit-link">Edit this page</a>
         </div>
+
+
       </div>
 
-      <footer>
-        <div class="grad-bottom"></div>
-        <div class="footer">
-          <div class="container">
-            <span class="pull-right">
-              <a href="#top">Back to top</a>
-            </span>
-            <div class="pull-left">
-        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-        
-            </div>
-            <div class="toggle-mode pull-right visible-sm visible-xs">
-              <div class="icon">
-                <i aria-hidden="true">☀</i>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="switch-style-m">
-                <span class="slider round"></span>
-              </label>
-              <div class="icon">
-                <i aria-hidden="true">☾</i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
-      </footer>    </div>
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

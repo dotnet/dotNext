@@ -1,88 +1,130 @@
 ﻿<!DOCTYPE html>
-<!--[if IE]><![endif]-->
 <html>
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Type&lt;T&gt;.Property&lt;TValue&gt;
+      <title>Class Type&lt;T&gt;.Property&lt;TValue&gt;
  | .NEXT </title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Type&lt;T&gt;.Property&lt;TValue&gt;
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class Type&lt;T&gt;.Property&lt;TValue&gt;
  | .NEXT ">
-    <meta name="generator" content="docfx ">
-  
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.json">
-    <meta property="docfx:tocrel" content="toc.json">
-  
-  
-  
-  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
-    <div id="wrapper">
-      <header>
+      
+      <link rel="icon" href="../fav.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.json">
+      <meta name="docfx:tocrel" content="toc.json">
+      
+      
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
 
-        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
+  <script type="module" src="./../public/docfx.min.js"></script>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
-              </a>
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../doc_logo.png" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
             </div>
-            <div class="collapse navbar-collapse" id="navbar">
-              <form class="navbar-form navbar-right" role="search" id="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
-                </div>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        <div class="subnav navbar navbar-default">
-          <div class="container hide-when-search" id="breadcrumb">
-            <ul class="breadcrumb">
-              <li></li>
-            </ul>
           </div>
         </div>
-      </header>
-      <div role="main" class="container body-content hide-when-search">
+      </nav>
+    </header>
 
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
           </div>
         </div>
-        <div class="article row grid-right">
-          <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Reflection.Type`1.Property`1">
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DotNext.Reflection.Type`1.Property`1">
 
 
 
-  <h1 id="DotNext_Reflection_Type_1_Property_1" data-uid="DotNext.Reflection.Type`1.Property`1" class="text-break">Class Type&lt;T&gt;.Property&lt;TValue&gt;
-</h1>
-  <div class="markdown level0 summary"><p>Provides access to property declared in type <code class="typeparamref">T</code>.</p>
-</div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">Type&lt;T&gt;.Property&lt;TValue&gt;</span></div>
+  <h1 id="DotNext_Reflection_Type_1_Property_1" data-uid="DotNext.Reflection.Type`1.Property`1" class="text-break">
+    Class Type&lt;T&gt;.Property&lt;TValue&gt;
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L9"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Reflection.html">Reflection</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>DotNext.Reflection.dll</dd></dl>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
+
+  <div class="markdown summary"><p>Provides access to property declared in type <code class="typeparamref">T</code>.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class Type&lt;T&gt;.Property&lt;TValue&gt;</code></pre>
+  </div>
+
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TValue</code></dt>
+    <dd><p>Type of property.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">Type&lt;T&gt;.Property&lt;TValue&gt;</span></div>
+    </dd>
+  </dl>
+
+
+
+  <dl class="typelist derived">
+    <dt>Inherited Members</dt>
+    <dd>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
@@ -104,868 +146,579 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Reflection.html">Reflection</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
-  <h5 id="DotNext_Reflection_Type_1_Property_1_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Type&lt;T&gt;.Property&lt;TValue&gt;</code></pre>
-  </div>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TValue</span></td>
-        <td><p>Type of property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_Get_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.Get(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L17">View Source</a>
-  </span>
+  </dd></dl>
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_Get_" data-uid="DotNext.Reflection.Type`1.Property`1.Get*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_Get_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.Get(System.String,System.Boolean)">Get(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_Get_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.Get(System.String,System.Boolean)">
+  Get(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L17"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects instance property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Property&lt;T, TValue&gt;? Get(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>Name of property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Property-2.html">Property</a>&lt;T, TValue&gt;</td>
-        <td><p>Property field; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if property doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_GetGetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.GetGetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L36">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>Name of property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Property-2.html">Property</a>&lt;T, TValue&gt;</dt>
+    <dd><p>Property field; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if property doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_GetGetter_" data-uid="DotNext.Reflection.Type`1.Property`1.GetGetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_GetGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetGetter(System.String,System.Boolean)">GetGetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_GetGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetGetter(System.String,System.Boolean)">
+  GetGetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L36"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects instance property getter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberGetter&lt;T, TValue&gt;&gt;? GetGetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, TValue&gt;&gt;</td>
-        <td><p>The reflected getter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if getter method doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_GetSetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.GetSetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L55">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, TValue&gt;&gt;</dt>
+    <dd><p>The reflected getter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if getter method doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_GetSetter_" data-uid="DotNext.Reflection.Type`1.Property`1.GetSetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_GetSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetSetter(System.String,System.Boolean)">GetSetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_GetSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetSetter(System.String,System.Boolean)">
+  GetSetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L55"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects instance property setter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberSetter&lt;T, TValue&gt;&gt;? GetSetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, TValue&gt;&gt;</td>
-        <td><p>The reflected setter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if setter method doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_GetStatic_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.GetStatic(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L74">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, TValue&gt;&gt;</dt>
+    <dd><p>The reflected setter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if setter method doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_GetStatic_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStatic*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_GetStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStatic(System.String,System.Boolean)">GetStatic(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_GetStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStatic(System.String,System.Boolean)">
+  GetStatic(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L74"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects static property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Property&lt;TValue&gt;? GetStatic(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>Name of property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p>True to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Property-1.html">Property</a>&lt;TValue&gt;</td>
-        <td><p>Instance property; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if property doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_GetStaticGetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.GetStaticGetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L93">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>Name of property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p>True to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Property-1.html">Property</a>&lt;TValue&gt;</dt>
+    <dd><p>Instance property; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if property doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_GetStaticGetter_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStaticGetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_GetStaticGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStaticGetter(System.String,System.Boolean)">GetStaticGetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_GetStaticGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStaticGetter(System.String,System.Boolean)">
+  GetStaticGetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L93"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects static property getter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberGetter&lt;TValue&gt;&gt;? GetStaticGetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-1.html">MemberGetter</a>&lt;TValue&gt;&gt;</td>
-        <td><p>The reflected getter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if getter method doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_GetStaticSetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.GetStaticSetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L112">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-1.html">MemberGetter</a>&lt;TValue&gt;&gt;</dt>
+    <dd><p>The reflected getter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if getter method doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_GetStaticSetter_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStaticSetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_GetStaticSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStaticSetter(System.String,System.Boolean)">GetStaticSetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_GetStaticSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.GetStaticSetter(System.String,System.Boolean)">
+  GetStaticSetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L112"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects static property setter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberSetter&lt;TValue&gt;&gt;? GetStaticSetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-1.html">MemberSetter</a>&lt;TValue&gt;&gt;</td>
-        <td><p>The reflected setter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if setter method doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_Require_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.Require(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L27">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-1.html">MemberSetter</a>&lt;TValue&gt;&gt;</dt>
+    <dd><p>The reflected setter method; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if setter method doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_Require_" data-uid="DotNext.Reflection.Type`1.Property`1.Require*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_Require_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.Require(System.String,System.Boolean)">Require(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_Require_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.Require(System.String,System.Boolean)">
+  Require(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L27"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects instance property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Property&lt;T, TValue&gt; Require(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>Name of property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Property-2.html">Property</a>&lt;T, TValue&gt;</td>
-        <td><p>Instance property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.MissingPropertyException.html">MissingPropertyException</a></td>
-        <td><p>Property doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_RequireGetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.RequireGetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L46">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>Name of property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Property-2.html">Property</a>&lt;T, TValue&gt;</dt>
+    <dd><p>Instance property.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.MissingPropertyException.html">MissingPropertyException</a></dt>
+    <dd><p>Property doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_RequireGetter_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireGetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_RequireGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireGetter(System.String,System.Boolean)">RequireGetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_RequireGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireGetter(System.String,System.Boolean)">
+  RequireGetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L46"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects instance property getter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberGetter&lt;T, TValue&gt;&gt; RequireGetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, TValue&gt;&gt;</td>
-        <td><p>The reflected getter method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
-        <td><p>The getter doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_RequireSetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.RequireSetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L65">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-2.html">MemberGetter</a>&lt;T, TValue&gt;&gt;</dt>
+    <dd><p>The reflected getter method.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
+    <dd><p>The getter doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_RequireSetter_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireSetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_RequireSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireSetter(System.String,System.Boolean)">RequireSetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_RequireSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireSetter(System.String,System.Boolean)">
+  RequireSetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L65"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects instance property setter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberSetter&lt;T, TValue&gt;&gt; RequireSetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, TValue&gt;&gt;</td>
-        <td><p>The reflected setter method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
-        <td><p>The setter doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_RequireStatic_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.RequireStatic(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L84">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-2.html">MemberSetter</a>&lt;T, TValue&gt;&gt;</dt>
+    <dd><p>The reflected setter method.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
+    <dd><p>The setter doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_RequireStatic_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStatic*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_RequireStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStatic(System.String,System.Boolean)">RequireStatic(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_RequireStatic_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStatic(System.String,System.Boolean)">
+  RequireStatic(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L84"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects static property.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Property&lt;TValue&gt; RequireStatic(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>Name of property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p>True to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Property-1.html">Property</a>&lt;TValue&gt;</td>
-        <td><p>Instance property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.MissingPropertyException.html">MissingPropertyException</a></td>
-        <td><p>Property doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_RequireStaticGetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.RequireStaticGetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L103">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>Name of property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p>True to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Property-1.html">Property</a>&lt;TValue&gt;</dt>
+    <dd><p>Instance property.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.MissingPropertyException.html">MissingPropertyException</a></dt>
+    <dd><p>Property doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_RequireStaticGetter_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStaticGetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_RequireStaticGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStaticGetter(System.String,System.Boolean)">RequireStaticGetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_RequireStaticGetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStaticGetter(System.String,System.Boolean)">
+  RequireStaticGetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L103"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects static property setter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberGetter&lt;TValue&gt;&gt; RequireStaticGetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-1.html">MemberGetter</a>&lt;TValue&gt;&gt;</td>
-        <td><p>The reflected setter method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
-        <td><p>The setter doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1_RequireStaticSetter_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601.RequireStaticSetter(System.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L122">View Source</a>
-  </span>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberGetter-1.html">MemberGetter</a>&lt;TValue&gt;&gt;</dt>
+    <dd><p>The reflected setter method.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
+    <dd><p>The setter doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
   <a id="DotNext_Reflection_Type_1_Property_1_RequireStaticSetter_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStaticSetter*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Property_1_RequireStaticSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStaticSetter(System.String,System.Boolean)">RequireStaticSetter(string, bool)</h4>
+
+  <h3 id="DotNext_Reflection_Type_1_Property_1_RequireStaticSetter_System_String_System_Boolean_" data-uid="DotNext.Reflection.Type`1.Property`1.RequireStaticSetter(System.String,System.Boolean)">
+  RequireStaticSetter(string, bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L122"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
   <div class="markdown level1 summary"><p>Reflects static property setter method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
+
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Method&lt;MemberSetter&lt;TValue&gt;&gt; RequireStaticSetter(string propertyName, bool nonPublic = false)</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">propertyName</span></td>
-        <td><p>The name of the property.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">nonPublic</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-1.html">MemberSetter</a>&lt;TValue&gt;&gt;</td>
-        <td><p>The reflected setter method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></td>
-        <td><p>The setter doesn't exist.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>propertyName</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The name of the property.</p>
+</dd>
+    <dt><code>nonPublic</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to reflect non-public property.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.Method-1.html">Method</a>&lt;<a class="xref" href="DotNext.Reflection.MemberSetter-1.html">MemberSetter</a>&lt;TValue&gt;&gt;</dt>
+    <dd><p>The reflected setter method.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Reflection.MissingMethodException.html">MissingMethodException</a></dt>
+    <dd><p>The setter doesn't exist.</p>
+</dd>
+  </dl>
+
+
+
 
 </article>
-          </div>
 
-          <div class="hidden-sm col-md-2" role="complementary">
-            <div class="sideaffix">
-              <div class="contribution">
-                <ul class="nav">
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_Type_1_Property_1.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Property%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L9" class="contribution-link">View Source</a>
-                  </li>
-                </ul>
-              </div>
-              <div class="toggle-mode">
-                <div class="icon">
-                  <i aria-hidden="true">☀</i>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="switch-style">
-                  <span class="slider round"></span>
-                </label>
-                <div class="icon">
-                  <i aria-hidden="true">☾</i>
-                </div>
-              </div>
-
-              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In this article</h5>
-              <div></div>
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
-              </nav>
-            </div>
-          </div>
+        <div class="contribution d-print-none">
+          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Properties.cs/#L9" class="edit-link">Edit this page</a>
         </div>
+
+
       </div>
 
-      <footer>
-        <div class="grad-bottom"></div>
-        <div class="footer">
-          <div class="container">
-            <span class="pull-right">
-              <a href="#top">Back to top</a>
-            </span>
-            <div class="pull-left">
-        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-        
-            </div>
-            <div class="toggle-mode pull-right visible-sm visible-xs">
-              <div class="icon">
-                <i aria-hidden="true">☀</i>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="switch-style-m">
-                <span class="slider round"></span>
-              </label>
-              <div class="icon">
-                <i aria-hidden="true">☾</i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
-      </footer>    </div>
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

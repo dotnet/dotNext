@@ -1,93 +1,135 @@
 ﻿<!DOCTYPE html>
-<!--[if IE]><![endif]-->
 <html>
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct Optional&lt;T&gt;
+      <title>Struct Optional&lt;T&gt;
  | .NEXT </title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct Optional&lt;T&gt;
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Struct Optional&lt;T&gt;
  | .NEXT ">
-    <meta name="generator" content="docfx ">
-  
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.json">
-    <meta property="docfx:tocrel" content="toc.json">
-  
-  
-  
-  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
-    <div id="wrapper">
-      <header>
+      
+      <link rel="icon" href="../fav.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.json">
+      <meta name="docfx:tocrel" content="toc.json">
+      
+      
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1.md&amp;value=---%0Auid%3A%20DotNext.Optional%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
 
-        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
+  <script type="module" src="./../public/docfx.min.js"></script>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
-              </a>
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../doc_logo.png" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
             </div>
-            <div class="collapse navbar-collapse" id="navbar">
-              <form class="navbar-form navbar-right" role="search" id="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
-                </div>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        <div class="subnav navbar navbar-default">
-          <div class="container hide-when-search" id="breadcrumb">
-            <ul class="breadcrumb">
-              <li></li>
-            </ul>
           </div>
         </div>
-      </header>
-      <div role="main" class="container body-content hide-when-search">
+      </nav>
+    </header>
 
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
           </div>
         </div>
-        <div class="article row grid-right">
-          <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Optional`1">
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DotNext.Optional`1">
 
 
 
-  <h1 id="DotNext_Optional_1" data-uid="DotNext.Optional`1" class="text-break">Struct Optional&lt;T&gt;
-</h1>
-  <div class="markdown level0 summary"><p>A container object which may or may not contain a value.</p>
-</div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;T&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.istructuralequatable">IStructuralEquatable</a></div>
-    <div><a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad</a>&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad</a>&lt;T&gt;</div>
-    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;&gt;</div>
+  <h1 id="DotNext_Optional_1" data-uid="DotNext.Optional`1" class="text-break">
+    Struct Optional&lt;T&gt;
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L252"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>DotNext.dll</dd></dl>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
+
+  <div class="markdown summary"><p>A container object which may or may not contain a value.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatable&lt;T&gt;, IStructuralEquatable, IOptionMonad&lt;T, Optional&lt;T&gt;&gt;, IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional&lt;Func&lt;object?&gt;&gt;</code></pre>
+  </div>
+
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>T</code></dt>
+    <dd><p>Type of value.</p>
+</dd>
+  </dl>
+
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;&gt;</div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;T&gt;</div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.istructuralequatable">IStructuralEquatable</a></div>
+      <div><a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad</a>&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;&gt;</div>
+      <div><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad</a>&lt;T&gt;</div>
+      <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</div>
+      <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;&gt;</div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist derived">
+    <dt>Inherited Members</dt>
+    <dd>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
@@ -97,1991 +139,11 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.dll</h6>
-  <h5 id="DotNext_Optional_1_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct Optional&lt;T&gt; : IEquatable&lt;Optional&lt;T&gt;&gt;, IEquatable&lt;T&gt;, IStructuralEquatable, IOptionMonad&lt;T, Optional&lt;T&gt;&gt;, IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional&lt;Func&lt;object?&gt;&gt;</code></pre>
-  </div>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="constructors">Constructors
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.%23ctor(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L279">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1__ctor_" data-uid="DotNext.Optional`1.#ctor*"></a>
-  <h4 id="DotNext_Optional_1__ctor__0_" data-uid="DotNext.Optional`1.#ctor(`0)">Optional(T?)</h4>
-  <div class="markdown level1 summary"><p>Constructs non-empty container.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Optional(T? value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>A value to be placed into container.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Optional_1__ctor__0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The property <code>IsNull</code> of the constructed object may be <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>
-if <code class="paramref">value</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.
-The property <code>IsUndefined</code> of the constructed object is always <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</div>
-  <h3 id="properties">Properties
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_HasValue.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.HasValue%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L335">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_HasValue_" data-uid="DotNext.Optional`1.HasValue*"></a>
-  <h4 id="DotNext_Optional_1_HasValue" data-uid="DotNext.Optional`1.HasValue">HasValue</h4>
-  <div class="markdown level1 summary"><p>Indicates whether the value is present.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool HasValue { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Optional_1_HasValue_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>If this property is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> then <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsUndefined">IsUndefined</a> and <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsNull">IsNull</a>
-equal to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_IsNull.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.IsNull%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L352">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_IsNull_" data-uid="DotNext.Optional`1.IsNull*"></a>
-  <h4 id="DotNext_Optional_1_IsNull" data-uid="DotNext.Optional`1.IsNull">IsNull</h4>
-  <div class="markdown level1 summary"><p>Indicates that the value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsNull { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Optional_1_IsNull_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This property returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> only if this instance
-was constructed using <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1__ctor__0_">Optional(T?)</a> with <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> argument.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_IsUndefined.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.IsUndefined%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L343">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_IsUndefined_" data-uid="DotNext.Optional`1.IsUndefined*"></a>
-  <h4 id="DotNext_Optional_1_IsUndefined" data-uid="DotNext.Optional`1.IsUndefined">IsUndefined</h4>
-  <div class="markdown level1 summary"><p>Indicates that the value is undefined.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsUndefined { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Optional_1_IsUndefined_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a></div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_None.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.None%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L326">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_None_" data-uid="DotNext.Optional`1.None*"></a>
-  <h4 id="DotNext_Optional_1_None" data-uid="DotNext.Optional`1.None">None</h4>
-  <div class="markdown level1 summary"><p>Represents optional container without value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; None { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Optional_1_None_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The property <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsUndefined">IsUndefined</a> of returned object is always <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L498">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Value_" data-uid="DotNext.Optional`1.Value*"></a>
-  <h4 id="DotNext_Optional_1_Value" data-uid="DotNext.Optional`1.Value">Value</h4>
-  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T Value { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>No value is present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_ValueOrDefault.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.ValueOrDefault%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L489">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_ValueOrDefault_" data-uid="DotNext.Optional`1.ValueOrDefault*"></a>
-  <h4 id="DotNext_Optional_1_ValueOrDefault" data-uid="DotNext.Optional`1.ValueOrDefault">ValueOrDefault</h4>
-  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise default value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T? ValueOrDefault { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present, otherwise default.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Box.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Box%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L358">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Box_" data-uid="DotNext.Optional`1.Box*"></a>
-  <h4 id="DotNext_Optional_1_Box" data-uid="DotNext.Optional`1.Box">Box()</h4>
-  <div class="markdown level1 summary"><p>Boxes value encapsulated by this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Optional&lt;object&gt; Box()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</td>
-        <td><p>The boxed value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Convert__1__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L579">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
-  <h4 id="DotNext_Optional_1_Convert__1__" data-uid="DotNext.Optional`1.Convert``1()">Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt; mapper)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>delegate*&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;&gt;</td>
-        <td><span class="parametername">mapper</span></td>
-        <td><p>A mapping function to be applied to the value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TResult</span></td>
-        <td><p>The type of the result of the mapping function.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Convert__1__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L579">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
-  <h4 id="DotNext_Optional_1_Convert__1__" data-uid="DotNext.Optional`1.Convert``1()">Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt; mapper)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>delegate*&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;&gt;</td>
-        <td><span class="parametername">mapper</span></td>
-        <td><p>A mapping function to be applied to the value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TResult</span></td>
-        <td><p>The type of the result of the mapping function.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Convert__1_System_Converter__0_DotNext_Optional___0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601(System.Converter%7B%600%2CDotNext.Optional%7B%60%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L569">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
-  <h4 id="DotNext_Optional_1_Convert__1_System_Converter__0_DotNext_Optional___0___" data-uid="DotNext.Optional`1.Convert``1(System.Converter{`0,DotNext.Optional{``0}})">Convert&lt;TResult&gt;(Converter&lt;T, Optional&lt;TResult&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(Converter&lt;T, Optional&lt;TResult&gt;&gt; mapper)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;&gt;</td>
-        <td><span class="parametername">mapper</span></td>
-        <td><p>A mapping function to be applied to the value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TResult</span></td>
-        <td><p>The type of the result of the mapping function.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Convert__1_System_Converter__0___0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Convert%60%601(System.Converter%7B%600%2C%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L543">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
-  <h4 id="DotNext_Optional_1_Convert__1_System_Converter__0___0__" data-uid="DotNext.Optional`1.Convert``1(System.Converter{`0,``0})">Convert&lt;TResult&gt;(Converter&lt;T, TResult&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
-non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(Converter&lt;T, TResult&gt; mapper)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T, TResult&gt;</td>
-        <td><span class="parametername">mapper</span></td>
-        <td><p>A mapping function to be applied to the value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</td>
-        <td><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TResult</span></td>
-        <td><p>The type of the result of the mapping function.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Equals_DotNext_Optional__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(DotNext.Optional%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L648">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
-  <h4 id="DotNext_Optional_1_Equals_DotNext_Optional__0__" data-uid="DotNext.Optional`1.Equals(DotNext.Optional{`0})">Equals(Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Determines whether this container stores
-the same value as other.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(Optional&lt;T&gt; other)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">other</span></td>
-        <td><p>Other container to compare.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container stores the same value as <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L656">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
-  <h4 id="DotNext_Optional_1_Equals_System_Object_" data-uid="DotNext.Optional`1.Equals(System.Object)">Equals(object?)</h4>
-  <div class="markdown level1 summary"><p>Determines whether this container stores
-the same value as other.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override bool Equals(object? other)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">other</span></td>
-        <td><p>Other container to compare.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container stores the same value as <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Equals_System_Object_System_Collections_IEqualityComparer_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(System.Object%2CSystem.Collections.IEqualityComparer)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L671">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
-  <h4 id="DotNext_Optional_1_Equals_System_Object_System_Collections_IEqualityComparer_" data-uid="DotNext.Optional`1.Equals(System.Object,System.Collections.IEqualityComparer)">Equals(object?, IEqualityComparer)</h4>
-  <div class="markdown level1 summary"><p>Performs equality check between stored value
-and the specified value using method <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer.equals">Equals(object, object)</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(object? other, IEqualityComparer comparer)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">other</span></td>
-        <td><p>Other object to compare with <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer">IEqualityComparer</a></td>
-        <td><span class="parametername">comparer</span></td>
-        <td><p>The comparer implementing custom equality check.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">other</code> is equal to <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a> using custom check; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Equals__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Equals(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L637">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
-  <h4 id="DotNext_Optional_1_Equals__0_" data-uid="DotNext.Optional`1.Equals(`0)">Equals(T?)</h4>
-  <div class="markdown level1 summary"><p>Determines whether this container stored the same
-value as the specified value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool Equals(T? other)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">other</span></td>
-        <td><p>Other value to compare.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a> is equal to <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L624">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_GetHashCode_" data-uid="DotNext.Optional`1.GetHashCode*"></a>
-  <h4 id="DotNext_Optional_1_GetHashCode" data-uid="DotNext.Optional`1.GetHashCode">GetHashCode()</h4>
-  <div class="markdown level1 summary"><p>Computes hash code of the stored value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The hash code of the stored value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a></div>
-  <h5 id="DotNext_Optional_1_GetHashCode_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method uses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.equalitycomparer-1">EqualityComparer&lt;T&gt;</a> type
-to get hash code of <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_GetHashCode_System_Collections_IEqualityComparer_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.GetHashCode(System.Collections.IEqualityComparer)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L680">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_GetHashCode_" data-uid="DotNext.Optional`1.GetHashCode*"></a>
-  <h4 id="DotNext_Optional_1_GetHashCode_System_Collections_IEqualityComparer_" data-uid="DotNext.Optional`1.GetHashCode(System.Collections.IEqualityComparer)">GetHashCode(IEqualityComparer)</h4>
-  <div class="markdown level1 summary"><p>Computes hash code for the stored value
-using method <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer.gethashcode">GetHashCode(object)</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int GetHashCode(IEqualityComparer comparer)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer">IEqualityComparer</a></td>
-        <td><span class="parametername">comparer</span></td>
-        <td><p>The comparer implementing hash code function.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The hash code of <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_If__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.If()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L602">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_If_" data-uid="DotNext.Optional`1.If*"></a>
-  <h4 id="DotNext_Optional_1_If__" data-uid="DotNext.Optional`1.If()">If(delegate*&lt;T, bool&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, and the value matches the given predicate,
-return an Optional describing the value, otherwise return an empty Optional.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public Optional&lt;T&gt; If(delegate*&lt;T, bool&gt; condition)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>delegate*&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
-        <td><span class="parametername">condition</span></td>
-        <td><p>A predicate to apply to the value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><p>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_If_System_Predicate__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.If(System.Predicate%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L594">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_If_" data-uid="DotNext.Optional`1.If*"></a>
-  <h4 id="DotNext_Optional_1_If_System_Predicate__0__" data-uid="DotNext.Optional`1.If(System.Predicate{`0})">If(Predicate&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, and the value matches the given predicate,
-return an Optional describing the value, otherwise return an empty Optional.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Optional&lt;T&gt; If(Predicate&lt;T&gt; condition)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.predicate-1">Predicate</a>&lt;T&gt;</td>
-        <td><span class="parametername">condition</span></td>
-        <td><p>A predicate to apply to the value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><p>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_IsValueDefined__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.IsValueDefined(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L312">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_IsValueDefined_" data-uid="DotNext.Optional`1.IsValueDefined*"></a>
-  <h4 id="DotNext_Optional_1_IsValueDefined__0_" data-uid="DotNext.Optional`1.IsValueDefined(`0)">IsValueDefined(T?)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the object represents meaningful value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsValueDefined(T? value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to check.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">value</code> is not null,
-or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1.hasvalue">HasValue</a> property is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>,
-or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_HasValue">HasValue</a> property is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>;
-otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_Or__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.Or(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L400">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_Or_" data-uid="DotNext.Optional`1.Or*"></a>
-  <h4 id="DotNext_Optional_1_Or__0_" data-uid="DotNext.Optional`1.Or(`0)">Or(T?)</h4>
-  <div class="markdown level1 summary"><p>Returns the value if present; otherwise return default value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T? Or(T? defaultValue)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">defaultValue</span></td>
-        <td><p>The value to be returned if there is no value present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present, otherwise <code class="paramref">defaultValue</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_OrDefault.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrDefault%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L482">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_OrDefault_" data-uid="DotNext.Optional`1.OrDefault*"></a>
-  <h4 id="DotNext_Optional_1_OrDefault" data-uid="DotNext.Optional`1.OrDefault">OrDefault()</h4>
-  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise return default value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ValueOrDefault property instead.&quot;)]
-public T? OrDefault()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present, otherwise default.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_OrInvoke__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrInvoke()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L475">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_OrInvoke_" data-uid="DotNext.Optional`1.OrInvoke*"></a>
-  <h4 id="DotNext_Optional_1_OrInvoke__" data-uid="DotNext.Optional`1.OrInvoke()">OrInvoke(delegate*&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public T OrInvoke(delegate*&lt;T&gt; defaultFunc)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>delegate*&lt;T&gt;</td>
-        <td><span class="parametername">defaultFunc</span></td>
-        <td><p>A delegate to be invoked if value is not present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present, otherwise returned from delegate.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_OrInvoke_System_Func__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrInvoke(System.Func%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L468">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_OrInvoke_" data-uid="DotNext.Optional`1.OrInvoke*"></a>
-  <h4 id="DotNext_Optional_1_OrInvoke_System_Func__0__" data-uid="DotNext.Optional`1.OrInvoke(System.Func{`0})">OrInvoke(Func&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T OrInvoke(Func&lt;T&gt; defaultFunc)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;T&gt;</td>
-        <td><span class="parametername">defaultFunc</span></td>
-        <td><p>A delegate to be invoked if value is not present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present, otherwise returned from delegate.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_OrThrow__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrThrow()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L452">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
-  <h4 id="DotNext_Optional_1_OrThrow__" data-uid="DotNext.Optional`1.OrThrow()">OrThrow(delegate*&lt;Exception&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public T OrThrow(delegate*&lt;Exception&gt; exceptionFactory)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>&gt;</td>
-        <td><span class="parametername">exceptionFactory</span></td>
-        <td><p>Exception factory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_OrThrow_System_Func_System_Exception__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrThrow(System.Func%7BSystem.Exception%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L442">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
-  <h4 id="DotNext_Optional_1_OrThrow_System_Func_System_Exception__" data-uid="DotNext.Optional`1.OrThrow(System.Func{System.Exception})">OrThrow(Func&lt;Exception&gt;)</h4>
-  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T OrThrow(Func&lt;Exception&gt; exceptionFactory)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>&gt;</td>
-        <td><span class="parametername">exceptionFactory</span></td>
-        <td><p>Exception factory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_OrThrow__1.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.OrThrow%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L408">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
-  <h4 id="DotNext_Optional_1_OrThrow__1" data-uid="DotNext.Optional`1.OrThrow``1">OrThrow&lt;TException&gt;()</h4>
-  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T OrThrow&lt;TException&gt;() where TException : Exception, new()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The value, if present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TException</span></td>
-        <td><p>Type of exception to throw.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L609">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_ToString_" data-uid="DotNext.Optional`1.ToString*"></a>
-  <h4 id="DotNext_Optional_1_ToString" data-uid="DotNext.Optional`1.ToString">ToString()</h4>
-  <div class="markdown level1 summary"><p>Returns textual representation of this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>The textual representation of this object.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_TryGet__0__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.TryGet(%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L365">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_TryGet_" data-uid="DotNext.Optional`1.TryGet*"></a>
-  <h4 id="DotNext_Optional_1_TryGet__0__" data-uid="DotNext.Optional`1.TryGet(`0@)">TryGet(out T)</h4>
-  <div class="markdown level1 summary"><p>Attempts to extract value from container if it is present.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryGet(out T value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>Extracted value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is present; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_TryGet__0__System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.TryGet(%600%40%2CSystem.Boolean%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L377">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_TryGet_" data-uid="DotNext.Optional`1.TryGet*"></a>
-  <h4 id="DotNext_Optional_1_TryGet__0__System_Boolean__" data-uid="DotNext.Optional`1.TryGet(`0@,System.Boolean@)">TryGet(out T, out bool)</h4>
-  <div class="markdown level1 summary"><p>Attempts to extract value from container if it is present.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryGet(out T value, out bool isNull)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>Extracted value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">isNull</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if underlying value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is present; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="operators">Operators
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_BitwiseOr_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_BitwiseOr(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L726">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_BitwiseOr_" data-uid="DotNext.Optional`1.op_BitwiseOr*"></a>
-  <h4 id="DotNext_Optional_1_op_BitwiseOr_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_BitwiseOr(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">operator |(in Optional&lt;T&gt;, in Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns non-empty container.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; operator |(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">first</span></td>
-        <td><p>The first container.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">second</span></td>
-        <td><p>The second container.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><p>The first non-empty container.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Optional_1_op_BitwiseOr_DotNext_Optional__0___DotNext_Optional__0____seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.Optional.html#DotNext_Optional_Coalesce__1_DotNext_Optional___0___DotNext_Optional___0___">Coalesce</a>&lt;T&gt;(in <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;, in <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;)</div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_Equality_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Equality(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L707">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_Equality_" data-uid="DotNext.Optional`1.op_Equality*"></a>
-  <h4 id="DotNext_Optional_1_op_Equality_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_Equality(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">operator ==(in Optional&lt;T&gt;, in Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Determines whether two containers store the same value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator ==(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">first</span></td>
-        <td><p>The first container to compare.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">second</span></td>
-        <td><p>The second container to compare.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both containers store the same value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_ExclusiveOr_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_ExclusiveOr(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L735">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_ExclusiveOr_" data-uid="DotNext.Optional`1.op_ExclusiveOr*"></a>
-  <h4 id="DotNext_Optional_1_op_ExclusiveOr_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_ExclusiveOr(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">operator ^(in Optional&lt;T&gt;, in Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Determines whether two containers are empty or have values.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; operator ^(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">first</span></td>
-        <td><p>The first container.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">second</span></td>
-        <td><p>The second container.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><p><a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>, if both containers are empty or have values; otherwise, non-empty container.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_Explicit_DotNext_Optional__0_____0.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Explicit(DotNext.Optional%7B%600%7D%40)~%600%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L699">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_Explicit_" data-uid="DotNext.Optional`1.op_Explicit*"></a>
-  <h4 id="DotNext_Optional_1_op_Explicit_DotNext_Optional__0_____0" data-uid="DotNext.Optional`1.op_Explicit(DotNext.Optional{`0}@)~`0">explicit operator T(in Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Extracts value stored in the Optional container.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static explicit operator T(in Optional&lt;T&gt; optional)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">optional</span></td>
-        <td><p>The container.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>No value is present.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_False_DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_False(DotNext.Optional%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L757">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_False_" data-uid="DotNext.Optional`1.op_False*"></a>
-  <h4 id="DotNext_Optional_1_op_False_DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_False(DotNext.Optional{`0}@)">operator false(in Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Checks whether the container has no value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator false(in Optional&lt;T&gt; optional)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">optional</span></td>
-        <td><p>The container to check.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container has no value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_Implicit__0__DotNext_Optional__0_.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Implicit(%600)~DotNext.Optional%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L691">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_Implicit_" data-uid="DotNext.Optional`1.op_Implicit*"></a>
-  <h4 id="DotNext_Optional_1_op_Implicit__0__DotNext_Optional__0_" data-uid="DotNext.Optional`1.op_Implicit(`0)~DotNext.Optional{`0}">implicit operator Optional&lt;T&gt;(T?)</h4>
-  <div class="markdown level1 summary"><p>Wraps value into Optional container.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static implicit operator Optional&lt;T&gt;(T? value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to convert.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_Inequality_DotNext_Optional__0___DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_Inequality(DotNext.Optional%7B%600%7D%40%2CDotNext.Optional%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L716">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_Inequality_" data-uid="DotNext.Optional`1.op_Inequality*"></a>
-  <h4 id="DotNext_Optional_1_op_Inequality_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_Inequality(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">operator !=(in Optional&lt;T&gt;, in Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Determines whether two containers store the different values.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator !=(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">first</span></td>
-        <td><p>The first container to compare.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">second</span></td>
-        <td><p>The second container to compare.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both containers store the different values; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1_op_True_DotNext_Optional__0___.md&amp;value=---%0Auid%3A%20DotNext.Optional%601.op_True(DotNext.Optional%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L748">View Source</a>
-  </span>
-  <a id="DotNext_Optional_1_op_True_" data-uid="DotNext.Optional`1.op_True*"></a>
-  <h4 id="DotNext_Optional_1_op_True_DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_True(DotNext.Optional{`0}@)">operator true(in Optional&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Checks whether the container has value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool operator true(in Optional&lt;T&gt; optional)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><span class="parametername">optional</span></td>
-        <td><p>The container to check.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container has value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.istructuralequatable">IStructuralEquatable</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad&lt;T, TSelf&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
-  </div>
-  <h3 id="extensionmethods">Extension Methods</h3>
+  </dd></dl>
+
+  <dl class="typelist extensionMethods">
+    <dt>Extension Methods</dt>
+    <dd>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
@@ -2097,75 +159,1604 @@ public T OrThrow(delegate*&lt;Exception&gt; exceptionFactory)</code></pre>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
   </div>
+  </dd></dl>
+
+
+
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="DotNext_Optional_1__ctor_" data-uid="DotNext.Optional`1.#ctor*"></a>
+
+  <h3 id="DotNext_Optional_1__ctor__0_" data-uid="DotNext.Optional`1.#ctor(`0)">
+  Optional(T?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L279"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Constructs non-empty container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Optional(T? value)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <span class="xref">T</span></dt>
+    <dd><p>A value to be placed into container.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Optional_1__ctor__0__remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>The property <code>IsNull</code> of the constructed object may be <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>
+if <code class="paramref">value</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.
+The property <code>IsUndefined</code> of the constructed object is always <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</div>
+
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="DotNext_Optional_1_HasValue_" data-uid="DotNext.Optional`1.HasValue*"></a>
+
+  <h3 id="DotNext_Optional_1_HasValue" data-uid="DotNext.Optional`1.HasValue">
+  HasValue
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L335"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Indicates whether the value is present.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasValue { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+  <h4 class="section" id="DotNext_Optional_1_HasValue_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>If this property is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> then <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsUndefined">IsUndefined</a> and <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsNull">IsNull</a>
+equal to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Optional_1_IsNull_" data-uid="DotNext.Optional`1.IsNull*"></a>
+
+  <h3 id="DotNext_Optional_1_IsNull" data-uid="DotNext.Optional`1.IsNull">
+  IsNull
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L352"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Indicates that the value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsNull { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+  <h4 class="section" id="DotNext_Optional_1_IsNull_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>This property returns <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> only if this instance
+was constructed using <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1__ctor__0_">Optional(T?)</a> with <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> argument.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Optional_1_IsUndefined_" data-uid="DotNext.Optional`1.IsUndefined*"></a>
+
+  <h3 id="DotNext_Optional_1_IsUndefined" data-uid="DotNext.Optional`1.IsUndefined">
+  IsUndefined
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L343"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Indicates that the value is undefined.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsUndefined { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a></div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_Optional_1_None_" data-uid="DotNext.Optional`1.None*"></a>
+
+  <h3 id="DotNext_Optional_1_None" data-uid="DotNext.Optional`1.None">
+  None
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L326"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Represents optional container without value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; None { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+  <h4 class="section" id="DotNext_Optional_1_None_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>The property <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_IsUndefined">IsUndefined</a> of returned object is always <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Optional_1_Value_" data-uid="DotNext.Optional`1.Value*"></a>
+
+  <h3 id="DotNext_Optional_1_Value" data-uid="DotNext.Optional`1.Value">
+  Value
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L498"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Value { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></dt>
+    <dd><p>No value is present.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="DotNext_Optional_1_ValueOrDefault_" data-uid="DotNext.Optional`1.ValueOrDefault*"></a>
+
+  <h3 id="DotNext_Optional_1_ValueOrDefault" data-uid="DotNext.Optional`1.ValueOrDefault">
+  ValueOrDefault
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L489"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T? ValueOrDefault { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present, otherwise default.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="DotNext_Optional_1_Box_" data-uid="DotNext.Optional`1.Box*"></a>
+
+  <h3 id="DotNext_Optional_1_Box" data-uid="DotNext.Optional`1.Box">
+  Box()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L358"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Boxes value encapsulated by this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Optional&lt;object&gt; Box()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</dt>
+    <dd><p>The boxed value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
+
+  <h3 id="DotNext_Optional_1_Convert__1__" data-uid="DotNext.Optional`1.Convert``1()">
+  Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L579"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt; mapper)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>mapper</code> delegate*&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;&gt;</dt>
+    <dd><p>A mapping function to be applied to the value, if present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</dt>
+    <dd><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TResult</code></dt>
+    <dd><p>The type of the result of the mapping function.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
+
+  <h3 id="DotNext_Optional_1_Convert__1__" data-uid="DotNext.Optional`1.Convert``1()">
+  Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L579"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(delegate*&lt;T, Optional&lt;TResult&gt;&gt; mapper)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>mapper</code> delegate*&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;&gt;</dt>
+    <dd><p>A mapping function to be applied to the value, if present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</dt>
+    <dd><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TResult</code></dt>
+    <dd><p>The type of the result of the mapping function.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
+
+  <h3 id="DotNext_Optional_1_Convert__1_System_Converter__0_DotNext_Optional___0___" data-uid="DotNext.Optional`1.Convert``1(System.Converter{`0,DotNext.Optional{``0}})">
+  Convert&lt;TResult&gt;(Converter&lt;T, Optional&lt;TResult&gt;&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L569"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(Converter&lt;T, Optional&lt;TResult&gt;&gt; mapper)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>mapper</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T, <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;&gt;</dt>
+    <dd><p>A mapping function to be applied to the value, if present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</dt>
+    <dd><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TResult</code></dt>
+    <dd><p>The type of the result of the mapping function.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Convert_" data-uid="DotNext.Optional`1.Convert*"></a>
+
+  <h3 id="DotNext_Optional_1_Convert__1_System_Converter__0___0__" data-uid="DotNext.Optional`1.Convert``1(System.Converter{`0,``0})">
+  Convert&lt;TResult&gt;(Converter&lt;T, TResult&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L543"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, apply the provided mapping function to it, and if the result is
+non-null, return an Optional describing the result. Otherwise returns <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Optional&lt;TResult&gt; Convert&lt;TResult&gt;(Converter&lt;T, TResult&gt; mapper)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>mapper</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T, TResult&gt;</dt>
+    <dd><p>A mapping function to be applied to the value, if present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;TResult&gt;</dt>
+    <dd><p>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TResult</code></dt>
+    <dd><p>The type of the result of the mapping function.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
+
+  <h3 id="DotNext_Optional_1_Equals_DotNext_Optional__0__" data-uid="DotNext.Optional`1.Equals(DotNext.Optional{`0})">
+  Equals(Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L648"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether this container stores
+the same value as other.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(Optional&lt;T&gt; other)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>other</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>Other container to compare.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container stores the same value as <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
+
+  <h3 id="DotNext_Optional_1_Equals_System_Object_" data-uid="DotNext.Optional`1.Equals(System.Object)">
+  Equals(object?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L656"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether this container stores
+the same value as other.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object? other)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>other</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
+    <dd><p>Other container to compare.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container stores the same value as <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
+
+  <h3 id="DotNext_Optional_1_Equals_System_Object_System_Collections_IEqualityComparer_" data-uid="DotNext.Optional`1.Equals(System.Object,System.Collections.IEqualityComparer)">
+  Equals(object?, IEqualityComparer)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L671"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Performs equality check between stored value
+and the specified value using method <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer.equals">Equals(object, object)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(object? other, IEqualityComparer comparer)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>other</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
+    <dd><p>Other object to compare with <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a>.</p>
+</dd>
+    <dt><code>comparer</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer">IEqualityComparer</a></dt>
+    <dd><p>The comparer implementing custom equality check.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">other</code> is equal to <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a> using custom check; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Equals_" data-uid="DotNext.Optional`1.Equals*"></a>
+
+  <h3 id="DotNext_Optional_1_Equals__0_" data-uid="DotNext.Optional`1.Equals(`0)">
+  Equals(T?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L637"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether this container stored the same
+value as the specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(T? other)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>other</code> <span class="xref">T</span></dt>
+    <dd><p>Other value to compare.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a> is equal to <code class="paramref">other</code>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_GetHashCode_" data-uid="DotNext.Optional`1.GetHashCode*"></a>
+
+  <h3 id="DotNext_Optional_1_GetHashCode" data-uid="DotNext.Optional`1.GetHashCode">
+  GetHashCode()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L624"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Computes hash code of the stored value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>The hash code of the stored value.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Optional_1_GetHashCode_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>This method uses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.equalitycomparer-1">EqualityComparer&lt;T&gt;</a> type
+to get hash code of <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a>.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Optional_1_GetHashCode_" data-uid="DotNext.Optional`1.GetHashCode*"></a>
+
+  <h3 id="DotNext_Optional_1_GetHashCode_System_Collections_IEqualityComparer_" data-uid="DotNext.Optional`1.GetHashCode(System.Collections.IEqualityComparer)">
+  GetHashCode(IEqualityComparer)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L680"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Computes hash code for the stored value
+using method <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer.gethashcode">GetHashCode(object)</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int GetHashCode(IEqualityComparer comparer)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>comparer</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.iequalitycomparer">IEqualityComparer</a></dt>
+    <dd><p>The comparer implementing hash code function.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></dt>
+    <dd><p>The hash code of <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_Value">Value</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_If_" data-uid="DotNext.Optional`1.If*"></a>
+
+  <h3 id="DotNext_Optional_1_If__" data-uid="DotNext.Optional`1.If()">
+  If(delegate*&lt;T, bool&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L602"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, and the value matches the given predicate,
+return an Optional describing the value, otherwise return an empty Optional.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public Optional&lt;T&gt; If(delegate*&lt;T, bool&gt; condition)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>condition</code> delegate*&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</dt>
+    <dd><p>A predicate to apply to the value, if present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_If_" data-uid="DotNext.Optional`1.If*"></a>
+
+  <h3 id="DotNext_Optional_1_If_System_Predicate__0__" data-uid="DotNext.Optional`1.If(System.Predicate{`0})">
+  If(Predicate&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L594"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, and the value matches the given predicate,
+return an Optional describing the value, otherwise return an empty Optional.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Optional&lt;T&gt; If(Predicate&lt;T&gt; condition)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>condition</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.predicate-1">Predicate</a>&lt;T&gt;</dt>
+    <dd><p>A predicate to apply to the value, if present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_IsValueDefined_" data-uid="DotNext.Optional`1.IsValueDefined*"></a>
+
+  <h3 id="DotNext_Optional_1_IsValueDefined__0_" data-uid="DotNext.Optional`1.IsValueDefined(`0)">
+  IsValueDefined(T?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L312"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether the object represents meaningful value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsValueDefined(T? value)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <span class="xref">T</span></dt>
+    <dd><p>The value to check.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">value</code> is not null,
+or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.nullable-1.hasvalue">HasValue</a> property is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>,
+or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_HasValue">HasValue</a> property is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>;
+otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_Or_" data-uid="DotNext.Optional`1.Or*"></a>
+
+  <h3 id="DotNext_Optional_1_Or__0_" data-uid="DotNext.Optional`1.Or(`0)">
+  Or(T?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L400"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise return default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T? Or(T? defaultValue)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>defaultValue</code> <span class="xref">T</span></dt>
+    <dd><p>The value to be returned if there is no value present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present, otherwise <code class="paramref">defaultValue</code>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_OrDefault_" data-uid="DotNext.Optional`1.OrDefault*"></a>
+
+  <h3 id="DotNext_Optional_1_OrDefault" data-uid="DotNext.Optional`1.OrDefault">
+  OrDefault()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L482"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise return default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ValueOrDefault property instead.&quot;)]
+public T? OrDefault()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present, otherwise default.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_OrInvoke_" data-uid="DotNext.Optional`1.OrInvoke*"></a>
+
+  <h3 id="DotNext_Optional_1_OrInvoke__" data-uid="DotNext.Optional`1.OrInvoke()">
+  OrInvoke(delegate*&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L475"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public T OrInvoke(delegate*&lt;T&gt; defaultFunc)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>defaultFunc</code> delegate*&lt;T&gt;</dt>
+    <dd><p>A delegate to be invoked if value is not present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present, otherwise returned from delegate.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_OrInvoke_" data-uid="DotNext.Optional`1.OrInvoke*"></a>
+
+  <h3 id="DotNext_Optional_1_OrInvoke_System_Func__0__" data-uid="DotNext.Optional`1.OrInvoke(System.Func{`0})">
+  OrInvoke(Func&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L468"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrInvoke(Func&lt;T&gt; defaultFunc)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>defaultFunc</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;T&gt;</dt>
+    <dd><p>A delegate to be invoked if value is not present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present, otherwise returned from delegate.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
+
+  <h3 id="DotNext_Optional_1_OrThrow__" data-uid="DotNext.Optional`1.OrThrow()">
+  OrThrow(delegate*&lt;Exception&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L452"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public T OrThrow(delegate*&lt;Exception&gt; exceptionFactory)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>exceptionFactory</code> delegate*&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>&gt;</dt>
+    <dd><p>Exception factory.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
+
+  <h3 id="DotNext_Optional_1_OrThrow_System_Func_System_Exception__" data-uid="DotNext.Optional`1.OrThrow(System.Func{System.Exception})">
+  OrThrow(Func&lt;Exception&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L442"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrThrow(Func&lt;Exception&gt; exceptionFactory)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>exceptionFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>&gt;</dt>
+    <dd><p>Exception factory.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_OrThrow_" data-uid="DotNext.Optional`1.OrThrow*"></a>
+
+  <h3 id="DotNext_Optional_1_OrThrow__1" data-uid="DotNext.Optional`1.OrThrow``1">
+  OrThrow&lt;TException&gt;()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L408"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>If a value is present, returns the value, otherwise throw exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrThrow&lt;TException&gt;() where TException : Exception, new()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd><p>The value, if present.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TException</code></dt>
+    <dd><p>Type of exception to throw.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_ToString_" data-uid="DotNext.Optional`1.ToString*"></a>
+
+  <h3 id="DotNext_Optional_1_ToString" data-uid="DotNext.Optional`1.ToString">
+  ToString()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L609"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns textual representation of this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string? ToString()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The textual representation of this object.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_TryGet_" data-uid="DotNext.Optional`1.TryGet*"></a>
+
+  <h3 id="DotNext_Optional_1_TryGet__0__" data-uid="DotNext.Optional`1.TryGet(`0@)">
+  TryGet(out T)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L365"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Attempts to extract value from container if it is present.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGet(out T value)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <span class="xref">T</span></dt>
+    <dd><p>Extracted value.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is present; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_TryGet_" data-uid="DotNext.Optional`1.TryGet*"></a>
+
+  <h3 id="DotNext_Optional_1_TryGet__0__System_Boolean__" data-uid="DotNext.Optional`1.TryGet(`0@,System.Boolean@)">
+  TryGet(out T, out bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L377"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Attempts to extract value from container if it is present.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGet(out T value, out bool isNull)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <span class="xref">T</span></dt>
+    <dd><p>Extracted value.</p>
+</dd>
+    <dt><code>isNull</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if underlying value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is present; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <h2 class="section" id="operators">Operators
+</h2>
+
+
+  <a id="DotNext_Optional_1_op_BitwiseOr_" data-uid="DotNext.Optional`1.op_BitwiseOr*"></a>
+
+  <h3 id="DotNext_Optional_1_op_BitwiseOr_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_BitwiseOr(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">
+  operator |(in Optional&lt;T&gt;, in Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L726"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Returns non-empty container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; operator |(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>first</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The first container.</p>
+</dd>
+    <dt><code>second</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The second container.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The first non-empty container.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.Optional.html#DotNext_Optional_Coalesce__1_DotNext_Optional___0___DotNext_Optional___0___">Coalesce</a>&lt;T&gt;(in <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;, in <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;)</div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_Optional_1_op_Equality_" data-uid="DotNext.Optional`1.op_Equality*"></a>
+
+  <h3 id="DotNext_Optional_1_op_Equality_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_Equality(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">
+  operator ==(in Optional&lt;T&gt;, in Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L707"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether two containers store the same value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>first</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The first container to compare.</p>
+</dd>
+    <dt><code>second</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The second container to compare.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both containers store the same value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_op_ExclusiveOr_" data-uid="DotNext.Optional`1.op_ExclusiveOr*"></a>
+
+  <h3 id="DotNext_Optional_1_op_ExclusiveOr_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_ExclusiveOr(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">
+  operator ^(in Optional&lt;T&gt;, in Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L735"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether two containers are empty or have values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; operator ^(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>first</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The first container.</p>
+</dd>
+    <dt><code>second</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The second container.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p><a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>, if both containers are empty or have values; otherwise, non-empty container.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_op_Explicit_" data-uid="DotNext.Optional`1.op_Explicit*"></a>
+
+  <h3 id="DotNext_Optional_1_op_Explicit_DotNext_Optional__0_____0" data-uid="DotNext.Optional`1.op_Explicit(DotNext.Optional{`0}@)~`0">
+  explicit operator T(in Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L699"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Extracts value stored in the Optional container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static explicit operator T(in Optional&lt;T&gt; optional)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>optional</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The container.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">T</span></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></dt>
+    <dd><p>No value is present.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="DotNext_Optional_1_op_False_" data-uid="DotNext.Optional`1.op_False*"></a>
+
+  <h3 id="DotNext_Optional_1_op_False_DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_False(DotNext.Optional{`0}@)">
+  operator false(in Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L757"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Checks whether the container has no value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator false(in Optional&lt;T&gt; optional)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>optional</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The container to check.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container has no value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_op_Implicit_" data-uid="DotNext.Optional`1.op_Implicit*"></a>
+
+  <h3 id="DotNext_Optional_1_op_Implicit__0__DotNext_Optional__0_" data-uid="DotNext.Optional`1.op_Implicit(`0)~DotNext.Optional{`0}">
+  implicit operator Optional&lt;T&gt;(T?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L691"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Wraps value into Optional container.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Optional&lt;T&gt;(T? value)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>value</code> <span class="xref">T</span></dt>
+    <dd><p>The value to convert.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_op_Inequality_" data-uid="DotNext.Optional`1.op_Inequality*"></a>
+
+  <h3 id="DotNext_Optional_1_op_Inequality_DotNext_Optional__0___DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_Inequality(DotNext.Optional{`0}@,DotNext.Optional{`0}@)">
+  operator !=(in Optional&lt;T&gt;, in Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L716"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Determines whether two containers store the different values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(in Optional&lt;T&gt; first, in Optional&lt;T&gt; second)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>first</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The first container to compare.</p>
+</dd>
+    <dt><code>second</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The second container to compare.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if both containers store the different values; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Optional_1_op_True_" data-uid="DotNext.Optional`1.op_True*"></a>
+
+  <h3 id="DotNext_Optional_1_op_True_DotNext_Optional__0___" data-uid="DotNext.Optional`1.op_True(DotNext.Optional{`0}@)">
+  operator true(in Optional&lt;T&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L748"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Checks whether the container has value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator true(in Optional&lt;T&gt; optional)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>optional</code> <a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</dt>
+    <dd><p>The container to check.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this container has value; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
 
 </article>
-          </div>
 
-          <div class="hidden-sm col-md-2" role="complementary">
-            <div class="sideaffix">
-              <div class="contribution">
-                <ul class="nav">
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Optional_1.md&amp;value=---%0Auid%3A%20DotNext.Optional%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L252" class="contribution-link">View Source</a>
-                  </li>
-                </ul>
-              </div>
-              <div class="toggle-mode">
-                <div class="icon">
-                  <i aria-hidden="true">☀</i>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="switch-style">
-                  <span class="slider round"></span>
-                </label>
-                <div class="icon">
-                  <i aria-hidden="true">☾</i>
-                </div>
-              </div>
-
-              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In this article</h5>
-              <div></div>
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
-              </nav>
-            </div>
-          </div>
+        <div class="contribution d-print-none">
+          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Optional.cs/#L252" class="edit-link">Edit this page</a>
         </div>
+
+
       </div>
 
-      <footer>
-        <div class="grad-bottom"></div>
-        <div class="footer">
-          <div class="container">
-            <span class="pull-right">
-              <a href="#top">Back to top</a>
-            </span>
-            <div class="pull-left">
-        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-        
-            </div>
-            <div class="toggle-mode pull-right visible-sm visible-xs">
-              <div class="icon">
-                <i aria-hidden="true">☀</i>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="switch-style-m">
-                <span class="slider round"></span>
-              </label>
-              <div class="icon">
-                <i aria-hidden="true">☾</i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
-      </footer>    </div>
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

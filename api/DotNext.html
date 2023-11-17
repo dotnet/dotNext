@@ -1,384 +1,491 @@
 ﻿<!DOCTYPE html>
-<!--[if IE]><![endif]-->
 <html>
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Namespace DotNext
+      <title>Namespace DotNext
  | .NEXT </title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Namespace DotNext
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Namespace DotNext
  | .NEXT ">
-    <meta name="generator" content="docfx ">
-  
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.json">
-    <meta property="docfx:tocrel" content="toc.json">
-  
-  
-  
-  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
-    <div id="wrapper">
-      <header>
+      
+      <link rel="icon" href="../fav.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.json">
+      <meta name="docfx:tocrel" content="toc.json">
+      
+      
+      
+      
+      
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
 
-        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
+  <script type="module" src="./../public/docfx.min.js"></script>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
-              </a>
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../doc_logo.png" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
             </div>
-            <div class="collapse navbar-collapse" id="navbar">
-              <form class="navbar-form navbar-right" role="search" id="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
-                </div>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        <div class="subnav navbar navbar-default">
-          <div class="container hide-when-search" id="breadcrumb">
-            <ul class="breadcrumb">
-              <li></li>
-            </ul>
           </div>
         </div>
-      </header>
-      <div role="main" class="container body-content hide-when-search">
+      </nav>
+    </header>
 
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
           </div>
         </div>
-        <div class="article row grid-right">
-          <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext">
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DotNext">
 
   <h1 id="DotNext" data-uid="DotNext" class="text-break">Namespace DotNext
 </h1>
   <div class="markdown level0 summary"></div>
   <div class="markdown level0 conceptual"></div>
   <div class="markdown level0 remarks"></div>
+
     <h3 id="classes">
 Classes
 </h3>
-      <h4><a class="xref" href="DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;</a></h4>
-      <section><p>Represents bitwise comparer for the arbitrary value type.</p>
-</section>
-      <h4><a class="xref" href="DotNext.CharComparer.html">CharComparer</a></h4>
-      <section><p>Represents a character comparison operation that uses specific case and culture-based
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;</a></dt>
+      <dd><p>Represents bitwise comparer for the arbitrary value type.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.CharComparer.html">CharComparer</a></dt>
+      <dd><p>Represents a character comparison operation that uses specific case and culture-based
 or ordinal comparison rules.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Comparison.html">Comparison</a></h4>
-      <section><p>Provides generic methods to work with comparable values.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Converter.html">Converter</a></h4>
-      <section><p>Provides extension methods for delegate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a> and
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Comparison.html">Comparison</a></dt>
+      <dd><p>Provides generic methods to work with comparable values.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Converter.html">Converter</a></dt>
+      <dd><p>Provides extension methods for delegate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a> and
 predefined converters.</p>
-</section>
-      <h4><a class="xref" href="DotNext.DelegateHelpers.html">DelegateHelpers</a></h4>
-      <section><p>Represents various extensions of delegates.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Disposable.html">Disposable</a></h4>
-      <section><p>Provides implementation of dispose pattern.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Disposable-1.html">Disposable&lt;T&gt;</a></h4>
-      <section><p>Represents dispose pattern as a concept.</p>
-</section>
-      <h4><a class="xref" href="DotNext.EnumConverter.html">EnumConverter</a></h4>
-      <section><p>Provides conversion between enum value and primitive types.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Func.html">Func</a></h4>
-      <section><p>Provides extension methods for delegate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func&lt;TResult&gt;</a> and
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.DelegateHelpers.html">DelegateHelpers</a></dt>
+      <dd><p>Represents various extensions of delegates.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Disposable.html">Disposable</a></dt>
+      <dd><p>Provides implementation of dispose pattern.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Disposable-1.html">Disposable&lt;T&gt;</a></dt>
+      <dd><p>Represents dispose pattern as a concept.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.EnumConverter.html">EnumConverter</a></dt>
+      <dd><p>Provides conversion between enum value and primitive types.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Func.html">Func</a></dt>
+      <dd><p>Provides extension methods for delegate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func&lt;TResult&gt;</a> and
 predefined functions.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Function.html">Function</a></h4>
-      <section><p>Provides extension methods for delegates <a class="xref" href="DotNext.Function-2.html">Function&lt;TArgs, TResult&gt;</a> and <a class="xref" href="DotNext.Function-3.html">Function&lt;T, TArgs, TResult&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.GenericArgumentException.html">GenericArgumentException</a></h4>
-      <section><p>The exception that is thrown when one of the generic arguments
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Function.html">Function</a></dt>
+      <dd><p>Provides extension methods for delegates <a class="xref" href="DotNext.Function-2.html">Function&lt;TArgs, TResult&gt;</a> and <a class="xref" href="DotNext.Function-3.html">Function&lt;T, TArgs, TResult&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.GenericArgumentException.html">GenericArgumentException</a></dt>
+      <dd><p>The exception that is thrown when one of the generic arguments
 provided to a type is not valid.</p>
-</section>
-      <h4><a class="xref" href="DotNext.GenericArgumentException-1.html">GenericArgumentException&lt;T&gt;</a></h4>
-      <section><p>The exception that is thrown when one of the generic arguments
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.GenericArgumentException-1.html">GenericArgumentException&lt;T&gt;</a></dt>
+      <dd><p>The exception that is thrown when one of the generic arguments
 provided to a type is not valid.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ObjectExtensions.html">ObjectExtensions</a></h4>
-      <section><p>Various extension methods for reference types.</p>
-</section>
-      <h4><a class="xref" href="DotNext.OneDimensionalArray.html">OneDimensionalArray</a></h4>
-      <section><p>Provides specialized methods to work with one-dimensional array.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Optional.html">Optional</a></h4>
-      <section><p>Various extension and factory methods for constructing optional value.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Predicate.html">Predicate</a></h4>
-      <section><p>Provides extension methods for type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a> and
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ObjectExtensions.html">ObjectExtensions</a></dt>
+      <dd><p>Various extension methods for reference types.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.OneDimensionalArray.html">OneDimensionalArray</a></dt>
+      <dd><p>Provides specialized methods to work with one-dimensional array.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Optional.html">Optional</a></dt>
+      <dd><p>Various extension and factory methods for constructing optional value.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Predicate.html">Predicate</a></dt>
+      <dd><p>Provides extension methods for type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a> and
 predefined predicates.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Procedure.html">Procedure</a></h4>
-      <section><p>Provides extension methods for delegates <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> and <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.RandomExtensions.html">RandomExtensions</a></h4>
-      <section><p>Provides random data generation.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Record-1.html">Record&lt;T&gt;</a></h4>
-      <section><p>Represents a concept that describes a record class.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Result.html">Result</a></h4>
-      <section><p>Represents extension methods for type <a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ServiceProviderFactory.html">ServiceProviderFactory</a></h4>
-      <section><p>Represents various ways for building <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a> implementations.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ServiceProviderFactory.Builder.html">ServiceProviderFactory.Builder</a></h4>
-      <section><p>Represents builder of the service provider.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Span.html">Span</a></h4>
-      <section><p>Provides extension methods for type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.StringExtensions.html">StringExtensions</a></h4>
-      <section><p>Represents various extension methods for type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.TupleExtensions.html">TupleExtensions</a></h4>
-      <section><p>Provides extension methods for tuples.</p>
-</section>
-      <h4><a class="xref" href="DotNext.UndefinedResultException-1.html">UndefinedResultException&lt;TError&gt;</a></h4>
-      <section><p>Indicates that the result of the operation is unavailable.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a></h4>
-      <section><p>Various extensions for value types.</p>
-</section>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Procedure.html">Procedure</a></dt>
+      <dd><p>Provides extension methods for delegates <a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a> and <a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.RandomExtensions.html">RandomExtensions</a></dt>
+      <dd><p>Provides random data generation.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Record-1.html">Record&lt;T&gt;</a></dt>
+      <dd><p>Represents a concept that describes a record class.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Result.html">Result</a></dt>
+      <dd><p>Represents extension methods for type <a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ServiceProviderFactory.html">ServiceProviderFactory</a></dt>
+      <dd><p>Represents various ways for building <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a> implementations.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ServiceProviderFactory.Builder.html">ServiceProviderFactory.Builder</a></dt>
+      <dd><p>Represents builder of the service provider.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Span.html">Span</a></dt>
+      <dd><p>Provides extension methods for type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.StringExtensions.html">StringExtensions</a></dt>
+      <dd><p>Represents various extension methods for type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.TupleExtensions.html">TupleExtensions</a></dt>
+      <dd><p>Provides extension methods for tuples.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.UndefinedResultException-1.html">UndefinedResultException&lt;TError&gt;</a></dt>
+      <dd><p>Indicates that the result of the operation is unavailable.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a></dt>
+      <dd><p>Various extensions for value types.</p>
+</dd>
+    </dl>
     <h3 id="structs">
 Structs
 </h3>
-      <h4><a class="xref" href="DotNext.Activator-1.html">Activator&lt;T&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Activator-1.html">Activator&lt;T&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
 that acts as activator of type with public parameterless constructor.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ConsumerClosure-2.html">ConsumerClosure&lt;TContext, T&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a> interface
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ConsumerClosure-2.html">ConsumerClosure&lt;TContext, T&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a> interface
 with the support of closure that is not allocated on the heap.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Consumer-1.html">Consumer&lt;T&gt;</a></h4>
-      <section><p>Represents typed function pointer implementing <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.DelegatingConsumer-1.html">DelegatingConsumer&lt;T&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a> that delegates
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Consumer-1.html">Consumer&lt;T&gt;</a></dt>
+      <dd><p>Represents typed function pointer implementing <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.DelegatingConsumer-1.html">DelegatingConsumer&lt;T&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a> that delegates
 invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action&lt;T&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.DelegatingSupplier-1.html">DelegatingSupplier&lt;TResult&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a> that delegates
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.DelegatingSupplier-1.html">DelegatingSupplier&lt;TResult&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a> that delegates
 invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func&lt;TResult&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.DelegatingSupplier-2.html">DelegatingSupplier&lt;T, TResult&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a> that delegates
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.DelegatingSupplier-2.html">DelegatingSupplier&lt;T, TResult&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a> that delegates
 invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.DelegatingSupplier-3.html">DelegatingSupplier&lt;T1, T2, TResult&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a> that delegates
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.DelegatingSupplier-3.html">DelegatingSupplier&lt;T1, T2, TResult&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a> that delegates
 invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func&lt;T1, T2, TResult&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.EqualityComparerBuilder-1.html">EqualityComparerBuilder&lt;T&gt;</a></h4>
-      <section><p>Generates hash code and equality check functions for the particular type.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Number-1.html">Number&lt;T&gt;</a></h4>
-      <section><p>Represents any primitive numeric type.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Optional-1.html">Optional&lt;T&gt;</a></h4>
-      <section><p>A container object which may or may not contain a value.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a></h4>
-      <section><p>Represents a result of operation which can be actual result or exception.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Result-2.html">Result&lt;T, TError&gt;</a></h4>
-      <section><p>Represents a result of operation which can be actual result or error code.</p>
-</section>
-      <h4><a class="xref" href="DotNext.SupplierClosure-2.html">SupplierClosure&lt;TContext, TResult&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a> interface
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.EqualityComparerBuilder-1.html">EqualityComparerBuilder&lt;T&gt;</a></dt>
+      <dd><p>Generates hash code and equality check functions for the particular type.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Number-1.html">Number&lt;T&gt;</a></dt>
+      <dd><p>Represents any primitive numeric type.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Optional-1.html">Optional&lt;T&gt;</a></dt>
+      <dd><p>A container object which may or may not contain a value.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a></dt>
+      <dd><p>Represents a result of operation which can be actual result or exception.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Result-2.html">Result&lt;T, TError&gt;</a></dt>
+      <dd><p>Represents a result of operation which can be actual result or error code.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.SupplierClosure-2.html">SupplierClosure&lt;TContext, TResult&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a> interface
 with the support of closure that is not allocated on the heap.</p>
-</section>
-      <h4><a class="xref" href="DotNext.SupplierClosure-3.html">SupplierClosure&lt;TContext, T, TResult&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a> interface
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.SupplierClosure-3.html">SupplierClosure&lt;TContext, T, TResult&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a> interface
 with the support of closure that is not allocated on the heap.</p>
-</section>
-      <h4><a class="xref" href="DotNext.SupplierClosure-4.html">SupplierClosure&lt;TContext, T1, T2, TResult&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a> interface
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.SupplierClosure-4.html">SupplierClosure&lt;TContext, T1, T2, TResult&gt;</a></dt>
+      <dd><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a> interface
 with the support of closure that is not allocated on the heap.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Supplier-1.html">Supplier&lt;TResult&gt;</a></h4>
-      <section><p>Represents typed function pointer implementing <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Supplier-2.html">Supplier&lt;T, TResult&gt;</a></h4>
-      <section><p>Represents typed function pointer implementing <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Supplier-3.html">Supplier&lt;T1, T2, TResult&gt;</a></h4>
-      <section><p>Represents typed function pointer implementing <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot&lt;TValue&gt;</a></h4>
-      <section><p>Uniquely identifies user data which can be associated
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Supplier-1.html">Supplier&lt;TResult&gt;</a></dt>
+      <dd><p>Represents typed function pointer implementing <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Supplier-2.html">Supplier&lt;T, TResult&gt;</a></dt>
+      <dd><p>Represents typed function pointer implementing <a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Supplier-3.html">Supplier&lt;T1, T2, TResult&gt;</a></dt>
+      <dd><p>Represents typed function pointer implementing <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.UserDataSlot-1.html">UserDataSlot&lt;TValue&gt;</a></dt>
+      <dd><p>Uniquely identifies user data which can be associated
 with any object.</p>
-</section>
-      <h4><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></h4>
-      <section><p>Provides access to user data associated with the object.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ValueSupplier-1.html">ValueSupplier&lt;T&gt;</a></h4>
-      <section><p>Represents constant value supplier.</p>
-</section>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></dt>
+      <dd><p>Provides access to user data associated with the object.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ValueSupplier-1.html">ValueSupplier&lt;T&gt;</a></dt>
+      <dd><p>Represents constant value supplier.</p>
+</dd>
+    </dl>
     <h3 id="interfaces">
 Interfaces
 </h3>
-      <h4><a class="xref" href="DotNext.IBuildable-2.html">IBuildable&lt;TSelf, TBuilder&gt;</a></h4>
-      <section><p>Represents builder pattern contract.</p>
-</section>
-      <h4><a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a></h4>
-      <section><p>Represents functional interface returning no value and
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.IBuildable-2.html">IBuildable&lt;TSelf, TBuilder&gt;</a></dt>
+      <dd><p>Represents builder pattern contract.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a></dt>
+      <dd><p>Represents functional interface returning no value and
 accepting the single argument.</p>
-</section>
-      <h4><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad&lt;T&gt;</a></h4>
-      <section><p>Represents common interface for all option monads.</p>
-</section>
-      <h4><a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad&lt;T, TSelf&gt;</a></h4>
-      <section><p>Represents common interface for all option monads.</p>
-</section>
-      <h4><a class="xref" href="DotNext.IResettable.html">IResettable</a></h4>
-      <section><p>Represents common contract for all mutable objects that support revert of their internal state.</p>
-</section>
-      <h4><a class="xref" href="DotNext.IResultMonad-2.html">IResultMonad&lt;T, TError&gt;</a></h4>
-      <section><p>Represents common interface for Result monad.</p>
-</section>
-      <h4><a class="xref" href="DotNext.IResultMonad-3.html">IResultMonad&lt;T, TError, TSelf&gt;</a></h4>
-      <section><p>Represents common interface for Result monad.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a></h4>
-      <section><p>Represents functional interface returning arbitrary value.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a></h4>
-      <section><p>Represents functional interface returning arbitrary value and
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad&lt;T&gt;</a></dt>
+      <dd><p>Represents common interface for all option monads.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad&lt;T, TSelf&gt;</a></dt>
+      <dd><p>Represents common interface for all option monads.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.IResettable.html">IResettable</a></dt>
+      <dd><p>Represents common contract for all mutable objects that support revert of their internal state.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.IResultMonad-2.html">IResultMonad&lt;T, TError&gt;</a></dt>
+      <dd><p>Represents common interface for Result monad.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.IResultMonad-3.html">IResultMonad&lt;T, TError, TSelf&gt;</a></dt>
+      <dd><p>Represents common interface for Result monad.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a></dt>
+      <dd><p>Represents functional interface returning arbitrary value.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ISupplier-2.html">ISupplier&lt;T, TResult&gt;</a></dt>
+      <dd><p>Represents functional interface returning arbitrary value and
 accepting the single argument.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a></h4>
-      <section><p>Represents functional interface returning arbitrary value and
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a></dt>
+      <dd><p>Represents functional interface returning arbitrary value and
 accepting the two arguments.</p>
-</section>
-      <h4><a class="xref" href="DotNext.UserDataStorage.IContainer.html">UserDataStorage.IContainer</a></h4>
-      <section><p>Implementation of this interface allows to customize behavior of
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.UserDataStorage.IContainer.html">UserDataStorage.IContainer</a></dt>
+      <dd><p>Implementation of this interface allows to customize behavior of
 <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">GetUserData&lt;T&gt;(T)</a> method.</p>
-</section>
+</dd>
+    </dl>
     <h3 id="enums">
 Enums
 </h3>
-      <h4><a class="xref" href="DotNext.BoundType.html">BoundType</a></h4>
-      <section><p>Indicates whether an endpoint of some range is contained in the range itself (&quot;closed&quot;) or not (&quot;open&quot;).</p>
-</section>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.BoundType.html">BoundType</a></dt>
+      <dd><p>Indicates whether an endpoint of some range is contained in the range itself (&quot;closed&quot;) or not (&quot;open&quot;).</p>
+</dd>
+    </dl>
     <h3 id="delegates">
 Delegates
 </h3>
-      <h4><a class="xref" href="DotNext.Function-2.html">Function&lt;TArgs, TResult&gt;</a></h4>
-      <section><p>Represents a static function with arbitrary number of arguments
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Function-2.html">Function&lt;TArgs, TResult&gt;</a></dt>
+      <dd><p>Represents a static function with arbitrary number of arguments
 allocated on the stack.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Function-3.html">Function&lt;T, TArgs, TResult&gt;</a></h4>
-      <section><p>Represents an instance function with arbitrary number of arguments
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Function-3.html">Function&lt;T, TArgs, TResult&gt;</a></dt>
+      <dd><p>Represents an instance function with arbitrary number of arguments
 allocated on the stack.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Parser-1.html">Parser&lt;T&gt;</a></h4>
-      <section><p>Represents parsing logic.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a></h4>
-      <section><p>Represents a static procedure with arbitrary number of arguments
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Parser-1.html">Parser&lt;T&gt;</a></dt>
+      <dd><p>Represents parsing logic.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;TArgs&gt;</a></dt>
+      <dd><p>Represents a static procedure with arbitrary number of arguments
 allocated on the stack.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a></h4>
-      <section><p>Represents an instance procedure with arbitrary number of arguments
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, TArgs&gt;</a></dt>
+      <dd><p>Represents an instance procedure with arbitrary number of arguments
 allocated on the stack.</p>
-</section>
-      <h4><a class="xref" href="DotNext.RefAction-2.html">RefAction&lt;T, TArgs&gt;</a></h4>
-      <section><p>Represents action that accepts arbitrary value by reference.</p>
-</section>
-      <h4><a class="xref" href="DotNext.RefFunc-3.html">RefFunc&lt;T, TArgs, TResult&gt;</a></h4>
-      <section><p>Represents delegate that accepts arbitrary value by reference and support
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.RefAction-2.html">RefAction&lt;T, TArgs&gt;</a></dt>
+      <dd><p>Represents action that accepts arbitrary value by reference.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="DotNext.RefFunc-3.html">RefFunc&lt;T, TArgs, TResult&gt;</a></dt>
+      <dd><p>Represents delegate that accepts arbitrary value by reference and support
 return value.</p>
-</section>
+</dd>
+    </dl>
 
 
 </article>
-          </div>
 
-          <div class="hidden-sm col-md-2" role="complementary">
-            <div class="sideaffix">
-              <div class="contribution">
-                <ul class="nav">
-                </ul>
-              </div>
-              <div class="toggle-mode">
-                <div class="icon">
-                  <i aria-hidden="true">☀</i>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="switch-style">
-                  <span class="slider round"></span>
-                </label>
-                <div class="icon">
-                  <i aria-hidden="true">☾</i>
-                </div>
-              </div>
-
-              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In this article</h5>
-              <div></div>
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
-              </nav>
-            </div>
-          </div>
+        <div class="contribution d-print-none">
         </div>
+
+
       </div>
 
-      <footer>
-        <div class="grad-bottom"></div>
-        <div class="footer">
-          <div class="container">
-            <span class="pull-right">
-              <a href="#top">Back to top</a>
-            </span>
-            <div class="pull-left">
-        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-        
-            </div>
-            <div class="toggle-mode pull-right visible-sm visible-xs">
-              <div class="icon">
-                <i aria-hidden="true">☀</i>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="switch-style-m">
-                <span class="slider round"></span>
-              </label>
-              <div class="icon">
-                <i aria-hidden="true">☾</i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
-      </footer>    </div>
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>

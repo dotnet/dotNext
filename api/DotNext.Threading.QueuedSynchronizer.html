@@ -1,103 +1,146 @@
 ﻿<!DOCTYPE html>
-<!--[if IE]><![endif]-->
 <html>
-
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class QueuedSynchronizer
+      <title>Class QueuedSynchronizer
  | .NEXT </title>
-    <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class QueuedSynchronizer
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class QueuedSynchronizer
  | .NEXT ">
-    <meta name="generator" content="docfx ">
-  
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.json">
-    <meta property="docfx:tocrel" content="toc.json">
-  
-  
-  
-  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
-    <div id="wrapper">
-      <header>
+      
+      <link rel="icon" href="../fav.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.json">
+      <meta name="docfx:tocrel" content="toc.json">
+      
+      
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+  </head>
 
-        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
-          <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
+  <script type="module" src="./../public/docfx.min.js"></script>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
-              </a>
+  <script>
+    const theme = localStorage.getItem('theme') || 'auto'
+    document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+  </script>
+
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../doc_logo.png" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
             </div>
-            <div class="collapse navbar-collapse" id="navbar">
-              <form class="navbar-form navbar-right" role="search" id="search">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
-                </div>
-              </form>
-            </div>
-          </div>
-        </nav>
-
-        <div class="subnav navbar navbar-default">
-          <div class="container hide-when-search" id="breadcrumb">
-            <ul class="breadcrumb">
-              <li></li>
-            </ul>
           </div>
         </div>
-      </header>
-      <div role="main" class="container body-content hide-when-search">
+      </nav>
+    </header>
 
-        <div class="sidenav hide-when-search">
-          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
-          <div class="sidetoggle collapse" id="sidetoggle">
-            <div id="sidetoc"></div>
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
           </div>
         </div>
-        <div class="article row grid-right">
-          <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.QueuedSynchronizer">
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" style="margin-top: -.65em; margin-left: -.8em" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="DotNext.Threading.QueuedSynchronizer">
 
 
 
-  <h1 id="DotNext_Threading_QueuedSynchronizer" data-uid="DotNext.Threading.QueuedSynchronizer" class="text-break">Class QueuedSynchronizer
-</h1>
-  <div class="markdown level0 summary"><p>Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.</p>
+  <h1 id="DotNext_Threading_QueuedSynchronizer" data-uid="DotNext.Threading.QueuedSynchronizer" class="text-break">
+    Class QueuedSynchronizer
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L24"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>DotNext.Threading.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.</p>
 </div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
-    <div class="level2"><span class="xref">QueuedSynchronizer</span></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncAutoResetEvent.html">AsyncAutoResetEvent</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncCounter.html">AsyncCounter</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncManualResetEvent.html">AsyncManualResetEvent</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncSharedLock.html">AsyncSharedLock</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncTrigger.html">AsyncTrigger</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.AsyncTrigger-1.html">AsyncTrigger&lt;TState&gt;</a></div>
-      <div class="level3"><a class="xref" href="DotNext.Threading.QueuedSynchronizer-1.html">QueuedSynchronizer&lt;TContext&gt;</a></div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class QueuedSynchronizer : Disposable, IDisposable</code></pre>
   </div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
+
+
+
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+      <div><span class="xref">QueuedSynchronizer</span></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist derived">
+    <dt>Derived</dt>
+    <dd>
+      <div><a class="xref" href="DotNext.Threading.AsyncAutoResetEvent.html">AsyncAutoResetEvent</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncCounter.html">AsyncCounter</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncManualResetEvent.html">AsyncManualResetEvent</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncSharedLock.html">AsyncSharedLock</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncTrigger.html">AsyncTrigger</a></div>
+      <div><a class="xref" href="DotNext.Threading.AsyncTrigger-1.html">AsyncTrigger&lt;TState&gt;</a></div>
+      <div><a class="xref" href="DotNext.Threading.QueuedSynchronizer-1.html">QueuedSynchronizer&lt;TContext&gt;</a></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist derived">
+    <dt>Inherited Members</dt>
+    <dd>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
@@ -161,436 +204,11 @@
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
-  </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_syntax">Syntax</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class QueuedSynchronizer : Disposable, IDisposable</code></pre>
-  </div>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>This class is designed to provide better throughput rather than optimized response time.
-It means that it minimizes contention between concurrent calls and allows to process
-as many concurrent requests as possible by the cost of the execution time of a single
-method for a particular caller.</p>
-</div>
-  <h3 id="properties">Properties
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_LockContentionCounter.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.LockContentionCounter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L138">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_LockContentionCounter_" data-uid="DotNext.Threading.QueuedSynchronizer.LockContentionCounter*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_LockContentionCounter" data-uid="DotNext.Threading.QueuedSynchronizer.LockContentionCounter">LockContentionCounter</h4>
-  <div class="markdown level1 summary"><p>Sets counter for lock contention.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
-public IncrementingEventCounter? LockContentionCounter { init; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.incrementingeventcounter">IncrementingEventCounter</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_LockDurationCounter.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.LockDurationCounter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L147">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_LockDurationCounter_" data-uid="DotNext.Threading.QueuedSynchronizer.LockDurationCounter*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_LockDurationCounter" data-uid="DotNext.Threading.QueuedSynchronizer.LockDurationCounter">LockDurationCounter</h4>
-  <div class="markdown level1 summary"><p>Sets counter of lock duration, in milliseconds.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
-public EventCounter? LockDurationCounter { init; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.eventcounter">EventCounter</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_MeasurementTags.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.MeasurementTags%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L58">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_MeasurementTags_" data-uid="DotNext.Threading.QueuedSynchronizer.MeasurementTags*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_MeasurementTags" data-uid="DotNext.Threading.QueuedSynchronizer.MeasurementTags">MeasurementTags</h4>
-  <div class="markdown level1 summary"><p>Sets a list of tags to be associated with each measurement.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public TagList MeasurementTags { init; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.taglist">TagList</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L345">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_" data-uid="DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers(System.Threading.CancellationToken)">CancelSuspendedCallers(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Cancels all suspended callers.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void CancelSuspendedCallers(CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The canceled token.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">token</code> is not in canceled state.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>The object has been disposed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L422">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_Dispose_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)">Dispose(bool)</h4>
-  <div class="markdown level1 summary"><p>Releases all resources associated with this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">disposing</span></td>
-        <td><p>Indicates whether the <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_">Dispose(bool)</a> has been called directly or from finalizer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is not thread-safe and may not be used concurrently with other members of this instance.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_Dispose_System_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.Dispose(System.Exception)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L429">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_Dispose_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Exception_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose(System.Exception)">Dispose(Exception?)</h4>
-  <div class="markdown level1 summary"><p>Releases all resources associated with this object.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Dispose(Exception? reason)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
-        <td><span class="parametername">reason</span></td>
-        <td><p>The exeption to be passed to all suspended callers.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L462">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_DisposeAsync_" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsync*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_DisposeAsync" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsync">DisposeAsync()</h4>
-  <div class="markdown level1 summary"><p>Disposes this synchronization primitive gracefully.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L438">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore_" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore">DisposeAsyncCore()</h4>
-  <div class="markdown level1 summary"><p>Releases managed resources associated with this object asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override ValueTask DisposeAsyncCore()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous execution of this method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a></div>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L131">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers" data-uid="DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers">GetSuspendedCallers()</h4>
-  <div class="markdown level1 summary"><p>Gets a list of suspended callers respecting their order in wait queue.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;object?&gt; GetSuspendedCallers()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</td>
-        <td><p>A list of suspended callers.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method is introduced for debugging purposes only.</p>
-</div>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers_seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">TrackSuspendedCallers(Func&lt;object&gt;?)</a></div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.SetCallerInformation(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L93">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_" data-uid="DotNext.Threading.QueuedSynchronizer.SetCallerInformation*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_" data-uid="DotNext.Threading.QueuedSynchronizer.SetCallerInformation(System.Object)">SetCallerInformation(object)</h4>
-  <div class="markdown level1 summary"><p>Sets caller information in DEBUG configuration.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Conditional(&quot;DEBUG&quot;)]
-public void SetCallerInformation(object information)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">information</span></td>
-        <td><p>The object that identifies the caller.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>It is recommended to inject caller information immediately before calling of <code>WaitAsync</code> method.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers(System.Func%7BSystem.Object%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L81">View Source</a>
-  </span>
-  <a id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers*"></a>
-  <h4 id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__" data-uid="DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers(System.Func{System.Object})">TrackSuspendedCallers(Func&lt;object&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Enables capturing information about suspended callers in DEBUG configuration.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Conditional(&quot;DEBUG&quot;)]
-public void TrackSuspendedCallers(Func&lt;object&gt;? callerInfoProvider = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</td>
-        <td><span class="parametername">callerInfoProvider</span></td>
-        <td><p>The optional factory of the information about the caller.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>If <code class="paramref">callerInfoProvider</code> is provided then no need to use <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">SetCallerInformation(object)</a>.</p>
-</div>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
-  </div>
-  <h3 id="extensionmethods">Extension Methods</h3>
+  </dd></dl>
+
+  <dl class="typelist extensionMethods">
+    <dt>Extension Methods</dt>
+    <dd>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
@@ -642,75 +260,443 @@ public void TrackSuspendedCallers(Func&lt;object&gt;? callerInfoProvider = null)
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  </dd></dl>
+
+
+
+  <h2 id="DotNext_Threading_QueuedSynchronizer_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>This class is designed to provide better throughput rather than optimized response time.
+It means that it minimizes contention between concurrent calls and allows to process
+as many concurrent requests as possible by the cost of the execution time of a single
+method for a particular caller.</p>
+</div>
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_LockContentionCounter_" data-uid="DotNext.Threading.QueuedSynchronizer.LockContentionCounter*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_LockContentionCounter" data-uid="DotNext.Threading.QueuedSynchronizer.LockContentionCounter">
+  LockContentionCounter
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L138"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Sets counter for lock contention.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
+public IncrementingEventCounter? LockContentionCounter { init; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.incrementingeventcounter">IncrementingEventCounter</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_LockDurationCounter_" data-uid="DotNext.Threading.QueuedSynchronizer.LockDurationCounter*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_LockDurationCounter" data-uid="DotNext.Threading.QueuedSynchronizer.LockDurationCounter">
+  LockDurationCounter
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L147"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Sets counter of lock duration, in milliseconds.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
+public EventCounter? LockDurationCounter { init; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.eventcounter">EventCounter</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_MeasurementTags_" data-uid="DotNext.Threading.QueuedSynchronizer.MeasurementTags*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_MeasurementTags" data-uid="DotNext.Threading.QueuedSynchronizer.MeasurementTags">
+  MeasurementTags
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L58"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Sets a list of tags to be associated with each measurement.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public TagList MeasurementTags { init; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.taglist">TagList</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_" data-uid="DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers(System.Threading.CancellationToken)">
+  CancelSuspendedCallers(CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L345"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Cancels all suspended callers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void CancelSuspendedCallers(CancellationToken token)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd><p>The canceled token.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></dt>
+    <dd><p><code class="paramref">token</code> is not in canceled state.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></dt>
+    <dd><p>The object has been disposed.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_Dispose_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)">
+  Dispose(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L422"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Releases all resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>disposing</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p>Indicates whether the <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_">Dispose(bool)</a> has been called directly or from finalizer.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean__remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>This method is not thread-safe and may not be used concurrently with other members of this instance.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_Dispose_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Exception_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose(System.Exception)">
+  Dispose(Exception?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L429"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Releases all resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose(Exception? reason)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>reason</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></dt>
+    <dd><p>The exeption to be passed to all suspended callers.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_DisposeAsync_" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsync*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_DisposeAsync" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsync">
+  DisposeAsync()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L462"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Disposes this synchronization primitive gracefully.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></dt>
+    <dd><p>The task representing asynchronous result.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore_" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore">
+  DisposeAsyncCore()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L438"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Releases managed resources associated with this object asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override ValueTask DisposeAsyncCore()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></dt>
+    <dd><p>The task representing asynchronous execution of this method.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers" data-uid="DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers">
+  GetSuspendedCallers()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L131"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets a list of suspended callers respecting their order in wait queue.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IReadOnlyList&lt;object?&gt; GetSuspendedCallers()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</dt>
+    <dd><p>A list of suspended callers.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>This method is introduced for debugging purposes only.</p>
+</div>
+
+
+  <dl class="typelist seealso">
+    <dt>See Also</dt>
+    <dd>
+    <div><a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">TrackSuspendedCallers(Func&lt;object&gt;?)</a></div>
+    </dd>
+  </dl>
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_" data-uid="DotNext.Threading.QueuedSynchronizer.SetCallerInformation*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_" data-uid="DotNext.Threading.QueuedSynchronizer.SetCallerInformation(System.Object)">
+  SetCallerInformation(object)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L93"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Sets caller information in DEBUG configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Conditional(&quot;DEBUG&quot;)]
+public void SetCallerInformation(object information)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>information</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></dt>
+    <dd><p>The object that identifies the caller.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object__remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>It is recommended to inject caller information immediately before calling of <code>WaitAsync</code> method.</p>
+</div>
+
+
+
+
+  <a id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers*"></a>
+
+  <h3 id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__" data-uid="DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers(System.Func{System.Object})">
+  TrackSuspendedCallers(Func&lt;object&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L81"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Enables capturing information about suspended callers in DEBUG configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Conditional(&quot;DEBUG&quot;)]
+public void TrackSuspendedCallers(Func&lt;object&gt;? callerInfoProvider = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>callerInfoProvider</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</dt>
+    <dd><p>The optional factory of the information about the caller.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h4 class="section" id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object___remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>If <code class="paramref">callerInfoProvider</code> is provided then no need to use <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">SetCallerInformation(object)</a>.</p>
+</div>
+
+
+
+
 
 </article>
-          </div>
 
-          <div class="hidden-sm col-md-2" role="complementary">
-            <div class="sideaffix">
-              <div class="contribution">
-                <ul class="nav">
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L24" class="contribution-link">View Source</a>
-                  </li>
-                </ul>
-              </div>
-              <div class="toggle-mode">
-                <div class="icon">
-                  <i aria-hidden="true">☀</i>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" id="switch-style">
-                  <span class="slider round"></span>
-                </label>
-                <div class="icon">
-                  <i aria-hidden="true">☾</i>
-                </div>
-              </div>
-
-              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <h5>In this article</h5>
-              <div></div>
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
-              </nav>
-            </div>
-          </div>
+        <div class="contribution d-print-none">
+          <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L24" class="edit-link">Edit this page</a>
         </div>
+
+
       </div>
 
-      <footer>
-        <div class="grad-bottom"></div>
-        <div class="footer">
-          <div class="container">
-            <span class="pull-right">
-              <a href="#top">Back to top</a>
-            </span>
-            <div class="pull-left">
-        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
-        
-            </div>
-            <div class="toggle-mode pull-right visible-sm visible-xs">
-              <div class="icon">
-                <i aria-hidden="true">☀</i>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="switch-style-m">
-                <span class="slider round"></span>
-              </label>
-              <div class="icon">
-                <i aria-hidden="true">☾</i>
-              </div>
-            </div>
-          </div>
-        </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
-      </footer>    </div>
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
