@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +13,6 @@ using Membership;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
-using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 
 internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
@@ -136,6 +136,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         var enumerator = members.GetEnumerator();
         try
         {
+            var forced = false;
             for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset(), ReuseEnumerator(ref members, ref enumerator))
             {
                 var startTime = new Timestamp();
@@ -143,9 +144,21 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 // do not resume suspended callers that came after the barrier, resume them in the next iteration
                 replicationQueue.SwitchValve();
 
-                // we want to minimize GC intrusion during replication process
-                // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
-                var scope = GCLatencyModeScope.SustainedLowLatency;
+                GCLatencyMode latencyMode;
+                if (forced)
+                {
+                    // in case of forced (initiated programmatically, not by timeout) replication
+                    // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
+                    Unsafe.SkipInit(out latencyMode);
+                }
+                else
+                {
+                    // we want to minimize GC intrusion during replication process
+                    // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
+                    latencyMode = GCSettings.LatencyMode;
+                    GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+                }
+
                 try
                 {
                     // Perf: the code in this block is inlined instead of moved to separated method because
@@ -200,7 +213,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 finally
                 {
                     var broadcastTime = startTime.ElapsedMilliseconds;
-                    scope.Dispose();
+
+                    if (forced)
+                        GCSettings.LatencyMode = latencyMode;
+
                     Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
                     LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
                 }
@@ -209,7 +225,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 replicationQueue.Drain();
 
                 // wait for heartbeat timeout or forced replication
-                await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);
+                forced = await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);
             }
         }
         finally
