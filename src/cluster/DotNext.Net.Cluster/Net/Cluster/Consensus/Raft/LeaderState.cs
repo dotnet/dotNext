@@ -17,7 +17,6 @@ using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private const int MaxTermCacheSize = 100;
     private readonly long currentTerm;
     private readonly CancellationTokenSource timerCancellation;
     internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
@@ -37,8 +36,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         context = new();
-        replicatorFactory = CreateReplicator;
-        localReplicatorFactory = CreateLocalMemberReplicator;
+        replicatorFactory = localReplicatorFactory = CreateDefaultReplicator;
     }
 
     internal ILeaderStateMetrics? Metrics
@@ -47,14 +45,12 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         init;
     }
 
-    // highly unlikely that this method completes asynchronously
-    private async ValueTask<(long, long, int)> SendHeartbeatsAsync(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
+    private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
     {
         Replicator replicator;
         Task<Result<bool>> response;
         long commitIndex = auditTrail.LastCommittedEntryIndex,
-            currentIndex = auditTrail.LastEntryIndex,
-            minPrecedingIndex = 0L;
+            currentIndex = auditTrail.LastEntryIndex;
 
         var majority = 0;
 
@@ -65,15 +61,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             if (member.IsRemote)
             {
                 var precedingIndex = member.State.PrecedingIndex;
-                minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
-
-                // try to get term from the cache to avoid touching audit trail for each member
-                if (!precedingTermCache.TryGet(precedingIndex, out var precedingTerm))
-                    precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
                 replicator = context.GetOrCreate(member, replicatorFactory);
-                replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex, precedingTerm);
+                replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex);
                 response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, token);
             }
             else
@@ -85,14 +76,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         responsePipe.Complete();
         majority = (majority >> 1) + 1;
-
-        // Clear cache:
-        // 1. Best case: remove all entries from the cache up to the minimal observed index (those entries will never be requested)
-        // 2. Worst case: cleanup the entire cache because one of the members too far behind of the leader (perhaps, it's unavailable)
-        if (precedingTermCache.ApproximatedCount < MaxTermCacheSize)
-            precedingTermCache.RemovePriorTo(minPrecedingIndex);
-        else
-            precedingTermCache.Clear();
 
         return (currentIndex, commitIndex, majority);
     }
@@ -167,8 +150,8 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 {
                     // Perf: the code in this block is inlined instead of moved to separated method because
                     // we want to prevent allocation of state machine on every call
-                    (long currentIndex, long commitIndex, int majority) = await SendHeartbeatsAsync(responsePipe, auditTrail, configurationStorage, enumerator, token).ConfigureAwait(false);
-                    int quorum = 0, commitQuorum = 0;
+                    int quorum = 0, commitQuorum = 0, majority;
+                    (long currentIndex, long commitIndex, majority) = ForkHeartbeats(responsePipe, auditTrail, configurationStorage, enumerator, token);
 
                     while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
                     {
@@ -306,7 +289,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
             replicationEvent.Dispose();
 
-            precedingTermCache.Clear();
             context.Dispose();
         }
 
