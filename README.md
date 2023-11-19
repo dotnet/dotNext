@@ -44,21 +44,13 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-16-2023
+Release Date: 11-19-2023
 
-<a href="https://www.nuget.org/packages/dotnext/4.15.2">DotNext 4.15.2</a>
-* Reduced memory allocation caused by async methods using [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) state machine builder
-* Fixed [204](https://github.com/dotnet/dotNext/issues/204)
-
-<a href="https://www.nuget.org/packages/dotnext.threading/4.15.2">DotNext.Threading 4.15.2</a>
-* Fixed [205](https://github.com/dotnet/dotNext/issues/205)
-* `AsyncCountdownEvent.Reset` now throws `PendingTaskInterruptedException` on every caller suspended by `WaitAsync`
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.2">DotNext.Net.Cluster 4.15.2</a>
-* Raft performance: reduced memory allocation caused by heartbeat round
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.3">DotNext.Net.Cluster 4.15.3</a>
+* `SustainedLowLatency` GC mode is now applied for heartbeats round initiated by heartbeat timeout. A round forced by replication programmatically doesn't set this mode that allows GC to be more intrusive. This trade-off provides better balance between memory consumption and replication time
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.2">DotNext.AspNetCore.Cluster 4.15.2</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.3">DotNext.AspNetCore.Cluster 4.15.3</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).

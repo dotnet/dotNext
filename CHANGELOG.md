@@ -1,6 +1,14 @@
 Release Notes
 ====
 
+# 11-19-2023
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.3">DotNext.Net.Cluster 4.15.3</a>
+* `SustainedLowLatency` GC mode is now applied for heartbeats round initiated by heartbeat timeout. A round forced by replication programmatically doesn't set this mode that allows GC to be more intrusive. This trade-off provides better balance between memory consumption and replication time
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.3">DotNext.AspNetCore.Cluster 4.15.3</a>
+* Updated dependencies
+
 # 11-16-2023
 <a href="https://www.nuget.org/packages/dotnext/4.15.2">DotNext 4.15.2</a>
 * Reduced memory allocation caused by async methods using [SpawningAsyncTaskMethodBuilder](https://dotnet.github.io/dotNext/api/DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder.html) state machine builder
