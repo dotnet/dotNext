@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
-using System.Runtime.Versioning;
 
 namespace DotNext.Buffers.Binary;
 
@@ -11,14 +10,12 @@ using Intrinsics = Runtime.Intrinsics;
 
 public static partial class BinaryTransformations
 {
-    [RequiresPreviewFeatures]
     private interface IEndiannessTransformation<T> : IUnaryTransformation<T>
         where T : unmanaged
     {
         Vector128<byte> ReorderMask { get; }
     }
 
-    [RequiresPreviewFeatures]
     private static void ReverseEndianness<T, TTransformation>(Span<T> buffer, TTransformation transformation)
         where T : unmanaged
         where TTransformation : struct, IEndiannessTransformation<T>
@@ -48,7 +45,6 @@ public static partial class BinaryTransformations
             item = TTransformation.Transform(item);
     }
 
-    [RequiresPreviewFeatures]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ReverseEndianness<T, TTransformation>(Span<T> buffer)
         where T : unmanaged
@@ -67,8 +63,6 @@ public static partial class BinaryTransformations
                 break;
         }
     }
-
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 
     /// <summary>
     /// Reverse endianness of 16-bit signed integers in-place.
@@ -114,9 +108,7 @@ public static partial class BinaryTransformations
     [CLSCompliant(false)]
     public static void ReverseEndianness(this Span<ulong> buffer)
         => ReverseEndianness<ulong, UInt64Transformation>(buffer);
-#pragma warning restore CA2252
 
-    [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
     private readonly struct UInt16Transformation : IEndiannessTransformation<ushort>
     {
@@ -143,7 +135,6 @@ public static partial class BinaryTransformations
         static ushort IUnaryTransformation<ushort>.Transform(ushort value) => BinaryPrimitives.ReverseEndianness(value);
     }
 
-    [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
     private readonly struct UInt32Transformation : IEndiannessTransformation<uint>
     {
@@ -170,7 +161,6 @@ public static partial class BinaryTransformations
         static uint IUnaryTransformation<uint>.Transform(uint value) => BinaryPrimitives.ReverseEndianness(value);
     }
 
-    [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
     private readonly struct UInt64Transformation : IEndiannessTransformation<ulong>
     {

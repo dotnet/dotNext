@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using System.Text;
 using static System.Buffers.Binary.BinaryPrimitives;
 
@@ -253,7 +252,6 @@ public static partial class BufferHelpers
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to convert.</param>
-    [RequiresPreviewFeatures]
     public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, T value)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -268,7 +266,6 @@ public static partial class BufferHelpers
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">A sequence of values to convert.</param>
-    [RequiresPreviewFeatures]
     public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, scoped ReadOnlySpan<T> values)
         where T : notnull, IBinaryFormattable<T>
     {

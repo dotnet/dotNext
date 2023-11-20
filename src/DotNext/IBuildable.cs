@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace DotNext;
 
 /// <summary>
@@ -15,6 +13,5 @@ public interface IBuildable<out TSelf, out TBuilder>
     /// Creates a new builder for type <typeparamref name="TSelf"/>.
     /// </summary>
     /// <returns>A new builder for type <typeparamref name="TSelf"/>.</returns>
-    [RequiresPreviewFeatures]
     public static abstract TBuilder CreateBuilder();
 }

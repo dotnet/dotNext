@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
-using System.Runtime.Versioning;
 
 namespace DotNext.Buffers.Binary;
 
@@ -10,14 +9,12 @@ namespace DotNext.Buffers.Binary;
 /// </summary>
 public static partial class BinaryTransformations
 {
-    [RequiresPreviewFeatures]
     private interface IUnaryTransformation<T>
         where T : unmanaged
     {
         public static abstract T Transform(T value);
     }
 
-    [RequiresPreviewFeatures]
     private interface IBinaryTransformation<T>
         where T : unmanaged
     {
