@@ -16,7 +16,6 @@
     <PackageVersion Include="System.IO.Pipelines" Version="7.0.0" />
     <PackageVersion Include="System.Resources.Extensions" Version="7.0.0"/>
     <PackageVersion Include="System.Runtime.Caching" Version="7.0.0" />
-    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0"/>
     <PackageVersion Include="System.Threading.Channels" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
