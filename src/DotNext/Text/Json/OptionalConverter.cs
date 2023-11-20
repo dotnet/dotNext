@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
 namespace DotNext.Text.Json;
 
@@ -8,10 +9,9 @@ namespace DotNext.Text.Json;
 /// Represents JSON converter for <see cref="Optional{T}"/> data type.
 /// </summary>
 /// <typeparam name="T">The type of the value in <see cref="Optional{T}"/> container.</typeparam>
-public sealed class OptionalConverter<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]T> : JsonConverter<Optional<T>>
+public sealed class OptionalConverter<T> : JsonConverter<Optional<T>>
 {
     /// <inheritdoc />
-    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
     [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     public override void Write(Utf8JsonWriter writer, Optional<T> value, JsonSerializerOptions options)
     {
@@ -23,14 +23,29 @@ public sealed class OptionalConverter<[DynamicallyAccessedMembers(DynamicallyAcc
                 writer.WriteNullValue();
                 break;
             default:
-                // TODO: Attempt to extract IJsonTypeInfo resolver for type T in .NET 7 to avoid Reflection
-                JsonSerializer.Serialize<T?>(writer, value.ValueOrDefault, options);
+                var typeInfo = options.GetTypeInfo(typeof(T));
+                if (typeInfo is JsonTypeInfo<T?> info)
+                {
+                    JsonSerializer.Serialize(writer, value.ValueOrDefault, info);
+                }
+                else
+                {
+                    JsonSerializer.Serialize(writer, value.ValueOrDefault, typeInfo);
+                }
+
                 break;
         }
     }
 
     /// <inheritdoc />
-    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "Public properties/fields are preserved")]
     public override Optional<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => new(reader.TokenType is JsonTokenType.Null ? default : JsonSerializer.Deserialize<T>(ref reader, options));
+    {
+        JsonTypeInfo typeInfo;
+        return new(
+            reader.TokenType is JsonTokenType.Null ?
+            default
+            : (typeInfo = options.GetTypeInfo(typeof(T))) is JsonTypeInfo<T?>
+            ? JsonSerializer.Deserialize(ref reader, (JsonTypeInfo<T>)typeInfo)
+            : (T?)JsonSerializer.Deserialize(ref reader, typeInfo));
+    }
 }
