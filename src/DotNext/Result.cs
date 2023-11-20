@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace DotNext;
 
@@ -159,6 +161,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// <value>The reference to the result.</value>
     /// <exception cref="Exception">The result is unavailable.</exception>
     [UnscopedRef]
+    [JsonIgnore]
     public ref readonly T ValueRef
     {
         get
@@ -426,6 +429,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <value>The reference to the result.</value>
     /// <exception cref="UndefinedResultException{TError}">The value is unavailable.</exception>
     [UnscopedRef]
+    [JsonIgnore]
     public ref readonly T ValueRef
     {
         get

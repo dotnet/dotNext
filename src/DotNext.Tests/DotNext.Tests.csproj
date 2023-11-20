@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/dotnet/DotNext</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnet/DotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
 
   <PropertyGroup>

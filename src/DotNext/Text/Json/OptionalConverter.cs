@@ -24,9 +24,9 @@ public sealed class OptionalConverter<T> : JsonConverter<Optional<T>>
                 break;
             default:
                 var typeInfo = options.GetTypeInfo(typeof(T));
-                if (typeInfo is JsonTypeInfo<T?> info)
+                if (typeInfo is JsonTypeInfo<T?> typed)
                 {
-                    JsonSerializer.Serialize(writer, value.ValueOrDefault, info);
+                    JsonSerializer.Serialize(writer, value.ValueOrDefault, typed);
                 }
                 else
                 {
