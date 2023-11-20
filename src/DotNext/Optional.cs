@@ -166,63 +166,6 @@ public static class Optional
         where T : class?
         => new(null);
 
-    private static ref readonly T GetReference<T, TException>(in Optional<T> optional, TException exceptionFactory)
-        where T : struct
-        where TException : struct, ISupplier<Exception>
-    {
-        optional.Validate(exceptionFactory);
-        return ref Optional<T>.GetReference(in optional);
-    }
-
-    /// <summary>
-    /// Obtains immutable reference to the value in the container.
-    /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <typeparam name="TException">The type of the exception to throw if the optional container has no value.</typeparam>
-    /// <param name="optional">The optional container.</param>
-    /// <returns>The immutable reference to the value in the container.</returns>
-    public static ref readonly T GetReference<T, TException>(in Optional<T> optional)
-        where T : struct
-        where TException : Exception, new()
-        => ref GetReference(in optional, new Activator<TException>());
-
-    /// <summary>
-    /// Obtains immutable reference to the value in the container.
-    /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <param name="optional">The optional container.</param>
-    /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
-    /// <returns>The immutable reference to the value in the container.</returns>
-    public static ref readonly T GetReference<T>(in Optional<T> optional, Func<Exception> exceptionFactory)
-        where T : struct
-        => ref GetReference<T, DelegatingSupplier<Exception>>(in optional, exceptionFactory);
-
-    /// <summary>
-    /// Obtains immutable reference to the value in the container.
-    /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <param name="optional">The optional container.</param>
-    /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
-    /// <returns>The immutable reference to the value in the container.</returns>
-    [CLSCompliant(false)]
-    public static unsafe ref readonly T GetReference<T>(in Optional<T> optional, delegate*<Exception> exceptionFactory)
-        where T : struct
-        => ref GetReference<T, Supplier<Exception>>(in optional, exceptionFactory);
-
-    /// <summary>
-    /// Obtains immutable reference to the value in the container.
-    /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <param name="optional">The optional container.</param>
-    /// <returns>The immutable reference to the value in the container.</returns>
-    /// <exception cref="InvalidOperationException">No value is present.</exception>
-    public static ref readonly T GetReference<T>(in Optional<T> optional)
-        where T : struct
-    {
-        optional.Validate();
-        return ref Optional<T>.GetReference(in optional);
-    }
-
     /// <summary>
     /// Converts the monad to <see cref="Optional{T}"/>.
     /// </summary>
@@ -248,7 +191,6 @@ public static class Optional
 /// A container object which may or may not contain a value.
 /// </summary>
 /// <typeparam name="T">Type of value.</typeparam>
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
 public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, IOptionMonad<T, Optional<T>>
 {
@@ -312,10 +254,6 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public static bool IsValueDefined([NotNullWhen(true)] T? value)
         => value is not null && (!IsOptional || GetKindUnsafe(ref value) is NotEmptyValue);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ref readonly T? GetReference(in Optional<T> optional)
-        => ref optional.value;
 
     /// <summary>
     /// Represents optional container without value.
@@ -476,20 +414,10 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public unsafe T OrInvoke(delegate*<T> defaultFunc) => OrInvoke<Supplier<T>>(defaultFunc);
 
     /// <summary>
-    /// If a value is present, returns the value, otherwise return default value.
-    /// </summary>
-    /// <returns>The value, if present, otherwise default.</returns>
-    [Obsolete("Use ValueOrDefault property instead.")]
-    public T? OrDefault() => ValueOrDefault;
-
-    /// <summary>
     /// If a value is present, returns the value, otherwise default value.
     /// </summary>
     /// <value>The value, if present, otherwise default.</value>
     public T? ValueOrDefault => value;
-
-    /// <inheritdoc />
-    T? IOptionMonad<T>.OrDefault() => ValueOrDefault;
 
     /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
@@ -504,6 +432,61 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
             return value;
         }
     }
+
+    /// <summary>
+    /// Obtains immutable reference to the value in the container.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">No value is present.</exception>
+    [UnscopedRef]
+    [DisallowNull]
+    public ref readonly T ValueRef
+    {
+        get
+        {
+            Validate();
+            return ref value!;
+        }
+    }
+
+    [UnscopedRef]
+    private ref readonly T GetReference<TException>(TException exceptionFactory)
+        where TException : struct, ISupplier<Exception>
+    {
+        Validate(exceptionFactory);
+        return ref value!;
+    }
+
+    /// <summary>
+    /// Obtains immutable reference to the value in the container.
+    /// </summary>
+    /// <typeparam name="TException">The type of the exception to throw if the optional container has no value.</typeparam>
+    /// <returns>The immutable reference to the value in the container.</returns>
+    [UnscopedRef]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public ref readonly T GetReference<TException>()
+        where TException : Exception, new()
+        => ref GetReference(new Activator<TException>());
+
+    /// <summary>
+    /// Obtains immutable reference to the value in the container.
+    /// </summary>
+    /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
+    /// <returns>The immutable reference to the value in the container.</returns>
+    [UnscopedRef]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public ref readonly T GetReference(Func<Exception> exceptionFactory)
+        => ref GetReference<DelegatingSupplier<Exception>>(exceptionFactory);
+
+    /// <summary>
+    /// Obtains immutable reference to the value in the container.
+    /// </summary>
+    /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
+    /// <returns>The immutable reference to the value in the container.</returns>
+    [CLSCompliant(false)]
+    [UnscopedRef]
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public unsafe ref readonly T GetReference(delegate*<Exception> exceptionFactory)
+        => ref GetReference<Supplier<Exception>>(exceptionFactory);
 
     [MemberNotNull(nameof(value))]
     internal void Validate()
@@ -757,4 +740,3 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MemberNotNullWhen(false, nameof(ValueOrDefault))]
     public static bool operator false(in Optional<T> optional) => optional.kind < NotEmptyValue;
 }
-#pragma warning restore CA2252

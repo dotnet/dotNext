@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace DotNext;
 
 /// <summary>
@@ -29,7 +27,6 @@ public interface IResultMonad<T, TError> : IOptionMonad<T>
 /// <typeparam name="T">The type of the result.</typeparam>
 /// <typeparam name="TError">The type that represents an error.</typeparam>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
-[RequiresPreviewFeatures]
 public interface IResultMonad<T, TError, TSelf> : IResultMonad<T, TError>, IOptionMonad<T, TSelf>
     where TError : notnull
     where TSelf : struct, IResultMonad<T, TError, TSelf>

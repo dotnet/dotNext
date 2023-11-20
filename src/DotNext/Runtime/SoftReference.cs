@@ -177,7 +177,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     T? IOptionMonad<T>.Or(T? defaultValue) => Target ?? defaultValue;
 
     /// <inheritdoc />
-    T? IOptionMonad<T>.OrDefault() => Target;
+    T? IOptionMonad<T>.ValueOrDefault => Target;
 
     /// <inheritdoc />
     T IOptionMonad<T>.OrInvoke(Func<T> defaultFunc) => Target ?? defaultFunc();

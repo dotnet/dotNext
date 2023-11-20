@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace DotNext;
 
 /// <summary>
@@ -22,8 +20,8 @@ public interface IOptionMonad<T> : ISupplier<object?>
     /// <summary>
     /// If a value is present, returns the value, otherwise return default value.
     /// </summary>
-    /// <returns>The value, if present, otherwise default.</returns>
-    T? OrDefault();
+    /// <value>The value, if present, otherwise default.</value>
+    T? ValueOrDefault { get; }
 
     /// <summary>
     /// Returns the value if present; otherwise return default value.
@@ -52,7 +50,6 @@ public interface IOptionMonad<T> : ISupplier<object?>
 /// </summary>
 /// <typeparam name="T">The type of the value in the container.</typeparam>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
-[RequiresPreviewFeatures]
 public interface IOptionMonad<T, TSelf> : IOptionMonad<T>
     where TSelf : struct, IOptionMonad<T, TSelf>
 {
