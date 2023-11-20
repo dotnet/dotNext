@@ -75,7 +75,7 @@ public sealed class BufferWriterTests : Test
 
     public static IEnumerable<object[]> CharWriters()
     {
-        yield return new object[] { new PooledBufferWriter<char> { BufferAllocator = MemoryPool<char>.Shared.ToAllocator() } };
+        yield return new object[] { new PooledBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
         yield return new object[] { new PooledArrayBufferWriter<char>() };
         yield return new object[] { new SparseBufferWriter<char>() };
         yield return new object[] { new SparseBufferWriter<char>(32) };
@@ -120,7 +120,7 @@ public sealed class BufferWriterTests : Test
     [Fact]
     public static void EncodeAsString()
     {
-        using (var writer = new PooledBufferWriter<byte> { BufferAllocator = MemoryPool<byte>.Shared.ToAllocator() })
+        using (var writer = new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator()))
         {
             EncodeDecode(writer, Encoding.UTF8);
         }

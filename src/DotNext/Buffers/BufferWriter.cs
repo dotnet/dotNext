@@ -2,7 +2,6 @@ using System.Buffers;
 using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -20,7 +19,6 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     private const string ElementTypeMeterAttribute = "dotnext.buffers.element";
 
     private protected readonly TagList measurementTags;
-    private readonly object? diagObj;
 
     /// <summary>
     /// Represents position of write cursor.
@@ -33,29 +31,6 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     private protected BufferWriter()
     {
         measurementTags = new() { { ElementTypeMeterAttribute, typeof(T).Name } };
-    }
-
-    /// <summary>
-    /// Sets the counter used to report allocation of internal buffer.
-    /// </summary>
-    [DisallowNull]
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public EventCounter? AllocationCounter
-    {
-        private protected get => diagObj as EventCounter;
-        init => diagObj = value;
-    }
-
-    /// <summary>
-    /// Sets the callback used internally to report actual size
-    /// of the allocated buffer.
-    /// </summary>
-    [DisallowNull]
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public Action<int>? BufferSizeCallback
-    {
-        private protected get => diagObj as Action<int>;
-        init => diagObj = value;
     }
 
     /// <summary>

@@ -101,9 +101,8 @@ internal partial class HttpPeerController
         }
         else
         {
-            using var buffer = new PooledBufferWriter<byte>
+            using var buffer = new PooledBufferWriter<byte>(allocator)
             {
-                BufferAllocator = allocator,
                 Capacity = payloadLength.Truncate(),
             };
 

@@ -145,7 +145,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// <inheritdoc/>
     protected sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
     {
-        using var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = bufferSize };
+        using var writer = new PooledBufferWriter<byte>(allocator) { Capacity = bufferSize };
         writer.WriteInt64(configuration.Fingerprint, littleEndian: true);
         await configuration.WriteToAsync(writer, token).ConfigureAwait(false);
 
@@ -179,11 +179,10 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// <inheritdoc/>
     protected sealed override async ValueTask LoadConfigurationAsync(CancellationToken token = default)
     {
-        var builder = ImmutableHashSet.CreateBuilder<TAddress>(comparer);
+        var builder = ImmutableHashSet.CreateBuilder(comparer);
 
-        using var buffer = new PooledBufferWriter<byte>
+        using var buffer = new PooledBufferWriter<byte>(allocator)
         {
-            BufferAllocator = allocator,
             Capacity = active.IsEmpty ? bufferSize : active.Length.Truncate(),
         };
 

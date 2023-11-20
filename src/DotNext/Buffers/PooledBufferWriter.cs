@@ -8,54 +8,14 @@ namespace DotNext.Buffers;
 /// Represents memory writer that uses pooled memory.
 /// </summary>
 /// <typeparam name="T">The data type that can be written.</typeparam>
-public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
+/// <remarks>
+/// Initializes a new writer with the default initial capacity.
+/// </remarks>
+/// <param name="allocator">The allocator of internal buffer.</param>
+public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) : BufferWriter<T>, IMemoryOwner<T>
 {
-    private readonly MemoryAllocator<T>? allocator;
+    private readonly MemoryAllocator<T>? allocator = allocator;
     private MemoryOwner<T> buffer;
-
-    /// <summary>
-    /// Initializes a new writer with the specified initial capacity.
-    /// </summary>
-    /// <param name="allocator">The allocator of internal buffer.</param>
-    /// <param name="initialCapacity">The initial capacity of the writer.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
-    [Obsolete("Use init-only properties to set the capacity and allocator")]
-    public PooledBufferWriter(MemoryAllocator<T>? allocator, int initialCapacity)
-    {
-        if (initialCapacity <= 0)
-            throw new ArgumentOutOfRangeException(nameof(initialCapacity));
-
-        this.allocator = allocator;
-        buffer = allocator.Invoke(initialCapacity, exactSize: false);
-    }
-
-    /// <summary>
-    /// Initializes a new writer with the default initial capacity.
-    /// </summary>
-    /// <param name="allocator">The allocator of internal buffer.</param>
-    [Obsolete("Use init-only properties to set the capacity and allocator")]
-    public PooledBufferWriter(MemoryAllocator<T>? allocator)
-        => this.allocator = allocator;
-
-    /// <summary>
-    /// Initializes a new empty writer.
-    /// </summary>
-    /// <seealso cref="BufferAllocator"/>
-    /// <seealso cref="Capacity"/>
-    public PooledBufferWriter()
-    {
-    }
-
-    /// <summary>
-    /// Sets the allocator of internal buffer.
-    /// </summary>
-    /// <remarks>
-    /// It is recommended to initialize this property before <see cref="Capacity"/>.
-    /// </remarks>
-    public MemoryAllocator<T>? BufferAllocator
-    {
-        init => allocator = value;
-    }
 
     /// <inheritdoc />
     public override int Capacity
@@ -113,10 +73,9 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
 
     private ref readonly MemoryOwner<T> GetBuffer(int sizeHint)
     {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
         ThrowIfDisposed();
+
         CheckAndResizeBuffer(sizeHint);
         return ref buffer;
     }
@@ -153,22 +112,12 @@ public sealed class PooledBufferWriter<T> : BufferWriter<T>, IMemoryOwner<T>
     private protected override void Resize(int newSize)
     {
         buffer.Resize(newSize, false, allocator);
-#pragma warning disable CS0618
-        AllocationCounter?.WriteMetric(buffer.Length);
-#pragma warning restore CS0618
         PooledBufferWriter.AllocationMeter.Record(buffer.Length, measurementTags);
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-#pragma warning disable CS0618
-            BufferSizeCallback?.Invoke(buffer.Length);
-#pragma warning restore CS0618
-        }
-
         buffer.Dispose();
         base.Dispose(disposing);
     }

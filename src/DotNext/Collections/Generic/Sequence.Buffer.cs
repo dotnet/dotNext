@@ -81,11 +81,9 @@ public static partial class Sequence
     public static async Task<MemoryOwner<T>> CopyAsync<T>(this IAsyncEnumerable<T> enumerable, int sizeHint = 0, MemoryAllocator<T>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(enumerable);
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
-        using var buffer = new PooledBufferWriter<T> { BufferAllocator = allocator, Capacity = sizeHint };
+        using var buffer = new PooledBufferWriter<T>(allocator) { Capacity = sizeHint };
 
         await foreach (var item in enumerable.WithCancellation(token).ConfigureAwait(false))
             buffer.Add(item);

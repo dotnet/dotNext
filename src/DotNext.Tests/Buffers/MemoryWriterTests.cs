@@ -72,9 +72,9 @@ public sealed class MemoryWriterTests : Test
     public static void PooledBufferWriterDefaultCapacity()
     {
         var allocator = MemoryPool<byte>.Shared.ToAllocator();
-        using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator })
+        using (var writer = new PooledBufferWriter<byte>(allocator))
             WriteReadUsingSpan(writer);
-        using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator })
+        using (var writer = new PooledBufferWriter<byte>(allocator))
             WriteReadUsingMemory(writer);
     }
 
@@ -83,18 +83,18 @@ public sealed class MemoryWriterTests : Test
     {
         var allocator = MemoryPool<byte>.Shared.ToAllocator();
         Throws<ArgumentOutOfRangeException>(new Action(() => new PooledBufferWriter<byte> { Capacity = -1 }));
-        using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = 30 })
+        using (var writer = new PooledBufferWriter<byte>(allocator) { Capacity = 30 })
             WriteReadUsingSpan(writer);
-        using (var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = 20 })
+        using (var writer = new PooledBufferWriter<byte>(allocator) { Capacity = 20 })
             WriteReadUsingMemory(writer);
     }
 
     [Fact]
     public static void PooledArrayBufferWriterDefaultCapacity()
     {
-        using (var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared })
+        using (var writer = new PooledArrayBufferWriter<byte>())
             WriteReadUsingSpan(writer);
-        using (var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared })
+        using (var writer = new PooledArrayBufferWriter<byte>())
             WriteReadUsingMemory(writer);
     }
 
@@ -188,7 +188,7 @@ public sealed class MemoryWriterTests : Test
     [Fact]
     public static void ReuseMemoryWriter()
     {
-        using var writer = new PooledBufferWriter<byte> { BufferAllocator = MemoryPool<byte>.Shared.ToAllocator() };
+        using var writer = new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator());
         Equal(0, writer.Capacity);
         var span = writer.GetSpan(10);
         span[0] = 20;
