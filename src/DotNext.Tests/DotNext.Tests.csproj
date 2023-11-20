@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFrameworks>net6.0</TargetFrameworks>
+	  <TargetFrameworks>net8.0</TargetFrameworks>
     <RootNamespace>DotNext</RootNamespace>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
-    <Version>4.14.0</Version>
+    <Version>5.0.0</Version>
     <IsPackable>false</IsPackable>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>

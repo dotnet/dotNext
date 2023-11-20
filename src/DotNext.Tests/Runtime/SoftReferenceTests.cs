@@ -100,13 +100,13 @@ public sealed class SoftReferenceTests : Test
         False(monad.HasValue);
         False(monad.TryGet(out _));
         Equal(string.Empty, monad.OrInvoke(Func.Constant(string.Empty)));
-        Null(monad.OrDefault());
+        Null(monad.ValueOrDefault);
         Equal(string.Empty, monad.Or(string.Empty));
 
         monad = new SoftReference<object>(new());
         True(monad.HasValue);
         True(monad.TryGet(out var target));
-        Same(monad.OrDefault(), target);
+        Same(monad.ValueOrDefault, target);
         Same(target, monad.Or(string.Empty));
         Same(target, monad.OrInvoke(Func.Constant(string.Empty)));
     }
