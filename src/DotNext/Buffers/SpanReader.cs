@@ -12,7 +12,8 @@ namespace DotNext.Buffers;
 [StructLayout(LayoutKind.Auto)]
 public ref struct SpanReader<T>
 {
-    private readonly ReadOnlySpan<T> span;
+    private readonly ref T reference;
+    private readonly int length;
     private int position;
 
     /// <summary>
@@ -21,8 +22,8 @@ public ref struct SpanReader<T>
     /// <param name="span">The span to read from.</param>
     public SpanReader(ReadOnlySpan<T> span)
     {
-        this.span = span;
-        position = 0;
+        reference = ref MemoryMarshal.GetReference(span);
+        length = span.Length;
     }
 
     /// <summary>
@@ -30,13 +31,16 @@ public ref struct SpanReader<T>
     /// </summary>
     /// <param name="reference">Managed pointer to the memory block.</param>
     /// <param name="length">The length of the elements referenced by the pointer.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public SpanReader(ref T reference, int length)
     {
-        if (Unsafe.IsNullRef(ref reference))
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+
+        if (Unsafe.IsNullRef(ref reference) && length > 0)
             throw new ArgumentNullException(nameof(reference));
 
-        span = MemoryMarshal.CreateReadOnlySpan(ref reference, length);
-        position = 0;
+        this.reference = ref reference;
+        this.length = length;
     }
 
     /// <summary>
@@ -48,10 +52,10 @@ public ref struct SpanReader<T>
     {
         get
         {
-            if ((uint)position >= (uint)span.Length)
+            if ((uint)position >= (uint)length)
                 ThrowInvalidOperationException();
 
-            return ref Unsafe.Add(ref MemoryMarshal.GetReference(span), position);
+            return ref Unsafe.Add(ref reference, position);
 
             [DoesNotReturn]
             [StackTraceHidden]
@@ -67,37 +71,32 @@ public ref struct SpanReader<T>
         readonly get => position;
         set
         {
-            if ((uint)value > (uint)span.Length)
-                ThrowArgumentOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)value, (uint)length);
 
             position = value;
-
-            [StackTraceHidden]
-            [DoesNotReturn]
-            static void ThrowArgumentOutOfRangeException()
-                => throw new ArgumentOutOfRangeException(nameof(value));
         }
     }
 
     /// <summary>
     /// Gets the number of unread elements.
     /// </summary>
-    public readonly int RemainingCount => span.Length - position;
+    public readonly int RemainingCount => length - position;
 
     /// <summary>
     /// Gets underlying span.
     /// </summary>
-    public readonly ReadOnlySpan<T> Span => span;
+    public readonly ReadOnlySpan<T> Span => MemoryMarshal.CreateReadOnlySpan(ref reference, length);
 
     /// <summary>
     /// Gets the span over consumed elements.
     /// </summary>
-    public readonly ReadOnlySpan<T> ConsumedSpan => span.Slice(0, position);
+    public readonly ReadOnlySpan<T> ConsumedSpan => MemoryMarshal.CreateReadOnlySpan(ref reference, position);
 
     /// <summary>
     /// Gets the remaining part of the span.
     /// </summary>
-    public readonly ReadOnlySpan<T> RemainingSpan => span.Slice(position);
+    public readonly ReadOnlySpan<T> RemainingSpan
+        => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref reference, position), RemainingCount);
 
     /// <summary>
     /// Advances the position of this reader.
@@ -106,8 +105,7 @@ public ref struct SpanReader<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
     public void Advance(int count)
     {
-        if ((uint)count > (uint)RemainingCount)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)RemainingCount);
 
         position += count;
     }
@@ -119,8 +117,7 @@ public ref struct SpanReader<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="ConsumedCount"/>.</exception>
     public void Rewind(int count)
     {
-        if ((uint)count > (uint)position)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)position);
 
         position -= count;
     }
@@ -147,16 +144,13 @@ public ref struct SpanReader<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     public bool TryRead(int count, out ReadOnlySpan<T> result)
     {
-        if (count < 0)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         var newLength = position + count;
 
-        if ((uint)newLength <= (uint)span.Length)
+        if ((uint)newLength <= (uint)length)
         {
-            result = MemoryMarshal.CreateReadOnlySpan(
-                ref Unsafe.Add(ref MemoryMarshal.GetReference(span), position),
-                count);
+            result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref reference, position), count);
             position = newLength;
             return true;
         }
@@ -172,9 +166,9 @@ public ref struct SpanReader<T>
     /// <returns><see langword="true"/> if element is obtained successfully; otherwise, <see langword="false"/>.</returns>
     public bool TryRead([MaybeNullWhen(false)] out T result)
     {
-        if ((uint)position < (uint)span.Length)
+        if ((uint)position < (uint)length)
         {
-            result = Unsafe.Add(ref MemoryMarshal.GetReference(span), position++);
+            result = Unsafe.Add(ref reference, position++);
             return true;
         }
 
@@ -225,15 +219,6 @@ public ref struct SpanReader<T>
     [StackTraceHidden]
     private static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException();
 
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowCountOutOfRangeException() => throw new ArgumentOutOfRangeException("count");
-
-    // TODO: Replace with ArgumentNullException.ThrowIfNull in .NET 8
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowArgumentNullException() => throw new ArgumentNullException("reader");
-
     /// <summary>
     /// Decodes the value from the block of memory.
     /// </summary>
@@ -246,8 +231,7 @@ public ref struct SpanReader<T>
     [CLSCompliant(false)]
     public unsafe TResult Read<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count)
     {
-        if (reader is null)
-            ThrowArgumentNullException();
+        ArgumentNullException.ThrowIfNull(reader);
 
         if (!TryRead(count, out var buffer))
             ThrowInternalBufferOverflowException();
@@ -267,8 +251,7 @@ public ref struct SpanReader<T>
     [CLSCompliant(false)]
     public unsafe bool TryRead<TResult>(delegate*<ReadOnlySpan<T>, TResult> reader, int count, [MaybeNullWhen(false)] out TResult result)
     {
-        if (reader is null)
-            ThrowArgumentNullException();
+        ArgumentNullException.ThrowIfNull(reader);
 
         if (TryRead(count, out var buffer))
         {
@@ -287,7 +270,7 @@ public ref struct SpanReader<T>
     public ReadOnlySpan<T> ReadToEnd()
     {
         var result = RemainingSpan;
-        position = span.Length;
+        position = length;
         return result;
     }
 
