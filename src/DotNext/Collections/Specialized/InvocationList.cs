@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -207,14 +208,16 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumeratorCore();
 
-    private static ReadOnlySpan<TDelegate> GetSpan(in object? list) => list switch
+    /// <summary>
+    /// Gets a span over list of delegates.
+    /// </summary>
+    [UnscopedRef]
+    public ReadOnlySpan<TDelegate> Span => list switch
     {
-        null => ReadOnlySpan<TDelegate>.Empty,
+        null => [],
         TDelegate => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<object, TDelegate>(ref Unsafe.AsRef(in list)), 1),
         _ => Unsafe.As<TDelegate[]>(list),
     };
-
-    internal static ReadOnlySpan<TDelegate> GetList(in InvocationList<TDelegate> list) => GetSpan(in list.list);
 }
 
 /// <summary>
@@ -223,16 +226,6 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
 public static class InvocationList
 {
     /// <summary>
-    /// Gets a span over the delegates in the list.
-    /// </summary>
-    /// <typeparam name="TDelegate">The type of the delegates.</typeparam>
-    /// <param name="delegates">The list of delegates.</param>
-    /// <returns>A span over the delegates in the list.</returns>
-    public static ReadOnlySpan<TDelegate> AsSpan<TDelegate>(this ref InvocationList<TDelegate> delegates)
-        where TDelegate : MulticastDelegate
-        => InvocationList<TDelegate>.GetList(in delegates);
-
-    /// <summary>
     /// Invokes all actions in the list.
     /// </summary>
     /// <typeparam name="T">The type of the action argument.</typeparam>
@@ -240,7 +233,7 @@ public static class InvocationList
     /// <param name="arg">The argument of the action.</param>
     public static void Invoke<T>(this InvocationList<Action<T>> actions, T arg)
     {
-        foreach (var action in actions.AsSpan())
+        foreach (var action in actions.Span)
             action(arg);
     }
 
@@ -254,7 +247,7 @@ public static class InvocationList
     /// <param name="arg2">The second argument of the action.</param>
     public static void Invoke<T1, T2>(this InvocationList<Action<T1, T2>> actions, T1 arg1, T2 arg2)
     {
-        foreach (var action in actions.AsSpan())
+        foreach (var action in actions.Span)
             action(arg1, arg2);
     }
 }
