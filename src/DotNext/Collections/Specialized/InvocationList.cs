@@ -17,7 +17,7 @@ using Collections.Generic;
 /// </remarks>
 /// <typeparam name="TDelegate">The type of delegates in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate> // TODO: Workaround for https://github.com/dotnet/runtime/issues/4556
+public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // TODO: Workaround for https://github.com/dotnet/runtime/issues/4556
     where TDelegate : MulticastDelegate
 {
     /// <summary>
@@ -159,6 +159,9 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
         TDelegate => 1,
         _ => Unsafe.As<TDelegate[]>(list).Length,
     };
+
+    /// <inheritdoc cref="IReadOnlyList{T}.this[int]"/>
+    public TDelegate this[int index] => Span[index];
 
     /// <summary>
     /// Combines the delegates in the list to a single delegate.
