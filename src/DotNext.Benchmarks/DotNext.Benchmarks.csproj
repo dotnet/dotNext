@@ -48,7 +48,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />    
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
     <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj" />

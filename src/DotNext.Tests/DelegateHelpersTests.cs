@@ -235,28 +235,6 @@ public sealed class DelegateHelpersTests : Test
     }
 
     [Fact]
-    public static void BindFunction()
-    {
-        static int Sum(in int x, in int y) => x + y;
-
-        Function<int, int, int> fn = Sum;
-
-        Equal(42, fn.Bind(40).Invoke(2));
-    }
-
-    [Fact]
-    public static void BindProcedure()
-    {
-        static void Append(in StringBuilder x, in int y) => x.Append(y);
-
-        Procedure<StringBuilder, int> proc = Append;
-
-        var builder = new StringBuilder();
-        proc.Bind(builder).Invoke(42);
-        Equal("42", builder.ToString(), StringComparer.Ordinal);
-    }
-
-    [Fact]
     public static void Constant()
     {
         Equal(42, Func.Constant(42).Invoke());
