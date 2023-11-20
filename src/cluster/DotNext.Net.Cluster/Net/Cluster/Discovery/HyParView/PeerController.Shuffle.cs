@@ -121,7 +121,7 @@ public partial class PeerController
 
             // send random part of passive view back to origin
             randomizedPassiveView.AddAll(passiveView);
-            random.Shuffle(randomizedPassiveView.WrittenArray);
+            random.Shuffle<EndPoint>(randomizedPassiveView.WrittenArray);
             if (randomizedPassiveView.WrittenCount > announcement.Count)
                 randomizedPassiveView.RemoveLast(randomizedPassiveView.WrittenCount - announcement.Count);
             await ShuffleReplyAsync(origin, randomizedPassiveView, LifecycleToken).ConfigureAwait(false);
