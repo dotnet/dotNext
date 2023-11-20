@@ -39,7 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj"/>
     <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj"/>
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj"/>
