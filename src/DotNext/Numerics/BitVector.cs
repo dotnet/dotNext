@@ -44,7 +44,7 @@ public static class BitVector
         var sizeInBits = sizeof(T) * 8;
         ArgumentOutOfRangeException.ThrowIfLessThan((uint)bits.Length, (uint)sizeInBits, nameof(bits));
 
-        if (Vector256.IsHardwareAccelerated && (sizeInBits & 1) is 0)
+        if (Vector256.IsHardwareAccelerated && int.IsEvenInteger(sizeInBits))
         {
             Get16Bits(ref Unsafe.As<T, byte>(ref value), sizeof(T), ref MemoryMarshal.GetReference(bits));
         }
