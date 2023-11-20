@@ -564,8 +564,7 @@ public sealed class PooledArrayBufferWriter<T> : BufferWriter<T>, ISupplier<Arra
     }
 }
 
-// TODO: Convert to file-local class in C# 11
-internal static class PooledArrayBufferWriter
+file static class PooledArrayBufferWriter
 {
     internal static readonly Histogram<long> AllocationMeter;
 
