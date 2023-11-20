@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
@@ -18,12 +17,11 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     private readonly byte flags;
     private readonly int identifier;
 
-    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
     private LogEntryMetadata(long term, DateTimeOffset timestamp, bool isSnapshot, int? commandId, long? length)
     {
         Term = term;
         this.timestamp = timestamp.UtcTicks;
-        flags = BitVector.ToByte(stackalloc bool[] { commandId.HasValue, isSnapshot });
+        flags = BitVector.FromBits<byte>([commandId.HasValue, isSnapshot]);
         identifier = commandId.GetValueOrDefault();
         this.length = length.GetValueOrDefault(-1L);
     }

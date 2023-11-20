@@ -33,42 +33,38 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     private readonly int commandId;
     private readonly byte flags;
 
-    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
     private BufferedRaftLogEntry(string fileName, int bufferSize, long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.ToByte(stackalloc bool[] { false, snapshot, id.HasValue });
+        flags = BitVector.FromBits<byte>([false, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
     }
 
-    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
     private BufferedRaftLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.ToByte(stackalloc bool[] { false, snapshot, id.HasValue });
+        flags = BitVector.FromBits<byte>([false, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = file;
     }
 
-    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
     private BufferedRaftLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.ToByte(stackalloc bool[] { true, snapshot, id.HasValue });
+        flags = BitVector.FromBits<byte>([true, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = buffer;
     }
 
-    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
     private BufferedRaftLogEntry(long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.ToByte(stackalloc bool[] { true, snapshot, id.HasValue });
+        flags = BitVector.FromBits<byte>([true, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = null;
     }
