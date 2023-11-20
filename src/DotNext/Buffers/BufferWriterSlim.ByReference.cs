@@ -12,11 +12,11 @@ public partial struct BufferWriterSlim<T>
     internal readonly ref struct Ref
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ReadOnlySpan<byte> reference;
+        private readonly ref byte reference;
 
         internal Ref(ref BufferWriterSlim<T> writer)
         {
-            reference = MemoryMarshal.CreateSpan(ref AsRef(ref writer), Size);
+            reference = ref AsRef(ref writer);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             static ref byte AsRef(ref BufferWriterSlim<T> writer)
@@ -32,7 +32,7 @@ public partial struct BufferWriterSlim<T>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                return ref AsWriter(ref MemoryMarshal.GetReference(reference));
+                return ref AsWriter(ref reference);
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 static ref BufferWriterSlim<T> AsWriter(ref byte reference)
