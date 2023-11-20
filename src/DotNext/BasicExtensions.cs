@@ -1,3 +1,4 @@
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
 using static InlineIL.IL;
@@ -6,10 +7,85 @@ using static InlineIL.IL.Emit;
 namespace DotNext;
 
 /// <summary>
-/// Various extensions for value types.
+/// Various extension methods for core data types.
 /// </summary>
-public static class ValueTypeExtensions
+public static class BasicExtensions
 {
+    internal static bool IsNull(object? obj) => obj is null;
+
+    internal static bool IsNotNull(object? obj) => obj is not null;
+
+    internal static bool IsTypeOf<T>(object? obj) => obj is T;
+
+    internal static TOutput Identity<TInput, TOutput>(TInput input)
+        where TInput : TOutput
+        => input;
+
+    /// <summary>
+    /// Provides ad-hoc approach to associate some data with the object
+    /// without modification of it.
+    /// </summary>
+    /// <remarks>
+    /// This method allows to associate arbitrary user data with any object.
+    /// User data storage is not a part of object type declaration.
+    /// Modification of user data doesn't cause modification of internal state of the object.
+    /// The storage is associated with the object reference.
+    /// Any user data are transient and can't be passed across process boundaries (i.e. serialization is not supported).
+    /// </remarks>
+    /// <typeparam name="T">The type of the object.</typeparam>
+    /// <param name="obj">Target object.</param>
+    /// <returns>User data storage.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static UserDataStorage GetUserData<T>(this T obj)
+        where T : class
+        => new(obj);
+
+    /// <summary>
+    /// Checks whether the specified object is equal to one
+    /// of the specified objects.
+    /// </summary>
+    /// <remarks>
+    /// This method uses <see cref="object.Equals(object, object)"/>
+    /// to check equality between two objects.
+    /// </remarks>
+    /// <typeparam name="T">The type of object to compare.</typeparam>
+    /// <param name="value">The object to compare with other.</param>
+    /// <param name="candidates">Candidate objects.</param>
+    /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="candidates"/>.</returns>
+    public static bool IsOneOf<T>(this T value, ReadOnlySpan<T> candidates)
+    {
+        foreach (var other in candidates)
+        {
+            if (EqualityComparer<T>.Default.Equals(value, other))
+                return true;
+        }
+
+        return false;
+    }
+
+    internal static bool IsContravariant(object? obj, Type type) => obj?.GetType().IsAssignableFrom(type) ?? false;
+
+    /// <summary>
+    /// Reinterprets object reference.
+    /// </summary>
+    /// <remarks>
+    /// This method can be used to get access to the explicitly implemented
+    /// interface methods.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// MemoryManager&lt;T&gt; manager;
+    /// manager.As&lt;IDisposable&gt;().Dispose();
+    /// </code>
+    /// </example>
+    /// <typeparam name="T">The target type.</typeparam>
+    /// <param name="obj">The object reference to reinterpret.</param>
+    /// <returns>The reinterpreted <paramref name="obj"/> reference.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T As<T>(this T obj)
+        where T : class?
+        => obj;
+
     internal static TOutput ChangeType<TInput, TOutput>(this TInput input)
         where TInput : struct, IConvertible
         where TOutput : struct, IConvertible
@@ -73,37 +149,29 @@ public static class ValueTypeExtensions
     /// <summary>
     /// Normalizes value in the specified range.
     /// </summary>
-    /// <typeparam name="T">The type of the value to be normalized.</typeparam>
+    /// <typeparam name="TInput">The type of the input value and bounds.</typeparam>
+    /// <typeparam name="TOutput">The type of normalized value.</typeparam>
     /// <param name="value">The value to be normalized. Must be in range [min..max].</param>
     /// <param name="min">The lower bound of the value.</param>
     /// <param name="max">The upper bound of the value.</param>
     /// <returns>The normalized value in range [-1..1] for signed value and [0..1] for unsigned value.</returns>
-    [CLSCompliant(false)]
-    public static float NormalizeToSingle<T>(this T value, T min, T max)
-        where T : struct, IConvertible, IComparable<T>
+    public static TOutput Normalize<TInput, TOutput>(this TInput value, TInput min, TInput max)
+        where TInput : struct, INumberBase<TInput>, IComparisonOperators<TInput, TInput, bool>
+        where TOutput : struct, IFloatingPoint<TOutput>
     {
-        var v = value.ToSingle(InvariantCulture);
-        return value.CompareTo(default) > 0 ?
-            v / max.ToSingle(InvariantCulture) :
-            -v / min.ToSingle(InvariantCulture);
-    }
+        var x = TOutput.CreateChecked(value);
+        TInput y;
+        if (value > TInput.Zero)
+        {
+            y = max;
+        }
+        else
+        {
+            y = min;
+            x = -x;
+        }
 
-    /// <summary>
-    /// Normalizes value in the specified range.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be normalized.</typeparam>
-    /// <param name="value">The value to be normalized. Must be in range [min..max].</param>
-    /// <param name="min">The lower bound of the value.</param>
-    /// <param name="max">The upper bound of the value.</param>
-    /// <returns>The normalized value in range [-1..1] for signed value and [0..1] for unsigned value.</returns>
-    [CLSCompliant(false)]
-    public static double NormalizeToDouble<T>(this T value, T min, T max)
-        where T : struct, IConvertible, IComparable<T>
-    {
-        var v = value.ToDouble(InvariantCulture);
-        return value.CompareTo(default) > 0 ?
-            v / max.ToDouble(InvariantCulture) :
-            -v / min.ToDouble(InvariantCulture);
+        return x / TOutput.CreateChecked(y);
     }
 
     /// <summary>

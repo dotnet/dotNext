@@ -88,7 +88,7 @@ public partial class PersistentState
             lastIndex = ReadInt64LittleEndian(bufferSpan.Slice(LastIndexOffset));
             lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
             snapshot = new(bufferSpan.Slice(SnapshotMetadataOffset));
-            if (ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
+            if (BasicExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
                 votedFor = BoxedClusterMemberId.Box(new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)));
             this.integrityCheck = integrityCheck;
         }

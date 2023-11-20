@@ -213,7 +213,7 @@ public static class EndPointFormatter
 
     private static HttpEndPoint DeserializeHttp(ref SequenceReader reader)
     {
-        var secure = ValueTypeExtensions.ToBoolean(reader.Read<byte>());
+        var secure = BasicExtensions.ToBoolean(reader.Read<byte>());
         DeserializeHost(ref reader, out var hostName, out var port, out var family);
         return new(hostName, port, secure, family);
     }

@@ -13,7 +13,7 @@ public static class Predicate
     /// </summary>
     /// <typeparam name="T">The target type.</typeparam>
     /// <returns>The predicate instance.</returns>
-    public static Predicate<object?> IsTypeOf<T>() => ObjectExtensions.IsTypeOf<T>;
+    public static Predicate<object?> IsTypeOf<T>() => BasicExtensions.IsTypeOf<T>;
 
     /// <summary>
     /// Returns predicate implementing nullability check.
@@ -25,7 +25,7 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T> IsNull<T>()
         where T : class?
-        => ObjectExtensions.IsNull;
+        => BasicExtensions.IsNull;
 
     /// <summary>
     /// Returns predicate checking that input argument
@@ -38,7 +38,7 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T> IsNotNull<T>()
         where T : class?
-        => ObjectExtensions.IsNotNull;
+        => BasicExtensions.IsNotNull;
 
     /// <summary>
     /// Returns predicate checking that input argument of value type

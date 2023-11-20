@@ -18,7 +18,7 @@ internal sealed class SynchronizeExchange : ClientExchange<long?>
         Debug.Assert(headers.Control == FlowControl.Ack);
 
         var reader = new SpanReader<byte>(payload.Span);
-        var hasValue = ValueTypeExtensions.ToBoolean(reader.Read());
+        var hasValue = BasicExtensions.ToBoolean(reader.Read());
         var commitIndex = reader.ReadInt64(true);
         TrySetResult(hasValue ? commitIndex : null);
         return new(false);

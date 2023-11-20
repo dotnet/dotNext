@@ -15,10 +15,10 @@ public readonly ref partial struct UserDataStorage
 {
     /// <summary>
     /// Implementation of this interface allows to customize behavior of
-    /// <see cref="ObjectExtensions.GetUserData{T}(T)"/> method.
+    /// <see cref="BasicExtensions.GetUserData{T}(T)"/> method.
     /// </summary>
     /// <remarks>
-    /// If runtime type of object passed to <see cref="ObjectExtensions.GetUserData{T}(T)"/> method
+    /// If runtime type of object passed to <see cref="BasicExtensions.GetUserData{T}(T)"/> method
     /// provides implementation of this interface then actual <see cref="UserDataStorage"/>
     /// depends on the <see cref="Source"/> implementation.
     /// It is recommended to implement this interface explicitly.

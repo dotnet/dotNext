@@ -65,7 +65,7 @@ internal static class ProtocolStreamExtensions
     internal static async ValueTask<bool> ReadBoolAsync(this ProtocolStream protocol, CancellationToken token)
     {
         await protocol.ReadAsync(sizeof(byte), token).ConfigureAwait(false);
-        return ValueTypeExtensions.ToBoolean(protocol.WrittenBufferSpan[0]);
+        return BasicExtensions.ToBoolean(protocol.WrittenBufferSpan[0]);
     }
 
     internal static ValueTask WriteNullableInt64Async(this ProtocolStream protocol, in long? value, CancellationToken token)

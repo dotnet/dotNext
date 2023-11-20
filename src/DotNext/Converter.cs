@@ -20,7 +20,7 @@ public static class Converter
     /// </remarks>
     public static Converter<TInput, TOutput> Identity<TInput, TOutput>()
         where TInput : TOutput
-        => ObjectExtensions.Identity<TInput, TOutput>;
+        => BasicExtensions.Identity<TInput, TOutput>;
 
     /// <summary>
     /// The converter which returns input argument

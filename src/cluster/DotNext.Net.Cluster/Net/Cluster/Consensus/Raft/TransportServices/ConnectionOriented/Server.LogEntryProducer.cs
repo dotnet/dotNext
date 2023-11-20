@@ -30,7 +30,7 @@ internal partial class Server
 
             var reader = new SpanReader<byte>(stream.WrittenBufferSpan);
             (Id, Term, PrevLogIndex, PrevLogTerm, CommitIndex, entriesCount) = AppendEntriesMessage.Read(ref reader);
-            ApplyConfig = ValueTypeExtensions.ToBoolean(reader.Read());
+            ApplyConfig = BasicExtensions.ToBoolean(reader.Read());
 
             var fingerprint = reader.ReadInt64(true);
             var configLength = reader.ReadInt64(true);

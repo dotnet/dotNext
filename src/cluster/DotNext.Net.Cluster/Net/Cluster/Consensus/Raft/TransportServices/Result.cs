@@ -48,7 +48,7 @@ internal static class Result
     internal static Result<bool> Read(ref SpanReader<byte> reader) => new()
     {
         Term = reader.ReadInt64(true),
-        Value = ValueTypeExtensions.ToBoolean(reader.Read()),
+        Value = BasicExtensions.ToBoolean(reader.Read()),
     };
 
     internal static Result<bool> Read(ReadOnlySpan<byte> input)
