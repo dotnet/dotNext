@@ -79,7 +79,7 @@ public ref struct SpanWriter<T>
         readonly get => position;
         set
         {
-            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)value, (uint)length);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)value, (uint)length, nameof(value));
 
             position = value;
         }
@@ -97,7 +97,7 @@ public ref struct SpanWriter<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the available space in the rest of the memory block.</exception>
     public void Advance(int count)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)FreeCapacity);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)FreeCapacity, nameof(count));
 
         position += count;
     }
@@ -109,7 +109,7 @@ public ref struct SpanWriter<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
     public void Rewind(int count)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)FreeCapacity);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)FreeCapacity, nameof(count));
 
         position -= count;
     }
