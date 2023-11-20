@@ -14,13 +14,6 @@ public sealed class ObjectExtensionsTests : Test
     }
 
     [Fact]
-    public static void OneOfCheck()
-    {
-        True("str".IsOneOf("a", "b", "str"));
-        True("str".IsOneOf(new List<string> { "a", "b", "str" }));
-    }
-
-    [Fact]
     public static void UserDataStorage()
     {
         var slot = new UserDataSlot<long>();

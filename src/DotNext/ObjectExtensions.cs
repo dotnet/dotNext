@@ -48,38 +48,13 @@ public static class ObjectExtensions
     /// </remarks>
     /// <typeparam name="T">The type of object to compare.</typeparam>
     /// <param name="value">The object to compare with other.</param>
-    /// <param name="values">Candidate objects.</param>
-    /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-    public static bool IsOneOf<T>(this T value, IEnumerable<T?> values)
-        where T : class
+    /// <param name="candidates">Candidate objects.</param>
+    /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="candidates"/>.</returns>
+    public static bool IsOneOf<T>(this T value, ReadOnlySpan<T> candidates)
     {
-        foreach (var v in values)
+        foreach (var other in candidates)
         {
-            if (Equals(value, v))
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Checks whether the specified object is equal to one
-    /// of the specified objects.
-    /// </summary>
-    /// <remarks>
-    /// This method uses <see cref="object.Equals(object, object)"/>
-    /// to check equality between two objects.
-    /// </remarks>
-    /// <typeparam name="T">The type of object to compare.</typeparam>
-    /// <param name="value">The object to compare with other.</param>
-    /// <param name="values">Candidate objects.</param>
-    /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-    public static bool IsOneOf<T>(this T value, params T?[] values)
-        where T : class
-    {
-        for (nint i = 0; i < Intrinsics.GetLength(values); i++)
-        {
-            if (Equals(values[i], value))
+            if (EqualityComparer<T>.Default.Equals(value, other))
                 return true;
         }
 

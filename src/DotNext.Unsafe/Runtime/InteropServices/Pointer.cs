@@ -428,7 +428,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         {
             for (int count; length > 0; length -= count, source += count)
             {
-                destination.Write(new ReadOnlySpan<byte>(source, count = length.Truncate()));
+                destination.Write(new ReadOnlySpan<byte>(source, count = int.CreateSaturating(length)));
             }
         }
     }
@@ -462,7 +462,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
         {
             for (int count; length > 0; length -= count, source += count)
             {
-                using var manager = new MemorySource(source, count = length.Truncate());
+                using var manager = new MemorySource(source, count = int.CreateSaturating(length));
                 await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
             }
         }
@@ -518,7 +518,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             var total = 0L;
             for (int bytesRead; length > 0L; total += bytesRead, length -= bytesRead)
             {
-                if ((bytesRead = source.Read(new Span<byte>(&destination[total], length.Truncate()))) is 0)
+                if ((bytesRead = source.Read(new Span<byte>(&destination[total], int.CreateSaturating(length)))) is 0)
                     break;
             }
 
@@ -572,7 +572,7 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
             var total = 0L;
             for (int bytesRead; length > 0L; length -= bytesRead, destination += bytesRead, total += bytesRead)
             {
-                using var manager = new MemorySource(destination, length.Truncate());
+                using var manager = new MemorySource(destination, int.CreateSaturating(length));
                 if ((bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false)) is 0)
                     break;
             }

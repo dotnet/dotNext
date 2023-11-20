@@ -135,11 +135,8 @@ public sealed class ValueTypeTests : Test
     [Fact]
     public static void OneOfValues()
     {
-        True(2.IsOneOf(2, 5, 7));
-        False(2.IsOneOf(3, 5, 7));
-
-        True(2.IsOneOf(new List<int> { 2, 5, 7 }));
-        False(2.IsOneOf(new List<int> { 3, 5, 7 }));
+        True(2.IsOneOf([2, 5, 7]));
+        False(2.IsOneOf([3, 5, 7]));
     }
 
     [Fact]

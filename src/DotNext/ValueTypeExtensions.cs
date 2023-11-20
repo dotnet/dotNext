@@ -16,46 +16,6 @@ public static class ValueTypeExtensions
         => (TOutput)input.ToType(typeof(TOutput), InvariantCulture);
 
     /// <summary>
-    /// Checks whether the specified value is equal to one
-    /// of the specified values.
-    /// </summary>
-    /// <remarks>
-    /// This method uses <see cref="IEquatable{T}.Equals(T)"/>
-    /// to check equality between two values.
-    /// </remarks>
-    /// <typeparam name="T">The type of object to compare.</typeparam>
-    /// <param name="value">The value to compare with other.</param>
-    /// <param name="values">Candidate objects.</param>
-    /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-    public static bool IsOneOf<T>(this T value, IEnumerable<T> values)
-        where T : struct, IEquatable<T>
-    {
-        foreach (var v in values)
-        {
-            if (v.Equals(value))
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Checks whether the specified value is equal to one
-    /// of the specified values.
-    /// </summary>
-    /// <remarks>
-    /// This method uses <see cref="IEquatable{T}.Equals(T)"/>
-    /// to check equality between two values.
-    /// </remarks>
-    /// <typeparam name="T">The type of object to compare.</typeparam>
-    /// <param name="value">The value to compare with other.</param>
-    /// <param name="values">Candidate objects.</param>
-    /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-    public static bool IsOneOf<T>(this T value, params T[] values)
-        where T : struct, IEquatable<T>
-        => values.AsSpan().Contains(value);
-
-    /// <summary>
     /// Attempts to get value from nullable container.
     /// </summary>
     /// <typeparam name="T">The underlying value type of the nullable type.</typeparam>
@@ -109,14 +69,6 @@ public static class ValueTypeExtensions
     /// <returns><see langword="true"/> if <c>value != 0</c>; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ToBoolean(this int value) => value is not 0;
-
-    /// <summary>
-    /// Truncates 64-bit signed integer.
-    /// </summary>
-    /// <param name="value">The value to truncate.</param>
-    /// <returns><see cref="int.MaxValue"/> if <paramref name="value"/> is greater than <see cref="int.MaxValue"/>; otherwise, cast <paramref name="value"/> to <see cref="int"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Truncate(this long value) => value > int.MaxValue ? int.MaxValue : unchecked((int)value);
 
     /// <summary>
     /// Normalizes value in the specified range.

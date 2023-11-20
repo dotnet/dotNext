@@ -114,7 +114,7 @@ public sealed class StreamSegment : Stream, IFlushable
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)
-        => BaseStream.Read(buffer.TrimLength(RemainingBytes.Truncate()));
+        => BaseStream.Read(buffer.TrimLength(int.CreateSaturating(RemainingBytes)));
 
     /// <inheritdoc/>
     public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
@@ -132,7 +132,7 @@ public sealed class StreamSegment : Stream, IFlushable
 
     /// <inheritdoc/>
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
-        => BaseStream.ReadAsync(buffer.TrimLength(RemainingBytes.Truncate()), token);
+        => BaseStream.ReadAsync(buffer.TrimLength(int.CreateSaturating(RemainingBytes)), token);
 
     /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)

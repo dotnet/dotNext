@@ -277,7 +277,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))] // hot path, avoid allocations
     async ValueTask ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
     {
-        var buffer = allocator.Invoke(configurationLength.Truncate(), true);
+        var buffer = allocator.Invoke(int.CreateSaturating(configurationLength), exactSize: true);
         await configurationReader(buffer.Memory, token).ConfigureAwait(false);
         cachedConfig.Clear();
         cachedConfig.Update(buffer, fingerprint);

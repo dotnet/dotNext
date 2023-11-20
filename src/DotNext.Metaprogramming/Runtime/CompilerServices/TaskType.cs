@@ -23,7 +23,7 @@ internal readonly struct TaskType
     internal TaskType(Type taskType)
     {
         this.taskType = taskType;
-        if (taskType.IsOneOf(typeof(ValueTask), typeof(Task)))
+        if (taskType.IsOneOf([typeof(ValueTask), typeof(Task)]))
         {
             resultType = null;
         }

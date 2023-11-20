@@ -632,7 +632,7 @@ public static partial class PipeExtensions
 
                 for (int bytesToConsume; length > 0L && buffer.TryGet(ref consumed, out var block, false) && !block.IsEmpty; consumed = buffer.GetPosition(bytesToConsume, consumed), length -= bytesToConsume)
                 {
-                    bytesToConsume = Math.Min(block.Length, length.Truncate());
+                    bytesToConsume = Math.Min(block.Length, int.CreateSaturating(length));
                     await consumer.Invoke(block.Slice(0, bytesToConsume), token).ConfigureAwait(false);
                 }
             }

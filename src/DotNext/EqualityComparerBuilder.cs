@@ -306,7 +306,7 @@ public readonly struct EqualityComparerBuilder<T>
     {
         var t = typeof(T);
 
-        return t.IsPrimitive || t.IsEnum || t.IsOneOf(typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset))
+        return t.IsPrimitive || t.IsEnum || t.IsOneOf([typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset)])
             ? EqualityComparer<T>.Default
             : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }
