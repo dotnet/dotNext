@@ -34,10 +34,13 @@ public ref struct SpanReader<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
     public SpanReader(ref T reference, int length)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(length);
-
-        if (Unsafe.IsNullRef(ref reference) && length > 0)
-            throw new ArgumentNullException(nameof(reference));
+        switch (length)
+        {
+            case < 0:
+                throw new ArgumentOutOfRangeException(nameof(length));
+            case > 0 when Unsafe.IsNullRef(ref reference):
+                throw new ArgumentNullException(nameof(reference));
+        }
 
         this.reference = ref reference;
         this.length = length;
