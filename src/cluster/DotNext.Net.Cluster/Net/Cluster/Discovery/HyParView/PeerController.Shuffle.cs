@@ -31,10 +31,10 @@ public partial class PeerController
 
             using (var activeViewCopy = activeView.Remove(activePeer).Copy())
             {
-                activeViewCopy.Span.Shuffle(random);
+                random.Shuffle(activeViewCopy.Span);
 
                 using var passiveViewCopy = passiveView.Copy();
-                passiveViewCopy.Span.Shuffle(random);
+                random.Shuffle(passiveViewCopy.Span);
 
                 // add randomly selected peers from active and passive views
                 peersToSend = new PooledArrayBufferWriter<EndPoint> { Capacity = shuffleActiveViewCount + shufflePassiveViewCount };
@@ -121,7 +121,7 @@ public partial class PeerController
 
             // send random part of passive view back to origin
             randomizedPassiveView.AddAll(passiveView);
-            randomizedPassiveView.WrittenArray.AsSpan().Shuffle(random);
+            random.Shuffle(randomizedPassiveView.WrittenArray);
             if (randomizedPassiveView.WrittenCount > announcement.Count)
                 randomizedPassiveView.RemoveLast(randomizedPassiveView.WrittenCount - announcement.Count);
             await ShuffleReplyAsync(origin, randomizedPassiveView, LifecycleToken).ConfigureAwait(false);

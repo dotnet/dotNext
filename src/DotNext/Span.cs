@@ -580,22 +580,6 @@ public static partial class Span
         => CopyTo((ReadOnlySpan<T>)source, destination, out writtenCount);
 
     /// <summary>
-    /// Shuffles elements in the span.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements in the span.</typeparam>
-    /// <param name="span">The span of elements to shuffle.</param>
-    /// <param name="random">The source of random values.</param>
-    public static void Shuffle<T>(this Span<T> span, Random random)
-    {
-        // TODO: Remove in .NET 8: https://github.com/dotnet/runtime/issues/73864
-        for (var i = span.Length - 1; i > 0; i--)
-        {
-            var randomIndex = random.Next(i + 1);
-            Intrinsics.Swap(ref span[randomIndex], ref span[i]);
-        }
-    }
-
-    /// <summary>
     /// Gets first element in the span.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>

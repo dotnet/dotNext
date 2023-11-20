@@ -345,19 +345,21 @@ public static class List
     /// <param name="random">The source of random values.</param>
     public static void Shuffle<T>(this IList<T> list, Random random)
     {
-        // TODO: Reuse https://github.com/dotnet/runtime/issues/73864
+        Span<T> span;
         switch (list)
         {
             case List<T> typedList:
-                CollectionsMarshal.AsSpan(typedList).Shuffle(random);
+                span = CollectionsMarshal.AsSpan(typedList);
                 break;
             case T[] array:
-                Span.Shuffle<T>(array, random);
+                span = array;
                 break;
             default:
                 ShuffleSlow(list, random);
-                break;
+                return;
         }
+
+        random.Shuffle(span);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         static void ShuffleSlow(IList<T> list, Random random)
