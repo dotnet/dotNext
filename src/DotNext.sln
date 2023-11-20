@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Benchmarks", "DotNe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Unsafe", "DotNext.Unsafe\DotNext.Unsafe.csproj", "{BEFBC460-FFF8-4685-8ACF-EC37530845FB}"
 EndProject
-Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "VisualBasicElements", "VisualBasicElements\VisualBasicElements.vbproj", "{9AB8DBF7-D99B-47D8-B6B9-37F5B8D75C17}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Metaprogramming", "DotNext.Metaprogramming\DotNext.Metaprogramming.csproj", "{C8415985-3BC5-44EB-BDB4-551777B73AB4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNext.Threading", "DotNext.Threading\DotNext.Threading.csproj", "{956A2A3E-F151-4FA4-9932-862BC5CB2F87}"
