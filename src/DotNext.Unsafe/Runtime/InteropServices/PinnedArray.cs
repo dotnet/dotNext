@@ -60,13 +60,6 @@ public readonly struct PinnedArray<T> : IUnmanagedArray<T>, IList<T>, IReadOnlyL
     /// <value>The managed pointer to the array element.</value>
     public ref T this[nint index] => ref Array[index];
 
-    /// <summary>
-    /// Gets a reference to the array element.
-    /// </summary>
-    /// <param name="index">The index of the array element.</param>
-    /// <returns>The reference to the array element.</returns>
-    public Reference<T> GetReference(nint index) => Reference.ArrayElement<T>(Array, index);
-
     /// <inheritdoc />
     T IList<T>.this[int index]
     {

@@ -118,19 +118,6 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     private static void ThrowNullPointerException() => throw new NullPointerException();
 
     /// <summary>
-    /// Converts this pointer to <see cref="Reference{TValue}"/>.
-    /// </summary>
-    /// <returns>The reference to the memory location identified by this pointer.</returns>
-    /// <exception cref="NullPointerException">This pointer is zero.</exception>
-    public unsafe Reference<T> GetReference()
-    {
-        if (IsNull)
-            ThrowNullPointerException();
-
-        return Reference.FromPointer<T>(value);
-    }
-
-    /// <summary>
     /// Gets boxed pointer.
     /// </summary>
     /// <returns>The boxed pointer.</returns>
@@ -1404,13 +1391,6 @@ public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IComparable<Pointer<
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
-
-    /// <summary>
-    /// Obtains the reference to the memory location identified by the pointer.
-    /// </summary>
-    /// <param name="ptr">The pointer to the memory location.</param>
-    /// <returns>The reference to the memory location identified by the pointer.</returns>
-    public static implicit operator Reference<T>(Pointer<T> ptr) => ptr.GetReference();
 
     /// <inheritdoc/>
     unsafe UIntPtr ISupplier<UIntPtr>.Invoke() => (nuint)value;

@@ -145,17 +145,4 @@ public sealed class PinnedArrayTests : Test
         Equal(30, ms.Read<int>());
         Equal(40, ms.Read<int>());
     }
-
-    [Fact]
-    public static void ArrayElementHandle()
-    {
-        var array = new PinnedArray<int>(4);
-        Reference<int> handle = array.GetReference(0);
-
-        array[0] = 42;
-        Equal(42, handle.Target);
-
-        handle.Target = 52;
-        Equal(52, array[0]);
-    }
 }

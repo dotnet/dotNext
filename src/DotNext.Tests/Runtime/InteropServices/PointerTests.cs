@@ -550,18 +550,6 @@ public sealed class PointerTests : Test
     }
 
     [Fact]
-    public static unsafe void PointerToHandle()
-    {
-        var value = 42;
-        Reference<int> handle = new Pointer<int>(&value);
-
-        Equal(42, handle.Target);
-
-        handle.Target = 52;
-        Equal(52, handle.Target);
-    }
-
-    [Fact]
     public static void CompareToMethod()
     {
         IComparable<Pointer<int>> x = new Pointer<int>((nint)9);
