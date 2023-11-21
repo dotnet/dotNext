@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers;
@@ -65,7 +66,7 @@ public static class MemoryAllocator
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     /// <returns>The allocated memory.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> Invoke<T>(this MemoryAllocator<T>? allocator, int length, bool exactSize)
+    public static MemoryOwner<T> Invoke<T>(this MemoryAllocator<T>? allocator, int length, [ConstantExpected] bool exactSize)
     {
         MemoryOwner<T> result;
         if (allocator is null)
@@ -83,14 +84,6 @@ public static class MemoryAllocator
 
         return result;
     }
-
-    /// <summary>
-    /// Returns array allocator.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the array.</typeparam>
-    /// <returns>The array allocator.</returns>
-    [Obsolete("Use GetArrayAllocator<T>() method instead.")]
-    public static MemoryAllocator<T> CreateArrayAllocator<T>() => GetArrayAllocator<T>();
 
     /// <summary>
     /// Returns array allocator.
@@ -130,6 +123,6 @@ public static class MemoryAllocator
     /// </param>
     /// <returns>The allocated memory.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> Allocate<T>(int length, bool exactSize)
+    public static MemoryOwner<T> Allocate<T>(int length, [ConstantExpected] bool exactSize)
         => new(ArrayPool<T>.Shared, length, exactSize);
 }
