@@ -114,7 +114,7 @@ public sealed class PhiAccrualFailureDetectorTests : Test
 
         for (var i = 0; i < 50; i++)
         {
-            detector.ReportHeartbeat(ts + TimeSpan.FromMilliseconds(i));
+            detector.ReportHeartbeat(checked(ts + TimeSpan.FromMilliseconds(i)));
         }
     }
 }
