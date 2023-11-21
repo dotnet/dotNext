@@ -233,8 +233,8 @@ public partial class FileBufferingWriter
     /// <exception cref="InvalidOperationException">The memory manager is already obtained but not disposed.</exception>
     public IReadOnlySequenceSource GetWrittenContent(int segmentSize)
     {
-        if (segmentSize <= 0)
-            throw new ArgumentOutOfRangeException(nameof(segmentSize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(segmentSize);
+
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
