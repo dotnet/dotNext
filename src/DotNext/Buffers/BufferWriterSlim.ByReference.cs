@@ -44,14 +44,4 @@ public partial struct BufferWriterSlim<T>
             }
         }
     }
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private static int Size
-    {
-        get
-        {
-            Sizeof(typeof(BufferWriterSlim<T>));
-            return Return<int>();
-        }
-    }
 }
