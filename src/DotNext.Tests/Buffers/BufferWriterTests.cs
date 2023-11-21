@@ -264,7 +264,7 @@ public sealed class BufferWriterTests : Test
     {
         // TODO: Return try-finally block when 'scoped' keyword will be introduced in the next version of C#
         var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
-        buffer.WriteString($"{x,4:X} = {y,-3:X}");
+        buffer.Interpolate($"{x,4:X} = {y,-3:X}");
         Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
         buffer.Dispose();
     }

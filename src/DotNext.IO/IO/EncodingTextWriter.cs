@@ -27,7 +27,7 @@ internal sealed class EncodingTextWriter<TWriter> : TextBufferWriter<byte, TWrit
         var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
         try
         {
-            writer.WriteFormattable(value, provider: FormatProvider);
+            writer.Write(value, provider: FormatProvider);
             Write(writer.WrittenSpan);
         }
         finally

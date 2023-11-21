@@ -44,7 +44,7 @@ public static partial class BufferHelpers
     /// <param name="provider">The formatting provider.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(provider))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
+    public static int Interpolate(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(provider))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -53,8 +53,8 @@ public static partial class BufferHelpers
     /// <param name="writer">The buffer writer.</param>
     /// <param name="handler">The handler of the interpolated string.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteString(this ref BufferWriterSlim<char> writer, [InterpolatedStringHandlerArgument(nameof(writer))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
-        => WriteString(ref writer, null, ref handler);
+    public static int Interpolate(this ref BufferWriterSlim<char> writer, [InterpolatedStringHandlerArgument(nameof(writer))] scoped ref BufferWriterSlimInterpolatedStringHandler handler)
+        => Interpolate(ref writer, null, ref handler);
 
     /// <summary>
     /// Writes the value as a string.
@@ -65,38 +65,8 @@ public static partial class BufferHelpers
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
-    public static int WriteAsString<T>(this ref BufferWriterSlim<char> writer, T value, string? format = null, IFormatProvider? provider = null)
+    public static int Write<T>(this ref BufferWriterSlim<char> writer, T value, string? format = null, IFormatProvider? provider = null)
         => BufferWriterSlimInterpolatedStringHandler.AppendFormatted(ref writer, value, format, provider);
-
-    /// <summary>
-    /// Writes the value as a sequence of characters.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to convert.</typeparam>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to convert.</param>
-    /// <param name="format">The format of the value.</param>
-    /// <param name="provider">The format provider.</param>
-    /// <returns>The number of written characters.</returns>
-    public static int WriteFormattable<T>(this ref BufferWriterSlim<char> writer, T value, scoped ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        where T : notnull, ISpanFormattable
-    {
-        int charsWritten;
-        const int maxBufferSize = int.MaxValue / 2;
-
-        for (int bufferSize = 0; ;)
-        {
-            var buffer = writer.InternalGetSpan(bufferSize);
-            if (value.TryFormat(buffer, out charsWritten, format, provider))
-            {
-                writer.Advance(charsWritten);
-                break;
-            }
-
-            bufferSize = bufferSize <= maxBufferSize ? buffer.Length << 1 : throw new InsufficientMemoryException();
-        }
-
-        return charsWritten;
-    }
 
     /// <summary>
     /// Writes line termination symbols to the buffer.
@@ -173,7 +143,7 @@ public static partial class BufferHelpers
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to convert.</param>
-    public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, T value)
+    public static void Write<T>(this ref BufferWriterSlim<byte> writer, T value)
         where T : notnull, IBinaryFormattable<T>
     {
         var output = new SpanWriter<byte>(writer.GetSpan(T.Size));
@@ -187,7 +157,7 @@ public static partial class BufferHelpers
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">A sequence of values to convert.</param>
-    public static void WriteFormattable<T>(this ref BufferWriterSlim<byte> writer, scoped ReadOnlySpan<T> values)
+    public static void Write<T>(this ref BufferWriterSlim<byte> writer, scoped ReadOnlySpan<T> values)
         where T : notnull, IBinaryFormattable<T>
     {
         if (values.IsEmpty)

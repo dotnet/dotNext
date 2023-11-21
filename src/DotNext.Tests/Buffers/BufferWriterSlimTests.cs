@@ -73,27 +73,27 @@ public sealed class BufferWriterSlimTests : Test
             writer.Write("Hello, world");
             writer.Add('!');
             writer.WriteLine("!!");
-            writer.WriteFormattable<int>(42, provider: InvariantCulture);
-            writer.WriteFormattable<uint>(56U, provider: InvariantCulture);
-            writer.WriteFormattable<byte>(10, provider: InvariantCulture);
-            writer.WriteFormattable<sbyte>(22, provider: InvariantCulture);
-            writer.WriteFormattable<short>(88, provider: InvariantCulture);
-            writer.WriteFormattable<ushort>(99, provider: InvariantCulture);
-            writer.WriteFormattable<long>(77L, provider: InvariantCulture);
-            writer.WriteFormattable<ulong>(66UL, provider: InvariantCulture);
+            writer.Write(42, provider: InvariantCulture);
+            writer.Write(56U, provider: InvariantCulture);
+            writer.Write<byte>(10, provider: InvariantCulture);
+            writer.Write<sbyte>(22, provider: InvariantCulture);
+            writer.Write<short>(88, provider: InvariantCulture);
+            writer.Write<ushort>(99, provider: InvariantCulture);
+            writer.Write(77L, provider: InvariantCulture);
+            writer.Write(66UL, provider: InvariantCulture);
 
             var guid = Guid.NewGuid();
-            writer.WriteFormattable(guid);
+            writer.Write(guid);
 
             var dt = DateTime.Now;
-            writer.WriteFormattable(dt, provider: InvariantCulture);
+            writer.Write(dt, provider: InvariantCulture);
 
             var dto = DateTimeOffset.Now;
-            writer.WriteFormattable(dto, provider: InvariantCulture);
+            writer.Write(dto, provider: InvariantCulture);
 
-            writer.WriteFormattable<decimal>(42.5M, provider: InvariantCulture);
-            writer.WriteFormattable<float>(32.2F, provider: InvariantCulture);
-            writer.WriteFormattable<double>(56.6D, provider: InvariantCulture);
+            writer.Write(42.5M, provider: InvariantCulture);
+            writer.Write(32.2F, provider: InvariantCulture);
+            writer.Write(56.6D, provider: InvariantCulture);
 
             Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.ToString());
         }
@@ -167,11 +167,11 @@ public sealed class BufferWriterSlimTests : Test
         try
         {
             const string expectedString = "Hello, world!";
-            Equal(expectedString.Length, writer.WriteAsString(expectedString));
+            Equal(expectedString.Length, writer.Write<string>(expectedString));
             Equal(expectedString, writer.ToString());
             writer.Clear();
 
-            Equal(2, writer.WriteAsString(56, provider: InvariantCulture));
+            Equal(2, writer.Write(56));
             Equal("56", writer.ToString());
         }
         finally
