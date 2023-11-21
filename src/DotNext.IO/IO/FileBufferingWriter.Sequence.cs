@@ -1,13 +1,10 @@
 using System.Buffers;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 using Debug = System.Diagnostics.Debug;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
+using System.Diagnostics.CodeAnalysis;
 using Buffers;
 using IReadOnlySequenceSource = Buffers.IReadOnlySequenceSource<byte>;
 
@@ -15,21 +12,11 @@ public partial class FileBufferingWriter
 {
     private sealed class TailSegment : ReadOnlySequenceSegment<byte>
     {
-        private static readonly Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>> SegmentSetter;
-
-        static TailSegment()
-        {
-            Ldnull();
-            Ldftn(PropertySet(Type<ReadOnlySequenceSegment<byte>>(), nameof(Next)));
-            Newobj(Constructor(Type<Action<ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>>>(), Type<object>(), Type<IntPtr>()));
-            Pop(out SegmentSetter);
-        }
-
-        internal TailSegment(ReadOnlySequenceSegment<byte> previous, Memory<byte> memory)
+        internal TailSegment(LazySegment previous, Memory<byte> memory)
         {
             Memory = memory;
             RunningIndex = previous.RunningIndex + previous.Memory.Length;
-            SegmentSetter(previous, this);
+            previous.Next(this);
         }
     }
 
@@ -76,6 +63,8 @@ public partial class FileBufferingWriter
         {
         }
 
+        internal new void Next(ReadOnlySequenceSegment<byte> value) => base.Next = value;
+
         private new LazySegment Next(int length)
         {
             var index = RunningIndex;
@@ -87,7 +76,7 @@ public partial class FileBufferingWriter
             return segment;
         }
 
-        internal static void AddSegment(ReadOnlySequenceSource cursor, int length, ref LazySegment? first, ref LazySegment? last)
+        internal static void AddSegment(ReadOnlySequenceSource cursor, int length, [AllowNull] ref LazySegment first, [AllowNull] ref LazySegment last)
         {
             if (first is null || last is null)
                 first = last = new(cursor, length) { RunningIndex = 0L };
@@ -159,9 +148,8 @@ public partial class FileBufferingWriter
             return buffer.Memory.Pin();
         }
 
-        private (ReadOnlySequenceSegment<byte>, ReadOnlySequenceSegment<byte>) BuildSegments()
+        private void BuildSegments([AllowNull] ref LazySegment first, [AllowNull] ref LazySegment last)
         {
-            LazySegment? first = null, last = null;
             for (var remainingLength = RandomAccess.GetLength(handle); remainingLength > 0;)
             {
                 var segmentLength = (int)Math.Min(this.segmentLength, remainingLength);
@@ -171,7 +159,6 @@ public partial class FileBufferingWriter
 
             Debug.Assert(first is not null);
             Debug.Assert(last is not null);
-            return (first, last);
         }
 
         /// <summary>
@@ -185,11 +172,10 @@ public partial class FileBufferingWriter
             {
                 ThrowIfDisposed();
 
-                var (first, last) = BuildSegments();
-                if (!tail.IsEmpty)
-                    last = new TailSegment(last, tail);
-
-                return new ReadOnlySequence<byte>(first, 0, last, last.Memory.Length);
+                LazySegment? first = null, last = null;
+                BuildSegments(ref first, ref last);
+                ReadOnlySequenceSegment<byte> tail = this.tail.IsEmpty ? last : new TailSegment(last, this.tail);
+                return new(first, 0, tail, tail.Memory.Length);
             }
         }
 
