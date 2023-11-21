@@ -20,7 +20,7 @@ internal partial class Client : RaftClusterMember
         ValueTask IClientExchange<long?>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             var writer = protocol.BeginRequestMessage(MessageType.Synchronize);
-            writer.WriteInt64(commitIndex, true);
+            writer.WriteLittleEndian(commitIndex);
             protocol.AdvanceWriteCursor(writer.WrittenCount);
 
             return protocol.WriteToTransportAsync(token);

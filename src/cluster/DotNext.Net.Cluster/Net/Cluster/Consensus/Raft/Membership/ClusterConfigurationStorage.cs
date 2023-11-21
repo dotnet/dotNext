@@ -55,7 +55,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
 
     private protected void Encode(IReadOnlyCollection<TAddress> configuration, ref BufferWriterSlim<byte> output)
     {
-        output.WriteInt32(configuration.Count, true);
+        output.WriteLittleEndian(configuration.Count);
 
         foreach (var address in configuration)
         {

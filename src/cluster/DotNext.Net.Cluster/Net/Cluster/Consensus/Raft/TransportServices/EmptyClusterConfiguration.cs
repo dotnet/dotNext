@@ -41,13 +41,13 @@ internal readonly struct EmptyClusterConfiguration
         }
 
         writer.Add(configState);
-        writer.WriteInt64(fingerprint, true);
+        writer.WriteLittleEndian(fingerprint);
     }
 
     internal static EmptyClusterConfiguration? ReadFrom(ref SpanReader<byte> reader)
     {
         var configState = reader.Read();
-        var fingerprint = reader.ReadInt64(true);
+        var fingerprint = reader.ReadLittleEndian<long>(isUnsigned: false);
 
         return configState switch
         {

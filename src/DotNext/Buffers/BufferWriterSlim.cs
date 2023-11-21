@@ -117,15 +117,9 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     public Span<T> GetSpan(int sizeHint = 0)
     {
-        if (sizeHint < 0)
-            ThrowArgumentOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
         return InternalGetSpan(sizeHint);
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowArgumentOutOfRangeException()
-            => throw new ArgumentOutOfRangeException(nameof(sizeHint));
     }
 
     internal Span<T> InternalGetSpan(int sizeHint)

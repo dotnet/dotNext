@@ -79,7 +79,7 @@ public static class EndPointFormatter
                 // number of address bytes, N = 1 byte
                 // address bytes = N bytes
                 writer.Add(IPEndPointPrefix);
-                writer.WriteInt32(ip.Port, true);
+                writer.WriteLittleEndian(ip.Port);
                 Serialize(ip.Address, ref writer);
                 break;
             case HttpEndPoint http:
@@ -92,8 +92,8 @@ public static class EndPointFormatter
                 // host name = N bytes
                 writer.Add(HttpEndPointPrefix);
                 writer.Add(http.IsSecure.ToByte());
-                writer.WriteInt32(http.Port, true);
-                writer.WriteInt32((int)http.AddressFamily, true);
+                writer.WriteLittleEndian(http.Port);
+                writer.WriteLittleEndian((int)http.AddressFamily);
                 Serialize(http.Host, ref writer);
                 break;
             case DnsEndPoint dns:
@@ -104,8 +104,8 @@ public static class EndPointFormatter
                 // host name length, N = 4 bytes
                 // host name = N bytes
                 writer.Add(DnsEndPointPrefix);
-                writer.WriteInt32(dns.Port, true);
-                writer.WriteInt32((int)dns.AddressFamily, true);
+                writer.WriteLittleEndian(dns.Port);
+                writer.WriteLittleEndian((int)dns.AddressFamily);
                 Serialize(dns.Host, ref writer);
                 break;
             case UnixDomainSocketEndPoint domainSocket:
@@ -144,7 +144,7 @@ public static class EndPointFormatter
     private static void Serialize(ReadOnlySpan<char> hostName, ref BufferWriterSlim<byte> writer)
     {
         var count = HostNameEncoding.GetByteCount(hostName);
-        writer.WriteInt32(count, true);
+        writer.WriteLittleEndian(count);
 
         HostNameEncoding.GetBytes(hostName, writer.GetSpan(count));
         writer.Advance(count);

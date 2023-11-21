@@ -14,7 +14,6 @@ using HttpEndPoint = Net.Http.HttpEndPoint;
 /// <summary>
 /// Represents unique identifier of cluster member.
 /// </summary>
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFormattable<ClusterMemberId>
 {
@@ -123,8 +122,8 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public ClusterMemberId(ref SpanReader<byte> reader)
     {
         address = new(reader.Read(16));
-        lengthAndPort = reader.ReadUInt64(true);
-        family = reader.ReadInt32(true);
+        lengthAndPort = reader.ReadLittleEndian<ulong>(isUnsigned: true);
+        family = reader.ReadLittleEndian<int>(isUnsigned: false);
     }
 
     /// <inheritdoc cref="IBinaryFormattable{T}.Parse(ref SpanReader{byte})"/>
@@ -135,12 +134,12 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// Serializes the value as a sequence of bytes.
     /// </summary>
     /// <param name="writer">The memory block writer.</param>
-    /// <exception cref="System.IO.InternalBufferOverflowException"><paramref name="writer"/> is not large enough.</exception>
+    /// <exception cref="InternalBufferOverflowException"><paramref name="writer"/> is not large enough.</exception>
     public void Format(ref SpanWriter<byte> writer)
     {
         address.TryWriteBytes(writer.Slide(16));
-        writer.WriteUInt64(lengthAndPort, true);
-        writer.WriteInt32(family, true);
+        writer.WriteLittleEndian(lengthAndPort);
+        writer.WriteLittleEndian(family);
     }
 
     /// <summary>
@@ -239,4 +238,3 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
         => !x.Equals(in y);
 }
-#pragma warning restore CA2252

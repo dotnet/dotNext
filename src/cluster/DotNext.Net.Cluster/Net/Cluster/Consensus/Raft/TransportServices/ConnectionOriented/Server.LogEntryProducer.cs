@@ -32,11 +32,11 @@ internal partial class Server
             (Id, Term, PrevLogIndex, PrevLogTerm, CommitIndex, entriesCount) = AppendEntriesMessage.Read(ref reader);
             ApplyConfig = BasicExtensions.ToBoolean(reader.Read());
 
-            var fingerprint = reader.ReadInt64(true);
-            var configLength = reader.ReadInt64(true);
+            var fingerprint = reader.ReadLittleEndian<long>(isUnsigned: false);
+            var configLength = reader.ReadLittleEndian<long>(isUnsigned: false);
 
             Configuration = configLength > 0L
-                ? new(allocator(checked((int)configLength)), fingerprint)
+                ? new(allocator(int.CreateChecked(configLength)), fingerprint)
                 : new(fingerprint);
             this.allocator = allocator;
         }

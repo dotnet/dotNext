@@ -9,16 +9,16 @@ internal static class SnapshotMessage
     internal static void Write(ref SpanWriter<byte> writer, in ClusterMemberId id, long term, long snapshotIndex, IRaftLogEntry snapshot)
     {
         id.Format(ref writer);
-        writer.WriteInt64(term, true);
-        writer.WriteInt64(snapshotIndex, true);
+        writer.WriteLittleEndian(term);
+        writer.WriteLittleEndian(snapshotIndex);
         LogEntryMetadata.Create(snapshot).Format(ref writer);
     }
 
     internal static (ClusterMemberId Id, long Term, long SnapshotIndex, LogEntryMetadata SnapshotMetadata) Read(ref SpanReader<byte> reader) => new()
     {
         Id = new(ref reader),
-        Term = reader.ReadInt64(true),
-        SnapshotIndex = reader.ReadInt64(true),
+        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
+        SnapshotIndex = reader.ReadLittleEndian<long>(isUnsigned: false),
         SnapshotMetadata = new(ref reader),
     };
 }

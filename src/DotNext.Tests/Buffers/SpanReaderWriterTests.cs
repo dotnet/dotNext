@@ -183,40 +183,32 @@ public sealed class SpanReaderTests : Test
     {
         var buffer = new byte[1024];
         var writer = new SpanWriter<byte>(buffer);
-        writer.WriteInt16(short.MinValue, true);
-        writer.WriteInt16(short.MaxValue, false);
-        writer.WriteUInt16(42, true);
-        writer.WriteUInt16(ushort.MaxValue, false);
-        writer.WriteInt32(int.MaxValue, true);
-        writer.WriteInt32(int.MinValue, false);
-        writer.WriteUInt32(42, true);
-        writer.WriteUInt32(uint.MaxValue, false);
-        writer.WriteInt64(long.MaxValue, true);
-        writer.WriteInt64(long.MinValue, false);
-        writer.WriteUInt64(42, true);
-        writer.WriteUInt64(ulong.MaxValue, false);
-        writer.WriteSingle(float.MaxValue, true);
-        writer.WriteSingle(float.MinValue, false);
-        writer.WriteDouble(double.MaxValue, true);
-        writer.WriteDouble(double.MinValue, false);
+        writer.WriteLittleEndian(short.MinValue);
+        writer.WriteBigEndian(short.MaxValue);
+        writer.WriteLittleEndian<ushort>(42);
+        writer.WriteBigEndian(ushort.MaxValue);
+        writer.WriteLittleEndian(int.MaxValue);
+        writer.WriteBigEndian(int.MinValue);
+        writer.WriteLittleEndian(42U);
+        writer.WriteBigEndian(uint.MaxValue);
+        writer.WriteLittleEndian(long.MaxValue);
+        writer.WriteBigEndian(long.MinValue);
+        writer.WriteLittleEndian(42UL);
+        writer.WriteBigEndian(ulong.MaxValue);
 
         var reader = new SpanReader<byte>(buffer);
-        Equal(short.MinValue, reader.ReadInt16(true));
-        Equal(short.MaxValue, reader.ReadInt16(false));
-        Equal(42, reader.ReadUInt16(true));
-        Equal(ushort.MaxValue, reader.ReadUInt16(false));
-        Equal(int.MaxValue, reader.ReadInt32(true));
-        Equal(int.MinValue, reader.ReadInt32(false));
-        Equal(42U, reader.ReadUInt32(true));
-        Equal(uint.MaxValue, reader.ReadUInt32(false));
-        Equal(long.MaxValue, reader.ReadInt64(true));
-        Equal(long.MinValue, reader.ReadInt64(false));
-        Equal(42UL, reader.ReadUInt64(true));
-        Equal(ulong.MaxValue, reader.ReadUInt64(false));
-        Equal(float.MaxValue, reader.ReadSingle(true));
-        Equal(float.MinValue, reader.ReadSingle(false));
-        Equal(double.MaxValue, reader.ReadDouble(true));
-        Equal(double.MinValue, reader.ReadDouble(false));
+        Equal(short.MinValue, reader.ReadLittleEndian<short>(isUnsigned: false));
+        Equal(short.MaxValue, reader.ReadBigEndian<short>(isUnsigned: false));
+        Equal(42U, reader.ReadLittleEndian<ushort>(isUnsigned: true));
+        Equal(ushort.MaxValue, reader.ReadBigEndian<ushort>(isUnsigned: true));
+        Equal(int.MaxValue, reader.ReadLittleEndian<int>(isUnsigned: false));
+        Equal(int.MinValue, reader.ReadBigEndian<int>(isUnsigned: false));
+        Equal(42U, reader.ReadLittleEndian<uint>(isUnsigned: true));
+        Equal(uint.MaxValue, reader.ReadBigEndian<uint>(isUnsigned: true));
+        Equal(long.MaxValue, reader.ReadLittleEndian<long>(isUnsigned: false));
+        Equal(long.MinValue, reader.ReadBigEndian<long>(isUnsigned: false));
+        Equal(42UL, reader.ReadLittleEndian<ulong>(isUnsigned: true));
+        Equal(ulong.MaxValue, reader.ReadBigEndian<ulong>(isUnsigned: true));
     }
 
     [Fact]

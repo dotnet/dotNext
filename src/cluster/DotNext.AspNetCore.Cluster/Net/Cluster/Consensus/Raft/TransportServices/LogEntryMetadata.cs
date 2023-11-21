@@ -65,10 +65,10 @@ internal readonly struct LogEntryMetadata
     internal void Serialize(Span<byte> output)
     {
         var writer = new SpanWriter<byte>(output);
-        writer.WriteInt64(Term, true);
-        writer.WriteInt64(timestamp, true);
+        writer.WriteLittleEndian(Term);
+        writer.WriteLittleEndian(timestamp);
         writer.Add(flags);
-        writer.WriteInt32(identifier, true);
-        writer.WriteInt64(Length, true);
+        writer.WriteLittleEndian(identifier);
+        writer.WriteLittleEndian(Length);
     }
 }

@@ -73,7 +73,7 @@ internal static class ProtocolStreamExtensions
         protocol.Reset();
         var writer = new SpanWriter<byte>(protocol.RemainingBufferSpan);
         writer.Add(value.HasValue.ToByte());
-        writer.WriteInt64(value.GetValueOrDefault(), true);
+        writer.WriteLittleEndian(value.GetValueOrDefault());
         protocol.AdvanceWriteCursor(writer.WrittenCount);
         return protocol.WriteToTransportAsync(token);
     }
@@ -86,7 +86,7 @@ internal static class ProtocolStreamExtensions
         static long? Read(ReadOnlySpan<byte> responseData)
         {
             var reader = new SpanReader<byte>(responseData);
-            return reader.Read() is 0 ? null : reader.ReadInt64(true);
+            return reader.Read() is 0 ? null : reader.ReadLittleEndian<long>(isUnsigned: false);
         }
     }
 

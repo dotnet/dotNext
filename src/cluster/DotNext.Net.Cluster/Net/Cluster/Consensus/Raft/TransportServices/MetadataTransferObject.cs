@@ -11,7 +11,6 @@ using Runtime.Serialization;
 using Text;
 using Dictionary = Collections.Generic.Dictionary;
 
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct MetadataTransferObject : ISerializable<MetadataTransferObject>
 {
@@ -165,4 +164,3 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
         return result;
     }
 }
-#pragma warning restore CA2252

@@ -50,12 +50,12 @@ public partial class PersistentState
         // slow version if target architecture has BE byte order or pointer is not aligned
         private LogEntryMetadata(ref SpanReader<byte> reader)
         {
-            Term = reader.ReadInt64(true);
-            Timestamp = reader.ReadInt64(true);
-            Length = reader.ReadInt64(true);
-            Offset = reader.ReadInt64(true);
-            flags = (LogEntryFlags)reader.ReadUInt32(true);
-            identifier = reader.ReadInt32(true);
+            Term = reader.ReadLittleEndian<long>(isUnsigned: false);
+            Timestamp = reader.ReadLittleEndian<long>(isUnsigned: false);
+            Length = reader.ReadLittleEndian<long>(isUnsigned: false);
+            Offset = reader.ReadLittleEndian<long>(isUnsigned: false);
+            flags = (LogEntryFlags)reader.ReadLittleEndian<uint>(isUnsigned: true);
+            identifier = reader.ReadLittleEndian<int>(isUnsigned: false);
         }
 
         internal LogEntryMetadata(ReadOnlySpan<byte> input)
@@ -106,12 +106,12 @@ public partial class PersistentState
         private void FormatSlow(Span<byte> output)
         {
             var writer = new SpanWriter<byte>(output);
-            writer.WriteInt64(Term, true);
-            writer.WriteInt64(Timestamp, true);
-            writer.WriteInt64(Length, true);
-            writer.WriteInt64(Offset, true);
-            writer.WriteUInt32((uint)flags, true);
-            writer.WriteInt32(identifier, true);
+            writer.WriteLittleEndian(Term);
+            writer.WriteLittleEndian(Timestamp);
+            writer.WriteLittleEndian(Length);
+            writer.WriteLittleEndian(Offset);
+            writer.WriteLittleEndian((uint)flags);
+            writer.WriteLittleEndian(identifier);
         }
 
         public void Format(Span<byte> output)
@@ -136,7 +136,7 @@ public partial class PersistentState
             else
             {
                 // 32-bit LE case, the pointer may not be aligned to 8 bytes
-                Unsafe.WriteUnaligned<LogEntryMetadata>(ref ptr, this);
+                Unsafe.WriteUnaligned(ref ptr, this);
             }
         }
 
@@ -169,7 +169,7 @@ public partial class PersistentState
             {
                 var reader = new SpanReader<byte>(input);
                 reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
-                return reader.ReadInt64(true) + reader.ReadInt64(true); // Length + Offset
+                return reader.ReadLittleEndian<long>(isUnsigned: false) + reader.ReadLittleEndian<long>(isUnsigned: false); // Length + Offset
             }
         }
     }

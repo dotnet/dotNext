@@ -58,8 +58,8 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
 
     private RumorTimestamp(ref SpanReader<byte> reader)
     {
-        timestamp = reader.ReadInt64(true);
-        sequenceNumber = reader.ReadUInt64(true);
+        timestamp = reader.ReadLittleEndian<long>(isUnsigned: false);
+        sequenceNumber = reader.ReadLittleEndian<ulong>(isUnsigned: true);
     }
 
     private RumorTimestamp(long timestamp, ulong sequenceNumber)
@@ -74,8 +74,8 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// <param name="writer">The buffer writer.</param>
     public void Format(ref SpanWriter<byte> writer)
     {
-        writer.WriteInt64(timestamp, true);
-        writer.WriteUInt64(sequenceNumber, true);
+        writer.WriteLittleEndian(timestamp);
+        writer.WriteLittleEndian(sequenceNumber);
     }
 
     /// <summary>

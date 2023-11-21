@@ -8,10 +8,10 @@ internal static class ConfigurationMessage
 
     internal static void Write(ref SpanWriter<byte> writer, long fingerprint, long length)
     {
-        writer.WriteInt64(fingerprint, true);
-        writer.WriteInt64(length, true);
+        writer.WriteLittleEndian(fingerprint);
+        writer.WriteLittleEndian(length);
     }
 
     internal static (long Fingerprint, long Length) Read(ref SpanReader<byte> reader)
-        => (reader.ReadInt64(true), reader.ReadInt64(true));
+        => (reader.ReadLittleEndian<long>(isUnsigned: false), reader.ReadLittleEndian<long>(isUnsigned: false));
 }

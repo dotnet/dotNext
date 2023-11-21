@@ -1,11 +1,11 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using Buffers;
 
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
 internal readonly struct CorrelationId : IEquatable<CorrelationId>, IBinaryFormattable<CorrelationId>
 {
@@ -32,8 +32,8 @@ internal readonly struct CorrelationId : IEquatable<CorrelationId>, IBinaryForma
 
     internal CorrelationId(ref SpanReader<byte> reader)
     {
-        ApplicationId = reader.ReadInt64(true);
-        StreamId = reader.ReadInt64(true);
+        ApplicationId = reader.ReadLittleEndian<long>(isUnsigned: false);
+        StreamId = reader.ReadLittleEndian<long>(isUnsigned: false);
     }
 
     static CorrelationId IBinaryFormattable<CorrelationId>.Parse(ref SpanReader<byte> input) => new(ref input);
@@ -42,8 +42,8 @@ internal readonly struct CorrelationId : IEquatable<CorrelationId>, IBinaryForma
 
     public void Format(ref SpanWriter<byte> output)
     {
-        output.WriteInt64(ApplicationId, true);
-        output.WriteInt64(StreamId, true);
+        output.WriteLittleEndian(ApplicationId);
+        output.WriteLittleEndian(StreamId);
     }
 
     private bool Equals(in CorrelationId other)
@@ -51,7 +51,8 @@ internal readonly struct CorrelationId : IEquatable<CorrelationId>, IBinaryForma
 
     public bool Equals(CorrelationId other) => Equals(in other);
 
-    public override bool Equals([NotNullWhen(true)] object? other) => other is CorrelationId id && Equals(in id);
+    public override bool Equals([NotNullWhen(true)] object? other)
+        => other is CorrelationId id && Equals(in Unsafe.Unbox<CorrelationId>(other));
 
     public override int GetHashCode() => HashCode.Combine(ApplicationId, StreamId);
 
@@ -63,4 +64,3 @@ internal readonly struct CorrelationId : IEquatable<CorrelationId>, IBinaryForma
     public static bool operator !=(in CorrelationId x, in CorrelationId y)
         => !x.Equals(in y);
 }
-#pragma warning restore CA2252

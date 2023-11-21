@@ -73,7 +73,7 @@ internal partial class HttpPeerController
 
         try
         {
-            writer.WriteInt32(peers.Count, true);
+            writer.WriteLittleEndian(peers.Count);
             foreach (var peer in peers)
                 writer.WriteEndPoint(peer);
 
@@ -163,9 +163,9 @@ internal partial class HttpPeerController
         {
             writer.WriteEndPoint(localNode);
             writer.WriteEndPoint(origin);
-            writer.WriteInt32(timeToLive, true);
+            writer.WriteLittleEndian(timeToLive);
 
-            writer.WriteInt32(peers.Count, true);
+            writer.WriteLittleEndian(peers.Count);
             foreach (var peer in peers)
                 writer.WriteEndPoint(peer);
 

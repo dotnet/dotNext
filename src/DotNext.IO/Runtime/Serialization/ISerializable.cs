@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace DotNext.Runtime.Serialization;
 
 using IO;
@@ -22,7 +20,6 @@ public interface ISerializable<TSelf> : IDataTransferObject
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The decoded object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [RequiresPreviewFeatures]
     public static abstract ValueTask<TSelf> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
         where TReader : notnull, IAsyncBinaryReader;
 }

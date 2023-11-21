@@ -109,44 +109,32 @@ public sealed class BufferWriterSlimTests : Test
         var builder = new BufferWriterSlim<byte>(stackalloc byte[512]);
         try
         {
-            builder.WriteInt16(short.MinValue, true);
-            builder.WriteInt16(short.MaxValue, false);
-            builder.WriteUInt16(42, true);
-            builder.WriteUInt16(ushort.MaxValue, false);
-            builder.WriteInt32(int.MaxValue, true);
-            builder.WriteInt32(int.MinValue, false);
-            builder.WriteUInt32(42, true);
-            builder.WriteUInt32(uint.MaxValue, false);
-            builder.WriteInt64(long.MaxValue, true);
-            builder.WriteInt64(long.MinValue, false);
-            builder.WriteUInt64(42, true);
-            builder.WriteUInt64(ulong.MaxValue, false);
-            builder.WriteSingle(float.MaxValue, true);
-            builder.WriteSingle(float.MinValue, false);
-            builder.WriteDouble(double.MaxValue, true);
-            builder.WriteDouble(double.MinValue, false);
-            builder.WriteHalf(Half.MaxValue, true);
-            builder.WriteHalf(Half.MinValue, false);
+            builder.WriteLittleEndian(short.MinValue);
+            builder.WriteBigEndian(short.MaxValue);
+            builder.WriteLittleEndian<ushort>(42);
+            builder.WriteBigEndian(ushort.MaxValue);
+            builder.WriteLittleEndian(int.MaxValue);
+            builder.WriteBigEndian(int.MinValue);
+            builder.WriteLittleEndian(42U);
+            builder.WriteBigEndian(uint.MaxValue);
+            builder.WriteLittleEndian(long.MaxValue);
+            builder.WriteBigEndian(long.MinValue);
+            builder.WriteLittleEndian(42UL);
+            builder.WriteBigEndian(ulong.MaxValue);
 
             var reader = new SpanReader<byte>(builder.WrittenSpan);
-            Equal(short.MinValue, reader.ReadInt16(true));
-            Equal(short.MaxValue, reader.ReadInt16(false));
-            Equal(42, reader.ReadUInt16(true));
-            Equal(ushort.MaxValue, reader.ReadUInt16(false));
-            Equal(int.MaxValue, reader.ReadInt32(true));
-            Equal(int.MinValue, reader.ReadInt32(false));
-            Equal(42U, reader.ReadUInt32(true));
-            Equal(uint.MaxValue, reader.ReadUInt32(false));
-            Equal(long.MaxValue, reader.ReadInt64(true));
-            Equal(long.MinValue, reader.ReadInt64(false));
-            Equal(42UL, reader.ReadUInt64(true));
-            Equal(ulong.MaxValue, reader.ReadUInt64(false));
-            Equal(float.MaxValue, reader.ReadSingle(true));
-            Equal(float.MinValue, reader.ReadSingle(false));
-            Equal(double.MaxValue, reader.ReadDouble(true));
-            Equal(double.MinValue, reader.ReadDouble(false));
-            Equal(Half.MaxValue, reader.ReadHalf(true));
-            Equal(Half.MinValue, reader.ReadHalf(false));
+            Equal(short.MinValue, reader.ReadLittleEndian<short>(isUnsigned: false));
+            Equal(short.MaxValue, reader.ReadBigEndian<short>(isUnsigned: false));
+            Equal(42, reader.ReadLittleEndian<ushort>(isUnsigned: true));
+            Equal(ushort.MaxValue, reader.ReadBigEndian<ushort>(isUnsigned: true));
+            Equal(int.MaxValue, reader.ReadLittleEndian<int>(isUnsigned: false));
+            Equal(int.MinValue, reader.ReadBigEndian<int>(isUnsigned: false));
+            Equal(42U, reader.ReadLittleEndian<uint>(isUnsigned: true));
+            Equal(uint.MaxValue, reader.ReadBigEndian<uint>(isUnsigned: true));
+            Equal(long.MaxValue, reader.ReadLittleEndian<long>(isUnsigned: false));
+            Equal(long.MinValue, reader.ReadBigEndian<long>(isUnsigned: false));
+            Equal(42UL, reader.ReadLittleEndian<ulong>(isUnsigned: true));
+            Equal(ulong.MaxValue, reader.ReadBigEndian<ulong>(isUnsigned: true));
         }
         finally
         {

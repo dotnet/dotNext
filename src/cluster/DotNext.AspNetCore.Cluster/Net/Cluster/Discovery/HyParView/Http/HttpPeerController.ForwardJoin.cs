@@ -70,7 +70,7 @@ internal partial class HttpPeerController
         {
             writer.WriteEndPoint(localNode);
             writer.WriteEndPoint(joinedPeer);
-            writer.WriteInt32(timeToLive, true);
+            writer.WriteLittleEndian(timeToLive);
 
             if (!writer.TryDetachBuffer(out result))
                 result = writer.WrittenSpan.Copy(allocator);

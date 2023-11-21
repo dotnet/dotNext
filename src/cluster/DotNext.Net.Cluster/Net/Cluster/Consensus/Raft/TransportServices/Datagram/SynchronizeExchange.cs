@@ -19,7 +19,7 @@ internal sealed class SynchronizeExchange : ClientExchange<long?>
 
         var reader = new SpanReader<byte>(payload.Span);
         var hasValue = BasicExtensions.ToBoolean(reader.Read());
-        var commitIndex = reader.ReadInt64(true);
+        var commitIndex = reader.ReadLittleEndian<long>(isUnsigned: false);
         TrySetResult(hasValue ? commitIndex : null);
         return new(false);
     }
@@ -28,7 +28,7 @@ internal sealed class SynchronizeExchange : ClientExchange<long?>
     {
         var writer = new SpanWriter<byte>(output);
         writer.Add(commitIndex.HasValue.ToByte());
-        writer.WriteInt64(commitIndex.GetValueOrDefault(), true);
+        writer.WriteLittleEndian(commitIndex.GetValueOrDefault());
         return writer.WrittenCount;
     }
 

@@ -9,16 +9,16 @@ internal static class VoteMessage
     internal static void Write(ref SpanWriter<byte> writer, in ClusterMemberId id, long term, long lastLogIndex, long lastLogTerm)
     {
         id.Format(ref writer);
-        writer.WriteInt64(term, true);
-        writer.WriteInt64(lastLogIndex, true);
-        writer.WriteInt64(lastLogTerm, true);
+        writer.WriteLittleEndian(term);
+        writer.WriteLittleEndian(lastLogIndex);
+        writer.WriteLittleEndian(lastLogTerm);
     }
 
     internal static (ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm) Read(ref SpanReader<byte> reader) => new()
     {
         Id = new(ref reader),
-        Term = reader.ReadInt64(true),
-        LastLogIndex = reader.ReadInt64(true),
-        LastLogTerm = reader.ReadInt64(true),
+        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
+        LastLogIndex = reader.ReadLittleEndian<long>(isUnsigned: false),
+        LastLogTerm = reader.ReadLittleEndian<long>(isUnsigned: false),
     };
 }

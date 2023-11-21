@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -43,134 +44,30 @@ public static partial class BufferHelpers
         => Unsafe.ReadUnaligned<T>(ref MemoryMarshal.GetReference(reader.Read(sizeof(T))));
 
     /// <summary>
-    /// Decodes 16-bit signed integer.
+    /// Reads the value encoded in little-endian byte order.
     /// </summary>
+    /// <typeparam name="T">The type of the value to decode.</typeparam>
     /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static short ReadInt16(this ref SpanReader<byte> reader, bool isLittleEndian)
-    {
-        var result = reader.Read<short>();
-        if (isLittleEndian != BitConverter.IsLittleEndian)
-            result = ReverseEndianness(result);
-        return result;
-    }
+    /// <param name="isUnsigned">
+    /// <see langword="true"/> if source represents an unsigned two's complement number;
+    /// otherwise, <see langword="false"/> to indicate it represents a signed two's complement number.
+    /// </param>
+    /// <returns>Decoded value.</returns>
+    public static unsafe T ReadLittleEndian<T>(this ref SpanReader<byte> reader, bool isUnsigned)
+        where T : unmanaged, IBinaryInteger<T>
+        => T.ReadLittleEndian(reader.Read(sizeof(T)), isUnsigned);
 
     /// <summary>
-    /// Decodes 16-bit unsigned integer.
+    /// Reads the value encoded in big-endian byte order.
     /// </summary>
+    /// <typeparam name="T">The type of the value to decode.</typeparam>
     /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [CLSCompliant(false)]
-    public static ushort ReadUInt16(this ref SpanReader<byte> reader, bool isLittleEndian)
-    {
-        var result = reader.Read<ushort>();
-        if (isLittleEndian != BitConverter.IsLittleEndian)
-            result = ReverseEndianness(result);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes 32-bit signed integer.
-    /// </summary>
-    /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int ReadInt32(this ref SpanReader<byte> reader, bool isLittleEndian)
-    {
-        var result = reader.Read<int>();
-        if (isLittleEndian != BitConverter.IsLittleEndian)
-            result = ReverseEndianness(result);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes 32-bit unsigned integer.
-    /// </summary>
-    /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [CLSCompliant(false)]
-    public static uint ReadUInt32(this ref SpanReader<byte> reader, bool isLittleEndian)
-    {
-        var result = reader.Read<uint>();
-        if (isLittleEndian != BitConverter.IsLittleEndian)
-            result = ReverseEndianness(result);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes 64-bit signed integer.
-    /// </summary>
-    /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long ReadInt64(this ref SpanReader<byte> reader, bool isLittleEndian)
-    {
-        var result = reader.Read<long>();
-        if (isLittleEndian != BitConverter.IsLittleEndian)
-            result = ReverseEndianness(result);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes 64-bit unsigned integer.
-    /// </summary>
-    /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [CLSCompliant(false)]
-    public static ulong ReadUInt64(this ref SpanReader<byte> reader, bool isLittleEndian)
-    {
-        var result = reader.Read<ulong>();
-        if (isLittleEndian != BitConverter.IsLittleEndian)
-            result = ReverseEndianness(result);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes single-precision floating-point number.
-    /// </summary>
-    /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float ReadSingle(this ref SpanReader<byte> reader, bool isLittleEndian)
-        => BitConverter.Int32BitsToSingle(reader.ReadInt32(isLittleEndian));
-
-    /// <summary>
-    /// Decodes double-precision floating-point number.
-    /// </summary>
-    /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double ReadDouble(this ref SpanReader<byte> reader, bool isLittleEndian)
-        => BitConverter.Int64BitsToDouble(reader.ReadInt64(isLittleEndian));
-
-    /// <summary>
-    /// Decodes half-precision floating-point number.
-    /// </summary>
-    /// <param name="reader">The memory reader.</param>
-    /// <param name="isLittleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Half ReadHalf(this ref SpanReader<byte> reader, bool isLittleEndian)
-        => BitConverter.Int16BitsToHalf(reader.ReadInt16(isLittleEndian));
+    /// <param name="isUnsigned">
+    /// <see langword="true"/> if source represents an unsigned two's complement number;
+    /// otherwise, <see langword="false"/> to indicate it represents a signed two's complement number.
+    /// </param>
+    /// <returns>Decoded value.</returns>
+    public static unsafe T ReadBigEndian<T>(this ref SpanReader<byte> reader, bool isUnsigned)
+        where T : unmanaged, IBinaryInteger<T>
+        => T.ReadBigEndian(reader.Read(sizeof(T)), isUnsigned);
 }

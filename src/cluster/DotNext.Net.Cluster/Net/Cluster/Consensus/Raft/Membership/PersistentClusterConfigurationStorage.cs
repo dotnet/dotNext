@@ -218,7 +218,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         try
         {
-            writer.WriteInt64(fingerprint, true);
+            writer.WriteLittleEndian(fingerprint);
             Encode(configuration, ref writer);
 
             if (!writer.TryDetachBuffer(out result))

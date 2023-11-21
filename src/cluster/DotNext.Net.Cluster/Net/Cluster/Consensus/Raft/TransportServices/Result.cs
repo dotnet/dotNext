@@ -8,7 +8,7 @@ internal static class Result
 
     internal static void Write(ref SpanWriter<byte> writer, in Result<bool> result)
     {
-        writer.WriteInt64(result.Term, true);
+        writer.WriteLittleEndian(result.Term);
         writer.Add(result.Value.ToByte());
     }
 
@@ -21,7 +21,7 @@ internal static class Result
 
     internal static void WritePreVoteResult(ref SpanWriter<byte> writer, in Result<PreVoteResult> result)
     {
-        writer.WriteInt64(result.Term, true);
+        writer.WriteLittleEndian(result.Term);
         writer.Add((byte)result.Value);
     }
 
@@ -34,7 +34,7 @@ internal static class Result
 
     internal static void WriteHeartbeatResult(ref SpanWriter<byte> writer, in Result<HeartbeatResult> result)
     {
-        writer.WriteInt64(result.Term, true);
+        writer.WriteLittleEndian(result.Term);
         writer.Add((byte)result.Value);
     }
 
@@ -47,7 +47,7 @@ internal static class Result
 
     internal static Result<bool> Read(ref SpanReader<byte> reader) => new()
     {
-        Term = reader.ReadInt64(true),
+        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
         Value = BasicExtensions.ToBoolean(reader.Read()),
     };
 
@@ -59,7 +59,7 @@ internal static class Result
 
     internal static Result<PreVoteResult> ReadPreVoteResult(ref SpanReader<byte> reader) => new()
     {
-        Term = reader.ReadInt64(true),
+        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
         Value = (PreVoteResult)reader.Read(),
     };
 
@@ -71,7 +71,7 @@ internal static class Result
 
     internal static Result<HeartbeatResult> ReadHeartbeatResult(ref SpanReader<byte> reader) => new()
     {
-        Term = reader.ReadInt64(true),
+        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
         Value = (HeartbeatResult)reader.Read(),
     };
 
