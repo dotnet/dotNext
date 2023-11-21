@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -320,30 +319,16 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// <param name="index">The index of the element in memory.</param>
     /// <value>The managed pointer to the item.</value>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
-    public readonly ref T this[nint index]
+    public readonly ref T this[int index]
     {
         get
         {
             AssertValid();
-
-            if ((nuint)index >= (nuint)length)
-                ThrowArgumentOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)length, nameof(index));
 
             return ref Unsafe.Add(ref First, index);
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowArgumentOutOfRangeException() => throw new ArgumentOutOfRangeException(nameof(index));
         }
     }
-
-    /// <summary>
-    /// Gets managed pointer to the item in the rented memory.
-    /// </summary>
-    /// <param name="index">The index of the element in memory.</param>
-    /// <value>The managed pointer to the item.</value>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
-    public readonly ref T this[int index] => ref this[(nint)index];
 
     internal readonly void Clear(bool clearBuffer)
     {

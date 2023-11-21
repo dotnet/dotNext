@@ -73,8 +73,8 @@ public ref struct MemoryRental<T>
     public MemoryRental(MemoryPool<T> pool, int minBufferSize, bool exactSize = true)
     {
         ArgumentNullException.ThrowIfNull(pool);
-        if (minBufferSize <= 0)
-            throw new ArgumentOutOfRangeException(nameof(minBufferSize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minBufferSize);
+
         var owner = pool.Rent(minBufferSize);
         memory = owner.Memory.Span;
         if (exactSize)
