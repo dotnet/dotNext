@@ -85,7 +85,7 @@ public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput>(IReadOnlyDi
     /// </summary>
     /// <returns>The enumerator over key/value pairs.</returns>
     public IEnumerator<KeyValuePair<TKey, TOutput>> GetEnumerator()
-        => source is null or { Count: 0 } || mapper is null ? Dictionary.Empty<TKey, TOutput>().GetEnumerator() : GetEnumerator(source, mapper);
+        => source is null or { Count: 0 } || mapper is null ? Enumerable.Empty<KeyValuePair<TKey, TOutput>>().GetEnumerator() : GetEnumerator(source, mapper);
 
     /// <summary>
     /// Returns the converted value associated with the specified key.

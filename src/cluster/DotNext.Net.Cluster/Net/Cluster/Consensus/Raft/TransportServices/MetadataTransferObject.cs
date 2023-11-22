@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -9,7 +10,6 @@ using Buffers;
 using IO;
 using Runtime.Serialization;
 using Text;
-using Dictionary = Collections.Generic.Dictionary;
 
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct MetadataTransferObject : ISerializable<MetadataTransferObject>
@@ -22,7 +22,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
 
     private static Encoding Encoding => Encoding.UTF8;
 
-    internal IReadOnlyDictionary<string, string> Metadata => metadata ?? Dictionary.Empty<string, string>();
+    internal IReadOnlyDictionary<string, string> Metadata => metadata ?? ReadOnlyDictionary<string, string>.Empty;
 
     long? IDataTransferObject.Length => null;
 

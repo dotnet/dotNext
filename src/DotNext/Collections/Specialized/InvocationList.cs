@@ -88,10 +88,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     public InvocationList(TDelegate d) => list = d;
 
     private InvocationList(TDelegate[] array, TDelegate d)
-    {
-        TDelegate[] list = [.. array, d];
-        this.list = list;
-    }
+        => list = (TDelegate[])[.. array, d];
 
     private InvocationList(TDelegate d1, TDelegate d2)
         => list = new TDelegate[] { d1, d2 };
