@@ -362,6 +362,8 @@ public static class RandomExtensions
         return result;
     }
 
+    /// <summary>
+    /// Fills the buffer with random values of the specified type.
     /// </summary>
     /// <typeparam name="T">The blittable type.</typeparam>
     /// <param name="random">The source of random numbers.</param>
