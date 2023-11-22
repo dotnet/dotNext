@@ -1012,6 +1012,16 @@ public static class Intrinsics
         return MemoryMarshal.CreateSpan(ref Unsafe.As<TInput, TOutput>(ref MemoryMarshal.GetReference(input)), input.Length);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ReadOnlySpan<TOutput> ReinterpretCast<TInput, TOutput>(ReadOnlySpan<TInput> input)
+        where TInput : unmanaged
+        where TOutput : unmanaged
+    {
+        Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>());
+
+        return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<TInput, TOutput>(ref MemoryMarshal.GetReference(input)), input.Length);
+    }
+
     /// <summary>
     /// Explicitly invokes object finalizer.
     /// </summary>
@@ -1068,4 +1078,15 @@ public static class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAtomic<T>()
         => AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= UIntPtr.Size;
+
+    /// <summary>
+    /// Determines whether the two types are binary compatible, i.e. both types have the same
+    /// size and memory alignment.
+    /// </summary>
+    /// <typeparam name="T1">The first type to compare.</typeparam>
+    /// <typeparam name="T2">The second type to compare.</typeparam>
+    /// <returns><see langword="true"/> if both types are binary compatible; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool AreCompatible<T1, T2>()
+        => Unsafe.SizeOf<T1>() == Unsafe.SizeOf<T2>() && AlignOf<T1>() == AlignOf<T2>();
 }

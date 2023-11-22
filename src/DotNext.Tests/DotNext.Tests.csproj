@@ -40,6 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.IO.Hashing"/>
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj"/>
     <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj"/>
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj"/>
