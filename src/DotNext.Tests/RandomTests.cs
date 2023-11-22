@@ -54,4 +54,66 @@ public sealed class RandomTests : Test
 
         All(buffer, static v => NotEqual(Guid.Empty, v));
     }
+
+    [Theory]
+    [InlineData("abcd123456789", 6)]
+    [InlineData("abcd123456789", 7)]
+    [InlineData("0123456789ABCDEF", 12)] // allowedChars.Length is pow of 2
+    public static void RandomString(string allowedChars, int length)
+    {
+        var str = Random.Shared.NextString(allowedChars, length);
+        Equal(length, str.Length);
+        All(str, ch => True(allowedChars.Contains(ch)));
+
+        using var generator = RandomNumberGenerator.Create();
+        str = generator.NextString(allowedChars, length);
+        Equal(length, str.Length);
+        All(str, ch => True(allowedChars.Contains(ch)));
+    }
+
+    [Fact]
+    public static void RandomChars()
+    {
+        const string AllowedChars = "abcd123456789";
+        var str = new char[6];
+
+        Random.Shared.NextChars(AllowedChars, str);
+        All(str, static ch => True(AllowedChars.Contains(ch)));
+
+        using var generator = RandomNumberGenerator.Create();
+        Array.Clear(str);
+        generator.NextChars(AllowedChars, str);
+
+        All(str, static ch => True(AllowedChars.Contains(ch)));
+    }
+
+    [Fact]
+    public static void PeekRandomFromEmptyCollection()
+    {
+        False(Random.Shared.Peek(Array.Empty<int>()).HasValue);
+    }
+
+    [Fact]
+    public static void PeekRandomFromSingletonCollection()
+    {
+        Equal(5, Random.Shared.Peek(new int[] { 5 }));
+    }
+
+    [Fact]
+    public static void PeekRandomFromCollection()
+    {
+        IReadOnlyCollection<int> collection = new int[] { 10, 20, 30 };
+        All(Enumerable.Range(0, collection.Count), i =>
+        {
+            True(Random.Shared.Peek(collection).Value is 10 or 20 or 30);
+        });
+    }
+
+    [Fact]
+    public static void ShuffleList()
+    {
+        var list = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
+        Random.Shared.Shuffle(list);
+        NotEqual([1, 2, 3, 4, 5, 6, 7], list.ToArray());
+    }
 }

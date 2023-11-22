@@ -80,37 +80,4 @@ public static class Collection
                 break;
         }
     }
-
-    /// <summary>
-    /// Gets the random element from the collection.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the collection.</typeparam>
-    /// <param name="collection">The collection to get the random element.</param>
-    /// <param name="random">The random numbers source.</param>
-    /// <returns>The random element from the collection; or <see cref="Optional{T}.None"/> if collection is empty.</returns>
-    public static Optional<T> PeekRandom<T>(this IReadOnlyCollection<T> collection, Random random)
-    {
-        return collection.Count switch
-        {
-            0 => Optional<T>.None,
-            1 => collection.FirstOrNone(),
-            _ when collection is T[] array => Span.PeekRandom<T>(array, random),
-            _ when collection is List<T> list => Span.PeekRandom<T>(CollectionsMarshal.AsSpan(list), random),
-            _ => PeekRandomSlow(collection, random),
-        };
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static Optional<T> PeekRandomSlow(IReadOnlyCollection<T> collection, Random random)
-        {
-            var index = random.Next(collection.Count);
-            using var enumerator = collection.GetEnumerator();
-            for (var i = 0; enumerator.MoveNext(); i++)
-            {
-                if (i == index)
-                    return enumerator.Current;
-            }
-
-            return Optional<T>.None;
-        }
-    }
 }

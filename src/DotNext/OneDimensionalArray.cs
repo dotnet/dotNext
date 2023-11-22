@@ -37,14 +37,6 @@ public static class OneDimensionalArray
     }
 
     /// <summary>
-    /// Indicates that array is <see langword="null"/> or empty.
-    /// </summary>
-    /// <param name="array">The array to check.</param>
-    /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
-    public static bool IsNullOrEmpty([NotNullWhen(false)] this Array? array)
-        => array is null || Intrinsics.GetLength(array) == 0;
-
-    /// <summary>
     /// Applies specific action to each array element.
     /// </summary>
     /// <remarks>

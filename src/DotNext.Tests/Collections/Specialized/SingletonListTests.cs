@@ -5,7 +5,7 @@ public sealed class SingletonListTests : Test
     [Fact]
     public static void ListInterop()
     {
-        IList<int> list = new SingletonList<int>(42);
+        IList<int> list = new SingletonList<int> { Item = 42 };
         Equal(42, list[0]);
         True(list.IsReadOnly);
         Single(list);

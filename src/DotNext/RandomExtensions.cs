@@ -178,9 +178,7 @@ public static class RandomExtensions
     public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
     {
         ArgumentNullException.ThrowIfNull(random);
-
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
 
         string result;
         if (length is 0 || allowedChars.IsEmpty)
@@ -364,8 +362,6 @@ public static class RandomExtensions
         return result;
     }
 
-    /// <summary>
-    /// Fills the buffer with random values of the specified type.
     /// </summary>
     /// <typeparam name="T">The blittable type.</typeparam>
     /// <param name="random">The source of random numbers.</param>
@@ -385,4 +381,92 @@ public static class RandomExtensions
     public static void GetItems<T>(this RandomNumberGenerator random, Span<T> buffer)
         where T : unmanaged
         => GetItems<CryptographicRandomBytesSource, T>(random ?? throw new ArgumentNullException(nameof(random)), buffer);
+
+    /// <summary>
+    /// Randomizes elements in the list.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the list.</typeparam>
+    /// <param name="random">The source of random values.</param>
+    /// <param name="list">The list to shuffle.</param>
+    public static void Shuffle<T>(this Random random, IList<T> list)
+    {
+        Span<T> span;
+        switch (list)
+        {
+            case List<T> typedList:
+                span = CollectionsMarshal.AsSpan(typedList);
+                break;
+            case T[] array:
+                span = array;
+                break;
+            default:
+                ShuffleSlow(random, list);
+                return;
+        }
+
+        random.Shuffle(span);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void ShuffleSlow(Random random, IList<T> list)
+        {
+            for (var i = list.Count - 1; i > 0; i--)
+            {
+                var randomIndex = random.Next(i + 1);
+                (list[i], list[randomIndex]) = (list[randomIndex], list[i]);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the random element from the collection.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the collection.</typeparam>
+    /// <param name="random">The random numbers source.</param>
+    /// <param name="collection">The collection to get the random element.</param>
+    /// <returns>The random element from the collection; or <see cref="Optional{T}.None"/> if collection is empty.</returns>
+    public static Optional<T> Peek<T>(this Random random, IReadOnlyCollection<T> collection)
+    {
+        return collection switch
+        {
+            null => throw new ArgumentNullException(nameof(collection)),
+            { Count: 0 } => Optional<T>.None,
+            { Count: 1 } => collection.ElementAt(0),
+            T[] array => random.Peek<T>(array.AsSpan()),
+            List<T> list => random.Peek<T>(CollectionsMarshal.AsSpan(list)),
+            _ => PeekRandomSlow(random, collection),
+        };
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static Optional<T> PeekRandomSlow(Random random, IReadOnlyCollection<T> collection)
+        {
+            var index = random.Next(collection.Count);
+            using var enumerator = collection.GetEnumerator();
+            for (var i = 0; enumerator.MoveNext(); i++)
+            {
+                if (i == index)
+                    return enumerator.Current;
+            }
+
+            return Optional<T>.None;
+        }
+    }
+
+    /// <summary>
+    /// Chooses the random element in the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="random">The source of random values.</param>
+    /// <param name="span">The span of elements.</param>
+    /// <returns>Randomly selected element from the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
+    public static Optional<T> Peek<T>(this Random random, ReadOnlySpan<T> span)
+    {
+        var length = span.Length;
+
+        return length switch
+        {
+            0 => Optional<T>.None,
+            1 => MemoryMarshal.GetReference(span),
+            _ => span[random.Next(length)],
+        };
+    }
 }

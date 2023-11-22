@@ -42,17 +42,6 @@ public sealed class SequenceTests : Test
     }
 
     [Fact]
-    public static void FirstOrNullTest()
-    {
-        var array = new long[0];
-        var element = array.FirstOrNull();
-        Null(element);
-        array = new long[] { 10, 20 };
-        element = array.FirstOrNull();
-        Equal(10, element);
-    }
-
-    [Fact]
     public static async Task FirstOrNullTestAsync()
     {
         var array = new long[0].ToAsyncEnumerable();
@@ -199,40 +188,6 @@ public sealed class SequenceTests : Test
         True(enumerator.MoveNext());
         Equal(2, enumerator.Current);
         False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public static void Iteration()
-    {
-        IEnumerable<int> collection = Array.Empty<int>();
-        Null(collection.FirstOrNull());
-        Equal(Optional<int>.None, collection.FirstOrNone());
-        Equal(Optional<int>.None, collection.FirstOrNone(Predicate.Constant<int>(true)));
-
-        collection = new int[] { 42 };
-        Equal(42, collection.FirstOrNull());
-        Equal(42, collection.FirstOrNone());
-        Equal(42, collection.FirstOrNone(Predicate.Constant<int>(true)));
-
-        Equal('a', "ab".FirstOrNone());
-        False(string.Empty.FirstOrNone().HasValue);
-        Equal('a', "ab".FirstOrNone(Predicate.Constant<char>(true)));
-        False(string.Empty.FirstOrNone(Predicate.Constant<char>(true)).HasValue);
-    }
-
-    [Fact]
-    public static void Iteration2()
-    {
-        IEnumerable<int> collection = Array.Empty<int>();
-        Null(collection.LastOrNull());
-        Equal(Optional<int>.None, collection.LastOrNone());
-
-        collection = new int[] { 42 };
-        Equal(42, collection.LastOrNull());
-        Equal(42, collection.LastOrNone());
-
-        Equal('b', "ab".LastOrNone());
-        False(string.Empty.LastOrNone().HasValue);
     }
 
     [Fact]

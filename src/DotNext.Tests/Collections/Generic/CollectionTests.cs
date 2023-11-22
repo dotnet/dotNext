@@ -42,26 +42,4 @@ public sealed class CollectionTests : Test
         NotEmpty(view);
         All(view, static value => True(value.IsBetween(0, 3, BoundType.Closed)));
     }
-
-    [Fact]
-    public static void PeekRandomFromEmptyCollection()
-    {
-        False(Array.Empty<int>().PeekRandom(Random.Shared).HasValue);
-    }
-
-    [Fact]
-    public static void PeekRandomFromSingletonCollection()
-    {
-        Equal(5, new int[] { 5 }.PeekRandom(Random.Shared));
-    }
-
-    [Fact]
-    public static void PeekRandomFromCollection()
-    {
-        IReadOnlyCollection<int> collection = new int[] { 10, 20, 30 };
-        All(Enumerable.Range(0, collection.Count), i =>
-        {
-            True(collection.PeekRandom(Random.Shared).Value is 10 or 20 or 30);
-        });
-    }
 }

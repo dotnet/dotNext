@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
 using static InlineIL.IL;
@@ -215,4 +216,29 @@ public static class BasicExtensions
     /// <returns>The normalized value in range [0..1).</returns>
     public static float Normalize(this int value)
         => Normalize(unchecked((uint)value));
+
+    /// <summary>
+    /// Checks whether specified value is in range.
+    /// </summary>
+    /// <typeparam name="T">Type of value to check.</typeparam>
+    /// <param name="value">Value to check.</param>
+    /// <param name="left">Range left bound.</param>
+    /// <param name="right">Range right bound.</param>
+    /// <param name="boundType">Range endpoints bound type.</param>
+    /// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
+    public static bool IsBetween<T>(this T value, T left, T right, [ConstantExpected] BoundType boundType = BoundType.Open)
+        where T : notnull, IComparable<T>
+    {
+        int l = value.CompareTo(left), r = value.CompareTo(right);
+        return (l > 0 || (l is 0 && (boundType & BoundType.LeftClosed) is not 0))
+          && (r < 0 || (r is 0 && (boundType & BoundType.RightClosed) is not 0));
+    }
+
+    /// <summary>
+    /// Indicates that array is <see langword="null"/> or empty.
+    /// </summary>
+    /// <param name="array">The array to check.</param>
+    /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
+    public static bool IsNullOrEmpty([NotNullWhen(false)] this Array? array)
+        => array is null || Runtime.Intrinsics.GetLength(array) is 0;
 }

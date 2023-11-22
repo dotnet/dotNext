@@ -196,7 +196,7 @@ public static class List
     /// <param name="item">An item to be placed into list.</param>
     /// <typeparam name="T">Type of list items.</typeparam>
     /// <returns>Read-only list containing single item.</returns>
-    public static IReadOnlyList<T> Singleton<T>(T item) => new Specialized.SingletonList<T>(item);
+    public static IReadOnlyList<T> Singleton<T>(T item) => new Specialized.SingletonList<T> { Item = item };
 
     /// <summary>
     /// Inserts the item into sorted list.
@@ -214,7 +214,7 @@ public static class List
     /// <param name="comparer">The comparer function.</param>
     /// <returns>The actual index of the inserted item.</returns>
     public static int InsertOrdered<T, TComparer>(this List<T> list, T item, TComparer comparer)
-        where TComparer : IComparer<T>
+        where TComparer : notnull, IComparer<T>
     {
         var span = CollectionsMarshal.AsSpan(list);
         var low = 0;
@@ -245,7 +245,7 @@ public static class List
     /// <param name="comparer">The comparer function.</param>
     /// <returns>The actual index of the inserted item.</returns>
     public static int InsertOrdered<T, TComparer>(this IList<T> list, T item, TComparer comparer)
-        where TComparer : IComparer<T>
+        where TComparer : notnull, IComparer<T>
     {
         var low = 0;
         for (var high = list.Count; low < high;)
@@ -336,41 +336,4 @@ public static class List
     /// <returns>The section of the list.</returns>
     public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
         => new(list, range);
-
-    /// <summary>
-    /// Randomizes elements in the list.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the list.</typeparam>
-    /// <param name="list">The list to shuffle.</param>
-    /// <param name="random">The source of random values.</param>
-    public static void Shuffle<T>(this IList<T> list, Random random)
-    {
-        Span<T> span;
-        switch (list)
-        {
-            case List<T> typedList:
-                span = CollectionsMarshal.AsSpan(typedList);
-                break;
-            case T[] array:
-                span = array;
-                break;
-            default:
-                ShuffleSlow(list, random);
-                return;
-        }
-
-        random.Shuffle(span);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static void ShuffleSlow(IList<T> list, Random random)
-        {
-            for (var i = list.Count - 1; i > 0; i--)
-            {
-                var randomIndex = random.Next(i + 1);
-                T item = list[randomIndex];
-                list[randomIndex] = list[i];
-                list[i] = item;
-            }
-        }
-    }
 }

@@ -9,8 +9,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void BitwiseEquality()
     {
-        Span<Guid> array1 = new Guid[] { Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
-        Span<Guid> array2 = new Guid[] { Guid.Empty, array1[1], array1[2] };
+        Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
+        Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
         True(array1.SequenceEqual(array2));
         True(array1.BitwiseEquals(array2));
         array2[1] = Guid.Empty;
@@ -21,8 +21,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void BitwiseComparison()
     {
-        Span<Guid> array1 = new Guid[] { Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
-        Span<Guid> array2 = new Guid[] { Guid.Empty, array1[1], array1[2] };
+        Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
+        Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
         Equal(0, array1.BitwiseCompare(array2));
         array2[1] = Guid.Empty;
         True(array1.BitwiseCompare(array2) > 0);
@@ -88,73 +88,6 @@ public sealed class SpanTests : Test
 
     private static string ToHexSlow(byte[] data, bool lowercased)
         => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString(lowercased ? "x2" : "X2", null)));
-
-    [Theory]
-    [InlineData(0, true)]
-    [InlineData(7, true)]
-    [InlineData(10, true)]
-    [InlineData(128, true)]
-    [InlineData(2048, true)]
-    [InlineData(0, false)]
-    [InlineData(7, false)]
-    [InlineData(10, false)]
-    [InlineData(128, false)]
-    [InlineData(2048, false)]
-    [Obsolete]
-    public static void ToHexConversion(int arraySize, bool lowercased)
-    {
-        var data = RandomBytes(arraySize);
-        Equal(ToHexSlow(data, lowercased), new ReadOnlySpan<byte>(data).ToHex(lowercased));
-    }
-
-    [Fact]
-    [Obsolete]
-    public static void ToHexConversionVarLength()
-    {
-        ReadOnlySpan<byte> data = new byte[] { 1, 2 };
-        char[] encoded = new char[1];
-        Equal(0, data.ToHex(encoded));
-        encoded = new char[2];
-        Equal(2, data.ToHex(encoded));
-        Equal('0', encoded[0]);
-        Equal('1', encoded[1]);
-    }
-
-    [Fact]
-    [Obsolete]
-    public static void FromHexConversionVarLength()
-    {
-        ReadOnlySpan<char> data = new char[] { 'F', 'F', 'A' };
-        var decoded = new byte[1];
-        Equal(1, data.FromHex(decoded));
-        Equal(byte.MaxValue, decoded[0]);
-        data = "ABBA".AsSpan();
-        decoded = new byte[2];
-        Equal(2, data.FromHex(decoded));
-        Equal(0xAB, decoded[0]);
-        Equal(0xBA, decoded[1]);
-        data = "abba".AsSpan();
-        Equal(2, data.FromHex(decoded));
-        Equal(0xAB, decoded[0]);
-        Equal(0xBA, decoded[1]);
-        data = default;
-        Equal(0, data.FromHex(decoded));
-    }
-
-    [Theory]
-    [InlineData(0, true)]
-    [InlineData(128, true)]
-    [InlineData(2048, true)]
-    [InlineData(0, false)]
-    [InlineData(128, false)]
-    [InlineData(2048, false)]
-    [Obsolete]
-    public static void FromHexConversion(int arraySize, bool lowercased)
-    {
-        var data = RandomBytes(arraySize);
-        ReadOnlySpan<char> hex = ToHexSlow(data, lowercased);
-        Equal(data, hex.FromHex());
-    }
 
     public static IEnumerable<object[]> TestAllocators()
     {
@@ -505,7 +438,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void SplitSpanByLength()
     {
-        Span<char> chars = new char[] { 'a', 'b', 'c', 'd' };
+        Span<char> chars = ['a', 'b', 'c', 'd'];
         var head = chars.TrimLength(2, out var rest);
         Equal("ab", head.ToString());
         Equal("cd", rest.ToString());
@@ -534,39 +467,39 @@ public sealed class SpanTests : Test
     public static void TransformElements()
     {
         // left < right
-        Span<int> input = new int[] { 1, 2, 3, 4, 5, 6 };
+        Span<int> input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..2, 3..6);
         Equal(new int[] { 4, 5, 6, 3, 1, 2 }, input.ToArray());
 
         // left > right
-        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..3, 4..6);
-        Equal(new int[] { 5, 6, 4, 1, 2, 3 }, input.ToArray());
+        Equal([5, 6, 4, 1, 2, 3], input.ToArray());
 
         // left is zero length
-        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input = [1, 2, 3, 4, 5, 6];
         input.Swap(1..1, 3..6);
-        Equal(new int[] { 1, 4, 5, 6, 2, 3 }, input.ToArray());
+        Equal([1, 4, 5, 6, 2, 3], input.ToArray());
 
         // right is zero length
-        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..2, 3..3);
-        Equal(new int[] { 3, 1, 2, 4, 5, 6 }, input.ToArray());
+        Equal([3, 1, 2, 4, 5, 6], input.ToArray());
 
         // no space between ranges
-        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..2, 2..6);
-        Equal(new int[] { 3, 4, 5, 6, 1, 2 }, input.ToArray());
+        Equal([3, 4, 5, 6, 1, 2], input.ToArray());
 
         // left == right
-        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..3, 3..6);
-        Equal(new int[] { 4, 5, 6, 1, 2, 3 }, input.ToArray());
+        Equal([4, 5, 6, 1, 2, 3], input.ToArray());
 
         // left and right are empty
-        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input = [1, 2, 3, 4, 5, 6];
         input.Swap(1..1, 5..5);
-        Equal(new int[] { 1, 2, 3, 4, 5, 6 }, input.ToArray());
+        Equal([1, 2, 3, 4, 5, 6], input.ToArray());
 
         // overlapping
         Throws<ArgumentException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Swap(0..2, 1..3));
@@ -576,18 +509,18 @@ public sealed class SpanTests : Test
     public static void MoveRange()
     {
         // move from left to right
-        Span<int> input = new int[] { 1, 2, 3, 4, 5, 6 };
+        Span<int> input = [1, 2, 3, 4, 5, 6];
         input.Move(0..2, 3);
-        Equal(new int[] { 3, 1, 2, 4, 5, 6 }, input.ToArray());
+        Equal([3, 1, 2, 4, 5, 6], input.ToArray());
 
         // move from left to right
-        input = new int[] { 1, 2, 3, 4, 5, 6 };
+        input = [1, 2, 3, 4, 5, 6];
         input.Move(1..3, 6);
-        Equal(new int[] { 1, 4, 5, 6, 2, 3 }, input.ToArray());
+        Equal([1, 4, 5, 6, 2, 3], input.ToArray());
 
         // move from right to left
         input.Move(4..6, 1);
-        Equal(new int[] { 1, 2, 3, 4, 5, 6 }, input.ToArray());
+        Equal([1, 2, 3, 4, 5, 6], input.ToArray());
 
         // out of range
         Throws<ArgumentOutOfRangeException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Move(0..2, 1));

@@ -320,7 +320,7 @@ public static partial class Span
                 throw new ArgumentOutOfRangeException(nameof(maxLength));
             case 0:
                 rest = span;
-                return Span<T>.Empty;
+                return default;
             default:
                 return TrimLengthCore(span, maxLength, out rest);
         }
@@ -451,7 +451,7 @@ public static partial class Span
     /// <typeparam name="T">The type of the pointer.</typeparam>
     /// <returns>The span of contiguous memory.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value)
+    public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(ref readonly T value)
         where T : unmanaged
         => AsBytes(ref AsRef(in value));
 
@@ -580,36 +580,6 @@ public static partial class Span
         => CopyTo((ReadOnlySpan<T>)source, destination, out writtenCount);
 
     /// <summary>
-    /// Gets first element in the span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span of elements.</param>
-    /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-    [Obsolete("Use FirstOrNone() extension method instead")]
-    public static Optional<T> FirstOrEmpty<T>(this ReadOnlySpan<T> span)
-        => FirstOrNone(span);
-
-    /// <summary>
-    /// Gets first element in the span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span of elements.</param>
-    /// <returns>The first element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010", Justification = "False positive")]
-    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span) // TODO: Remove in the next version because of list pattern matching
-        => span is [var result, ..] ? result : Optional<T>.None;
-
-    /// <summary>
-    /// Gets the last element in the span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span of elements.</param>
-    /// <returns>The last element in the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010", Justification = "False positive")]
-    public static Optional<T> LastOrNone<T>(this ReadOnlySpan<T> span)
-        => span is [.., var result] ? result : Optional<T>.None;
-
-    /// <summary>
     /// Returns the first element in a span that satisfies a specified condition.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the span.</typeparam>
@@ -630,20 +600,6 @@ public static partial class Span
 
         return Optional<T>.None;
     }
-
-    /// <summary>
-    /// Chooses the random element in the span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span of elements.</param>
-    /// <param name="random">The source of random values.</param>
-    /// <returns>Randomly selected element from the span; or <see cref="Optional{T}.None"/> if span is empty.</returns>
-    public static Optional<T> PeekRandom<T>(this ReadOnlySpan<T> span, Random random) => span.Length switch
-    {
-        0 => Optional<T>.None,
-        1 => MemoryMarshal.GetReference(span),
-        int length => span[random.Next(length)], // cannot use MemoryMarshal here because Random.Next is virtual so bounds check required for security reasons
-    };
 
     internal static bool ElementAt<T>(ReadOnlySpan<T> span, int index, [MaybeNullWhen(false)] out T element)
     {
@@ -749,8 +705,7 @@ public static partial class Span
     /// <exception cref="ArgumentException"><paramref name="x"/> overlaps with <paramref name="y"/>.</exception>
     public static void Swap<T>(this Span<T> x, Span<T> y)
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(y));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         if (x.Overlaps(y))
             throw new ArgumentException(ExceptionMessages.OverlappedRange, nameof(y));

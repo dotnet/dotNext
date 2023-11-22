@@ -115,22 +115,6 @@ public sealed class ListTests : Test
     }
 
     [Fact]
-    public static void ShuffleArray()
-    {
-        var array = new int[] { 1, 2, 3, 4, 5, 6, 7 };
-        array.Shuffle(Random.Shared);
-        True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
-    }
-
-    [Fact]
-    public static void ShuffleList()
-    {
-        var array = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
-        array.Shuffle(Random.Shared);
-        True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
-    }
-
-    [Fact]
     public static void ArraySlice()
     {
         var segment = List.Slice(new int[] { 10, 20, 30 }, 0..2);

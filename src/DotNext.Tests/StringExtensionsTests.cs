@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Text;
+﻿using System.Text;
 
 namespace DotNext;
 
@@ -12,42 +11,6 @@ public sealed class StringExtensionsTests : Test
         Equal("a", "".IfNullOrEmpty("a"));
         Equal("a", default(string).IfNullOrEmpty("a"));
         Equal("b", "b".IfNullOrEmpty("a"));
-    }
-
-    [Theory]
-    [InlineData("abcd123456789", 6)]
-    [InlineData("abcd123456789", 7)]
-    [InlineData("0123456789ABCDEF", 12)] // allowedChars.Length is pow of 2
-    public static void RandomStringTest(string allowedChars, int length)
-    {
-        var str = Random.Shared.NextString(allowedChars, length);
-        Equal(length, str.Length);
-        All(str, ch => True(allowedChars.Contains(ch)));
-
-        using (var generator = RandomNumberGenerator.Create())
-        {
-            str = generator.NextString(allowedChars, length);
-            Equal(length, str.Length);
-            All(str, ch => True(allowedChars.Contains(ch)));
-        }
-    }
-
-    [Fact]
-    public static void RandomChars()
-    {
-        const string AllowedChars = "abcd123456789";
-        var str = new char[6];
-
-        Random.Shared.NextChars(AllowedChars, str);
-        All(str, static ch => True(AllowedChars.Contains(ch)));
-
-        using (var generator = RandomNumberGenerator.Create())
-        {
-            Array.Clear(str);
-            generator.NextChars(AllowedChars, str);
-
-            All(str, static ch => True(AllowedChars.Contains(ch)));
-        }
     }
 
     [Fact]

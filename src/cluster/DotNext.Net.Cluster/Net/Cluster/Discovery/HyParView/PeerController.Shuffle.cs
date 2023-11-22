@@ -25,7 +25,7 @@ public partial class PeerController
 
     private async Task ProcessShuffleAsync()
     {
-        if (activeView.PeekRandom(random).TryGet(out var activePeer))
+        if (random.Peek(activeView).TryGet(out var activePeer))
         {
             PooledArrayBufferWriter<EndPoint> peersToSend;
 
@@ -128,7 +128,7 @@ public partial class PeerController
 
             await AddPeersToPassiveViewAsync(announcement).ConfigureAwait(false);
         }
-        else if (activeView.Except(new[] { sender, origin }).PeekRandom(random).TryGet(out var activePeer))
+        else if (random.Peek(activeView.Except(new[] { sender, origin })).TryGet(out var activePeer))
         {
             // resend announcement
             await ShuffleAsync(activePeer, origin, announcement, ttl - 1, LifecycleToken).ConfigureAwait(false);

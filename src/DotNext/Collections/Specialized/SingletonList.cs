@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -48,7 +46,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
         /// <returns><see langword="true"/> if the enumerator advanced successfully; otherwise, <see langword="false"/>.</returns>
         public bool MoveNext()
         {
-            if (state == NotRequestedState)
+            if (state is NotRequestedState)
             {
                 state = RequestedState;
                 return true;
@@ -62,25 +60,15 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
         /// </summary>
         public void Reset()
         {
-            if (state == RequestedState)
+            if (state is RequestedState)
                 state = NotRequestedState;
         }
     }
 
     /// <summary>
-    /// Initializes a new list with one element.
+    /// The item of the list.
     /// </summary>
-    /// <param name="item">The element in the list.</param>
-    public SingletonList(T item) => Item = item;
-
-    /// <summary>
-    /// Gets or sets the item in this list.
-    /// </summary>
-    public T Item
-    {
-        readonly get;
-        set;
-    }
+    required public T Item;
 
     /// <summary>
     /// Gets or sets the item in this list.
@@ -94,25 +82,18 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
     {
         readonly get
         {
-            if (index != 0)
-                ThrowIndexOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfNotEqual(index, 0);
 
             return Item;
         }
 
         set
         {
-            if (index != 0)
-                ThrowIndexOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfNotEqual(index, 0);
 
             Item = value;
         }
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowIndexOutOfRangeException()
-        => throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
 
     /// <inheritdoc />
     readonly object? ITuple.this[int index] => this[index];
@@ -171,5 +152,5 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
     /// </summary>
     /// <param name="item">The item in the list.</param>
     /// <returns>The collection containing the list.</returns>
-    public static implicit operator SingletonList<T>(T item) => new(item);
+    public static implicit operator SingletonList<T>(T item) => new() { Item = item };
 }
