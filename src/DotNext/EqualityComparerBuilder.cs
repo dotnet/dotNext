@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
+using Collections.Generic;
 using Reflection;
 using Intrinsics = Runtime.Intrinsics;
-using Seq = Collections.Generic.Sequence;
 
 /// <summary>
 /// Generates hash code and equality check functions for the particular type.
@@ -141,12 +141,12 @@ public readonly struct EqualityComparerBuilder<T>
 
         if (itemType.IsValueType)
         {
-            return typeof(Seq)
-                .GetMethod(nameof(Seq.SequenceEqual), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)!
+            return typeof(Collection)
+                .GetMethod(nameof(Collection.SequenceEqual), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)!
                 .MakeGenericMethod(itemType);
         }
 
-        return new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Seq.SequenceEqual).Method;
+        return new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Collection.SequenceEqual).Method;
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
@@ -164,11 +164,11 @@ public readonly struct EqualityComparerBuilder<T>
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
             return typeof(OneDimensionalArray)
-                      .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, new[] { arrayType, typeof(bool) }, null)!
+                      .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, [arrayType, typeof(bool)], null)!
                       .MakeGenericMethod(itemType);
         }
 
-        return typeof(Seq).GetMethod(nameof(Seq.SequenceHashCode), PublicStaticFlags)!
+        return typeof(Collection).GetMethod(nameof(Collection.SequenceHashCode), PublicStaticFlags)!
             .MakeGenericMethod(itemType);
     }
 
@@ -278,7 +278,7 @@ public readonly struct EqualityComparerBuilder<T>
         }
 
         expressions.Add(hashCodeTemp);
-        expr = Expression.Block(typeof(int), Seq.Singleton(hashCodeTemp), expressions);
+        expr = Expression.Block(typeof(int), List.Singleton(hashCodeTemp), expressions);
         return Expression.Lambda<Func<T, int>>(expr, false, inputParam).Compile();
     }
 

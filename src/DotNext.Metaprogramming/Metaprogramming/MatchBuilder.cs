@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Metaprogramming;
 
 using Linq.Expressions;
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents pattern matcher.
@@ -84,7 +84,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             var test = value.InstanceOf(expectedType);
             var typedValue = Expression.Variable(expectedType);
             var body = builder.Invoke(typedValue);
-            return endOfMatch => Expression.IfThen(test, Expression.Block(Seq.Singleton(typedValue), typedValue.Assign(value.Convert(expectedType)), endOfMatch.Goto(body)));
+            return endOfMatch => Expression.IfThen(test, Expression.Block(List.Singleton(typedValue), typedValue.Assign(value.Convert(expectedType)), endOfMatch.Goto(body)));
         }
     }
 
@@ -101,7 +101,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             var typedVarInit = typedVar.Assign(value.Convert(expectedType));
             var body = builder.Invoke(typedVar);
             var test2 = condition(typedVar);
-            return endOfMatch => Expression.IfThen(test, Expression.Block(Seq.Singleton(typedVar), typedVarInit, Expression.IfThen(test2, endOfMatch.Goto(body))));
+            return endOfMatch => Expression.IfThen(test, Expression.Block(List.Singleton(typedVar), typedVarInit, Expression.IfThen(test2, endOfMatch.Goto(body))));
         }
     }
 
@@ -180,7 +180,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
     public MatchBuilder Case(string memberName, Expression memberValue, Func<MemberExpression, Expression> body)
-        => Case(StructuralPattern(Seq.Singleton((memberName, memberValue))), value => body(Expression.PropertyOrField(value, memberName)));
+        => Case(StructuralPattern(List.Singleton((memberName, memberValue))), value => body(Expression.PropertyOrField(value, memberName)));
 
     /// <summary>
     /// Defines pattern matching based on structural matching.
@@ -409,7 +409,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
 
         // setup label as last instruction
         instructions.Add(Expression.Label(endOfMatch, Expression.Default(endOfMatch.Type)));
-        return assignment is null ? Expression.Block(instructions) : Expression.Block(Seq.Singleton(value), instructions);
+        return assignment is null ? Expression.Block(instructions) : Expression.Block(List.Singleton(value), instructions);
     }
 
     private protected override void Cleanup()
@@ -501,7 +501,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
 
         private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression> scope)
         {
-            var pattern = StructuralPattern(Seq.Singleton((memberName, memberValue)));
+            var pattern = StructuralPattern(List.Singleton((memberName, memberValue)));
             return builder.MatchByCondition(pattern, new CaseStatementBuilder(this, memberName, scope));
         }
     }

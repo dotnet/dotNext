@@ -1,7 +1,5 @@
 namespace DotNext;
 
-using static Collections.Generic.Sequence;
-
 public sealed class OneDimensionalArrayTests : Test
 {
     public sealed class Equatable
@@ -13,19 +11,6 @@ public sealed class OneDimensionalArrayTests : Test
         public override bool Equals(object other) => other is Equatable equ && value == equ.value;
 
         public override int GetHashCode() => value.GetHashCode();
-    }
-
-    [Fact]
-    public static void ArrayEquality2()
-    {
-        var array1 = new[] { new Equatable("a"), new Equatable("b") };
-        var array2 = new[] { new Equatable("a"), new Equatable("b") };
-        True(array1.SequenceEqual(array2));
-        True(array1.SequenceEqual(array2, true));
-        Equal(array1.SequenceHashCode(), array2.SequenceHashCode());
-        array2[0] = new Equatable("c");
-        False(array1.SequenceEqual(array2));
-        False(array1.SequenceEqual(array2, true));
     }
 
     [Fact]

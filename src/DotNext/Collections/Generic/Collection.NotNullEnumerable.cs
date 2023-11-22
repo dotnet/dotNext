@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace DotNext.Collections.Generic;
 
-public static partial class Sequence
+public static partial class Collection
 {
     private sealed class NotNullEnumerable<T> : IEnumerable<T>
         where T : class

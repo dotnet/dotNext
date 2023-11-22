@@ -11,22 +11,16 @@ namespace DotNext.Collections.Generic;
 /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
 /// <typeparam name="TInput">Type of values in the source dictionary.</typeparam>
 /// <typeparam name="TOutput">Type of values in the converted dictionary.</typeparam>
+/// <remarks>
+/// Initializes a new lazily converted view.
+/// </remarks>
+/// <param name="dictionary">Read-only dictionary to convert.</param>
+/// <param name="mapper">Value converter.</param>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput> : IReadOnlyDictionary<TKey, TOutput>, IEquatable<ReadOnlyDictionaryView<TKey, TInput, TOutput>>
+public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput>(IReadOnlyDictionary<TKey, TInput> dictionary, Func<TInput, TOutput> mapper) : IReadOnlyDictionary<TKey, TOutput>, IEquatable<ReadOnlyDictionaryView<TKey, TInput, TOutput>>
 {
-    private readonly IReadOnlyDictionary<TKey, TInput>? source;
-    private readonly Func<TInput, TOutput> mapper;
-
-    /// <summary>
-    /// Initializes a new lazily converted view.
-    /// </summary>
-    /// <param name="dictionary">Read-only dictionary to convert.</param>
-    /// <param name="mapper">Value converter.</param>
-    public ReadOnlyDictionaryView(IReadOnlyDictionary<TKey, TInput> dictionary, Func<TInput, TOutput> mapper)
-    {
-        source = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
-        this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+    private readonly IReadOnlyDictionary<TKey, TInput>? source = dictionary ?? throw new ArgumentNullException(nameof(dictionary));
+    private readonly Func<TInput, TOutput> mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     /// <summary>
     /// Initializes a new lazily converted view.
@@ -91,7 +85,7 @@ public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput> : IReadOnly
     /// </summary>
     /// <returns>The enumerator over key/value pairs.</returns>
     public IEnumerator<KeyValuePair<TKey, TOutput>> GetEnumerator()
-        => source is null || mapper is null || source.Count == 0 ? Sequence.GetEmptyEnumerator<KeyValuePair<TKey, TOutput>>() : GetEnumerator(source, mapper);
+        => source is null or { Count: 0 } || mapper is null ? Dictionary.Empty<TKey, TOutput>().GetEnumerator() : GetEnumerator(source, mapper);
 
     /// <summary>
     /// Returns the converted value associated with the specified key.

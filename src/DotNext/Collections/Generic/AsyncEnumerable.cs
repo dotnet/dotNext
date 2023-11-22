@@ -2,7 +2,10 @@ namespace DotNext.Collections.Generic;
 
 using Buffers;
 
-public static partial class Sequence
+/// <summary>
+/// Provides extension methods for <see cref="IAsyncEnumerable{T}"/> interface.
+/// </summary>
+public static partial class AsyncEnumerable
 {
     /// <summary>
     /// Applies specified action to each collection element asynchronously.
@@ -200,7 +203,7 @@ public static partial class Sequence
     /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
     public static IAsyncEnumerable<T> SkipNulls<T>(this IAsyncEnumerable<T?> collection)
         where T : class
-        => new AsyncNotNullEnumerable<T>(collection);
+        => new NotNullEnumerable<T>(collection);
 
     /// <summary>
     /// Converts asynchronous collection to the array.
@@ -223,4 +226,11 @@ public static partial class Sequence
 
         return buffer.WrittenMemory.ToArray();
     }
+
+    /// <summary>
+    /// Gets empty asynchronous collection.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+    /// <returns>Empty asynchronous collection.</returns>
+    public static IAsyncEnumerable<T> Empty<T>() => EmptyEnumerator<T>.Instance;
 }

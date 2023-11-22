@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -12,7 +11,6 @@ namespace DotNext.IO;
 using Buffers;
 using Text;
 using static Buffers.BufferReader;
-using static Collections.Generic.Sequence;
 
 /// <summary>
 /// Represents high-level read/write methods for the stream.
@@ -1230,7 +1228,7 @@ public static partial class StreamExtensions
     /// <param name="others">A collection of streams.</param>
     /// <returns>An object that represents multiple streams as one logical stream.</returns>
     public static Stream Combine(this Stream stream, params Stream[] others)
-        => others.IsNullOrEmpty() ? stream : new SparseStream(Singleton(stream).Concat(others));
+        => others is { Length: > 0 } ? new SparseStream(others.Prepend(stream)) : stream;
 
     /// <summary>
     /// Combines multiple readable streams.

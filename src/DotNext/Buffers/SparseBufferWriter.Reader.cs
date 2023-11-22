@@ -7,8 +7,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
 
-using Sequence = Collections.Generic.Sequence;
-
 public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
 {
     /// <summary>
@@ -252,7 +250,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
 
     /// <inheritdoc />
     IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => first is null ? Sequence.GetEmptyEnumerator<ReadOnlyMemory<T>>() : GetEnumerator();
+        => first is null ? Enumerable.Empty<ReadOnlyMemory<T>>().GetEnumerator() : GetEnumerator();
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

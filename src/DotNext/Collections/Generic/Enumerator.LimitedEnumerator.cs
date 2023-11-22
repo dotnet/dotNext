@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic;
 
-public static partial class Sequence
+public static partial class Enumerator
 {
     /// <summary>
     /// Wrapped for the enumerator which is limited by count.

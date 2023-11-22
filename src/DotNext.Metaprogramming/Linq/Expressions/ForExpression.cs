@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions;
 
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents <c>for</c> loop as expression.
@@ -196,6 +196,6 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
     {
         Expression body = Condition(Test, Body, Goto(BreakLabel), typeof(void));
         body = Loop(body, BreakLabel);
-        return Block(typeof(void), Seq.Singleton(LoopVar), Assign(LoopVar, Initialization), body);
+        return Block(typeof(void), List.Singleton(LoopVar), Assign(LoopVar, Initialization), body);
     }
 }

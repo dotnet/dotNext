@@ -2,7 +2,7 @@
 
 namespace DotNext.Metaprogramming;
 
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents selection statement that chooses a single section to execute from a
@@ -55,7 +55,7 @@ public sealed class SwitchBuilder : ExpressionBuilder<SwitchExpression>
     /// <param name="test">Single test value.</param>
     /// <param name="body">The expression to be returned from selection statement.</param>
     /// <returns><c>this</c> builder.</returns>
-    public SwitchBuilder Case(Expression test, Expression body) => Case(Seq.Singleton(test), body);
+    public SwitchBuilder Case(Expression test, Expression body) => Case(List.Singleton(test), body);
 
     /// <summary>
     /// Specifies a pattern to compare to the match expression

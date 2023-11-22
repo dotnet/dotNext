@@ -9,22 +9,16 @@ namespace DotNext.Collections.Generic;
 /// </summary>
 /// <typeparam name="TInput">Type of items in the source list.</typeparam>
 /// <typeparam name="TOutput">Type of items in the converted list.</typeparam>
+/// <remarks>
+/// Initializes a new lazily converted view.
+/// </remarks>
+/// <param name="list">Read-only list to convert.</param>
+/// <param name="mapper">List items converter.</param>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct ReadOnlyListView<TInput, TOutput> : IReadOnlyList<TOutput>, IEquatable<ReadOnlyListView<TInput, TOutput>>
+public readonly struct ReadOnlyListView<TInput, TOutput>(IReadOnlyList<TInput> list, Func<TInput, TOutput> mapper) : IReadOnlyList<TOutput>, IEquatable<ReadOnlyListView<TInput, TOutput>>
 {
-    private readonly IReadOnlyList<TInput>? source;
-    private readonly Func<TInput, TOutput> mapper;
-
-    /// <summary>
-    /// Initializes a new lazily converted view.
-    /// </summary>
-    /// <param name="list">Read-only list to convert.</param>
-    /// <param name="mapper">List items converter.</param>
-    public ReadOnlyListView(IReadOnlyList<TInput> list, Func<TInput, TOutput> mapper)
-    {
-        source = list ?? throw new ArgumentNullException(nameof(list));
-        this.mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+    private readonly IReadOnlyList<TInput>? source = list ?? throw new ArgumentNullException(nameof(list));
+    private readonly Func<TInput, TOutput> mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     /// <summary>
     /// Initializes a new lazily converted view.
@@ -63,7 +57,7 @@ public readonly struct ReadOnlyListView<TInput, TOutput> : IReadOnlyList<TOutput
     /// </summary>
     /// <returns>The enumerator over converted items.</returns>
     public IEnumerator<TOutput> GetEnumerator()
-        => source is null || mapper is null || source.Count == 0 ? Sequence.GetEmptyEnumerator<TOutput>() : source.Select(mapper).GetEnumerator();
+        => source is null or { Count: 0 } || mapper is null ? Enumerable.Empty<TOutput>().GetEnumerator() : source.Select(mapper).GetEnumerator();
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

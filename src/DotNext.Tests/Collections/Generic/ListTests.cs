@@ -140,4 +140,12 @@ public sealed class ListTests : Test
         Equal(10, span[0]);
         Equal(20, span[1]);
     }
+
+    [Fact]
+    public static void SingletonCollection()
+    {
+        var collection = List.Singleton(42);
+        NotEmpty(collection);
+        Equal(42, collection.First());
+    }
 }

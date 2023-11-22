@@ -1,8 +1,8 @@
 namespace DotNext.Collections.Generic;
 
-public static partial class Sequence
+public static partial class AsyncEnumerable
 {
-    private sealed class AsyncNotNullEnumerable<T> : IAsyncEnumerable<T>
+    private sealed class NotNullEnumerable<T> : IAsyncEnumerable<T>
         where T : class
     {
         private sealed class Enumerator : IAsyncEnumerator<T>
@@ -39,7 +39,7 @@ public static partial class Sequence
 
         private readonly IAsyncEnumerable<T?> enumerable;
 
-        internal AsyncNotNullEnumerable(IAsyncEnumerable<T?> enumerable)
+        internal NotNullEnumerable(IAsyncEnumerable<T?> enumerable)
             => this.enumerable = enumerable;
 
         public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)

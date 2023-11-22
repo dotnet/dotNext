@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using Sequence = Collections.Generic.Sequence;
+using Enumerator = Collections.Generic.Enumerator;
 
 internal sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
 {
@@ -127,7 +127,7 @@ internal sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
         {
             var length = i < remainder ? quotient + 1 : quotient;
             var sliced = sequence.Slice(startIndex, length);
-            partitions[i] = Sequence.ToEnumerator(in sliced);
+            partitions[i] = Enumerator.ToEnumerator(in sliced);
             startIndex = sliced.End;
         }
 

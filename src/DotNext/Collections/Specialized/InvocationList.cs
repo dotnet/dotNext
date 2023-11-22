@@ -5,8 +5,6 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Specialized;
 
-using Collections.Generic;
-
 /// <summary>
 /// Represents immutable list of delegates.
 /// </summary>
@@ -91,9 +89,8 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
 
     private InvocationList(TDelegate[] array, TDelegate d)
     {
-        Array.Resize(ref array, array.Length + 1);
-        array[array.Length - 1] = d;
-        list = array;
+        TDelegate[] list = [.. array, d];
+        this.list = list;
     }
 
     private InvocationList(TDelegate d1, TDelegate d2)
@@ -200,7 +197,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
 
     private IEnumerator<TDelegate> GetEnumeratorCore() => list switch
     {
-        null => Sequence.GetEmptyEnumerator<TDelegate>(),
+        null => Enumerable.Empty<TDelegate>().GetEnumerator(),
         TDelegate d => new SingletonList<TDelegate>.Enumerator(d),
         _ => Unsafe.As<IEnumerable<TDelegate>>(list).GetEnumerator(),
     };

@@ -7,7 +7,7 @@ namespace DotNext.Linq.Expressions;
 
 using static Reflection.CollectionType;
 using static Reflection.DisposableType;
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents iteration over collection elements as expression.
@@ -193,7 +193,7 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
                 Assign(enumeratorVar, Default(enumeratorVar.Type)) :
                 Block(disposeCall, Assign(enumeratorVar, Default(enumeratorVar.Type)));
         loopBody = TryFinally(loopBody, @finally);
-        return Block(Type, Seq.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
+        return Block(Type, List.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
     }
 
     /// <summary>

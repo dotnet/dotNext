@@ -2,7 +2,7 @@
 
 namespace DotNext.Threading.Channels;
 
-using static Collections.Generic.Sequence;
+using static Collections.Generic.AsyncEnumerable;
 using static IO.StreamExtensions;
 
 public sealed class PersistentChannelTests : Test

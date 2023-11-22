@@ -3,11 +3,9 @@ using System.Collections.Concurrent;
 
 namespace DotNext.Collections.Generic;
 
-using Buffers;
-
 public sealed class SequenceTests : Test
 {
-    private sealed class Counter<T>
+    internal sealed class Counter<T>
     {
         public int value;
 
@@ -28,31 +26,6 @@ public sealed class SequenceTests : Test
     }
 
     [Fact]
-    public static async Task ForEachTestAsync()
-    {
-        var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
-        var counter = new Counter<int>();
-        await list.ForEachAsync(counter.Accept);
-        Equal(3, counter.value);
-        counter.value = 0;
-
-        list = new int[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
-        await list.ForEachAsync(counter.Accept);
-        Equal(5, counter.value);
-    }
-
-    [Fact]
-    public static async Task FirstOrNullTestAsync()
-    {
-        var array = new long[0].ToAsyncEnumerable();
-        var element = await array.FirstOrNullAsync();
-        Null(element);
-        array = new long[] { 10, 20 }.ToAsyncEnumerable();
-        element = await array.FirstOrNullAsync();
-        Equal(10, element);
-    }
-
-    [Fact]
     public static void ElementAtIndex()
     {
         var list = new LinkedList<long>();
@@ -63,19 +36,6 @@ public sealed class SequenceTests : Test
         Equal(100, element);
         list.ElementAt(0, out element);
         Equal(10, element);
-    }
-
-    [Fact]
-    public static async Task ElementAtIndexAsync()
-    {
-        var list = new LinkedList<long>();
-        list.AddLast(10);
-        list.AddLast(40);
-        list.AddLast(100);
-
-        var asyncList = list.ToAsyncEnumerable();
-        Equal(100, await asyncList.ElementAtAsync(2));
-        Equal(10, await asyncList.ElementAtAsync(0));
     }
 
     [Fact]
@@ -140,57 +100,6 @@ public sealed class SequenceTests : Test
     }
 
     [Fact]
-    public static void Skip()
-    {
-        var range = Enumerable.Range(0, 10);
-        using var enumerator = range.GetEnumerator();
-        True(enumerator.Skip(8));
-        True(enumerator.MoveNext());
-        Equal(8, enumerator.Current);
-        True(enumerator.MoveNext());
-        Equal(9, enumerator.Current);
-        False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public static async Task SkipAsync()
-    {
-        var range = Enumerable.Range(0, 10);
-        await using var enumerator = range.GetAsyncEnumerator();
-        True(await enumerator.SkipAsync(8));
-        True(await enumerator.MoveNextAsync());
-        Equal(8, enumerator.Current);
-        True(await enumerator.MoveNextAsync());
-        Equal(9, enumerator.Current);
-        False(await enumerator.MoveNextAsync());
-    }
-
-    [Fact]
-    public static void SkipValueEnumerator()
-    {
-        var list = new List<long> { 10L, 20L, 30L };
-        var enumerator = list.GetEnumerator();
-        True(enumerator.Skip<List<long>.Enumerator, long>(2));
-        True(enumerator.MoveNext());
-        Equal(30L, enumerator.Current);
-        enumerator.Dispose();
-    }
-
-    [Fact]
-    public static void LimitedSequence()
-    {
-        var range = Enumerable.Range(0, 10);
-        using var enumerator = range.GetEnumerator().Limit(3);
-        True(enumerator.MoveNext());
-        Equal(0, enumerator.Current);
-        True(enumerator.MoveNext());
-        Equal(1, enumerator.Current);
-        True(enumerator.MoveNext());
-        Equal(2, enumerator.Current);
-        False(enumerator.MoveNext());
-    }
-
-    [Fact]
     public static async Task IterationAsync()
     {
         var collection = Array.Empty<int>().ToAsyncEnumerable();
@@ -239,84 +148,9 @@ public sealed class SequenceTests : Test
     }
 
     [Fact]
-    public static async Task ConversionToAsyncEnumerator()
-    {
-        await using var enumerator = new int[] { 10, 20, 30 }.GetAsyncEnumerator();
-        for (int index = 0; await enumerator.MoveNextAsync(); index++)
-        {
-            switch (index)
-            {
-                case 0:
-                    Equal(10, enumerator.Current);
-                    break;
-                case 1:
-                    Equal(20, enumerator.Current);
-                    break;
-                case 2:
-                    Equal(30, enumerator.Current);
-                    break;
-                default:
-                    Fail("Unexpected enumerator state");
-                    break;
-            }
-        }
-    }
-
-    [Fact]
-    public static async Task CanceledAsyncEnumerator()
-    {
-        await using var enumerator = new int[] { 10, 20, 30 }.GetAsyncEnumerator(new CancellationToken(true));
-        await ThrowsAsync<TaskCanceledException>(enumerator.MoveNextAsync().AsTask);
-    }
-
-    [Fact]
-    public static void GeneratorMethod()
-    {
-        int i = 0;
-        Func<Optional<int>> generator = () => i < 3 ? i++ : Optional<int>.None;
-        var list = new List<int>();
-        foreach (var item in generator.ToEnumerable())
-            list.Add(item);
-
-        NotEmpty(list);
-        Equal(3, list.Count);
-        Equal(0, list[0]);
-        Equal(1, list[1]);
-        Equal(2, list[2]);
-
-        list.Clear();
-        foreach (var item in new Sequence.Generator<int>())
-            list.Add(item);
-
-        Empty(list);
-    }
-
-    [Fact]
-    public static async Task AsyncGeneratorMethod()
-    {
-        int i = 0;
-        Func<CancellationToken, ValueTask<Optional<int>>> generator = token => new ValueTask<Optional<int>>(i < 3 ? i++ : Optional<int>.None);
-        var list = new List<int>();
-        await foreach (var item in generator.ToAsyncEnumerable())
-            list.Add(item);
-
-        NotEmpty(list);
-        Equal(3, list.Count);
-        Equal(0, list[0]);
-        Equal(1, list[1]);
-        Equal(2, list[2]);
-
-        list.Clear();
-        await foreach (var item in new Sequence.AsyncGenerator<int>())
-            list.Add(item);
-
-        Empty(list);
-    }
-
-    [Fact]
     public static void EmptyConsumingEnumerable()
     {
-        var enumerable = new Sequence.ConsumingEnumerable<int>();
+        var enumerable = new Collection.ConsumingEnumerable<int>();
         Empty(enumerable);
     }
 
@@ -397,127 +231,9 @@ public sealed class SequenceTests : Test
     }
 
     [Fact]
-    public static async Task CopyEmptCollectionAsync()
-    {
-        using var copy = await Enumerable.Empty<int>().ToAsyncEnumerable().CopyAsync();
-        True(copy.IsEmpty);
-    }
-
-    [Fact]
-    public static async Task CopyListAsync()
-    {
-        using var copy = await new List<int> { 10, 20, 30 }.ToAsyncEnumerable().CopyAsync(sizeHint: 4);
-        Equal(3, copy.Length);
-        Equal(10, copy[0]);
-        Equal(20, copy[1]);
-        Equal(30, copy[2]);
-    }
-
-    [Fact]
     public static void CopyString()
     {
         using var copy = "abcd".Copy();
         Equal("abcd", copy.Memory.ToString());
-    }
-
-    [Fact]
-    public static void SingletonCollection()
-    {
-        var collection = Sequence.Singleton(42);
-        NotEmpty(collection);
-        Equal(42, collection.First());
-    }
-
-    [Fact]
-    public static void EmptyMemoryEnumerator()
-    {
-        using var enumerator = Sequence.ToEnumerator(ReadOnlyMemory<int>.Empty);
-        False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public static void ArrayMemoryEnumerator()
-    {
-        using var enumerator = Sequence.ToEnumerator(new ReadOnlyMemory<int>(new int[] { 1, 2, 3 }));
-
-        True(enumerator.MoveNext());
-        Equal(1, enumerator.Current);
-
-        True(enumerator.MoveNext());
-        Equal(2, enumerator.Current);
-
-        True(enumerator.MoveNext());
-        Equal(3, enumerator.Current);
-
-        False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public static void NativeMemoryEnumerator()
-    {
-        using var owner = UnmanagedMemoryAllocator.Allocate<int>(3);
-        owner[(nint)0] = 10;
-        owner[(nint)1] = 20;
-        owner[(nint)2] = 30;
-
-        using var enumerator = Sequence.ToEnumerator<int>(owner.Memory);
-
-        True(enumerator.MoveNext());
-        Equal(10, enumerator.Current);
-
-        True(enumerator.MoveNext());
-        Equal(20, enumerator.Current);
-
-        True(enumerator.MoveNext());
-        Equal(30, enumerator.Current);
-
-        False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public static void EmptySequenceEnumerator()
-    {
-        using var enumerator = Sequence.ToEnumerator(ReadOnlySequence<int>.Empty);
-        False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public static void ArraySequenceEnumerator()
-    {
-        using var enumerator = Sequence.ToEnumerator(new ReadOnlySequence<int>(new ReadOnlyMemory<int>(new int[] { 1, 2, 3 })));
-        True(enumerator.MoveNext());
-        Equal(1, enumerator.Current);
-
-        True(enumerator.MoveNext());
-        Equal(2, enumerator.Current);
-
-        True(enumerator.MoveNext());
-        Equal(3, enumerator.Current);
-
-        False(enumerator.MoveNext());
-    }
-
-    [Fact]
-    public static void SequenceEnumerator()
-    {
-        var bytes = RandomBytes(64);
-        using var enumerator = Sequence.ToEnumerator(ToReadOnlySequence<byte>(bytes, 32));
-
-        var i = 0;
-        while (enumerator.MoveNext())
-        {
-            Equal(bytes[i++], enumerator.Current);
-        }
-    }
-
-    [Fact]
-    public static async Task EmptyAsyncEnumerable()
-    {
-        var count = 0;
-
-        await foreach (var item in Sequence.GetEmptyAsyncEnumerable<int>())
-            count++;
-
-        Equal(0, count);
     }
 }

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic;
 
-public static partial class Sequence
+public static partial class Collection
 {
     /// <summary>
     /// Represents a wrapped for method <see cref="IProducerConsumerCollection{T}.TryTake(out T)"/>

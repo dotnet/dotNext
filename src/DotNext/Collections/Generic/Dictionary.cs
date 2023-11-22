@@ -12,7 +12,7 @@ using static Reflection.CollectionType;
 /// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
 /// and <see cref="IDictionary{TKey, TValue}"/>.
 /// </summary>
-public static class Dictionary
+public static partial class Dictionary
 {
     /// <summary>
     /// Provides strongly-typed access to dictionary indexer.

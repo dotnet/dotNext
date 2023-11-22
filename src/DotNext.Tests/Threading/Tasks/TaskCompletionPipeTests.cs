@@ -1,6 +1,6 @@
 namespace DotNext.Threading.Tasks;
 
-using static Collections.Generic.Sequence;
+using static Collections.Generic.AsyncEnumerable;
 
 public class TaskCompletionPipeTests : Test
 {
