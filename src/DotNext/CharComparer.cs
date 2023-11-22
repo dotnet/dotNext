@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext;
 
@@ -36,7 +35,7 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
     /// <param name="comparisonType">The comparison type.</param>
     /// <returns><see langword="true"/> if both characters are equal; otherwise, <see langword="false"/>.</returns>
     public static bool Equals(char x, char y, StringComparison comparisonType)
-        => CreateReadOnlySpan(ref x, 1).Equals(CreateReadOnlySpan(ref y, 1), comparisonType);
+        => MemoryExtensions.Equals(new(ref x), new(ref y), comparisonType);
 
     /// <summary>
     /// Compares two characters and returns an indication of their relative sort order.
@@ -54,7 +53,7 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
     /// <param name="comparisonType">The comparison type.</param>
     /// <returns>A number indicating relative sort order of the characters.</returns>
     public static int Compare(char x, char y, StringComparison comparisonType)
-        => CreateReadOnlySpan(ref x, 1).CompareTo(CreateReadOnlySpan(ref y, 1), comparisonType);
+        => MemoryExtensions.CompareTo(new(ref x), new(ref y), comparisonType);
 
     /// <summary>
     /// Gets the hash code for the specified character.
@@ -70,7 +69,7 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
     /// <param name="comparisonType">The comparison type.</param>
     /// <returns>A hash code of the character.</returns>
     public static int GetHashCode(char ch, StringComparison comparisonType)
-        => string.GetHashCode(CreateReadOnlySpan(ref ch, 1), comparisonType);
+        => string.GetHashCode(new(ref ch), comparisonType);
 
     /// <summary>
     /// Converts <see cref="StringComparison"/> to <see cref="CharComparer"/>.
@@ -106,60 +105,60 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
 
         return new CultureSpecificCharComparer(culture, options);
     }
-}
 
-internal sealed class DefaultCharComparer : CharComparer
-{
-    private readonly StringComparison comparisonType;
-
-    internal DefaultCharComparer(StringComparison comparison)
-        => comparisonType = comparison;
-
-    public override bool Equals(char x, char y)
-        => Equals(x, y, comparisonType);
-
-    public override int Compare(char x, char y)
-        => Compare(x, y, comparisonType);
-
-    public override int GetHashCode(char ch)
-        => GetHashCode(ch, comparisonType);
-
-    public override bool Equals([NotNullWhen(true)] object? other)
-        => other is DefaultCharComparer comparer && comparisonType == comparer.comparisonType;
-
-    public override int GetHashCode() => (int)comparisonType;
-
-    public override string ToString() => comparisonType.ToString();
-}
-
-internal sealed class CultureSpecificCharComparer : CharComparer
-{
-    private readonly CompareInfo comparison;
-    private readonly CompareOptions options;
-
-    internal CultureSpecificCharComparer(CultureInfo culture, CompareOptions options)
+    private sealed class DefaultCharComparer : CharComparer
     {
-        comparison = culture.CompareInfo;
-        this.options = options;
+        private readonly StringComparison comparisonType;
+
+        internal DefaultCharComparer(StringComparison comparison)
+            => comparisonType = comparison;
+
+        public override bool Equals(char x, char y)
+            => Equals(x, y, comparisonType);
+
+        public override int Compare(char x, char y)
+            => Compare(x, y, comparisonType);
+
+        public override int GetHashCode(char ch)
+            => GetHashCode(ch, comparisonType);
+
+        public override bool Equals([NotNullWhen(true)] object? other)
+            => other is DefaultCharComparer comparer && comparisonType == comparer.comparisonType;
+
+        public override int GetHashCode() => (int)comparisonType;
+
+        public override string ToString() => comparisonType.ToString();
     }
 
-    public override bool Equals(char x, char y)
-        => Compare(x, y) is 0;
-
-    public override int Compare(char x, char y)
-        => comparison.Compare(CreateReadOnlySpan(ref x, 1), CreateReadOnlySpan(ref y, 1), options);
-
-    public override int GetHashCode(char ch)
-        => comparison.GetHashCode(CreateReadOnlySpan(ref ch, 1), options);
-
-    public override bool Equals([NotNullWhen(true)] object? other)
-        => other is CultureSpecificCharComparer comparer && Equals(comparison, comparer.comparison) && options == comparer.options;
-
-    public override int GetHashCode()
+    private sealed class CultureSpecificCharComparer : CharComparer
     {
-        var result = new HashCode();
-        result.Add(comparison);
-        result.Add(options);
-        return result.ToHashCode();
+        private readonly CompareInfo comparison;
+        private readonly CompareOptions options;
+
+        internal CultureSpecificCharComparer(CultureInfo culture, CompareOptions options)
+        {
+            comparison = culture.CompareInfo;
+            this.options = options;
+        }
+
+        public override bool Equals(char x, char y)
+            => Compare(x, y) is 0;
+
+        public override int Compare(char x, char y)
+            => comparison.Compare(new ReadOnlySpan<char>(ref x), new(ref y), options);
+
+        public override int GetHashCode(char ch)
+            => comparison.GetHashCode(new ReadOnlySpan<char>(ref ch), options);
+
+        public override bool Equals([NotNullWhen(true)] object? other)
+            => other is CultureSpecificCharComparer comparer && Equals(comparison, comparer.comparison) && options == comparer.options;
+
+        public override int GetHashCode()
+        {
+            var result = new HashCode();
+            result.Add(comparison);
+            result.Add(options);
+            return result.ToHashCode();
+        }
     }
 }
