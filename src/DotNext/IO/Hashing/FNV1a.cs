@@ -46,6 +46,13 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
     public unsafe void Append(void* address, nuint length)
         => state.Append(ref Unsafe.AsRef<byte>(address), length);
 
+    /// <summary>
+    /// Appends the value to the data already processed for the current hash computation.
+    /// </summary>
+    /// <param name="value">The value to be hashed.</param>
+    public void Append(THash value)
+        => state.Append(value);
+
     /// <inheritdoc/>
     protected sealed override void GetCurrentHashCore(Span<byte> destination)
         => state.GetValue(destination);
@@ -125,6 +132,17 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
         var hash = new State(salted);
         hash.Append(ref Unsafe.AsRef<byte>(address), length);
         return hash.Value;
+    }
+
+    /// <summary>
+    /// Computes a hash for a value of type <typeparamref name="THash"/>.
+    /// </summary>
+    /// <param name="data">The data to be hashed.</param>
+    /// <returns>The computed FNV-1a hash.</returns>
+    public static THash Hash(THash data)
+    {
+        State.Append(ref data, data);
+        return data;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -234,7 +252,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
             buffer = default;
         }
 
-        private static void Append(ref THash hash, THash data)
+        internal static void Append(ref THash hash, THash data)
             => hash = (hash ^ data) * TParameters.Prime;
 
         internal void Append(THash data)
