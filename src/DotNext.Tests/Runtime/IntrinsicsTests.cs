@@ -305,22 +305,6 @@ public class IntrinsicsTests : Test
     }
 
     [Fact]
-    public static void ReverseUInt32()
-    {
-        uint i = uint.MaxValue >> 1, tmp = i;
-        Intrinsics.Reverse(ref i);
-
-        if (BitConverter.IsLittleEndian)
-        {
-            Equal(BinaryPrimitives.ReadUInt32BigEndian(Span.AsReadOnlyBytes(in tmp)), i);
-        }
-        else
-        {
-            Equal(BinaryPrimitives.ReadUInt32LittleEndian(Span.AsReadOnlyBytes(in tmp)), i);
-        }
-    }
-
-    [Fact]
     public static void HasFinalizer()
     {
         True(Intrinsics.HasFinalizer(new WeakReference(null)));

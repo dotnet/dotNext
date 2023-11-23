@@ -16,4 +16,13 @@ public static partial class BinaryTransformations
     {
         public static abstract T Transform(T x, T y);
     }
+
+    /// <summary>
+    /// Reverse bytes in the specified value of blittable type.
+    /// </summary>
+    /// <typeparam name="T">Blittable type.</typeparam>
+    /// <param name="value">The value which bytes should be reversed.</param>
+    public static void Reverse<T>(ref T value)
+        where T : unmanaged
+        => Span.AsBytes(ref value).Reverse();
 }

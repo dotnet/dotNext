@@ -141,4 +141,20 @@ public sealed class BinaryTransformationsTests : Test
             return result;
         }
     }
+
+    [Fact]
+    public static void ReverseUInt32()
+    {
+        uint i = uint.MaxValue >> 1, tmp = i;
+        BinaryTransformations.Reverse(ref i);
+
+        if (BitConverter.IsLittleEndian)
+        {
+            Equal(BinaryPrimitives.ReadUInt32BigEndian(Span.AsReadOnlyBytes(in tmp)), i);
+        }
+        else
+        {
+            Equal(BinaryPrimitives.ReadUInt32LittleEndian(Span.AsReadOnlyBytes(in tmp)), i);
+        }
+    }
 }

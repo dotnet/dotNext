@@ -908,15 +908,6 @@ public static class Intrinsics
     #endregion
 
     /// <summary>
-    /// Reverse bytes in the specified value of blittable type.
-    /// </summary>
-    /// <typeparam name="T">Blittable type.</typeparam>
-    /// <param name="value">The value which bytes should be reversed.</param>
-    public static void Reverse<T>(ref T value)
-        where T : unmanaged
-        => Span.AsBytes(ref value).Reverse();
-
-    /// <summary>
     /// Checks whether the specified object is exactly of the specified type.
     /// </summary>
     /// <param name="obj">The object to test.</param>
