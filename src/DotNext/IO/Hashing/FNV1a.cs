@@ -37,6 +37,15 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
         where T : unmanaged
         => Hash(ref state, source);
 
+    /// <summary>
+    /// Appends the contents of unmanaged memory to the data already processed for the current hash computation.
+    /// </summary>
+    /// <param name="address">The address of the unmanaged memory.</param>
+    /// <param name="length">The length of the unmanaged memory block, in bytes.</param>
+    [CLSCompliant(false)]
+    public unsafe void Append(void* address, nuint length)
+        => state.Append(ref Unsafe.AsRef<byte>(address), length);
+
     /// <inheritdoc/>
     protected sealed override void GetCurrentHashCore(Span<byte> destination)
         => state.GetValue(destination);
@@ -103,6 +112,21 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
         return hash.Value;
     }
 
+    /// <summary>
+    /// Computes hash code for the specified block of unmanaged memory.
+    /// </summary>
+    /// <param name="address">The address of the unmanaged memory.</param>
+    /// <param name="length">The length of the unmanaged memory block, in bytes.</param>
+    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+    /// <returns>The computed FNV-1a hash.</returns>
+    [CLSCompliant(false)]
+    public static unsafe THash Hash(void* address, nuint length, bool salted = false)
+    {
+        var hash = new State(salted);
+        hash.Append(ref Unsafe.AsRef<byte>(address), length);
+        return hash.Value;
+    }
+
     [StructLayout(LayoutKind.Auto)]
     private unsafe struct State
     {
@@ -150,38 +174,38 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
             bufferSize += data.Length;
         }
 
-        private void Append(ref byte data, int length)
+        internal void Append(ref byte data, nuint length)
         {
             var remaining = RemainingBuffer;
-            if (remaining.Length < sizeof(THash) && remaining.Length <= length)
+            if (remaining.Length < sizeof(THash) && (uint)remaining.Length <= length)
             {
                 data = ref Unsafe.Add(ref data, Append(remaining, ref data, ref length));
             }
 
-            for (; length >= sizeof(THash); length -= sizeof(THash), data = ref Unsafe.Add(ref data, sizeof(THash)))
+            for (; length >= (uint)sizeof(THash); length -= (uint)sizeof(THash), data = ref Unsafe.Add(ref data, sizeof(THash)))
             {
                 Append(Unsafe.ReadUnaligned<THash>(in data));
             }
 
             if (length > 0)
             {
-                Debug.Assert(length < sizeof(THash));
+                Debug.Assert(length < (uint)sizeof(THash));
 
-                Bufferize(MemoryMarshal.CreateReadOnlySpan(ref data, length));
+                Bufferize(MemoryMarshal.CreateReadOnlySpan(ref data, (int)length));
             }
         }
 
-        private int Append(Span<byte> remaining, ref byte data, ref int length)
+        private int Append(Span<byte> remaining, ref byte data, ref nuint length)
         {
             var input = MemoryMarshal.CreateReadOnlySpan(ref data, remaining.Length);
             input.CopyTo(remaining);
             Flush();
-            length -= input.Length;
+            length -= (uint)input.Length;
             return input.Length;
         }
 
         internal void Append(ReadOnlySpan<byte> data)
-            => Append(ref MemoryMarshal.GetReference(data), data.Length);
+            => Append(ref MemoryMarshal.GetReference(data), (nuint)data.Length);
 
         internal void Append(ReadOnlySpan<THash> data)
         {
@@ -195,7 +219,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
             for (int maxSize = int.MaxValue / sizeof(T), size; !data.IsEmpty; data = data.Slice(size))
             {
                 size = Math.Min(maxSize, data.Length);
-                Append(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(data)), size * sizeof(T));
+                Append(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(data)), (uint)size * (uint)sizeof(T));
             }
         }
 
