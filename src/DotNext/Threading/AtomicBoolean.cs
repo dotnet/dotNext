@@ -12,8 +12,12 @@ namespace DotNext.Threading;
 /// <summary>
 /// Represents atomic boolean.
 /// </summary>
+/// <remarks>
+/// Initializes a new atomic boolean container with initial value.
+/// </remarks>
+/// <param name="value">Initial value of the atomic boolean.</param>
 [SuppressMessage("Usage", "CA2231")]
-public struct AtomicBoolean : IEquatable<bool>
+public struct AtomicBoolean(bool value) : IEquatable<bool>
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Negation : ISupplier<bool, bool>
@@ -21,13 +25,7 @@ public struct AtomicBoolean : IEquatable<bool>
         bool ISupplier<bool, bool>.Invoke(bool value) => !value;
     }
 
-    private int value;
-
-    /// <summary>
-    /// Initializes a new atomic boolean container with initial value.
-    /// </summary>
-    /// <param name="value">Initial value of the atomic boolean.</param>
-    public AtomicBoolean(bool value) => this.value = value.ToInt32();
+    private int value = value.ToInt32();
 
     /// <summary>
     /// Gets or sets boolean value in volatile manner.
