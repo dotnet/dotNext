@@ -198,7 +198,7 @@ public sealed class Base64Tests : Test
 
         encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), writer, flush: false);
         encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
+        Equal(0, encoder.BufferedData.Length);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
@@ -271,15 +271,15 @@ public sealed class Base64Tests : Test
     {
         var encoder = new Base64Encoder();
         var writer = new ArrayBufferWriter<byte>();
-        byte[] expected = { 1, 2 };
+        byte[] expected = [1, 2];
 
         encoder.EncodeToUtf8(expected, writer, flush: false);
         True(encoder.HasBufferedData);
 
-        Span<byte> base64 = stackalloc byte[4];
-        Equal(2, encoder.GetBufferedData(base64));
-        Equal(expected, base64.Slice(0, 2).ToArray());
+        Equal(2, encoder.BufferedData.Length);
+        Equal(expected, encoder.BufferedData.Slice(0, 2).ToArray());
 
+        Span<byte> base64 = stackalloc byte[Base64Encoder.MaxCharsToFlush];
         Equal(4, encoder.Flush(base64));
     }
 
@@ -357,7 +357,7 @@ public sealed class Base64Tests : Test
 
         encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), Write, writer, flush: false);
         encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
+        Equal(0, encoder.BufferedData.Length);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
@@ -384,7 +384,7 @@ public sealed class Base64Tests : Test
 
         encoder.EncodeToChars(expected.AsSpan(0, size / 2), Write, writer, flush: false);
         encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
+        Equal(0, encoder.BufferedData.Length);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
@@ -411,7 +411,7 @@ public sealed class Base64Tests : Test
 
         encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), &Write, writer, flush: false);
         encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), &Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
+        Equal(0, encoder.BufferedData.Length);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
@@ -438,7 +438,7 @@ public sealed class Base64Tests : Test
 
         encoder.EncodeToChars(expected.AsSpan(0, size / 2), &Write, writer, flush: false);
         encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), &Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
+        Equal(0, encoder.BufferedData.Length);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);

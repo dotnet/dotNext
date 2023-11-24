@@ -1,7 +1,11 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Text;
+
+using static Runtime.Intrinsics;
 
 /// <summary>
 /// Represents base64 decoder suitable for decoding large base64-encoded binary
@@ -36,4 +40,33 @@ public partial struct Base64Decoder : IResettable
     /// Resets the internal state of the decoder.
     /// </summary>
     public void Reset() => reservedBufferSize = 0;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private Span<char> CharBuffer
+        => MemoryMarshal.CreateSpan(ref Unsafe.As<ulong, char>(ref reservedBuffer), sizeof(ulong) / sizeof(char));
+
+    private readonly ReadOnlySpan<char> BufferedChars
+    {
+        get
+        {
+            Debug.Assert((uint)reservedBufferSize <= sizeof(ulong) / sizeof(char));
+
+            return MemoryMarshal.CreateReadOnlySpan(in InToRef<ulong, char>(in reservedBuffer), reservedBufferSize);
+        }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [UnscopedRef]
+    private Span<byte> ByteBuffer
+        => Span.AsBytes(ref reservedBuffer);
+
+    private readonly ReadOnlySpan<byte> BufferedBytes
+    {
+        get
+        {
+            Debug.Assert((uint)reservedBufferSize <= sizeof(ulong));
+
+            return MemoryMarshal.CreateReadOnlySpan(in InToRef<ulong, byte>(ref Unsafe.AsRef(in reservedBuffer)), reservedBufferSize);
+        }
+    }
 }

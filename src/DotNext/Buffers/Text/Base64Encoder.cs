@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Text;
 
+using static Runtime.Intrinsics;
+
 /// <summary>
 /// Represents base64 encoder suitable for encoding large binary
 /// data using streaming approach.
@@ -17,7 +19,7 @@ namespace DotNext.Buffers.Text;
 /// Encoding methods should not be intermixed by the caller code.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-[DebuggerDisplay($"BufferedDataSize = {{{nameof(BufferedDataSize)}}}, BufferedData = {{{nameof(BufferedData)}}}")]
+[DebuggerDisplay($"BufferedData = {{{nameof(BufferedDataString)}}}")]
 public partial struct Base64Encoder : IResettable
 {
     /// <summary>
@@ -29,16 +31,16 @@ public partial struct Base64Encoder : IResettable
     /// Gets the maximum number of characters that can be produced by <see cref="Flush(Span{byte})"/>
     /// or <see cref="Flush(Span{char})"/> methods.
     /// </summary>
-    public const int MaxCharsToFlush = ((MaxBufferedDataSize + 2) / 3) * 4;
+    public const int MaxCharsToFlush = (MaxBufferedDataSize + 2) / 3 * 4;
 
     /// <summary>
     /// Gets the maximum size of the input block of bytes to encode.
     /// </summary>
-    public const int MaxInputSize = (int.MaxValue / 4) * 3;
+    public const int MaxInputSize = int.MaxValue / 4 * 3;
 
     private const int DecodingBufferSize = 258;
 
-    private const int EncodingBufferSize = ((DecodingBufferSize + 2) / 3) * 4;
+    private const int EncodingBufferSize = (DecodingBufferSize + 2) / 3 * 4;
 
     // 2 bytes reserved if the input is not a multiple of 3
     private ushort reservedBuffer;
@@ -53,32 +55,33 @@ public partial struct Base64Encoder : IResettable
     public readonly bool HasBufferedData => reservedBufferSize > 0;
 
     /// <summary>
-    /// Gets the number of buffered bytes.
-    /// </summary>
-    /// <remarks>
-    /// The range of the returned value is [0..<see cref="MaxBufferedDataSize"/>].
-    /// </remarks>
-    public readonly int BufferedDataSize => reservedBufferSize;
-
-    /// <summary>
     /// Gets the buffered data.
     /// </summary>
-    /// <param name="output">The output buffer.</param>
-    /// <returns>The number of bytes copied to <paramref name="output"/>.</returns>
-    /// <exception cref="ArgumentException"><paramref name="output"/> is not large enough.</exception>
-    public readonly int GetBufferedData(scoped Span<byte> output)
-    {
-        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(output);
-        return reservedBufferSize;
-    }
-
-    [ExcludeFromCodeCoverage]
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private readonly string BufferedData
+    /// <remarks>
+    /// The length of returned span is in [0..<see cref="MaxBufferedDataSize"/>] range.
+    /// </remarks>
+    [UnscopedRef]
+    public readonly ReadOnlySpan<byte> BufferedData
     {
         get
         {
-            var bufferedData = AsReadOnlyBytes(in reservedBuffer, reservedBufferSize);
+            Debug.Assert((uint)reservedBufferSize <= sizeof(ushort));
+
+            return MemoryMarshal.CreateReadOnlySpan(in InToRef<ushort, byte>(in reservedBuffer), reservedBufferSize);
+        }
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [UnscopedRef]
+    private Span<byte> Buffer => Span.AsBytes(ref reservedBuffer);
+
+    [ExcludeFromCodeCoverage]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private readonly string BufferedDataString
+    {
+        get
+        {
+            var bufferedData = BufferedData;
             return bufferedData.IsEmpty ? string.Empty : Convert.ToBase64String(bufferedData);
         }
     }
@@ -87,12 +90,4 @@ public partial struct Base64Encoder : IResettable
     /// Resets the internal state of the encoder.
     /// </summary>
     public void Reset() => reservedBufferSize = 0;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ReadOnlySpan<byte> AsReadOnlyBytes(in ushort value, int length)
-    {
-        Debug.Assert((uint)length <= (uint)sizeof(ushort));
-
-        return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<ushort, byte>(ref Unsafe.AsRef(in value)), length);
-    }
 }

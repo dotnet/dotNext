@@ -27,7 +27,7 @@ public partial struct Base64Encoder
             // size of the rest
             size = bytes.Length - size;
             var rest = bytes.Slice(size);
-            rest.CopyTo(Span.AsBytes(ref reservedBuffer));
+            rest.CopyTo(Buffer);
             reservedBufferSize = rest.Length;
             bytes = bytes.Slice(0, size);
         }
@@ -42,7 +42,7 @@ public partial struct Base64Encoder
     {
         var newSize = reservedBufferSize + bytes.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
+        BufferedData.CopyTo(tempBuffer.Span);
         bytes.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         EncodeToCharsCore(tempBuffer.Span, ref writer, flush);
     }
@@ -117,7 +117,7 @@ public partial struct Base64Encoder
         {
             reservedBufferSize = chunk.Length - consumed;
             Debug.Assert(reservedBufferSize <= MaxBufferedDataSize);
-            chunk.Slice(consumed).CopyTo(Span.AsBytes(ref reservedBuffer));
+            chunk.Slice(consumed).CopyTo(Buffer);
         }
 
         if (consumed > 0 && produced > 0)
@@ -130,7 +130,7 @@ public partial struct Base64Encoder
         // flush the rest of the buffer
         if (HasBufferedData && flush)
         {
-            Convert.TryToBase64Chars(AsReadOnlyBytes(in reservedBuffer, reservedBufferSize), buffer, out produced);
+            Convert.TryToBase64Chars(BufferedData, buffer, out produced);
             Reset();
             output.Invoke(buffer.Slice(0, produced));
         }
@@ -158,7 +158,7 @@ public partial struct Base64Encoder
     {
         var newSize = reservedBufferSize + bytes.Length;
         using var tempBuffer = (uint)newSize <= (uint)MemoryRental<char>.StackallocThreshold ? stackalloc byte[newSize] : new MemoryRental<byte>(newSize);
-        AsReadOnlyBytes(in reservedBuffer, reservedBufferSize).CopyTo(tempBuffer.Span);
+        BufferedData.CopyTo(tempBuffer.Span);
         bytes.CopyTo(tempBuffer.Span.Slice(reservedBufferSize));
         EncodeToCharsCore(tempBuffer.Span, output, flush);
     }
