@@ -25,6 +25,11 @@ public interface ISupplier<out TResult> : IFunctional<Func<TResult>>
 
     /// <inheritdoc />
     Func<TResult> IFunctional<Func<TResult>>.ToDelegate() => Invoke;
+
+    /// <summary>
+    /// Gets a supplier of default value for type <typeparamref name="TResult"/>.
+    /// </summary>
+    public static ISupplier<TResult?> NullOrDefault { get; } = new DefaultSupplier<TResult>();
 }
 
 /// <summary>
@@ -201,4 +206,9 @@ public readonly record struct DelegatingSupplier<TResult> : ISupplier<TResult>, 
     /// <returns>The supplier represented by the delegate.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
     public static implicit operator DelegatingSupplier<TResult>(Func<TResult> func) => new(func);
+}
+
+file sealed class DefaultSupplier<T> : ISupplier<T?>
+{
+    T? ISupplier<T?>.Invoke() => default;
 }
