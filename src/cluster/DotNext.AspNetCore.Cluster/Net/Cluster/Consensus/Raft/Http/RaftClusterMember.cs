@@ -10,7 +10,6 @@ using Membership;
 using Messaging;
 using Net.Http;
 using Runtime.Serialization;
-using Threading;
 using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 using Timestamp = Diagnostics.Timestamp;
 
@@ -26,7 +25,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     internal readonly ClusterMemberId Id;
     internal readonly UriEndPoint EndPoint;
     private readonly KeyValuePair<string, object?> cachedRemoteAddressAttribute;
-    private AtomicEnum<ClusterMemberStatus> status;
+    private volatile ClusterMemberStatus status;
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private IRaftClusterMember.ReplicationState state;
@@ -44,7 +43,6 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         : base(remoteMember.Uri, context.CreateHttpHandler(), true)
     {
         this.context = context;
-        status = new(ClusterMemberStatus.Unknown);
         EndPoint = remoteMember;
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, remoteMember.ToString());
         Id = ClusterMemberId.FromEndPoint(remoteMember);
@@ -282,8 +280,11 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     public ClusterMemberStatus Status
     {
-        get => IsRemote ? status.Value : ClusterMemberStatus.Available;
+        get => IsRemote ? status : ClusterMemberStatus.Available;
+
+#pragma warning disable CS0420
         private set => IClusterMember.OnMemberStatusChanged(this, ref status, value, memberStatusChanged);
+#pragma warning restore CS0420
     }
 
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)

@@ -24,11 +24,11 @@ public class GenericEnumBenchmark
     public long ToInt64UsingConstrainedCall() => ToInt64(EnvironmentVariableTarget.Machine);
 
     [Benchmark]
-    public int ToInt32UsingGenericConverter() => EnvironmentVariableTarget.Machine.ToInt32();
+    public int ToInt32UsingGenericConverter() => EnumConverter.FromEnum<EnvironmentVariableTarget, int>(EnvironmentVariableTarget.Machine);
 
     [Benchmark]
-    public long ToInt64UsingGenericConverter() => EnvironmentVariableTarget.Machine.ToInt64();
+    public long ToInt64UsingGenericConverter() => EnumConverter.FromEnum<EnvironmentVariableTarget, long>(EnvironmentVariableTarget.Machine);
 
     [Benchmark]
-    public EnvironmentVariableTarget ToEnumUsingGenericConverter() => 2.ToEnum<EnvironmentVariableTarget>();
+    public EnvironmentVariableTarget ToEnumUsingGenericConverter() => EnumConverter.ToEnum<EnvironmentVariableTarget, int>(2);
 }

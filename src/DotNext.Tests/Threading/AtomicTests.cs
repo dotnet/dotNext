@@ -252,44 +252,6 @@ public sealed class AtomicTests : Test
     }
 
     [Fact]
-    public static void AtomicEnumTest()
-    {
-        var value = new AtomicEnum<EnvironmentVariableTarget>();
-        True(value.Equals(EnvironmentVariableTarget.Process));
-        False(value.Equals(EnvironmentVariableTarget.User));
-        Equal(EnvironmentVariableTarget.Process, value.Value);
-        Equal(EnvironmentVariableTarget.Process, value.GetAndSet(EnvironmentVariableTarget.Machine));
-        Equal(EnvironmentVariableTarget.Machine, value.Value);
-        Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(static x => EnvironmentVariableTarget.User));
-        Equal(EnvironmentVariableTarget.User, value.Value);
-        Equal(EnvironmentVariableTarget.User.ToString(), value.ToString());
-        value.Value = EnvironmentVariableTarget.Process;
-        Equal(EnvironmentVariableTarget.Machine, value.SetAndGet(EnvironmentVariableTarget.Machine));
-        Equal(EnvironmentVariableTarget.Machine, value.Value);
-        Equal(EnvironmentVariableTarget.User, value.UpdateAndGet(static x =>
-        {
-            Equal(EnvironmentVariableTarget.Machine, x);
-            return EnvironmentVariableTarget.User;
-        }));
-        value.Value = EnvironmentVariableTarget.Process;
-        Equal(EnvironmentVariableTarget.Process, value.GetAndAccumulate(EnvironmentVariableTarget.User, static (current, update) =>
-        {
-            Equal(EnvironmentVariableTarget.Process, current);
-            Equal(EnvironmentVariableTarget.User, update);
-            return (int)current + update;
-        }));
-        Equal(EnvironmentVariableTarget.User, value.Value);
-        value.Value = EnvironmentVariableTarget.Process;
-        Equal(EnvironmentVariableTarget.User, value.AccumulateAndGet(EnvironmentVariableTarget.User, static (current, update) =>
-        {
-            Equal(EnvironmentVariableTarget.Process, current);
-            Equal(EnvironmentVariableTarget.User, update);
-            return (int)current + update;
-        }));
-        Equal(EnvironmentVariableTarget.User, value.Value);
-    }
-
-    [Fact]
     public static void AtomicIntPtrTest()
     {
         var i = new IntPtr(10);
@@ -336,19 +298,5 @@ public sealed class AtomicTests : Test
     {
         One = 0,
         Two = 1
-    }
-
-    [Fact]
-    public static void EnumVolatileReadWrite()
-    {
-        var be = ByteEnum.Two;
-        Equal(ByteEnum.Two, be.VolatileRead());
-        be.VolatileWrite(ByteEnum.One);
-        Equal(ByteEnum.One, be);
-
-        var le = LongEnum.Two;
-        Equal(LongEnum.Two, le.VolatileRead());
-        le.VolatileWrite(LongEnum.One);
-        Equal(LongEnum.One, le);
     }
 }

@@ -345,14 +345,6 @@ public static class Intrinsics
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static TOutput ReinterpretCast<TInput, TOutput>(TInput input)
-    {
-        Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>());
-
-        return Unsafe.As<TInput, TOutput>(ref input);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static Span<TOutput> ReinterpretCast<TInput, TOutput>(Span<TInput> input)
         where TInput : unmanaged
         where TOutput : unmanaged

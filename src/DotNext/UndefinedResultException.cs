@@ -9,10 +9,7 @@ public sealed class UndefinedResultException<TError> : Exception
 {
     internal UndefinedResultException(TError errorCode)
         : base(ExceptionMessages.NoResult(errorCode))
-    {
-        ErrorCode = errorCode;
-        HResult = errorCode.ToInt32();
-    }
+        => ErrorCode = errorCode;
 
     /// <summary>
     /// Gets the error code associated with the exception.
