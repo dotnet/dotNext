@@ -137,4 +137,41 @@ public static partial class BufferHelpers
 
         return result;
     }
+
+    /// <summary>
+    /// Converts the value to a set of characters and writes them to the buffer.
+    /// </summary>
+    /// <typeparam name="T">The formattable type.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to be converted to a set of characters.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="writer"/> is not large enough to place the characters.</exception>
+    public static void Write<T>(this ref SpanWriter<byte> writer, T value, scoped ReadOnlySpan<char> format, IFormatProvider? provider = null)
+        where T : notnull, IUtf8SpanFormattable
+    {
+        if (!value.TryFormat(writer.RemainingSpan, out var writtenCount, format, provider))
+            throw new ArgumentOutOfRangeException(nameof(writer));
+
+        writer.Advance(writtenCount);
+    }
+
+    /// <summary>
+    /// Converts the value to a set of characters and writes them to the buffer.
+    /// </summary>
+    /// <typeparam name="T">The formattable type.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to be converted to a set of characters.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <returns><see langword="true"/> if <paramref name="writer"/> has enough space to place the value; otherwise, <see langword="false"/>.</returns>
+    public static bool TryWrite<T>(this ref SpanWriter<byte> writer, T value, scoped ReadOnlySpan<char> format, IFormatProvider? provider = null)
+        where T : notnull, IUtf8SpanFormattable
+    {
+        bool result;
+        if (result = value.TryFormat(writer.RemainingSpan, out var writtenCount, format, provider))
+            writer.Advance(writtenCount);
+
+        return result;
+    }
 }
