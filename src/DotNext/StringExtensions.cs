@@ -1,11 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
-
-using StringTemplate = Buffers.MemoryTemplate<char>;
 
 /// <summary>
 /// Represents various extension methods for type <see cref="string"/>.
@@ -90,31 +87,4 @@ public static class StringExtensions
         var (start, length) = range.GetOffsetAndLength(str.Length);
         return str.Substring(start, length);
     }
-
-    /// <summary>
-    /// Compiles string template.
-    /// </summary>
-    /// <param name="template">The string representing template with placeholders.</param>
-    /// <param name="placeholder">The placeholder in the template.</param>
-    /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
-    public static StringTemplate AsTemplate(this string template, string placeholder)
-        => new(template.AsMemory(), placeholder);
-
-    /// <summary>
-    /// Compiles string template.
-    /// </summary>
-    /// <param name="template">The string representing template with placeholders.</param>
-    /// <param name="placeholder">The placeholder in the template.</param>
-    /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
-    public static StringTemplate AsTemplate(this string template, char placeholder)
-        => new(template.AsMemory(), CreateReadOnlySpan(ref placeholder, 1));
-
-    /// <summary>
-    /// Checks whether the growable string is <see langword="null"/> or empty.
-    /// </summary>
-    /// <param name="builder">The builder to check.</param>
-    /// <returns><see langword="true"/>, if builder is <see langword="null"/> or empty.</returns>
-    [Obsolete("This method is easily replaceable with pattern matching: sb is not { Length: > 0 };")]
-    public static bool IsNullOrEmpty([NotNullWhen(false)] this StringBuilder? builder)
-        => builder is not { Length: > 0 };
 }
