@@ -63,10 +63,6 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     /// </description>
     /// </item>
     /// <item>
-    /// <term><see cref="MetricsCollector"/></term>
-    /// <description>Allows to capture runtime metrics associated with the local node.</description>
-    /// </item>
-    /// <item>
     /// <term><see cref="ClusterMemberAnnouncer{TAddress}"/> of type <see cref="UriEndPoint"/></term>
     /// <description>Allows to announce a new node the cluster leader.</description>
     /// </item>
