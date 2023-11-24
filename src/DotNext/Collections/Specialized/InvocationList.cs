@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using DotNext.Collections.Generic;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Specialized;
@@ -88,7 +89,12 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     public InvocationList(TDelegate d) => list = d;
 
     private InvocationList(TDelegate[] array, TDelegate d)
-        => list = (TDelegate[])[.. array, d];
+    {
+        var list = new TDelegate[array.Length + 1];
+        array.CopyTo(list.AsSpan());
+        list[^1] = d;
+        this.list = list;
+    }
 
     private InvocationList(TDelegate d1, TDelegate d2)
         => list = new TDelegate[] { d1, d2 };
@@ -133,10 +139,10 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
         else
         {
             var array = Unsafe.As<TDelegate[]>(list);
-            long index = Array.IndexOf(array, d);
+            var index = Array.IndexOf(array, d);
 
-            if (index >= 0L)
-                array = OneDimensionalArray.RemoveAt(array, index);
+            if (index >= 0)
+                array = DotNext.Span.ConcatToArray<TDelegate>(array.AsSpan(0, index), array.AsSpan(index + 1));
 
             result = new(array);
         }

@@ -97,7 +97,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     // boxed ClusterMemberId or null if there is not last vote stored
     private volatile BoxedClusterMemberId? lastVote;
-    private volatile long[] log = Array.Empty<long>();    // log of uncommitted entries
+    private volatile long[] log = [];    // log of uncommitted entries
 
     /// <inheritdoc/>
     long IPersistentState.Term => term.VolatileRead();
@@ -107,8 +107,16 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     private void Append(long[] terms, long startIndex)
     {
-        log = log.Concat(terms, startIndex - commitIndex.VolatileRead() - 1L);
-        index.VolatileWrite(startIndex + terms.LongLength - 1L);
+        log = Concat(log, terms, startIndex - Volatile.Read(in commitIndex) - 1L);
+        Volatile.Write(ref index, startIndex + terms.LongLength - 1L);
+
+        static long[] Concat(long[] left, long[] right, long startIndex)
+        {
+            var result = new long[startIndex + right.LongLength];
+            Array.Copy(left, result, startIndex);
+            Array.Copy(right, 0L, result, startIndex, right.Length);
+            return result;
+        }
     }
 
     private async ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long? startIndex, bool skipCommitted, CancellationToken token)
@@ -224,7 +232,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
                 lastTerm.VolatileWrite(log[count - 1]);
 
                 // count indicates how many elements should be removed from log
-                log = log.RemoveFirst(count);
+                log = log[(int)count..];
                 commitEvent.Signal(resumeAll: true);
             }
         }
@@ -246,11 +254,11 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         long count;
         using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
         {
-            if (startIndex <= commitIndex.VolatileRead())
+            if (startIndex <= Volatile.Read(in commitIndex))
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-            count = index.VolatileRead() - startIndex + 1L;
-            index.VolatileWrite(startIndex - 1L);
-            log = log.RemoveLast(count);
+            count = Volatile.Read(in index) - startIndex + 1L;
+            Volatile.Write(ref index, startIndex - 1L);
+            log = log[0..^(int)count];
         }
 
         return count;

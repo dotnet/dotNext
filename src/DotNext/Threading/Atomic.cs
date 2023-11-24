@@ -27,7 +27,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     [StructLayout(LayoutKind.Auto)]
     private readonly struct BitwiseEqualityComparer : IEqualityComparer
     {
-        bool IEqualityComparer.Equals(in T x, in T y) => BitwiseComparer<T>.Equals(in x, in y);
+        bool IEqualityComparer.Equals(in T x, in T y) => EqualityComparer<T>.Default.Equals(x, y);
     }
 
     [StructLayout(LayoutKind.Auto)]

@@ -118,17 +118,16 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     public void Insert(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
-        if ((uint)index > (uint)position)
-            throw new ArgumentOutOfRangeException(nameof(index));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
         if (items.IsEmpty)
             goto exit;
 
-        if (GetLength(buffer) is 0)
+        if (buffer.GetLength() is 0U)
         {
             buffer = pool.Rent(items.Length);
         }
-        else if (position + items.Length <= GetLength(buffer))
+        else if ((uint)position + (uint)items.Length <= buffer.GetLength())
         {
             CopyFast(buffer, index, buffer, index + items.Length, position - index);
         }
@@ -160,14 +159,13 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     public void Overwrite(int index, ReadOnlySpan<T> items)
     {
         ThrowIfDisposed();
-        if ((uint)index > (uint)position)
-            throw new ArgumentOutOfRangeException(nameof(index));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
-        if (GetLength(buffer) is 0)
+        if (buffer.GetLength() is 0U)
         {
             buffer = pool.Rent(items.Length);
         }
-        else if (index + items.Length <= GetLength(buffer))
+        else if ((uint)index + (uint)items.Length <= buffer.GetLength())
         {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 Array.Clear(buffer, index, position - index);
@@ -255,14 +253,14 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     {
         ThrowIfDisposed();
 
-        if (GetLength(buffer) is 0)
+        if (buffer.GetLength() is 0)
         {
             // nothing to do
         }
         else if (!reuseBuffer)
         {
             ReturnBuffer();
-            buffer = Array.Empty<T>();
+            buffer = [];
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
@@ -360,17 +358,16 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     public void RemoveLast(int count)
     {
         ThrowIfDisposed();
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (GetLength(buffer) is 0)
+        if (buffer.GetLength() is 0)
         {
             // nothing to do
         }
         else if (count >= position)
         {
             ReturnBuffer();
-            buffer = Array.Empty<T>();
+            buffer = [];
             position = 0;
         }
         else if (count > 0)
@@ -394,17 +391,16 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     public void RemoveFirst(int count)
     {
         ThrowIfDisposed();
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (GetLength(buffer) is 0)
+        if (buffer.GetLength() is 0)
         {
             // nothing to do
         }
         else if (count >= position)
         {
             ReturnBuffer();
-            buffer = Array.Empty<T>();
+            buffer = [];
             position = 0;
         }
         else if (count > 0)
@@ -448,7 +444,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     private protected override void Resize(int newSize)
     {
         var newBuffer = pool.Rent(newSize);
-        if (GetLength(buffer) > 0)
+        if (buffer.GetLength() > 0U)
         {
             CopyFast(buffer, newBuffer, position);
             ReturnBuffer();
@@ -463,7 +459,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     {
         if (disposing)
         {
-            if (GetLength(buffer) > 0)
+            if (buffer.GetLength() > 0U)
             {
                 ReturnBuffer();
                 buffer = [];

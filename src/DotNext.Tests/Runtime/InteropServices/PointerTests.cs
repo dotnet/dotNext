@@ -9,23 +9,6 @@ using Threading;
 public sealed class PointerTests : Test
 {
     [Fact]
-    public static unsafe void BitwiseOperations()
-    {
-        var array1 = new ushort[] { 1, 2, 3 };
-        var array2 = new ushort[] { 1, 2, 3 };
-        fixed (ushort* p1 = array1, p2 = array2)
-        {
-            var ptr1 = new Pointer<ushort>(p1);
-            var ptr2 = new Pointer<ushort>(p2);
-            True(ptr1.BitwiseEquals(ptr2, array1.Length));
-            Equal(0, ptr1.BitwiseCompare(ptr2, array1.Length));
-            array2[1] = 55;
-            False(ptr1.BitwiseEquals(ptr2, array1.Length));
-            NotEqual(0, ptr1.BitwiseCompare(ptr2, array1.Length));
-        }
-    }
-
-    [Fact]
     public static void StreamInterop()
     {
         var array = new ushort[] { 1, 2, 3 }.AsMemory();
@@ -35,7 +18,7 @@ public sealed class PointerTests : Test
         ptr.WriteTo(ms, array.Length);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.Array.ForEach(static (ref byte value, nint _) =>
+        buffer.AsSpan().ForEach(static (ref byte value, int _) =>
         {
             if (value == 1)
                 value = 20;
@@ -55,7 +38,7 @@ public sealed class PointerTests : Test
         await ptr.WriteToAsync(ms, array.Length);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.Array.ForEach(static (ref byte value, nint _) =>
+        buffer.AsSpan().ForEach(static (ref byte value, int _) =>
         {
             if (value == 1)
                 value = 20;

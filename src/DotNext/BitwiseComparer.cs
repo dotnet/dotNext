@@ -3,13 +3,14 @@ using static System.Runtime.CompilerServices.Unsafe;
 namespace DotNext;
 
 using static Runtime.Intrinsics;
+using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>
 /// Represents bitwise comparer for the arbitrary value type.
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
 public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
-    where T : struct
+    where T : unmanaged
 {
     private BitwiseComparer()
     {
@@ -36,16 +37,16 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <param name="first">The first value to check.</param>
     /// <param name="second">The second value to check.</param>
     /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
-    public static bool Equals<TOther>(in T first, in TOther second)
-        where TOther : struct
-        => SizeOf<T>() == SizeOf<TOther>() && SizeOf<T>() switch
+    public static unsafe bool Equals<TOther>(in T first, in TOther second)
+        where TOther : unmanaged
+        => sizeof(T) == sizeof(TOther) && sizeof(T) switch
         {
             0 => true,
-            sizeof(byte) => InToRef<T, byte>(first) == InToRef<TOther, byte>(second),
-            sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(first)) == ReadUnaligned<ushort>(ref InToRef<TOther, byte>(second)),
-            sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(first)) == ReadUnaligned<uint>(ref InToRef<TOther, byte>(second)),
-            sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(first)) == ReadUnaligned<ulong>(ref InToRef<TOther, byte>(second)),
-            _ => EqualsUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), (nuint)SizeOf<T>()),
+            sizeof(byte) => InToRef<T, byte>(in first) == InToRef<TOther, byte>(in second),
+            sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(in first)) == ReadUnaligned<ushort>(ref InToRef<TOther, byte>(in second)),
+            sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(in first)) == ReadUnaligned<uint>(ref InToRef<TOther, byte>(in second)),
+            sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(in first)) == ReadUnaligned<ulong>(ref InToRef<TOther, byte>(in second)),
+            _ => EqualsUnaligned(ref InToRef<T, byte>(in first), ref InToRef<TOther, byte>(in second), (nuint)SizeOf<T>()),
         };
 
     /// <summary>
@@ -55,17 +56,27 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <param name="first">The first value to compare.</param>
     /// <param name="second">The second value to compare.</param>
     /// <returns>A value that indicates the relative order of the objects being compared.</returns>
-    public static int Compare<TOther>(in T first, in TOther second)
-        where TOther : struct
-        => SizeOf<T>() != SizeOf<TOther>() ? SizeOf<T>() - SizeOf<TOther>() : SizeOf<T>() switch
+    public static unsafe int Compare<TOther>(in T first, in TOther second)
+        where TOther : unmanaged
+    {
+        var result = sizeof(T);
+        result = result.CompareTo(sizeof(TOther));
+
+        if (result is 0)
         {
-            0 => 0,
-            sizeof(byte) => InToRef<T, byte>(first).CompareTo(InToRef<TOther, byte>(second)),
-            sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<short>(ref InToRef<TOther, byte>(second))),
-            sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<uint>(ref InToRef<TOther, byte>(second))),
-            sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(first)).CompareTo(ReadUnaligned<ulong>(ref InToRef<TOther, byte>(second))),
-            _ => CompareUnaligned(ref InToRef<T, byte>(first), ref InToRef<TOther, byte>(second), (nuint)SizeOf<T>()),
-        };
+            result = sizeof(T) switch
+            {
+                0 => 0,
+                sizeof(byte) => InToRef<T, byte>(in first).CompareTo(InToRef<TOther, byte>(in second)),
+                sizeof(ushort) => ReadUnaligned<ushort>(ref InToRef<T, byte>(in first)).CompareTo(ReadUnaligned<short>(ref InToRef<TOther, byte>(in second))),
+                sizeof(uint) => ReadUnaligned<uint>(ref InToRef<T, byte>(in first)).CompareTo(ReadUnaligned<uint>(ref InToRef<TOther, byte>(in second))),
+                sizeof(ulong) => ReadUnaligned<ulong>(ref InToRef<T, byte>(in first)).CompareTo(ReadUnaligned<ulong>(ref InToRef<TOther, byte>(in second))),
+                _ => CompareUnaligned(ref InToRef<T, byte>(in first), ref InToRef<TOther, byte>(in second), (nuint)SizeOf<T>()),
+            };
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Computes hash code for the structure content.
@@ -73,27 +84,27 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     /// <param name="value">Value to be hashed.</param>
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>Content hash code.</returns>
-    public static int GetHashCode(in T value, bool salted = true)
+    public static unsafe int GetHashCode(in T value, bool salted = true)
     {
         int hash;
-        switch (SizeOf<T>())
+        switch (sizeof(T))
         {
             default:
-                return GetHashCode32Unaligned(ref InToRef<T, byte>(value), (nuint)SizeOf<T>(), salted);
+                return FNV1a32.Hash(Span.AsReadOnlyBytes(in value), salted);
             case 0:
                 hash = 0;
                 break;
             case sizeof(byte):
-                hash = InToRef<T, byte>(value);
+                hash = InToRef<T, byte>(in value);
                 break;
             case sizeof(ushort):
-                hash = ReadUnaligned<ushort>(ref InToRef<T, byte>(value));
+                hash = ReadUnaligned<ushort>(ref InToRef<T, byte>(in value));
                 break;
             case sizeof(uint):
-                hash = ReadUnaligned<int>(ref InToRef<T, byte>(value));
+                hash = ReadUnaligned<int>(ref InToRef<T, byte>(in value));
                 break;
             case sizeof(ulong):
-                hash = ReadUnaligned<ulong>(ref InToRef<T, byte>(value)).GetHashCode();
+                hash = ReadUnaligned<ulong>(ref InToRef<T, byte>(in value)).GetHashCode();
                 break;
         }
 
@@ -101,70 +112,6 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
             hash ^= RandomExtensions.BitwiseHashSalt;
 
         return hash;
-    }
-
-    private static void GetHashCodeUnaligned<THashFunction>(in T value, ref THashFunction hashFunction, bool salted)
-        where THashFunction : struct, IConsumer<int>
-    {
-        switch (SizeOf<T>())
-        {
-            default:
-                GetHashCode32Unaligned(ref hashFunction, ref InToRef<T, byte>(value), (nuint)SizeOf<T>());
-                break;
-            case 0:
-                break;
-            case sizeof(byte):
-                hashFunction.Invoke(InToRef<T, byte>(in value));
-                break;
-            case sizeof(ushort):
-                hashFunction.Invoke(ReadUnaligned<ushort>(ref InToRef<T, byte>(in value)));
-                break;
-            case sizeof(int):
-                hashFunction.Invoke(ReadUnaligned<int>(ref InToRef<T, byte>(in value)));
-                break;
-        }
-
-        if (salted)
-            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the specified value.
-    /// </summary>
-    /// <remarks>
-    /// This method doesn't use <see cref="object.GetHashCode"/>
-    /// even if it is overridden by value type.
-    /// </remarks>
-    /// <param name="value">A value to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Hashing function.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>Bitwise hash code.</returns>
-    public static int GetHashCode(in T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
-    {
-        var fn = new Accumulator<int, int>(hashFunction, hash);
-        GetHashCodeUnaligned(in value, ref fn, salted);
-        return fn.Invoke();
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the specified value.
-    /// </summary>
-    /// <remarks>
-    /// This method doesn't use <see cref="object.GetHashCode"/>
-    /// even if it is overridden by value type.
-    /// </remarks>
-    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
-    /// <param name="value">A value to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>Bitwise hash code.</returns>
-    [CLSCompliant(false)]
-    public static int GetHashCode<THashFunction>(in T value, bool salted = true)
-        where THashFunction : struct, IConsumer<int>, ISupplier<int>
-    {
-        var hash = new THashFunction();
-        GetHashCodeUnaligned(in value, ref hash, salted);
-        return hash.Invoke();
     }
 
     /// <inheritdoc/>

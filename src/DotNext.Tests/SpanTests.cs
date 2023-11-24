@@ -12,10 +12,10 @@ public sealed class SpanTests : Test
         Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
         Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
         True(array1.SequenceEqual(array2));
-        True(array1.BitwiseEquals(array2));
+        True(Span.BitwiseEquals<Guid>(array1, array2));
         array2[1] = Guid.Empty;
         False(array1.SequenceEqual(array2));
-        False(array1.BitwiseEquals(array2));
+        False(Span.BitwiseEquals<Guid>(array1, array2));
     }
 
     [Fact]
@@ -23,15 +23,15 @@ public sealed class SpanTests : Test
     {
         Span<Guid> array1 = [Guid.Empty, Guid.NewGuid(), Guid.NewGuid()];
         Span<Guid> array2 = [Guid.Empty, array1[1], array1[2]];
-        Equal(0, array1.BitwiseCompare(array2));
+        Equal(0, Span.BitwiseCompare<Guid>(array1, array2));
         array2[1] = Guid.Empty;
-        True(array1.BitwiseCompare(array2) > 0);
+        True(Span.BitwiseCompare<Guid>(array1, array2) > 0);
     }
 
     [Fact]
     public static unsafe void SortingUsingPointer()
     {
-        Span<ulong> span = new ulong[] { 3, 2, 6, 4 };
+        Span<ulong> span = [3, 2, 6, 4];
         span.Sort(&Sort);
         Equal(6UL, span[0]);
         Equal(4UL, span[1]);
@@ -177,7 +177,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void Tuple1ToReadOnlySpan()
     {
-        var span = new ValueTuple<int>(42).AsReadOnlySpan();
+        var tuple = new ValueTuple<int>(42);
+        var span = tuple.AsReadOnlySpan();
         False(span.IsEmpty);
         Equal(1, span.Length);
         Equal(42, span[0]);
@@ -202,7 +203,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void Tuple2ToReadOnlySpan()
     {
-        var span = (42, 43).AsReadOnlySpan();
+        var tuple = (42, 43);
+        var span = tuple.AsReadOnlySpan();
         False(span.IsEmpty);
         Equal(2, span.Length);
         Equal(42, span[0]);
@@ -231,7 +233,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void Tuple3ToReadOnlySpan()
     {
-        var span = (42, 43, 44).AsReadOnlySpan();
+        var tuple = (42, 43, 44);
+        var span = tuple.AsReadOnlySpan();
         False(span.IsEmpty);
         Equal(3, span.Length);
         Equal(42, span[0]);
@@ -264,7 +267,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void Tuple4ToReadOnlySpan()
     {
-        var span = (42, 43, 44, 45).AsReadOnlySpan();
+        var tuple = (42, 43, 44, 45);
+        var span = tuple.AsReadOnlySpan();
         False(span.IsEmpty);
         Equal(4, span.Length);
         Equal(42, span[0]);
@@ -301,7 +305,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void Tuple5ToReadOnlySpan()
     {
-        var span = (42, 43, 44, 45, 46).AsReadOnlySpan();
+        var tuple = (42, 43, 44, 45, 46);
+        var span = tuple.AsReadOnlySpan();
         False(span.IsEmpty);
         Equal(5, span.Length);
         Equal(42, span[0]);
@@ -342,7 +347,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void Tuple6ToReadOnlySpan()
     {
-        var span = (42, 43, 44, 45, 46, 47).AsReadOnlySpan();
+        var tuple = (42, 43, 44, 45, 46, 47);
+        var span = tuple.AsReadOnlySpan();
         False(span.IsEmpty);
         Equal(6, span.Length);
         Equal(42, span[0]);
@@ -387,7 +393,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void Tuple7ToReadOnlySpan()
     {
-        var span = (42, 43, 44, 45, 46, 47, 48).AsReadOnlySpan();
+        var tuple = (42, 43, 44, 45, 46, 47, 48);
+        var span = tuple.AsReadOnlySpan();
         False(span.IsEmpty);
         Equal(7, span.Length);
         Equal(42, span[0]);
@@ -416,12 +423,14 @@ public sealed class SpanTests : Test
             Empty(buffer.Span.ToString());
         }
 
-        using (var buffer = Span.Concat(new ValueTuple<string>("Hello, world!").AsReadOnlySpan()))
+        var tuple1 = new ValueTuple<string>("Hello, world!");
+        using (var buffer = Span.Concat(tuple1.AsReadOnlySpan()))
         {
             Equal("Hello, world!", buffer.Span.ToString());
         }
 
-        using (var buffer = Span.Concat(("Hello, ", "world!").AsReadOnlySpan()))
+        var tuple2 = ("Hello, ", "world!");
+        using (var buffer = Span.Concat(tuple2.AsReadOnlySpan()))
         {
             Equal("Hello, world!", buffer.Span.ToString());
         }

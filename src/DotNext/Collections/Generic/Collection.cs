@@ -175,8 +175,8 @@ public static partial class Collection
     {
         return collection switch
         {
-            List<T> list => Span.ElementAt<T>(CollectionsMarshal.AsSpan(list), index, out element),
-            T[] array => Span.ElementAt<T>(array, index, out element),
+            List<T> list => Span.ElementAt(CollectionsMarshal.AsSpan(list), index, out element),
+            T[] array => Span.ElementAt(array, index, out element),
             LinkedList<T> list => NodeValueAt(list, index, out element),
             IList<T> list => ListElementAt(list, index, out element),
             IReadOnlyList<T> readOnlyList => ReadOnlyListElementAt(readOnlyList, index, out element),

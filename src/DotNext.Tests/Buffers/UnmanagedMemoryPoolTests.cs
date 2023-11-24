@@ -12,19 +12,15 @@ public sealed class UnmanagedMemoryPoolTests : Test
         array[0] = 10;
         array[1] = 20;
         array[2] = 30;
-        Equal(new ushort[] { 10, 20, 30 }, owner.ToArray());
-        Equal(0, owner.Span.BitwiseCompare(new ushort[] { 10, 20, 30 }));
-        True(owner.Span.BitwiseEquals(new ushort[] { 10, 20, 30 }));
-        False(owner.Span.BitwiseEquals(new ushort[] { 10, 20, 40 }));
-        True(owner.Span.BitwiseCompare(new ushort[] { 10, 20, 40 }) < 0);
+        Equal([10, 20, 30], owner.ToArray());
         Equal(3, array.Length);
         Equal(3, owner.Length);
         Equal(6, owner.Size);
         Equal(10, array[0]);
         Equal(20, array[1]);
         Equal(30, array[2]);
-        var managedArray = System.Linq.Enumerable.ToArray(owner);
-        Equal(new ushort[] { 10, 20, 30 }, managedArray);
+        var managedArray = Enumerable.ToArray(owner);
+        Equal([10, 20, 30], managedArray);
         array.Clear();
         Equal(0, array[0]);
         Equal(0, array[1]);
@@ -64,37 +60,6 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(10, dest[0]);
         Equal(20, dest[1]);
         Equal(30, dest[2]);
-    }
-
-    [Fact]
-    public static void BitwiseOperationsTest()
-    {
-        using var owner1 = UnmanagedMemoryAllocator.Allocate<ushort>(3);
-        using var owner2 = UnmanagedMemoryAllocator.Allocate<ushort>(3);
-        Span<ushort> array1 = owner1.Span;
-        Span<ushort> array2 = owner2.Span;
-
-        array1[0] = 10;
-        array1[1] = 20;
-        array1[2] = 30;
-
-
-        array2[0] = 10;
-        array2[1] = 20;
-        array2[2] = 30;
-
-        True(array1.BitwiseEquals(array2));
-        True(owner1.BitwiseEquals(owner2));
-        Equal(0, owner1.BitwiseCompare(owner2));
-        True(owner1.BitwiseEquals(owner2.Pointer));
-        Equal(0, array1.BitwiseCompare(array2));
-
-        array2[1] = 50;
-        False(array1.BitwiseEquals(array2));
-        False(owner1.BitwiseEquals(owner2));
-        True(owner1.BitwiseCompare(owner2) < 0);
-        False(owner1.BitwiseEquals(owner2.Pointer));
-        NotEqual(0, array1.BitwiseCompare(array2));
     }
 
     [Fact]
@@ -217,7 +182,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         await memory.WriteToAsync(ms);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.Array.ForEach((ref byte value, nint _) =>
+        buffer.AsSpan().ForEach((ref byte value, int _) =>
         {
             if (value is 1)
                 value = 20;
@@ -236,7 +201,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         memory.WriteTo(ms);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.Array.ForEach((ref byte value, nint _) =>
+        buffer.AsSpan().ForEach((ref byte value, int _) =>
         {
             if (value is 1)
                 value = 20;

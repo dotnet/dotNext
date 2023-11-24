@@ -64,10 +64,9 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
     public readonly void Clear()
     {
-        if (ptr is null)
-            throw new ObjectDisposedException(GetType().Name);
+        ObjectDisposedException.ThrowIf(ptr is null, this);
 
-        Pointer.Clear(new IntPtr(Size));
+        Pointer.Clear((nuint)Size);
     }
 
     /// <summary>

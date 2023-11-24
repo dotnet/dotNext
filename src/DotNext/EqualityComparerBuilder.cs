@@ -9,6 +9,7 @@ namespace DotNext;
 using Collections.Generic;
 using Reflection;
 using Intrinsics = Runtime.Intrinsics;
+using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>
 /// Generates hash code and equality check functions for the particular type.
@@ -21,6 +22,7 @@ using Intrinsics = Runtime.Intrinsics;
 public readonly struct EqualityComparerBuilder<T>
 {
     private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+    private const BindingFlags NonPublicStaticFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
     private readonly IReadOnlySet<string>? excludedFields;
 
@@ -134,8 +136,8 @@ public readonly struct EqualityComparerBuilder<T>
         if (itemType.IsUnmanaged())
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
-            return typeof(OneDimensionalArray)
-                    .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), 1, PublicStaticFlags, null, new[] { arrayType, arrayType }, null)!
+            return typeof(Span)
+                    .GetMethod(nameof(Span.BitwiseEquals), 1, NonPublicStaticFlags, null, [arrayType, arrayType], null)!
                     .MakeGenericMethod(itemType);
         }
 
@@ -163,8 +165,8 @@ public readonly struct EqualityComparerBuilder<T>
         if (itemType.IsUnmanaged())
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
-            return typeof(OneDimensionalArray)
-                      .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, [arrayType, typeof(bool)], null)!
+            return typeof(FNV1a32)
+                      .GetMethod(nameof(FNV1a32.Hash), 1, NonPublicStaticFlags, null, [arrayType, typeof(bool)], null)!
                       .MakeGenericMethod(itemType);
         }
 

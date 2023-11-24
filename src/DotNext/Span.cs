@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
 
@@ -16,254 +15,69 @@ using Runtime;
 public static partial class Span
 {
     /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>32-bit hash code of the span content.</returns>
-    public static int BitwiseHashCode<T>(this Span<T> span, bool salted = true)
-        where T : unmanaged
-        => BitwiseHashCode((ReadOnlySpan<T>)span, salted);
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>32-bit hash code of the span content.</returns>
-    public static unsafe int BitwiseHashCode<T>(this ReadOnlySpan<T> span, bool salted = true)
-        where T : unmanaged
-    {
-        if (span.IsEmpty)
-            return salted ? RandomExtensions.BitwiseHashSalt : 0;
-
-        return Intrinsics.GetHashCode32Unaligned(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)), salted);
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>32-bit hash code of the array content.</returns>
-    public static int BitwiseHashCode<T>(this Span<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        where T : unmanaged
-        => BitwiseHashCode((ReadOnlySpan<T>)span, hash, hashFunction, salted);
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>32-bit hash code of the array content.</returns>
-    [CLSCompliant(false)]
-    public static int BitwiseHashCode<T, THashFunction>(this Span<T> span, bool salted = true)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<int>, ISupplier<int>
-        => BitwiseHashCode<T, THashFunction>((ReadOnlySpan<T>)span, salted);
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>64-bit hash code of the array content.</returns>
-    public static long BitwiseHashCode64<T>(this Span<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
-        where T : unmanaged
-        => BitwiseHashCode64((ReadOnlySpan<T>)span, hash, hashFunction, salted);
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>64-bit hash code of the array content.</returns>
-    [CLSCompliant(false)]
-    public static long BitwiseHashCode64<T, THashFunction>(this Span<T> span, bool salted = true)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<long>, ISupplier<long>
-        => BitwiseHashCode64<T, THashFunction>((ReadOnlySpan<T>)span, salted);
-
-    private static unsafe void BitwiseHashCode<T, THashFunction>(ReadOnlySpan<T> span, scoped ref THashFunction hashFunction, bool salted)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<int>
-    {
-        if (!span.IsEmpty)
-            Intrinsics.GetHashCode32Unaligned(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)));
-
-        if (salted)
-            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>32-bit hash code of the array content.</returns>
-    public static int BitwiseHashCode<T>(this ReadOnlySpan<T> span, int hash, Func<int, int, int> hashFunction, bool salted = true)
-        where T : unmanaged
-    {
-        var fn = new Accumulator<int, int>(hashFunction, hash);
-        BitwiseHashCode(span, ref fn, salted);
-        return fn.Invoke();
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>32-bit hash code of the array content.</returns>
-    [CLSCompliant(false)]
-    public static int BitwiseHashCode<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<int>, ISupplier<int>
-    {
-        var hash = new THashFunction();
-        BitwiseHashCode(span, ref hash, salted);
-        return hash.Invoke();
-    }
-
-    private static unsafe void BitwiseHashCode64<T, THashFunction>(ReadOnlySpan<T> span, scoped ref THashFunction hashFunction, bool salted)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<long>
-    {
-        if (!span.IsEmpty)
-            Intrinsics.GetHashCode64Unaligned(ref hashFunction, ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)));
-
-        if (salted)
-            hashFunction.Invoke(RandomExtensions.BitwiseHashSalt);
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="hash">Initial value of the hash.</param>
-    /// <param name="hashFunction">Custom hashing algorithm.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>64-bit hash code of the array content.</returns>
-    public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
-        where T : unmanaged
-    {
-        var fn = new Accumulator<long, long>(hashFunction, hash);
-        BitwiseHashCode64(span, ref fn, salted);
-        return fn.Invoke();
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span using custom hash function.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <typeparam name="THashFunction">The type of the hash algorithm.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>64-bit hash code of the array content.</returns>
-    [CLSCompliant(false)]
-    public static long BitwiseHashCode64<T, THashFunction>(this ReadOnlySpan<T> span, bool salted = true)
-        where T : unmanaged
-        where THashFunction : struct, IConsumer<long>, ISupplier<long>
-    {
-        var hash = new THashFunction();
-        BitwiseHashCode64(span, ref hash, salted);
-        return hash.Invoke();
-    }
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>64-bit hash code of the span content.</returns>
-    public static long BitwiseHashCode64<T>(this Span<T> span, bool salted = true)
-        where T : unmanaged
-        => BitwiseHashCode64((ReadOnlySpan<T>)span, salted);
-
-    /// <summary>
-    /// Computes bitwise hash code for the memory identified by the given span.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="span">The span whose content to be hashed.</param>
-    /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-    /// <returns>64-bit hash code of the span content.</returns>
-    public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, bool salted = true)
-        where T : unmanaged
-    {
-        if (span.IsEmpty)
-            return salted ? RandomExtensions.BitwiseHashSalt : 0L;
-
-        return Intrinsics.GetHashCode64Unaligned(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), checked((nuint)span.Length * (nuint)sizeof(T)), salted);
-    }
-
-    /// <summary>
     /// Determines whether two memory blocks identified by the given spans contain the same set of elements.
     /// </summary>
     /// <remarks>
     /// This method performs bitwise equality between each pair of elements.
     /// </remarks>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="first">The first memory span to compare.</param>
-    /// <param name="second">The second memory span to compare.</param>
+    /// <param name="x">The first memory span to compare.</param>
+    /// <param name="y">The second memory span to compare.</param>
     /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
-    public static bool BitwiseEquals<T>(this Span<T> first, Span<T> second)
+    public static unsafe bool BitwiseEquals<T>(this ReadOnlySpan<T> x, ReadOnlySpan<T> y)
         where T : unmanaged
-        => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
+    {
+        var result = false;
+        if (x.Length == y.Length)
+        {
+            for (int maxSize = Array.MaxLength / sizeof(T), size; !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
+            {
+                size = Math.Min(maxSize, x.Length);
+                var sizeInBytes = size * sizeof(T);
+                var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
+                var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
+                if (MemoryExtensions.SequenceEqual(partX, partY) is false)
+                    break;
+            }
 
-    /// <summary>
-    /// Determines whether two memory blocks identified by the given spans contain the same set of elements.
-    /// </summary>
-    /// <remarks>
-    /// This method performs bitwise equality between each pair of elements.
-    /// </remarks>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="first">The first memory span to compare.</param>
-    /// <param name="second">The second memory span to compare.</param>
-    /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
-    public static bool BitwiseEquals<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
+            result = true;
+        }
+
+        return result;
+    }
+
+    internal static bool BitwiseEquals<T>(T[] x, T[] y)
         where T : unmanaged
-        => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
+        => BitwiseEquals(new ReadOnlySpan<T>(x), new ReadOnlySpan<T>(y));
 
     /// <summary>
     /// Compares content of the two memory blocks identified by the given spans.
     /// </summary>
     /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="first">The first memory span to compare.</param>
-    /// <param name="second">The second array to compare.</param>
+    /// <param name="x">The first memory span to compare.</param>
+    /// <param name="y">The second array to compare.</param>
     /// <returns>Comparison result.</returns>
-    public static int BitwiseCompare<T>(this Span<T> first, Span<T> second)
+    public static unsafe int BitwiseCompare<T>(this ReadOnlySpan<T> x, ReadOnlySpan<T> y)
         where T : unmanaged
-        => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
+    {
+        var result = x.Length;
+        result = result.CompareTo(y.Length);
+        if (result is 0)
+        {
+            for (int maxSize = Array.MaxLength / sizeof(T), size; !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
+            {
+                size = Math.Min(maxSize, x.Length);
+                var sizeInBytes = size * sizeof(T);
+                var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
+                var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
+                result = MemoryExtensions.SequenceCompareTo(partX, partY);
+                if (result is not 0)
+                    break;
+            }
+        }
 
-    /// <summary>
-    /// Compares content of the two memory blocks identified by the given spans.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the span.</typeparam>
-    /// <param name="first">The first memory span to compare.</param>
-    /// <param name="second">The second array to compare.</param>
-    /// <returns>Comparison result.</returns>
-    public static int BitwiseCompare<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
-        where T : unmanaged
-        => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
+        return result;
+    }
 
     /// <summary>
     /// Sorts the elements.
@@ -320,10 +134,14 @@ public static partial class Span
                 throw new ArgumentOutOfRangeException(nameof(maxLength));
             case 0:
                 rest = span;
-                return default;
+                span = default;
+                break;
             default:
-                return TrimLengthCore(span, maxLength, out rest);
+                span = TrimLengthCore(span, maxLength, out rest);
+                break;
         }
+
+        return span;
     }
 
     private static Span<T> TrimLengthCore<T>(Span<T> span, int maxLength, out Span<T> rest)
@@ -333,7 +151,7 @@ public static partial class Span
         {
             ref var ptr = ref MemoryMarshal.GetReference(span);
             span = MemoryMarshal.CreateSpan(ref ptr, maxLength);
-            rest = MemoryMarshal.CreateSpan(ref Add(ref ptr, maxLength), length - maxLength);
+            rest = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, maxLength), length - maxLength);
         }
         else
         {
@@ -424,8 +242,7 @@ public static partial class Span
     [CLSCompliant(false)]
     public static unsafe void ForEach<T, TArg>(this Span<T> span, delegate*<ref T, TArg, void> action, TArg arg)
     {
-        if (action is null)
-            throw new ArgumentNullException(nameof(action));
+        ArgumentNullException.ThrowIfNull(action);
 
         foreach (ref var item in span)
             action(ref item, arg);
@@ -441,7 +258,7 @@ public static partial class Span
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Span<byte> AsBytes<T>(ref T value)
         where T : unmanaged
-        => MemoryMarshal.CreateSpan(ref As<T, byte>(ref value), sizeof(T));
+        => MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref value), sizeof(T));
 
     /// <summary>
     /// Converts contiguous memory identified by the specified pointer
@@ -453,7 +270,7 @@ public static partial class Span
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(ref readonly T value)
         where T : unmanaged
-        => AsBytes(ref AsRef(in value));
+        => AsBytes(ref Unsafe.AsRef(in value));
 
     /// <summary>
     /// Converts contiguous memory identified by the specified pointer
@@ -496,6 +313,23 @@ public static partial class Span
                 first.CopyTo(output);
                 second.CopyTo(output.Slice(first.Length));
                 break;
+        }
+
+        return result;
+    }
+
+    internal static T[] ConcatToArray<T>(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
+    {
+        T[] result;
+        if (x.IsEmpty && y.IsEmpty)
+        {
+            result = [];
+        }
+        else
+        {
+            result = GC.AllocateUninitializedArray<T>(x.Length + y.Length);
+            x.CopyTo(result);
+            y.CopyTo(result.AsSpan(x.Length));
         }
 
         return result;
@@ -693,7 +527,7 @@ public static partial class Span
     public static ReadOnlySpan<TBase> Contravariance<T, TBase>(this ReadOnlySpan<T> span)
         where T : class?, TBase
         where TBase : class?
-        => MemoryMarshal.CreateReadOnlySpan(ref As<T, TBase>(ref MemoryMarshal.GetReference(span)), span.Length);
+        => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, TBase>(ref MemoryMarshal.GetReference(span)), span.Length);
 
     /// <summary>
     /// Swaps contents of the two spans.

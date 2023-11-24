@@ -160,7 +160,7 @@ public sealed class DelegateHelpersTests : Test
             types[argCount] = typeof(int);
             var funcType = Expression.GetFuncType(types);
             var parameters = new ParameterExpression[argCount];
-            parameters.ForEach(static (ref ParameterExpression p, nint _) => p = Expression.Parameter(typeof(string)));
+            parameters.AsSpan().ForEach(static (ref ParameterExpression p, int _) => p = Expression.Parameter(typeof(string)));
             //prepare args
             var args = new object[parameters.LongLength + 1];
             Array.Fill(args, string.Empty);

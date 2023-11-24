@@ -88,7 +88,7 @@ internal sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
     {
         unsafe
         {
-            partitions.ForEach(&CreatePartition, GetOrderableDynamicPartitions());
+            partitions.AsSpan().ForEach(&CreatePartition, GetOrderableDynamicPartitions());
         }
 
         static void CreatePartition(ref IEnumerator<KeyValuePair<long, T>> partition, IEnumerable<KeyValuePair<long, T>> partitions)
@@ -97,8 +97,7 @@ internal sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
 
     public override IList<IEnumerator<KeyValuePair<long, T>>> GetOrderablePartitions(int partitionCount)
     {
-        if (partitionCount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(partitionCount));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(partitionCount);
 
         var partitions = new IEnumerator<KeyValuePair<long, T>>[partitionCount];
 
@@ -115,8 +114,7 @@ internal sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
 
     public override IList<IEnumerator<T>> GetPartitions(int partitionCount)
     {
-        if (partitionCount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(partitionCount));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(partitionCount);
 
         var partitions = new IEnumerator<T>[partitionCount];
         var (quotient, remainder) = Math.DivRem(sequence.Length, partitions.Length);
@@ -153,5 +151,5 @@ public static class ReadOnlySequencePartitioner
     /// </param>
     /// <returns>The partitioner for the sequence.</returns>
     public static OrderablePartitioner<T> CreatePartitioner<T>(this in ReadOnlySequence<T> sequence, bool splitOnSegments = false)
-        => sequence.IsEmpty ? Partitioner.Create<T>(Array.Empty<T>(), splitOnSegments) : new ReadOnlySequencePartitioner<T>(in sequence, splitOnSegments);
+        => sequence.IsEmpty ? Partitioner.Create<T>([], splitOnSegments) : new ReadOnlySequencePartitioner<T>(in sequence, splitOnSegments);
 }

@@ -53,7 +53,7 @@ internal sealed class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMe
     /// </summary>
     /// <returns>The enumerator over all elements in the unmanaged memory.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-    public Pointer<T>.Enumerator GetEnumerator() => Pointer.GetEnumerator(Length);
+    public Pointer<T>.Enumerator GetEnumerator() => Pointer.GetEnumerator((nuint)Length);
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 

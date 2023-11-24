@@ -7,9 +7,9 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster;
 
 using Buffers;
+using IO.Hashing;
 using Hex = Buffers.Text.Hex;
-using Intrinsics = Runtime.Intrinsics;
-using HttpEndPoint = Net.Http.HttpEndPoint;
+using HttpEndPoint = Http.HttpEndPoint;
 
 /// <summary>
 /// Represents unique identifier of cluster member.
@@ -39,8 +39,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     private ClusterMemberId(DnsEndPoint endPoint)
     {
         Span<byte> bytes = stackalloc byte[16];
-        bytes.Clear();
-        WriteInt64LittleEndian(bytes, Span.BitwiseHashCode64(endPoint.Host.AsSpan(), false));
+        WriteInt64LittleEndian(bytes, FNV1a64.Hash<char>(endPoint.Host));
         address = new(bytes);
 
         lengthAndPort = Combine(endPoint.Host.Length, endPoint.Port);
@@ -49,11 +48,10 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
 
     private ClusterMemberId(HttpEndPoint endPoint)
     {
-        Span<byte> bytes = stackalloc byte[16];
-        bytes.Clear();
-        WriteInt64LittleEndian(bytes, Span.BitwiseHashCode64(endPoint.Host.AsSpan(), false));
-        bytes[sizeof(long)] = endPoint.IsSecure.ToByte();
-        address = new(bytes);
+        var writer = new SpanWriter<byte>(stackalloc byte[16]);
+        writer.WriteLittleEndian(FNV1a64.Hash<char>(endPoint.Host));
+        writer.Add(endPoint.IsSecure.ToByte());
+        address = new(writer.Span);
 
         lengthAndPort = Combine(endPoint.Host.Length, endPoint.Port);
         family = (int)endPoint.AddressFamily;
@@ -61,11 +59,11 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
 
     private ClusterMemberId(Uri uri)
     {
-        Span<byte> bytes = stackalloc byte[16];
-        WriteInt32LittleEndian(bytes, Span.BitwiseHashCode(uri.Scheme.AsSpan(), false));
-        WriteInt32LittleEndian(bytes.Slice(sizeof(int)), Span.BitwiseHashCode(uri.Host.AsSpan(), false));
-        WriteInt64LittleEndian(bytes.Slice(sizeof(long)), Span.BitwiseHashCode64(uri.PathAndQuery.AsSpan(), false));
-        address = new(bytes);
+        var writer = new SpanWriter<byte>(stackalloc byte[16]);
+        writer.WriteLittleEndian(FNV1a32.Hash<char>(uri.Scheme));
+        writer.WriteLittleEndian(FNV1a32.Hash<char>(uri.Host));
+        writer.WriteLittleEndian(FNV1a64.Hash<char>(uri.PathAndQuery));
+        address = new(writer.Span);
 
         lengthAndPort = Combine(uri.AbsoluteUri.Length, uri.Port);
         family = (int)uri.HostNameType;
@@ -75,7 +73,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         Span<byte> bytes = stackalloc byte[16];
         bytes.Clear();
-        WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(static (address, index) => address[index], address.Size, address, false));
+        WriteInt64LittleEndian(bytes, FNV1a64.Hash(static (address, index) => address[index], address.Size, address));
         this.address = new(bytes);
 
         lengthAndPort = unchecked((uint)address.Size);

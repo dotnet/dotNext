@@ -28,8 +28,8 @@ public static partial class Collection
         return enumerable switch
         {
             List<T> typedList => Span.Copy(CollectionsMarshal.AsSpan(typedList), allocator),
-            T[] array => Span.Copy<T>(array, allocator),
-            string str => ReinterpretCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
+            T[] array => Span.Copy(array, allocator),
+            string str => Unsafe.BitCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
             ArraySegment<T> segment => Span.Copy<T>(segment.AsSpan(), allocator),
             ICollection<T> collection => collection.Count == 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
             IReadOnlyCollection<T> collection => collection.Count == 0 ? default : CopySlow(enumerable, collection.Count, allocator),

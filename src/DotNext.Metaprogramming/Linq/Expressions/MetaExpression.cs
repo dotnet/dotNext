@@ -73,15 +73,15 @@ internal sealed class MetaExpression : DynamicMetaObject
         return Expression.Call(typeof(ExpressionBuilder), nameof(ExpressionBuilder.Const), new[] { arg.Expression.Type }, arg.Expression);
     }
 
-    private static IEnumerable<Expression> ToExpressions(DynamicMetaObject[] args, out BindingRestrictions restrictions)
+    private static IReadOnlyList<Expression> ToExpressions(DynamicMetaObject[] args, out BindingRestrictions restrictions)
     {
         restrictions = BindingRestrictions.Empty;
 
-        if (Intrinsics.GetLength(args) == 0)
+        if (Intrinsics.GetLength(args) is 0)
             return Array.Empty<Expression>();
 
         var result = new Expression[args.LongLength];
-        for (nint i = 0; i < Intrinsics.GetLength(args); i++)
+        for (nuint i = 0; i < Intrinsics.GetLength(args); i++)
         {
             result[i] = ToExpression(args[i], out var r);
             restrictions = restrictions.Merge(r);

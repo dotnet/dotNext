@@ -15,12 +15,12 @@ public partial class TypeMap<TValue>
     public struct Enumerator
     {
         private readonly Entry[] entries;
-        private nint index;
+        private nuint index;
 
         internal Enumerator(Entry[] entries)
         {
             this.entries = entries;
-            index = -1;
+            index = nuint.MaxValue;
         }
 
         /// <summary>
@@ -37,10 +37,10 @@ public partial class TypeMap<TValue>
         {
             if (entries is not null)
             {
-                for (nint nextIndex; ;)
+                for (nuint nextIndex; ;)
                 {
-                    nextIndex = index + 1;
-                    if (nextIndex >= GetLength(entries))
+                    nextIndex = index + 1U;
+                    if (nextIndex >= entries.GetLength())
                         break;
 
                     index = nextIndex;

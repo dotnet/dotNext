@@ -1063,10 +1063,9 @@ public static class CodeGenerator
     private static LambdaExpressionTree AsyncLambda<TScope>(Type[] parameters, Type returnType, AsyncLambdaFlags flags, TScope scope)
         where TScope : MulticastDelegate
     {
-        var args = parameters.Concat(new Type[] { new TaskType(returnType, (flags & AsyncLambdaFlags.UseValueTask) != 0) }, parameters.LongLength);
-        var type = LambdaExpressionTree.GetDelegateType(args);
+        var type = LambdaExpressionTree.GetDelegateType([.. parameters, new TaskType(returnType, flags.HasFlag(AsyncLambdaFlags.UseValueTask))]);
         type = typeof(AsyncLambdaExpression<>).MakeGenericType(type);
-        using var expression = (LambdaExpression?)Activator.CreateInstance(type, new object[] { (flags & AsyncLambdaFlags.UseTaskPooling) != 0 });
+        using var expression = (LambdaExpression?)Activator.CreateInstance(type, [flags.HasFlag(AsyncLambdaFlags.UseTaskPooling)]);
         Debug.Assert(expression is ILexicalScope<LambdaExpressionTree, TScope>);
         return ((ILexicalScope<LambdaExpressionTree, TScope>)expression).Build(scope);
     }

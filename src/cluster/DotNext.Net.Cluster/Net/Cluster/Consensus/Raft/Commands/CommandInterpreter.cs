@@ -64,7 +64,7 @@ public partial class CommandInterpreter : Disposable
             if (handlerAttr is not null && method.ReturnType == typeof(ValueTask))
             {
                 var parameters = method.GetParameterTypes();
-                if (GetLength(parameters) != 2 || !parameters[0].IsValueType || parameters[1] != typeof(CancellationToken))
+                if (parameters.GetLength() is not 2 || !parameters[0].IsValueType || parameters[1] != typeof(CancellationToken))
                     continue;
                 var commandType = parameters[0];
                 if (!identifiers.TryGetValue(commandType, out var commandId))

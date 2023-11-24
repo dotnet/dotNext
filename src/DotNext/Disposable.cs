@@ -174,7 +174,7 @@ public abstract class Disposable : IDisposable
     /// <param name="objects">An array of objects to dispose.</param>
     public static void Dispose(params IDisposable?[] objects)
     {
-        for (nint i = 0; i < GetLength(objects); i++)
+        for (nuint i = 0; i < objects.GetLength(); i++)
             objects[i]?.Dispose();
     }
 
