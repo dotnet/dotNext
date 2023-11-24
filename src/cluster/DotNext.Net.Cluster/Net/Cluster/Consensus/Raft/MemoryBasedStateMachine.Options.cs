@@ -1,5 +1,3 @@
-using System.Diagnostics.Tracing;
-
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 public partial class MemoryBasedStateMachine

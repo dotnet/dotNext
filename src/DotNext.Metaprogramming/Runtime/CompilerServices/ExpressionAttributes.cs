@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices;
 
@@ -8,7 +7,6 @@ namespace DotNext.Runtime.CompilerServices;
 /// </summary>
 internal class ExpressionAttributes
 {
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<ExpressionAttributes?> AttributesSlot = new();
 
     /// <summary>

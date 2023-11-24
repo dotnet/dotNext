@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
 using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
@@ -20,7 +19,6 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     private readonly IAsyncEvent readTrigger;
     private readonly int bufferSize;
     private readonly DirectoryInfo location;
-    private readonly IncrementingEventCounter? writeRate;
     private readonly TaskCompletionSource completionTask;
     private readonly TagList measurementTags;
 
@@ -84,7 +82,6 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     void IChannelWriter<TInput>.MessageReady()
     {
         readTrigger.Signal();
-        writeRate?.Increment();
         IChannel.WriteRateMeter.Add(1, measurementTags);
     }
 

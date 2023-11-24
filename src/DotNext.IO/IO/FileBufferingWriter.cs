@@ -2,7 +2,6 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -165,7 +164,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     private readonly BackingFileProvider fileProvider;
     private readonly int memoryThreshold;
     private readonly MemoryAllocator<byte>? allocator;
-    private readonly EventCounter? allocationCounter;
     private MemoryOwner<byte> buffer;
     private int position;
     private FileStream? fileBackend;
@@ -344,7 +342,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 newSize = bufLen;
 
             buffer.Resize(newSize, exactSize: false, allocator: allocator);
-            allocationCounter?.WriteMetric(buffer.Length);
             AllocationMeter.Record(buffer.Length, measurementTags);
         }
 

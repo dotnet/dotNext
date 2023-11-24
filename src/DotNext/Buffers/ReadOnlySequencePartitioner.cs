@@ -8,7 +8,7 @@ namespace DotNext.Buffers;
 
 using Enumerator = Collections.Generic.Enumerator;
 
-internal sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
+file sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
 {
     private sealed class SegmentProvider : IEnumerable<KeyValuePair<long, T>>
     {

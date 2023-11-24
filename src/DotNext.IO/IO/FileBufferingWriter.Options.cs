@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
 using System.Runtime.InteropServices;
 
 namespace DotNext.IO;

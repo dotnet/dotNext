@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;

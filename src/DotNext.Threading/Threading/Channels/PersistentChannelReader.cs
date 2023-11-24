@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 using Debug = System.Diagnostics.Debug;
