@@ -130,12 +130,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
 
     /// <summary>
-    /// Indicates that the local member is a leader.
-    /// </summary>
-    [Obsolete("Use LeadershipToken property instead.")]
-    protected bool IsLeaderLocal => state is LeaderState<TMember>;
-
-    /// <summary>
     /// Gets the lease that can be used for linearizable read.
     /// </summary>
     public ILeaderLease? Lease => (state as LeaderState<TMember>)?.Lease;
@@ -177,16 +171,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     /// <inheritdoc />
     IReadOnlyCollection<IRaftClusterMember> IRaftCluster.Members => Members;
-
-    /// <summary>
-    /// Establishes metrics collector.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public MetricsCollector? Metrics
-    {
-        protected get;
-        init;
-    }
 
     /// <summary>
     /// Gets Term value maintained by local member.
@@ -305,9 +289,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         async ValueTask UnfreezeCoreAsync()
         {
-#pragma warning disable CS0618
-            var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
-#pragma warning restore CS0618
+            var newState = new FollowerState<TMember>(this);
             await UpdateStateAsync(newState).ConfigureAwait(false);
             newState.StartServing(ElectionTimeout, LifecycleToken);
             readinessProbe.TrySetResult();
@@ -356,21 +338,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     protected void StartFollowing() => (state as FollowerState<TMember>)?.StartServing(ElectionTimeout, LifecycleToken);
 
-    /// <summary>
-    /// Turns this node into regular state when the node can be elected as leader.
-    /// </summary>
-    /// <remarks>
-    /// Initially, the node can be started in standby mode when it cannot be elected as a leader.
-    /// This can be helpful if you need to wait for full replication with existing leader node.
-    /// When replication finished, you can turn this node into regular state.
-    /// </remarks>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous execution of this operation.</returns>
-    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    [Obsolete("Use RevertToNormalModeAsync(CancellationToken) method instead.")]
-    public async ValueTask TurnIntoRegularNodeAsync(CancellationToken token)
-        => await RevertToNormalModeAsync(token).ConfigureAwait(false);
-
     /// <inheritdoc cref="IStandbyModeSupport.RevertToNormalModeAsync(CancellationToken)"/>
     public async ValueTask<bool> RevertToNormalModeAsync(CancellationToken token = default)
     {
@@ -388,9 +355,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 // ensure that we trying to update the same state
                 if (TryGetLocalMember() is not null && ReferenceEquals(state, standbyState))
                 {
-#pragma warning disable CS0618
-                    var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
-#pragma warning restore CS0618
+                    var newState = new FollowerState<TMember>(this);
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     newState.StartServing(ElectionTimeout, LifecycleToken);
                     return true;
@@ -530,14 +495,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 followerState.Refresh();
                 break;
             case LeaderState<TMember> or CandidateState<TMember>:
-#pragma warning disable CS0618
-                var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
-#pragma warning restore CS0618
+                var newState = new FollowerState<TMember>(this);
                 await UpdateStateAsync(newState).ConfigureAwait(false);
                 newState.StartServing(ElectionTimeout, LifecycleToken);
-#pragma warning disable CS0618
-                Metrics?.MovedToFollowerState();
-#pragma warning restore CS0618
                 FollowerState.TransitionRateMeter.Add(1, in measurementTags);
                 break;
         }
@@ -829,9 +789,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             }
             else if (state is StandbyState<TMember>)
             {
-#pragma warning disable CS0618
-                Metrics?.ReportHeartbeat();
-#pragma warning restore CS0618
                 FollowerState.HeartbeatRateMeter.Add(1, in measurementTags);
             }
             else
@@ -874,9 +831,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                 if (ReferenceEquals(state, leaderState))
                 {
-#pragma warning disable CS0618
-                    var newState = new FollowerState<TMember>(this) { Metrics = Metrics };
-#pragma warning restore CS0618
+                    var newState = new FollowerState<TMember>(this);
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     Leader = null;
                     newState.StartServing(ElectionTimeout, LifecycleToken);
@@ -1054,9 +1009,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                     // vote for self
                     newState.StartVoting(ElectionTimeout, auditTrail);
-#pragma warning disable CS0618
-                    Metrics?.MovedToCandidateState();
-#pragma warning restore CS0618
                     CandidateState.TransitionRateMeter.Add(1, in measurementTags);
                     Logger.TransitionToCandidateStateCompleted(Term);
                 }
@@ -1111,9 +1063,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 var newState = new LeaderState<TMember>(this, currentTerm, LeaderLeaseDuration)
                 {
-#pragma warning disable CS0618
-                    Metrics = Metrics,
-#pragma warning restore CS0618
                     FailureDetectorFactory = FailureDetectorFactory,
                 };
 
@@ -1123,9 +1072,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
                 newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
 
-#pragma warning disable CS0618
-                Metrics?.MovedToLeaderState();
-#pragma warning restore CS0618
                 LeaderState.TransitionRateMeter.Add(1, in measurementTags);
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
             }

@@ -58,12 +58,6 @@ public readonly record struct Timestamp :
     /// </summary>
     public bool IsPast => ticks < GetTimestamp();
 
-    /// <summary>
-    /// Gets the current point in time.
-    /// </summary>
-    [Obsolete("Use public parameterless constructor instead")]
-    public static Timestamp Current => new();
-
     private static long ToTicks(double duration)
         => unchecked((long)(TickFrequency * duration));
 

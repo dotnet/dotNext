@@ -313,16 +313,6 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         => Set(ITypeMap.GetIndex<TKey>(), newValue, out oldValue);
 
-    /// <summary>
-    /// Replaces the existing value with a new value.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="newValue">A new value.</param>
-    /// <returns>The replaced value.</returns>
-    [Obsolete("Use Set overload instead")]
-    public Optional<TValue> Replace<TKey>(TValue newValue)
-        => Set(ITypeMap.GetIndex<TKey>(), newValue, out var oldValue) ? Optional.Some(oldValue!) : Optional.None<TValue>();
-
     private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {
         for (Entry[] entries; ;)

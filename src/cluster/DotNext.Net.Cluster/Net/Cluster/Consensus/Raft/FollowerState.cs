@@ -13,7 +13,6 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
     private readonly AsyncManualResetEvent suppressionEvent;
     private readonly CancellationTokenSource trackerCancellation;
     private Task? tracker;
-    internal IFollowerStateMetrics? Metrics;
     private volatile bool timedOut;
 
     internal FollowerState(IRaftStateMachine<TMember> stateMachine)
@@ -82,7 +81,6 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
     {
         Logger.TimeoutReset();
         refreshEvent.Set();
-        Metrics?.ReportHeartbeat();
         FollowerState.HeartbeatRateMeter.Add(1, MeasurementTags);
     }
 
@@ -111,7 +109,6 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
             suppressionEvent.Dispose();
             trackerCancellation.Dispose();
             tracker = null;
-            Metrics = null;
         }
 
         base.Dispose(disposing);

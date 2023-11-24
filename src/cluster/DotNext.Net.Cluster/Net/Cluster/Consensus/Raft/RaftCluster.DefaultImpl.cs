@@ -12,7 +12,6 @@ using IO.Log;
 using Membership;
 using Microsoft.Extensions.Logging;
 using TransportServices;
-using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
 /// <summary>
 /// Represents default implementation of Raft-based cluster.
@@ -64,9 +63,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     private readonly IReadOnlyDictionary<string, string> metadata;
-#pragma warning disable CS0618
-    private readonly Func<ILocalMember, EndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
-#pragma warning restore CS0618
+    private readonly Func<ILocalMember, EndPoint, RaftClusterMember> clientFactory;
     private readonly Func<ILocalMember, IServer> serverFactory;
     private readonly MemoryAllocator<byte>? allocator;
     private readonly ClusterMemberAnnouncer<EndPoint>? announcer;
@@ -85,9 +82,6 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     public RaftCluster(NodeConfiguration configuration)
         : base(configuration, GetMeasurementTags(configuration))
     {
-#pragma warning disable CS0618
-        Metrics = configuration.Metrics;
-#pragma warning restore CS0618
         metadata = new Dictionary<string, string>(configuration.Metadata, StringComparer.Ordinal); // TODO: Migrate to FrozenDictionary in .NET 8
         clientFactory = configuration.CreateClient;
         serverFactory = configuration.CreateServer;
@@ -199,9 +193,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     }
 
     private RaftClusterMember CreateMember(EndPoint address)
-#pragma warning disable CS0618
-        => clientFactory.Invoke(this, address, Metrics as IClientMetricsCollector);
-#pragma warning restore CS0618
+        => clientFactory.Invoke(this, address);
 
     /// <summary>
     /// Announces a new member in the cluster.

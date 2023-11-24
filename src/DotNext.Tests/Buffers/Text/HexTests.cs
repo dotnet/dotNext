@@ -64,7 +64,6 @@ public sealed class HexTests : Test
     [InlineData(0, false)]
     [InlineData(128, false)]
     [InlineData(2048, false)]
-    [Obsolete]
     public static void FromUtf16(int arraySize, bool lowercased)
     {
         var expected = RandomBytes(arraySize);
@@ -103,7 +102,6 @@ public sealed class HexTests : Test
     [InlineData(0, false)]
     [InlineData(128, false)]
     [InlineData(2048, false)]
-    [Obsolete]
     public static void FromUtf8(int arraySize, bool lowercased)
     {
         var expected = RandomBytes(arraySize);

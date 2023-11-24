@@ -289,17 +289,6 @@ public readonly struct Pointer<T> :
     public void Clear() => Value = default;
 
     /// <summary>
-    /// Copies block of memory from the source address to the destination address.
-    /// </summary>
-    /// <param name="destination">Destination address.</param>
-    /// <param name="count">The number of elements to be copied.</param>
-    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
-    /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
-    [Obsolete("Use CopyTo method instead")]
-    public void WriteTo(Pointer<T> destination, long count)
-        => CopyTo(destination, new IntPtr(count));
-
-    /// <summary>
     /// Copies a block of memory identifier by this pointer to the specified location.
     /// </summary>
     /// <param name="destination">The destination memory block.</param>
@@ -344,31 +333,6 @@ public readonly struct Pointer<T> :
             throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
 
         Intrinsics.Copy(in value[0], out destination.value[0], count);
-    }
-
-    /// <summary>
-    /// Copies elements from the memory location identified
-    /// by this pointer to managed array.
-    /// </summary>
-    /// <param name="destination">The array to be modified.</param>
-    /// <param name="offset">The position in the destination array from which copying begins.</param>
-    /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
-    /// <returns>Actual number of copied elements.</returns>
-    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> or <paramref name="offset"/> is less than zero.</exception>
-    [Obsolete("Use CopyTo method instead")]
-    public unsafe long WriteTo(T[] destination, long offset, long count)
-    {
-        if (IsNull)
-            ThrowNullPointerException();
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (offset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(offset));
-        if (count is 0L || (ulong)(offset + count) > (ulong)destination.LongLength)
-            return 0L;
-        Intrinsics.Copy(in value[0], out destination[offset], (nuint)count);
-        return count;
     }
 
     /// <summary>
@@ -432,31 +396,6 @@ public readonly struct Pointer<T> :
                 await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
             }
         }
-    }
-
-    /// <summary>
-    /// Copies elements from the specified array into
-    /// the memory block identified by this pointer.
-    /// </summary>
-    /// <param name="source">The source array.</param>
-    /// <param name="offset">The position in the source array from which copying begins.</param>
-    /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
-    /// <returns>Actual number of copied elements.</returns>
-    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> or <paramref name="offset"/> is less than zero.</exception>
-    [Obsolete("Use CopyTo method instead")]
-    public unsafe long ReadFrom(T[] source, long offset, long count)
-    {
-        if (IsNull)
-            ThrowNullPointerException();
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
-        if (offset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(offset));
-        if (count is 0L || (ulong)(count + offset) > (ulong)source.LongLength)
-            return 0L;
-        Intrinsics.Copy(in source[offset], out value[0], (nuint)count);
-        return count;
     }
 
     /// <summary>
@@ -576,60 +515,24 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <param name="length">Number of elements to copy.</param>
     /// <returns>A copy of memory block in the form of byte array.</returns>
-    [Obsolete("Use ToByteArray overload with native-sized integer parameter")]
-    public byte[] ToByteArray(long length) => ToByteArray(new IntPtr(length));
-
-    /// <summary>
-    /// Copies the block of memory referenced by this pointer
-    /// into managed heap as array of bytes.
-    /// </summary>
-    /// <param name="length">Number of elements to copy.</param>
-    /// <returns>A copy of memory block in the form of byte array.</returns>
-    public byte[] ToByteArray(nint length)
-        => length >= 0 ? ToByteArray((nuint)length) : throw new ArgumentOutOfRangeException(nameof(length));
-
-    /// <summary>
-    /// Copies the block of memory referenced by this pointer
-    /// into managed heap as array of bytes.
-    /// </summary>
-    /// <param name="length">Number of elements to copy.</param>
-    /// <returns>A copy of memory block in the form of byte array.</returns>
     [CLSCompliant(false)]
     public unsafe byte[] ToByteArray(nuint length)
     {
         byte[] result;
 
-        if (IsNull || length is 0)
+        if (IsNull || length is 0U)
         {
-            result = Array.Empty<byte>();
+            result = [];
         }
         else
         {
             length = checked((nuint)sizeof(T) * length);
-            result = new byte[length];
-            Intrinsics.Copy(in ((byte*)value)[0], out MemoryMarshal.GetArrayDataReference(result), length);
+            result = length <= (nuint)Array.MaxLength ? GC.AllocateUninitializedArray<byte>((int)length, pinned: true) : new byte[length];
+            Intrinsics.Copy(in Unsafe.AsRef<byte>(value), out MemoryMarshal.GetArrayDataReference(result), length);
         }
 
         return result;
     }
-
-    /// <summary>
-    /// Copies the block of memory referenced by this pointer
-    /// into managed heap as a pinned array.
-    /// </summary>
-    /// <param name="length">The length of the memory block to be copied.</param>
-    /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
-    [Obsolete("Use ToByteArray overload with native-sized integer parameter")]
-    public T[] ToArray(long length) => ToArray(new IntPtr(length));
-
-    /// <summary>
-    /// Copies the block of memory referenced by this pointer
-    /// into managed heap as a pinned array.
-    /// </summary>
-    /// <param name="length">The length of the memory block to be copied.</param>
-    /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
-    public T[] ToArray(nint length)
-        => length >= 0 ? ToArray((nuint)length) : throw new ArgumentOutOfRangeException(nameof(length));
 
     /// <summary>
     /// Copies the block of memory referenced by this pointer
@@ -644,7 +547,7 @@ public readonly struct Pointer<T> :
 
         if (IsNull || length is 0)
         {
-            result = Array.Empty<T>();
+            result = [];
         }
         else
         {

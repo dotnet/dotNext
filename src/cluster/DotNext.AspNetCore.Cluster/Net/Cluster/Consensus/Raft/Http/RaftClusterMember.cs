@@ -10,7 +10,6 @@ using Membership;
 using Messaging;
 using Net.Http;
 using Runtime.Serialization;
-using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 using Timestamp = Diagnostics.Timestamp;
 
 internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, ISubscriber
@@ -29,9 +28,6 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private IRaftClusterMember.ReplicationState state;
-
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
-    internal IClientMetricsCollector? Metrics;
 
     static RaftClusterMember()
     {
@@ -137,14 +133,9 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             request.Dispose();
 
             var responseTime = timeStamp.ElapsedMilliseconds;
-#pragma warning disable CS0618
-            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
-#pragma warning restore CS0618
             ResponseTimeMeter.Record(
                 responseTime,
-#pragma warning disable CA2252
                 new(IRaftClusterMember.MessageTypeAttributeName, TMessage.MessageType),
-#pragma warning restore CA2252
                 cachedRemoteAddressAttribute);
         }
 

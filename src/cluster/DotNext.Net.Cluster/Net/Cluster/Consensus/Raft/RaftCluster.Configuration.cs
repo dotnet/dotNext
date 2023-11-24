@@ -18,7 +18,6 @@ using Tcp;
 using TransportServices;
 using TransportServices.Datagram;
 using Udp;
-using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
 public partial class RaftCluster
 {
@@ -41,16 +40,6 @@ public partial class RaftCluster
             heartbeatThreshold = 0.5D;
             Metadata = new Dictionary<string, string>();
             warmupRounds = 10;
-        }
-
-        /// <summary>
-        /// Gets or sets metrics collector.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public MetricsCollector? Metrics
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -89,16 +78,6 @@ public partial class RaftCluster
             ConfigurationStorage = storage;
             return storage;
         }
-
-        /// <summary>
-        /// Indicates that each part of cluster in partitioned network allow to elect its own leader.
-        /// </summary>
-        /// <remarks>
-        /// <see langword="false"/> value allows to build CA distributed cluster
-        /// while <see langword="true"/> value allows to build CP/AP distributed cluster.
-        /// </remarks>
-        [Obsolete("This property is no longer supported.", error: true)]
-        public bool Partitioning { get; set; }
 
         /// <summary>
         /// Gets or sets threshold of the heartbeat timeout.
@@ -206,9 +185,7 @@ public partial class RaftCluster
         /// </summary>
         public bool AggressiveLeaderStickiness { get; set; }
 
-#pragma warning disable CS0618
-        internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics);
-#pragma warning restore CS0618
+        internal abstract RaftClusterMember CreateClient(ILocalMember localMember, EndPoint endPoint);
 
         internal abstract IServer CreateServer(ILocalMember localMember);
     }
@@ -272,10 +249,8 @@ public partial class RaftCluster
         /// <inheritdoc />
         IEqualityComparer<EndPoint> IClusterMemberConfiguration.EndPointComparer => EndPointComparer;
 
-#pragma warning disable CS0618
-        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
+        internal override GenericClient CreateClient(ILocalMember localMember, EndPoint endPoint)
             => new(localMember, endPoint, clientFactory, MemoryAllocator) { ConnectTimeout = ConnectTimeout };
-#pragma warning restore CS0618
 
         internal override GenericServer CreateServer(ILocalMember localMember)
             => new(HostEndPoint, serverFactory, localMember, MemoryAllocator, LoggerFactory) { ReceiveTimeout = RequestTimeout };
@@ -436,15 +411,12 @@ public partial class RaftCluster
             return client;
         }
 
-#pragma warning disable CS0618
-        internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
+        internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint)
             => new(localMember, endPoint, CreateClient)
             {
                 RequestTimeout = RequestTimeout,
-                Metrics = metrics,
                 PipeConfig = PipeConfig,
             };
-#pragma warning restore CS0618
 
         internal override UdpServer CreateServer(ILocalMember localMember)
         {
@@ -535,8 +507,7 @@ public partial class RaftCluster
             set => connectTimeout = value > TimeSpan.Zero ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
-#pragma warning disable CS0618
-        internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint, IClientMetricsCollector? metrics)
+        internal override TcpClient CreateClient(ILocalMember localMember, EndPoint endPoint)
             => new(localMember, endPoint, MemoryAllocator)
             {
                 TransmissionBlockSize = TransmissionBlockSize,
@@ -545,9 +516,7 @@ public partial class RaftCluster
                 SslOptions = SslOptions?.ClientOptions,
                 RequestTimeout = RequestTimeout,
                 ConnectTimeout = ConnectTimeout,
-                Metrics = metrics,
             };
-#pragma warning restore CS0618
 
         internal override TcpServer CreateServer(ILocalMember localMember)
             => new(HostEndPoint, ServerBacklog, localMember, MemoryAllocator, LoggerFactory)

@@ -7,8 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
 using Membership;
-using Metrics;
-using Threading;
 using TransportServices;
 
 /// <summary>
@@ -18,8 +16,6 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 {
     private protected static readonly Histogram<double> ResponseTimeMeter = Raft.Metrics.Instrumentation.ClientSide.CreateHistogram<double>("response-time", unit: "ms", description: "Response Time");
 
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
-    private readonly IClientMetricsCollector? metrics;
     private protected readonly ILocalMember localMember;
     private readonly TimeSpan requestTimeout;
     internal readonly ClusterMemberId Id;
@@ -40,13 +36,6 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
         requestTimeout = TimeSpan.FromSeconds(30);
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString());
         IsRemote = localMember.Id != Id;
-    }
-
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
-    internal IClientMetricsCollector? Metrics
-    {
-        get => metrics;
-        init => metrics = value;
     }
 
     internal TimeSpan RequestTimeout

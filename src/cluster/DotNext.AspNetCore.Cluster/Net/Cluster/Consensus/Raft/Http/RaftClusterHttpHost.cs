@@ -89,9 +89,6 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
             configurator: activationContext.GetService<IClusterMemberLifetime>(),
             configStorage: activationContext.GetService<IClusterConfigurationStorage<UriEndPoint>>(),
             httpHandlerFactory: activationContext.GetService<IHttpMessageHandlerFactory>(),
-#pragma warning disable CS0618
-            metrics: activationContext.GetService<MetricsCollector>(),
-#pragma warning restore CS0618
             announcer: activationContext.GetService<ClusterMemberAnnouncer<UriEndPoint>>())
         {
             FailureDetectorFactory = activationContext.GetService<Func<TimeSpan, IRaftClusterMember, IFailureDetector>>(),

@@ -115,12 +115,8 @@ internal abstract partial class Client : RaftClusterMember
             if (lockTaken)
                 accessLock.Release();
 
-            var responseTime = timeStamp.ElapsedMilliseconds;
-#pragma warning disable CS0618
-            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
-#pragma warning restore CS0618
             ResponseTimeMeter.Record(
-                responseTime,
+                timeStamp.ElapsedMilliseconds,
                 new(IRaftClusterMember.MessageTypeAttributeName, TExchange.Name),
                 cachedRemoteAddressAttribute);
 

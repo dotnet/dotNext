@@ -65,38 +65,6 @@ public sealed class AsyncTriggerTests : Test
         await ThrowsAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true).AsTask);
     }
 
-    [Obsolete]
-    private sealed class TestTransition : AsyncTrigger<StrongBox<int>>.ITransition
-    {
-        bool AsyncTrigger<StrongBox<int>>.ITransition.Test(StrongBox<int> state)
-            => state.Value == 42;
-
-        void AsyncTrigger<StrongBox<int>>.ITransition.Transit(StrongBox<int> state)
-            => state.Value = 56;
-    }
-
-    [Fact]
-    [Obsolete]
-    public static async Task Transitions()
-    {
-        using var trigger = new AsyncTrigger<StrongBox<int>>(new());
-
-        trigger.State.Value = 64;
-        var task1 = trigger.WaitAsync(new TestTransition());
-        False(task1.IsCompleted);
-
-        trigger.Signal(static state => state.Value = 42);
-
-        var task2 = trigger.WaitAsync(new TestTransition());
-        False(task2.IsCompleted);
-
-        await task1;
-
-        trigger.CancelSuspendedCallers(new(true));
-
-        await ThrowsAsync<OperationCanceledException>(task2.AsTask);
-    }
-
     private sealed class Condition : StrongBox<bool>, ISupplier<bool>
     {
         bool ISupplier<bool>.Invoke() => Value;

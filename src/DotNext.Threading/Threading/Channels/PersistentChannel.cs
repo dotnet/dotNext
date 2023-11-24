@@ -36,16 +36,10 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
         if (!location.Exists)
             location.Create();
         var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter, options.InitialPartitionSize);
-#pragma warning disable CS0618
-        var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReliableEnumeration, options.ReadRateCounter);
-#pragma warning restore CS0618
+        var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReliableEnumeration);
         Reader = reader;
         Writer = writer;
         readTrigger = new AsyncCounter(writer.Position - reader.Position);
-#pragma warning disable CS0618
-        writeRate = options.WriteRateCounter;
-#pragma warning restore CS0618
-
         completionTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         measurementTags = options.MeasurementTags;
         IChannel.SetTags(ref measurementTags, location.FullName);

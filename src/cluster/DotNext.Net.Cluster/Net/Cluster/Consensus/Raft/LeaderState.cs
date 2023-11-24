@@ -39,12 +39,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         replicatorFactory = localReplicatorFactory = CreateDefaultReplicator;
     }
 
-    internal ILeaderStateMetrics? Metrics
-    {
-        private get;
-        init;
-    }
-
     private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
     {
         Replicator replicator;
@@ -217,7 +211,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     if (forced)
                         GCSettings.LatencyMode = latencyMode;
 
-                    Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
                     LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
                 }
 

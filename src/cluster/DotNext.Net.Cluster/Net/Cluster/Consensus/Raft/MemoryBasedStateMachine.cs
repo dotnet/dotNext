@@ -41,7 +41,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private readonly CompactionMode compaction;
     private readonly bool replayOnInitialize, evictOnCommit;
     private readonly int snapshotBufferSize;
-    private readonly Action<double>? compactionCounter;
 
     private long lastTerm;  // term of last committed entry, volatile
 
@@ -65,10 +64,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         // with concurrent compaction, we will release cached log entries according to partition lifetime
         evictOnCommit = compaction is not CompactionMode.Incremental && configuration.CacheEvictionPolicy is LogEntryCacheEvictionPolicy.OnCommit;
-#pragma warning disable CS0618
-        compactionCounter = ToDelegate(configuration.CompactionCounter);
-#pragma warning restore CS0618
-
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode, initialSize: configuration.InitialPartitionSize);
     }
 
@@ -112,10 +107,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             await ApplyIfNotEmptyAsync(builder, current.Read(sessionId, currentIndex)).ConfigureAwait(false);
         }
 
-        // update counter
-        var count = upperBoundIndex - SnapshotInfo.Index;
-        compactionCounter?.Invoke(count);
-        CompactionRateMeter.Add(count, measurementTags);
+        CompactionRateMeter.Add(upperBoundIndex - SnapshotInfo.Index, measurementTags);
     }
 
     private bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, [NotNullWhen(true)] ref Partition? partition)
@@ -611,10 +603,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             incrementalBuilder.Builder.RefreshTimestamp();
             UpdateSnapshotInfo(await incrementalBuilder.Builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
 
-            var count = upperBoundIndex - SnapshotInfo.Index;
-            compactionCounter?.Invoke(count);
-            CompactionRateMeter.Add(count, measurementTags);
-
+            CompactionRateMeter.Add(upperBoundIndex - SnapshotInfo.Index, measurementTags);
             return true;
         }
 

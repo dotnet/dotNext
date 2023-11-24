@@ -371,14 +371,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
         => commitEvent.SpinWaitAsync(new CommitChecker(this, index), token);
 
-    /// <inheritdoc/>
-    [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]
-    async ValueTask IPersistentState.EnsureConsistencyAsync(CancellationToken token)
-    {
-        while (Term != Volatile.Read(in lastTerm))
-            await commitEvent.WaitAsync(token).ConfigureAwait(false);
-    }
-
     /// <summary>
     /// Releases all resources associated with this audit trail.
     /// </summary>

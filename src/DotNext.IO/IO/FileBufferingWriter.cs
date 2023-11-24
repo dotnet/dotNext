@@ -214,9 +214,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         this.memoryThreshold = memoryThreshold;
         fileProvider = new BackingFileProvider(in options);
-#pragma warning disable CS0618
-        allocationCounter = options.AllocationCounter;
-#pragma warning restore CS0618
         measurementTags = options.MeasurementTags;
     }
 

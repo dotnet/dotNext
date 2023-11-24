@@ -30,9 +30,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly WriteMode writeMode;
     private readonly bool parallelIO;
 
-    // diagnostic counters
-    private readonly Action<double>? readCounter, writeCounter, commitCounter;
-
     static PersistentState()
     {
         var meter = new Meter("DotNext.IO.WriteAheadLog");
@@ -65,10 +62,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         syncRoot = new(configuration.MaxConcurrentReads)
         {
             MeasurementTags = configuration.MeasurementTags,
-#pragma warning disable CS0618
-            LockContentionCounter = configuration.LockContentionCounter,
-            LockDurationCounter = configuration.LockDurationCounter,
-#pragma warning restore CS0618
         };
 
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -102,20 +95,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         partitionTable.Clear();
         state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.NoFlush);
-
-        // counters
-#pragma warning disable CS0618
-        readCounter = ToDelegate(configuration.ReadCounter);
-        writeCounter = ToDelegate(configuration.WriteCounter);
-        commitCounter = ToDelegate(configuration.CommitCounter);
-#pragma warning restore CS0618
         measurementTags = configuration.MeasurementTags;
 
         static int ComparePartitions(Partition x, Partition y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
     }
-
-    private protected static Action<double>? ToDelegate(IncrementingEventCounter? counter)
-        => counter is null ? null : counter.Increment;
 
     private protected static Meter MeterRoot => ReadRateMeter.Meter;
 
@@ -191,7 +174,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         if (length > int.MaxValue)
             return ValueTask.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig));
 
-        readCounter?.Invoke(length);
         ReadRateMeter.Add(length, measurementTags);
 
         SingletonList<LogEntry> list;
@@ -362,9 +344,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = new(Task.WhenAll(bufferingSupplier.BufferizeAsync(), AppendUncachedAsync(bufferingSupplier, startIndex, skipCommitted, token)));
         }
 
-        writeCounter?.Invoke(count);
         WriteRateMeter.Add(count, measurementTags);
-
         return result;
     }
 
@@ -515,7 +495,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         state.LastIndex = startIndex;
         await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
 
-        writeCounter?.Invoke(1D);
         WriteRateMeter.Add(1L, measurementTags);
     }
 
@@ -616,9 +595,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             syncRoot.Release(LockType.WriteLock);
         }
 
-        writeCounter?.Invoke(1D);
         WriteRateMeter.Add(1L, measurementTags);
-
         return startIndex;
     }
 
@@ -644,9 +621,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             syncRoot.Release(LockType.WriteLock);
         }
 
-        writeCounter?.Invoke(1D);
         WriteRateMeter.Add(1L, measurementTags);
-
         return startIndex;
     }
 
@@ -873,27 +848,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Debug.Assert(count > 0L);
 
         commitEvent.Signal(resumeAll: true);
-        commitCounter?.Invoke(count);
         CommitRateMeter.Add(count, measurementTags);
-    }
-
-    /// <summary>
-    /// Suspends the caller until the log entry with term equal to <see cref="Term"/>
-    /// will be committed.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing state of the asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="TimeoutException">Timeout occurred.</exception>
-    [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]
-    public async ValueTask EnsureConsistencyAsync(CancellationToken token)
-    {
-        ThrowIfDisposed();
-
-        for (var condition = new DelegatingSupplier<bool>(IsConsistent); !IsConsistent();)
-            await commitEvent.SpinWaitAsync(condition, token).ConfigureAwait(false);
-
-        bool IsConsistent() => state.Term == LastTerm && state.CommitIndex == state.LastApplied;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

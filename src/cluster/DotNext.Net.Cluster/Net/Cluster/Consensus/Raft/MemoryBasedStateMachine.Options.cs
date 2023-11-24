@@ -129,15 +129,5 @@ public partial class MemoryBasedStateMachine
             get;
             set;
         }
-
-        /// <summary>
-        /// Gets or sets the counter used to measure the number of squashed log entries.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public IncrementingEventCounter? CompactionCounter
-        {
-            get;
-            set;
-        }
     }
 }

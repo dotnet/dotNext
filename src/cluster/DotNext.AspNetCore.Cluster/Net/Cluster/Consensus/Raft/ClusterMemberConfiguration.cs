@@ -67,16 +67,6 @@ public class ClusterMemberConfiguration : IClusterMemberConfiguration
     ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;
 
     /// <summary>
-    /// Indicates that each part of cluster in partitioned network allow to elect its own leader.
-    /// </summary>
-    /// <remarks>
-    /// <see langword="false"/> value allows to build CA distributed cluster
-    /// while <see langword="true"/> value allows to build CP/AP distributed cluster.
-    /// </remarks>
-    [Obsolete("This property is no longer supported.", error: true)]
-    public bool Partitioning { get; set; }
-
-    /// <summary>
     /// Gets metadata associated with local cluster member.
     /// </summary>
     public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();

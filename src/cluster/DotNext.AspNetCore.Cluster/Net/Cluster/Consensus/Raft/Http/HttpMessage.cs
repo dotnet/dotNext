@@ -106,7 +106,7 @@ internal abstract class HttpMessage
         {
             foreach (var header in values)
             {
-                if (parser(header, out var result))
+                if (header is not null && parser(header, out var result))
                     return result;
             }
         }

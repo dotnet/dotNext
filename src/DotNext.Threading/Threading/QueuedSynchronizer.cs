@@ -27,7 +27,6 @@ public class QueuedSynchronizer : Disposable
     private static readonly Counter<int> SuspendedCallersMeter;
     private static readonly Histogram<double> LockDurationMeter;
 
-    private readonly Action<double>? contentionCounter, lockDurationCounter;
     private readonly TagList measurementTags;
     private readonly TaskCompletionSource disposeTask;
     private CallerInformationStorage? callerInfo;
@@ -132,31 +131,12 @@ public class QueuedSynchronizer : Disposable
     public IReadOnlyList<object?> GetSuspendedCallers()
         => callerInfo is null ? Array.Empty<object?>() : GetSuspendedCallersCore();
 
-    /// <summary>
-    /// Sets counter for lock contention.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public IncrementingEventCounter? LockContentionCounter
-    {
-        init => contentionCounter = value is not null ? value.Increment : null;
-    }
-
-    /// <summary>
-    /// Sets counter of lock duration, in milliseconds.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public EventCounter? LockDurationCounter
-    {
-        init => lockDurationCounter = value is not null ? value.WriteMetric : null;
-    }
-
     private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
         => waitQueue.Remove(node);
 
     private protected void EnqueueNode(WaitNode node)
     {
         waitQueue.Add(node);
-        contentionCounter?.Invoke(1D);
         SuspendedCallersMeter.Add(1, measurementTags);
     }
 
@@ -530,9 +510,7 @@ public class QueuedSynchronizer : Disposable
             // report lock duration
             if (node.owner.TryGetTarget(out var owner))
             {
-                var duration = node.createdAt.ElapsedMilliseconds;
-                owner.lockDurationCounter?.Invoke(duration);
-                LockDurationMeter.Record(duration, owner.measurementTags);
+                LockDurationMeter.Record(node.createdAt.ElapsedMilliseconds, owner.measurementTags);
             }
 
             node.OnConsumed?.Invoke(node);

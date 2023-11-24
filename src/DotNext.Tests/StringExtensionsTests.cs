@@ -3,15 +3,6 @@
 public sealed class StringExtensionsTests : Test
 {
     [Fact]
-    [Obsolete]
-    public static void IfNullOrEmptyTest()
-    {
-        Equal("a", "".IfNullOrEmpty("a"));
-        Equal("a", default(string).IfNullOrEmpty("a"));
-        Equal("b", "b".IfNullOrEmpty("a"));
-    }
-
-    [Fact]
     public static void ReverseTest()
     {
         Equal("cba", "abc".Reverse());

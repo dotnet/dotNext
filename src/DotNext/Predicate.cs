@@ -73,28 +73,6 @@ public static class Predicate
     }
 
     /// <summary>
-    /// Returns a predicate which always returns <see langword="true"/>.
-    /// </summary>
-    /// <typeparam name="T">Type of predicate argument.</typeparam>
-    /// <returns>A predicate which always returns <see langword="true"/>.</returns>
-    /// <remarks>
-    /// This method returns the same instance of predicate on every call.
-    /// </remarks>
-    [Obsolete("Use Constant method instead.")]
-    public static Predicate<T> True<T>() => Constant<T>(value: true);
-
-    /// <summary>
-    /// Returns a predicate which always returns <see langword="false"/>.
-    /// </summary>
-    /// <typeparam name="T">Type of predicate argument.</typeparam>
-    /// <returns>A predicate which always returns <see langword="false"/>.</returns>
-    /// <remarks>
-    /// This method returns the same instance of predicate on every call.
-    /// </remarks>
-    [Obsolete("Use Constant method instead.")]
-    public static Predicate<T> False<T>() => Constant<T>(value: false);
-
-    /// <summary>
     /// Represents predicate as type <see cref="Func{T,Boolean}"/>.
     /// </summary>
     /// <param name="predicate">A predicate to convert.</param>

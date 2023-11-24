@@ -36,16 +36,9 @@ public readonly record struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TVa
     internal int ValueIndex => valueIndex - 1;
 
     /// <summary>
-    /// Allocates a new data slot.
-    /// </summary>
-    /// <returns>Allocated data slot.</returns>
-    [Obsolete("Use public constructor to allocate the slot")]
-    public static UserDataSlot<TValue> Allocate() => new();
-
-    /// <summary>
     /// Gets a value indicating that this object was constructed using <see cref="UserDataSlot{TValue}()"/> constructor.
     /// </summary>
-    public bool IsAllocated => valueIndex != 0;
+    public bool IsAllocated => valueIndex is not 0;
 
     /// <summary>
     /// Gets textual representation of this data slot

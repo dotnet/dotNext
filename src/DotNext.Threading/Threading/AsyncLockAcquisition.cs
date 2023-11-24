@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
@@ -8,10 +7,8 @@ namespace DotNext.Threading;
 /// </summary>
 public static class AsyncLockAcquisition
 {
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = new();
 
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -126,79 +123,4 @@ public static class AsyncLockAcquisition
     /// <returns>The acquired lock holder.</returns>
     public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token)
         where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(token);
-
-    /// <summary>
-    /// Suspends <see cref="ObjectDisposedException"/> if the target lock
-    /// has been disposed.
-    /// </summary>
-    /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
-    /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
-    /// to avoid <see cref="ObjectDisposedException"/> if the lock is already disposed
-    /// at the time of the call. If the lock is disposed then this method returns empty <see cref="AsyncLock.Holder"/>.
-    /// </remarks>
-    /// <param name="result">The result of the lock acquisition.</param>
-    /// <returns>The task representing the lock acquisition.</returns>
-    [Obsolete("Catch exception manually instead.")]
-    public static async ValueTask<AsyncLock.Holder> SuppressDisposedState(this ValueTask<AsyncLock.Holder> result)
-    {
-        try
-        {
-            return await result.ConfigureAwait(false);
-        }
-        catch (ObjectDisposedException)
-        {
-            return default;
-        }
-    }
-
-    /// <summary>
-    /// Suspends cancellation of lock acquisition and converts the canceled operation result
-    /// into unsuccessfully acquired lock.
-    /// </summary>
-    /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
-    /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
-    /// to avoid <see cref="OperationCanceledException"/> if the lock acquisition is already canceled
-    /// at the time of the call. If the acqusition is canceled then this method returns empty <see cref="AsyncLock.Holder"/>.
-    /// </remarks>
-    /// <param name="result">The result of the lock acquisition.</param>
-    /// <returns>The task representing the lock acquisition.</returns>
-    [Obsolete("Catch exception manually instead.")]
-    public static async ValueTask<AsyncLock.Holder> SuppressCancellation(this ValueTask<AsyncLock.Holder> result)
-    {
-        try
-        {
-            return await result.ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            return default;
-        }
-    }
-
-    /// <summary>
-    /// Suspends cancellation of lock acquisition or <see cref="ObjectDisposedException"/> if the target lock
-    /// has been disposed.
-    /// </summary>
-    /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
-    /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
-    /// to replace <see cref="OperationCanceledException"/> or <see cref="OperationCanceledException"/>
-    /// with empty <see cref="AsyncLock.Holder"/>.
-    /// </remarks>
-    /// <param name="result">The result of the lock acquisition.</param>
-    /// <returns>The task representing the lock acquisition.</returns>
-    [Obsolete("Catch exception manually instead.")]
-    public static async ValueTask<AsyncLock.Holder> SuppressDisposedStateOrCancellation(this ValueTask<AsyncLock.Holder> result)
-    {
-        try
-        {
-            return await result.ConfigureAwait(false);
-        }
-        catch (Exception e) when (e is OperationCanceledException or ObjectDisposedException)
-        {
-            return default;
-        }
-    }
 }

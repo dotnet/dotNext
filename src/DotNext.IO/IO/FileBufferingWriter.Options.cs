@@ -201,16 +201,6 @@ public partial class FileBufferingWriter
         }
 
         /// <summary>
-        /// Gets or sets the counter used to report allocation of the internal buffer.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public EventCounter? AllocationCounter
-        {
-            get;
-            init;
-        }
-
-        /// <summary>
         /// Sets a list of tags to be associated with each measurement.
         /// </summary>
         [CLSCompliant(false)]

@@ -29,12 +29,6 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
     /// <summary>
-    /// Establishes metrics collector.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    MetricsCollector Metrics { init; }
-
-    /// <summary>
     /// Defines persistent state for the Raft-based cluster.
     /// </summary>
     new IPersistentState AuditTrail { get; set; }

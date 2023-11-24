@@ -45,7 +45,7 @@ public interface IUnmanagedArray<T> : IUnmanagedMemory, IEnumerable<T>, ICloneab
     /// </summary>
     /// <returns>The array allocated in managed heap containing copied elements from unmanaged memory.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    T[] ToArray() => Pointer.ToArray(Length);
+    T[] ToArray() => Pointer.ToArray((uint)Length);
 
     /// <inheritdoc/>
     T[] ISupplier<T[]>.Invoke() => ToArray();

@@ -10,23 +10,6 @@ namespace DotNext;
 public static class StringExtensions
 {
     /// <summary>
-    /// Returns alternative string if first string argument
-    /// is <see langword="null"/> or empty.
-    /// </summary>
-    /// <example>
-    /// This method is equivalent to the following code:
-    /// <code>
-    /// var result = string.IsNullOrEmpty(str) ? alt : str;
-    /// </code>
-    /// </example>
-    /// <param name="str">A string to check.</param>
-    /// <param name="alt">Alternative string to be returned if original string is <see langword="null"/> or empty.</param>
-    /// <returns>Original or alternative string.</returns>
-    [Obsolete("This method is easily replaceable with pattern matching: expression is { Length: > 0 } str ? str : alt")]
-    public static string IfNullOrEmpty(this string? str, string alt)
-        => str is { Length: > 0 } ? str : alt;
-
-    /// <summary>
     /// Reverse string characters.
     /// </summary>
     /// <param name="str">The string to reverse.</param>
