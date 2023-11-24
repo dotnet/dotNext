@@ -22,7 +22,12 @@ public partial class PersistentState
     // Compaction lock  - disallow reads, allow writes (to the end of the log), disallow compaction
     // Exclusive lock   - disallow everything
     // Write lock + Compaction lock = exclusive lock
-    internal sealed class LockManager : QueuedSynchronizer<LockType>
+#if DEBUG
+    internal
+#else
+    private protected
+#endif
+    sealed class LockManager : QueuedSynchronizer<LockType>
     {
         private readonly uint maxReadCount;
         private uint readerCount;
