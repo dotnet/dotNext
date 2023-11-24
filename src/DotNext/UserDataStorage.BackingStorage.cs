@@ -21,8 +21,7 @@ public partial struct UserDataStorage
 
                 for (var i = 0; i < array.Length; i++)
                 {
-                    var value = (array.GetValue(i) as ISupplier<object?>)?.Invoke();
-                    if (value is not null)
+                    if ((array.GetValue(i) as ISupplier<object?>)?.Invoke() is { } value)
                         output[UserDataSlot.ToString(typeIndex, i + 1)] = value;
                 }
             }

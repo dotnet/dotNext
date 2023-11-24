@@ -71,6 +71,8 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
             timedOut = false;
             tracker = Track(timeout, token);
         }
+
+        FollowerState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
 
     internal bool IsExpired => timedOut;

@@ -234,3 +234,12 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         base.Dispose(disposing);
     }
 }
+
+file static class MemoryMappedViewAccessorExtensions
+{
+    internal static void ReleasePointerAndDispose(this MemoryMappedViewAccessor accessor)
+    {
+        accessor.SafeMemoryMappedViewHandle.ReleasePointer();
+        accessor.Dispose();
+    }
+}

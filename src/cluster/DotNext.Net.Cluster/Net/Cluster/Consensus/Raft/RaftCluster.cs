@@ -498,7 +498,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 var newState = new FollowerState<TMember>(this);
                 await UpdateStateAsync(newState).ConfigureAwait(false);
                 newState.StartServing(ElectionTimeout, LifecycleToken);
-                FollowerState.TransitionRateMeter.Add(1, in measurementTags);
                 break;
         }
 
@@ -1009,7 +1008,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                     // vote for self
                     newState.StartVoting(ElectionTimeout, auditTrail);
-                    CandidateState.TransitionRateMeter.Add(1, in measurementTags);
                     Logger.TransitionToCandidateStateCompleted(Term);
                 }
                 else
@@ -1072,7 +1070,6 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
                 newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
 
-                LeaderState.TransitionRateMeter.Add(1, in measurementTags);
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
             }
         }

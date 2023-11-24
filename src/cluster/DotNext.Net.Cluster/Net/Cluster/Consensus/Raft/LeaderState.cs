@@ -265,6 +265,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
 
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, members, token);
+        LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
 
     protected override async ValueTask DisposeAsyncCore()
@@ -313,7 +314,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     }
 }
 
-internal static class LeaderState
+file static class LeaderState
 {
     internal static readonly Histogram<double> BroadcastTimeMeter = Metrics.Instrumentation.ServerSide.CreateHistogram<double>("broadcast-time", unit: "ms", description: "Heartbeat Broadcasting Time");
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-leader-count", description: "Number of Transitions of Leader State");

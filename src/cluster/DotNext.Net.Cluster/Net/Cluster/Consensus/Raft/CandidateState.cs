@@ -131,6 +131,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     /// <param name="auditTrail">The local transaction log.</param>
     internal void StartVoting(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
+        CandidateState.TransitionRateMeter.Add(1, in MeasurementTags);
         Logger.VotingStarted(timeout, Term);
         votingTask = VoteAsync(timeout, auditTrail);
     }
@@ -163,7 +164,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     }
 }
 
-internal static class CandidateState
+file static class CandidateState
 {
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-candidate-count", description: "Number of Transitions to Candidate State");
 }

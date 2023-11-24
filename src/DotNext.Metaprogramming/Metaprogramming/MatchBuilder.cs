@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -627,4 +628,11 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
         private protected override MatchBuilder Build(MatchBuilder builder, Action<ParameterExpression> scope)
             => builder.MatchByType(expectedType, condition, new CaseStatementBuilder(this, scope));
     }
+}
+
+file static class ExpressionHelpers
+{
+    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1313", Justification = "Underscore is used to indicate that the parameter is unused")]
+    internal static Expression TrivialCaseStatement(this Expression value, ParameterExpression _)
+        => value;
 }

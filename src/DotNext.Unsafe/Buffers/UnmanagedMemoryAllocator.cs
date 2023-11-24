@@ -32,7 +32,7 @@ public static class UnmanagedMemoryAllocator
         => zeroMem ? UnmanagedMemoryAllocator<T>.ZeroedAllocator : UnmanagedMemoryAllocator<T>.Allocator;
 }
 
-internal static class UnmanagedMemoryAllocator<T>
+file static class UnmanagedMemoryAllocator<T>
     where T : unmanaged
 {
     internal static readonly MemoryAllocator<T> Allocator, ZeroedAllocator;
