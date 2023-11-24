@@ -16,7 +16,7 @@ public static partial class DelegateHelpers
             MethodCallExpression expr => expr.Method,
             MemberExpression { Member: PropertyInfo { CanRead: true } property } => property.GetMethod!,
             BinaryExpression { Method: not null } expr => expr.Method,
-            IndexExpression { Indexer: { CanRead: true } } expr => expr.Indexer.GetMethod!,
+            IndexExpression { Indexer.CanRead: true } expr => expr.Indexer.GetMethod!,
             UnaryExpression { Method: not null } expr => expr.Method,
             _ => throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(expression))
         };
