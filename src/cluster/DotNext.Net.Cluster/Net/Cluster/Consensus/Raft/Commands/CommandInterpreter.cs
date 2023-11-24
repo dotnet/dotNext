@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -88,7 +89,7 @@ public partial class CommandInterpreter : Disposable
     private CommandInterpreter(IDictionary<int, CommandHandler> interpreters, IDictionary<Type, int> identifiers, int? snapshotCommandId)
     {
         this.interpreters = CreateRegistry(interpreters);
-        this.identifiers = new Dictionary<Type, int>(identifiers); // TODO: Migrate to FrozenDictionary in .NET 8
+        this.identifiers = identifiers.ToFrozenDictionary();
         this.snapshotCommandId = snapshotCommandId;
     }
 
@@ -100,10 +101,10 @@ public partial class CommandInterpreter : Disposable
     /// <typeparam name="TCommand">The type of the command.</typeparam>
     /// <returns>The instance of the log entry containing the command.</returns>
     /// <exception cref="GenericArgumentException"><typeparamref name="TCommand"/> is not registered with <see cref="CommandAttribute{TCommand}"/>.</exception>
-    public LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
+    public RaftLogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
         where TCommand : notnull, ISerializable<TCommand>
         => identifiers.TryGetValue(typeof(TCommand), out var id) ?
-            new LogEntry<TCommand>(term, command, id) :
+            new RaftLogEntry<TCommand>(term, command, id) :
             throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandId, nameof(command));
 
     private bool TryGetCommandId<TEntry>(ref TEntry entry, out int commandId)

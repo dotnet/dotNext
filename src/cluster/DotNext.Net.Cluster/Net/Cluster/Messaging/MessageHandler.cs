@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -150,9 +151,8 @@ public partial class MessageHandler : IInputChannel
 
     private MessageHandler(IDictionary<string, RpcHandler> rpcHandlers, IDictionary<string, SignalHandler> signalHandlers)
     {
-        // TODO: Migrate to FrozenDictionary in .NET 8
-        this.rpcHandlers = new Dictionary<string, RpcHandler>(rpcHandlers, NameComparer);
-        this.signalHandlers = new Dictionary<string, SignalHandler>(signalHandlers, NameComparer);
+        this.rpcHandlers = rpcHandlers.ToFrozenDictionary(NameComparer);
+        this.signalHandlers = signalHandlers.ToFrozenDictionary(NameComparer);
     }
 
     /// <inheritdoc/>

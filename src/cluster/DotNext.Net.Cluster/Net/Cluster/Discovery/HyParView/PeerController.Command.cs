@@ -35,7 +35,7 @@ public partial class PeerController
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Command
     {
-        internal CommandType Type { get; private init; } // TODO: Change to required in C# 11
+        required internal CommandType Type { get; init; }
 
         [DisallowNull]
         private EndPoint? Address1 { get; init; }

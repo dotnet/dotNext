@@ -166,7 +166,7 @@ public sealed class CommandInterpreterTests : Test
 
         internal int Value => interpreter.Value;
 
-        internal LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
+        internal RaftLogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
             where TCommand : struct, ISerializable<TCommand>
             => interpreter.CreateLogEntry(command, Term);
 

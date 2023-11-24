@@ -23,7 +23,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     /// <summary>
     /// Represents JSON serializable object.
     /// </summary>
-    public T Value; // TODO: Change to required in C# 11
+    required public T Value;
 
     /// <inheritdoc />
     readonly T ISupplier<T>.Invoke() => Value;

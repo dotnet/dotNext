@@ -10,10 +10,10 @@ using Runtime.Serialization;
 /// </summary>
 /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct LogEntry<TCommand> : IRaftLogEntry // TODO: Rename to RaftLogEntry
+public readonly struct RaftLogEntry<TCommand> : IRaftLogEntry
     where TCommand : notnull, ISerializable<TCommand>
 {
-    internal LogEntry(long term, TCommand command, int id)
+    internal RaftLogEntry(long term, TCommand command, int id)
     {
         Term = term;
         Timestamp = DateTimeOffset.UtcNow;

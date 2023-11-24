@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -62,7 +63,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         }
     }
 
-    private readonly IReadOnlyDictionary<string, string> metadata;
+    private readonly FrozenDictionary<string, string> metadata;
     private readonly Func<ILocalMember, EndPoint, RaftClusterMember> clientFactory;
     private readonly Func<ILocalMember, IServer> serverFactory;
     private readonly MemoryAllocator<byte>? allocator;
@@ -82,7 +83,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     public RaftCluster(NodeConfiguration configuration)
         : base(configuration, GetMeasurementTags(configuration))
     {
-        metadata = new Dictionary<string, string>(configuration.Metadata, StringComparer.Ordinal); // TODO: Migrate to FrozenDictionary in .NET 8
+        metadata = configuration.Metadata.ToFrozenDictionary(StringComparer.Ordinal);
         clientFactory = configuration.CreateClient;
         serverFactory = configuration.CreateServer;
         localMemberId = ClusterMemberId.FromEndPoint(LocalMemberAddress = configuration.PublicEndPoint);
