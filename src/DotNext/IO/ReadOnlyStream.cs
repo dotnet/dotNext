@@ -2,8 +2,6 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO;
 
-using static Threading.AsyncDelegate;
-
 internal abstract class ReadOnlyStream : Stream, IFlushable
 {
     public sealed override bool CanRead => true;
@@ -60,15 +58,9 @@ internal abstract class ReadOnlyStream : Stream, IFlushable
         => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
 
     public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => new Func<object?, int>(_ => Read(buffer, offset, count)).BeginInvoke(state, callback);
+        => TaskToAsyncResult.Begin(ReadAsync(buffer, offset, count), callback, state);
 
-    private static int EndRead(Task<int> task)
-    {
-        using (task)
-            return task.Result;
-    }
-
-    public sealed override int EndRead(IAsyncResult ar) => EndRead((Task<int>)ar);
+    public sealed override int EndRead(IAsyncResult ar) => TaskToAsyncResult.End<int>(ar);
 
     public sealed override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 

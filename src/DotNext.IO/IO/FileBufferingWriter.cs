@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO;
 
 using Buffers;
-using static Threading.AsyncDelegate;
 
 /// <summary>
 /// Represents builder of contiguous block of memory that may
@@ -479,45 +478,10 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
     /// <inheritdoc/>
     public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-    {
-        Task task;
-
-        if (fileProvider.IsAsynchronous)
-        {
-            task = WriteAsync(buffer, offset, count, CancellationToken.None);
-
-            // attach state only if it's necessary
-            if (state is not null)
-                task = task.ContinueWith(static (task, state) => task.ConfigureAwait(false).GetAwaiter().GetResult(), state, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
-
-            if (callback is not null)
-            {
-                if (task.IsCompleted)
-                    callback(task);
-                else
-                    task.ConfigureAwait(false).GetAwaiter().OnCompleted(() => callback(task));
-            }
-        }
-        else
-        {
-            // start synchronous write as separated task
-            task = new Action<object?>(_ => Write(buffer, offset, count)).BeginInvoke(state, callback);
-        }
-
-        return task;
-    }
-
-    private static void EndWrite(Task task)
-    {
-        using (task)
-        {
-            task.Wait();
-        }
-    }
+        => TaskToAsyncResult.Begin(WriteAsync(buffer, offset, count), callback, state);
 
     /// <inheritdoc/>
-    public override void EndWrite(IAsyncResult ar)
-        => EndWrite((Task)ar);
+    public override void EndWrite(IAsyncResult ar) => TaskToAsyncResult.End(ar);
 
     /// <inheritdoc/>
     public override void Flush() => Flush(flushToDisk: false);
