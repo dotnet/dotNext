@@ -87,7 +87,7 @@ public partial class RaftCluster<TMember>
 
     private IMemberList members;
     private InvocationList<Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>> memberAddedHandlers, memberRemovedHandlers;
-    private AtomicBoolean membershipState;
+    private Atomic.Boolean membershipState;
 
     /// <summary>
     /// Gets the member by its identifier.

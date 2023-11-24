@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
@@ -72,7 +73,7 @@ public partial class PeerController
         }
 
         internal static Command Neighbor(EndPoint sender, bool highPriority)
-            => new() { Type = CommandType.Neighbor, Address1 = sender, Int32Param = highPriority.ToInt32() };
+            => new() { Type = CommandType.Neighbor, Address1 = sender, Int32Param = Unsafe.BitCast<bool, byte>(highPriority) };
 
         internal void Neighbor(out EndPoint sender, out bool highPriority)
         {
@@ -80,11 +81,11 @@ public partial class PeerController
             Debug.Assert(Address1 is not null);
 
             sender = Address1;
-            highPriority = Int32Param.ToBoolean();
+            highPriority = Unsafe.BitCast<byte, bool>((byte)Int32Param);
         }
 
         internal static Command Disconnect(EndPoint sender, bool isAlive)
-            => new() { Type = CommandType.Disconnect, Address1 = sender, Int32Param = isAlive.ToInt32() };
+            => new() { Type = CommandType.Disconnect, Address1 = sender, Int32Param = Unsafe.BitCast<bool, byte>(isAlive) };
 
         internal void Disconnect(out EndPoint sender, out bool isAlive)
         {
@@ -92,7 +93,7 @@ public partial class PeerController
             Debug.Assert(Address1 is not null);
 
             sender = Address1;
-            isAlive = Int32Param.ToBoolean();
+            isAlive = Unsafe.BitCast<byte, bool>((byte)Int32Param);
         }
 
         internal static Command Shuffle(EndPoint sender, EndPoint origin, IReadOnlyCollection<EndPoint> peers, int ttl)

@@ -88,7 +88,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         }
 
         bool ISupplier<bool>.Invoke()
-            => index <= state.commitIndex.VolatileRead();
+            => index <= Volatile.Read(in state.commitIndex);
     }
 
     private readonly AsyncReaderWriterLock syncRoot = new();
@@ -99,16 +99,20 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     private volatile BoxedClusterMemberId? lastVote;
     private volatile long[] log = [];    // log of uncommitted entries
 
-    /// <inheritdoc/>
-    long IPersistentState.Term => term.VolatileRead();
+    /// <inheritdoc cref="IPersistentState.Term"/>
+    public long Term
+    {
+        get => Volatile.Read(in term);
+        private set => Volatile.Write(ref term, value);
+    }
 
     /// <inheritdoc/>
     bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
 
     private void Append(long[] terms, long startIndex)
     {
-        log = Concat(log, terms, startIndex - Volatile.Read(in commitIndex) - 1L);
-        Volatile.Write(ref index, startIndex + terms.LongLength - 1L);
+        log = Concat(log, terms, startIndex - LastCommittedEntryIndex - 1L);
+        LastEntryIndex = startIndex + terms.LongLength - 1L;
 
         static long[] Concat(long[] left, long[] right, long startIndex)
         {
@@ -130,10 +134,10 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
         if (skipCommitted)
         {
-            skip = Math.Max(0, commitIndex.VolatileRead() - startIndex.GetValueOrDefault() + 1L);
+            skip = Math.Max(0, LastCommittedEntryIndex - startIndex.GetValueOrDefault() + 1L);
             startIndex += skip;
         }
-        else if (startIndex.GetValueOrDefault() <= commitIndex.VolatileRead())
+        else if (startIndex.GetValueOrDefault() <= LastCommittedEntryIndex)
         {
             throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
         }
@@ -188,19 +192,18 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     {
         using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
         {
-            if (startIndex <= commitIndex.VolatileRead())
+            if (startIndex <= LastCommittedEntryIndex)
             {
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             }
             else if (entry.IsSnapshot)
             {
-                lastTerm.VolatileWrite(entry.Term);
-                commitIndex.VolatileWrite(startIndex);
-                index.VolatileWrite(startIndex);
-                log = Array.Empty<long>();
+                Volatile.Write(ref lastTerm, entry.Term);
+                LastCommittedEntryIndex = LastEntryIndex = startIndex;
+                log = [];
                 commitEvent.Signal(resumeAll: true);
             }
-            else if (startIndex > index.VolatileRead() + 1L)
+            else if (startIndex > LastEntryIndex + 1L)
             {
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
@@ -224,12 +227,12 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         long count;
         using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
         {
-            var startIndex = commitIndex.VolatileRead() + 1L;
-            count = (endIndex ?? index.VolatileRead()) - startIndex + 1L;
+            var startIndex = LastCommittedEntryIndex + 1L;
+            count = (endIndex ?? LastEntryIndex) - startIndex + 1L;
             if (count > 0)
             {
-                commitIndex.VolatileWrite(startIndex + count - 1);
-                lastTerm.VolatileWrite(log[count - 1]);
+                LastCommittedEntryIndex = startIndex + count - 1;
+                Volatile.Write(ref lastTerm, log[count - 1]);
 
                 // count indicates how many elements should be removed from log
                 log = log[(int)count..];
@@ -254,10 +257,10 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         long count;
         using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
         {
-            if (startIndex <= Volatile.Read(in commitIndex))
+            if (startIndex <= LastCommittedEntryIndex)
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-            count = Volatile.Read(in index) - startIndex + 1L;
-            Volatile.Write(ref index, startIndex - 1L);
+            count = LastEntryIndex - startIndex + 1L;
+            LastEntryIndex = startIndex - 1L;
             log = log[0..^(int)count];
         }
 
@@ -267,18 +270,26 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <summary>
     /// Gets the index of the last committed log entry.
     /// </summary>
-    public long LastCommittedEntryIndex => commitIndex.VolatileRead();
+    public long LastCommittedEntryIndex
+    {
+        get => Volatile.Read(in commitIndex);
+        private set => Volatile.Write(ref commitIndex, value);
+    }
 
     /// <summary>
     /// Gets the index of the last uncommitted log entry.
     /// </summary>
-    public long LastEntryIndex => index.VolatileRead();
+    public long LastEntryIndex
+    {
+        get => Volatile.Read(in index);
+        private set => Volatile.Write(ref index, value);
+    }
 
     /// <inheritdoc/>
     ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
     {
         lastVote = BoxedClusterMemberId.Box(member);
-        return new(term.IncrementAndGet());
+        return new(Interlocked.Increment(ref term));
     }
 
     /// <inheritdoc/>
@@ -290,12 +301,12 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
 
     private ValueTask<TResult> ReadCoreAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
     {
-        if (endIndex > index.VolatileRead())
+        if (endIndex > LastEntryIndex)
             return ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
 
-        var commitIndex = this.commitIndex.VolatileRead();
+        var commitIndex = LastCommittedEntryIndex;
         var offset = startIndex - commitIndex - 1L;
-        return reader.ReadAsync<EmptyLogEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, lastTerm.VolatileRead()), offset >= 0 ? null : new long?(commitIndex), token);
+        return reader.ReadAsync<EmptyLogEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, Volatile.Read(in lastTerm)), offset >= 0 ? null : new long?(commitIndex), token);
     }
 
     /// <summary>
@@ -332,13 +343,13 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         if (startIndex < 0L)
             throw new ArgumentOutOfRangeException(nameof(startIndex));
         using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
-            return await ReadCoreAsync(reader, startIndex, index.VolatileRead(), token).ConfigureAwait(false);
+            return await ReadCoreAsync(reader, startIndex, LastEntryIndex, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     ValueTask IPersistentState.UpdateTermAsync(long value, bool resetLastVote)
     {
-        term.VolatileWrite(value);
+        Term = value;
         if (resetLastVote)
             lastVote = null;
 
@@ -364,7 +375,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]
     async ValueTask IPersistentState.EnsureConsistencyAsync(CancellationToken token)
     {
-        while (term.VolatileRead() != lastTerm.VolatileRead())
+        while (Term != Volatile.Read(in lastTerm))
             await commitEvent.WaitAsync(token).ConfigureAwait(false);
     }
 

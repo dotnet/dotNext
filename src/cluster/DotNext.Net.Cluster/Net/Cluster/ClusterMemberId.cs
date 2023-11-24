@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Connections;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -50,7 +51,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         var writer = new SpanWriter<byte>(stackalloc byte[16]);
         writer.WriteLittleEndian(FNV1a64.Hash<char>(endPoint.Host));
-        writer.Add(endPoint.IsSecure.ToByte());
+        writer.Add(Unsafe.BitCast<bool, byte>(endPoint.IsSecure));
         address = new(writer.Span);
 
         lengthAndPort = Combine(endPoint.Host.Length, endPoint.Port);

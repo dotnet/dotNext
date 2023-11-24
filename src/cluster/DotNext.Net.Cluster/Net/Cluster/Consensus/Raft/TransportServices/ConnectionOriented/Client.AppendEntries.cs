@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
@@ -67,7 +68,7 @@ internal partial class Client : RaftClusterMember
 
             var writer = protocol.BeginRequestMessage(MessageType.AppendEntries);
             AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
-            writer.Add(applyConfig.ToByte());
+            writer.Add(Unsafe.BitCast<bool, byte>(applyConfig));
             writer.WriteLittleEndian(config.Fingerprint);
             writer.WriteLittleEndian(config.Length);
             return writer.WrittenCount;

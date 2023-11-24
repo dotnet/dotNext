@@ -5,6 +5,8 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.Caching;
 
+using Atomic = Threading.Atomic;
+
 public partial class ConcurrentCache<TKey, TValue>
 {
     private class KeyValuePair
@@ -91,18 +93,18 @@ public partial class ConcurrentCache<TKey, TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static TValue GetValue(KeyValuePair pair)
     {
-        Debug.Assert(Intrinsics.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
+        Debug.Assert(Atomic.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
-        return Intrinsics.IsAtomic<TValue>() ? Unsafe.As<KeyValuePairAtomicAccess>(pair).Value : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
+        return Atomic.IsAtomic<TValue>() ? Unsafe.As<KeyValuePairAtomicAccess>(pair).Value : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
     }
 
     // devirtualize Value setter manually (JIT will replace this method with one of the actual branches)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SetValue(KeyValuePair pair, TValue value)
     {
-        Debug.Assert(Intrinsics.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
+        Debug.Assert(Atomic.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
-        if (Intrinsics.IsAtomic<TValue>())
+        if (Atomic.IsAtomic<TValue>())
             Unsafe.As<KeyValuePairAtomicAccess>(pair).Value = value;
         else
             Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value = value;
@@ -201,7 +203,7 @@ public partial class ConcurrentCache<TKey, TValue>
             }
 
             previous = default;
-            pair = Intrinsics.IsAtomic<TValue>()
+            pair = Atomic.IsAtomic<TValue>()
                 ? new KeyValuePairAtomicAccess(key, value, hashCode)
                 : new KeyValuePairNonAtomicAccess(key, value, hashCode);
             pair.Next = bucket;

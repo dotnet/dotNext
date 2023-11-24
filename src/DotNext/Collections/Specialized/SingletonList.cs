@@ -127,7 +127,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
     readonly void ICollection<T>.Add(T item) => throw new NotSupportedException();
 
     /// <inheritdoc />
-    readonly int IList<T>.IndexOf(T item) => EqualityComparer<T>.Default.Equals(Item, item).ToInt32() - 1;
+    readonly int IList<T>.IndexOf(T item) => Unsafe.BitCast<bool, byte>(EqualityComparer<T>.Default.Equals(Item, item)) - 1;
 
     /// <inheritdoc />
     readonly void IList<T>.Insert(int index, T item) => throw new NotSupportedException();

@@ -399,17 +399,6 @@ public static class Intrinsics
         => Unsafe.SizeOf<AlignmentHelperType<T>>() - Unsafe.SizeOf<T>();
 
     /// <summary>
-    /// Determines that the write to the location in the memory of
-    /// type <typeparamref name="T"/> is atomic.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be written.</typeparam>
-    /// <returns><see langword="true"/> if write is atomic; otherwise, <see langword="false"/>.</returns>
-    /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAtomic<T>()
-        => AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= UIntPtr.Size;
-
-    /// <summary>
     /// Determines whether the two types are binary compatible, i.e. both types have the same
     /// size and memory alignment.
     /// </summary>

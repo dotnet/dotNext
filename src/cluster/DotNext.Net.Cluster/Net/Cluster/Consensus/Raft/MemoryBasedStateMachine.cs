@@ -8,7 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Runtime.CompilerServices;
-using static Threading.AtomicInt64;
 
 /// <summary>
 /// Represents memory-based state machine with snapshotting support.
@@ -85,7 +84,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     {
     }
 
-    private protected sealed override long LastTerm => lastTerm.VolatileRead();
+    private protected sealed override long LastTerm => Volatile.Read(in lastTerm);
 
     /// <summary>
     /// Gets a value indicating that log compaction should
@@ -243,7 +242,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             sessionManager.Return(session);
         }
 
-        lastTerm.VolatileWrite(snapshot.Term);
+        Volatile.Write(ref lastTerm, snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
         await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
         OnCommit(1L);
@@ -696,7 +695,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             {
                 var entry = partition.Read(sessionId, startIndex, out var persisted);
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
-                lastTerm.VolatileWrite(entry.Term);
+                Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
                 if (!persisted)
@@ -739,7 +738,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             {
                 entry = new(in SnapshotInfo) { ContentReader = snapshot[session] };
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
-                lastTerm.VolatileWrite(entry.Term);
+                Volatile.Write(ref lastTerm, entry.Term);
                 startIndex = entry.Index;
             }
             else

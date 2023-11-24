@@ -21,27 +21,20 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     [StructLayout(LayoutKind.Auto)]
     private struct StateManager : ILockManager<DefaultWaitNode>
     {
-        private long state;
+        required internal long Value;
 
-        internal StateManager(long initialValue)
-            => state = initialValue;
+        internal void Increment(long delta) => Value = checked(Value + delta);
 
-        internal readonly long Value => state;
-
-        internal readonly long VolatileRead() => state.VolatileRead();
-
-        internal void Increment(long delta) => state = checked(state + delta);
-
-        internal void Decrement() => state--;
+        internal void Decrement() => Value--;
 
         internal bool TryReset()
         {
-            var result = state > 0L;
-            state = 0L;
+            var result = Value > 0L;
+            Value = 0L;
             return result;
         }
 
-        readonly bool ILockManager.IsLockAllowed => state > 0L;
+        readonly bool ILockManager.IsLockAllowed => Value > 0L;
 
         void ILockManager.AcquireLock() => Decrement();
 
@@ -62,13 +55,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncCounter(long initialValue, int concurrencyLevel)
     {
-        if (initialValue < 0L)
-            throw new ArgumentOutOfRangeException(nameof(initialValue));
+        ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);
+        ArgumentOutOfRangeException.ThrowIfLessThan(concurrencyLevel, 1);
 
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
-
-        manager = new(initialValue);
+        manager = new() { Value = initialValue };
         pool = new(OnCompleted, concurrencyLevel);
     }
 
@@ -79,10 +69,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialValue"/> is less than zero.</exception>
     public AsyncCounter(long initialValue = 0L)
     {
-        if (initialValue < 0L)
-            throw new ArgumentOutOfRangeException(nameof(initialValue));
+        ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);
 
-        manager = new(initialValue);
+        manager = new() { Value = initialValue };
         pool = new(OnCompleted);
     }
 
@@ -98,7 +87,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     }
 
     /// <inheritdoc/>
-    bool IAsyncEvent.IsSet => manager.VolatileRead() > 0L;
+    bool IAsyncEvent.IsSet => Value > 0L;
 
     /// <summary>
     /// Gets the counter value.
@@ -108,7 +97,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
     /// blocking.
     /// </remarks>
-    public long Value => manager.VolatileRead();
+    public long Value => Volatile.Read(in manager.Value);
 
     /// <inheritdoc/>
     bool IAsyncEvent.Reset()

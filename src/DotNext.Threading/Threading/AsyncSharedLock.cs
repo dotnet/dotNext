@@ -38,11 +38,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
 
-        internal readonly long RemainingLocks => remainingLocks.VolatileRead();
+        internal readonly long RemainingLocks => Volatile.Read(in remainingLocks);
 
         internal readonly bool IsWeakLockAllowed => remainingLocks > 0L;
 
-        internal void AcquireWeakLock() => remainingLocks.DecrementAndGet();
+        internal void AcquireWeakLock() => Interlocked.Decrement(ref remainingLocks);
 
         internal void ExitLock()
         {
@@ -64,10 +64,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     private readonly struct WeakLockManager : ILockManager<WaitNode>
     {
         bool ILockManager.IsLockAllowed
-            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(this)).IsWeakLockAllowed;
+            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(in this)).IsWeakLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(this)).AcquireWeakLock();
+            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(in this)).AcquireWeakLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = false;
@@ -77,10 +77,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     private readonly struct StrongLockManager : ILockManager<WaitNode>
     {
         bool ILockManager.IsLockAllowed
-            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(this)).IsStrongLockAllowed;
+            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(in this)).IsStrongLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(this)).AcquireStrongLock();
+            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(in this)).AcquireStrongLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = true;

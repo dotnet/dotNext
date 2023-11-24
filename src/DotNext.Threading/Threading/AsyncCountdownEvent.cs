@@ -95,12 +95,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
     /// </summary>
-    public long InitialCount => manager.Initial.VolatileRead();
+    public long InitialCount => Volatile.Read(in manager.Initial);
 
     /// <summary>
     /// Gets the number of remaining signals required to set the event.
     /// </summary>
-    public long CurrentCount => manager.Current.VolatileRead();
+    public long CurrentCount => Volatile.Read(in manager.Current);
 
     /// <summary>
     /// Indicates whether this event is set.

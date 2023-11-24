@@ -57,7 +57,7 @@ internal static class ProtocolStreamExtensions
     internal static ValueTask WriteBoolAsync(this ProtocolStream protocol, bool value, CancellationToken token)
     {
         protocol.Reset();
-        protocol.RemainingBufferSpan[0] = value.ToByte();
+        protocol.RemainingBufferSpan[0] = Unsafe.BitCast<bool, byte>(value);
         protocol.AdvanceWriteCursor(1);
         return protocol.WriteToTransportAsync(token);
     }
@@ -65,14 +65,14 @@ internal static class ProtocolStreamExtensions
     internal static async ValueTask<bool> ReadBoolAsync(this ProtocolStream protocol, CancellationToken token)
     {
         await protocol.ReadAsync(sizeof(byte), token).ConfigureAwait(false);
-        return BasicExtensions.ToBoolean(protocol.WrittenBufferSpan[0]);
+        return Unsafe.BitCast<byte, bool>(protocol.WrittenBufferSpan[0]);
     }
 
     internal static ValueTask WriteNullableInt64Async(this ProtocolStream protocol, in long? value, CancellationToken token)
     {
         protocol.Reset();
         var writer = new SpanWriter<byte>(protocol.RemainingBufferSpan);
-        writer.Add(value.HasValue.ToByte());
+        writer.Add(Unsafe.BitCast<bool, byte>(value.HasValue));
         writer.WriteLittleEndian(value.GetValueOrDefault());
         protocol.AdvanceWriteCursor(writer.WrittenCount);
         return protocol.WriteToTransportAsync(token);

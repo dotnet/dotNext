@@ -2,30 +2,8 @@
 
 namespace DotNext;
 
-public sealed class ValueTypeTests : Test
+public sealed class BitwiseComparerTests : Test
 {
-    [Fact]
-    public static void BoolToIntConversion()
-    {
-        Equal(1, true.ToInt32());
-        Equal(0, false.ToInt32());
-    }
-
-    [Fact]
-    public static void BoolToByteConversion()
-    {
-        Equal(1, true.ToByte());
-        Equal(0, false.ToByte());
-    }
-
-    [Fact]
-    public static void IntToBoolConversion()
-    {
-        True(1.ToBoolean());
-        True(42.ToBoolean());
-        False(0.ToBoolean());
-    }
-
     [Fact]
     public static void BitwiseEqualityCheck()
     {

@@ -64,9 +64,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             }
         }
 
-        internal readonly long ReadLocks => readLocks.VolatileRead();
+        internal readonly long ReadLocks => Volatile.Read(in readLocks);
 
-        internal readonly ulong Version => version.VolatileRead();
+        internal readonly ulong Version => Volatile.Read(in version);
 
         internal readonly bool IsWriteLockAllowed => writeLock is false && readLocks is 0L;
 
@@ -88,10 +88,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     private readonly struct ReadLockManager : ILockManager<WaitNode>
     {
         bool ILockManager.IsLockAllowed
-            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(this)).IsReadLockAllowed;
+            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(in this)).IsReadLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(this)).AcquireReadLock();
+            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(in this)).AcquireReadLock();
 
         void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Read;

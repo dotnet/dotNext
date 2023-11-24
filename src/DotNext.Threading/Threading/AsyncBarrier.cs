@@ -42,12 +42,12 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <summary>
     /// Gets the number of the barrier's current phase.
     /// </summary>
-    public long CurrentPhaseNumber => currentPhase.VolatileRead();
+    public long CurrentPhaseNumber => Volatile.Read(in currentPhase);
 
     /// <summary>
     /// Gets the total number of participants in the barrier.
     /// </summary>
-    public long ParticipantCount => participants.VolatileRead();
+    public long ParticipantCount => Volatile.Read(in participants);
 
     /// <summary>
     /// Gets the number of participants in the barrier that haven't yet signaled in the current phase.
@@ -80,7 +80,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
                 return CurrentPhaseNumber;
             default:
                 countdown.AddCountAndReset(participantCount);
-                participants.AddAndGet(participantCount);
+                Interlocked.Add(ref participants, participantCount);
                 goto case 0L;
         }
     }
@@ -108,7 +108,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
             throw new ArgumentOutOfRangeException(nameof(participantCount));
 
         countdown.Signal(participantCount);
-        participants.AddAndGet(-participantCount);
+        Interlocked.Add(ref participants, -participantCount);
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
         {
             try
             {
-                await PostPhase(currentPhase.AddAndGet(1L)).ConfigureAwait(false);
+                await PostPhase(Interlocked.Increment(ref currentPhase)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -173,7 +173,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
         {
             try
             {
-                await PostPhase(currentPhase.AddAndGet(1L)).ConfigureAwait(false);
+                await PostPhase(Interlocked.Increment(ref currentPhase)).ConfigureAwait(false);
             }
             catch (Exception e)
             {

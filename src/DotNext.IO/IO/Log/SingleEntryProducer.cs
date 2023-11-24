@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace DotNext.IO.Log;
 
 internal sealed class SingleEntryProducer<TEntry> : ILogEntryProducer<TEntry>
@@ -11,7 +13,7 @@ internal sealed class SingleEntryProducer<TEntry> : ILogEntryProducer<TEntry>
         available = true;
     }
 
-    long ILogEntryProducer<TEntry>.RemainingCount => available.ToInt32();
+    long ILogEntryProducer<TEntry>.RemainingCount => Unsafe.BitCast<bool, byte>(available);
 
     public TEntry Current { get; }
 

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 using Debug = System.Diagnostics.Debug;
 
@@ -18,7 +19,7 @@ internal sealed class SynchronizeExchange : ClientExchange<long?>
         Debug.Assert(headers.Control == FlowControl.Ack);
 
         var reader = new SpanReader<byte>(payload.Span);
-        var hasValue = BasicExtensions.ToBoolean(reader.Read());
+        var hasValue = Unsafe.BitCast<byte, bool>(reader.Read());
         var commitIndex = reader.ReadLittleEndian<long>(isUnsigned: false);
         TrySetResult(hasValue ? commitIndex : null);
         return new(false);
@@ -27,7 +28,7 @@ internal sealed class SynchronizeExchange : ClientExchange<long?>
     internal static int WriteResponse(Span<byte> output, long? commitIndex)
     {
         var writer = new SpanWriter<byte>(output);
-        writer.Add(commitIndex.HasValue.ToByte());
+        writer.Add(Unsafe.BitCast<bool, byte>(commitIndex.HasValue));
         writer.WriteLittleEndian(commitIndex.GetValueOrDefault());
         return writer.WrittenCount;
     }

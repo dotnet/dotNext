@@ -18,7 +18,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     internal sealed class Entry
     {
-        private int state; // volatile
+        private volatile int state;
         internal TValue? Value;
 
         internal int AcquireLock()
@@ -26,14 +26,14 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             int currentState;
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                currentState = state.VolatileRead();
+                currentState = state;
 
-                if (currentState is not LockedState && state.CompareAndSet(currentState, LockedState))
+                if (currentState is not LockedState && Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
                     return currentState;
             }
         }
 
-        internal void ReleaseLock(int newState) => state.VolatileWrite(newState);
+        internal void ReleaseLock(int newState) => state = newState;
 
         internal bool HasValue
         {
@@ -43,7 +43,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
                 for (var spinner = new SpinWait(); ; spinner.SpinOnce())
                 {
-                    currentState = state.VolatileRead();
+                    currentState = state;
 
                     if (currentState is LockedState)
                         continue;
@@ -59,7 +59,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                currentState = state.VolatileRead();
+                currentState = state;
 
                 if (currentState is LockedState)
                     continue;
@@ -67,7 +67,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 if (currentState != expectedState)
                     return false;
 
-                if (state.CompareAndSet(currentState, LockedState))
+                if (Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
                     return true;
             }
         }

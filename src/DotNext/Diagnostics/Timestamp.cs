@@ -4,6 +4,8 @@ using static System.Diagnostics.Stopwatch;
 
 namespace DotNext.Diagnostics;
 
+using Threading;
+
 /// <summary>
 /// Represents timestamp.
 /// </summary>
@@ -15,7 +17,8 @@ public readonly record struct Timestamp :
     IComparable<Timestamp>,
     IComparisonOperators<Timestamp, Timestamp, bool>,
     IAdditionOperators<Timestamp, TimeSpan, Timestamp>,
-    ISubtractionOperators<Timestamp, TimeSpan, Timestamp>
+    ISubtractionOperators<Timestamp, TimeSpan, Timestamp>,
+    IInterlockedOperations<Timestamp>
 {
     private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
     private readonly long ticks;
@@ -228,4 +231,8 @@ public readonly record struct Timestamp :
     /// <param name="location">The location of the timestampt to update.</param>
     public static void Refresh(ref Timestamp location)
         => Volatile.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, GetTimestamp()));
+
+    /// <inheritdoc cref="IInterlockedOperations{T}.CompareExchange(ref T, T, T)"/>
+    public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)
+        => new(Interlocked.CompareExchange(ref Unsafe.AsRef(in location.ticks), value.ticks, comparand.ticks));
 }

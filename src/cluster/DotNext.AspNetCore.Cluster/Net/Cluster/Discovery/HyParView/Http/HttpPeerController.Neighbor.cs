@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Debug = System.Diagnostics.Debug;
 
@@ -37,7 +38,7 @@ internal partial class HttpPeerController
     }
 
     private static (EndPoint, bool) DeserializeNeighborRequest(ref SequenceReader reader)
-        => (reader.ReadEndPoint(), BasicExtensions.ToBoolean(reader.Read<byte>()));
+        => (reader.ReadEndPoint(), reader.Read<bool>());
 
     private static (EndPoint, bool) DeserializeNeighborRequest(ReadOnlyMemory<byte> buffer)
     {
@@ -69,7 +70,7 @@ internal partial class HttpPeerController
         try
         {
             writer.WriteEndPoint(localNode);
-            writer.Add(highPriority.ToByte());
+            writer.Add(Unsafe.BitCast<bool, byte>(highPriority));
 
             if (!writer.TryDetachBuffer(out result))
                 result = writer.WrittenSpan.Copy(allocator);

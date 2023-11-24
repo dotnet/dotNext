@@ -7,7 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp;
 
 using Buffers;
 using TransportServices.Datagram;
-using static Threading.AtomicInt64;
 
 internal sealed class UdpClient : UdpSocket, IClient
 {
@@ -106,7 +105,7 @@ internal sealed class UdpClient : UdpSocket, IClient
         if (!IsBound && !Start(exchange))
             return;
 
-        var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
+        var id = new CorrelationId(applicationId, Interlocked.Increment(ref streamNumber));
         var channel = new Channel(exchange, cancellationHandler, id, token, LifecycleToken);
         if (channels.TryAdd(id, channel))
         {

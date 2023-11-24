@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DotNext.Net;
@@ -91,7 +92,7 @@ public static class EndPointFormatter
                 // host name length, N = 4 bytes
                 // host name = N bytes
                 writer.Add(HttpEndPointPrefix);
-                writer.Add(http.IsSecure.ToByte());
+                writer.Add(Unsafe.BitCast<bool, byte>(http.IsSecure));
                 writer.WriteLittleEndian(http.Port);
                 writer.WriteLittleEndian((int)http.AddressFamily);
                 Serialize(http.Host, ref writer);
@@ -213,7 +214,7 @@ public static class EndPointFormatter
 
     private static HttpEndPoint DeserializeHttp(ref SequenceReader reader)
     {
-        var secure = BasicExtensions.ToBoolean(reader.Read<byte>());
+        var secure = reader.Read<bool>();
         DeserializeHost(ref reader, out var hostName, out var port, out var family);
         return new(hostName, port, secure, family);
     }

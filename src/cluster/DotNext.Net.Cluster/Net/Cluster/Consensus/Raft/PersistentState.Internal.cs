@@ -9,7 +9,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using IO;
-using static Threading.AtomicInt64;
 using Intrinsics = Runtime.Intrinsics;
 
 public partial class PersistentState
@@ -281,7 +280,7 @@ public partial class PersistentState
 
         internal long FileSize => RandomAccess.GetLength(Handle);
 
-        internal void Invalidate() => version.IncrementAndGet();
+        internal void Invalidate() => Interlocked.Increment(ref version);
 
         internal ValueTask SetWritePositionAsync(long position, CancellationToken token = default)
         {
@@ -325,13 +324,14 @@ public partial class PersistentState
 
             ref var result = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
 
+            var version = Volatile.Read(in this.version);
             if (result is null)
             {
-                result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version.VolatileRead());
+                result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version);
             }
             else
             {
-                result.VerifyVersion(version.VolatileRead());
+                result.VerifyVersion(version);
             }
 
             return result;

@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
@@ -69,7 +70,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
 
     private T value;
 
-    private AtomicBoolean lockState;
+    private Atomic.Boolean lockState;
 
     /// <summary>
     /// Clones this container atomically.
@@ -385,5 +386,135 @@ public struct Atomic<T> : IStrongBox, ICloneable
     {
         Read(out var result);
         return result.ToString();
+    }
+}
+
+/// <summary>
+/// Exposes atomic operations for thread-safe scenarios.
+/// </summary>
+public static partial class Atomic
+{
+    private static (TValue OldValue, TValue NewValue) Update<TValue, TUpdater, TOperations>(ref TValue value, TUpdater updater)
+        where TValue : IEqualityOperators<TValue, TValue, bool>
+        where TUpdater : notnull, ISupplier<TValue, TValue>
+        where TOperations : IInterlockedOperations<TValue>
+    {
+        TValue oldValue, newValue, tmp = TOperations.VolatileRead(in value);
+        do
+        {
+            newValue = updater.Invoke(oldValue = tmp);
+        }
+        while ((tmp = TOperations.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
+        return (oldValue, newValue);
+    }
+
+    private static (TValue OldValue, TValue NewValue) Accumulate<TValue, TAccumulator, TOperations>(ref TValue value, TValue x, TAccumulator accumulator)
+        where TValue : IEqualityOperators<TValue, TValue, bool>
+        where TAccumulator : notnull, ISupplier<TValue, TValue, TValue>
+        where TOperations : IInterlockedOperations<TValue>
+    {
+        TValue oldValue, newValue, tmp = TOperations.VolatileRead(in value);
+        do
+        {
+            newValue = accumulator.Invoke(oldValue = tmp, x);
+        }
+        while ((tmp = TOperations.CompareExchange(ref value, newValue, oldValue)) != oldValue);
+
+        return (oldValue, newValue);
+    }
+
+    /// <summary>
+    /// Determines that the write to the location in the memory of
+    /// type <typeparamref name="T"/> is atomic.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to be written.</typeparam>
+    /// <returns><see langword="true"/> if write is atomic; otherwise, <see langword="false"/>.</returns>
+    /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAtomic<T>()
+        => AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= nuint.Size;
+
+    private struct InterlockedOperations :
+        IInterlockedOperations<int>,
+        IInterlockedOperations<uint>,
+        IInterlockedOperations<long>,
+        IInterlockedOperations<ulong>,
+        IInterlockedOperations<nint>,
+        IInterlockedOperations<nuint>,
+        IInterlockedOperations<float>,
+        IInterlockedOperations<double>
+    {
+        static int IInterlockedOperations<int>.VolatileRead(ref readonly int location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<int>.VolatileWrite(ref int location, int value)
+            => Volatile.Write(ref location, value);
+
+        static int IInterlockedOperations<int>.CompareExchange(ref int location, int value, int comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
+
+        static uint IInterlockedOperations<uint>.VolatileRead(ref readonly uint location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<uint>.VolatileWrite(ref uint location, uint value)
+            => Volatile.Write(ref location, value);
+
+        static uint IInterlockedOperations<uint>.CompareExchange(ref uint location, uint value, uint comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
+
+        static long IInterlockedOperations<long>.VolatileRead(ref readonly long location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<long>.VolatileWrite(ref long location, long value)
+            => Volatile.Write(ref location, value);
+
+        static long IInterlockedOperations<long>.CompareExchange(ref long location, long value, long comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
+
+        static ulong IInterlockedOperations<ulong>.VolatileRead(ref readonly ulong location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<ulong>.VolatileWrite(ref ulong location, ulong value)
+            => Volatile.Write(ref location, value);
+
+        static ulong IInterlockedOperations<ulong>.CompareExchange(ref ulong location, ulong value, ulong comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
+
+        static nint IInterlockedOperations<nint>.VolatileRead(ref readonly nint location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<nint>.VolatileWrite(ref nint location, nint value)
+            => Volatile.Write(ref location, value);
+
+        static nint IInterlockedOperations<nint>.CompareExchange(ref nint location, nint value, nint comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
+
+        static nuint IInterlockedOperations<nuint>.VolatileRead(ref readonly nuint location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<nuint>.VolatileWrite(ref nuint location, nuint value)
+            => Volatile.Write(ref location, value);
+
+        static nuint IInterlockedOperations<nuint>.CompareExchange(ref nuint location, nuint value, nuint comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
+
+        static float IInterlockedOperations<float>.VolatileRead(ref readonly float location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<float>.VolatileWrite(ref float location, float value)
+            => Volatile.Write(ref location, value);
+
+        static float IInterlockedOperations<float>.CompareExchange(ref float location, float value, float comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
+
+        static double IInterlockedOperations<double>.VolatileRead(ref readonly double location)
+            => Volatile.Read(in location);
+
+        static void IInterlockedOperations<double>.VolatileWrite(ref double location, double value)
+            => Volatile.Write(ref location, value);
+
+        static double IInterlockedOperations<double>.CompareExchange(ref double location, double value, double comparand)
+            => Interlocked.CompareExchange(ref location, value, comparand);
     }
 }

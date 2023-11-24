@@ -11,11 +11,11 @@ public sealed class AsyncDelegateTests : Test
 
         internal int Counter => counter;
 
-        internal void IncBy1() => counter.AddAndGet(1);
+        internal void IncBy1() => Interlocked.Increment(ref counter);
 
-        internal void IncBy3() => counter.AddAndGet(3);
+        internal void IncBy3() => Interlocked.Add(ref counter, 3);
 
-        internal void IncBy5() => counter.AddAndGet(5);
+        internal void IncBy5() => Interlocked.Add(ref counter, 5);
 
         internal void Throw() => throw new Exception();
     }

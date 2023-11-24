@@ -6,7 +6,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Runtime.CompilerServices;
-using static Threading.AtomicInt64;
 
 /// <summary>
 /// Represents disk-based state machine.
@@ -54,7 +53,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
     private ValueTask<long?> ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new(default(long?)) : ApplyAsync(entry);
 
-    private protected sealed override long LastTerm => lastTerm.VolatileRead();
+    private protected sealed override long LastTerm => Volatile.Read(in lastTerm);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<long?> ApplyAsync(int sessionId, long startIndex, CancellationToken token)
@@ -68,7 +67,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
             {
                 var entry = partition.Read(sessionId, startIndex, out var persisted);
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
-                lastTerm.VolatileWrite(entry.Term);
+                Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
                 if (!persisted)

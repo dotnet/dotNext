@@ -107,47 +107,6 @@ public static class BasicExtensions
     }
 
     /// <summary>
-    /// Converts <see cref="bool"/> into <see cref="int"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns><see cref="int"/> representation of <paramref name="value"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int ToInt32(this bool value)
-    {
-        Push(value);
-        return Return<int>();
-    }
-
-    /// <summary>
-    /// Converts <see cref="bool"/> into <see cref="byte"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns><see cref="byte"/> representation of <paramref name="value"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte ToByte(this bool value)
-    {
-        Push(value);
-        Conv_U1();
-        return Return<byte>();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static sbyte ToSByte(this bool value)
-    {
-        Push(value);
-        Conv_I1();
-        return Return<sbyte>();
-    }
-
-    /// <summary>
-    /// Converts <see cref="int"/> into <see cref="bool"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns><see langword="true"/> if <c>value != 0</c>; otherwise, <see langword="false"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool ToBoolean(this int value) => value is not 0;
-
-    /// <summary>
     /// Normalizes value in the specified range.
     /// </summary>
     /// <typeparam name="TInput">The type of the input value and bounds.</typeparam>

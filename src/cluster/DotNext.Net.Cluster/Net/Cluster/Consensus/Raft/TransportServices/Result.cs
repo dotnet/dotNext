@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
@@ -9,7 +11,7 @@ internal static class Result
     internal static void Write(ref SpanWriter<byte> writer, in Result<bool> result)
     {
         writer.WriteLittleEndian(result.Term);
-        writer.Add(result.Value.ToByte());
+        writer.Add(Unsafe.BitCast<bool, byte>(result.Value));
     }
 
     internal static int Write(Span<byte> output, in Result<bool> result)
@@ -48,7 +50,7 @@ internal static class Result
     internal static Result<bool> Read(ref SpanReader<byte> reader) => new()
     {
         Term = reader.ReadLittleEndian<long>(isUnsigned: false),
-        Value = BasicExtensions.ToBoolean(reader.Read()),
+        Value = Unsafe.BitCast<byte, bool>(reader.Read()),
     };
 
     internal static Result<bool> Read(ReadOnlySpan<byte> input)

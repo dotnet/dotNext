@@ -1,7 +1,6 @@
 ﻿using DotNext;
 using DotNext.IO;
 using DotNext.Net.Cluster.Consensus.Raft;
-using static DotNext.Threading.AtomicInt64;
 
 namespace RaftNode;
 
@@ -33,16 +32,16 @@ internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier
     }
 
     public SimplePersistentState(IConfiguration configuration)
-        : this(configuration[LogLocation])
+        : this(configuration[LogLocation] ?? string.Empty)
     {
     }
 
-    long ISupplier<long>.Invoke() => content.VolatileRead();
+    long ISupplier<long>.Invoke() => Volatile.Read(in content);
 
     private async ValueTask UpdateValue(LogEntry entry)
     {
         var value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
-        content.VolatileWrite(value);
+        Volatile.Write(ref content, value);
         Console.WriteLine($"Accepting value {value}");
     }
 

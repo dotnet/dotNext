@@ -25,7 +25,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
     private sealed class SingleReaderBuffer : IReadBuffer
     {
-        private AtomicBoolean readyToRead;
+        private Atomic.Boolean readyToRead;
         [AllowNull]
         private T value;
 
