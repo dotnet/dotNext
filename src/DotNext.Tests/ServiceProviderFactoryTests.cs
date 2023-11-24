@@ -16,7 +16,7 @@ public sealed class ServiceProviderFactoryTests : Test
         IsType<int>(provider.GetService(typeof(IFormattable)));
         Null(provider.GetService(typeof(string)));
 
-        builder.Clear();
+        builder.Reset();
         Same(ServiceProviderFactory.Empty, builder.Build());
     }
 
