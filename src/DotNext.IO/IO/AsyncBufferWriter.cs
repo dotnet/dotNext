@@ -2,7 +2,6 @@
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.IO;
 
@@ -197,7 +196,6 @@ internal readonly struct AsyncBufferWriter : IAsyncBinaryWriter
         return result;
     }
 
-    [RequiresPreviewFeatures]
     ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
     {
         ValueTask result;

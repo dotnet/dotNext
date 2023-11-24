@@ -43,7 +43,7 @@ public sealed class EqualityComparerBuilderTests : Test
         {
             this.obj = obj;
             this.array = array;
-            objArray = new object[] { "1", "2" };
+            objArray = ["1", "2"];
             nullArray = null;
         }
 

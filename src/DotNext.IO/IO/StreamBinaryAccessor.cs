@@ -2,7 +2,6 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.IO;
@@ -113,7 +112,6 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
         => StreamExtensions.ParseAsync(Stream, parser, lengthFormat, context, buffer, provider, token);
 
-    [RequiresPreviewFeatures]
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
         => StreamExtensions.ParseAsync<T>(Stream, buffer, token);
 
@@ -204,7 +202,6 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
     ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
         => Stream.WriteFormattableAsync(value, lengthFormat, context, buffer, format, provider, token);
 
-    [RequiresPreviewFeatures]
     ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
         => Stream.WriteFormattableAsync(value, buffer, token);
 

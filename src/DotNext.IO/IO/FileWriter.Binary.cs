@@ -2,7 +2,6 @@ using System.Buffers;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 using Encoder = System.Text.Encoder;
 
@@ -250,7 +249,6 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [RequiresPreviewFeatures]
     public async ValueTask WriteFormattableAsync<T>(T value, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {

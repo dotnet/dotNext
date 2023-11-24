@@ -60,9 +60,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private async Task<TResponse> SendAsync<TResponse, TMessage>(TMessage message, CancellationToken token)
         where TMessage : class, IHttpMessage<TResponse>
     {
-#pragma warning disable CA2252
         context.Logger.SendingRequestToMember(EndPoint, TMessage.MessageType);
-#pragma warning restore CA2252
         var request = new HttpRequestMessage
         {
             RequestUri = resourcePath,
@@ -70,9 +68,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             VersionPolicy = DefaultVersionPolicy,
         };
 
-#pragma warning disable CA2252
         HttpMessage.SetMessageType<TMessage>(request);
-#pragma warning restore CA2252
         message.PrepareRequest(request);
 
         // setup additional timeout control token needed if actual timeout
@@ -105,9 +101,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         }
         catch (HttpRequestException e)
         {
-#pragma warning disable CA2252
             if (response is null || TMessage.IsMemberUnavailable(e.StatusCode))
-#pragma warning restore CA2252
                 throw MemberUnavailable(e);
 
             throw new UnexpectedStatusCodeException(response, e);

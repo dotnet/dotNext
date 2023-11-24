@@ -1,6 +1,5 @@
 using System.Net.Mime;
 using System.Reflection;
-using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Messaging;
 
@@ -55,7 +54,6 @@ public class MessagingClient
     /// <typeparam name="TMessage">The type of the message payload.</typeparam>
     /// <param name="messageInfo">The information about message type.</param>
     /// <returns>This client.</returns>
-    [RequiresPreviewFeatures]
     public MessagingClient RegisterMessage<TMessage>(MessageAttribute<TMessage> messageInfo)
         where TMessage : notnull, ISerializable<TMessage>
         => RegisterMessage<TMessage>(messageInfo.Name, new(messageInfo.MimeType));

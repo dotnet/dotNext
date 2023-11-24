@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace DotNext.Net.Cluster.Messaging;
 
 using Runtime.Serialization;
@@ -156,14 +154,11 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <summary>
         /// Clears this builder so it can be reused.
         /// </summary>
-        public void Clear()
+        public void Reset()
         {
             rpcHandlers.Clear();
             signalHandlers.Clear();
         }
-
-        /// <inheritdoc />
-        void IResettable.Reset() => Clear();
 
         /// <summary>
         /// Constructs message hander based on registered delegates.
@@ -175,7 +170,5 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         MessageHandler ISupplier<MessageHandler>.Invoke() => Build();
     }
 
-    /// <inheritdoc cref="IBuildable{TSelf, TBuilder}.CreateBuilder"/>
-    [RequiresPreviewFeatures]
-    static Builder IBuildable<MessageHandler, MessageHandler.Builder>.CreateBuilder() => new();
+    static Builder IBuildable<MessageHandler, Builder>.CreateBuilder() => new();
 }

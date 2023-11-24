@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
@@ -8,7 +7,6 @@ using Buffers;
 internal partial class Client : RaftClusterMember
 {
     [StructLayout(LayoutKind.Auto)]
-    [RequiresPreviewFeatures]
     private readonly struct SynchronizeExchange : IClientExchange<long?>
     {
         private const string Name = "Synchronize";
@@ -32,7 +30,6 @@ internal partial class Client : RaftClusterMember
         static string IClientExchange<long?>.Name => Name;
     }
 
-    [RequiresPreviewFeatures]
     private protected sealed override Task<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
         => RequestAsync<long?, SynchronizeExchange>(new(commitIndex), token);
 }

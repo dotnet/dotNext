@@ -228,9 +228,7 @@ public partial class PersistentState
         {
             votedFor = BoxedClusterMemberId.Box(id);
             buffer[LastVotePresenceOffset] = True;
-#pragma warning disable CA2252 // TODO: Remove in .NET 7
             IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));
-#pragma warning restore CA2252
         }
 
         internal ref readonly SnapshotMetadata Snapshot => ref snapshot;

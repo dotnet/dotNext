@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -12,7 +11,6 @@ using IO.Log;
 /// </summary>
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-[RequiresPreviewFeatures]
 public struct BinaryLogEntry<T> : IBinaryLogEntry
     where T : struct, IBinaryFormattable<T>
 {

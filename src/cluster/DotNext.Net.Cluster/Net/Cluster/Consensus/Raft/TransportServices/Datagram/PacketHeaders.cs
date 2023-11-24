@@ -2,7 +2,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.Datagram;
 
 using Buffers;
 
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 internal readonly struct PacketHeaders : IBinaryFormattable<PacketHeaders>
 {
     /// <summary>
@@ -28,4 +27,3 @@ internal readonly struct PacketHeaders : IBinaryFormattable<PacketHeaders>
 
     internal FlowControl Control => control.Control;
 }
-#pragma warning restore CA2252

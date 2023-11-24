@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -157,7 +156,6 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         }
     }
 
-    [RequiresPreviewFeatures]
     private protected static async Task<T> ParseResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
         where T : notnull, ISerializable<T>
     {
@@ -172,7 +170,6 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         }
     }
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 }
 
@@ -195,7 +192,6 @@ internal sealed class CustomSerializableMessage<T> : CustomMessage, IHttpMessage
     {
     }
 
-    [RequiresPreviewFeatures]
     Task<T> IHttpMessage<T>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
         => ParseResponseAsync<T>(response, token);
 }

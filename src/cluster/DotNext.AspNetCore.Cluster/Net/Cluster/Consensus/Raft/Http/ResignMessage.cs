@@ -1,5 +1,4 @@
-﻿using System.Runtime.Versioning;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -19,7 +18,6 @@ internal sealed class ResignMessage : HttpMessage, IHttpMessage<bool>
 
     Task<bool> IHttpMessage<bool>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     void IHttpMessage.PrepareRequest(HttpRequestMessage request) => PrepareRequest(request);

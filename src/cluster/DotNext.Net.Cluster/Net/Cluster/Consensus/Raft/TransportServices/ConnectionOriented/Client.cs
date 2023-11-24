@@ -1,6 +1,5 @@
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -19,7 +18,6 @@ internal abstract partial class Client : RaftClusterMember
     }
 
     // this interface helps to inline async request/response parsing pipeline to RequestAsync method
-    [RequiresPreviewFeatures]
     private interface IClientExchange<TResponse>
     {
         ValueTask RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token);
@@ -61,7 +59,6 @@ internal abstract partial class Client : RaftClusterMember
 
     private protected abstract ValueTask<IConnectionContext> ConnectAsync(CancellationToken token);
 
-    [RequiresPreviewFeatures]
     private async Task<TResponse> RequestAsync<TResponse, TExchange>(TExchange exchange, CancellationToken token)
         where TExchange : notnull, IClientExchange<TResponse>
     {

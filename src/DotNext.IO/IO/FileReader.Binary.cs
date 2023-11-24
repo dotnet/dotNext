@@ -3,7 +3,6 @@ using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.IO;
@@ -262,7 +261,6 @@ public partial class FileReader : IAsyncBinaryReader
     /// <returns>The parsed value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    [RequiresPreviewFeatures]
     public ValueTask<T> ParseAsync<T>(CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -295,7 +293,6 @@ public partial class FileReader : IAsyncBinaryReader
         return result;
     }
 
-    [RequiresPreviewFeatures]
     private T ParseFast<T>()
         where T : notnull, IBinaryFormattable<T>
     {
@@ -308,7 +305,6 @@ public partial class FileReader : IAsyncBinaryReader
         return result;
     }
 
-    [RequiresPreviewFeatures]
     private async ValueTask<T> ParseSlowAsync<T>(CancellationToken token)
         where T : notnull, IBinaryFormattable<T>
     {

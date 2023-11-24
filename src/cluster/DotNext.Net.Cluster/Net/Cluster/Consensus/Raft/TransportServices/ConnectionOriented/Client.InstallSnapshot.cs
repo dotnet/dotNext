@@ -1,4 +1,3 @@
-using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -7,7 +6,6 @@ using IO;
 
 internal partial class Client : RaftClusterMember
 {
-    [RequiresPreviewFeatures]
     private sealed class InstallSnapshotExchange : IClientExchange<Result<HeartbeatResult>>
     {
         private const string Name = "InstallSnapshot";
@@ -47,7 +45,6 @@ internal partial class Client : RaftClusterMember
         static string IClientExchange<Result<HeartbeatResult>>.Name => Name;
     }
 
-    [RequiresPreviewFeatures]
     private protected sealed override Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         => RequestAsync<Result<HeartbeatResult>, InstallSnapshotExchange>(new(term, snapshot, snapshotIndex), token);
 }

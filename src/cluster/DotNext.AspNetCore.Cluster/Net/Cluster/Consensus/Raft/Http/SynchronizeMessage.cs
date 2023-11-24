@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -55,7 +54,6 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessage<long?>
         }
     }
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, long? commitIndex, CancellationToken token)

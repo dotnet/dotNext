@@ -11,7 +11,6 @@ using Hex = Buffers.Text.Hex;
 /// Represents Lamport timestamp of the rumor mixed with the timestamp returned
 /// by the local clock.
 /// </summary>
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryFormattable<RumorTimestamp>, IComparable<RumorTimestamp>
 {
@@ -245,4 +244,3 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     public static RumorTimestamp Next(ref RumorTimestamp location)
         => new(location.timestamp, Interlocked.Increment(ref Unsafe.AsRef(in location.sequenceNumber)));
 }
-#pragma warning restore CA2252

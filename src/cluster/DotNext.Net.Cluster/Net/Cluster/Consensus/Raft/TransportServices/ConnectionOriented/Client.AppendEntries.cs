@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -12,7 +11,6 @@ using IClusterConfiguration = Membership.IClusterConfiguration;
 internal partial class Client : RaftClusterMember
 {
     // optimized version for empty heartbeats (it has no field to store empty entries)
-    [RequiresPreviewFeatures]
     private class AppendEntriesExchange : IClientExchange<Result<HeartbeatResult>>, IResettable
     {
         private const string Name = "AppendEntries";
@@ -80,7 +78,6 @@ internal partial class Client : RaftClusterMember
         static string IClientExchange<Result<HeartbeatResult>>.Name => Name;
     }
 
-    [RequiresPreviewFeatures]
     private sealed class AppendEntriesExchange<TEntry, TList> : AppendEntriesExchange, IClientExchange<Result<HeartbeatResult>>
         where TEntry : notnull, IRaftLogEntry
         where TList : notnull, IReadOnlyList<TEntry>
@@ -142,7 +139,6 @@ internal partial class Client : RaftClusterMember
         }
     }
 
-    [RequiresPreviewFeatures]
     private protected sealed override Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
     {
         if (entries.Count is 0)

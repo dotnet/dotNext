@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using System.Text.Json;
 using PipeReader = System.IO.Pipelines.PipeReader;
 
@@ -33,7 +32,6 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     readonly long? IDataTransferObject.Length => null;
 
     /// <inheritdoc />
-    [RequiresPreviewFeatures]
     readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
         ValueTask result;
@@ -71,7 +69,6 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     }
 
     /// <inheritdoc cref="ISerializable{TSelf}.ReadFromAsync{TReader}(TReader, CancellationToken)"/>
-    [RequiresPreviewFeatures]
     public static ValueTask<JsonSerializable<T>> ReadFromAsync<TReader>(TReader reader, CancellationToken token = default)
         where TReader : notnull, IAsyncBinaryReader
     {

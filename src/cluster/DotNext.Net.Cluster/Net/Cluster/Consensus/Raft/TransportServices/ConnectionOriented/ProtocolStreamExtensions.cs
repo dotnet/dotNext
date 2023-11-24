@@ -100,7 +100,5 @@ internal static class ProtocolStreamExtensions
     }
 
     internal static async ValueTask<IReadOnlyDictionary<string, string>> ReadDictionaryAsync(this ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
         => (await Serializable.ReadFromAsync<MetadataTransferObject>(protocol, buffer, token).ConfigureAwait(false)).Metadata;
-#pragma warning restore CA2252
 }

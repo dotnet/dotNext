@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
@@ -14,18 +13,10 @@ public partial class CommandInterpreter
             where TReader : notnull, IAsyncBinaryReader;
     }
 
-    private sealed class CommandHandler<TCommand> : CommandHandler
+    private sealed class CommandHandler<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler) : CommandHandler
         where TCommand : notnull, ISerializable<TCommand>
     {
-        private readonly Func<TCommand, CancellationToken, ValueTask> handler;
-
-        public CommandHandler(Func<TCommand, CancellationToken, ValueTask> handler)
-        {
-            this.handler = handler;
-        }
-
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        [RequiresPreviewFeatures]
         internal override async ValueTask InterpretAsync<TReader>(TReader reader, CancellationToken token)
         {
             var command = await TCommand.ReadFromAsync(reader, token).ConfigureAwait(false);

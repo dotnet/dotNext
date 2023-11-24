@@ -1,5 +1,4 @@
 using System.IO.Pipelines;
-using System.Runtime.Versioning;
 
 namespace DotNext.Runtime.Serialization;
 
@@ -23,7 +22,6 @@ public static class Serializable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Deserialized object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [RequiresPreviewFeatures]
     public static ValueTask<TObject> ReadFromAsync<TObject>(this Stream input, Memory<byte> buffer, CancellationToken token = default)
         where TObject : notnull, ISerializable<TObject>
         => TObject.ReadFromAsync<AsyncStreamBinaryAccessor>(new(input, buffer), token);
@@ -37,7 +35,6 @@ public static class Serializable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Deserialized object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [RequiresPreviewFeatures]
     public static async ValueTask<TObject> ReadFromAsync<TObject>(this Stream input, int bufferSize = 128, CancellationToken token = default)
         where TObject : notnull, ISerializable<TObject>
     {
@@ -53,7 +50,6 @@ public static class Serializable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Deserialized object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [RequiresPreviewFeatures]
     public static ValueTask<TObject> ReadFromAsync<TObject>(this PipeReader reader, CancellationToken token = default)
         where TObject : notnull, ISerializable<TObject>
         => TObject.ReadFromAsync<PipeBinaryReader>(new(reader), token);

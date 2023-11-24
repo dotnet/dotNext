@@ -24,9 +24,7 @@ internal sealed class MetadataExchange : PipeExchange, IClientExchange<Task<IRea
     string IClientExchange<Task<IReadOnlyDictionary<string, string>>>.Name => Name;
 
     async Task<IReadOnlyDictionary<string, string>> ISupplier<CancellationToken, Task<IReadOnlyDictionary<string, string>>>.Invoke(CancellationToken token)
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
         => (await Serializable.ReadFromAsync<MetadataTransferObject>(Reader, token).ConfigureAwait(false)).Metadata;
-#pragma warning restore CA2252
 
     public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, CancellationToken token)
     {

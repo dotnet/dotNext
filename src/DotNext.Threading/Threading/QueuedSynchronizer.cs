@@ -1,10 +1,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -191,9 +189,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-#pragma warning disable CA2252
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -220,9 +216,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-#pragma warning disable CA2252
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -266,9 +260,8 @@ public class QueuedSynchronizer : Disposable
                         task = new(GetDisposedTask<bool>());
                         break;
                     }
-#pragma warning disable CA2252
+
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -293,9 +286,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-#pragma warning disable CA2252
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -546,10 +537,9 @@ public class QueuedSynchronizer : Disposable
 
         TimeSpan Timeout { get; }
 
-        object? InterruptionReason { get; }
+        object? InterruptionReason => null;
 
-        [RequiresPreviewFeatures]
-        static abstract bool InterruptionRequired { get; }
+        static virtual bool InterruptionRequired => false;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -558,11 +548,6 @@ public class QueuedSynchronizer : Disposable
         internal CancellationTokenOnly(CancellationToken token) => Token = token;
 
         public CancellationToken Token { get; }
-
-        [RequiresPreviewFeatures]
-        static bool IAcquisitionOptions.InterruptionRequired => false;
-
-        object? IAcquisitionOptions.InterruptionReason => null;
 
         TimeSpan IAcquisitionOptions.Timeout => new(Timeout.InfiniteTicks);
     }
@@ -579,11 +564,6 @@ public class QueuedSynchronizer : Disposable
         public CancellationToken Token { get; }
 
         public TimeSpan Timeout { get; }
-
-        [RequiresPreviewFeatures]
-        static bool IAcquisitionOptions.InterruptionRequired => false;
-
-        object? IAcquisitionOptions.InterruptionReason => null;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -599,7 +579,6 @@ public class QueuedSynchronizer : Disposable
 
         public object? InterruptionReason { get; }
 
-        [RequiresPreviewFeatures]
         static bool IAcquisitionOptions.InterruptionRequired => true;
 
         TimeSpan IAcquisitionOptions.Timeout => new(Timeout.InfiniteTicks);
@@ -619,7 +598,6 @@ public class QueuedSynchronizer : Disposable
 
         public object? InterruptionReason { get; }
 
-        [RequiresPreviewFeatures]
         static bool IAcquisitionOptions.InterruptionRequired => true;
 
         public TimeSpan Timeout { get; }

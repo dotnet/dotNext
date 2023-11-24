@@ -1,6 +1,5 @@
 ﻿using System.IO.Pipelines;
 using System.Net;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -108,7 +107,6 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Res
     Task<Result<HeartbeatResult>> IHttpMessage<Result<HeartbeatResult>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
         => ParseEnumResponseAsync<HeartbeatResult>(response, token);
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, in Result<HeartbeatResult> result, CancellationToken token)

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Runtime.Versioning;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
@@ -301,7 +300,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         base.PrepareRequest(request);
     }
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, in Result<HeartbeatResult> result, CancellationToken token)
