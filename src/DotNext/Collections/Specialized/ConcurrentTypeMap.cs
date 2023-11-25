@@ -91,7 +91,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity]);
+        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 
@@ -447,7 +447,7 @@ public class ConcurrentTypeMap : ITypeMap
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity]);
+        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 

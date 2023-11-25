@@ -246,7 +246,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask OnActiveConfigurationChanged(TAddress address, bool isAdded, CancellationToken token)
     {
-        foreach (Func<TAddress, bool, CancellationToken, ValueTask> handler in handlers?.GetInvocationList() ?? Array.Empty<Func<TAddress, bool, CancellationToken, ValueTask>>())
+        foreach (Func<TAddress, bool, CancellationToken, ValueTask> handler in handlers?.GetInvocationList() ?? [])
             await handler.Invoke(address, isAdded, token).ConfigureAwait(false);
     }
 

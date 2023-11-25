@@ -88,7 +88,7 @@ public sealed class MutationExpression : CustomExpression
         var result = cloneMethodOrCtor switch
         {
             MethodInfo cloneMethod => Call(Expression, cloneMethod),
-            ConstructorInfo ctor => New(ctor, ctor.GetParameters().Length is 0 ? Array.Empty<Expression>() : new[] { Expression }),
+            ConstructorInfo ctor => New(ctor, ctor.GetParameters().Length is 0 ? [] : [Expression]),
             _ => Expression,
         };
 

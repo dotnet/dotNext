@@ -105,7 +105,7 @@ public class QueuedSynchronizer : Disposable
             if (waitQueue.First is null)
                 return Array.Empty<Activity?>();
 
-            list = new List<object?>();
+            list = [];
             for (LinkedValueTaskCompletionSource<bool>? current = waitQueue.First; current is not null; current = current.Next)
             {
                 if (current is WaitNode node)

@@ -226,7 +226,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         else if (endIndex < 0L)
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
         else if (startIndex > endIndex)
-            result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            result = reader.ReadAsync<LogEntry, LogEntry[]>([], null, token);
         else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, endIndex, token);
         else
@@ -305,7 +305,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         else if (startIndex < 0L)
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (startIndex > state.LastIndex)
-            result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            result = reader.ReadAsync<LogEntry, LogEntry[]>([], null, token);
         else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, null, token);
         else

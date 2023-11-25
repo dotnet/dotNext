@@ -30,7 +30,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity];
+        entries = capacity is 0 ? [] : new Entry[capacity];
     }
 
     /// <summary>
@@ -250,7 +250,7 @@ public partial class TypeMap : ITypeMap
         if (capacity < 0)
             throw new ArgumentOutOfRangeException(nameof(capacity));
 
-        entries = capacity is 0 ? Array.Empty<object>() : new object?[capacity];
+        entries = capacity is 0 ? [] : new object?[capacity];
     }
 
     /// <summary>

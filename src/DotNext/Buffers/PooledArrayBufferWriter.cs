@@ -278,7 +278,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
         if (position > 0)
         {
             result = new(pool, buffer, position);
-            buffer = Array.Empty<T>();
+            buffer = [];
             position = 0;
         }
         else

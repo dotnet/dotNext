@@ -108,8 +108,8 @@ public static class List
         where TConverter : struct, ISupplier<TInput, TOutput>
     {
         var count = input.Count;
-        if (count == 0)
-            return Array.Empty<TOutput>();
+        if (count is 0)
+            return [];
 
         var output = GC.AllocateUninitializedArray<TOutput>(count);
         for (var i = 0; i < count; i++)

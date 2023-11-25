@@ -80,7 +80,7 @@ internal partial class LeaderState<TMember>
             entries = new ContextEntry?[sizeHint <= HalfMaxSize ? sizeHint << 1 : sizeHint];
         }
 
-        public Context() => entries = Array.Empty<ContextEntry?>();
+        public Context() => entries = [];
 
         private static int GetIndex(int hashCode, int boundary)
             => (hashCode & int.MaxValue) % boundary;
@@ -202,7 +202,7 @@ internal partial class LeaderState<TMember>
                 entry = null;
             }
 
-            entries = Array.Empty<ContextEntry?>();
+            entries = [];
         }
     }
 

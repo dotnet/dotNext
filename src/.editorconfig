@@ -127,6 +127,7 @@ dotnet_diagnostic.SA1642.severity = none
 dotnet_diagnostic.SA1643.severity = none
 dotnet_diagnostic.SA1649.severity = none
 dotnet_diagnostic.SX1101.severity = warning
+dotnet_diagnostic.SA1010.severity = none
 
 # CA1040: Avoid empty interfaces
 dotnet_diagnostic.CA1040.severity = error

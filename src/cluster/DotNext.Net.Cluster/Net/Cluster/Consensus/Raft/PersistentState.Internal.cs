@@ -348,7 +348,7 @@ public partial class PersistentState
                     stream?.Dispose();
                 }
 
-                readers = Array.Empty<VersionedFileReader?>();
+                readers = [];
                 writer.Dispose();
                 Handle.Dispose();
                 streamForFlush?.Dispose();

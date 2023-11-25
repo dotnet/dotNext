@@ -11,14 +11,14 @@ public sealed class ChunkSequenceTests : Test
         Equal(Array.Empty<byte>(), block1.Concat(block2).ToArray());
 
         block1 = new byte[] { 1, 2 };
-        Equal(new byte[] { 1, 2 }, block1.Concat(block2).ToArray());
+        Equal([1, 2], block1.Concat(block2).ToArray());
 
         block2 = block1;
         block1 = default;
-        Equal(new byte[] { 1, 2 }, block1.Concat(block2).ToArray());
+        Equal([1, 2], block1.Concat(block2).ToArray());
 
         block1 = new byte[] { 3, 4 };
-        Equal(new byte[] { 1, 2, 3, 4 }, block2.Concat(block1).ToArray());
+        Equal([1, 2, 3, 4], block2.Concat(block1).ToArray());
     }
 
     [Fact]
@@ -28,14 +28,14 @@ public sealed class ChunkSequenceTests : Test
         Equal(Array.Empty<byte>(), new[] { block1, block2 }.ToReadOnlySequence().ToArray());
 
         block1 = new byte[] { 1, 2 };
-        Equal(new byte[] { 1, 2 }, new List<ReadOnlyMemory<byte>> { block1, block2 }.ToReadOnlySequence().ToArray());
+        Equal([1, 2], new List<ReadOnlyMemory<byte>> { block1, block2 }.ToReadOnlySequence().ToArray());
 
         block2 = block1;
         block1 = default;
-        Equal(new byte[] { 1, 2 }, ToEnumerable(block1, block2).ToReadOnlySequence().ToArray());
+        Equal([1, 2], ToEnumerable(block1, block2).ToReadOnlySequence().ToArray());
 
         block1 = new byte[] { 3, 4 };
-        Equal(new byte[] { 1, 2, 3, 4 }, new[] { block2, block1 }.ToReadOnlySequence().ToArray());
+        Equal([1, 2, 3, 4], new[] { block2, block1 }.ToReadOnlySequence().ToArray());
 
         static IEnumerable<ReadOnlyMemory<byte>> ToEnumerable(ReadOnlyMemory<byte> block1, ReadOnlyMemory<byte> block2)
         {

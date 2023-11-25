@@ -216,7 +216,7 @@ public static class DataTransferObject
         {
             var buffer = CreateBuffer(dto.Length, allocator);
             if (buffer is null)
-                return Array.Empty<byte>();
+                return [];
 
             try
             {

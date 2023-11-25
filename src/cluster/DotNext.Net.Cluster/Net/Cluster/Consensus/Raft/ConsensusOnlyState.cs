@@ -325,7 +325,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         if (endIndex < 0L)
             throw new ArgumentOutOfRangeException(nameof(endIndex));
         if (endIndex < startIndex)
-            return await reader.ReadAsync<EmptyLogEntry, EmptyLogEntry[]>(Array.Empty<EmptyLogEntry>(), null, token).ConfigureAwait(false);
+            return await reader.ReadAsync<EmptyLogEntry, EmptyLogEntry[]>([], null, token).ConfigureAwait(false);
         using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
             return await ReadCoreAsync(reader, startIndex, endIndex, token).ConfigureAwait(false);
     }

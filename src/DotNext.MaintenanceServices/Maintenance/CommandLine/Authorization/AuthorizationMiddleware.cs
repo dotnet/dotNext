@@ -34,7 +34,7 @@ internal static class AuthorizationMiddleware
         if (session.Principal is null)
             return false;
 
-        foreach (AuthorizationCallback rule in authorizationRules?.GetInvocationList() ?? Array.Empty<AuthorizationCallback>())
+        foreach (AuthorizationCallback rule in authorizationRules?.GetInvocationList() ?? [])
         {
             if (!await rule.Invoke(session.Principal, target, session.Context, token).ConfigureAwait(false))
                 return false;

@@ -64,7 +64,7 @@ public partial class InterpolationExpression
         public void AppendFormatted(Expression arg, string? format = null)
             => AppendFormatted(arg, 0, format);
 
-        internal readonly Expression[] Arguments => arguments ?? Array.Empty<Expression>();
+        internal readonly Expression[] Arguments => arguments ?? [];
 
         internal readonly LambdaExpression BuildRenderer() => builder.Build();
 

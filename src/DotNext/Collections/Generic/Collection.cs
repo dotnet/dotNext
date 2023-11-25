@@ -28,12 +28,18 @@ public static partial class Collection
     /// <returns>Array of collection items.</returns>
     public static T[] ToArray<T>(ICollection<T> collection)
     {
+        T[] result;
         var count = collection.Count;
-        if (count == 0)
-            return Array.Empty<T>();
+        if (count is 0)
+        {
+            result = [];
+        }
+        else
+        {
+            result = GC.AllocateUninitializedArray<T>(count);
+            collection.CopyTo(result, 0);
+        }
 
-        var result = GC.AllocateUninitializedArray<T>(count);
-        collection.CopyTo(result, 0);
         return result;
     }
 
@@ -46,8 +52,8 @@ public static partial class Collection
     public static T[] ToArray<T>(IReadOnlyCollection<T> collection)
     {
         var count = collection.Count;
-        if (count == 0)
-            return Array.Empty<T>();
+        if (count is 0)
+            return [];
 
         var result = GC.AllocateUninitializedArray<T>(count);
         nuint index = 0;

@@ -36,5 +36,5 @@ public static class EnumType
     public static IEnumerable<TAttribute> GetCustomAttributes<TEnum, TAttribute>(this TEnum value)
         where TEnum : struct, Enum
         where TAttribute : Attribute
-        => GetField(value)?.GetCustomAttributes<TAttribute>(false) ?? Array.Empty<TAttribute>();
+        => GetField(value)?.GetCustomAttributes<TAttribute>(false) ?? [];
 }
