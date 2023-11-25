@@ -262,7 +262,6 @@ public sealed class BufferWriterTests : Test
     [InlineData(int.MaxValue, int.MinValue)]
     public static void WriteInterpolatedStringToBufferWriterSlim(int x, int y)
     {
-        // TODO: Return try-finally block when 'scoped' keyword will be introduced in the next version of C#
         var buffer = new BufferWriterSlim<char>(stackalloc char[4]);
         buffer.Interpolate($"{x,4:X} = {y,-3:X}");
         Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());

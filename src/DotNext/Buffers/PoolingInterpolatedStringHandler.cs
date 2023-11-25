@@ -40,7 +40,6 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
 
         this.allocator = allocator;
         this.provider = provider;
-        count = 0;
     }
 
     /// <inheritdoc />

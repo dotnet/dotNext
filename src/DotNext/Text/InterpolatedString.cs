@@ -16,7 +16,7 @@ public static class InterpolatedString
     /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>A buffer containing formatted string.</returns>
-    public static MemoryOwner<char> Interpolate(MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator), nameof(provider))] ref PoolingInterpolatedStringHandler handler)
+    public static MemoryOwner<char> Interpolate(MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator), nameof(provider))] in PoolingInterpolatedStringHandler handler)
         => handler.DetachBuffer();
 
     /// <summary>
@@ -25,6 +25,6 @@ public static class InterpolatedString
     /// <param name="allocator">The allocator of the interpolated string.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>A buffer containing formatted string.</returns>
-    public static MemoryOwner<char> Interpolate(MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
-        => Interpolate(allocator, null, ref handler);
+    public static MemoryOwner<char> Interpolate(MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument(nameof(allocator))] in PoolingInterpolatedStringHandler handler)
+        => Interpolate(allocator, null, in handler);
 }

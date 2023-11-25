@@ -258,7 +258,7 @@ public static class BufferWriter
     /// <param name="provider">The format provider.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>The number of produced bytes.</returns>
-    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer), nameof(provider))] ref EncodingInterpolatedStringHandler handler)
+    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer), nameof(provider))] in EncodingInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -269,6 +269,6 @@ public static class BufferWriter
     /// <param name="buffer">The preallocated buffer to be used for placing characters during encoding.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>The number of produced bytes.</returns>
-    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer))] ref EncodingInterpolatedStringHandler handler)
-        => Interpolate(writer, in context, buffer, provider: null, ref handler);
+    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer))] in EncodingInterpolatedStringHandler handler)
+        => Interpolate(writer, in context, buffer, provider: null, in handler);
 }

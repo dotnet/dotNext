@@ -14,26 +14,19 @@ public partial class InterpolationExpression
     /// <summary>
     /// Represents interpolated string as an expression.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new handler.
+    /// </remarks>
+    /// <param name="literalLength">The total number of characters in known at compile-time.</param>
+    /// <param name="formattedCount">The number of placeholders.</param>
     [StructLayout(LayoutKind.Auto)]
     [InterpolatedStringHandler]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public struct InterpolatedStringExpressionHandler
+    public struct InterpolatedStringExpressionHandler(int literalLength, int formattedCount)
     {
-        private Expression[]? arguments;
+        private readonly Expression[]? arguments = new Expression[formattedCount];
+        private InterpolatedStringTemplateBuilder builder = new(literalLength, formattedCount);
         private int index;
-        private InterpolatedStringTemplateBuilder builder;
-
-        /// <summary>
-        /// Initializes a new handler.
-        /// </summary>
-        /// <param name="literalLength">The total number of characters in known at compile-time.</param>
-        /// <param name="formattedCount">The number of placeholders.</param>
-        public InterpolatedStringExpressionHandler(int literalLength, int formattedCount)
-        {
-            builder = new(literalLength, formattedCount);
-            arguments = new Expression[formattedCount];
-            index = 0;
-        }
 
         /// <summary>
         /// Adds literal value to the template.
@@ -75,7 +68,7 @@ public partial class InterpolationExpression
         public readonly override string ToString() => builder.ToString();
     }
 
-    private InterpolationExpression(ref InterpolatedStringExpressionHandler handler, Expression? formatProvider)
+    private InterpolationExpression(in InterpolatedStringExpressionHandler handler, Expression? formatProvider)
         : this(handler.ToString(), handler.Arguments, Kind.InterpolatedString, formatProvider)
     {
         interpolation = handler.BuildRenderer();
@@ -84,7 +77,7 @@ public partial class InterpolationExpression
     private InvocationExpression MakeInterpolatedString()
     {
         Debug.Assert(interpolation is not null);
-        return Expression.Invoke(interpolation, arguments.Prepend(FormatProvider).Append(Expression.Constant(null, typeof(CharBufferAllocator))));
+        return Invoke(interpolation, arguments.Prepend(FormatProvider).Append(Constant(null, typeof(CharBufferAllocator))));
     }
 
     /// <summary>
@@ -93,6 +86,6 @@ public partial class InterpolationExpression
     /// <param name="handler">The interpolated string.</param>
     /// <param name="formatProvider">The expression of type <see cref="IFormatProvider"/>.</param>
     /// <returns>The expression representing the interpolated string.</returns>
-    public static InterpolationExpression Create(ref InterpolatedStringExpressionHandler handler, Expression? formatProvider = null)
-        => new(ref handler, formatProvider);
+    public static InterpolationExpression Create(in InterpolatedStringExpressionHandler handler, Expression? formatProvider = null)
+        => new(in handler, formatProvider);
 }
