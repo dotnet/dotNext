@@ -5,19 +5,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext;
 
-using Dictionary = Collections.Generic.Dictionary;
-
 [DebuggerDisplay($"Source = {{{nameof(source)}}}")]
 [DebuggerTypeProxy(typeof(DebugView))]
 public partial struct UserDataStorage
 {
     [ExcludeFromCodeCoverage]
-    private readonly struct DebugView
+    private readonly struct DebugView(UserDataStorage storage)
     {
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public readonly IReadOnlyDictionary<string, object> Entries;
-
-        public DebugView(UserDataStorage storage) => Entries = storage.Capture();
+        public readonly IReadOnlyDictionary<string, object> Entries = storage.Capture();
     }
 
     /// <summary>

@@ -75,11 +75,9 @@ public static class BitVector
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Get8Bits(Vector128<byte> input, ref bool output)
     {
         Debug.Assert(Vector128.IsHardwareAccelerated);
-        Debug.Assert(Vector64.IsHardwareAccelerated);
 
         var onevec = Vector128.Create((byte)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
         var bitmask = Vector128.Create(
@@ -116,7 +114,6 @@ public static class BitVector
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Get16Bits(Vector256<ushort> input, ref bool output)
     {
         Debug.Assert(Vector256.IsHardwareAccelerated);

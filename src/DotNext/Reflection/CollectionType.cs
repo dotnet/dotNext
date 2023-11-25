@@ -58,7 +58,8 @@ public static class CollectionType
     /// <seealso cref="IReadOnlyCollection{T}"/>
     public static Type? GetImplementedCollection([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type)
     {
-        foreach (var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsReadOnlySpan())
+        var collectionTypes = (typeof(IReadOnlyCollection<>), typeof(ICollection<>));
+        foreach (var collectionType in collectionTypes.AsReadOnlySpan())
         {
             if (type.FindGenericInstance(collectionType) is { } result)
                 return result;

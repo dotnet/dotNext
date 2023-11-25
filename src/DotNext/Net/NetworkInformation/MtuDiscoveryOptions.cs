@@ -5,25 +5,19 @@ namespace DotNext.Net.NetworkInformation;
 /// <summary>
 /// Describes options for MTU discovery.
 /// </summary>
-public class MtuDiscoveryOptions : PingOptions
+/// <remarks>
+/// Initializes a new discovery options.
+/// </remarks>
+/// <param name="ttl">The number of times that ICMP packet can be forwarded by hosts in the route.</param>
+/// <param name="minMtuSize">The lowest possible size of MTU.</param>
+/// <param name="maxMtuSize">The highest possible size of MTU.</param>
+public class MtuDiscoveryOptions(byte ttl = 64, int minMtuSize = MtuDiscoveryOptions.DefaultMinMtuSize, int maxMtuSize = MtuDiscoveryOptions.DefaultMaxMtuSize) : PingOptions(ttl, true)
 {
     private const int DefaultMinMtuSize = 60;
     private const int DefaultMaxMtuSize = 65500;
 
-    private int minMtuSize, maxMtuSize;
-
-    /// <summary>
-    /// Initializes a new discovery options.
-    /// </summary>
-    /// <param name="ttl">The number of times that ICMP packet can be forwarded by hosts in the route.</param>
-    /// <param name="minMtuSize">The lowest possible size of MTU.</param>
-    /// <param name="maxMtuSize">The highest possible size of MTU.</param>
-    public MtuDiscoveryOptions(byte ttl = 64, int minMtuSize = DefaultMinMtuSize, int maxMtuSize = DefaultMaxMtuSize)
-        : base(ttl, true)
-    {
-        this.minMtuSize = minMtuSize > 0 ? minMtuSize : throw new ArgumentOutOfRangeException(nameof(minMtuSize));
-        this.maxMtuSize = maxMtuSize <= DefaultMaxMtuSize ? maxMtuSize : throw new ArgumentOutOfRangeException(nameof(maxMtuSize));
-    }
+    private int minMtuSize = minMtuSize > 0 ? minMtuSize : throw new ArgumentOutOfRangeException(nameof(minMtuSize));
+    private int maxMtuSize = maxMtuSize <= DefaultMaxMtuSize ? maxMtuSize : throw new ArgumentOutOfRangeException(nameof(maxMtuSize));
 
     /// <summary>
     /// Gets or sets the lowest possible size of MTU.

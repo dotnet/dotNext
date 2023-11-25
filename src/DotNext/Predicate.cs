@@ -103,19 +103,8 @@ public static class Predicate
     public static Predicate<T> Negate<T>(this Predicate<T> predicate)
         => predicate is not null ? predicate.Negate : throw new ArgumentNullException(nameof(predicate));
 
-    private sealed class BinaryOperator<T>
+    private sealed class BinaryOperator<T>(Predicate<T> left, Predicate<T> right)
     {
-        private readonly Predicate<T> left, right;
-
-        internal BinaryOperator(Predicate<T> left, Predicate<T> right)
-        {
-            Debug.Assert(left is not null);
-            Debug.Assert(right is not null);
-
-            this.left = left;
-            this.right = right;
-        }
-
         internal bool Or(T value) => left(value) || right(value);
 
         internal bool And(T value) => left(value) && right(value);

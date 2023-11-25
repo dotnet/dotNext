@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using DotNext.Collections.Generic;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Specialized;

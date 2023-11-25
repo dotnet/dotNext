@@ -1,13 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 
 namespace DotNext.Net.Http;
 
 /// <summary>
 /// Represents HTTP endpoint.
 /// </summary>
-public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>
+public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>, IEqualityOperators<HttpEndPoint?, HttpEndPoint?, bool>
 {
     private const StringComparison HostNameComparison = StringComparison.OrdinalIgnoreCase;
 

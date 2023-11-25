@@ -11,7 +11,7 @@ public static class EnumType
         where TEnum : struct, Enum
     {
         const BindingFlags publicStaticField = BindingFlags.Public | BindingFlags.Static;
-        return Enum.GetName<TEnum>(value) is { Length: > 0 } fieldName ? typeof(TEnum).GetField(fieldName, publicStaticField) : null;
+        return Enum.GetName(value) is { Length: > 0 } fieldName ? typeof(TEnum).GetField(fieldName, publicStaticField) : null;
     }
 
     /// <summary>

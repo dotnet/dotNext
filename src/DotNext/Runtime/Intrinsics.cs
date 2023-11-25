@@ -50,9 +50,9 @@ public static class Intrinsics
     {
         0 => true,
         sizeof(byte) => InToRef<T, byte>(in value) is 0,
-        sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(value)) is 0,
-        sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(value)) is 0U,
-        sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(value)) is 0UL,
+        sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(in value)) is 0,
+        sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(in value)) is 0U,
+        sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(in value)) is 0UL,
         _ => IsZero(ref InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
     };
 

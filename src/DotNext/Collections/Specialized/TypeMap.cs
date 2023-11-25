@@ -247,8 +247,7 @@ public partial class TypeMap : ITypeMap
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
     public TypeMap(int capacity)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
         entries = capacity is 0 ? [] : new object?[capacity];
     }

@@ -220,7 +220,7 @@ public static class TypeExtensions
     public static object? Cast(this Type type, object? obj)
     {
         if (obj is null)
-            return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default(object);
+            return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default;
         if (type.IsInstanceOfType(obj))
             return obj;
         throw new InvalidCastException();

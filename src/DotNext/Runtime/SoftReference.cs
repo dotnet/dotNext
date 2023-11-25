@@ -19,17 +19,8 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     where T : class
 {
     // tracks generation of Target in each GC collection using Finalizer as a callback
-    private sealed class Tracker : IGCCallback
+    private sealed class Tracker(SoftReference<T> parent, SoftReferenceOptions options) : IGCCallback
     {
-        private readonly SoftReferenceOptions options;
-        private readonly SoftReference<T> parent;
-
-        internal Tracker(SoftReference<T> parent, SoftReferenceOptions options)
-        {
-            this.options = options;
-            this.parent = parent;
-        }
-
         ~Tracker()
         {
             // Thread safety: preserve order of fields

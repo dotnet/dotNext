@@ -444,8 +444,7 @@ public class ConcurrentTypeMap : ITypeMap
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
     public ConcurrentTypeMap(int capacity)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
         Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();

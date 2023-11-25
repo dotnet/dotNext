@@ -9,7 +9,7 @@ namespace DotNext.Reflection;
 /// </summary>
 public static class DelegateType
 {
-    private const string InvokeMethodName = "Invoke";
+    private const string InvokeMethodName = nameof(Action.Invoke);
 
     /// <summary>
     /// Returns special Invoke method generate for each delegate type.
@@ -20,8 +20,7 @@ public static class DelegateType
     public static MethodInfo GetInvokeMethod<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>()
         where TDelegate : Delegate
     {
-        var delegateType = typeof(TDelegate);
-        return delegateType.IsSealed ?
+        return typeof(TDelegate) is { IsSealed: true } delegateType ?
             delegateType.GetMethod(InvokeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)!
             : throw new GenericArgumentException<TDelegate>(ExceptionMessages.ConcreteDelegateExpected);
     }
