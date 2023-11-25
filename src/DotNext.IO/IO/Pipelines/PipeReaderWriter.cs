@@ -221,7 +221,7 @@ internal readonly struct PipeBinaryWriter : IAsyncBinaryWriter
 
         static ValueTask<FlushResult> WriteAndFlushOnceAsync(PipeWriter output, ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
         {
-            output.WriteString(chars.Span, context, lengthFormat: lengthFormat);
+            output.Encode(chars.Span, context, lengthFormat: lengthFormat);
             return output.FlushAsync(token);
         }
     }

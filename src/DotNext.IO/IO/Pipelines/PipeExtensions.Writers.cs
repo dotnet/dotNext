@@ -70,7 +70,7 @@ public static partial class PipeExtensions
     public static ValueTask<FlushResult> WriteFormattableAsync<T>(this PipeWriter writer, T value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         where T : notnull, ISpanFormattable
     {
-        writer.WriteFormattable(value, lengthFormat, in context, format, provider);
+        writer.Encode(value, lengthFormat, in context, format, provider);
         return writer.FlushAsync(token);
     }
 

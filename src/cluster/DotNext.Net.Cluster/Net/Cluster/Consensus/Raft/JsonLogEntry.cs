@@ -54,7 +54,7 @@ internal static class JsonLogEntry
         static void Serialize(string typeId, T value, IBufferWriter<byte> buffer, JsonSerializerOptions? options)
         {
             // serialize type identifier
-            buffer.WriteString(typeId, DefaultEncoding, lengthFormat: LengthEncoding);
+            buffer.Encode(typeId, DefaultEncoding, lengthFormat: LengthEncoding);
 
             // serialize object to JSON
             using var jsonWriter = new Utf8JsonWriter(buffer, options?.GetWriterOptions() ?? DefaultWriterOptions);
@@ -95,7 +95,7 @@ internal static class JsonLogEntry
         static void Serialize(string typeId, T value, IBufferWriter<byte> buffer, JsonTypeInfo<T> typeInfo)
         {
             // serialize type identifier
-            buffer.WriteString(typeId, DefaultEncoding, lengthFormat: LengthEncoding);
+            buffer.Encode(typeId, DefaultEncoding, lengthFormat: LengthEncoding);
 
             // serialize object to JSON
             using var jsonWriter = new Utf8JsonWriter(buffer, DefaultWriterOptions);

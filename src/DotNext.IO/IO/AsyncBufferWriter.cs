@@ -162,7 +162,7 @@ internal readonly struct AsyncBufferWriter : IAsyncBinaryWriter
             result = new();
             try
             {
-                writer.WriteString(chars.Span, in context, lengthFormat: lengthFormat);
+                writer.Encode(chars.Span, in context, lengthFormat: lengthFormat);
             }
             catch (Exception e)
             {
@@ -185,7 +185,7 @@ internal readonly struct AsyncBufferWriter : IAsyncBinaryWriter
             result = new();
             try
             {
-                writer.WriteFormattable(value, lengthFormat, in context, format, provider);
+                writer.Encode(value, lengthFormat, in context, format, provider);
             }
             catch (Exception e)
             {

@@ -37,7 +37,7 @@ public sealed class BufferWriterTests : Test
     private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat? lengthEnc)
     {
         var writer = new ArrayBufferWriter<byte>();
-        writer.WriteString(value.AsSpan(), encoding, lengthEnc);
+        writer.Encode(value.AsSpan(), encoding, lengthEnc);
         IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
         var result = await (lengthEnc is null ?
             reader.ReadStringAsync(encoding.GetByteCount(value), encoding) :
@@ -143,27 +143,27 @@ public sealed class BufferWriterTests : Test
             var bi = new BigInteger(RandomBytes(64));
             var dt = DateTime.Now;
             var dto = DateTimeOffset.Now;
-            writer.WriteFormattable<long>(42L, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<ulong>(12UL, LengthFormat.PlainLittleEndian, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<int>(34, LengthFormat.PlainBigEndian, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<uint>(78, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<short>(90, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<ushort>(12, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
-            writer.WriteFormattable<ushort>(12, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<byte>(10, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
-            writer.WriteFormattable<sbyte>(11, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
-            writer.WriteFormattable<byte>(10, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<sbyte>(11, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable(g, LengthFormat.Plain, in encodingContext);
-            writer.WriteFormattable(g, LengthFormat.Plain, in encodingContext, format: "X");
-            writer.WriteFormattable(dt, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.WriteFormattable(dto, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.WriteFormattable(dt, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.WriteFormattable(dto, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.WriteFormattable(42.5M, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<float>(32.2F, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable<double>(56.6D, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.WriteFormattable(bi, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<long>(42L, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<ulong>(12UL, LengthFormat.PlainLittleEndian, in encodingContext, provider: InvariantCulture);
+            writer.Encode<int>(34, LengthFormat.PlainBigEndian, in encodingContext, provider: InvariantCulture);
+            writer.Encode<uint>(78, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<short>(90, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<ushort>(12, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
+            writer.Encode<ushort>(12, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<byte>(10, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
+            writer.Encode<sbyte>(11, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
+            writer.Encode<byte>(10, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<sbyte>(11, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode(g, LengthFormat.Plain, in encodingContext);
+            writer.Encode(g, LengthFormat.Plain, in encodingContext, format: "X");
+            writer.Encode(dt, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
+            writer.Encode(dto, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
+            writer.Encode(dt, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
+            writer.Encode(dto, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
+            writer.Encode(42.5M, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<float>(32.2F, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode<double>(56.6D, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Encode(bi, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
 
             var decodingContext = new DecodingContext(encoding, true);
             True(writer.TryGetWrittenContent(out var writtenMemory));
@@ -288,7 +288,7 @@ public sealed class BufferWriterTests : Test
         Span<char> buffer = stackalloc char[bufferSize];
 
         var context = new EncodingContext(Encoding.GetEncoding(encoding), true);
-        True(writer.WriteString(in context, buffer, null, $"{x,4:X} = {y,-3:X}") > 0);
+        True(writer.Interpolate(in context, buffer, $"{x,4:X} = {y,-3:X}") > 0);
 
         Equal($"{x,4:X} = {y,-3:X}", context.Encoding.GetString(writer.WrittenSpan));
     }

@@ -35,8 +35,8 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
         var context = new EncodingContext(Encoding, reuseEncoder: true);
         foreach (var (key, value) in metadata)
         {
-            writer.WriteString(key, context, lengthFormat: LengthEncoding);
-            writer.WriteString(value, context, lengthFormat: LengthEncoding);
+            writer.Encode(key, context, lengthFormat: LengthEncoding);
+            writer.Encode(value, context, lengthFormat: LengthEncoding);
         }
     }
 

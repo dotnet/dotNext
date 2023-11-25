@@ -68,7 +68,7 @@ public class TextMessage : IMessage
             result = ValueTask.CompletedTask;
             try
             {
-                bufferWriter.WriteString(Content.AsSpan(), Type.GetEncoding());
+                bufferWriter.Encode(Content.AsSpan(), Type.GetEncoding());
             }
             catch (Exception e)
             {
