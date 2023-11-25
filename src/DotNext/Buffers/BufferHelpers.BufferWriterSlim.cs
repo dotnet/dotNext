@@ -170,4 +170,34 @@ public static partial class BufferHelpers
 
         writer.Advance(output.WrittenCount);
     }
+
+    /// <summary>
+    /// Encodes formatted value as a set of UTF-8 bytes using the specified encoding.
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <returns>The number of written bytes.</returns>
+    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough free space to place UTF-8 bytes.</exception>
+    public static int EncodeAsUtf8<T>(this ref BufferWriterSlim<byte> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        where T : notnull, IUtf8SpanFormattable
+    {
+        const int maxBufferSize = int.MaxValue / 2;
+        int bytesWritten;
+        for (var bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+        {
+            var span = writer.InternalGetSpan(bufferSize);
+
+            // constrained call avoiding boxing for value types
+            if (((IUtf8SpanFormattable)value).TryFormat(span, out bytesWritten, format, provider))
+            {
+                writer.Advance(bytesWritten);
+                break;
+            }
+        }
+
+        return bytesWritten;
+    }
 }

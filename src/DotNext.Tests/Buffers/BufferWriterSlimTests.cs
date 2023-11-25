@@ -295,4 +295,13 @@ public sealed class BufferWriterSlimTests : Test
         buffer.WrittenCount = 1;
         Equal(42, buffer[0]);
     }
+
+    [Fact]
+    public static void EncodeAsUtf8()
+    {
+        var writer = new BufferWriterSlim<byte>();
+        writer.EncodeAsUtf8(42);
+        Equal(2, writer.WrittenCount);
+        Equal(42, int.Parse(writer.WrittenSpan));
+    }
 }
