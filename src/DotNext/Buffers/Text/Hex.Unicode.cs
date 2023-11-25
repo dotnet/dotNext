@@ -15,7 +15,7 @@ public static partial class Hex
     /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
     /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
     /// <returns>The actual number of characters in <paramref name="output"/> written by the method.</returns>
-    public static unsafe int EncodeToUtf16(scoped ReadOnlySpan<byte> bytes, scoped Span<char> output, bool lowercased = false)
+    public static int EncodeToUtf16(scoped ReadOnlySpan<byte> bytes, scoped Span<char> output, bool lowercased = false)
     {
         if (bytes.IsEmpty || output.IsEmpty)
             return 0;
@@ -40,7 +40,7 @@ public static partial class Hex
                 var nibbles256 = Vector256.Create(nibbles, nibbles);
                 var lowNibbleMask = Vector256.Create(NibbleMaxValue);
                 var utf16Mask = Vector256.Create(
-                    (byte)0,
+                    0,
                     byte.MaxValue,
                     1,
                     byte.MaxValue,
@@ -76,16 +76,16 @@ public static partial class Hex
                 do
                 {
                     var lowNibbles = Fetch(ref bytePtr);
-                    var highNibbles = Avx2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
+                    var highNibbles = Vector256.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
 
                     // combine high nibbles and low nibbles, then do table lookup
                     var result = Avx2.UnpackLow(highNibbles, lowNibbles);
-                    result = Avx2.And(result, lowNibbleMask);
+                    result &= lowNibbleMask;
                     result = Avx2.Shuffle(nibbles256, result);
                     result = Avx2.Shuffle(result, utf16Mask);
 
                     // save vector back to memory block
-                    Unsafe.WriteUnaligned(ref Unsafe.As<char, byte>(ref charPtr), result);
+                    Vector256.StoreUnsafe(result, ref As<char, byte>(ref charPtr));
 
                     bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
                     charPtr = ref Add(ref charPtr, charsCountPerIteration);
@@ -113,7 +113,7 @@ public static partial class Hex
 
                 var lowNibbleMask = Vector128.Create(NibbleMaxValue);
                 var utf16Mask = Vector128.Create(
-                    (byte)0,
+                    0,
                     byte.MaxValue,
                     1,
                     byte.MaxValue,
@@ -133,16 +133,16 @@ public static partial class Hex
                 do
                 {
                     var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<uint>(ref bytePtr)).AsByte();
-                    var highNibbles = Sse2.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
+                    var highNibbles = Vector128.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
 
                     // combine high nibbles and low nibbles, then do table lookup
                     var result = Sse2.UnpackLow(highNibbles, lowNibbles);
-                    result = Sse2.And(result, lowNibbleMask);
+                    result &= lowNibbleMask;
                     result = Ssse3.Shuffle(nibbles, result);
                     result = Ssse3.Shuffle(result, utf16Mask);
 
                     // save vector back to memory block
-                    Unsafe.WriteUnaligned(ref Unsafe.As<char, byte>(ref charPtr), result);
+                    Vector128.StoreUnsafe(result, ref As<char, byte>(ref charPtr));
 
                     bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
                     charPtr = ref Add(ref charPtr, charsCountPerIteration);
@@ -160,7 +160,7 @@ public static partial class Hex
 
         ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NibbleToUtf16CharLookupTable);
         if (!lowercased)
-            hexTable = ref Unsafe.Add(ref hexTable, 16);
+            hexTable = ref Add(ref hexTable, 16);
 
         for (byte value; offset < bytesCount; offset++, charPtr = ref Add(ref charPtr, 1), bytePtr = ref Add(ref bytePtr, 1))
         {
@@ -213,8 +213,8 @@ public static partial class Hex
         ref byte bytePtr = ref MemoryMarshal.GetReference(output);
         for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1))
         {
-            var high = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i);
-            var low = Unsafe.Add(ref MemoryMarshal.GetReference(chars), i + 1);
+            var high = Add(ref MemoryMarshal.GetReference(chars), i);
+            var low = Add(ref MemoryMarshal.GetReference(chars), i + 1);
 
             bytePtr = (byte)(ToNibble(low) | (ToNibble(high) << 4));
         }
