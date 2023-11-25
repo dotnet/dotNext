@@ -36,19 +36,16 @@ public interface ISupplier<out TResult> : IFunctional<Func<TResult>>
 /// Represents typed function pointer implementing <see cref="ISupplier{TResult}"/>.
 /// </summary>
 /// <typeparam name="TResult">The type of the result.</typeparam>
+/// <remarks>
+/// Wraps the function pointer.
+/// </remarks>
+/// <param name="ptr">The function pointer.</param>
+/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
 [StructLayout(LayoutKind.Auto)]
 [CLSCompliant(false)]
-public readonly unsafe struct Supplier<TResult> : ISupplier<TResult>
+public readonly unsafe struct Supplier<TResult>(delegate*<TResult> ptr) : ISupplier<TResult>
 {
-    private readonly delegate*<TResult> ptr;
-
-    /// <summary>
-    /// Wraps the function pointer.
-    /// </summary>
-    /// <param name="ptr">The function pointer.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-    public Supplier(delegate*<TResult> ptr)
-        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
+    private readonly delegate*<TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
@@ -106,16 +103,12 @@ public readonly struct Activator<T> : ISupplier<T>
 /// Represents constant value supplier.
 /// </summary>
 /// <typeparam name="T">The type of the value to supply.</typeparam>
-public readonly struct ValueSupplier<T> : ISupplier<T>
+/// <remarks>
+/// Creates a new wrapper for the value.
+/// </remarks>
+/// <param name="value">The value to wrap.</param>
+public readonly struct ValueSupplier<T>(T value) : ISupplier<T>
 {
-    private readonly T value;
-
-    /// <summary>
-    /// Creates a new wrapper for the value.
-    /// </summary>
-    /// <param name="value">The value to wrap.</param>
-    public ValueSupplier(T value) => this.value = value;
-
     /// <inheritdoc />
     T ISupplier<T>.Invoke() => value;
 
@@ -139,24 +132,18 @@ public readonly struct ValueSupplier<T> : ISupplier<T>
 /// </summary>
 /// <typeparam name="TContext">The type describing closure.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
+/// <remarks>
+/// Wraps the function pointer.
+/// </remarks>
+/// <param name="ptr">The function pointer.</param>
+/// <param name="context">The context to be passed to the function pointer.</param>
+/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
 [StructLayout(LayoutKind.Auto)]
 [CLSCompliant(false)]
-public readonly unsafe struct SupplierClosure<TContext, TResult> : ISupplier<TResult>
+public readonly unsafe struct SupplierClosure<TContext, TResult>(delegate*<in TContext, TResult> ptr, TContext context) : ISupplier<TResult>
 {
-    private readonly delegate*<in TContext, TResult> ptr;
-    private readonly TContext context;
-
-    /// <summary>
-    /// Wraps the function pointer.
-    /// </summary>
-    /// <param name="ptr">The function pointer.</param>
-    /// <param name="context">The context to be passed to the function pointer.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-    public SupplierClosure(delegate*<in TContext, TResult> ptr, TContext context)
-    {
-        this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
-        this.context = context;
-    }
+    private readonly delegate*<in TContext, TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
+    private readonly TContext context = context;
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.

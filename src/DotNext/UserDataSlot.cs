@@ -21,17 +21,12 @@ internal static class UserDataSlot
 /// </summary>
 /// <typeparam name="TValue">The type of the value stored in user data slot.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
+public readonly record struct UserDataSlot<TValue>() : IEquatable<UserDataSlot<TValue>>
 {
     private static volatile int valueIndexCounter;
     internal static readonly int TypeIndex = UserDataSlot.Allocate();
 
-    private readonly int valueIndex;
-
-    /// <summary>
-    /// Allocates a new data slot.
-    /// </summary>
-    public UserDataSlot() => valueIndex = Interlocked.Increment(ref valueIndexCounter);
+    private readonly int valueIndex = Interlocked.Increment(ref valueIndexCounter);
 
     internal int ValueIndex => valueIndex - 1;
 

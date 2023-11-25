@@ -164,7 +164,7 @@ public partial struct UserDataStorage
         {
             if (isEmpty)
             {
-                tables = Array.Empty<BackingStorageEntry>();
+                tables = [];
             }
             else
             {

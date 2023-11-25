@@ -35,19 +35,16 @@ public interface ISupplier<in T, out TResult> : IFunctional<Func<T, TResult>>
 /// </summary>
 /// <typeparam name="T">The type of the argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
+/// <remarks>
+/// Wraps the function pointer.
+/// </remarks>
+/// <param name="ptr">The function pointer.</param>
+/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
 [StructLayout(LayoutKind.Auto)]
 [CLSCompliant(false)]
-public readonly unsafe struct Supplier<T, TResult> : ISupplier<T, TResult>
+public readonly unsafe struct Supplier<T, TResult>(delegate*<T, TResult> ptr) : ISupplier<T, TResult>
 {
-    private readonly delegate*<T, TResult> ptr;
-
-    /// <summary>
-    /// Wraps the function pointer.
-    /// </summary>
-    /// <param name="ptr">The function pointer.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-    public Supplier(delegate*<T, TResult> ptr)
-        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
+    private readonly delegate*<T, TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
@@ -92,24 +89,18 @@ public readonly unsafe struct Supplier<T, TResult> : ISupplier<T, TResult>
 /// <typeparam name="TContext">The type describing closure.</typeparam>
 /// <typeparam name="T">The type of the argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
+/// <remarks>
+/// Wraps the function pointer.
+/// </remarks>
+/// <param name="ptr">The function pointer.</param>
+/// <param name="context">The context to be passed to the function pointer.</param>
+/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
 [StructLayout(LayoutKind.Auto)]
 [CLSCompliant(false)]
-public readonly unsafe struct SupplierClosure<TContext, T, TResult> : ISupplier<T, TResult>
+public readonly unsafe struct SupplierClosure<TContext, T, TResult>(delegate*<in TContext, T, TResult> ptr, TContext context) : ISupplier<T, TResult>
 {
-    private readonly delegate*<in TContext, T, TResult> ptr;
-    private readonly TContext context;
-
-    /// <summary>
-    /// Wraps the function pointer.
-    /// </summary>
-    /// <param name="ptr">The function pointer.</param>
-    /// <param name="context">The context to be passed to the function pointer.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-    public SupplierClosure(delegate*<in TContext, T, TResult> ptr, TContext context)
-    {
-        this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
-        this.context = context;
-    }
+    private readonly delegate*<in TContext, T, TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
+    private readonly TContext context = context;
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
@@ -164,13 +155,8 @@ public readonly record struct DelegatingSupplier<T, TResult> : ISupplier<T, TRes
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingPredicate<T> : ISupplier<T, bool>, IFunctional<Predicate<T>>
+internal readonly struct DelegatingPredicate<T>(Predicate<T> predicate) : ISupplier<T, bool>, IFunctional<Predicate<T>>
 {
-    private readonly Predicate<T> predicate;
-
-    internal DelegatingPredicate(Predicate<T> predicate)
-        => this.predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
-
     /// <inheritdoc />
     bool ISupplier<T, bool>.Invoke(T arg) => predicate(arg);
 
@@ -185,12 +171,9 @@ internal readonly struct DelegatingPredicate<T> : ISupplier<T, bool>, IFunctiona
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingConverter<TInput, TOutput> : ISupplier<TInput, TOutput>, IFunctional<Converter<TInput, TOutput>>
+internal readonly struct DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter) : ISupplier<TInput, TOutput>, IFunctional<Converter<TInput, TOutput>>
 {
-    private readonly Converter<TInput, TOutput> converter;
-
-    internal DelegatingConverter(Converter<TInput, TOutput> converter)
-        => this.converter = converter ?? throw new ArgumentNullException(nameof(converter));
+    private readonly Converter<TInput, TOutput> converter = converter ?? throw new ArgumentNullException(nameof(converter));
 
     /// <inheritdoc />
     TOutput ISupplier<TInput, TOutput>.Invoke(TInput arg) => converter(arg);
