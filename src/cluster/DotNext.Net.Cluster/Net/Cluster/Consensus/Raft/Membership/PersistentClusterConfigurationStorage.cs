@@ -80,7 +80,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         {
             // this method should be safe for concurrent invocations
             var handle = fs.SafeFileHandle;
-            using var buffer = allocator.Invoke(bufferSize, exactSize: false);
+            using var buffer = allocator.Allocate(bufferSize, exactSize: false);
 
             for (int offset = PayloadOffset, count; (count = await RandomAccess.ReadAsync(handle, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
             {

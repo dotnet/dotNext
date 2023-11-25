@@ -187,7 +187,7 @@ public static partial class StreamExtensions
         }
         else
         {
-            result = allocator.Invoke(length, exactSize: true);
+            result = allocator.Allocate(length, exactSize: true);
             length = ReadString(stream, result.Span, in context, buffer);
             result.TryResize(length);
         }
@@ -700,7 +700,7 @@ public static partial class StreamExtensions
         }
         else
         {
-            result = allocator.Invoke(length, exactSize: true);
+            result = allocator.Allocate(length, exactSize: true);
             length = await ReadStringAsync(stream, result.Memory, context, buffer, token).ConfigureAwait(false);
             result.TryResize(length);
         }
@@ -856,7 +856,7 @@ public static partial class StreamExtensions
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Invoke(length, true);
+            result = allocator.Allocate(length, true);
             stream.ReadExactly(result.Span);
         }
         else
@@ -900,7 +900,7 @@ public static partial class StreamExtensions
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Invoke(length, true);
+            result = allocator.Allocate(length, true);
             await stream.ReadExactlyAsync(result.Memory, token).ConfigureAwait(false);
         }
         else
@@ -1213,7 +1213,7 @@ public static partial class StreamExtensions
         if (bufferSize < 1)
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-        using var bufferOwner = allocator.Invoke(bufferSize, exactSize: false);
+        using var bufferOwner = allocator.Allocate(bufferSize, exactSize: false);
         var buffer = bufferOwner.Memory;
 
         for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)

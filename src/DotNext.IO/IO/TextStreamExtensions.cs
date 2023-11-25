@@ -206,7 +206,7 @@ public static class TextStreamExtensions
         if (bufferSize < 1)
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-        using var bufferOwner = allocator.Invoke(bufferSize, exactSize: false);
+        using var bufferOwner = allocator.Allocate(bufferSize, exactSize: false);
         var buffer = bufferOwner.Memory;
 
         for (int count; (count = await reader.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)

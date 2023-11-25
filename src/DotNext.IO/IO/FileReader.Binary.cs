@@ -141,7 +141,7 @@ public partial class FileReader : IAsyncBinaryReader
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Invoke(length, true);
+            result = allocator.Allocate(length, true);
             await ReadBlockAsync(result.Memory, token).ConfigureAwait(false);
         }
         else

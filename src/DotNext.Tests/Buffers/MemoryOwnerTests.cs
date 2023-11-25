@@ -76,7 +76,7 @@ public sealed class MemoryOwnerTests : Test
     [MemberData(nameof(GetArrayAllocators))]
     public static void ArrayAllocation(MemoryAllocator<int> allocator)
     {
-        using var owner = allocator.Invoke(4, false);
+        using var owner = allocator.Allocate(4, false);
         Equal(4, owner.Length);
     }
 

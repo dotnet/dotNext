@@ -205,7 +205,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         var memoryThreshold = options.MemoryThreshold;
         if (options.InitialCapacity > 0)
         {
-            buffer = allocator.Invoke(options.InitialCapacity, exactSize: false);
+            buffer = allocator.Allocate(options.InitialCapacity, exactSize: false);
             if (buffer.Length > memoryThreshold)
                 memoryThreshold = buffer.Length < Array.MaxLength ? buffer.Length + 1 : Array.MaxLength;
         }
@@ -589,7 +589,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         if (fileBackend is not null)
         {
-            using var buffer = allocator.Invoke(bufferSize, exactSize: false);
+            using var buffer = allocator.Allocate(bufferSize, exactSize: false);
             int count;
             for (long offset = 0L; (count = await RandomAccess.ReadAsync(fileBackend.SafeFileHandle, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
                 await consumer.Invoke(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
@@ -616,7 +616,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (fileBackend is not null)
         {
-            using var buffer = allocator.Invoke(bufferSize, exactSize: false);
+            using var buffer = allocator.Allocate(bufferSize, exactSize: false);
             int count;
             for (long offset = 0L; (count = RandomAccess.Read(fileBackend.SafeFileHandle, buffer.Span, offset)) > 0; offset += count, token.ThrowIfCancellationRequested())
                 consumer.Invoke(buffer.Span.Slice(0, count));

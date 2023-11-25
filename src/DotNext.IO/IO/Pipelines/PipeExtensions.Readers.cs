@@ -230,7 +230,7 @@ public static partial class PipeExtensions
         }
         else
         {
-            result = allocator.Invoke<char>(length, exactSize: true);
+            result = allocator.Allocate<char>(length, exactSize: true);
             length = await ReadAsync<int, StringReader<ArrayBuffer<char>>>(reader, new(context, new ArrayBuffer<char>(result)), token).ConfigureAwait(false);
             result.TryResize(length);
         }
@@ -570,7 +570,7 @@ public static partial class PipeExtensions
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Invoke(length, true);
+            result = allocator.Allocate(length, true);
             await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
         }
         else

@@ -297,7 +297,7 @@ public static partial class StreamExtensions
     public static async ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, bool littleEndian, MemoryAllocator<byte>? allocator = null, LengthFormat? lengthFormat = null, CancellationToken token = default)
     {
         var bytesCount = value.GetByteCount();
-        using var buffer = allocator.Invoke(Math.Max(1, bytesCount), false);
+        using var buffer = allocator.Allocate(Math.Max(1, bytesCount), false);
 
         if (lengthFormat.HasValue)
             await stream.WriteLengthAsync(bytesCount, lengthFormat.GetValueOrDefault(), buffer.Memory, token).ConfigureAwait(false);

@@ -49,7 +49,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void UnmanagedMemoryAllocation()
     {
-        using var owner = UnmanagedMemoryAllocator.GetAllocator<ushort>(false).Invoke(3, false);
+        using var owner = UnmanagedMemoryAllocator.GetAllocator<ushort>(false).Allocate(3, false);
         Span<ushort> array = owner.Span;
         array[0] = 10;
         array[1] = 20;

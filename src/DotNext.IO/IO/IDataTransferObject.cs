@@ -114,7 +114,7 @@ public interface IDataTransferObject
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
-        var buffer = allocator.Invoke(DefaultBufferSize, false);
+        var buffer = allocator.Allocate(DefaultBufferSize, false);
         try
         {
             return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);

@@ -175,7 +175,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
             {
                 int commandLength;
 
-                using (var buffer = ByteBufferAllocator.Invoke(bufferSize, exactSize: false))
+                using (var buffer = ByteBufferAllocator.Allocate(bufferSize, exactSize: false))
                 {
                     commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, token).ConfigureAwait(false);
                 }

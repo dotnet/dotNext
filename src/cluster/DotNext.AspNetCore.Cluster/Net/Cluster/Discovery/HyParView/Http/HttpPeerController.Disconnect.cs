@@ -26,7 +26,7 @@ internal partial class HttpPeerController
         }
         else
         {
-            using var buffer = allocator.Invoke(payloadLength, true);
+            using var buffer = allocator.Allocate(payloadLength, true);
             await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             (sender, isAlive) = DeserializeDisconnectRequest(buffer.Memory);
         }

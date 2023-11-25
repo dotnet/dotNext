@@ -66,7 +66,7 @@ public static class MemoryAllocator
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     /// <returns>The allocated memory.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> Invoke<T>(this MemoryAllocator<T>? allocator, int length, [ConstantExpected] bool exactSize)
+    public static MemoryOwner<T> Allocate<T>(this MemoryAllocator<T>? allocator, int length, [ConstantExpected] bool exactSize)
     {
         MemoryOwner<T> result;
         if (allocator is null)

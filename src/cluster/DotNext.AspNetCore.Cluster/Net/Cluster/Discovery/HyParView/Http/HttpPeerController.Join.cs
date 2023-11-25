@@ -25,7 +25,7 @@ internal partial class HttpPeerController
         else
         {
             // slow path, copy to temp buffer
-            using var buffer = allocator.Invoke(payloadLength, true);
+            using var buffer = allocator.Allocate(payloadLength, true);
             await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             joinedPeer = DeserializeJoinRequest(buffer.Memory);
         }

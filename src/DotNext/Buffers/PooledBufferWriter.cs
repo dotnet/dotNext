@@ -29,7 +29,7 @@ public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) 
                 case < 0:
                     throw new ArgumentOutOfRangeException(nameof(value));
                 case > 0:
-                    buffer = allocator.Invoke(value, exactSize: false);
+                    buffer = allocator.Allocate(value, exactSize: false);
                     break;
             }
         }

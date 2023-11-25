@@ -35,7 +35,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
         var length = (charsPerPlaceholder * formattedCount) + literalLength;
 
         buffer = (uint)length <= (uint)Array.MaxLength
-            ? allocator.Invoke(length, exactSize: false)
+            ? allocator.Allocate(length, exactSize: false)
             : throw new InsufficientMemoryException();
 
         this.allocator = allocator;

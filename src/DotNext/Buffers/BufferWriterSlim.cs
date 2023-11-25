@@ -60,7 +60,7 @@ public ref partial struct BufferWriterSlim<T>
 
         initialBuffer = default;
         this.allocator = allocator;
-        extraBuffer = initialCapacity is 0 ? default : allocator.Invoke(initialCapacity, exactSize: false);
+        extraBuffer = initialCapacity is 0 ? default : allocator.Allocate(initialCapacity, exactSize: false);
         position = 0;
     }
 
@@ -133,7 +133,7 @@ public ref partial struct BufferWriterSlim<T>
             // need to copy initial buffer
             if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out newSize))
             {
-                extraBuffer = allocator.Invoke(newSize, exactSize: false);
+                extraBuffer = allocator.Allocate(newSize, exactSize: false);
                 initialBuffer.CopyTo(result = extraBuffer.Span);
             }
             else
