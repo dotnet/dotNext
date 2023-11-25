@@ -83,7 +83,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         // fast path - attempt to consume metadata synchronously
         private bool TryConsume()
         {
-            if (!reader.TryReadBlock(LogEntryMetadata.Size, out var result) || result.IsCanceled)
+            if (!reader.TryReadExactly(LogEntryMetadata.Size, out var result) || result.IsCanceled)
                 return false;
 
             metadata = new(result.Buffer, out var metadataEnd);
@@ -98,7 +98,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
             if (metadataBuffer.IsEmpty)
                 metadataBuffer = new byte[LogEntryMetadata.Size];
 
-            await reader.ReadBlockAsync(metadataBuffer).ConfigureAwait(false);
+            await reader.ReadExactlyAsync(metadataBuffer).ConfigureAwait(false);
             metadata = new(metadataBuffer);
             consumed = false;
         }
@@ -265,7 +265,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         : this(request.Headers, out var entriesCount)
     {
         entries = CreateReader(request, entriesCount);
-        configurationReader = request.BodyReader.ReadBlockAsync;
+        configurationReader = request.BodyReader.ReadExactlyAsync;
     }
 
     private static ILogEntryProducer<IRaftLogEntry> CreateReader(HttpRequest request, long count)

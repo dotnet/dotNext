@@ -140,7 +140,7 @@ internal abstract partial class Server : Disposable, IServer
             var configuration = entries.Configuration.Content;
             if (!configuration.IsEmpty)
             {
-                await protocol.ReadBlockAsync(configuration, token).ConfigureAwait(false);
+                await protocol.ReadExactlyAsync(configuration, token).ConfigureAwait(false);
             }
 
             protocol.ResetReadState();

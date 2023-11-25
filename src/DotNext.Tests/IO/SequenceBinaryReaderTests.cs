@@ -42,7 +42,7 @@ public sealed class SequenceBinaryReaderTests : Test
         await reader.CopyToAsync(pipe.Writer);
         await pipe.Writer.CompleteAsync();
         var actual = new byte[expected.Length];
-        await pipe.Reader.ReadBlockAsync(actual);
+        await pipe.Reader.ReadExactlyAsync(actual);
         Equal(expected, actual);
     }
 

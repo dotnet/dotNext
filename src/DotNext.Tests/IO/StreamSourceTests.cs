@@ -182,7 +182,7 @@ public sealed class StreamSourceTests : Test
         buffer.Write(in sequence);
         using var src = buffer.AsStream(true);
         Span<byte> dest = new byte[data.Length];
-        src.ReadBlock(dest);
+        src.ReadExactly(dest);
         Equal(data, dest.ToArray());
     }
 
@@ -224,7 +224,7 @@ public sealed class StreamSourceTests : Test
         Equal(src.Length, sequence.Length);
         Equal(0L, src.Position);
         Memory<byte> dest = new byte[data.Length];
-        await src.ReadBlockAsync(dest);
+        await src.ReadExactlyAsync(dest);
         Equal(src.Length, src.Position);
         Equal(data, dest.ToArray());
     }

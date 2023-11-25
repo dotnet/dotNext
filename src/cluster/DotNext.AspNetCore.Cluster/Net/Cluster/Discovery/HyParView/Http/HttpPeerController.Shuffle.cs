@@ -18,7 +18,7 @@ internal partial class HttpPeerController
     {
         IReadOnlySet<EndPoint> peers;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             peers = DeserializeShuffleReply(result.Buffer, out var position);
             request.BodyReader.AdvanceTo(position);
@@ -26,7 +26,7 @@ internal partial class HttpPeerController
         else
         {
             using var buffer = allocator.Invoke(payloadLength, true);
-            await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             peers = DeserializeShuffleReply(buffer.Memory);
         }
 
@@ -94,7 +94,7 @@ internal partial class HttpPeerController
         IReadOnlySet<EndPoint> peers;
         int timeToLive;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             (sender, origin, timeToLive, peers) = DeserializeShuffleRequest(result.Buffer, out var position);
             request.BodyReader.AdvanceTo(position);

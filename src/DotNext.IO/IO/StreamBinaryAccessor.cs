@@ -36,7 +36,7 @@ internal readonly struct AsyncStreamBinaryAccessor : IAsyncBinaryReader, IAsyncB
         => StreamExtensions.ReadAsync<T>(Stream, buffer, token);
 
     public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
-        => StreamExtensions.ReadBlockAsync(Stream, output, token);
+        => Stream.ReadExactlyAsync(output, token);
 
     private async ValueTask SkipSlowAsync(long length, CancellationToken token)
     {

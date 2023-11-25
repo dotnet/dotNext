@@ -50,8 +50,8 @@ public sealed class PipeExtensionsTests : Test
         WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
         var portion1 = new byte[3];
         var portion2 = new byte[2];
-        await pipe.Reader.ReadBlockAsync(portion1);
-        await pipe.Reader.ReadBlockAsync(portion2);
+        await pipe.Reader.ReadExactlyAsync(portion1);
+        await pipe.Reader.ReadExactlyAsync(portion2);
         Equal(1, portion1[0]);
         Equal(5, portion1[1]);
         Equal(8, portion1[2]);
@@ -71,7 +71,7 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
         Memory<byte> result = new byte[124];
-        await ThrowsAsync<EndOfStreamException>(() => pipe.Reader.ReadBlockAsync(result).AsTask());
+        await ThrowsAsync<EndOfStreamException>(() => pipe.Reader.ReadExactlyAsync(result).AsTask());
     }
 
     [Fact]
@@ -320,13 +320,13 @@ public sealed class PipeExtensionsTests : Test
     {
         var pipe = new Pipe();
         pipe.Writer.Write(new byte[] { 10, 20, 30 });
-        False(pipe.Reader.TryReadBlock(10L, out var result));
+        False(pipe.Reader.TryReadExactly(10L, out var result));
         True(result.Buffer.IsEmpty);
         False(result.IsCanceled);
         False(result.IsCompleted);
 
         pipe.Writer.Complete();
-        True(pipe.Reader.TryReadBlock(3L, out result));
+        True(pipe.Reader.TryReadExactly(3L, out result));
         True(result.IsCompleted);
         False(result.Buffer.IsEmpty);
         Equal(3L, result.Buffer.Length);

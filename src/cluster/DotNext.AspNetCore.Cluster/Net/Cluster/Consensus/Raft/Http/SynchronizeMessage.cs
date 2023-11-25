@@ -48,7 +48,7 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessage<long?>
             await using (stream.ConfigureAwait(false))
             {
                 using var buffer = MemoryAllocator.Allocate<byte>(sizeof(long), exactSize: true);
-                await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+                await stream.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
                 return ReadInt64LittleEndian(buffer.Span);
             }
         }

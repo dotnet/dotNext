@@ -38,13 +38,13 @@ internal sealed class TcpProtocolStream : ProtocolStream
 
     private protected override int ReadFromTransport(Span<byte> buffer) => BaseStream.Read(buffer);
 
-    private protected override int ReadFromTransport(int count, Span<byte> buffer) => BaseStream.ReadAtLeast(count, buffer);
+    private protected override int ReadFromTransport(int count, Span<byte> buffer) => BaseStream.ReadAtLeast(buffer, count);
 
     private protected override ValueTask<int> ReadFromTransportAsync(Memory<byte> buffer, CancellationToken token)
         => BaseStream.ReadAsync(buffer, token);
 
     private protected override ValueTask<int> ReadFromTransportAsync(int minimumSize, Memory<byte> buffer, CancellationToken token)
-        => BaseStream.ReadAtLeastAsync(minimumSize, buffer, token);
+        => BaseStream.ReadAtLeastAsync(buffer, minimumSize, cancellationToken: token);
 
     private protected override void WriteToTransport(ReadOnlySpan<byte> buffer)
         => BaseStream.Write(buffer);

@@ -40,7 +40,7 @@ public sealed class FileBufferingWriterTests : Test
 
         using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
         var actual = new byte[expected.Length];
-        fs.ReadBlock(actual);
+        fs.ReadExactly(actual);
         Equal(expected, actual);
     }
 

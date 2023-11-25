@@ -91,7 +91,7 @@ public static partial class StreamExtensions
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
         buffer = buffer.Slice(0, T.Size);
-        ReadBlock(stream, buffer);
+        stream.ReadExactly(buffer);
 
         var reader = new SpanReader<byte>(buffer);
         return T.Parse(ref reader);
@@ -218,7 +218,7 @@ public static partial class StreamExtensions
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
         buffer = buffer.Slice(0, length);
-        stream.ReadBlock(buffer);
+        stream.ReadExactly(buffer);
         return new BigInteger(buffer, isBigEndian: !littleEndian);
     }
 
@@ -241,7 +241,7 @@ public static partial class StreamExtensions
             return BigInteger.Zero;
 
         using MemoryRental<byte> buffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length);
-        stream.ReadBlock(buffer.Span);
+        stream.ReadExactly(buffer.Span);
         return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
     }
 
@@ -384,7 +384,7 @@ public static partial class StreamExtensions
 
         using (MemoryRental<byte> bytesBuffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length))
         {
-            stream.ReadBlock(bytesBuffer.Span);
+            stream.ReadExactly(bytesBuffer.Span);
             charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);
         }
 
@@ -414,7 +414,7 @@ public static partial class StreamExtensions
         else
         {
             using var bytesBuffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length);
-            stream.ReadBlock(bytesBuffer.Span);
+            stream.ReadExactly(bytesBuffer.Span);
             result = encoding.GetChars(bytesBuffer.Span, allocator);
         }
 
@@ -590,7 +590,7 @@ public static partial class StreamExtensions
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
 
         buffer = buffer.Slice(0, length);
-        await stream.ReadBlockAsync(buffer, token).ConfigureAwait(false);
+        await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
         return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
     }
 
@@ -610,7 +610,7 @@ public static partial class StreamExtensions
             return BigInteger.Zero;
 
         using var buffer = MemoryAllocator.Allocate<byte>(length, true);
-        await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+        await stream.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
         return new BigInteger(buffer.Span, isBigEndian: !littleEndian);
     }
 
@@ -792,7 +792,7 @@ public static partial class StreamExtensions
         else
         {
             using var bytesBuffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
-            await stream.ReadBlockAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
+            await stream.ReadExactlyAsync(bytesBuffer.Memory, token).ConfigureAwait(false);
             result = encoding.GetChars(bytesBuffer.Span, allocator);
         }
 
@@ -843,22 +843,6 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Reads exact number of bytes.
-    /// </summary>
-    /// <param name="stream">The stream to read from.</param>
-    /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
-    /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-    public static void ReadBlock(this Stream stream, Span<byte> output)
-    {
-        for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
-        {
-            bytesRead = stream.Read(output.Slice(offset, size));
-            if (bytesRead == 0)
-                throw new EndOfStreamException();
-        }
-    }
-
-    /// <summary>
     /// Decodes the block of bytes.
     /// </summary>
     /// <param name="stream">The stream to read from.</param>
@@ -873,7 +857,7 @@ public static partial class StreamExtensions
         if (length > 0)
         {
             result = allocator.Invoke(length, true);
-            stream.ReadBlock(result.Span);
+            stream.ReadExactly(result.Span);
         }
         else
         {
@@ -894,28 +878,8 @@ public static partial class StreamExtensions
         where T : unmanaged
     {
         var result = default(T);
-        stream.ReadBlock(Span.AsBytes(ref result));
+        stream.ReadExactly(Span.AsBytes(ref result));
         return result;
-    }
-
-    /// <summary>
-    /// Reads exact number of bytes asynchronously.
-    /// </summary>
-    /// <param name="stream">The stream to read from.</param>
-    /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
-    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
-    /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    public static async ValueTask ReadBlockAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
-    {
-        for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
-        {
-            bytesRead = await stream.ReadAsync(output.Slice(offset, size), token).ConfigureAwait(false);
-            if (bytesRead is 0)
-                throw new EndOfStreamException();
-        }
     }
 
     /// <summary>
@@ -937,7 +901,7 @@ public static partial class StreamExtensions
         if (length > 0)
         {
             result = allocator.Invoke(length, true);
-            await stream.ReadBlockAsync(result.Memory, token).ConfigureAwait(false);
+            await stream.ReadExactlyAsync(result.Memory, token).ConfigureAwait(false);
         }
         else
         {
@@ -961,7 +925,7 @@ public static partial class StreamExtensions
     public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
         where T : unmanaged
     {
-        await stream.ReadBlockAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token).ConfigureAwait(false);
+        await stream.ReadExactlyAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token).ConfigureAwait(false);
         return MemoryMarshal.Read<T>(buffer.Span);
     }
 
@@ -971,7 +935,7 @@ public static partial class StreamExtensions
         where TOutput : unmanaged
         where TConverter : struct, ISupplier<TInput, TOutput>
     {
-        await stream.ReadBlockAsync(buffer.Slice(0, Unsafe.SizeOf<TInput>()), token).ConfigureAwait(false);
+        await stream.ReadExactlyAsync(buffer.Slice(0, Unsafe.SizeOf<TInput>()), token).ConfigureAwait(false);
         return converter.Invoke(MemoryMarshal.Read<TInput>(buffer.Span));
     }
 
@@ -989,7 +953,7 @@ public static partial class StreamExtensions
         where T : unmanaged
     {
         using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
-        await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+        await stream.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
         return MemoryMarshal.Read<T>(buffer.Span);
     }
 
@@ -1231,61 +1195,6 @@ public static partial class StreamExtensions
     /// <param name="streams">A collection of readable streams.</param>
     /// <returns>An object that represents multiple streams as one logical stream.</returns>
     public static Stream Combine(this IEnumerable<Stream> streams) => new SparseStream(streams);
-
-    /// <summary>
-    /// Reads at least the specified number of bytes.
-    /// </summary>
-    /// <param name="stream">The stream to read from.</param>
-    /// <param name="minimumSize">The minimum size to read.</param>
-    /// <param name="buffer">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The actual number of bytes written to the <paramref name="buffer"/>. This value is equal to or greater than <paramref name="minimumSize"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="minimumSize"/> is greater than the length of <paramref name="buffer"/>.</exception>
-    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public static async ValueTask<int> ReadAtLeastAsync(this Stream stream, int minimumSize, Memory<byte> buffer, CancellationToken token = default)
-    {
-        if ((uint)minimumSize > (uint)buffer.Length)
-            throw new ArgumentOutOfRangeException(nameof(minimumSize));
-
-        var offset = 0;
-
-        for (int size = minimumSize, bytesRead; size > 0; size -= bytesRead, offset += bytesRead)
-        {
-            bytesRead = await stream.ReadAsync(buffer.Slice(offset), token).ConfigureAwait(false);
-            if (bytesRead is 0)
-                throw new EndOfStreamException();
-        }
-
-        return offset;
-    }
-
-    /// <summary>
-    /// Reads at least the specified number of bytes.
-    /// </summary>
-    /// <param name="stream">The stream to read from.</param>
-    /// <param name="minimumSize">The minimum size to read.</param>
-    /// <param name="buffer">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
-    /// <returns>The actual number of bytes written to the <paramref name="buffer"/>. This value is equal to or greater than <paramref name="minimumSize"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="minimumSize"/> is greater than the length of <paramref name="buffer"/>.</exception>
-    /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
-    public static int ReadAtLeast(this Stream stream, int minimumSize, Span<byte> buffer)
-    {
-        if ((uint)minimumSize > (uint)buffer.Length)
-            throw new ArgumentOutOfRangeException(nameof(minimumSize));
-
-        var offset = 0;
-
-        for (int size = minimumSize, bytesRead; size > 0; size -= bytesRead, offset += bytesRead)
-        {
-            bytesRead = stream.Read(buffer.Slice(offset));
-            if (bytesRead is 0)
-                throw new EndOfStreamException();
-        }
-
-        return offset;
-    }
 
     /// <summary>
     /// Reads the stream sequentially.

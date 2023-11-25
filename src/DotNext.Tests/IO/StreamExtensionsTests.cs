@@ -557,9 +557,9 @@ public sealed class StreamExtensionsTests : Test
         False(combined.CanSeek);
 
         Span<byte> buffer = stackalloc byte[6];
-        combined.ReadBlock(buffer);
+        combined.ReadExactly(buffer);
 
-        Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, buffer.ToArray());
+        Equal([1, 2, 3, 4, 5, 6], buffer.ToArray());
     }
 
     [Fact]
@@ -570,9 +570,9 @@ public sealed class StreamExtensionsTests : Test
         await using var combined = new[] { ms1, ms2 }.Combine();
 
         var buffer = new byte[6];
-        await combined.ReadBlockAsync(buffer);
+        await combined.ReadExactlyAsync(buffer);
 
-        Equal(new byte[] { 1, 2, 3, 4, 5, 6 }, buffer);
+        Equal([1, 2, 3, 4, 5, 6], buffer);
     }
 
     [Fact]
@@ -629,24 +629,6 @@ public sealed class StreamExtensionsTests : Test
         Throws<NotSupportedException>(() => combined.WriteByte(1));
         Throws<NotSupportedException>(() => combined.Write(ReadOnlySpan<byte>.Empty));
         await ThrowsAsync<NotSupportedException>(async () => await combined.WriteAsync(ReadOnlyMemory<byte>.Empty));
-    }
-
-    [Fact]
-    public static void ReadAtLeastBytes()
-    {
-        using var ms = new MemoryStream(new byte[] { 1, 2, 3, 4 });
-        Span<byte> buffer = stackalloc byte[4];
-        Equal(4, ms.ReadAtLeast(3, buffer));
-        Equal(ms.ToArray(), buffer.ToArray());
-    }
-
-    [Fact]
-    public static async Task ReadAtLeastBytesAsync()
-    {
-        using var ms = new MemoryStream(new byte[] { 1, 2, 3, 4 });
-        var buffer = new byte[4];
-        Equal(4, await ms.ReadAtLeastAsync(3, buffer));
-        Equal(ms.ToArray(), buffer.ToArray());
     }
 
     [Fact]

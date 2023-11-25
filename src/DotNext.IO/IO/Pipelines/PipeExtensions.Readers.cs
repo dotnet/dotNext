@@ -123,7 +123,7 @@ public static partial class PipeExtensions
         where T : notnull, IBinaryFormattable<T>
     {
         ValueTask<T> result;
-        if (TryReadBlock(reader, T.Size, out var readResult))
+        if (TryReadExactly(reader, T.Size, out var readResult))
         {
             result = readResult.IsCanceled
                 ? ValueTask.FromCanceled<T>(token.IsCancellationRequested ? token : new(true))
@@ -142,7 +142,7 @@ public static partial class PipeExtensions
         static async ValueTask<T> ParseSlowAsync(PipeReader reader, CancellationToken token)
         {
             using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
-            await ReadBlockAsync(reader, buffer.Memory, token).ConfigureAwait(false);
+            await ReadExactlyAsync(reader, buffer.Memory, token).ConfigureAwait(false);
             return IBinaryFormattable<T>.Parse(buffer.Span);
         }
     }
@@ -339,7 +339,7 @@ public static partial class PipeExtensions
     {
         ValueTask<T> result;
 
-        if (!TryReadBlock(reader, Unsafe.SizeOf<T>(), out var readResult))
+        if (!TryReadExactly(reader, Unsafe.SizeOf<T>(), out var readResult))
         {
             result = ReadSlowAsync(reader, token);
         }
@@ -519,12 +519,12 @@ public static partial class PipeExtensions
     /// <returns>The task representing asynchronous state of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
-    public static ValueTask ReadBlockAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
+    public static ValueTask ReadExactlyAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
     {
         if (output.IsEmpty)
             return ValueTask.CompletedTask;
 
-        if (TryReadBlock(reader, output.Length, out var result))
+        if (TryReadExactly(reader, output.Length, out var result))
         {
             result.Buffer.CopyTo(output.Span);
             reader.AdvanceTo(result.Buffer.GetPosition(output.Length));
@@ -536,7 +536,21 @@ public static partial class PipeExtensions
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         static async ValueTask ReadBlockSlowAsync(PipeReader reader, Memory<byte> output, CancellationToken token)
-            => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
+        {
+            var result = await reader.ReadAtLeastAsync(output.Length, token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(reader, token);
+            Copy(reader, result.Buffer, output.Span);
+        }
+
+        static void Copy(PipeReader reader, ReadOnlySequence<byte> source, Span<byte> output)
+        {
+            if (source.Length < output.Length)
+                throw new EndOfStreamException();
+
+            var blockEnd = source.GetPosition(output.Length);
+            source.Slice(source.Start, blockEnd).CopyTo(output);
+            reader.AdvanceTo(blockEnd, source.End);
+        }
     }
 
     /// <summary>
@@ -557,7 +571,7 @@ public static partial class PipeExtensions
         if (length > 0)
         {
             result = allocator.Invoke(length, true);
-            await ReadBlockAsync(reader, result.Memory, token).ConfigureAwait(false);
+            await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
         }
         else
         {
@@ -583,7 +597,7 @@ public static partial class PipeExtensions
     /// <see langword="true"/> if the block of requested length is obtained successfully;
     /// otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool TryReadBlock(this PipeReader reader, long length, out ReadResult result)
+    public static bool TryReadExactly(this PipeReader reader, long length, out ReadResult result)
     {
         if (reader.TryRead(out result))
         {

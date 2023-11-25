@@ -19,7 +19,7 @@ internal partial class HttpPeerController
         EndPoint sender;
         bool highPriority;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             // fast path, no need to allocate temp buffer
             (sender, highPriority) = DeserializeNeighborRequest(result.Buffer, out var position);
@@ -29,7 +29,7 @@ internal partial class HttpPeerController
         {
             // slow path, allocate temp buffer
             using var buffer = allocator.Invoke(payloadLength, true);
-            await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             (sender, highPriority) = DeserializeNeighborRequest(buffer.Memory);
         }
 
