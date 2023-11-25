@@ -297,7 +297,7 @@ public static partial class StreamExtensions
     public static async ValueTask WriteBigIntegerAsync(this Stream stream, BigInteger value, bool littleEndian, MemoryAllocator<byte>? allocator = null, LengthFormat? lengthFormat = null, CancellationToken token = default)
     {
         var bytesCount = value.GetByteCount();
-        using var buffer = allocator.Allocate(Math.Max(1, bytesCount), false);
+        using var buffer = allocator.AllocateAtLeast(Math.Max(1, bytesCount));
 
         if (lengthFormat.HasValue)
             await stream.WriteLengthAsync(bytesCount, lengthFormat.GetValueOrDefault(), buffer.Memory, token).ConfigureAwait(false);
@@ -391,7 +391,7 @@ public static partial class StreamExtensions
     public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, LengthFormat? lengthFormat = null, CancellationToken token = default)
     {
         var bytesCount = encoding.GetByteCount(value.Span);
-        using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
+        using var buffer = MemoryAllocator.AllocateExactly<byte>(bytesCount);
         await stream.WriteLengthAsync(bytesCount, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
         if (bytesCount == 0)
             return;
@@ -420,7 +420,7 @@ public static partial class StreamExtensions
     {
         for (var charBufferSize = InitialCharBufferSize; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
-            using var owner = MemoryAllocator.Allocate<char>(charBufferSize, false);
+            using var owner = MemoryAllocator.AllocateAtLeast<char>(charBufferSize);
 
             if (value.TryFormat(owner.Span, out var charsWritten, format, provider))
             {
@@ -449,7 +449,7 @@ public static partial class StreamExtensions
     public static async ValueTask WriteFormattableAsync<T>(this Stream stream, T value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
         where T : notnull, ISpanFormattable
     {
-        using var owner = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
+        using var owner = MemoryAllocator.AllocateAtLeast<byte>(DefaultBufferSize);
         await WriteFormattableAsync(stream, value, lengthFormat, context, owner.Memory, format, provider, token).ConfigureAwait(false);
     }
 
@@ -560,7 +560,7 @@ public static partial class StreamExtensions
     public static async ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
         where T : unmanaged
     {
-        using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), false);
+        using var buffer = MemoryAllocator.AllocateAtLeast<byte>(Unsafe.SizeOf<T>());
         await WriteAsync(stream, value, buffer.Memory, token).ConfigureAwait(false);
     }
 

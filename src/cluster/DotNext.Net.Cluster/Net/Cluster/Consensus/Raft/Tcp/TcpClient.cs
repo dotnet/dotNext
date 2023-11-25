@@ -24,7 +24,7 @@ internal sealed class TcpClient : Client, ITcpTransport
 
             this.transport = transport;
             this.protocol = protocol;
-            buffer = allocator.Allocate(bufferSize, exactSize: false);
+            buffer = allocator.AllocateAtLeast(bufferSize);
         }
 
         internal int CloseTimeout

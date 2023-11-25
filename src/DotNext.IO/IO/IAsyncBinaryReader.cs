@@ -34,7 +34,7 @@ public interface IAsyncBinaryReader
     async ValueTask<T> ReadAsync<T>(CancellationToken token = default)
         where T : unmanaged
     {
-        using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
+        using var buffer = MemoryAllocator.AllocateExactly<byte>(Unsafe.SizeOf<T>());
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
         return MemoryMarshal.Read<T>(buffer.Span);
     }
@@ -112,7 +112,7 @@ public interface IAsyncBinaryReader
     async ValueTask<T> ParseAsync<T>(CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
-        using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+        using var buffer = MemoryAllocator.AllocateExactly<byte>(T.Size);
         await ReadAsync(buffer.Memory, token).ConfigureAwait(false);
         return IBinaryFormattable<T>.Parse(buffer.Span);
     }
@@ -137,7 +137,7 @@ public interface IAsyncBinaryReader
 
         async ValueTask<BigInteger> ReadAsync()
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(length);
             await this.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return new(buffer.Span, isBigEndian: !littleEndian);
         }
@@ -191,7 +191,7 @@ public interface IAsyncBinaryReader
             const int tempBufferSize = 4096;
 
             // fixed-size buffer to avoid OOM
-            using var buffer = MemoryAllocator.Allocate<byte>((int)Math.Min(tempBufferSize, length), exactSize: false);
+            using var buffer = MemoryAllocator.AllocateAtLeast<byte>((int)Math.Min(tempBufferSize, length));
             for (var bytesToRead = buffer.Length; length > 0L; length -= bytesToRead)
             {
                 bytesToRead = (int)Math.Min(bytesToRead, length);
@@ -232,7 +232,7 @@ public interface IAsyncBinaryReader
 
         async ValueTask<string> ReadAsync()
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(length);
             await this.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return context.Encoding.GetString(buffer.Span);
         }
@@ -259,7 +259,7 @@ public interface IAsyncBinaryReader
 
         async ValueTask<MemoryOwner<char>> ReadAsync()
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(length);
             await this.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return context.Encoding.GetChars(buffer.Span, allocator);
         }

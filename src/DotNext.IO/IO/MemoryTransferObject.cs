@@ -15,7 +15,7 @@ public class MemoryTransferObject : Disposable, IDataTransferObject
     /// <param name="length">The length, in bytes, of the content.</param>
     /// <param name="allocator">The memory allocator.</param>
     public MemoryTransferObject(int length, MemoryAllocator<byte>? allocator = null)
-        => owner = length > 0 ? allocator.Allocate(length, true) : default;
+        => owner = length > 0 ? allocator.AllocateExactly(length) : default;
 
     /// <summary>
     /// Transforms this object to serialized form.

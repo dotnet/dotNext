@@ -49,7 +49,7 @@ public partial class FileWriter : Disposable, IFlushable
         if (bufferSize <= 16)
             throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
-        buffer = allocator.Allocate(bufferSize, exactSize: false);
+        buffer = allocator.AllocateAtLeast(bufferSize);
         this.handle = handle;
         this.fileOffset = fileOffset;
     }

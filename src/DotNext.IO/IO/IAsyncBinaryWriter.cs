@@ -26,7 +26,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     async ValueTask WriteAsync<T>(T value, CancellationToken token = default)
         where T : unmanaged
     {
-        using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
+        using var buffer = MemoryAllocator.AllocateExactly<byte>(Unsafe.SizeOf<T>());
         Span.AsReadOnlyBytes(value).CopyTo(buffer.Span);
         await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
     }
@@ -92,7 +92,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         }
         else
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(bytesCount);
             if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
                 throw new InternalBufferOverflowException();
             await WriteAsync(buffer.Memory, lengthFormat, token).ConfigureAwait(false);
@@ -194,7 +194,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     async Task CopyFromAsync(Stream input, CancellationToken token = default)
     {
         const int defaultBufferSize = 512;
-        using var buffer = MemoryAllocator.Allocate<byte>(defaultBufferSize, false);
+        using var buffer = MemoryAllocator.AllocateAtLeast<byte>(defaultBufferSize);
         for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0;)
             await WriteAsync(buffer.Memory.Slice(0, count), null, token).ConfigureAwait(false);
     }

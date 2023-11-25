@@ -29,7 +29,7 @@ public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) 
                 case < 0:
                     throw new ArgumentOutOfRangeException(nameof(value));
                 case > 0:
-                    buffer = allocator.Allocate(value, exactSize: false);
+                    buffer = allocator.AllocateAtLeast(value);
                     break;
             }
         }
@@ -111,7 +111,7 @@ public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) 
     /// <inheritdoc/>
     private protected override void Resize(int newSize)
     {
-        buffer.Resize(newSize, false, allocator);
+        buffer.Resize(newSize, allocator);
         PooledBufferWriter.AllocationMeter.Record(buffer.Length, measurementTags);
     }
 

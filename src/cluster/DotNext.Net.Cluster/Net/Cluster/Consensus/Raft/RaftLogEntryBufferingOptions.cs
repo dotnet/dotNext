@@ -55,7 +55,7 @@ public class RaftLogEntryBufferingOptions
 
     internal string GetRandomFileName() => Path.Combine(TempPath, Path.GetRandomFileName());
 
-    internal MemoryOwner<byte> RentBuffer() => MemoryAllocator.Allocate(BufferSize, false);
+    internal MemoryOwner<byte> RentBuffer() => MemoryAllocator.AllocateAtLeast(BufferSize);
 
     internal FileBufferingWriter CreateBufferingWriter()
     {

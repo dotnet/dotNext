@@ -62,7 +62,7 @@ public partial class SparseBufferWriter<T>
 
         internal PooledMemoryChunk(MemoryAllocator<T>? allocator, int length, MemoryChunk? previous = null)
             : base(previous)
-            => owner = allocator.Allocate(length, exactSize: false);
+            => owner = allocator.AllocateAtLeast(length);
 
         /// <summary>
         /// Indicates that the chunk has no occupied elements in the memory.
@@ -97,7 +97,7 @@ public partial class SparseBufferWriter<T>
         internal void Realloc(MemoryAllocator<T>? allocator, int length)
         {
             owner.Dispose();
-            owner = allocator.Allocate(length, exactSize: false);
+            owner = allocator.AllocateAtLeast(length);
         }
 
         protected override void Dispose(bool disposing)

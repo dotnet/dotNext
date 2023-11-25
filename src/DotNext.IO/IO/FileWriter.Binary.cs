@@ -201,7 +201,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         else
         {
             Debug.Assert(bufferOffset is 0);
-            using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, exactSize: true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(bytesCount);
             value.TryWriteBytes(buffer.Span, out bytesWritten, isBigEndian: !littleEndian);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += bytesCount;
@@ -229,7 +229,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         for (var charBufferSize = initialCharBufferSize; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
-            using var charBuffer = MemoryAllocator.Allocate<char>(charBufferSize, false);
+            using var charBuffer = MemoryAllocator.AllocateAtLeast<char>(charBufferSize);
 
             if (value.TryFormat(charBuffer.Span, out var charsWritten, format, provider))
             {
@@ -262,7 +262,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         }
         else
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(T.Size);
             IBinaryFormattable<T>.Format(value, buffer.Span);
             await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
             fileOffset += T.Size;

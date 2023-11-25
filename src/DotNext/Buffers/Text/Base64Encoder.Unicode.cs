@@ -256,7 +256,7 @@ public partial struct Base64Encoder
 
         if (encoder.HasBufferedData)
         {
-            using (buffer = allocator.Allocate(MaxBufferedDataSize, exactSize: false))
+            using (buffer = allocator.AllocateAtLeast(MaxBufferedDataSize))
             {
                 var count = encoder.Flush(buffer.Span);
                 yield return buffer.Memory.Slice(0, count);

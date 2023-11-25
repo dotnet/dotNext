@@ -203,10 +203,9 @@ public static class TextStreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than 1.</exception>
     public static async IAsyncEnumerable<ReadOnlyMemory<char>> ReadAllAsync(this TextReader reader, int bufferSize, MemoryAllocator<char>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
     {
-        if (bufferSize < 1)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-        using var bufferOwner = allocator.Allocate(bufferSize, exactSize: false);
+        using var bufferOwner = allocator.AllocateAtLeast(bufferSize);
         var buffer = bufferOwner.Memory;
 
         for (int count; (count = await reader.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)

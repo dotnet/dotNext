@@ -61,7 +61,7 @@ public struct BinaryLogEntry<T> : IBinaryLogEntry
     /// <inheritdoc />
     MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
     {
-        var buffer = allocator.Allocate(T.Size, exactSize: true);
+        var buffer = allocator.AllocateExactly(T.Size);
         var writer = new SpanWriter<byte>(buffer.Span);
         Content.Format(ref writer);
         return buffer;

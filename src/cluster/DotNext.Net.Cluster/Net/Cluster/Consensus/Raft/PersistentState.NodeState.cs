@@ -58,7 +58,7 @@ public partial class PersistentState
         {
             Debug.Assert(Capacity >= LastVoteOffset + sizeof(long));
 
-            buffer = allocator.Allocate(Capacity, true);
+            buffer = allocator.AllocateExactly(Capacity);
             if (File.Exists(fileName))
             {
                 handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.SequentialScan);

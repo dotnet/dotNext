@@ -114,7 +114,7 @@ public interface IDataTransferObject
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
-        var buffer = allocator.Allocate(DefaultBufferSize, false);
+        var buffer = allocator.AllocateAtLeast(DefaultBufferSize);
         try
         {
             return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
@@ -174,7 +174,7 @@ public interface IDataTransferObject
         var output = new FileBufferingWriter(asyncIO: true);
         await using (output.ConfigureAwait(false))
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, exactSize: false);
+            using var buffer = MemoryAllocator.AllocateAtLeast<byte>(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
@@ -207,7 +207,7 @@ public interface IDataTransferObject
 
         await using (fs.ConfigureAwait(false))
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
+            using var buffer = MemoryAllocator.AllocateAtLeast<byte>(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);

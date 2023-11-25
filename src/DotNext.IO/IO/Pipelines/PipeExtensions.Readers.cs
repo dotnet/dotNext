@@ -141,7 +141,7 @@ public static partial class PipeExtensions
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<T> ParseSlowAsync(PipeReader reader, CancellationToken token)
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(T.Size, true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(T.Size);
             await ReadExactlyAsync(reader, buffer.Memory, token).ConfigureAwait(false);
             return IBinaryFormattable<T>.Parse(buffer.Span);
         }
@@ -230,7 +230,7 @@ public static partial class PipeExtensions
         }
         else
         {
-            result = allocator.Allocate<char>(length, exactSize: true);
+            result = allocator.AllocateExactly<char>(length);
             length = await ReadAsync<int, StringReader<ArrayBuffer<char>>>(reader, new(context, new ArrayBuffer<char>(result)), token).ConfigureAwait(false);
             result.TryResize(length);
         }
@@ -570,7 +570,7 @@ public static partial class PipeExtensions
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Allocate(length, true);
+            result = allocator.AllocateExactly(length);
             await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
         }
         else

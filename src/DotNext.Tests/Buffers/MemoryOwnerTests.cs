@@ -76,7 +76,7 @@ public sealed class MemoryOwnerTests : Test
     [MemberData(nameof(GetArrayAllocators))]
     public static void ArrayAllocation(MemoryAllocator<int> allocator)
     {
-        using var owner = allocator.Allocate(4, false);
+        using var owner = allocator(4);
         Equal(4, owner.Length);
     }
 
@@ -119,10 +119,10 @@ public sealed class MemoryOwnerTests : Test
         var allocator = MemoryAllocator.GetArrayAllocator<byte>();
         var buffer = default(MemoryOwner<byte>);
 
-        buffer.Resize(10, false, allocator);
+        buffer.Resize(10, allocator);
         Equal(10, buffer.Length);
 
-        buffer.Resize(3, false, allocator);
+        buffer.Resize(3, allocator);
         Equal(3, buffer.Length);
 
         True(buffer.TryResize(10));

@@ -172,7 +172,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Allocate(length, exactSize: true);
+            result = allocator.AllocateExactly(length);
             Read(result.Span);
         }
         else
@@ -352,7 +352,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
         }
         else
         {
-            result = allocator.Allocate(length, exactSize: true);
+            result = allocator.AllocateExactly(length);
             length = Read<int, StringReader<ArrayBuffer<char>>>(new(in context, new ArrayBuffer<char>(result)));
             result.TryResize(length);
         }

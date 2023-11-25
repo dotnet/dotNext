@@ -121,7 +121,7 @@ public partial class FileBufferingWriter
             var buffer = writer.buffer;
             tail = buffer.Memory.Slice(0, writer.position);
             handle = writer.fileBackend.SafeFileHandle;
-            this.buffer = writer.allocator.Allocate(segmentLength, true);
+            this.buffer = writer.allocator.AllocateExactly(segmentLength);
             this.segmentLength = segmentLength;
 
             session = writer.EnterReadMode(this);

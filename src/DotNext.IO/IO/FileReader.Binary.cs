@@ -72,7 +72,7 @@ public partial class FileReader : IAsyncBinaryReader
     private async ValueTask<T> ReadSlowAsync<T>(CancellationToken token)
         where T : unmanaged
     {
-        using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
+        using var buffer = MemoryAllocator.AllocateExactly<byte>(Unsafe.SizeOf<T>());
         await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
         return MemoryMarshal.Read<T>(buffer.Span);
     }
@@ -141,7 +141,7 @@ public partial class FileReader : IAsyncBinaryReader
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Allocate(length, true);
+            result = allocator.AllocateExactly(length);
             await ReadBlockAsync(result.Memory, token).ConfigureAwait(false);
         }
         else
@@ -194,7 +194,7 @@ public partial class FileReader : IAsyncBinaryReader
         if (this.length < length)
             throw new EndOfStreamException();
 
-        using var result = MemoryAllocator.Allocate<char>(length, true);
+        using var result = MemoryAllocator.AllocateExactly<char>(length);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
         return new string(result.Span.Slice(0, length));
     }
@@ -216,7 +216,7 @@ public partial class FileReader : IAsyncBinaryReader
         if (this.length < length)
             throw new EndOfStreamException();
 
-        using var result = MemoryAllocator.Allocate<char>(length, true);
+        using var result = MemoryAllocator.AllocateExactly<char>(length);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
         return new string(result.Span.Slice(0, length));
     }
@@ -243,12 +243,12 @@ public partial class FileReader : IAsyncBinaryReader
         var length = ReadLength(lengthFormat);
 
         if (length <= 0)
-            return parser(ReadOnlySpan<char>.Empty, provider);
+            return parser([], provider);
 
         if (this.length < length)
             throw new EndOfStreamException();
 
-        using var result = MemoryAllocator.Allocate<char>(length, true);
+        using var result = MemoryAllocator.AllocateExactly<char>(length);
         length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
         return parser(result.Span.Slice(0, length), provider);
     }
@@ -308,7 +308,7 @@ public partial class FileReader : IAsyncBinaryReader
     private async ValueTask<T> ParseSlowAsync<T>(CancellationToken token)
         where T : notnull, IBinaryFormattable<T>
     {
-        using var buffer = MemoryAllocator.Allocate<byte>(T.Size, exactSize: true);
+        using var buffer = MemoryAllocator.AllocateExactly<byte>(T.Size);
         await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
         return IBinaryFormattable<T>.Parse(buffer.Span);
     }
@@ -334,7 +334,7 @@ public partial class FileReader : IAsyncBinaryReader
         if (this.length < length)
             throw new EndOfStreamException();
 
-        using var block = MemoryAllocator.Allocate<byte>(length, exactSize: true);
+        using var block = MemoryAllocator.AllocateExactly<byte>(length);
         await ReadBlockAsync(block.Memory, token).ConfigureAwait(false);
         return new BigInteger(block.Span, isBigEndian: !littleEndian);
     }

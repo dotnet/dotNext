@@ -23,7 +23,7 @@ internal abstract partial class ProtocolStream : Stream, IResettable
     {
         Debug.Assert(transmissionBlockSize > 0);
 
-        buffer = allocator.Allocate(transmissionBlockSize, exactSize: false);
+        buffer = allocator.AllocateAtLeast(transmissionBlockSize);
         this.allocator = allocator;
     }
 
@@ -55,7 +55,7 @@ internal abstract partial class ProtocolStream : Stream, IResettable
     private protected virtual int ReadFromTransport(Span<byte> buffer)
     {
         int result;
-        var localBuffer = allocator.Allocate(buffer.Length, exactSize: true);
+        var localBuffer = allocator.AllocateExactly(buffer.Length);
         var timeoutTracker = new CancellationTokenSource(ReadTimeout);
         var task = ReadFromTransportAsync(localBuffer.Memory, timeoutTracker.Token).AsTask();
         try
@@ -83,7 +83,7 @@ internal abstract partial class ProtocolStream : Stream, IResettable
     private protected virtual int ReadFromTransport(int minimumSize, Span<byte> buffer)
     {
         int result;
-        var localBuffer = allocator.Allocate(buffer.Length, exactSize: true);
+        var localBuffer = allocator.AllocateExactly(buffer.Length);
         var timeoutTracker = new CancellationTokenSource(ReadTimeout);
         var task = ReadFromTransportAsync(minimumSize, localBuffer.Memory, timeoutTracker.Token).AsTask();
         try

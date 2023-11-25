@@ -38,7 +38,7 @@ public static class Serializable
     public static async ValueTask<TObject> ReadFromAsync<TObject>(this Stream input, int bufferSize = 128, CancellationToken token = default)
         where TObject : notnull, ISerializable<TObject>
     {
-        using var owner = MemoryAllocator.Allocate<byte>(bufferSize, false);
+        using var owner = MemoryAllocator.AllocateAtLeast<byte>(bufferSize);
         return await ReadFromAsync<TObject>(input, owner.Memory, token).ConfigureAwait(false);
     }
 

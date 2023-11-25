@@ -42,7 +42,7 @@ public partial class PersistentState
             PartitionNumber = partitionNumber;
 
             // allocate metadata segment
-            metadata = manager.BufferAllocator.Allocate(fileOffset, true);
+            metadata = manager.BufferAllocator.AllocateExactly(fileOffset);
             metadataFlushStartAddress = int.MaxValue;
 
             entryCache = manager.AllocLogEntryCache(recordsPerPartition);

@@ -271,7 +271,7 @@ public partial class PersistentState
             [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
             static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
             {
-                using var buffer = MemoryAllocator.Allocate<byte>(int.CreateSaturating(metadata.Length), true);
+                using var buffer = MemoryAllocator.AllocateExactly<byte>(int.CreateSaturating(metadata.Length));
                 await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
                 return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, options);
             }
@@ -325,7 +325,7 @@ public partial class PersistentState
 
             static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
             {
-                using var buffer = MemoryAllocator.Allocate<byte>(int.CreateSaturating(metadata.Length), exactSize: true);
+                using var buffer = MemoryAllocator.AllocateExactly<byte>(int.CreateSaturating(metadata.Length));
                 await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
                 return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, context);
             }

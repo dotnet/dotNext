@@ -110,7 +110,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<JsonSerializable<T>> DeserializeBufferedAsync(TReader reader, int bufferSize, CancellationToken token)
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(bufferSize, exactSize: true);
+            using var buffer = MemoryAllocator.AllocateExactly<byte>(bufferSize);
             await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return Deserialize(new(buffer.Memory));
         }

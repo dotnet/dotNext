@@ -55,31 +55,48 @@ public static class MemoryAllocator
         => provider.Allocate;
 
     /// <summary>
-    /// Allocates memory.
+    /// Allocates memory of at least <paramref name="length"/> size.
     /// </summary>
     /// <param name="allocator">The memory allocator.</param>
     /// <param name="length">The number of items in the rented memory.</param>
-    /// <param name="exactSize">
-    /// <see langword="true"/> to ask allocator to allocate exactly <paramref name="length"/>;
-    /// <see langword="false"/> to allocate at least <paramref name="length"/>.
-    /// </param>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     /// <returns>The allocated memory.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> Allocate<T>(this MemoryAllocator<T>? allocator, int length, [ConstantExpected] bool exactSize)
+    public static MemoryOwner<T> AllocateAtLeast<T>(this MemoryAllocator<T>? allocator, int length)
     {
         MemoryOwner<T> result;
         if (allocator is null)
         {
-            result = Allocate<T>(length, exactSize);
+            result = AllocateAtLeast<T>(length);
         }
         else
         {
             result = allocator(length);
-            if (exactSize)
-                result.Truncate(length);
-            else
-                result.Expand();
+            result.Expand();
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Allocates memory of <paramref name="length"/> size.
+    /// </summary>
+    /// <param name="allocator">The memory allocator.</param>
+    /// <param name="length">The number of items in the rented memory.</param>
+    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+    /// <returns>The allocated memory.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static MemoryOwner<T> AllocateExactly<T>(this MemoryAllocator<T>? allocator, int length)
+    {
+        MemoryOwner<T> result;
+        if (allocator is null)
+        {
+            result = AllocateAtLeast<T>(length);
+        }
+        else
+        {
+            result = allocator(length);
+            result.Truncate(length);
         }
 
         return result;
@@ -113,16 +130,22 @@ public static class MemoryAllocator
     }
 
     /// <summary>
-    /// Rents a block of memory from <see cref="ArrayPool{T}.Shared"/> pool.
+    /// Rents a block of memory of at least
+    /// <paramref name="length"/> size from <see cref="ArrayPool{T}.Shared"/> pool.
     /// </summary>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
     /// <param name="length">The number of items in the rented memory.</param>
-    /// <param name="exactSize">
-    /// <see langword="true"/> to ask allocator to allocate exactly <paramref name="length"/>;
-    /// <see langword="false"/> to allocate at least <paramref name="length"/>.
-    /// </param>
     /// <returns>The allocated memory.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> Allocate<T>(int length, [ConstantExpected] bool exactSize)
-        => new(ArrayPool<T>.Shared, length, exactSize);
+    public static MemoryOwner<T> AllocateAtLeast<T>(int length)
+        => new(ArrayPool<T>.Shared, length, exactSize: false);
+
+    /// <summary>
+    /// Rents a block of memory of the specified size from <see cref="ArrayPool{T}.Shared"/> pool.
+    /// </summary>
+    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+    /// <param name="length">The number of items in the rented memory.</param>
+    /// <returns>The allocated memory.</returns>
+    public static MemoryOwner<T> AllocateExactly<T>(int length)
+        => new(ArrayPool<T>.Shared, length, exactSize: true);
 }

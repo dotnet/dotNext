@@ -78,7 +78,7 @@ public static class DataTransferObject
 
         static async ValueTask WriteToStreamAsync(TObject dto, Stream output, int bufferSize, CancellationToken token)
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(bufferSize, exactSize: false);
+            using var buffer = MemoryAllocator.AllocateAtLeast<byte>(bufferSize);
             await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
         }
     }

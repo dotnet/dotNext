@@ -55,12 +55,11 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than zero.</exception>
     public BufferWriterSlim(int initialCapacity, MemoryAllocator<T>? allocator = null)
     {
-        if (initialCapacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(initialCapacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(initialCapacity);
 
         initialBuffer = default;
         this.allocator = allocator;
-        extraBuffer = initialCapacity is 0 ? default : allocator.Allocate(initialCapacity, exactSize: false);
+        extraBuffer = initialCapacity is 0 ? default : allocator.AllocateAtLeast(initialCapacity);
         position = 0;
     }
 
@@ -133,7 +132,7 @@ public ref partial struct BufferWriterSlim<T>
             // need to copy initial buffer
             if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out newSize))
             {
-                extraBuffer = allocator.Allocate(newSize, exactSize: false);
+                extraBuffer = allocator.AllocateAtLeast(newSize);
                 initialBuffer.CopyTo(result = extraBuffer.Span);
             }
             else
@@ -145,7 +144,7 @@ public ref partial struct BufferWriterSlim<T>
         {
             // no need to copy initial buffer
             if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out newSize))
-                extraBuffer.Resize(newSize, exactSize: false, allocator);
+                extraBuffer.Resize(newSize, allocator);
 
             result = extraBuffer.Span;
         }

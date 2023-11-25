@@ -38,7 +38,7 @@ public static class EncodingExtensions
         }
         else
         {
-            owner = allocator.Allocate(encoding.GetByteCount(chars), true);
+            owner = allocator.AllocateExactly(encoding.GetByteCount(chars));
             encoding.GetBytes(chars, owner.Span);
         }
 
@@ -61,7 +61,7 @@ public static class EncodingExtensions
         }
         else
         {
-            owner = allocator.Allocate(encoding.GetCharCount(bytes), true);
+            owner = allocator.AllocateExactly(encoding.GetCharCount(bytes));
             encoding.GetChars(bytes, owner.Span);
         }
 

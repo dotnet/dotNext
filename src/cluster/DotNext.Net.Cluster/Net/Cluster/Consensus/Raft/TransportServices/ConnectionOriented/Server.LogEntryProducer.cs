@@ -99,7 +99,7 @@ internal partial class Server
         async ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         {
             // we don't need large buffer. It is used for encoding some special data types, such as strings
-            using var buffer = allocator.Allocate(length: 512, exactSize: false);
+            using var buffer = allocator.AllocateAtLeast(length: 512);
             var result = await IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, buffer.Memory, token).ConfigureAwait(false);
             consumed = true;
             return result;

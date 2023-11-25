@@ -42,14 +42,10 @@ public partial class FileReader : Disposable
     public FileReader(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle);
+        ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        if (fileOffset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(fileOffset));
-
-        if (bufferSize <= 16)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-        buffer = allocator.Allocate(bufferSize, exactSize: false);
+        buffer = allocator.AllocateAtLeast(bufferSize);
         this.handle = handle;
         this.fileOffset = fileOffset;
     }
@@ -64,8 +60,7 @@ public partial class FileReader : Disposable
         get => fileOffset;
         set
         {
-            if (value < 0L)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             if (HasBufferedData)
                 throw new InvalidOperationException();
