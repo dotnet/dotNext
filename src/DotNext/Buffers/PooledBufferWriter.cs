@@ -37,7 +37,7 @@ public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) 
 
     private Memory<T> GetWrittenMemory()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         return buffer.Memory.Slice(0, position);
     }
 
@@ -57,7 +57,7 @@ public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) 
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override void Clear(bool reuseBuffer = false)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (!reuseBuffer)
         {
@@ -74,7 +74,7 @@ public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) 
     private ref readonly MemoryOwner<T> GetBuffer(int sizeHint)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         CheckAndResizeBuffer(sizeHint);
         return ref buffer;
@@ -91,7 +91,7 @@ public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) 
     /// <inheritdoc />
     public override MemoryOwner<T> DetachBuffer()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         MemoryOwner<T> result;
         if (position > 0)
         {

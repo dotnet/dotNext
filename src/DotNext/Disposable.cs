@@ -40,20 +40,6 @@ public abstract class Disposable : IDisposable
     private string ObjectName => GetType().Name;
 
     /// <summary>
-    /// Throws exception if this object is disposed.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">Object is disposed.</exception>
-    protected void ThrowIfDisposed()
-    {
-        if (IsDisposed)
-            Throw();
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        void Throw() => throw new ObjectDisposedException(ObjectName);
-    }
-
-    /// <summary>
     /// Gets a task representing <see cref="ObjectDisposedException"/> exception.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

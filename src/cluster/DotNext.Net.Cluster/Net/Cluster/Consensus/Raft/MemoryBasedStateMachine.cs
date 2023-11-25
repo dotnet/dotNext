@@ -714,7 +714,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <returns>The task representing asynchronous state of the method.</returns>
     public async Task ReplayAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
         try
@@ -761,7 +761,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <inheritdoc />
     public override async Task InitializeAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         await base.InitializeAsync(token).ConfigureAwait(false);
 
@@ -772,7 +772,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <inheritdoc />
     protected sealed override async Task ClearAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
         try
         {

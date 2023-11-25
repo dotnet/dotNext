@@ -36,11 +36,8 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     {
         get
         {
-            return address is not null ? new(address) : Throw();
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            IntPtr Throw() => throw new ObjectDisposedException(GetType().Name);
+            ObjectDisposedException.ThrowIf(address is null, this);
+            return new(address);
         }
     }
 
@@ -50,11 +47,8 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     internal void Reallocate(int length)
     {
-        if (length <= 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
-
-        if (address is null)
-            throw new ObjectDisposedException(GetType().Name);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+        ObjectDisposedException.ThrowIf(address is null, this);
 
         Length = length;
         var size = (nuint)SizeOf(length);
@@ -66,8 +60,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     public sealed override MemoryHandle Pin(int elementIndex = 0)
     {
-        if (address is null)
-            throw new ObjectDisposedException(GetType().Name);
+        ObjectDisposedException.ThrowIf(address is null, this);
 
         return new(Unsafe.Add<T>(address, elementIndex));
     }

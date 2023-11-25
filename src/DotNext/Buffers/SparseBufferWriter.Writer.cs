@@ -23,7 +23,7 @@ public partial class SparseBufferWriter<T> : IBufferWriter<T>
 
     private Memory<T> GetMemory(int sizeHint)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         switch (sizeHint)
         {
@@ -66,7 +66,7 @@ public partial class SparseBufferWriter<T> : IBufferWriter<T>
     /// <inheritdoc />
     void IBufferWriter<T>.Advance(int count)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (last is not PooledMemoryChunk chunk)
             throw new InvalidOperationException();
         chunk.Advance(count);

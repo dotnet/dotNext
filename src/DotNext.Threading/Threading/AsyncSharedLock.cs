@@ -150,7 +150,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     private bool TryAcquire<TManager>()
         where TManager : struct, ILockManager<WaitNode>
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref GetLockManager<TManager>());
@@ -272,7 +272,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Downgrade()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -294,7 +294,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)

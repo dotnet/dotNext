@@ -207,7 +207,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void Advance(int count)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (count < 0)
             ThrowCountOutOfRangeException();
 
@@ -231,7 +231,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
     public void Rewind(int count)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if ((uint)count > (uint)position)
             ThrowCountOutOfRangeException();
 

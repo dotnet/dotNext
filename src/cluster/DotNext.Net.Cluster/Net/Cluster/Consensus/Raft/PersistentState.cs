@@ -692,7 +692,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
         where TEntry : notnull, IRaftLogEntry
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (entries.RemainingCount == 0L)
             throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
@@ -725,7 +725,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
     public async ValueTask<long> DropAsync(long startIndex, bool reuseSpace = false, CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         var count = 0L;
         if (startIndex > state.LastIndex)
             goto exit;

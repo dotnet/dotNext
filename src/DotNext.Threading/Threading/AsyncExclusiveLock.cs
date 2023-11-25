@@ -85,7 +85,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryAcquire()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
@@ -218,7 +218,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         ManualResetCompletionSource? suspendedCaller;
         lock (SyncRoot)

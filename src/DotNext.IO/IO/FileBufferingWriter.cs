@@ -62,19 +62,9 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
             length = value;
         }
 
-        private void ThrowIfDisposed()
-        {
-            if (ptr is null)
-                Throw();
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            void Throw() => throw new ObjectDisposedException(GetType().Name);
-        }
-
         public override Span<byte> GetSpan()
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(ptr is null, this);
             return new(ptr, length);
         }
 
@@ -82,11 +72,11 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         public override MemoryHandle Pin(int elementIndex)
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(ptr is null, this);
             return new(Unsafe.Add<byte>(ptr, elementIndex));
         }
 
-        public override void Unpin() => ThrowIfDisposed();
+        public override void Unpin() => ObjectDisposedException.ThrowIf(ptr is null, this);
 
         protected override void Dispose(bool disposing)
         {
@@ -96,7 +86,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 session = default;
             }
 
-            if (ptr != null)
+            if (ptr is not null)
                 NativeMemory.Free(ptr);
 
             ptr = null;

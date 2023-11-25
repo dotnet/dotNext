@@ -207,7 +207,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
     public override async Task InitializeAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
         try

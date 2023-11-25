@@ -170,7 +170,7 @@ public partial class FileBufferingWriter
         {
             get
             {
-                ThrowIfDisposed();
+                ObjectDisposedException.ThrowIf(IsDisposed, this);
 
                 LazySegment? first = null, last = null;
                 BuildSegments(ref first, ref last);

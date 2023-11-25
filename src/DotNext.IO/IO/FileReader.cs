@@ -141,7 +141,7 @@ public partial class FileReader : Disposable
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public async ValueTask<bool> ReadAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var buffer = this.buffer.Memory;
 
@@ -173,7 +173,7 @@ public partial class FileReader : Disposable
     /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
     public bool Read()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var buffer = this.buffer.Span;
 
@@ -249,7 +249,7 @@ public partial class FileReader : Disposable
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     public int Read(Span<byte> output)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         int count;
 
@@ -287,7 +287,7 @@ public partial class FileReader : Disposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is less than zero.</exception>
     public void Skip(long bytes)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (bytes < 0L)
             throw new ArgumentOutOfRangeException(nameof(bytes));

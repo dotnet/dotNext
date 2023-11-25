@@ -168,7 +168,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     public void Write()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (HasBufferedData)
             FlushCore();
@@ -242,7 +242,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     public void Write(ReadOnlySpan<byte> input)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (input.Length <= FreeCapacity)
         {

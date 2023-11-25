@@ -48,7 +48,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     {
         get
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             return ref buffer[index];
         }
     }
@@ -56,14 +56,14 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <inheritdoc/>
     int IList<T>.IndexOf(T item)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         return Array.IndexOf(buffer, item, 0, position);
     }
 
     /// <inheritdoc/>
     bool ICollection<T>.Contains(T item)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         return Array.IndexOf(buffer, item, 0, position) >= 0;
     }
 
@@ -78,14 +78,14 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
         if (--position is 0)
         {
             ReturnBuffer();
-            buffer = Array.Empty<T>();
+            buffer = [];
         }
     }
 
     /// <inheritdoc/>
     void IList<T>.RemoveAt(int index)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if ((uint)index >= (uint)position)
             throw new ArgumentOutOfRangeException(nameof(index));
 
@@ -95,7 +95,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <inheritdoc/>
     bool ICollection<T>.Remove(T item)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         var index = Array.IndexOf(buffer, item, 0, position);
         if (index < 0)
             return false;
@@ -117,7 +117,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void Insert(int index, ReadOnlySpan<T> items)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
         if (items.IsEmpty)
@@ -158,7 +158,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void Overwrite(int index, ReadOnlySpan<T> items)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
         if (buffer.GetLength() is 0U)
@@ -220,7 +220,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     {
         get
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             return new(buffer, 0, position);
         }
     }
@@ -233,7 +233,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     {
         get
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             return new(buffer, 0, position);
         }
     }
@@ -251,7 +251,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public override void Clear(bool reuseBuffer = false)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (buffer.GetLength() is 0)
         {
@@ -273,7 +273,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <inheritdoc />
     public override MemoryOwner<T> DetachBuffer()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         MemoryOwner<T> result;
         if (position > 0)
         {
@@ -294,7 +294,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
         if (sizeHint < 0)
             throw new ArgumentOutOfRangeException(nameof(sizeHint));
 
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         CheckAndResizeBuffer(sizeHint);
         return buffer;
     }
@@ -338,7 +338,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <inheritdoc/>
     public override void AddAll(ICollection<T> items)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var count = items.Count;
         if (count <= 0)
@@ -357,7 +357,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void RemoveLast(int count)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         if (buffer.GetLength() is 0)
@@ -390,7 +390,7 @@ public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buff
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void RemoveFirst(int count)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         if (buffer.GetLength() is 0)

@@ -102,7 +102,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
         var result = manager.TryReset();
@@ -118,7 +118,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public void Increment()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         IncrementCore(1L);
     }
 
@@ -131,7 +131,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OverflowException">Counter overflow detected.</exception>
     public void Increment(long delta)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         switch (delta)
         {
@@ -205,7 +205,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <returns><see langword="true"/> if the counter decremented successfully; <see langword="false"/> if this counter is already zero.</returns>
     public bool TryDecrement()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref manager);

@@ -318,7 +318,7 @@ public class QueuedSynchronizer : Disposable
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -732,7 +732,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected void Release()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -757,7 +757,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected void Release(TContext context)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -784,7 +784,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected bool TryAcquire(TContext context)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         lock (SyncRoot)
         {
             return TryAcquireCore(context);

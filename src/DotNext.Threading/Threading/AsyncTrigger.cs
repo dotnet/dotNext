@@ -83,7 +83,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
     public bool Signal(bool resumeAll = false)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         bool result;

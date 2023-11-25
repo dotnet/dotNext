@@ -341,7 +341,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc cref="IStandbyModeSupport.RevertToNormalModeAsync(CancellationToken)"/>
     public async ValueTask<bool> RevertToNormalModeAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (TryGetLocalMember() is not null && state is StandbyState<TMember> { Resumable: true } standbyState)
         {
@@ -379,7 +379,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <inheritdoc cref="IStandbyModeSupport.EnableStandbyModeAsync(CancellationToken)"/>
     public async ValueTask<bool> EnableStandbyModeAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         RaftState<TMember> currentState;
         if ((currentState = state) is FollowerState<TMember> or CandidateState<TMember>)
@@ -1159,7 +1159,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     public async ValueTask<bool> ReplicateAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var leaderState = LeaderStateOrException;
         var tokenSource = token.LinkTo(leaderState.LeadershipToken);

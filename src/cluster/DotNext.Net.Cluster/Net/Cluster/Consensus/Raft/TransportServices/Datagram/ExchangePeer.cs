@@ -34,7 +34,7 @@ internal sealed class ExchangePeer : RaftClusterMember
     private async Task<TResult> SendAsync<TResult, TExchange>(TExchange exchange, CancellationToken token)
         where TExchange : class, IClientExchange<Task<TResult>>
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         exchange.Sender = localMember.Id;
         var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         timeoutSource.CancelAfter(RequestTimeout);

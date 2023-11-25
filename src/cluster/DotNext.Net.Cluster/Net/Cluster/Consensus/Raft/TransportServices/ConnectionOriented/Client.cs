@@ -62,7 +62,7 @@ internal abstract partial class Client : RaftClusterMember
     private async Task<TResponse> RequestAsync<TResponse, TExchange>(TExchange exchange, CancellationToken token)
         where TExchange : notnull, IClientExchange<TResponse>
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var timeStamp = new Timestamp();
         var lockTaken = false;

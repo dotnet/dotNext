@@ -141,7 +141,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than zero.</exception>
     public bool TryAddCount(long signalCount)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         return signalCount switch
         {
@@ -158,7 +158,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool TryAddCount()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         return TryAddCountCore(1L);
     }
@@ -193,7 +193,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Reset()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -222,7 +222,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (count < 0L)
             throw new ArgumentOutOfRangeException(nameof(count));
 
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -370,7 +370,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (signalCount < 1L)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;

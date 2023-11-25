@@ -70,7 +70,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public long AddParticipants(long participantCount)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         switch (participantCount)
         {
@@ -132,7 +132,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="BarrierPostPhaseException"><see cref="PostPhase(long)"/> fails.</exception>
     public async ValueTask<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (ParticipantCount is 0L)
             throw new InvalidOperationException();
@@ -163,7 +163,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="BarrierPostPhaseException"><see cref="PostPhase(long)"/> fails.</exception>
     public async ValueTask SignalAndWaitAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (ParticipantCount is 0L)
             throw new InvalidOperationException();

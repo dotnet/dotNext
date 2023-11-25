@@ -185,7 +185,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
     {
         get
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             if (totalLength == 0)
                 return ReadOnlySequence<byte>.Empty;
 
@@ -196,7 +196,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
 
     private unsafe Span<byte> GetSpan(in Segment window)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (current != window)
         {
