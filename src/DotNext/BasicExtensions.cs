@@ -2,8 +2,6 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 
 namespace DotNext;
 
