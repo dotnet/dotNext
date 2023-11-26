@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace DotNext;
@@ -106,13 +105,8 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
         return new CultureSpecificCharComparer(culture, options);
     }
 
-    private sealed class DefaultCharComparer : CharComparer
+    private sealed class DefaultCharComparer(StringComparison comparisonType) : CharComparer
     {
-        private readonly StringComparison comparisonType;
-
-        internal DefaultCharComparer(StringComparison comparison)
-            => comparisonType = comparison;
-
         public override bool Equals(char x, char y)
             => Equals(x, y, comparisonType);
 
@@ -122,24 +116,12 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
         public override int GetHashCode(char ch)
             => GetHashCode(ch, comparisonType);
 
-        public override bool Equals([NotNullWhen(true)] object? other)
-            => other is DefaultCharComparer comparer && comparisonType == comparer.comparisonType;
-
-        public override int GetHashCode() => (int)comparisonType;
-
         public override string ToString() => comparisonType.ToString();
     }
 
-    private sealed class CultureSpecificCharComparer : CharComparer
+    private sealed class CultureSpecificCharComparer(CultureInfo culture, CompareOptions options) : CharComparer
     {
-        private readonly CompareInfo comparison;
-        private readonly CompareOptions options;
-
-        internal CultureSpecificCharComparer(CultureInfo culture, CompareOptions options)
-        {
-            comparison = culture.CompareInfo;
-            this.options = options;
-        }
+        private readonly CompareInfo comparison = culture.CompareInfo;
 
         public override bool Equals(char x, char y)
             => Compare(x, y) is 0;
@@ -149,16 +131,5 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
 
         public override int GetHashCode(char ch)
             => comparison.GetHashCode(new ReadOnlySpan<char>(ref ch), options);
-
-        public override bool Equals([NotNullWhen(true)] object? other)
-            => other is CultureSpecificCharComparer comparer && Equals(comparison, comparer.comparison) && options == comparer.options;
-
-        public override int GetHashCode()
-        {
-            var result = new HashCode();
-            result.Add(comparison);
-            result.Add(options);
-            return result.ToHashCode();
-        }
     }
 }
