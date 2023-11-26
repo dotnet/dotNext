@@ -11,25 +11,18 @@ namespace DotNext.Text;
 /// It cannot be shared across parallel flows or threads. However, you can call <see cref="Copy"/> method to create
 /// an independent copy of this context for separated async flow or thread.
 /// </remarks>
+/// <remarks>
+/// Initializes a new decoding context.
+/// </remarks>
+/// <param name="encoding">The encoding to be used for converting bytes into string.</param>
+/// <param name="reuseDecoder"><see langword="true"/> to reuse the decoder between decoding operations; <see langword="false"/> to create separated encoder for each encoding operation.</param>
+/// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct DecodingContext : ICloneable, IResettable
+public readonly struct DecodingContext(Encoding encoding, bool reuseDecoder) : ICloneable, IResettable
 {
     internal const byte Utf8NullChar = 0;
 
-    private readonly Encoding encoding;
-    private readonly Decoder? decoder;
-
-    /// <summary>
-    /// Initializes a new decoding context.
-    /// </summary>
-    /// <param name="encoding">The encoding to be used for converting bytes into string.</param>
-    /// <param name="reuseDecoder"><see langword="true"/> to reuse the decoder between decoding operations; <see langword="false"/> to create separated encoder for each encoding operation.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
-    public DecodingContext(Encoding encoding, bool reuseDecoder)
-    {
-        this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
-        decoder = reuseDecoder ? encoding.GetDecoder() : null;
-    }
+    private readonly Decoder? decoder = reuseDecoder ? encoding.GetDecoder() : null;
 
     /// <summary>
     /// Creates independent copy of this context that can be used
