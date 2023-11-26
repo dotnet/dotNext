@@ -127,7 +127,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
                 readerStream = await buffer.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
                 return new JsonSerializable<T>
                 {
-                    Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo).ConfigureAwait(false))!,
+                    Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo, token).ConfigureAwait(false))!,
                 };
             }
             finally
@@ -144,7 +144,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         {
             return new JsonSerializable<T>
             {
-                Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo).ConfigureAwait(false))!,
+                Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo, token).ConfigureAwait(false))!,
             };
         }
 
@@ -156,7 +156,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
             {
                 return new JsonSerializable<T>
                 {
-                    Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo).ConfigureAwait(false))!,
+                    Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo, token).ConfigureAwait(false))!,
                 };
             }
             finally
@@ -173,5 +173,5 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     }
 
     /// <inheritdoc />
-    public override string? ToString() => Value?.ToString();
+    public override readonly string? ToString() => Value?.ToString();
 }
