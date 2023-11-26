@@ -76,35 +76,27 @@ public readonly struct Timeout
     /// <summary>
     /// Throws <see cref="TimeoutException"/> if timeout occurs.
     /// </summary>
-    /// <param name="remaining">The remaining time before timeout.</param>
-    public void ThrowIfExpired(out TimeSpan remaining)
+    /// <param name="remainingTime">The remaining time before timeout.</param>
+    public void ThrowIfExpired(out TimeSpan remainingTime)
     {
-        if (IsInfinite)
-        {
-            remaining = new(InfiniteTicks);
-        }
-        else if ((remaining = timeout - created.Elapsed) < default(TimeSpan))
-        {
+        if (TryGetRemainingTime(out remainingTime) is false)
             throw new TimeoutException();
-        }
     }
 
     /// <summary>
     /// Gets the remaining time.
     /// </summary>
-    /// <value>The remaining time; or <see langword="null"/> if timeout occurred.</value>
-    public TimeSpan? RemainingTime
+    /// <param name="remainingTime">The remaining time before timeout.</param>
+    /// <returns><see langword="true"/> if timeout hasn't happened yet; otherwise, <see langword="false"/>.</returns>
+    public bool TryGetRemainingTime(out TimeSpan remainingTime)
     {
-        get
+        if (IsInfinite)
         {
-            TimeSpan result;
-
-            return IsInfinite
-                ? new(InfiniteTicks)
-                : (result = timeout - created.Elapsed) >= default(TimeSpan)
-                ? result
-                : null;
+            remainingTime = new(InfiniteTicks);
+            return true;
         }
+
+        return (remainingTime = timeout - created.Elapsed) >= TimeSpan.Zero;
     }
 
     /// <summary>

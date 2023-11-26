@@ -271,7 +271,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             if (manager.Condition.Invoke())
                 return true;
         }
-        while (timeout.RemainingTime.TryGetValue(out var remainingTime) && await TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(remainingTime, token)).ConfigureAwait(false));
+        while (timeout.TryGetRemainingTime(out var remainingTime) && await TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(remainingTime, token)).ConfigureAwait(false));
 
         return false;
     }
