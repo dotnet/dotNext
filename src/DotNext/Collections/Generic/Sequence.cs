@@ -150,7 +150,7 @@ public static partial class Sequence
     }
 
     /// <summary>
-    /// Obtains first value in the sequence; or <see cref="Optional{T}.None"/>
+    /// Obtains the last value in the sequence; or <see cref="Optional{T}.None"/>
     /// if sequence is empty.
     /// </summary>
     /// <typeparam name="T">Type of elements in the sequence.</typeparam>
