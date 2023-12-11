@@ -32,7 +32,7 @@ This library is the core of .NEXT which extends .NET standard library with
 
 # DotNext.Reflection
 <a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.reflection.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.reflection.svg)<br/>
-.NET Reflection is slow because relies on late-bound calls when every actual argument should be validated. There is alternative approach: dynamic code generation optimized for every member call. Reflection library from .NEXT family provides provides fully-featured fast reflection using dynamic code generation. Invocation cost is comparable to direct call. Check [Benchmarks](benchmarks.md) to see how it is fast.
+.NET Reflection is slow because relies on late-bound calls when every actual argument should be validated. There is alternative approach: dynamic code generation optimized for every member call. Reflection library from .NEXT family provides fully-featured fast reflection using dynamic code generation. Invocation cost is comparable to direct call. Check [Benchmarks](benchmarks.md) to see how it is fast.
 
 > [!IMPORTANT]
 > `DotNext.Reflection` library doesn't receive new features anymore and will be deprecated soon. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
