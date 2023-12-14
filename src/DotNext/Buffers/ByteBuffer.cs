@@ -61,6 +61,23 @@ public static class ByteBuffer
     }
 
     /// <summary>
+    /// Writes <see cref="BigInteger"/> value to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <param name="isBigEndian"><see langword="true"/> to use unsigned encoding; otherwise, <see langword="false"/>.</param>
+    /// <param name="isUnsigned"><see langword="true"/> to write the bytes in a big-endian byte order; otherwise, <see langword="false"/>.</param>
+    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
+    public static void Write(this IBufferWriter<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
+    {
+        var buffer = writer.GetSpan(value.GetByteCount(isUnsigned));
+        if (!value.TryWriteBytes(buffer, out var bytesWritten, isUnsigned, isBigEndian))
+            throw new InsufficientMemoryException();
+
+        writer.Advance(bytesWritten);
+    }
+
+    /// <summary>
     /// Formats the value as UTF-8 into the provided buffer.
     /// </summary>
     /// <typeparam name="T">The type of the value to be written as UTF-8.</typeparam>
@@ -131,6 +148,23 @@ public static class ByteBuffer
     }
 
     /// <summary>
+    /// Writes <see cref="BigInteger"/> value to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <param name="isBigEndian"><see langword="true"/> to use unsigned encoding; otherwise, <see langword="false"/>.</param>
+    /// <param name="isUnsigned"><see langword="true"/> to write the bytes in a big-endian byte order; otherwise, <see langword="false"/>.</param>
+    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
+    public static void Write(this ref BufferWriterSlim<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
+    {
+        var buffer = writer.InternalGetSpan(value.GetByteCount(isUnsigned));
+        if (!value.TryWriteBytes(buffer, out var bytesWritten, isUnsigned, isBigEndian))
+            throw new InsufficientMemoryException();
+
+        writer.Advance(bytesWritten);
+    }
+
+    /// <summary>
     /// Formats the value as UTF-8 into the provided buffer.
     /// </summary>
     /// <typeparam name="T">The type of the value to be written as UTF-8.</typeparam>
@@ -194,6 +228,26 @@ public static class ByteBuffer
     public static void Write<T>(this ref SpanWriter<byte> writer, T value)
         where T : notnull, IBinaryFormattable<T>
         => value.Format(writer.Slide(T.Size));
+
+    /// <summary>
+    /// Writes <see cref="BigInteger"/> value to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <param name="isBigEndian"><see langword="true"/> to use unsigned encoding; otherwise, <see langword="false"/>.</param>
+    /// <param name="isUnsigned"><see langword="true"/> to write the bytes in a big-endian byte order; otherwise, <see langword="false"/>.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="writer"/> has enough space to place formatted value;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public static bool TryWrite(this ref SpanWriter<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
+    {
+        bool result;
+        if (result = value.TryWriteBytes(writer.RemainingSpan, out var bytesWritten, isUnsigned, isBigEndian))
+            writer.Advance(bytesWritten);
+
+        return result;
+    }
 
     /// <summary>
     /// Tries to format the value as UTF-8 into the provided buffer.
