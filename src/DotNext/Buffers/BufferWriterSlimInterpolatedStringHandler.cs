@@ -58,18 +58,16 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
         switch (value)
         {
             case ISpanFormattable:
-                for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
-                {
-                    var span = buffer.InternalGetSpan(bufferSize);
+                Span<char> span = buffer.InternalGetSpan(sizeHint: 0);
 
-                    // constrained call avoiding boxing for value types
-                    if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
-                    {
-                        buffer.Advance(charsWritten);
-                        break;
-                    }
+                // constrained call avoiding boxing for value types
+                for (int sizeHint; !((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider); span = buffer.InternalGetSpan(sizeHint))
+                {
+                    sizeHint = span.Length;
+                    sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException();
                 }
 
+                buffer.Advance(charsWritten);
                 break;
             case IFormattable:
                 // constrained call avoiding boxing for value types

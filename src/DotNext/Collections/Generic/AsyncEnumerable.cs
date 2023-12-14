@@ -191,7 +191,7 @@ public static partial class AsyncEnumerable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async Task<T[]> ToArrayAsync<T>(this IAsyncEnumerable<T> collection, int initialCapacity = 10, MemoryAllocator<T>? allocator = null, CancellationToken token = default)
     {
-        using var buffer = new PooledBufferWriter<T>(allocator) { Capacity = initialCapacity };
+        using var buffer = new PoolingBufferWriter<T>(allocator) { Capacity = initialCapacity };
 
         await foreach (var item in collection.WithCancellation(token).ConfigureAwait(false))
         {

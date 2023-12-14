@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace DotNext.Buffers;
+namespace DotNext.Buffers.Binary;
 
 /// <summary>
 /// Represents an object that can be converted to and restored from the binary representation.
@@ -20,14 +20,14 @@ public interface IBinaryFormattable<TSelf>
     /// Formats object as a sequence of bytes.
     /// </summary>
     /// <param name="output">The output buffer.</param>
-    void Format(ref SpanWriter<byte> output);
+    void Format(Span<byte> output);
 
     /// <summary>
     /// Restores the object from its binary representation.
     /// </summary>
     /// <param name="input">The input buffer.</param>
     /// <returns>The restored object.</returns>
-    public static abstract TSelf Parse(ref SpanReader<byte> input);
+    public static abstract TSelf Parse(ReadOnlySpan<byte> input);
 
     /// <summary>
     /// Attempts to restore the object from its binary representation.
@@ -39,7 +39,7 @@ public interface IBinaryFormattable<TSelf>
     {
         if (input.Length >= TSelf.Size)
         {
-            result = Parse(input);
+            result = TSelf.Parse(input);
             return true;
         }
 
@@ -56,20 +56,8 @@ public interface IBinaryFormattable<TSelf>
     public static MemoryOwner<byte> Format(TSelf value, MemoryAllocator<byte>? allocator = null)
     {
         var result = allocator.AllocateExactly(TSelf.Size);
-        var writer = new SpanWriter<byte>(result.Span);
-        value.Format(ref writer);
+        value.Format(result.Span);
         return result;
-    }
-
-    /// <summary>
-    /// Formats object as a sequence of bytes.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <param name="output">The output buffer.</param>
-    public static void Format(TSelf value, Span<byte> output)
-    {
-        var writer = new SpanWriter<byte>(output);
-        value.Format(ref writer);
     }
 
     /// <summary>
@@ -82,7 +70,7 @@ public interface IBinaryFormattable<TSelf>
     {
         if (output.Length >= TSelf.Size)
         {
-            Format(value, output);
+            value.Format(output);
             return true;
         }
 
@@ -94,29 +82,22 @@ public interface IBinaryFormattable<TSelf>
     /// </summary>
     /// <param name="input">The input buffer.</param>
     /// <returns>The restored object.</returns>
-    public static TSelf Parse(ReadOnlySpan<byte> input)
-    {
-        var reader = new SpanReader<byte>(input);
-        return TSelf.Parse(ref reader);
-    }
-
-    /// <summary>
-    /// Restores the object from its binary representation.
-    /// </summary>
-    /// <param name="input">The input buffer.</param>
-    /// <returns>The restored object.</returns>
     public static TSelf Parse(in ReadOnlySequence<byte> input)
     {
-        return input.FirstSpan.Length >= TSelf.Size
-            ? Parse(input.FirstSpan.Slice(0, TSelf.Size))
+        var fastBuffer = input.FirstSpan;
+        return fastBuffer.Length >= TSelf.Size
+            ? TSelf.Parse(fastBuffer)
             : ParseSlow(in input);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         static TSelf ParseSlow(in ReadOnlySequence<byte> input)
         {
-            using var buffer = (uint)TSelf.Size <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[TSelf.Size] : new MemoryRental<byte>(TSelf.Size);
+            using var buffer = (uint)TSelf.Size <= (uint)MemoryRental<byte>.StackallocThreshold
+                ? stackalloc byte[TSelf.Size]
+                : new MemoryRental<byte>(TSelf.Size);
+
             input.CopyTo(buffer.Span, out var writtenCount);
-            return Parse(buffer.Span.Slice(0, writtenCount));
+            return TSelf.Parse(buffer.Span.Slice(0, writtenCount));
         }
     }
 }

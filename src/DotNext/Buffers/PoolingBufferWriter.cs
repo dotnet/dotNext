@@ -12,7 +12,7 @@ namespace DotNext.Buffers;
 /// Initializes a new writer with the default initial capacity.
 /// </remarks>
 /// <param name="allocator">The allocator of internal buffer.</param>
-public sealed class PooledBufferWriter<T>(MemoryAllocator<T>? allocator = null) : BufferWriter<T>, IMemoryOwner<T>
+public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null) : BufferWriter<T>, IMemoryOwner<T>
 {
     private readonly MemoryAllocator<T>? allocator = allocator;
     private MemoryOwner<T> buffer;

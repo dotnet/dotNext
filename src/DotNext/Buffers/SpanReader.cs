@@ -196,12 +196,12 @@ public ref struct SpanReader<T>
     /// </summary>
     /// <returns>The element obtained from the span.</returns>
     /// <exception cref="InternalBufferOverflowException">The end of memory block is reached.</exception>
-    public T Read()
+    public ref readonly T Read()
     {
-        if (!TryRead(out var result))
+        if ((uint)position >= (uint)length)
             ThrowInternalBufferOverflowException();
 
-        return result;
+        return ref Unsafe.Add(ref reference, position++);
     }
 
     /// <summary>

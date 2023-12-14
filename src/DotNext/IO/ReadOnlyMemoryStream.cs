@@ -2,7 +2,7 @@ using System.Buffers;
 
 namespace DotNext.IO;
 
-using static Buffers.BufferHelpers;
+using static Buffers.Memory;
 
 internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
 {

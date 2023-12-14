@@ -14,8 +14,8 @@ namespace DotNext.Buffers;
 /// usage can produce holes in the sparse buffer. To avoid holes, use public members only.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
-/// <seealso cref="PooledArrayBufferWriter{T}"/>
-/// <seealso cref="PooledBufferWriter{T}"/>
+/// <seealso cref="PoolingArrayBufferWriter{T}"/>
+/// <seealso cref="PoolingBufferWriter{T}"/>
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FragmentedBytes = {{{nameof(FragmentedBytes)}}}")]
 public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
 {
@@ -47,9 +47,9 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         {
             this.growth = growth switch
             {
-                SparseBufferGrowth.Linear => &BufferHelpers.LinearGrowth,
-                SparseBufferGrowth.Exponential => &BufferHelpers.ExponentialGrowth,
-                _ => &BufferHelpers.NoGrowth,
+                SparseBufferGrowth.Linear => &SparseBufferWriter.LinearGrowth,
+                SparseBufferGrowth.Exponential => &SparseBufferWriter.ExponentialGrowth,
+                _ => &SparseBufferWriter.NoGrowth,
             };
         }
     }
@@ -65,7 +65,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         allocator = pool.ToAllocator();
         unsafe
         {
-            growth = &BufferHelpers.NoGrowth;
+            growth = &SparseBufferWriter.NoGrowth;
         }
     }
 
@@ -282,7 +282,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
     /// <inheritdoc />
     ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
-        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : BufferHelpers.ToReadOnlySequence(this);
+        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.ToReadOnlySequence(this);
 
     private void ReleaseChunks()
     {
@@ -342,5 +342,18 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
             return result;
         }
+    }
+}
+
+file static class SparseBufferWriter
+{
+    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize * ++chunkIndex, chunkSize);
+
+    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize << ++chunkIndex, chunkSize);
+
+    internal static int NoGrowth(int chunkSize, ref int chunkIndex)
+    {
+        Debug.Assert(chunkIndex == 0);
+        return chunkSize;
     }
 }

@@ -183,10 +183,23 @@ public ref struct SpanWriter<T>
     /// </summary>
     /// <param name="item">The item to place.</param>
     /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the item.</exception>
-    public void Add(T item)
+    public void Add(T item) => Add() = item;
+
+    /// <summary>
+    /// Adds single element and returns a reference to it.
+    /// </summary>
+    /// <returns>The reference to the added element.</returns>
+    /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place the item.</exception>
+    public ref T Add()
     {
-        if (!TryAdd(item))
+        if ((uint)position >= (uint)length)
             ThrowInternalBufferOverflowException();
+
+        return ref Unsafe.Add(ref reference, position++);
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
     }
 
     /// <summary>
@@ -220,18 +233,18 @@ public ref struct SpanWriter<T>
     /// </summary>
     /// <param name="count">The size of the segment.</param>
     /// <returns>The portion of the underlying span.</returns>
-    /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative or greater than <see cref="FreeCapacity"/>.</exception>
     public Span<T> Slide(int count)
     {
-        if (!TrySlide(count, out var result))
-            ThrowInternalBufferOverflowException();
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
+        var newLength = position + count;
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)newLength, (uint)length, nameof(count));
+
+        var result = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref reference, position), count);
+        position = newLength;
         return result;
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
 
     /// <summary>
     /// Writes a portion of data.
@@ -241,16 +254,19 @@ public ref struct SpanWriter<T>
     /// <param name="count">The number of the elements to be written.</param>
     /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
     /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
-    /// <exception cref="InternalBufferOverflowException">Remaining space in the underlying span is not enough to place <paramref name="count"/> elements.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative or greater than <see cref="FreeCapacity"/>.</exception>
     [CLSCompliant(false)]
     public unsafe void Write<TArg>(delegate*<TArg, Span<T>, void> action, TArg arg, int count)
     {
         ArgumentNullException.ThrowIfNull(action);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (!TrySlide(count, out var buffer))
-            ThrowInternalBufferOverflowException();
+        var newLength = position + count;
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)newLength, (uint)length, nameof(count));
 
+        var buffer = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref reference, position), count);
         action(arg, buffer);
+        position = newLength;
     }
 
     /// <summary>

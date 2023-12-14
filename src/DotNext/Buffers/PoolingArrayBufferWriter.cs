@@ -12,14 +12,14 @@ using static Runtime.Intrinsics;
 /// Represents memory writer that is backed by the array obtained from the pool.
 /// </summary>
 /// <remarks>
-/// This class provides additional methods for access to array segments in contrast to <see cref="PooledBufferWriter{T}"/>.
+/// This class provides additional methods for access to array segments in contrast to <see cref="PoolingBufferWriter{T}"/>.
 /// </remarks>
 /// <typeparam name="T">The data type that can be written.</typeparam>
 /// <remarks>
 /// Initializes a new writer with the default initial capacity.
 /// </remarks>
 /// <param name="pool">The array pool.</param>
-public sealed class PooledArrayBufferWriter<T>(ArrayPool<T>? pool = null) : BufferWriter<T>, ISupplier<ArraySegment<T>>, IList<T>
+public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : BufferWriter<T>, ISupplier<ArraySegment<T>>, IList<T>
 {
     private readonly ArrayPool<T> pool = pool ?? ArrayPool<T>.Shared;
     private T[] buffer = [];

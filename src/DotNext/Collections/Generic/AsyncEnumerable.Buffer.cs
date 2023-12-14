@@ -24,7 +24,7 @@ public static partial class AsyncEnumerable
         ArgumentNullException.ThrowIfNull(enumerable);
         ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
-        using var buffer = new PooledBufferWriter<T>(allocator) { Capacity = sizeHint };
+        using var buffer = new PoolingBufferWriter<T>(allocator) { Capacity = sizeHint };
 
         await foreach (var item in enumerable.WithCancellation(token).ConfigureAwait(false))
             buffer.Add(item);

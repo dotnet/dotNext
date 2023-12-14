@@ -10,14 +10,14 @@ namespace DotNext.Buffers;
 /// Represents stack-allocated buffer writer.
 /// </summary>
 /// <remarks>
-/// This type is similar to <see cref="PooledArrayBufferWriter{T}"/> and <see cref="PooledBufferWriter{T}"/>
+/// This type is similar to <see cref="PoolingArrayBufferWriter{T}"/> and <see cref="PoolingBufferWriter{T}"/>
 /// classes but it tries to avoid on-heap allocation. Moreover, it can use pre-allocated stack
 /// memory as a initial buffer used for writing. If builder requires more space then pooled
 /// memory used.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
-/// <seealso cref="PooledArrayBufferWriter{T}"/>
-/// <seealso cref="PooledBufferWriter{T}"/>
+/// <seealso cref="PoolingArrayBufferWriter{T}"/>
+/// <seealso cref="PoolingBufferWriter{T}"/>
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
