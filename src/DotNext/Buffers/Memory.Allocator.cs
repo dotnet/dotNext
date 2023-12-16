@@ -78,7 +78,7 @@ public static partial class Memory
         MemoryOwner<T> result;
         if (allocator is null)
         {
-            result = AllocateAtLeast<T>(length);
+            result = AllocateExactly<T>(length);
         }
         else
         {
