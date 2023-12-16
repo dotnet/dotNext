@@ -22,9 +22,6 @@ public static class EncodingExtensions
     /// <summary>
     /// Encodes a set of characters from the specified read-only span.
     /// </summary>
-    /// <remarks>
-    /// The caller is responsible for releasing returned memory.
-    /// </remarks>
     /// <param name="encoding">The target encoding.</param>
     /// <param name="chars">The characters to encode.</param>
     /// <param name="allocator">The memory allocator.</param>
@@ -39,14 +36,14 @@ public static class EncodingExtensions
         else
         {
             owner = allocator.AllocateExactly(encoding.GetByteCount(chars));
-            encoding.GetBytes(chars, owner.Span);
+            owner.Truncate(encoding.GetBytes(chars, owner.Span));
         }
 
         return owner;
     }
 
     /// <summary>
-    /// Decodes all the bytes in the specified read-only byte.
+    /// Decodes all the bytes in the specified read-only span.
     /// </summary>
     /// <param name="encoding">The target encoding.</param>
     /// <param name="bytes">The set of bytes representing encoded characters.</param>
@@ -62,7 +59,7 @@ public static class EncodingExtensions
         else
         {
             owner = allocator.AllocateExactly(encoding.GetCharCount(bytes));
-            encoding.GetChars(bytes, owner.Span);
+            owner.Truncate(encoding.GetChars(bytes, owner.Span));
         }
 
         return owner;
