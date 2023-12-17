@@ -3,6 +3,7 @@ using System.Numerics;
 
 namespace DotNext.Buffers;
 
+using System.Diagnostics.CodeAnalysis;
 using Binary;
 using Numerics;
 
@@ -14,45 +15,13 @@ public static class ByteBuffer
     private const int MaxBufferSize = int.MaxValue / 2;
 
     /// <summary>
-    /// Writes a value in little-endian format to the buffer.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteLittleEndian<T>(this IBufferWriter<byte> writer, T value)
-        where T : notnull, IBinaryInteger<T>
-    {
-        var buffer = writer.GetSpan(value.GetByteCount());
-        if (!value.TryWriteLittleEndian(buffer, out var bytesWritten))
-            throw new InsufficientMemoryException();
-
-        writer.Advance(bytesWritten);
-    }
-
-    /// <summary>
-    /// Writes a value in big-endian format to the buffer.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteBigEndian<T>(this IBufferWriter<byte> writer, T value)
-        where T : notnull, IBinaryInteger<T>
-    {
-        var buffer = writer.GetSpan(value.GetByteCount());
-        if (!value.TryWriteBigEndian(buffer, out var bytesWritten))
-            throw new InsufficientMemoryException();
-
-        writer.Advance(bytesWritten);
-    }
-
-    /// <summary>
     /// Writes the value as a sequence of bytes to the buffer.
     /// </summary>
     /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <seealso cref="BinaryTransformations.AsLittleEndian{T}(T)"/>
+    /// <seealso cref="BinaryTransformations.AsBigEndian{T}(T)"/>
     public static void Write<T>(this IBufferWriter<byte> writer, T value)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -101,45 +70,13 @@ public static class ByteBuffer
     }
 
     /// <summary>
-    /// Writes a value in little-endian format to the buffer.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteLittleEndian<T>(this ref BufferWriterSlim<byte> writer, T value)
-        where T : notnull, IBinaryInteger<T>
-    {
-        var buffer = writer.GetSpan(value.GetByteCount());
-        if (!value.TryWriteLittleEndian(buffer, out var bytesWritten))
-            throw new InsufficientMemoryException();
-
-        writer.Advance(bytesWritten);
-    }
-
-    /// <summary>
-    /// Writes a value in big-endian format to the buffer.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteBigEndian<T>(this ref BufferWriterSlim<byte> writer, T value)
-        where T : notnull, IBinaryInteger<T>
-    {
-        var buffer = writer.GetSpan(value.GetByteCount());
-        if (!value.TryWriteBigEndian(buffer, out var bytesWritten))
-            throw new InsufficientMemoryException();
-
-        writer.Advance(bytesWritten);
-    }
-
-    /// <summary>
     /// Writes the value as a sequence of bytes to the buffer.
     /// </summary>
     /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <seealso cref="BinaryTransformations.AsLittleEndian{T}(T)"/>
+    /// <seealso cref="BinaryTransformations.AsBigEndian{T}(T)"/>
     public static void Write<T>(this ref BufferWriterSlim<byte> writer, T value)
         where T : notnull, IBinaryFormattable<T>
     {
@@ -188,46 +125,38 @@ public static class ByteBuffer
     }
 
     /// <summary>
-    /// Writes a value in little-endian format to the buffer.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteLittleEndian<T>(this ref SpanWriter<byte> writer, T value)
-        where T : notnull, IBinaryInteger<T>
-    {
-        if (!value.TryWriteLittleEndian(writer.RemainingSpan, out var bytesWritten))
-            throw new InsufficientMemoryException();
-
-        writer.Advance(bytesWritten);
-    }
-
-    /// <summary>
-    /// Writes a value in big-endian format to the buffer.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteBigEndian<T>(this ref SpanWriter<byte> writer, T value)
-        where T : notnull, IBinaryInteger<T>
-    {
-        if (!value.TryWriteBigEndian(writer.RemainingSpan, out var bytesWritten))
-            throw new InsufficientMemoryException();
-
-        writer.Advance(bytesWritten);
-    }
-
-    /// <summary>
     /// Writes the value as a sequence of bytes to the buffer.
     /// </summary>
     /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <seealso cref="BinaryTransformations.AsLittleEndian{T}(T)"/>
+    /// <seealso cref="BinaryTransformations.AsBigEndian{T}(T)"/>
     public static void Write<T>(this ref SpanWriter<byte> writer, T value)
         where T : notnull, IBinaryFormattable<T>
         => value.Format(writer.Slide(T.Size));
+
+    /// <summary>
+    /// Tries to write the value as a sequence of bytes to the buffer.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to be written as a sequence of bytes.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The value to be written as a sequence of bytes.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="writer"/> has enough space to place formatted value;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    /// <seealso cref="BinaryTransformations.AsLittleEndian{T}(T)"/>
+    /// <seealso cref="BinaryTransformations.AsBigEndian{T}(T)"/>
+    public static bool TryWrite<T>(this ref SpanWriter<byte> writer, T value)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        bool result;
+        if (result = writer.TrySlide(T.Size, out var segment))
+            value.Format(segment);
+
+        return result;
+    }
 
     /// <summary>
     /// Writes <see cref="BigInteger"/> value to the buffer.
@@ -272,23 +201,37 @@ public static class ByteBuffer
     }
 
     /// <summary>
-    /// Reads a value encoded in little-endian format.
+    /// Restores a value from a sequence of bytes.
     /// </summary>
-    /// <typeparam name="T">The type of the value to read.</typeparam>
-    /// <param name="reader">The reader.</param>
-    /// <returns>The value read from <paramref name="reader"/>.</returns>
-    public static T ReadLittleEndian<T>(this ref SpanReader<byte> reader)
-        where T : struct, IBinaryInteger<T>
-        => T.ReadLittleEndian(reader.Read(Number.GetMaxByteCount<T>()), Number.IsSigned<T>() is false);
+    /// <typeparam name="T">The type of value to read.</typeparam>
+    /// <param name="reader">The buffer reader.</param>
+    /// <returns>The value restored from a sequence of bytes.</returns>
+    /// <seealso cref="LittleEndian{T}"/>
+    /// <seealso cref="BigEndian{T}"/>
+    public static T Read<T>(this ref SpanReader<byte> reader)
+        where T : notnull, IBinaryFormattable<T>
+        => T.Parse(reader.Read(T.Size));
 
     /// <summary>
-    /// Reads a value encoded in big-endian format.
+    /// Tries to restore a value from a sequence of bytes.
     /// </summary>
-    /// <typeparam name="T">The type of the value to read.</typeparam>
-    /// <param name="reader">The reader.</param>
-    /// <returns>The value read from <paramref name="reader"/>.</returns>
-    [CLSCompliant(false)]
-    public static T ReadBigEndian<T>(this ref SpanReader<byte> reader)
-        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
-        => T.ReadBigEndian(reader.Read(Number.GetMaxByteCount<T>()), Number.IsSigned<T>() is false);
+    /// <typeparam name="T">The type of value to read.</typeparam>
+    /// <param name="reader">The buffer reader.</param>
+    /// <param name="value">The value restored from a sequence of bytes.</param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="value"/> is restored successfully;
+    /// <see langword="false"/> if <paramref name="reader"/> has not enough bytes to read.
+    /// </returns>
+    /// <seealso cref="LittleEndian{T}"/>
+    /// <seealso cref="BigEndian{T}"/>
+    public static bool TryRead<T>(this ref SpanReader<byte> reader, [NotNullWhen(true)] out T? value)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        bool result;
+        value = (result = reader.TryRead(T.Size, out var segment))
+            ? T.Parse(segment)
+            : default;
+
+        return result;
+    }
 }
