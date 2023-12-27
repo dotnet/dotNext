@@ -10,7 +10,7 @@ namespace DotNext.Collections.Specialized;
 /// </summary>
 /// <typeparam name="T">The type of the element in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
+public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>
 {
     /// <summary>
     /// Represents an enumerator over the collection containing a single element.
@@ -153,4 +153,68 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
     /// <param name="item">The item in the list.</param>
     /// <returns>The collection containing the list.</returns>
     public static implicit operator SingletonList<T>(T item) => new() { Item = item };
+
+    /// <inheritdoc />
+    readonly bool IReadOnlySet<T>.Contains(T item) => EqualityComparer<T>.Default.Equals(Item, item);
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.Overlaps(IEnumerable<T> other)
+        => other.Contains(Item);
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.SetEquals(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count is 1 && other.Contains(Item);
+
+        using var enumerator = other.GetEnumerator();
+        return enumerator.MoveNext()
+            && EqualityComparer<T>.Default.Equals(Item, enumerator.Current)
+            && !enumerator.MoveNext();
+    }
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsSubsetOf(IEnumerable<T> other)
+        => other.Contains(Item);
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsProperSubsetOf(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count > 1 && other.Contains(Item);
+
+        var matched = false;
+        foreach (var candidate in other)
+        {
+            if (matched)
+                return true;
+
+            if (EqualityComparer<T>.Default.Equals(Item, candidate))
+                matched = true;
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsProperSupersetOf(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count is 0;
+
+        using var enumerator = other.GetEnumerator();
+        return enumerator.MoveNext() is false;
+    }
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsSupersetOf(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count is 0 || (count is 1 && other.Contains(Item));
+
+        using var enumerator = other.GetEnumerator();
+        return !enumerator.MoveNext()
+            || EqualityComparer<T>.Default.Equals(Item, enumerator.Current)
+            && !enumerator.MoveNext();
+    }
 }
