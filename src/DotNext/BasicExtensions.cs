@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
 
@@ -105,97 +104,57 @@ public static class BasicExtensions
     }
 
     /// <summary>
-    /// Normalizes value in the specified range.
-    /// </summary>
-    /// <typeparam name="TInput">The type of the input value and bounds.</typeparam>
-    /// <typeparam name="TOutput">The type of normalized value.</typeparam>
-    /// <param name="value">The value to be normalized. Must be in range [min..max].</param>
-    /// <param name="min">The lower bound of the value.</param>
-    /// <param name="max">The upper bound of the value.</param>
-    /// <returns>The normalized value in range [-1..1] for signed value and [0..1] for unsigned value.</returns>
-    public static TOutput Normalize<TInput, TOutput>(this TInput value, TInput min, TInput max)
-        where TInput : struct, INumberBase<TInput>, IComparisonOperators<TInput, TInput, bool>
-        where TOutput : struct, IFloatingPoint<TOutput>
-    {
-        var x = TOutput.CreateChecked(value);
-        TInput y;
-        if (value > TInput.Zero)
-        {
-            y = max;
-        }
-        else
-        {
-            y = min;
-            x = -x;
-        }
-
-        return x / TOutput.CreateChecked(y);
-    }
-
-    /// <summary>
-    /// Normalizes 64-bit unsigned integer to interval [0..1).
-    /// </summary>
-    /// <param name="value">The value to be normalized.</param>
-    /// <returns>The normalized value in range [0..1).</returns>
-    [CLSCompliant(false)]
-    public static double Normalize(this ulong value)
-    {
-        const ulong fraction = ulong.MaxValue >> (64 - 53);
-        const ulong exponent = 1UL << 53;
-        return BitConverter.UInt64BitsToDouble(fraction & value) / BitConverter.UInt64BitsToDouble(exponent);
-    }
-
-    /// <summary>
-    /// Normalizes 64-bit signed integer to interval [0..1).
-    /// </summary>
-    /// <param name="value">The value to be normalized.</param>
-    /// <returns>The normalized value in range [0..1).</returns>
-    public static double Normalize(this long value)
-        => Normalize(unchecked((ulong)value));
-
-    /// <summary>
-    /// Normalizes 32-bit unsigned integer to interval [0..1).
-    /// </summary>
-    /// <param name="value">The value to be normalized.</param>
-    /// <returns>The normalized value in range [0..1).</returns>
-    [CLSCompliant(false)]
-    public static float Normalize(this uint value)
-    {
-        const uint fraction = uint.MaxValue >> (32 - 24);
-        const uint exponent = 1U << 24;
-        return BitConverter.UInt32BitsToSingle(fraction & value) / BitConverter.UInt32BitsToSingle(exponent);
-    }
-
-    /// <summary>
-    /// Normalizes 32-bit signed integer to interval [0..1).
-    /// </summary>
-    /// <param name="value">The value to be normalized.</param>
-    /// <returns>The normalized value in range [0..1).</returns>
-    public static float Normalize(this int value)
-        => Normalize(unchecked((uint)value));
-
-    /// <summary>
-    /// Checks whether specified value is in range.
-    /// </summary>
-    /// <typeparam name="T">Type of value to check.</typeparam>
-    /// <param name="value">Value to check.</param>
-    /// <param name="left">Range left bound.</param>
-    /// <param name="right">Range right bound.</param>
-    /// <param name="boundType">Range endpoints bound type.</param>
-    /// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
-    public static bool IsBetween<T>(this T value, T left, T right, [ConstantExpected] BoundType boundType = BoundType.Open)
-        where T : notnull, IComparable<T>
-    {
-        int l = value.CompareTo(left), r = value.CompareTo(right);
-        return (l > 0 || (l is 0 && (boundType & BoundType.LeftClosed) is not 0))
-          && (r < 0 || (r is 0 && (boundType & BoundType.RightClosed) is not 0));
-    }
-
-    /// <summary>
     /// Indicates that array is <see langword="null"/> or empty.
     /// </summary>
     /// <param name="array">The array to check.</param>
     /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
     public static bool IsNullOrEmpty([NotNullWhen(false)] this Array? array)
         => array is null || Runtime.Intrinsics.GetLength(array) is 0;
+
+    /// <summary>
+    /// Determines whether the specified value is in the specified range.
+    /// </summary>
+    /// <example>
+    /// The following example demonstrates how to check whether the value is in range [0..1).
+    /// <code>
+    /// double x;
+    /// IsBetween(x, 0D.Enclosed(), 1D.Disclosed());
+    /// </code>
+    /// </example>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TLowerBound">The lower bound type.</typeparam>
+    /// <typeparam name="TUpperBound">The upper bound type.</typeparam>
+    /// <param name="value">The value to compare.</param>
+    /// <param name="lowerBound">The lower bound.</param>
+    /// <param name="upperBound">The upper bound.</param>
+    /// <returns><see langword="true"/> if <paramref name="value"/> is in the specified range; otherwise, <see langword="false"/>.</returns>
+    /// <seealso cref="Enclosed{T}(T)"/>
+    /// <seealso cref="Disclosed{T}(T)"/>
+    public static bool IsBetween<T, TLowerBound, TUpperBound>(this T value, TLowerBound lowerBound, TUpperBound upperBound)
+        where T : notnull
+        where TLowerBound : notnull, IRangeEndpoint<T>
+        where TUpperBound : notnull, IRangeEndpoint<T>
+        => lowerBound.IsOnRight(value) && upperBound.IsOnLeft(value);
+
+    /// <summary>
+    /// Creates enclosed range endpoint.
+    /// </summary>
+    /// <typeparam name="T">The type of the endpoint.</typeparam>
+    /// <param name="value">The endpoint value.</param>
+    /// <returns>The range endpoint.</returns>
+    /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
+    public static EnclosedEndpoint<T> Enclosed<T>(this T value)
+        where T : notnull, IComparable<T>
+        => new() { Value = value };
+
+    /// <summary>
+    /// Creates disclosed range endpoint.
+    /// </summary>
+    /// <typeparam name="T">The type of the endpoint.</typeparam>
+    /// <param name="value">The endpoint value.</param>
+    /// <returns>The range endpoint.</returns>
+    /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
+    public static DisclosedEndpoint<T> Disclosed<T>(this T value)
+        where T : notnull, IComparable<T>
+        => new() { Value = value };
 }

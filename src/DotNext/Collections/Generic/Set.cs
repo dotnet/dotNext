@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Frozen;
-using System.Diagnostics;
 using System.Numerics;
 
 namespace DotNext.Collections.Generic;
 
 using Specialized;
+using static Numerics.Number;
 
 /// <summary>
 /// Represents various extension methods for sets.
@@ -13,26 +13,27 @@ using Specialized;
 public static class Set
 {
     /// <summary>
-    /// Creates a range of integer values.
+    /// Creates a range using the specified bounds.
     /// </summary>
-    /// <typeparam name="T">The type of elements in the range.</typeparam>
-    /// <param name="fromInclusive">The first element in the range.</param>
-    /// <param name="count">The number of elements in the range.</param>
-    /// <returns>A set containing all elements in the range.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="count"/> is negative;
-    /// or <paramref name="fromInclusive"/>+<paramref name="count"/>-<c>1</c> is larger than maximum value of type <typeparamref name="T"/>.
-    /// </exception>
-    public static IReadOnlySet<T> Range<T>(T fromInclusive, T count)
+    /// <typeparam name="T">The type of the elements in the range.</typeparam>
+    /// <typeparam name="TLowerBound">The type of lower bound.</typeparam>
+    /// <typeparam name="TUpperBound">The type of upper bound.</typeparam>
+    /// <param name="lowerBound">The lower bound of the range.</param>
+    /// <param name="upperBound">The upper bound of the range.</param>
+    /// <returns>An ordered set of elements in the range.</returns>
+    public static IReadOnlySet<T> Range<T, TLowerBound, TUpperBound>(TLowerBound lowerBound, TUpperBound upperBound)
         where T : notnull, IBinaryInteger<T>
+        where TLowerBound : notnull, IFiniteRangeEndpoint<T>
+        where TUpperBound : notnull, IFiniteRangeEndpoint<T>
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(count);
+        var (minValue, maxValue) = GetMinMaxValues<T, TLowerBound, TUpperBound>(lowerBound, upperBound);
 
-        return count == T.Zero
-            ? FrozenSet<T>.Empty
-            : count == T.One
-            ? Singleton(fromInclusive)
-            : new RangeSet<T>(fromInclusive, count);
+        return minValue.CompareTo(maxValue) switch
+        {
+            < 0 => FrozenSet<T>.Empty,
+            0 => Singleton(minValue),
+            > 0 => new RangeSet<T>(minValue, maxValue),
+        };
     }
 
     /// <summary>
@@ -44,29 +45,11 @@ public static class Set
     public static IReadOnlySet<T> Singleton<T>(T item)
         => new SingletonList<T> { Item = item };
 
-    private sealed class RangeSet<T> : IReadOnlySet<T>
+    private sealed class RangeSet<T>(T lowerBound, T upperBound) : IReadOnlySet<T>
         where T : notnull, IBinaryInteger<T>
     {
-        private readonly T lowerBound;
-        private readonly T upperBound;
-
-        internal RangeSet(T fromInclusive, T count)
-        {
-            Debug.Assert(!T.IsNegative(count));
-            Debug.Assert(count != T.Zero);
-            Debug.Assert(count != T.One);
-
-            try
-            {
-                upperBound = checked(fromInclusive + (count - T.One));
-            }
-            catch (OverflowException e)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count), e.Message);
-            }
-
-            lowerBound = fromInclusive;
-        }
+        private readonly T lowerBound = lowerBound;
+        private readonly T upperBound = upperBound;
 
         private T Count => upperBound - lowerBound + T.One;
 

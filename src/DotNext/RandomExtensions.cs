@@ -3,6 +3,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using DotNext.Numerics;
 
 namespace DotNext;
 
@@ -288,7 +289,7 @@ public static class RandomExtensions
     /// <returns>Randomly generated boolean value.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
     public static bool NextBoolean(this Random random, double trueProbability = 0.5D)
-        => trueProbability.IsBetween(0D, 1D, BoundType.Closed) ?
+        => trueProbability is >= 0D and <= 1D ?
                 random.NextDouble() >= 1.0D - trueProbability :
                 throw new ArgumentOutOfRangeException(nameof(trueProbability));
 
@@ -320,7 +321,7 @@ public static class RandomExtensions
     /// <returns>Randomly generated boolean value.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="trueProbability"/> value is invalid.</exception>
     public static bool NextBoolean(this RandomNumberGenerator random, double trueProbability = 0.5D)
-        => trueProbability.IsBetween(0D, 1D, BoundType.Closed) ?
+        => trueProbability is >= 0D and <= 1D ?
                 random.NextDouble() >= (1.0D - trueProbability) :
                 throw new ArgumentOutOfRangeException(nameof(trueProbability));
 

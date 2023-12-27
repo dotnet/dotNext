@@ -250,7 +250,7 @@ public class SoftReferenceOptions
     public double MemoryThreshold
     {
         get => memoryThreshold;
-        init => memoryThreshold = double.IsFinite(value) && value.IsBetween(0D, 1D, BoundType.RightClosed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        init => memoryThreshold = double.IsFinite(value) && value is > 0D and <= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     internal bool KeepTracking(object target)

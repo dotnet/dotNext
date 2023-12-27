@@ -174,4 +174,26 @@ public static partial class Memory
             return result;
         }
     }
+
+    /// <summary>
+    /// Tries to get a contiguous block of memory from the specified sequence of elements.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the block.</typeparam>
+    /// <param name="sequence">The sequence of elements to read from.</param>
+    /// <param name="count">The size of contiguous block.</param>
+    /// <param name="span">The contiguous block of elements.</param>
+    /// <returns><see langword="true"/> if contiguous block of elements is obtained successfully; otherwise, <see langword="false"/>.</returns>
+    public static bool TryGetBlock<T>(this in ReadOnlySequence<T> sequence, int count, out ReadOnlySpan<T> span)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        span = sequence.FirstSpan;
+        if (span.Length >= count)
+        {
+            span = span.Slice(0, count);
+            return true;
+        }
+
+        return false;
+    }
 }
