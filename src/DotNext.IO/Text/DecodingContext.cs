@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Buffers;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DotNext.Text;
@@ -52,34 +53,22 @@ public readonly struct DecodingContext(Encoding encoding, bool reuseDecoder) : I
     /// <param name="encoding">The text encoding.</param>
     public static implicit operator DecodingContext(Encoding encoding) => new(encoding, false);
 
-    private IEnumerable<ReadOnlyMemory<char>> GetCharsCore(ReadOnlyMemory<byte> bytes, Memory<char> buffer, bool flush)
+    internal static int GetChars(in ReadOnlySequence<byte> bytes, ref SequencePosition position, Encoding encoding, Decoder decoder, Span<char> buffer)
     {
-        var decoder = GetDecoder();
-
-        for (int bytesConsumed, charsProduced; bytes.Length > 0; bytes = bytes.Slice(bytesConsumed))
+        int charsWritten;
+        if (bytes.TryGet(ref position, out var source, advance: false))
         {
-            decoder.Convert(bytes.Span, buffer.Span, flush && Encoding.GetMaxCharCount(bytes.Length) <= buffer.Length, out bytesConsumed, out charsProduced, out _);
-            yield return buffer.Slice(0, charsProduced);
+            var bytesToRead = buffer.Length / encoding.GetMaxByteCount(1);
+            bytesToRead = Math.Min(bytesToRead, source.Length);
+
+            charsWritten = decoder.GetChars(source.Span.Slice(0, bytesToRead), buffer, bytes.Length <= bytesToRead);
+            position = bytes.GetPosition(bytesToRead, position);
         }
-    }
+        else
+        {
+            charsWritten = 0;
+        }
 
-    /// <summary>
-    /// Decodes the characters.
-    /// </summary>
-    /// <param name="bytes">A sequence of bytes representing encoded characters.</param>
-    /// <param name="buffer">The temporary buffer used internally to decode characters.</param>
-    /// <param name="isFinalBlock"><see langword="true"/> if <paramref name="bytes"/> is a final block containing encoded characters; otherwise, <see langword="false"/>.</param>
-    /// <returns>A collection of memory chunks representing decoded characters.</returns>
-    /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="isFinalBlock"/> is <see langword="true"/> but the context doesn't have reusable decoder.</exception>
-    public IEnumerable<ReadOnlyMemory<char>> GetChars(ReadOnlyMemory<byte> bytes, Memory<char> buffer, bool isFinalBlock = true)
-    {
-        if (buffer.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
-
-        if (decoder is null && !isFinalBlock)
-            throw new ArgumentOutOfRangeException(nameof(isFinalBlock));
-
-        return bytes.IsEmpty ? Enumerable.Empty<ReadOnlyMemory<char>>() : GetCharsCore(bytes, buffer, isFinalBlock);
+        return charsWritten;
     }
 }

@@ -33,8 +33,9 @@ public static class ByteBuffer
     /// <typeparam name="T">The integer type.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written in little-endian format.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteLittleEndian<T>(this IBufferWriter<byte> writer, T value)
+    public static int WriteLittleEndian<T>(this IBufferWriter<byte> writer, T value)
         where T : notnull, IBinaryInteger<T>
     {
         int length;
@@ -45,6 +46,7 @@ public static class ByteBuffer
         }
 
         writer.Advance(length);
+        return length;
     }
 
     /// <summary>
@@ -53,8 +55,9 @@ public static class ByteBuffer
     /// <typeparam name="T">The integer type.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written in big-endian format.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteBigEndian<T>(this IBufferWriter<byte> writer, T value)
+    public static int WriteBigEndian<T>(this IBufferWriter<byte> writer, T value)
         where T : notnull, IBinaryInteger<T>
     {
         int length;
@@ -65,6 +68,7 @@ public static class ByteBuffer
         }
 
         writer.Advance(length);
+        return length;
     }
 
     /// <summary>
@@ -74,14 +78,16 @@ public static class ByteBuffer
     /// <param name="value">The value to be written as a sequence of bytes.</param>
     /// <param name="isBigEndian"><see langword="true"/> to use unsigned encoding; otherwise, <see langword="false"/>.</param>
     /// <param name="isUnsigned"><see langword="true"/> to write the bytes in a big-endian byte order; otherwise, <see langword="false"/>.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void Write(this IBufferWriter<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
+    public static int Write(this IBufferWriter<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
     {
         var buffer = writer.GetSpan(value.GetByteCount(isUnsigned));
         if (!value.TryWriteBytes(buffer, out var bytesWritten, isUnsigned, isBigEndian))
             throw new InsufficientMemoryException();
 
         writer.Advance(bytesWritten);
+        return bytesWritten;
     }
 
     /// <summary>
@@ -92,8 +98,9 @@ public static class ByteBuffer
     /// <param name="value">The value to be written as a sequence of bytes.</param>
     /// <param name="format">A standard or custom format string.</param>
     /// <param name="provider">Culture-specific formatting information.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void Format<T>(this IBufferWriter<byte> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    public static int Format<T>(this IBufferWriter<byte> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, IUtf8SpanFormattable
     {
         var buffer = writer.GetSpan();
@@ -105,6 +112,7 @@ public static class ByteBuffer
         }
 
         writer.Advance(bytesWritten);
+        return bytesWritten;
     }
 
     /// <summary>
@@ -126,8 +134,9 @@ public static class ByteBuffer
     /// <typeparam name="T">The integer type.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written in little-endian format.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteLittleEndian<T>(this ref BufferWriterSlim<byte> writer, T value)
+    public static int WriteLittleEndian<T>(this ref BufferWriterSlim<byte> writer, T value)
         where T : notnull, IBinaryInteger<T>
     {
         int length;
@@ -138,6 +147,7 @@ public static class ByteBuffer
         }
 
         writer.Advance(length);
+        return length;
     }
 
     /// <summary>
@@ -146,8 +156,9 @@ public static class ByteBuffer
     /// <typeparam name="T">The integer type.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written in big-endian format.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteBigEndian<T>(this ref BufferWriterSlim<byte> writer, T value)
+    public static int WriteBigEndian<T>(this ref BufferWriterSlim<byte> writer, T value)
         where T : notnull, IBinaryInteger<T>
     {
         int length;
@@ -158,6 +169,7 @@ public static class ByteBuffer
         }
 
         writer.Advance(length);
+        return length;
     }
 
     /// <summary>
@@ -167,14 +179,16 @@ public static class ByteBuffer
     /// <param name="value">The value to be written as a sequence of bytes.</param>
     /// <param name="isBigEndian"><see langword="true"/> to use unsigned encoding; otherwise, <see langword="false"/>.</param>
     /// <param name="isUnsigned"><see langword="true"/> to write the bytes in a big-endian byte order; otherwise, <see langword="false"/>.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void Write(this ref BufferWriterSlim<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
+    public static int Write(this ref BufferWriterSlim<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)
     {
         var buffer = writer.InternalGetSpan(value.GetByteCount(isUnsigned));
         if (!value.TryWriteBytes(buffer, out var bytesWritten, isUnsigned, isBigEndian))
             throw new InsufficientMemoryException();
 
         writer.Advance(bytesWritten);
+        return bytesWritten;
     }
 
     /// <summary>
@@ -185,8 +199,9 @@ public static class ByteBuffer
     /// <param name="value">The value to be written as a sequence of bytes.</param>
     /// <param name="format">A standard or custom format string.</param>
     /// <param name="provider">Culture-specific formatting information.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void Format<T>(this ref BufferWriterSlim<byte> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    public static int Format<T>(this ref BufferWriterSlim<byte> writer, T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : notnull, IUtf8SpanFormattable
     {
         var buffer = writer.InternalGetSpan(sizeHint: 0);
@@ -198,6 +213,7 @@ public static class ByteBuffer
         }
 
         writer.Advance(bytesWritten);
+        return bytesWritten;
     }
 
     /// <summary>
@@ -236,14 +252,16 @@ public static class ByteBuffer
     /// <typeparam name="T">The integer type.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written in little-endian format.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteLittleEndian<T>(this ref SpanWriter<byte> writer, T value)
+    public static int WriteLittleEndian<T>(this ref SpanWriter<byte> writer, T value)
         where T : notnull, IBinaryInteger<T>
     {
         if (!value.TryWriteLittleEndian(writer.RemainingSpan, out var bytesWritten))
             throw new InsufficientMemoryException();
 
         writer.Advance(bytesWritten);
+        return bytesWritten;
     }
 
     /// <summary>
@@ -252,14 +270,16 @@ public static class ByteBuffer
     /// <typeparam name="T">The integer type.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written in big-endian format.</param>
+    /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
-    public static void WriteBigEndian<T>(this ref SpanWriter<byte> writer, T value)
+    public static int WriteBigEndian<T>(this ref SpanWriter<byte> writer, T value)
         where T : notnull, IBinaryInteger<T>
     {
         if (!value.TryWriteBigEndian(writer.RemainingSpan, out var bytesWritten))
             throw new InsufficientMemoryException();
 
         writer.Advance(bytesWritten);
+        return bytesWritten;
     }
 
     /// <summary>

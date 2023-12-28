@@ -56,7 +56,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         }
         else
         {
-            result = writer.WriteAsync(Serialize, Value, token);
+            result = SerializeAsync(Value, new(writer), token);
         }
 
         return result;
@@ -65,6 +65,12 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         {
             using var jsonWriter = new Utf8JsonWriter(writer, new JsonWriterOptions { Indented = false, SkipValidation = false });
             JsonSerializer.Serialize(jsonWriter, value, T.TypeInfo);
+        }
+
+        static async ValueTask SerializeAsync(T value, Wrapper<TWriter> writer, CancellationToken token)
+        {
+            using var wrapper = StreamSource.AsAsynchronousStream(writer);
+            await JsonSerializer.SerializeAsync(wrapper, value, T.TypeInfo, token).ConfigureAwait(false);
         }
     }
 
@@ -110,7 +116,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<JsonSerializable<T>> DeserializeBufferedAsync(TReader reader, int bufferSize, CancellationToken token)
         {
-            using var buffer = MemoryAllocator.AllocateExactly<byte>(bufferSize);
+            using var buffer = Memory.AllocateExactly<byte>(bufferSize);
             await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
             return Deserialize(new(buffer.Memory));
         }
@@ -174,4 +180,18 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
 
     /// <inheritdoc />
     public override readonly string? ToString() => Value?.ToString();
+
+    private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+        where TWriter : notnull, IAsyncBinaryWriter
+    {
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
+            => writer.Invoke(source, token);
+
+        void IFlushable.Flush()
+        {
+        }
+
+        Task IFlushable.FlushAsync(CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+    }
 }

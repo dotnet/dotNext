@@ -22,7 +22,7 @@ internal abstract class ReadOnlyStream : Stream, IFlushable
     public sealed override int ReadByte()
     {
         byte result = 0;
-        return Read(CreateSpan(ref result, 1)) == 1 ? result : -1;
+        return Read(CreateSpan(ref result, 1)) is 1 ? result : -1;
     }
 
     public sealed override int Read(byte[] buffer, int offset, int count)

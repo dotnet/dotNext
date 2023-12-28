@@ -5,22 +5,12 @@ namespace DotNext.IO.Log;
 /// of the log entries.
 /// </summary>
 /// <typeparam name="TEntry">The type of the supplied entries.</typeparam>
-public sealed class LogEntryProducer<TEntry> : ILogEntryProducer<TEntry>, IResettable
+/// <param name="entries">The list of the log entries to be returned by the producer.</param>
+public sealed class LogEntryProducer<TEntry>(IReadOnlyList<TEntry> entries) : ILogEntryProducer<TEntry>, IResettable
     where TEntry : notnull, ILogEntry
 {
     private const int InitialPosition = -1;
-    private readonly IReadOnlyList<TEntry> source;
-    private int currentIndex;
-
-    /// <summary>
-    /// Initializes a new producer of the log entries passed as list.
-    /// </summary>
-    /// <param name="entries">The list of the log entries to be returned by the producer.</param>
-    public LogEntryProducer(IReadOnlyList<TEntry> entries)
-    {
-        currentIndex = InitialPosition;
-        source = entries;
-    }
+    private int currentIndex = InitialPosition;
 
     /// <summary>
     /// Initializes a new producer of the log entries passed as array.
@@ -35,24 +25,25 @@ public sealed class LogEntryProducer<TEntry> : ILogEntryProducer<TEntry>, IReset
     /// Initializes a new empty producer of the log entries.
     /// </summary>
     public LogEntryProducer()
-        : this(Array.Empty<TEntry>())
+        : this([])
     {
     }
 
     /// <inheritdoc/>
-    TEntry IAsyncEnumerator<TEntry>.Current => source[currentIndex];
+    TEntry IAsyncEnumerator<TEntry>.Current => entries[currentIndex];
 
     /// <inheritdoc/>
-    long ILogEntryProducer<TEntry>.RemainingCount => source.Count - currentIndex - 1;
+    long ILogEntryProducer<TEntry>.RemainingCount => entries.Count - currentIndex - 1;
 
     /// <inheritdoc/>
     ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync()
     {
         var index = currentIndex + 1;
         bool result;
-        if (result = index < source.Count)
+        if (result = index < entries.Count)
             currentIndex = index;
-        return new ValueTask<bool>(result);
+
+        return ValueTask.FromResult(result);
     }
 
     /// <summary>

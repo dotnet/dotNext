@@ -18,8 +18,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 
     internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
     {
-        if (bufferSize <= 0)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
         this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
         decoder = encoding.GetDecoder();
@@ -95,7 +94,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         {
             do
             {
-                ref var first = ref BufferHelpers.GetReference(in buffer);
+                ref var first = ref Memory.GetReference(in buffer);
 
                 do
                 {

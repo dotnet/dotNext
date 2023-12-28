@@ -120,7 +120,7 @@ public partial class FileBufferingWriter
 
             var buffer = writer.buffer;
             tail = buffer.Memory.Slice(0, writer.position);
-            handle = writer.fileBackend.SafeFileHandle;
+            handle = writer.fileBackend;
             this.buffer = writer.allocator.AllocateExactly(segmentLength);
             this.segmentLength = segmentLength;
 

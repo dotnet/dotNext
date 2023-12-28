@@ -1,8 +1,4 @@
-using System.Buffers;
-
 namespace DotNext.IO;
-
-using Buffers;
 
 internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
     where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
@@ -34,8 +30,7 @@ internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
     {
         if (!buffer.IsEmpty)
         {
-            using var rental = new MemoryOwner<byte>(ArrayPool<byte>.Shared, buffer.Length);
-            buffer.CopyTo(rental.Span);
+            using var rental = buffer.Copy();
             using var source = new CancellationTokenSource(timeout);
             using var task = WriteAsync(rental.Memory, source.Token).AsTask();
             task.Wait(source.Token);

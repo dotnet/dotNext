@@ -19,6 +19,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// Represents the file handle.
     /// </summary>
     protected readonly SafeFileHandle handle;
+    private readonly MemoryAllocator<byte>? allocator;
     private MemoryOwner<byte> buffer;
     private int bufferOffset;
     private long fileOffset;
@@ -42,16 +43,13 @@ public partial class FileWriter : Disposable, IFlushable
     public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle);
-
-        if (fileOffset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(fileOffset));
-
-        if (bufferSize <= 16)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
+        ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
         buffer = allocator.AllocateAtLeast(bufferSize);
         this.handle = handle;
         this.fileOffset = fileOffset;
+        this.allocator = allocator;
     }
 
     private ReadOnlyMemory<byte> WrittenMemory => buffer.Memory.Slice(0, bufferOffset);
@@ -81,8 +79,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
     public void Produce(int bytes)
     {
-        if ((uint)bytes > (uint)FreeCapacity)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)bytes, (uint)FreeCapacity, nameof(bytes));
 
         bufferOffset += bytes;
     }
@@ -157,6 +154,17 @@ public partial class FileWriter : Disposable, IFlushable
             return ValueTask.FromCanceled(token);
 
         return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Flushes the operating system buffers for the given file to disk.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
+    public void FlushToDisk()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+
+        RandomAccess.FlushToDisk(handle);
     }
 
     /// <inheritdoc />

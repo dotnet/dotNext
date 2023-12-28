@@ -1,6 +1,6 @@
 ﻿namespace DotNext.IO;
 
-using static Buffers.BufferHelpers;
+using static Buffers.Memory;
 
 /// <summary>
 /// Represents read-only view over the portion of underlying stream.

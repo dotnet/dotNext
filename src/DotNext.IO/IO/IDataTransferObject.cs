@@ -10,7 +10,7 @@ using Buffers;
 /// </summary>
 /// <remarks>
 /// Typically, this interface is used for variable-length data units while
-/// <see cref="Buffers.IBinaryFormattable{TSelf}"/> can be used for simple fixed-length structures.
+/// <see cref="Buffers.Binary.IBinaryFormattable{TSelf}"/> can be used for simple fixed-length structures.
 /// </remarks>
 /// <seealso cref="IAsyncBinaryReader"/>
 /// <seealso cref="IAsyncBinaryWriter"/>
@@ -161,7 +161,7 @@ public interface IDataTransferObject
     {
         Debug.Assert(length <= Array.MaxLength);
 
-        using var writer = new PooledArrayBufferWriter<byte> { Capacity = (int)length };
+        using var writer = new PoolingArrayBufferWriter<byte> { Capacity = (int)length };
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
         return await parser.TransformAsync(new SequenceReader(writer.WrittenMemory), token).ConfigureAwait(false);
     }
@@ -174,7 +174,7 @@ public interface IDataTransferObject
         var output = new FileBufferingWriter(asyncIO: true);
         await using (output.ConfigureAwait(false))
         {
-            using var buffer = MemoryAllocator.AllocateAtLeast<byte>(DefaultBufferSize);
+            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
@@ -207,7 +207,7 @@ public interface IDataTransferObject
 
         await using (fs.ConfigureAwait(false))
         {
-            using var buffer = MemoryAllocator.AllocateAtLeast<byte>(DefaultBufferSize);
+            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);

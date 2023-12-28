@@ -2,31 +2,25 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.IO.Log;
 
-internal sealed class SingleEntryProducer<TEntry> : ILogEntryProducer<TEntry>
+internal sealed class SingleEntryProducer<TEntry>(TEntry entry) : ILogEntryProducer<TEntry>
     where TEntry : notnull, ILogEntry
 {
-    private bool available;
-
-    internal SingleEntryProducer(TEntry entry)
-    {
-        Current = entry;
-        available = true;
-    }
+    private bool available = true;
 
     long ILogEntryProducer<TEntry>.RemainingCount => Unsafe.BitCast<bool, byte>(available);
 
-    public TEntry Current { get; }
+    TEntry IAsyncEnumerator<TEntry>.Current => entry;
 
     ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync()
     {
         var result = available;
         available = false;
-        return new ValueTask<bool>(result);
+        return ValueTask.FromResult(result);
     }
 
     ValueTask IAsyncDisposable.DisposeAsync()
     {
         available = false;
-        return new ValueTask();
+        return ValueTask.CompletedTask;
     }
 }

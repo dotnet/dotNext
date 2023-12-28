@@ -202,9 +202,22 @@ public static partial class AsyncEnumerable
     }
 
     /// <summary>
-    /// Gets empty asynchronous collection.
+    /// Gets an empty asynchronous collection.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the collection.</typeparam>
     /// <returns>Empty asynchronous collection.</returns>
     public static IAsyncEnumerable<T> Empty<T>() => EmptyEnumerator<T>.Instance;
+
+    /// <summary>
+    /// Gets an asynchronous collection that throws the specified exception.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+    /// <param name="e">The exception to be thrown by the enumerator.</param>
+    /// <returns>Empty asynchronous collection which enumerator throws <paramref name="e"/>.</returns>
+    public static IAsyncEnumerable<T> Throw<T>(Exception e)
+    {
+        ArgumentNullException.ThrowIfNull(e);
+
+        return new ThrowingEnumerator<T>(e);
+    }
 }

@@ -63,7 +63,7 @@ public static partial class StreamSource
     /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <returns>The writable stream wrapping the callback.</returns>
     public static Stream AsStream<TArg>(this ReadOnlySpanAction<byte, TArg> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
-        => AsSynchronousStream<ReadOnlySpanWriter<TArg>>(new ReadOnlySpanWriter<TArg>(writer ?? throw new ArgumentNullException(nameof(writer)), arg, flush, flushAsync));
+        => AsSynchronousStream<ReadOnlySpanWriter<TArg>>(new(writer ?? throw new ArgumentNullException(nameof(writer)), arg, flush, flushAsync));
 
     /// <summary>
     /// Returns writable stream associated with the buffer writer.
@@ -77,7 +77,9 @@ public static partial class StreamSource
         where TWriter : class, IBufferWriter<byte>
     {
         IFlushable.DiscoverFlushMethods(writer, ref flush, ref flushAsync);
-        return writer is IReadOnlySpanConsumer<byte> ? AsSynchronousStream<DelegatingWriter<TWriter>>(new DelegatingWriter<TWriter>(writer, flush, flushAsync)) : AsSynchronousStream<BufferWriter<TWriter>>(new BufferWriter<TWriter>(writer, flush, flushAsync));
+        return writer is IReadOnlySpanConsumer<byte>
+            ? AsSynchronousStream<DelegatingWriter<TWriter>>(new(writer, flush, flushAsync))
+            : AsSynchronousStream<BufferWriter<TWriter>>(new(writer, flush, flushAsync));
     }
 
     /// <summary>
@@ -121,5 +123,5 @@ public static partial class StreamSource
     /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <returns>The writable stream wrapping the callback.</returns>
     public static Stream AsStream<TArg>(this Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
-        => AsAsynchronousStream<ReadOnlyMemoryWriter<TArg>>(new ReadOnlyMemoryWriter<TArg>(writer, arg, flush, flushAsync));
+        => AsAsynchronousStream<ReadOnlyMemoryWriter<TArg>>(new(writer, arg, flush, flushAsync));
 }

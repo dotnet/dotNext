@@ -18,7 +18,7 @@ public static class TextStreamExtensions
     /// <param name="writer">The buffer writer.</param>
     /// <param name="provider">The object that controls formatting.</param>
     /// <param name="flush">The optional implementation of <see cref="TextWriter.Flush"/> method.</param>
-    /// <param name="flushAsync">The optional implementation of <see cref="TextWriter.FlushAsync"/> method.</param>
+    /// <param name="flushAsync">The optional implementation of <see cref="TextWriter.FlushAsync(CancellationToken)"/> method.</param>
     /// <typeparam name="TWriter">The type of the char buffer writer.</typeparam>
     /// <returns>The text writer backed by the buffer writer.</returns>
     public static TextWriter AsTextWriter<TWriter>(this TWriter writer, IFormatProvider? provider = null, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
@@ -69,7 +69,7 @@ public static class TextStreamExtensions
     /// <param name="encoding">The encoding used to converts chars to bytes.</param>
     /// <param name="provider">The object that controls formatting.</param>
     /// <param name="flush">The optional implementation of <see cref="TextWriter.Flush"/> method.</param>
-    /// <param name="flushAsync">The optional implementation of <see cref="TextWriter.FlushAsync"/> method.</param>
+    /// <param name="flushAsync">The optional implementation of <see cref="TextWriter.FlushAsync(CancellationToken)"/> method.</param>
     /// <typeparam name="TWriter">The type of the char buffer writer.</typeparam>
     /// <returns>The text writer backed by the buffer writer.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="encoding"/> is <see langword="null"/>.</exception>
@@ -91,7 +91,7 @@ public static class TextStreamExtensions
     /// <returns>A task that represents the asynchronous write operation.</returns>
     public static ValueTask WriteAsync(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator), nameof(provider))] ref PoolingInterpolatedStringHandler handler, CancellationToken token = default)
     {
-        return WriteAsync(writer, InterpolatedString.Interpolate(allocator, provider, ref handler), token);
+        return WriteAsync(writer, InterpolatedString.Interpolate(allocator, provider, in handler), token);
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         static async ValueTask WriteAsync(TextWriter writer, MemoryOwner<char> buffer, CancellationToken token)
@@ -151,9 +151,9 @@ public static class TextStreamExtensions
     /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
     /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
     /// <param name="handler">The interpolated string handler.</param>
-    public static void Write(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
+    public static void Write(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator))] in PoolingInterpolatedStringHandler handler)
     {
-        using var buffer = InterpolatedString.Interpolate(allocator, provider, ref handler);
+        using var buffer = InterpolatedString.Interpolate(allocator, provider, in handler);
         writer.Write(buffer.Span);
     }
 
@@ -163,8 +163,8 @@ public static class TextStreamExtensions
     /// <param name="writer">An output for the interpolated string.</param>
     /// <param name="allocator">The allocator for the buffer used by string interpolation handler.</param>
     /// <param name="handler">The interpolated string handler.</param>
-    public static void Write(this TextWriter writer, MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
-        => Write(writer, allocator, null, ref handler);
+    public static void Write(this TextWriter writer, MemoryAllocator<char>? allocator, [InterpolatedStringHandlerArgument(nameof(allocator))] in PoolingInterpolatedStringHandler handler)
+        => Write(writer, allocator, null, in handler);
 
     /// <summary>
     /// Writes interpolated string and appends a new line after it.
@@ -176,7 +176,7 @@ public static class TextStreamExtensions
     public static void WriteLine(this TextWriter writer, MemoryAllocator<char>? allocator, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(allocator))] ref PoolingInterpolatedStringHandler handler)
     {
         handler.AppendLiteral(Environment.NewLine);
-        using var buffer = InterpolatedString.Interpolate(allocator, provider, ref handler);
+        using var buffer = InterpolatedString.Interpolate(allocator, provider, in handler);
         writer.Write(buffer.Span);
     }
 

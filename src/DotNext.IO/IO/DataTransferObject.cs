@@ -16,15 +16,6 @@ public static class DataTransferObject
     private const int DefaultBufferSize = 1024;
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ValueDecoder<T> : IDataTransferObject.ITransformation<T>
-        where T : unmanaged
-    {
-        public ValueTask<T> TransformAsync<TReader>(TReader reader, CancellationToken token)
-            where TReader : IAsyncBinaryReader
-            => reader.ReadAsync<T>(token);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
     private readonly struct DelegatingDecoder<T> : IDataTransferObject.ITransformation<T>
     {
         private readonly Func<IAsyncBinaryReader, CancellationToken, ValueTask<T>> decoder;
@@ -39,9 +30,9 @@ public static class DataTransferObject
     // can return null if capacity == 0
     private static BufferWriter<byte>? CreateBuffer(long? capacity, MemoryAllocator<byte>? allocator) => capacity switch
     {
-        null => new PooledBufferWriter<byte>(allocator),
+        null => new PoolingBufferWriter<byte>(allocator),
         0L => null,
-        { } length when length <= Array.MaxLength => new PooledBufferWriter<byte>(allocator) { Capacity = (int)length },
+        { } length when length <= Array.MaxLength => new PoolingBufferWriter<byte>(allocator) { Capacity = (int)length },
         _ => throw new InsufficientMemoryException(),
     };
 
@@ -78,7 +69,7 @@ public static class DataTransferObject
 
         static async ValueTask WriteToStreamAsync(TObject dto, Stream output, int bufferSize, CancellationToken token)
         {
-            using var buffer = MemoryAllocator.AllocateAtLeast<byte>(bufferSize);
+            using var buffer = Memory.AllocateAtLeast<byte>(bufferSize);
             await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
         }
     }
@@ -89,12 +80,17 @@ public static class DataTransferObject
     /// <typeparam name="TObject">The type of data transfer object.</typeparam>
     /// <param name="dto">Transfer data object to transform.</param>
     /// <param name="output">The pipe writer receiving object content.</param>
+    /// <param name="bufferSize">The maximum numbers of bytes that can be buffered in the memory without flushing.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask WriteToAsync<TObject>(this TObject dto, PipeWriter output, CancellationToken token = default)
+    public static ValueTask WriteToAsync<TObject>(this TObject dto, PipeWriter output, long bufferSize = 0L, CancellationToken token = default)
         where TObject : notnull, IDataTransferObject
-        => dto.WriteToAsync(new PipeBinaryWriter(output), token);
+    {
+        return bufferSize >= 0L
+            ? dto.WriteToAsync(new PipeBinaryWriter(output, bufferSize), token)
+            : ValueTask.FromException(new ArgumentOutOfRangeException(nameof(bufferSize)));
+    }
 
     /// <summary>
     /// Copies the object content to the specified buffer.
@@ -278,40 +274,6 @@ public static class DataTransferObject
                 buffer.Dispose();
             }
         }
-    }
-
-    /// <summary>
-    /// Converts DTO to value of blittable type.
-    /// </summary>
-    /// <typeparam name="TResult">The type of result.</typeparam>
-    /// <typeparam name="TObject">The type of data transfer object.</typeparam>
-    /// <param name="dto">Data transfer object to read from.</param>
-    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns>The content of the object.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<TResult> ToTypeAsync<TResult, TObject>(this TObject dto, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
-        where TResult : unmanaged
-    {
-        ValueTask<TResult> result;
-
-        if (dto.TryGetMemory(out var memory))
-        {
-            try
-            {
-                result = new(MemoryMarshal.Read<TResult>(memory.Span));
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<TResult>(e);
-            }
-        }
-        else
-        {
-            result = dto.TransformAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
-        }
-
-        return result;
     }
 
     /// <summary>

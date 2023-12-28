@@ -5,17 +5,11 @@ using Buffers;
 /// <summary>
 /// Represents data transfer object holding the content of the predefined size in the memory.
 /// </summary>
-public class MemoryTransferObject : Disposable, IDataTransferObject
+/// <param name="length">The length, in bytes, of the content.</param>
+/// <param name="allocator">The memory allocator.</param>
+public class MemoryTransferObject(int length, MemoryAllocator<byte>? allocator = null) : Disposable, IDataTransferObject
 {
-    private MemoryOwner<byte> owner;
-
-    /// <summary>
-    /// Initializes a new data transfer object of the specified size.
-    /// </summary>
-    /// <param name="length">The length, in bytes, of the content.</param>
-    /// <param name="allocator">The memory allocator.</param>
-    public MemoryTransferObject(int length, MemoryAllocator<byte>? allocator = null)
-        => owner = length > 0 ? allocator.AllocateExactly(length) : default;
+    private MemoryOwner<byte> owner = length > 0 ? allocator.AllocateExactly(length) : default;
 
     /// <summary>
     /// Transforms this object to serialized form.

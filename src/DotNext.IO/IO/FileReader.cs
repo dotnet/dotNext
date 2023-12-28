@@ -19,6 +19,7 @@ public partial class FileReader : Disposable
     /// Represents the file handle.
     /// </summary>
     protected readonly SafeFileHandle handle;
+    private readonly MemoryAllocator<byte>? allocator;
     private MemoryOwner<byte> buffer;
     private int bufferStart, bufferEnd;
     private long fileOffset;
@@ -48,6 +49,7 @@ public partial class FileReader : Disposable
         buffer = allocator.AllocateAtLeast(bufferSize);
         this.handle = handle;
         this.fileOffset = fileOffset;
+        this.allocator = allocator;
     }
 
     /// <summary>
@@ -106,9 +108,7 @@ public partial class FileReader : Disposable
     public void Consume(int bytes)
     {
         var newPosition = bytes + bufferStart;
-
-        if ((uint)newPosition > (uint)bufferEnd)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)newPosition, (uint)bufferEnd, nameof(bytes));
 
         if (newPosition == bufferEnd)
         {
@@ -120,6 +120,35 @@ public partial class FileReader : Disposable
         }
 
         fileOffset += bytes;
+    }
+
+    /// <summary>
+    /// Attempts to consume buffered data.
+    /// </summary>
+    /// <param name="bytes">The number of bytes to consume.</param>
+    /// <param name="buffer">The slice of internal buffer containing consumed bytes.</param>
+    /// <returns><see langword="true"/> if the specified number of bytes is consumed successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryConsume(int bytes, out ReadOnlyMemory<byte> buffer)
+    {
+        var newPosition = bytes + bufferStart;
+        if ((uint)newPosition > (uint)bufferEnd)
+        {
+            buffer = default;
+            return false;
+        }
+
+        buffer = this.buffer.Memory.Slice(bufferStart, bytes);
+        if (newPosition == bufferEnd)
+        {
+            ClearBuffer();
+        }
+        else
+        {
+            bufferStart = newPosition;
+        }
+
+        fileOffset += bytes;
+        return true;
     }
 
     /// <summary>
@@ -207,10 +236,9 @@ public partial class FileReader : Disposable
         if (IsDisposed)
             return new(GetDisposedTask<int>());
 
-        if (output.IsEmpty)
-            return new(0);
-
-        return HasBufferedData || output.Length < buffer.Length
+        return output.IsEmpty
+            ? ValueTask.FromResult(0)
+            : HasBufferedData || output.Length < buffer.Length
             ? ReadBufferedAsync(output, token)
             : ReadDirectAsync(output, token);
     }
@@ -288,9 +316,7 @@ public partial class FileReader : Disposable
     public void Skip(long bytes)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-
-        if (bytes < 0L)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfNegative(bytes);
 
         if (bytes < BufferLength)
         {

@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+using System.Collections.Frozen;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -26,5 +26,5 @@ public partial struct UserDataStorage
     /// <returns>The copy of all custom data.</returns>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyDictionary<string, object> Capture()
-        => GetStorage()?.Dump() ?? ReadOnlyDictionary<string, object>.Empty;
+        => GetStorage()?.Dump() ?? FrozenDictionary<string, object>.Empty;
 }

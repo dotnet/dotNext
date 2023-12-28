@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
@@ -41,18 +42,8 @@ public partial class FileBufferingWriter
 
         internal bool IsAsynchronous => (options & FileOptions.Asynchronous) != 0;
 
-        private FileStreamOptions CreateOptions(int preallocationSize) => new()
-        {
-            Mode = FileMode.CreateNew,
-            Access = FileAccess.ReadWrite,
-            Share = FileShare.Read,
-            Options = options,
-            PreallocationSize = preallocationSize,
-            BufferSize = 0, // skip internal FileStream buffer, because we're using the stream itself for flushing only
-        };
-
-        internal FileStream CreateBackingFileHandle(int preallocationSize)
-            => new(temporary ? Path.Combine(path, Path.GetRandomFileName()) : path, CreateOptions(preallocationSize));
+        internal SafeFileHandle CreateBackingFileHandle(int preallocationSize, out string fileName)
+            => File.OpenHandle(fileName = temporary ? Path.Combine(path, Path.GetRandomFileName()) : path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options, preallocationSize);
     }
 
     /// <summary>

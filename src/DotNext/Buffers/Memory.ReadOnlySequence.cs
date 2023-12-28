@@ -183,11 +183,11 @@ public static partial class Memory
     /// <param name="count">The size of contiguous block.</param>
     /// <param name="span">The contiguous block of elements.</param>
     /// <returns><see langword="true"/> if contiguous block of elements is obtained successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool TryGetBlock<T>(this in ReadOnlySequence<T> sequence, int count, out ReadOnlySpan<T> span)
+    public static bool TryGetBlock<T>(this in ReadOnlySequence<T> sequence, int count, out ReadOnlyMemory<T> span)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        span = sequence.FirstSpan;
+        span = sequence.First;
         if (span.Length >= count)
         {
             span = span.Slice(0, count);
