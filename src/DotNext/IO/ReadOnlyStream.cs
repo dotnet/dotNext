@@ -2,7 +2,9 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO;
 
-internal abstract class ReadOnlyStream : Stream, IFlushable
+using Buffers;
+
+internal abstract class ReadOnlyStream : Stream
 {
     public sealed override bool CanRead => true;
 
@@ -32,7 +34,7 @@ internal abstract class ReadOnlyStream : Stream, IFlushable
         return Read(buffer.AsSpan(offset, count));
     }
 
-    public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
     {
         ValueTask<int> result;
         if (token.IsCancellationRequested)
@@ -78,4 +80,90 @@ internal abstract class ReadOnlyStream : Stream, IFlushable
         => throw new NotSupportedException();
 
     public sealed override void EndWrite(IAsyncResult ar) => throw new InvalidOperationException();
+}
+
+internal sealed class ReadOnlyStream<TArg>(Func<Memory<byte>, TArg, CancellationToken, ValueTask<int>> reader, TArg arg) : ReadOnlyStream
+{
+    private const int DefaultTimeout = 4000;
+    private int timeout = DefaultTimeout;
+    private byte[]? synchronousBuffer;
+    private CancellationTokenSource? timeoutSource;
+
+    public override int ReadTimeout
+    {
+        get => timeout;
+        set => timeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
+
+    public override long Position
+    {
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
+    }
+
+    public override long Length => throw new NotSupportedException();
+
+    public override long Seek(long offset, SeekOrigin origin)
+        => throw new NotSupportedException();
+
+    public override bool CanSeek => false;
+
+    public override void SetLength(long value)
+        => throw new NotSupportedException();
+
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
+        => reader(buffer, arg, token);
+
+    public override int Read(Span<byte> buffer)
+    {
+        int writtenCount;
+        if (buffer.IsEmpty)
+        {
+            writtenCount = 0;
+        }
+        else
+        {
+            var tempBuffer = RentBuffer(buffer.Length);
+            timeoutSource ??= new();
+            timeoutSource.CancelAfter(timeout);
+            var task = ReadAsync(tempBuffer, timeoutSource.Token).AsTask();
+            try
+            {
+                task.Wait();
+                writtenCount = task.Result;
+            }
+            finally
+            {
+                task.Dispose();
+
+                if (!timeoutSource.TryReset())
+                {
+                    timeoutSource.Dispose();
+                    timeoutSource = null;
+                }
+            }
+
+            tempBuffer.AsSpan(0, writtenCount).CopyTo(buffer);
+        }
+
+        return writtenCount;
+    }
+
+    private ArraySegment<byte> RentBuffer(int length)
+    {
+        if (synchronousBuffer is null || synchronousBuffer.Length < length)
+            synchronousBuffer = GC.AllocateUninitializedArray<byte>(length);
+
+        return new(synchronousBuffer, 0, length);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            timeoutSource?.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
 }

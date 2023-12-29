@@ -2,14 +2,9 @@
 
 using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
 
-internal sealed class SyncWriterStream<TOutput> : WriterStream<TOutput>
+internal sealed class SyncWriterStream<TOutput>(TOutput output) : WriterStream<TOutput>(output)
     where TOutput : notnull, IReadOnlySpanConsumer, IFlushable
 {
-    internal SyncWriterStream(TOutput output)
-        : base(output)
-    {
-    }
-
     public override bool CanTimeout => false;
 
     public override void Write(ReadOnlySpan<byte> buffer)

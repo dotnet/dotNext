@@ -62,7 +62,7 @@ public interface IDataTransferObject
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        where TWriter : IAsyncBinaryWriter;
+        where TWriter : notnull, IAsyncBinaryWriter;
 
     private static void ResetStream(Stream stream, bool resetStream)
     {

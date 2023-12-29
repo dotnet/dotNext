@@ -1,16 +1,11 @@
 namespace DotNext.IO;
 
-internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
+internal sealed class AsyncWriterStream<TOutput>(TOutput output) : WriterStream<TOutput>(output)
     where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
 {
     private const int DefaultTimeout = 4000;
-    private int timeout;
-
-    internal AsyncWriterStream(TOutput output)
-        : base(output)
-    {
-        timeout = DefaultTimeout;
-    }
+    private int timeout = DefaultTimeout;
+    private CancellationTokenSource? timeoutSource;
 
     public override int WriteTimeout
     {
@@ -31,9 +26,34 @@ internal sealed class AsyncWriterStream<TOutput> : WriterStream<TOutput>
         if (!buffer.IsEmpty)
         {
             using var rental = buffer.Copy();
-            using var source = new CancellationTokenSource(timeout);
-            using var task = WriteAsync(rental.Memory, source.Token).AsTask();
-            task.Wait(source.Token);
+
+            timeoutSource ??= new();
+            timeoutSource.CancelAfter(timeout);
+            var task = WriteAsync(rental.Memory, timeoutSource.Token).AsTask();
+            try
+            {
+                task.Wait();
+            }
+            finally
+            {
+                task.Dispose();
+
+                if (!timeoutSource.TryReset())
+                {
+                    timeoutSource.Dispose();
+                    timeoutSource = null;
+                }
+            }
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            timeoutSource?.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 }

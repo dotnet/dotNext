@@ -9,17 +9,11 @@ using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
 /// Represents implementation of <see cref="IReadOnlySpanConsumer"/>
 /// in the form of the writer to <see cref="Stream"/>.
 /// </summary>
+/// <param name="output">The writable stream.</param>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct StreamConsumer : IReadOnlySpanConsumer, IEquatable<StreamConsumer>, IFlushable
+public readonly record struct StreamConsumer(Stream output) : IReadOnlySpanConsumer, IEquatable<StreamConsumer>, IFlushable
 {
-    private readonly Stream output;
-
-    /// <summary>
-    /// Wraps the stream.
-    /// </summary>
-    /// <param name="output">The writable stream.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-    public StreamConsumer(Stream output) => this.output = output ?? throw new ArgumentNullException(nameof(output));
+    private readonly Stream output = output ?? throw new ArgumentNullException(nameof(output));
 
     /// <summary>
     /// Gets a value indicating that the underlying stream is <see langword="null"/>.

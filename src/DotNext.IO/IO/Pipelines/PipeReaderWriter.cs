@@ -1,18 +1,18 @@
 using System.Buffers;
 using System.Globalization;
 using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.IO.Pipelines;
 
-using System.Runtime.CompilerServices;
 using Buffers;
 using Text;
 
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReader
 {
-    internal readonly PipeReader Reader = reader ?? throw new ArgumentNullException(nameof(reader));
+    internal Stream AsStream() => reader.AsStream(leaveOpen: true);
 
     ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
         => reader.ReadAsync<T>(token);
@@ -75,7 +75,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : IAsyncBinaryWriter
 {
-    internal PipeWriter Writer => writer;
+    internal Stream AsStream() => writer.AsStream(leaveOpen: true);
 
     private ValueTask FlushIfNeededAsync(CancellationToken token)
     {

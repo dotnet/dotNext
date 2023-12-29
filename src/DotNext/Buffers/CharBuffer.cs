@@ -52,6 +52,28 @@ public static class CharBuffer
         => BufferWriterInterpolatedStringHandler.AppendFormatted(writer, value, format, provider);
 
     /// <summary>
+    /// Writes formatted string to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="provider">A culture-specific formatting information.</param>
+    /// <param name="format">Formatting template.</param>
+    /// <param name="args">The arguments to be rendered as a part of template.</param>
+    /// <returns>The number of written characters.</returns>
+    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
+    public static int Format(this IBufferWriter<char> writer, IFormatProvider? provider, CompositeFormat format, params object?[] args)
+    {
+        const int maxBufferSize = int.MaxValue / 2;
+        for (var bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+        {
+            var buffer = writer.GetSpan(bufferSize);
+            if (buffer.TryWrite(provider, format, out bufferSize, args))
+                return bufferSize;
+
+            bufferSize = buffer.Length;
+        }
+    }
+
+    /// <summary>
     /// Writes line termination symbols to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
@@ -163,6 +185,28 @@ public static class CharBuffer
         => BufferWriterSlimInterpolatedStringHandler.AppendFormatted(ref writer, value, format, provider);
 
     /// <summary>
+    /// Writes formatted string to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="provider">A culture-specific formatting information.</param>
+    /// <param name="format">Formatting template.</param>
+    /// <param name="args">The arguments to be rendered as a part of template.</param>
+    /// <returns>The number of written characters.</returns>
+    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
+    public static int Format(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, CompositeFormat format, params object?[] args)
+    {
+        const int maxBufferSize = int.MaxValue / 2;
+        for (var bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+        {
+            var buffer = writer.InternalGetSpan(bufferSize);
+            if (buffer.TryWrite(provider, format, out bufferSize, args))
+                return bufferSize;
+
+            bufferSize = buffer.Length;
+        }
+    }
+
+    /// <summary>
     /// Writes line termination symbols to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
@@ -257,6 +301,23 @@ public static class CharBuffer
         bool result;
         if (result = value.TryFormat(writer.RemainingSpan, out var writtenCount, format, provider))
             writer.Advance(writtenCount);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Tries to write formatted string to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="format">Formatting template.</param>
+    /// <param name="args">The arguments to be rendered as a part of template.</param>
+    /// <param name="provider">A culture-specific formatting information.</param>
+    /// <returns><see langword="true"/> if <paramref name="writer"/> has enough free space to place rendered string; otherwise, <see langword="false"/>.</returns>
+    public static bool TryFormat(this ref SpanWriter<char> writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider = null)
+    {
+        bool result;
+        if (result = writer.RemainingSpan.TryWrite(provider, format, out var charsWritten, args))
+            writer.Advance(charsWritten);
 
         return result;
     }

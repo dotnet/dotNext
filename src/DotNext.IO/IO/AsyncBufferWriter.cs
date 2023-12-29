@@ -11,6 +11,8 @@ using Text;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct AsyncBufferWriter(IBufferWriter<byte> writer) : IAsyncBinaryWriter
 {
+    internal Stream AsStream() => StreamSource.AsStream(writer);
+
     Memory<byte> IAsyncBinaryWriter.Buffer => writer.GetMemory();
 
     ValueTask IAsyncBinaryWriter.AdvanceAsync(int bytesWritten, CancellationToken token)

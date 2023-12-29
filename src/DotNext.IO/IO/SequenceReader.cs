@@ -12,7 +12,6 @@ namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
-using Numerics;
 using static Pipelines.PipeExtensions;
 using DecodingContext = Text.DecodingContext;
 
@@ -167,6 +166,23 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         position = result.End;
         return result;
     }
+
+    /// <summary>
+    /// Gets unread part of the buffer and advances the current reader
+    /// to the end of the buffer.
+    /// </summary>
+    /// <returns>Unread part of the buffer.</returns>
+    public ReadOnlySequence<byte> ReadToEnd()
+    {
+        var result = RemainingSequence;
+        position = result.End;
+        return result;
+    }
+
+    /// <summary>
+    /// Indicates that the current reader has no more data to read.
+    /// </summary>
+    public readonly bool IsEmpty => position.Equals(sequence.End);
 
     /// <summary>
     /// Tries to read the next chunk.

@@ -116,12 +116,32 @@ public static partial class StreamSource
     /// <summary>
     /// Returns writable stream that wraps the provided delegate for writing data.
     /// </summary>
-    /// <param name="writer">The callback that is called automatically.</param>
+    /// <param name="writer">The callback to be called for each write.</param>
     /// <param name="arg">The arg to be passed to the callback.</param>
     /// <param name="flush">Optional synchronous flush action.</param>
     /// <param name="flushAsync">Optional asynchronous flush action.</param>
     /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
-    /// <returns>The writable stream wrapping the callback.</returns>
+    /// <returns>A writable stream wrapping the callback.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
     public static Stream AsStream<TArg>(this Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> writer, TArg arg, Action<TArg>? flush = null, Func<TArg, CancellationToken, Task>? flushAsync = null)
-        => AsAsynchronousStream<ReadOnlyMemoryWriter<TArg>>(new(writer, arg, flush, flushAsync));
+    {
+        ArgumentNullException.ThrowIfNull(writer);
+
+        return AsAsynchronousStream<ReadOnlyMemoryWriter<TArg>>(new(writer, arg, flush, flushAsync));
+    }
+
+    /// <summary>
+    /// Returns read-only asynchronous stream that wraps the provided delegate for reading data.
+    /// </summary>
+    /// <typeparam name="TArg">The type of the argument to be passed to the delegate.</typeparam>
+    /// <param name="reader">The callback to be called for each read.</param>
+    /// <param name="arg">The arg to be passed to the callback.</param>
+    /// <returns>A readable stream wrapping the callback.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
+    public static Stream AsStream<TArg>(this Func<Memory<byte>, TArg, CancellationToken, ValueTask<int>> reader, TArg arg)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+
+        return new ReadOnlyStream<TArg>(reader, arg);
+    }
 }

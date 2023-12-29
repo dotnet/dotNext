@@ -2,12 +2,15 @@ using System.Buffers;
 using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
 using EncodingContext = Text.EncodingContext;
+using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
 /// <summary>
 /// Providers a uniform way to encode the data.
@@ -279,7 +282,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         ArgumentNullException.ThrowIfNull(output);
         ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-        return new Pipelines.PipeBinaryWriter(output, bufferSize);
+        return new PipeBinaryWriter(output, bufferSize);
     }
 
     /// <summary>
@@ -293,5 +296,35 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         ArgumentNullException.ThrowIfNull(writer);
 
         return new AsyncBufferWriter(writer);
+    }
+
+    internal static Stream GetStream<TWriter>(TWriter writer, out bool keepAlive)
+        where TWriter : notnull, IAsyncBinaryWriter
+    {
+        if (keepAlive = typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
+            return Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream;
+
+        if (typeof(TWriter) == typeof(PipeBinaryWriter))
+            return Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).AsStream();
+
+        if (typeof(TWriter) == typeof(AsyncBufferWriter))
+            return Unsafe.As<TWriter, AsyncBufferWriter>(ref writer).AsStream();
+
+        return StreamSource.AsAsynchronousStream(new Wrapper<TWriter>(writer));
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+        where TWriter : notnull, IAsyncBinaryWriter
+    {
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
+            => writer.Invoke(source, token);
+
+        void IFlushable.Flush()
+        {
+        }
+
+        Task IFlushable.FlushAsync(CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
     }
 }

@@ -9,8 +9,8 @@ namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
+using Pipelines;
 using DecodingContext = Text.DecodingContext;
-using PipeConsumer = Pipelines.PipeConsumer;
 
 /// <summary>
 /// Providers a uniform way to decode the data
@@ -428,5 +428,24 @@ public interface IAsyncBinaryReader
     /// <param name="reader">The pipe reader.</param>
     /// <returns>The binary reader.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
-    public static IAsyncBinaryReader Create(PipeReader reader) => new Pipelines.PipeBinaryReader(reader);
+    public static IAsyncBinaryReader Create(PipeReader reader) => new PipeBinaryReader(reader);
+
+    internal static Stream GetStream<TReader>(TReader reader, out bool keepAlive)
+        where TReader : notnull, IAsyncBinaryReader
+    {
+        if (keepAlive = typeof(TReader) == typeof(AsyncStreamBinaryAccessor))
+            return Unsafe.As<TReader, AsyncStreamBinaryAccessor>(ref reader).Stream;
+
+        if (typeof(TReader) == typeof(PipeBinaryReader))
+            return Unsafe.As<TReader, PipeBinaryReader>(ref reader).AsStream();
+
+        if (typeof(TReader) == typeof(SequenceReader))
+            return Unsafe.As<TReader, SequenceReader>(ref reader).ReadToEnd().AsStream();
+
+        return StreamSource.AsStream(ReadAsync, reader);
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        static async ValueTask<int> ReadAsync(Memory<byte> buffer, TReader reader, CancellationToken token)
+            => (await reader.ReadAsync<MemoryReader>(new(buffer), token).ConfigureAwait(false)).BytesWritten;
+    }
 }

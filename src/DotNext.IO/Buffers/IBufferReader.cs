@@ -40,18 +40,20 @@ internal struct MemoryBlockReader(Memory<byte> destination) : IBufferReader
 [StructLayout(LayoutKind.Auto)]
 internal struct MemoryReader(Memory<byte> destination) : IBufferReader, ISupplier<int>
 {
-    private int bytesConsumed;
+    private int bytesWritten;
+
+    internal readonly int BytesWritten => bytesWritten;
 
     readonly int IBufferReader.RemainingBytes => destination.Length;
 
     void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> source)
     {
         source.CopyTo(destination.Span, out var count);
-        bytesConsumed += count;
+        bytesWritten += count;
         destination = default;
     }
 
-    readonly int ISupplier<int>.Invoke() => bytesConsumed;
+    readonly int ISupplier<int>.Invoke() => BytesWritten;
 
     static bool IBufferReader.ThrowOnPartialData => false;
 }

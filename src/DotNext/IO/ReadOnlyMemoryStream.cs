@@ -4,16 +4,9 @@ namespace DotNext.IO;
 
 using static Buffers.Memory;
 
-internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
+internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : ReadOnlyStream
 {
-    private ReadOnlySequence<byte> sequence;
-    private SequencePosition position;
-
-    internal ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence)
-    {
-        this.sequence = sequence;
-        position = sequence.Start;
-    }
+    private SequencePosition position = sequence.Start;
 
     private ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
 
