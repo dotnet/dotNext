@@ -75,6 +75,8 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : IAsyncBinaryWriter
 {
+    internal PipeWriter Writer => writer;
+
     private ValueTask FlushIfNeededAsync(CancellationToken token)
     {
         return !writer.CanGetUnflushedBytes || writer.UnflushedBytes > bufferSize

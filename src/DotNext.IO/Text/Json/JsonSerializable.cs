@@ -1,15 +1,15 @@
 using System.Buffers;
+using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using PipeReader = System.IO.Pipelines.PipeReader;
 
 namespace DotNext.Text.Json;
 
 using Buffers;
 using IO;
+using IO.Pipelines;
 using Runtime.Serialization;
-using PipeBinaryReader = IO.Pipelines.PipeBinaryReader;
 
 /// <summary>
 /// Represents a bridge between JSON serialization framework in .NET and <see cref="ISerializable{TSelf}"/>
@@ -54,9 +54,13 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         {
             result = new(JsonSerializer.SerializeAsync(Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream, Value, T.TypeInfo, token));
         }
+        else if (typeof(TWriter) == typeof(PipeBinaryWriter))
+        {
+            result = SerializeToStreamAsync(Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).Writer.AsStream(leaveOpen: true), Value, token);
+        }
         else
         {
-            result = SerializeAsync(Value, new(writer), token);
+            result = SerializeToStreamAsync(StreamSource.AsAsynchronousStream(new Wrapper<TWriter>(writer)), Value, token);
         }
 
         return result;
@@ -67,10 +71,16 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
             JsonSerializer.Serialize(jsonWriter, value, T.TypeInfo);
         }
 
-        static async ValueTask SerializeAsync(T value, Wrapper<TWriter> writer, CancellationToken token)
+        static async ValueTask SerializeToStreamAsync(Stream stream, T value, CancellationToken token)
         {
-            using var wrapper = StreamSource.AsAsynchronousStream(writer);
-            await JsonSerializer.SerializeAsync(wrapper, value, T.TypeInfo, token).ConfigureAwait(false);
+            try
+            {
+                await JsonSerializer.SerializeAsync(stream, value, T.TypeInfo, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                await stream.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 
@@ -131,7 +141,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
                 await reader.CopyToAsync(buffer.As<Stream>(), token).ConfigureAwait(false);
 
                 readerStream = await buffer.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
-                return new JsonSerializable<T>
+                return new()
                 {
                     Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo, token).ConfigureAwait(false))!,
                 };
@@ -148,7 +158,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<JsonSerializable<T>> DeserializeFromStreamAsync(Stream readerStream, CancellationToken token)
         {
-            return new JsonSerializable<T>
+            return new()
             {
                 Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo, token).ConfigureAwait(false))!,
             };
@@ -160,7 +170,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
             var readerStream = reader.AsStream(leaveOpen: true);
             try
             {
-                return new JsonSerializable<T>
+                return new()
                 {
                     Value = (await JsonSerializer.DeserializeAsync(readerStream, T.TypeInfo, token).ConfigureAwait(false))!,
                 };

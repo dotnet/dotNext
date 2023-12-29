@@ -137,6 +137,14 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         => Read(output.Length).CopyTo(output);
 
     /// <summary>
+    /// Reads single byte.
+    /// </summary>
+    /// <returns>A byte.</returns>
+    /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+    public byte ReadByte()
+        => MemoryMarshal.GetReference(Read(1).FirstSpan);
+
+    /// <summary>
     /// Reads the specified number of bytes.
     /// </summary>
     /// <param name="count">The number of bytes to read.</param>
