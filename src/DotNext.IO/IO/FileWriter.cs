@@ -52,6 +52,20 @@ public partial class FileWriter : Disposable, IFlushable
         this.allocator = allocator;
     }
 
+    /// <summary>
+    /// Creates a new writer backed by the file.
+    /// </summary>
+    /// <param name="destination">Writable file stream.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The buffer allocator.</param>
+    /// <exception cref="ArgumentException"><paramref name="destination"/> is not writable.</exception>
+    public FileWriter(FileStream destination, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
+        : this(destination.SafeFileHandle, destination.Position, bufferSize, allocator)
+    {
+        if (!destination.CanWrite)
+            throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+    }
+
     private ReadOnlyMemory<byte> WrittenMemory => buffer.Memory.Slice(0, bufferOffset);
 
     private int FreeCapacity => buffer.Length - bufferOffset;

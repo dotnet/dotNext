@@ -29,11 +29,16 @@ internal readonly struct AsyncBufferWriter(IBufferWriter<byte> writer) : IAsyncB
         }
     }
 
-    ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
-        => input.CopyToAsync(writer, token: token);
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream source, long? count, CancellationToken token)
+        => count.HasValue ? source.CopyToAsync(writer, count.GetValueOrDefault(), token: token) : source.CopyToAsync(writer, token: token);
 
-    ValueTask IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
-        => input.CopyToAsync(writer, token);
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(PipeReader source, long? count, CancellationToken token)
+    {
+        var consumer = new BufferConsumer<byte>(writer);
+        return count.HasValue
+            ? source.CopyToAsync(consumer, count.GetValueOrDefault(), token)
+            : source.CopyToAsync(consumer, token);
+    }
 
     ValueTask IAsyncBinaryWriter.WriteAsync<T>(T value, CancellationToken token)
     {

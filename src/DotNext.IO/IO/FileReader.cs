@@ -53,6 +53,20 @@ public partial class FileReader : Disposable
     }
 
     /// <summary>
+    /// Initializes a new buffered file reader.
+    /// </summary>
+    /// <param name="source">Readable file stream.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The buffer allocator.</param>
+    /// <exception cref="ArgumentException"><paramref name="source"/> is not readable.</exception>
+    public FileReader(FileStream source, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
+        : this(source.SafeFileHandle, source.Position, bufferSize, allocator)
+    {
+        if (source.CanRead is false)
+            throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
+    }
+
+    /// <summary>
     /// Gets or sets the cursor position within the file.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">The value is less than zero.</exception>

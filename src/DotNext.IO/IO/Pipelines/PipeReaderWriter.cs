@@ -53,17 +53,27 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
     ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
         => reader.ParseAsync(arg, parser, context, lengthFormat, allocator, token);
 
-    ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-        => new(reader.CopyToAsync(output, token));
+    ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, long? count, CancellationToken token)
+    {
+        var consumer = new StreamConsumer(output);
+        return count.HasValue
+            ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token)
+            : reader.CopyToAsync(consumer, token);
+    }
 
-    ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-        => new(reader.CopyToAsync(output, token));
+    ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter output, long? count, CancellationToken token)
+        => count.HasValue ? reader.CopyToAsync<PipeConsumer>(output, count.GetValueOrDefault(), token) : new(reader.CopyToAsync(output, token));
 
-    ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
-        => reader.CopyToAsync(writer, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, long? count, CancellationToken token)
+    {
+        var consumer = new BufferConsumer<byte>(writer);
+        return count.HasValue
+            ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token)
+            : reader.CopyToAsync(consumer, token);
+    }
 
-    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-        => reader.CopyToAsync(consumer, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
+        => count.HasValue ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token) : reader.CopyToAsync(consumer, token);
 
     bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
     {
@@ -170,11 +180,11 @@ internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : 
     ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         => FlushIfNeededAsync(writer.Format(value, lengthFormat, format, provider), token);
 
-    ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
-        => new(input.CopyToAsync(writer, token));
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream source, long? count, CancellationToken token)
+        => count.HasValue ? writer.CopyFromAsync(source, count.GetValueOrDefault(), token) : new(source.CopyToAsync(writer, token));
 
-    ValueTask IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
-        => new(input.CopyToAsync(writer, token));
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(PipeReader source, long? count, CancellationToken token)
+        => count.HasValue ? source.CopyToAsync<PipeConsumer>(writer, count.GetValueOrDefault(), token) : new(source.CopyToAsync(writer, token));
 
     IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => writer;
 }

@@ -331,6 +331,62 @@ public static partial class PipeExtensions
     }
 
     /// <summary>
+    /// Reads the entire content using the specified consumer.
+    /// </summary>
+    /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+    /// <param name="reader">The pipe to read from.</param>
+    /// <param name="consumer">The content reader.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    /// <param name="token">The token that can be used to cancel operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask CopyToAsync<TConsumer>(this PipeReader reader, TConsumer consumer, long count, CancellationToken token = default)
+        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        while (count > 0L)
+        {
+            var result = await reader.ReadAsync(token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(reader, token);
+
+            var buffer = result.Buffer;
+            var consumed = buffer.Start;
+
+            try
+            {
+                if (buffer.Length >= count)
+                {
+                    buffer = buffer.Slice(consumed, count);
+                }
+                else if (result.IsCompleted)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                while (buffer.TryGet(ref consumed, out var block))
+                    await consumer.Invoke(block, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                reader.AdvanceTo(consumed);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Copies the data from the pipe to the buffer.
+    /// </summary>
+    /// <param name="reader">The pipe to read from.</param>
+    /// <param name="destination">The buffer writer used as destination.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask CopyToAsync(this PipeReader reader, IBufferWriter<byte> destination, long count, CancellationToken token = default)
+        => CopyToAsync(reader, new BufferConsumer<byte>(destination), count, token);
+
+    /// <summary>
     /// Reads the block of memory.
     /// </summary>
     /// <param name="reader">The pipe reader.</param>
@@ -341,6 +397,46 @@ public static partial class PipeExtensions
     /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
     public static ValueTask ReadExactlyAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
         => output.IsEmpty ? ValueTask.CompletedTask : ReadAsync<MemoryBlockReader>(reader, new(output), token);
+
+    /// <summary>
+    /// Reads at least the specified number of bytes.
+    /// </summary>
+    /// <param name="reader">The pipe reader.</param>
+    /// <param name="destination">The buffer to write into.</param>
+    /// <param name="minimumSize">The minimum number of bytes to read.</param>
+    /// <param name="token">The token that can be used to cancel operation.</param>
+    /// <returns>The actual number of bytes written to <paramref name="destination"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="minimumSize"/> is negative or greater than the length of <paramref name="destination"/>.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public static async ValueTask<int> ReadAtLeastAsync(this PipeReader reader, Memory<byte> destination, int minimumSize, CancellationToken token)
+    {
+        if ((uint)minimumSize > (uint)destination.Length)
+            throw new ArgumentOutOfRangeException(nameof(minimumSize));
+
+        var result = await reader.ReadAtLeastAsync(minimumSize, token).ConfigureAwait(false);
+        result.ThrowIfCancellationRequested(reader, token);
+
+        return Read(reader, result.Buffer, destination, minimumSize);
+
+        static int Read(PipeReader reader, ReadOnlySequence<byte> source, in Memory<byte> destination, int minimumSize)
+        {
+            var readCount = 0;
+            try
+            {
+                source.CopyTo(destination.Span, out readCount);
+                if (minimumSize > readCount)
+                    throw new EndOfStreamException();
+            }
+            finally
+            {
+                reader.AdvanceTo(source.GetPosition(readCount));
+            }
+
+            return readCount;
+        }
+    }
 
     /// <summary>
     /// Reads length-prefixed block of bytes.
@@ -430,22 +526,7 @@ public static partial class PipeExtensions
     /// <param name="token">The token that can be used to cancel operation.</param>
     /// <returns>The actual number of copied bytes.</returns>
     public static ValueTask<int> ReadAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
-    {
-        return output.IsEmpty
-            ? ValueTask.FromResult(0)
-            : ReadAsync<int, MemoryReader>(reader, new(output), token);
-    }
-
-    /// <summary>
-    /// Copies the data from the pipe to the buffer.
-    /// </summary>
-    /// <param name="reader">The pipe to read from.</param>
-    /// <param name="destination">The buffer writer used as destination.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask CopyToAsync(this PipeReader reader, IBufferWriter<byte> destination, CancellationToken token = default)
-        => CopyToAsync(reader, new BufferConsumer<byte>(destination), token);
+        => output.IsEmpty ? ValueTask.FromResult(0) : ReadAsync<int, MemoryReader>(reader, new(output), token);
 
     /// <summary>
     /// Reads all chunks of data from the pipe.

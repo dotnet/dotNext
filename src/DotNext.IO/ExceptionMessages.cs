@@ -15,6 +15,8 @@ internal static class ExceptionMessages
 
     internal static string StreamNotWritable => (string)Resources.Get();
 
+    internal static string StreamNotReadable => (string)Resources.Get();
+
     internal static string DirectoryNotFound(string path)
         => Resources.Get().Format(path);
 

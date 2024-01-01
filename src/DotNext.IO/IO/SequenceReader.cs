@@ -149,7 +149,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="count">The number of bytes to read.</param>
     /// <returns>The buffer of length <paramref name="count"/>.</returns>
     /// <exception cref="EndOfStreamException"><paramref name="count"/> is larger than the available buffer to read.</exception>
-    public ReadOnlySequence<byte> Read(int count)
+    public ReadOnlySequence<byte> Read(long count)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
@@ -740,15 +740,47 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         => Decode(context, lengthFormat, buffer).AsAsyncEnumerable(token);
 
     /// <inheritdoc/>
-    readonly ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-        => output.WriteAsync(RemainingSequence, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(Stream destination, long? count, CancellationToken token)
+    {
+        ValueTask result;
+        try
+        {
+            var remaining = count.HasValue
+                ? Read(count.GetValueOrDefault())
+                : ReadToEnd();
+
+            result = destination.WriteAsync(remaining, token);
+        }
+        catch (Exception e)
+        {
+            result = ValueTask.FromException(e);
+        }
+
+        return result;
+    }
 
     /// <inheritdoc/>
-    readonly ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-        => output.WriteAsync(RemainingSequence, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter destination, long? count, CancellationToken token)
+    {
+        ValueTask result;
+        try
+        {
+            var remaining = count.HasValue
+                ? Read(count.GetValueOrDefault())
+                : ReadToEnd();
+
+            result = destination.WriteAsync(remaining, token);
+        }
+        catch (Exception e)
+        {
+            result = ValueTask.FromException(e);
+        }
+
+        return result;
+    }
 
     /// <inheritdoc/>
-    readonly ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+    ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, long? count, CancellationToken token)
     {
         ValueTask result;
         if (token.IsCancellationRequested)
@@ -760,7 +792,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             result = ValueTask.CompletedTask;
             try
             {
-                writer.Write(RemainingSequence);
+                writer.Write(count.HasValue ? Read(count.GetValueOrDefault()) : ReadToEnd());
             }
             catch (Exception e)
             {
@@ -772,9 +804,9 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     }
 
     /// <inheritdoc/>
-    readonly async ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+    async ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
     {
-        foreach (var segment in RemainingSequence)
+        foreach (var segment in count.HasValue ? Read(count.GetValueOrDefault()) : ReadToEnd())
             await consumer.Invoke(segment, token).ConfigureAwait(false);
     }
 

@@ -334,12 +334,45 @@ public static partial class StreamExtensions
     /// <param name="token">The token that can be used to cancel this operation.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     public static async ValueTask CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, Memory<byte> buffer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        for (int count; (count = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
+        ThrowIfEmpty(buffer);
+
+        for (int bytesRead; (bytesRead = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
         {
-            await consumer.Invoke(buffer.Slice(0, count), token).ConfigureAwait(false);
+            await consumer.Invoke(buffer.Slice(0, bytesRead), token).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Asynchronously reads the bytes from the source stream and passes them to the consumer, using a specified buffer.
+    /// </summary>
+    /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
+    /// <param name="source">The source stream to read from.</param>
+    /// <param name="consumer">The destination stream to write into.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
+    /// <param name="token">The token that can be used to cancel this operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes.</exception>
+    public static async ValueTask CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, long count, Memory<byte> buffer, CancellationToken token = default)
+        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+        ThrowIfEmpty(buffer);
+
+        for (int bytesRead; count > 0L; count -= bytesRead)
+        {
+            bytesRead = await source.ReadAsync(buffer.TrimLength(int.CreateSaturating(count)), token).ConfigureAwait(false);
+            if (bytesRead <= 0)
+                throw new EndOfStreamException();
+
+            await consumer.Invoke(buffer.Slice(0, bytesRead), token).ConfigureAwait(false);
         }
     }
 
@@ -351,9 +384,26 @@ public static partial class StreamExtensions
     /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
     /// <param name="token">The token that can be used to cancel this operation.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask CopyToAsync(this Stream source, Stream destination, Memory<byte> buffer, CancellationToken token = default)
         => CopyToAsync<StreamConsumer>(source, destination, buffer, token);
+
+    /// <summary>
+    /// Asynchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.
+    /// </summary>
+    /// <param name="source">The source stream to read from.</param>
+    /// <param name="destination">The destination stream to write into.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
+    /// <param name="token">The token that can be used to cancel this operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes.</exception>
+    public static ValueTask CopyToAsync(this Stream source, Stream destination, long count, Memory<byte> buffer, CancellationToken token = default)
+        => CopyToAsync<StreamConsumer>(source, destination, count, buffer, token);
 
     /// <summary>
     /// Asynchronously reads the bytes from the current stream and writes them to buffer
@@ -373,12 +423,40 @@ public static partial class StreamExtensions
         ArgumentNullException.ThrowIfNull(destination);
         ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
 
-        for (int count; ; destination.Advance(count))
+        for (int bytesRead; ; destination.Advance(bytesRead))
         {
-            var buffer = destination.GetMemory(bufferSize);
-            count = await source.ReadAsync(buffer, token).ConfigureAwait(false);
-            if (count <= 0)
+            bytesRead = await source.ReadAsync(destination.GetMemory(bufferSize), token).ConfigureAwait(false);
+            if (bytesRead <= 0)
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Asynchronously reads the bytes from the current stream and writes them to buffer
+    /// writer, using a specified cancellation token.
+    /// </summary>
+    /// <param name="source">The source stream.</param>
+    /// <param name="destination">The writer to which the contents of the current stream will be copied.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    /// <param name="bufferSize">The size, in bytes, of the buffer.</param>
+    /// <param name="token">The token to monitor for cancellation requests.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="destination"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> or <paramref name="count"/> is negative.</exception>
+    /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async ValueTask CopyToAsync(this Stream source, IBufferWriter<byte> destination, long count, int bufferSize = 0, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(destination);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+        ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
+
+        for (int bytesRead; count > 0L; destination.Advance(bytesRead), count -= bytesRead)
+        {
+            var buffer = destination.GetMemory(bufferSize).TrimLength(int.CreateSaturating(count));
+            bytesRead = await source.ReadAsync(buffer, token).ConfigureAwait(false);
+            if (bytesRead <= 0)
+                throw new EndOfStreamException();
         }
     }
 

@@ -47,7 +47,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     {
         try
         {
-            await writer.CopyFromAsync(content, token).ConfigureAwait(false);
+            await writer.CopyFromAsync(content, count: null, token).ConfigureAwait(false);
         }
         finally
         {

@@ -35,7 +35,7 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader
         => EndOfStream<T>();
 
     ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
-        => output.IsEmpty ? ValueTask.CompletedTask : EndOfStream();
+        => output.IsEmpty ? GetCompletedOrCanceledTask(token) : EndOfStream();
 
     ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
         => EndOfStream<MemoryOwner<byte>>();
@@ -61,8 +61,12 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader
     ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)
         => reader.RemainingBytes > 0 ? EndOfStream<TReader>() : ValueTask.FromResult(reader);
 
-    ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token)
-        => length is 0L ? ValueTask.CompletedTask : EndOfStream();
+    ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token) => length switch
+    {
+        < 0L => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length))),
+        0L => ValueTask.CompletedTask,
+        _ => EndOfStream(),
+    };
 
     bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
     {
@@ -76,15 +80,22 @@ internal sealed class EmptyBinaryReader : IAsyncBinaryReader
         return true;
     }
 
-    ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
-        => GetCompletedOrCanceledTask(token);
+    private static ValueTask CopyHelper(long? count, CancellationToken token) => count switch
+    {
+        null or 0L => GetCompletedOrCanceledTask(token),
+        < 0L => ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count))),
+        _ => EndOfStream(),
+    };
 
-    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-        => GetCompletedOrCanceledTask(token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, long? count, CancellationToken token)
+        => CopyHelper(count, token);
 
-    ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-        => GetCompletedOrCanceledTask(token);
+    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
+        => CopyHelper(count, token);
 
-    ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-        => GetCompletedOrCanceledTask(token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, long? count, CancellationToken token)
+        => CopyHelper(count, token);
+
+    ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter output, long? count, CancellationToken token)
+        => CopyHelper(count, token);
 }

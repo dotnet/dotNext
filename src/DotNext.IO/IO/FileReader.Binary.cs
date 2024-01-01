@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Globalization;
-using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
@@ -10,7 +9,6 @@ namespace DotNext.IO;
 using Buffers;
 using Buffers.Binary;
 using Text;
-using PipeConsumer = Pipelines.PipeConsumer;
 
 public partial class FileReader : IAsyncBinaryReader
 {
@@ -300,34 +298,36 @@ public partial class FileReader : IAsyncBinaryReader
     }
 
     /// <summary>
-    /// Copies the content to the specified stream.
+    /// Reads the entire content using the specified delegate.
     /// </summary>
-    /// <param name="output">The output stream receiving object content.</param>
-    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+    /// <param name="consumer">The content reader.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask CopyToAsync(Stream output, CancellationToken token = default)
-        => CopyToAsync<StreamConsumer>(output, token);
+    /// <exception cref="EndOfStreamException">The underlying file doesn't have enough bytes to read.</exception>
+    public async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long count, CancellationToken token = default)
+        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-    /// <summary>
-    /// Copies the content to the specified pipe writer.
-    /// </summary>
-    /// <param name="output">The writer.</param>
-    /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default)
-        => CopyToAsync<PipeConsumer>(output, token);
+        for (ReadOnlyMemory<byte> buffer; count > 0L && length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
+        {
+            buffer = TrimLength(Buffer, length).TrimLength(int.CreateSaturating(count));
+            await consumer.Invoke(buffer, token).ConfigureAwait(false);
+            length -= buffer.Length;
+            count -= buffer.Length;
+        }
 
-    /// <summary>
-    /// Copies the content to the specified buffer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-        => CopyToAsync(new BufferConsumer<byte>(writer), token);
+        if (count > 0L)
+            throw new EndOfStreamException();
+    }
+
+    /// <inheritdoc/>
+    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
+        => count.HasValue ? CopyToAsync(consumer, count.GetValueOrDefault(), token) : CopyToAsync(consumer, token);
 
     /// <inheritdoc />
     ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)

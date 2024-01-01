@@ -226,14 +226,41 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <summary>
     /// Writes the content from the specified stream.
     /// </summary>
-    /// <param name="input">The stream to read from.</param>
+    /// <param name="source">The stream to read from the source.</param>
+    /// <param name="count">The number of bytes to read from the source.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async ValueTask CopyFromAsync(Stream input, CancellationToken token = default)
+    ValueTask CopyFromAsync(Stream source, long? count, CancellationToken token = default)
     {
-        for (int bytesWritten; (bytesWritten = await input.ReadAsync(Buffer, token).ConfigureAwait(false)) > 0;)
+        return source is null
+            ? ValueTask.FromException(new ArgumentNullException(nameof(source)))
+            : count.HasValue
+            ? CopyFromAsync(source, count.GetValueOrDefault(), token)
+            : CopyFromAsync(source, token);
+    }
+
+    private async ValueTask CopyFromAsync(Stream source, CancellationToken token)
+    {
+        for (int bytesWritten; (bytesWritten = await source.ReadAsync(Buffer, token).ConfigureAwait(false)) > 0;)
         {
+            await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask CopyFromAsync(Stream source, long count, CancellationToken token)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        for (int bytesWritten; count > 0L; count -= bytesWritten)
+        {
+            bytesWritten = await source.ReadAsync(Buffer, token).ConfigureAwait(false);
+
+            if (bytesWritten <= 0)
+                throw new EndOfStreamException();
+
             await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
         }
     }
@@ -241,12 +268,17 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <summary>
     /// Writes the content from the specified pipe.
     /// </summary>
-    /// <param name="input">The pipe to read from.</param>
+    /// <param name="source">The pipe to read from.</param>
+    /// <param name="count">The number of bytes to read from the source.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyFromAsync(PipeReader input, CancellationToken token = default)
-        => Pipelines.PipeExtensions.CopyToAsync(input, this, token);
+    ValueTask CopyFromAsync(PipeReader source, long? count, CancellationToken token = default)
+        => count.HasValue
+            ? Pipelines.PipeExtensions.CopyToAsync(source, this, count.GetValueOrDefault(), token)
+            : Pipelines.PipeExtensions.CopyToAsync(source, this, token);
 
     /// <summary>
     /// Creates default implementation of binary writer for the stream.

@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -6,7 +7,6 @@ using Encoder = System.Text.Encoder;
 
 namespace DotNext.IO;
 
-using System.Diagnostics;
 using Buffers;
 using Buffers.Binary;
 using Numerics;
@@ -333,21 +333,47 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         var buffer = this.buffer.Memory;
 
-        for (int count; (count = await input.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; fileOffset += count)
+        for (int bytesWritten; (bytesWritten = await input.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; fileOffset += bytesWritten)
         {
-            await RandomAccess.WriteAsync(handle, buffer.Slice(0, count), fileOffset, token).ConfigureAwait(false);
+            await RandomAccess.WriteAsync(handle, buffer.Slice(0, bytesWritten), fileOffset, token).ConfigureAwait(false);
         }
     }
 
     /// <summary>
-    /// Writes the content from the specified pipe.
+    /// Writes the content from the specified stream.
     /// </summary>
-    /// <param name="input">The pipe to read from.</param>
+    /// <param name="source">The stream to read from.</param>
+    /// <param name="count">The number of bytes to copy.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask CopyFromAsync(PipeReader input, CancellationToken token = default)
-        => input.CopyToAsync(this, token);
+    /// <exception cref="EndOfStreamException"><paramref name="source"/> doesn't have enough data to read.</exception>
+    public async ValueTask CopyFromAsync(Stream source, long count, CancellationToken token = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        await WriteAsync(token).ConfigureAwait(false);
+
+        var buffer = this.buffer.Memory;
+
+        for (int bytesWritten; count > 0L; fileOffset += bytesWritten, count -= bytesWritten)
+        {
+            bytesWritten = await source.ReadAsync(buffer.TrimLength(int.CreateSaturating(count)), token).ConfigureAwait(false);
+            if (bytesWritten <= 0)
+                throw new EndOfStreamException();
+
+            await RandomAccess.WriteAsync(handle, buffer.Slice(0, bytesWritten), fileOffset, token).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc/>
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream source, long? count, CancellationToken token)
+        => count.HasValue ? CopyFromAsync(source, count.GetValueOrDefault(), token) : CopyFromAsync(source, token);
+
+    /// <inheritdoc/>
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(PipeReader source, long? count, CancellationToken token)
+        => count.HasValue ? source.CopyToAsync(this, count.GetValueOrDefault(), token) : source.CopyToAsync(this, token);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)

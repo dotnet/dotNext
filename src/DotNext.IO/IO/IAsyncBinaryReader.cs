@@ -105,13 +105,13 @@ public interface IAsyncBinaryReader
     /// <summary>
     /// Reads the block of bytes.
     /// </summary>
-    /// <param name="output">The block of memory to fill.</param>
+    /// <param name="destination">The block of memory to fill.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    async ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
-        => await ReadAsync<MemoryBlockReader>(new(output), token).ConfigureAwait(false);
+    async ValueTask ReadAsync(Memory<byte> destination, CancellationToken token = default)
+        => await ReadAsync<MemoryBlockReader>(new(destination), token).ConfigureAwait(false);
 
     /// <summary>
     /// Skips the block of bytes.
@@ -296,31 +296,37 @@ public interface IAsyncBinaryReader
     /// <summary>
     /// Copies the content to the specified stream.
     /// </summary>
-    /// <param name="output">The output stream receiving object content.</param>
+    /// <param name="destination">The output stream receiving object content.</param>
+    /// <param name="count">The number of bytes to copy.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync(Stream output, CancellationToken token = default)
-        => CopyToAsync<StreamConsumer>(output, token);
+    ValueTask CopyToAsync(Stream destination, long? count, CancellationToken token = default)
+        => CopyToAsync<StreamConsumer>(destination, count, token);
 
     /// <summary>
     /// Copies the content to the specified pipe writer.
     /// </summary>
-    /// <param name="output">The writer.</param>
+    /// <param name="destination">The writer.</param>
+    /// <param name="count">The number of bytes to copy.</param>
     /// <param name="token">The token that can be used to cancel operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default)
-        => CopyToAsync<PipeConsumer>(output, token);
+    ValueTask CopyToAsync(PipeWriter destination, long? count, CancellationToken token = default)
+        => CopyToAsync<PipeConsumer>(destination, count, token);
 
     /// <summary>
     /// Copies the content to the specified buffer.
     /// </summary>
-    /// <param name="writer">The buffer writer.</param>
+    /// <param name="destination">The buffer writer.</param>
+    /// <param name="count">The number of bytes to copy.</param>
     /// <param name="token">The token that can be used to cancel operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
+    ValueTask CopyToAsync(IBufferWriter<byte> destination, long? count, CancellationToken token = default)
     {
         ValueTask result;
         if (TryGetSequence(out var sequence))
@@ -328,9 +334,20 @@ public interface IAsyncBinaryReader
             result = ValueTask.CompletedTask;
             try
             {
+                switch (count)
+                {
+                    case null:
+                        break;
+                    case < 0L:
+                        throw new ArgumentOutOfRangeException(nameof(count));
+                    default:
+                        sequence = sequence.Slice(0, count.GetValueOrDefault());
+                        break;
+                }
+
                 foreach (var segment in sequence)
                 {
-                    writer.Write(segment.Span);
+                    destination.Write(segment.Span);
                     token.ThrowIfCancellationRequested();
                 }
             }
@@ -345,7 +362,7 @@ public interface IAsyncBinaryReader
         }
         else
         {
-            result = CopyToAsync(new BufferConsumer<byte>(writer), token);
+            result = CopyToAsync(new BufferConsumer<byte>(destination), count, token);
         }
 
         return result;
@@ -355,11 +372,13 @@ public interface IAsyncBinaryReader
     /// Reads the entire content using the specified delegate.
     /// </summary>
     /// <param name="consumer">The content reader.</param>
+    /// <param name="count">The number of bytes to copy.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
+    ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
 
     /// <summary>
