@@ -169,30 +169,6 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     }
 
     /// <summary>
-    /// Rents the memory block and wrap it to the <see cref="MemoryOwner{T}"/> type.
-    /// </summary>
-    /// <typeparam name="TArg">The type of the argument to be passed to the provider.</typeparam>
-    /// <param name="provider">The provider that allows to rent the memory.</param>
-    /// <param name="length">The length of the memory block to rent.</param>
-    /// <param name="arg">The argument to be passed to the provider.</param>
-    /// <param name="exactSize">
-    /// <see langword="true"/> to preserve the requested length;
-    /// <see langword="false"/> to use actual length of the rented memory block.
-    /// </param>
-    /// <returns>Rented memory block.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="provider"/> is zero pointer.</exception>
-    [CLSCompliant(false)]
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe MemoryOwner<T> Create<TArg>(delegate*<int, TArg, IMemoryOwner<T>> provider, int length, TArg arg, bool exactSize = true)
-    {
-        if (provider is null)
-            throw new ArgumentNullException(nameof(provider));
-
-        return length == 0 ? default : new(provider(length, arg), exactSize ? length : null);
-    }
-
-    /// <summary>
     /// Gets numbers of elements in the rented memory block.
     /// </summary>
     public readonly int Length => length;

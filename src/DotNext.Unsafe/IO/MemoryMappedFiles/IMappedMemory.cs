@@ -5,6 +5,7 @@ using Runtime.InteropServices;
 /// <summary>
 /// Represents segment of memory-mapped file.
 /// </summary>
-public interface IMappedMemoryOwner : IUnmanagedMemory<byte>, IFlushable
+[CLSCompliant(false)]
+public interface IMappedMemory : IUnmanagedMemory<byte>, IFlushable
 {
 }

@@ -172,10 +172,17 @@ public readonly struct Pointer<T> :
             ThrowNullPointerException();
 
         var pointer = this.value;
-        for (nuint len; count > 0; count -= len, pointer += len)
+        if (sizeof(T) is sizeof(byte))
         {
-            len = count > int.MaxValue ? int.MaxValue : count;
-            new Span<T>(pointer, (int)len).Fill(value);
+            NativeMemory.Fill(pointer, count, Unsafe.BitCast<T, byte>(value));
+        }
+        else
+        {
+            for (int len; count > 0; count -= (uint)len, pointer += len)
+            {
+                len = int.CreateSaturating(count);
+                new Span<T>(pointer, len).Fill(value);
+            }
         }
     }
 
@@ -201,39 +208,7 @@ public readonly struct Pointer<T> :
     /// <returns>Array element.</returns>
     /// <exception cref="NullPointerException">This array is not allocated.</exception>
     [CLSCompliant(false)]
-    public unsafe ref T this[nuint index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            if (IsNull)
-                ThrowNullPointerException();
-
-            return ref value[index];
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets pointer value at the specified position in the memory.
-    /// </summary>
-    /// <remarks>
-    /// This property doesn't check bounds of the array.
-    /// </remarks>
-    /// <param name="index">Element index.</param>
-    /// <returns>Array element.</returns>
-    /// <exception cref="NullPointerException">This array is not allocated.</exception>
-    [CLSCompliant(false)]
-    public unsafe ref T this[nint index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            if (IsNull)
-                ThrowNullPointerException();
-
-            return ref value[index];
-        }
-    }
+    public ref T this[nuint index] => ref Unsafe.Add(ref Value, index);
 
     /// <summary>
     /// Swaps values between this memory location and the given memory location.
@@ -245,8 +220,10 @@ public readonly struct Pointer<T> :
     {
         if (IsNull)
             ThrowNullPointerException();
+
         if (other.IsNull)
             throw new ArgumentNullException(nameof(other));
+
         Intrinsics.Swap(value, other.value);
     }
 
@@ -257,11 +234,13 @@ public readonly struct Pointer<T> :
         set => *this.value = (T)value!;
     }
 
-    internal unsafe MemoryHandle Pin(nint elementIndex)
-        => new(value + elementIndex);
-
     /// <inheritdoc />
-    MemoryHandle IPinnable.Pin(int elementIndex) => Pin(elementIndex);
+    public unsafe MemoryHandle Pin(int elementIndex)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(elementIndex);
+
+        return new(value + elementIndex);
+    }
 
     /// <inheritdoc />
     void IPinnable.Unpin()
@@ -279,7 +258,19 @@ public readonly struct Pointer<T> :
         if (IsNull)
             ThrowNullPointerException();
 
-        NativeMemory.Clear(value, count);
+        var pointer = value;
+        if (sizeof(T) is sizeof(byte))
+        {
+            NativeMemory.Clear(pointer, count);
+        }
+        else
+        {
+            for (int len; count > 0; count -= (uint)len, pointer += len)
+            {
+                len = int.CreateSaturating(count);
+                new Span<T>(pointer, len).Clear();
+            }
+        }
     }
 
     /// <summary>
@@ -298,23 +289,7 @@ public readonly struct Pointer<T> :
         if (IsNull)
             ThrowNullPointerException();
 
-        Intrinsics.Copy(in value[0], out MemoryMarshal.GetReference(destination), (nuint)destination.Length);
-    }
-
-    /// <summary>
-    /// Copies block of memory from the source address to the destination address.
-    /// </summary>
-    /// <param name="destination">Destination address.</param>
-    /// <param name="count">The number of elements to be copied.</param>
-    /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
-    /// <exception cref="ArgumentNullException">Destination pointer is zero.</exception>
-    [CLSCompliant(false)]
-    public void CopyTo(Pointer<T> destination, nint count)
-    {
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
-
-        CopyTo(destination, (nuint)count);
+        new ReadOnlySpan<T>(value, destination.Length).CopyTo(destination);
     }
 
     /// <summary>
@@ -328,11 +303,19 @@ public readonly struct Pointer<T> :
     public unsafe void CopyTo(Pointer<T> destination, nuint count)
     {
         if (IsNull)
-            throw new NullPointerException(ExceptionMessages.NullSource);
+            ThrowNullPointerException();
+
         if (destination.IsNull)
             throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
 
-        Intrinsics.Copy(in value[0], out destination.value[0], count);
+        if (sizeof(T) is sizeof(byte))
+        {
+            NativeMemory.Copy(value, destination.value, count);
+        }
+        else
+        {
+            Intrinsics.Copy(in value[0], out destination.value[0], count);
+        }
     }
 
     /// <summary>
@@ -343,22 +326,24 @@ public readonly struct Pointer<T> :
     /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
     /// <exception cref="ArgumentException">The stream is not writable.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+    [CLSCompliant(false)]
     public unsafe void WriteTo(Stream destination, long count)
     {
         if (IsNull)
             ThrowNullPointerException();
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+
         if (!destination.CanWrite)
             throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+
         if (count > 0)
             WriteTo((byte*)value, checked(count * sizeof(T)), destination);
 
         static void WriteTo(byte* source, long length, Stream destination)
         {
-            for (int count; length > 0; length -= count, source += count)
+            for (int count; length > 0L; length -= count, source += count)
             {
-                destination.Write(new ReadOnlySpan<byte>(source, count = int.CreateSaturating(length)));
+                count = int.CreateSaturating(length);
+                destination.Write(new(source, count));
             }
         }
     }
@@ -392,7 +377,8 @@ public readonly struct Pointer<T> :
         {
             for (int count; length > 0; length -= count, source += count)
             {
-                using var manager = new MemorySource(source, count = int.CreateSaturating(length));
+                count = int.CreateSaturating(length);
+                using var manager = new MemorySource(source, count);
                 await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
             }
         }
@@ -411,8 +397,8 @@ public readonly struct Pointer<T> :
     {
         if (IsNull)
             ThrowNullPointerException();
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
+
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         if (!source.CanRead)
             throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
 
@@ -423,7 +409,7 @@ public readonly struct Pointer<T> :
             var total = 0L;
             for (int bytesRead; length > 0L; total += bytesRead, length -= bytesRead)
             {
-                if ((bytesRead = source.Read(new Span<byte>(&destination[total], int.CreateSaturating(length)))) is 0)
+                if ((bytesRead = source.Read(new Span<byte>(destination + total, int.CreateSaturating(length)))) is 0)
                     break;
             }
 
@@ -499,8 +485,7 @@ public readonly struct Pointer<T> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe Stream AsStream(long count, FileAccess access = FileAccess.ReadWrite)
     {
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         if (IsNull)
             return Stream.Null;
@@ -515,20 +500,22 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <param name="length">Number of elements to copy.</param>
     /// <returns>A copy of memory block in the form of byte array.</returns>
-    [CLSCompliant(false)]
-    public unsafe byte[] ToByteArray(nuint length)
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    public unsafe byte[] ToByteArray(int length)
     {
-        byte[] result;
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
 
-        if (IsNull || length is 0U)
+        byte[] result;
+        if (IsNull || length is 0)
         {
             result = [];
         }
         else
         {
-            length = checked((nuint)sizeof(T) * length);
-            result = length <= (nuint)Array.MaxLength ? GC.AllocateUninitializedArray<byte>((int)length, pinned: true) : new byte[length];
-            Intrinsics.Copy(in Unsafe.AsRef<byte>(value), out MemoryMarshal.GetArrayDataReference(result), length);
+            length = checked(sizeof(T) * length);
+            result = GC.AllocateUninitializedArray<byte>(length, pinned: true);
+
+            Intrinsics.Copy(in Unsafe.AsRef<byte>(value), out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
         }
 
         return result;
@@ -540,9 +527,11 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <param name="length">The length of the memory block to be copied.</param>
     /// <returns>The array containing elements from the memory block referenced by this pointer.</returns>
-    [CLSCompliant(false)]
-    public unsafe T[] ToArray(nuint length)
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
+    public unsafe T[] ToArray(int length)
     {
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+
         T[] result;
 
         if (IsNull || length is 0)
@@ -551,8 +540,8 @@ public readonly struct Pointer<T> :
         }
         else
         {
-            result = length <= (nuint)Array.MaxLength ? GC.AllocateUninitializedArray<T>((int)length, pinned: true) : new T[length];
-            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), length);
+            result = GC.AllocateUninitializedArray<T>(length, pinned: true);
+            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
         }
 
         return result;
@@ -603,40 +592,6 @@ public readonly struct Pointer<T> :
             return ref value[0];
         }
     }
-
-    /// <summary>
-    /// Dereferences this pointer.
-    /// </summary>
-    /// <returns>The value stored in the memory.</returns>
-    /// <exception cref="NullPointerException">The pointer is 0.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T Get() => Value;
-
-    /// <summary>
-    /// Gets the value stored in the memory at the specified position.
-    /// </summary>
-    /// <param name="index">The index of the element.</param>
-    /// <returns>The value stored in the memory at the specified position.</returns>
-    /// <exception cref="NullPointerException">The pointer is 0.</exception>
-    [CLSCompliant(false)]
-    public T Get(nuint index) => this[index];
-
-    /// <summary>
-    /// Sets the value stored in the memory identified by this pointer.
-    /// </summary>
-    /// <param name="value">The value to be stored in the memory.</param>
-    /// <exception cref="NullPointerException">The pointer is 0.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Set(T value) => Value = value;
-
-    /// <summary>
-    /// Sets the value at the specified position in the memory.
-    /// </summary>
-    /// <param name="value">The value to be stored in the memory.</param>
-    /// <param name="index">The index of the element to modify.</param>
-    /// <exception cref="NullPointerException">The pointer is 0.</exception>
-    [CLSCompliant(false)]
-    public void Set(T value, nuint index) => this[index] = value;
 
     /// <summary>
     /// Dereferences this pointer, assuming that this pointer is unaligned.

@@ -7,20 +7,19 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ReadWriteTest()
     {
-        using var owner = UnmanagedMemoryAllocator.Allocate<ushort>(3);
+        using var owner = UnmanagedMemory.Allocate<ushort>(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
         array[2] = 30;
-        Equal([10, 20, 30], owner.ToArray());
+        Equal([10, 20, 30], owner.Span.ToArray());
         Equal(3, array.Length);
         Equal(3, owner.Length);
-        Equal(6, owner.Size);
+        Equal(6U, owner.Size);
         Equal(10, array[0]);
         Equal(20, array[1]);
         Equal(30, array[2]);
-        var managedArray = Enumerable.ToArray(owner);
-        Equal([10, 20, 30], managedArray);
+
         array.Clear();
         Equal(0, array[0]);
         Equal(0, array[1]);
@@ -30,7 +29,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void ArrayInteropTest()
     {
-        using var owner = UnmanagedMemoryAllocator.Allocate<ushort>(3);
+        using var owner = UnmanagedMemory.Allocate<ushort>(3);
         Span<ushort> array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -49,7 +48,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void UnmanagedMemoryAllocation()
     {
-        using var owner = UnmanagedMemoryAllocator.GetAllocator<ushort>(false).AllocateAtLeast(3);
+        using var owner = UnmanagedMemory.GetAllocator<ushort>(false).Invoke(3);
         Span<ushort> array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -65,7 +64,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ResizeTest()
     {
-        using var owner = UnmanagedMemoryAllocator.Allocate<long>(5);
+        using var owner = UnmanagedMemory.Allocate<long>(5);
         Span<long> array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -84,7 +83,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void SliceTest()
     {
-        using var owner = UnmanagedMemoryAllocator.Allocate<long>(5);
+        using var owner = UnmanagedMemory.Allocate<long>(5);
         Span<long> span = owner.Span;
         span[0] = 10;
         span[1] = 20;
@@ -114,10 +113,10 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void Allocation()
     {
-        using var manager = UnmanagedMemoryAllocator.Allocate<long>(2);
+        using var manager = UnmanagedMemory.Allocate<long>(2);
         Equal(2, manager.Length);
 
-        Equal(sizeof(long) * 2, manager.Size);
+        Equal(sizeof(long) * 2U, manager.Size);
         Equal(0, manager.Span[0]);
         Equal(0, manager.Span[1]);
         manager.Pointer[0] = 10L;
@@ -131,7 +130,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void Pooling()
     {
-        using var pool = new UnmanagedMemoryPool<long>(10, trackAllocations: true);
+        using var pool = new UnmanagedMemoryPool<long>(10) { TrackAllocations = true };
         using var manager = pool.Rent(2);
         Equal(2, manager.Memory.Length);
 
@@ -146,7 +145,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void EnumeratorTest()
     {
-        using var owner = UnmanagedMemoryAllocator.Allocate<int>(3);
+        using var owner = UnmanagedMemory.Allocate<int>(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -161,7 +160,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void ZeroMem()
     {
-        using var memory = UnmanagedMemoryAllocator.Allocate<byte>(3, false);
+        using var memory = UnmanagedMemory.Allocate<byte>(3);
         memory.Span[0] = 10;
         memory.Span[1] = 20;
         memory.Span[2] = 30;
@@ -174,31 +173,12 @@ public sealed class UnmanagedMemoryPoolTests : Test
     }
 
     [Fact]
-    public static async Task StreamInteropAsync()
-    {
-        using var memory = UnmanagedMemoryAllocator.Allocate<ushort>(3);
-        using var ms = new MemoryStream();
-        new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
-        await memory.WriteToAsync(ms);
-        Equal(6L, ms.Length);
-        True(ms.TryGetBuffer(out var buffer));
-        buffer.AsSpan().ForEach((ref byte value, int _) =>
-        {
-            if (value is 1)
-                value = 20;
-        });
-        ms.Position = 0;
-        Equal(6, await memory.ReadFromAsync(ms));
-        Equal(20, memory.Span[0]);
-    }
-
-    [Fact]
     public static void StreamInterop()
     {
-        using var memory = UnmanagedMemoryAllocator.Allocate<ushort>(3);
+        using var memory = UnmanagedMemory.Allocate<ushort>(3);
         using var ms = new MemoryStream();
         new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
-        memory.WriteTo(ms);
+        ms.Write(memory.Bytes);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
         buffer.AsSpan().ForEach((ref byte value, int _) =>
@@ -206,15 +186,16 @@ public sealed class UnmanagedMemoryPoolTests : Test
             if (value is 1)
                 value = 20;
         });
+
         ms.Position = 0;
-        Equal(6, memory.ReadFrom(ms));
+        Equal(6, ms.Read(memory.Bytes));
         Equal(20, memory.Span[0]);
     }
 
     [Fact]
     public static unsafe void ToStreamConversion()
     {
-        using var memory = UnmanagedMemoryAllocator.Allocate<byte>(3, false);
+        using var memory = UnmanagedMemory.AllocateZeroed<byte>(3);
         new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
         using var stream = memory.AsStream();
         var bytes = new byte[3];
@@ -225,21 +206,9 @@ public sealed class UnmanagedMemoryPoolTests : Test
     }
 
     [Fact]
-    public static void CopyMemory()
-    {
-        using var memory1 = UnmanagedMemoryAllocator.Allocate<int>(3);
-        memory1.Span[0] = 10;
-        using var memory2 = memory1.Clone() as IUnmanagedMemoryOwner<int>;
-        Equal(10, memory2.Span[0]);
-        memory2.Span[0] = int.MaxValue;
-        Equal(int.MaxValue, memory2.Span[0]);
-        Equal(10, memory1.Span[0]);
-    }
-
-    [Fact]
     public static unsafe void Pinning()
     {
-        using var memory = UnmanagedMemoryAllocator.Allocate<int>(3) as MemoryManager<int>;
+        using var memory = UnmanagedMemory.AllocateZeroed<int>(3) as MemoryManager<int>;
         NotNull(memory);
         memory.GetSpan()[0] = 10;
         memory.GetSpan()[1] = 20;

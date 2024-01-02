@@ -2,7 +2,7 @@
 
 namespace DotNext.IO.MemoryMappedFiles;
 
-public sealed class MemoryMappedOwnerTests : Test
+public sealed class MemoryMappedTests : Test
 {
     [Fact]
     public static void AccessByPointer()
@@ -11,7 +11,7 @@ public sealed class MemoryMappedOwnerTests : Test
         using (var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
         using (var da = mappedFile.CreateMemoryAccessor(10L, 4))
         {
-            Equal(4L, da.Size);
+            Equal(4U, da.Size);
             var ptr = da.Pointer;
             ptr.Value = 1;
             ptr += 1;
@@ -48,7 +48,7 @@ public sealed class MemoryMappedOwnerTests : Test
         using (var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
         using (var da = mappedFile.CreateMemoryAccessor(10L, 4))
         {
-            Equal(4L, da.Size);
+            Equal(4U, da.Size);
             var span = da.Bytes;
             Equal(4, span.Length);
             span[0] = 5;
@@ -91,7 +91,7 @@ public sealed class MemoryMappedOwnerTests : Test
         using (var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
         using (var da = mappedFile.CreateMemoryAccessor(10L, 4))
         {
-            Equal(4L, da.Size);
+            Equal(4U, da.Size);
             var memory = da.Memory;
             Equal(4, memory.Length);
             memory.Span[0] = 5;
@@ -118,7 +118,7 @@ public sealed class MemoryMappedOwnerTests : Test
         var tempFile = Path.GetTempFileName();
         using var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite);
         using var da = mappedFile.CreateMemoryAccessor(10L, 4);
-        Equal(4L, da.Size);
+        Equal(4U, da.Size);
         var span = da.Bytes;
         Equal(4, span.Length);
         span[0] = 5;

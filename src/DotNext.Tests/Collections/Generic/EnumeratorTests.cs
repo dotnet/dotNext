@@ -33,10 +33,10 @@ public sealed class EnumeratorTests : Test
     [Fact]
     public static void NativeMemoryEnumerator()
     {
-        using var owner = UnmanagedMemoryAllocator.Allocate<int>(3);
-        owner[(nint)0] = 10;
-        owner[(nint)1] = 20;
-        owner[(nint)2] = 30;
+        using var owner = UnmanagedMemory.Allocate<int>(3);
+        owner[0] = 10;
+        owner[1] = 20;
+        owner[2] = 30;
 
         using var enumerator = Enumerator.ToEnumerator<int>(owner.Memory);
 
@@ -62,7 +62,7 @@ public sealed class EnumeratorTests : Test
     [Fact]
     public static void ArraySequenceEnumerator()
     {
-        using var enumerator = Enumerator.ToEnumerator(new ReadOnlySequence<int>(new ReadOnlyMemory<int>(new int[] { 1, 2, 3 })));
+        using var enumerator = Enumerator.ToEnumerator(new ReadOnlySequence<int>(new ReadOnlyMemory<int>([1, 2, 3])));
         True(enumerator.MoveNext());
         Equal(1, enumerator.Current);
 

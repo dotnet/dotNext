@@ -1,22 +1,24 @@
 using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices;
 
 /// <summary>
 /// Represents common interface for the wrapper of the unmanaged memory.
 /// </summary>
+[CLSCompliant(false)]
 public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
 {
     /// <summary>
     /// Gets size of referenced unmanaged memory, in bytes.
     /// </summary>
-    long Size { get; }
+    nuint Size { get; }
 
     /// <summary>
     /// Sets all bits of allocated memory to zero.
     /// </summary>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void Clear() => Pointer.Clear((uint)Size);
+    void Clear() => Pointer.Clear(Size);
 
     /// <summary>
     /// Gets a pointer to the allocated unmanaged memory.
@@ -35,66 +37,70 @@ public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
     /// </summary>
     /// <returns>The stream of unmanaged memory.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    Stream AsStream();
+    Stream AsStream() => Pointer.AsStream(long.CreateChecked(Size));
 
     /// <inheritdoc/>
     Stream ISupplier<Stream>.Invoke() => AsStream();
-
-    /// <summary>
-    /// Copies bytes from the memory location to the stream.
-    /// </summary>
-    /// <param name="destination">The destination stream.</param>
-    /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void WriteTo(Stream destination) => Pointer.WriteTo(destination, Size);
-
-    /// <summary>
-    /// Copies bytes from the memory location to the stream asynchronously.
-    /// </summary>
-    /// <param name="destination">The destination stream.</param>
-    /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task instance representing asynchronous state of the copying process.</returns>
-    /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask WriteToAsync(Stream destination, CancellationToken token = default) => Pointer.WriteToAsync(destination, Size, token);
-
-    /// <summary>
-    /// Copies bytes from the given stream to the memory location identified by this object asynchronously.
-    /// </summary>
-    /// <param name="source">The source stream.</param>
-    /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    long ReadFrom(Stream source) => Pointer.ReadFrom(source, Size);
-
-    /// <summary>
-    /// Copies bytes from the given stream to the memory location identified by this object asynchronously.
-    /// </summary>
-    /// <param name="source">The source stream.</param>
-    /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask<long> ReadFromAsync(Stream source, CancellationToken token = default) => Pointer.ReadFromAsync(source, Size, token);
-
-    /// <summary>
-    /// Copies elements from the current memory location to the specified memory location.
-    /// </summary>
-    /// <param name="destination">The target memory location.</param>
-    /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void WriteTo(Pointer<byte> destination) => Pointer.CopyTo(destination, new IntPtr(Size));
-
-    /// <summary>
-    /// Copies bytes from the source memory to the memory identified by this object.
-    /// </summary>
-    /// <param name="source">The pointer to the source unmanaged memory.</param>
-    /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    void ReadFrom(Pointer<byte> source) => source.CopyTo(Pointer, new IntPtr(Size));
 }
 
 /// <summary>
 /// Represents unmanaged memory owner.
 /// </summary>
 /// <typeparam name="T">The type of elements in the unmanaged memory.</typeparam>
+[CLSCompliant(false)]
 public interface IUnmanagedMemory<T> : IUnmanagedMemory, IMemoryOwner<T>, ISupplier<Memory<T>>
     where T : unmanaged
 {
     /// <inheritdoc/>
     Memory<T> ISupplier<Memory<T>>.Invoke() => Memory;
+
+    /// <inheritdoc/>
+    unsafe nuint IUnmanagedMemory.Size => (nuint)Length * (nuint)sizeof(T);
+
+    /// <summary>
+    /// Gets the number of elements in the unmanaged memory.
+    /// </summary>
+    int Length { get; }
+
+    /// <summary>
+    /// Gets a pointer to the allocated unmanaged memory.
+    /// </summary>
+    new Pointer<T> Pointer { get; }
+
+    /// <inheritdoc/>
+    Pointer<byte> IUnmanagedMemory.Pointer => new(Pointer);
+
+    /// <summary>
+    /// Gets a span from the current instance.
+    /// </summary>
+    Span<T> Span { get; }
+
+    /// <inheritdoc/>
+    Span<byte> IUnmanagedMemory.Bytes => MemoryMarshal.AsBytes(Span);
+
+    /// <summary>
+    /// Gets element of the unmanaged array.
+    /// </summary>
+    /// <param name="index">The index of the element to get.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is out of range.</exception>
+    /// <value>The pointer to the array element.</value>
+    ref T this[int index] => ref Span[index];
+
+    /// <summary>
+    /// Resizes a block of memory represented by this instance.
+    /// </summary>
+    /// <remarks>
+    /// This method is dangerous becase it invalidates all buffers returned by <see cref="System.Buffers.IMemoryOwner{T}.Memory"/> property.
+    /// </remarks>
+    /// <param name="length">The new number of elements in the unmanaged array.</param>
+    /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
+    /// <exception cref="NotSupportedException">Reallocation is not supported.</exception>
+    /// <seealso cref="SupportsReallocation"/>
+    void Reallocate(int length) => throw new NotSupportedException();
+
+    /// <summary>
+    /// Gets a value indicating that the referenced memory can be reallocated.
+    /// </summary>
+    bool SupportsReallocation => false;
 }

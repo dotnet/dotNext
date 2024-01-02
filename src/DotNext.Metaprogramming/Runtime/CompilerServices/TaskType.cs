@@ -29,7 +29,8 @@ internal readonly struct TaskType
         }
         else
         {
-            var enumerator = (typeof(Task<>), typeof(ValueTask<>)).AsReadOnlySpan().GetEnumerator();
+            ReadOnlySpan<Type> types = [typeof(Task<>), typeof(ValueTask<>)];
+            var enumerator = types.GetEnumerator();
 
         move_next:
             if (!enumerator.MoveNext())

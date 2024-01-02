@@ -84,33 +84,13 @@ public sealed class PointerTests : Test
     }
 
     [Fact]
-    public static unsafe void ReadWrite2()
-    {
-        var array = new ushort[] { 1, 2, 3 };
-        fixed (ushort* p = array)
-        {
-            var ptr = new Pointer<ushort>(p);
-            Equal(new IntPtr(p), (IntPtr)ptr.Address);
-            ptr.Set(20);
-            Equal(20, array[0]);
-            Equal(20, ptr.Get());
-            ptr.Set(30, 1);
-            Equal(30, array[1]);
-            Equal(30, ptr.Get(1));
-            ptr.Set(42, 0);
-            Equal(42, array[0]);
-            Equal(42, ptr.Get(0));
-        }
-    }
-
-    [Fact]
     public static unsafe void ReadWriteUnaligned()
     {
         var array = new ushort[] { 1, 2, 3 };
         fixed (ushort* p = array)
         {
             var ptr = new Pointer<ushort>(p);
-            Equal(new IntPtr(p), (IntPtr)ptr.Address);
+            Equal(new IntPtr(p), ptr.Address);
             ptr.SetUnaligned(20);
             Equal(20, array[0]);
             Equal(20, ptr.GetUnaligned());
@@ -159,8 +139,6 @@ public sealed class PointerTests : Test
         var ptr = default(Pointer<int>);
         Throws<NullPointerException>(() => ptr[0] = 10);
         Throws<NullPointerException>(() => ptr.Value = 10);
-        Throws<NullPointerException>(() => ptr.Set(10));
-        Throws<NullPointerException>(() => ptr.Set(10, 0));
         Empty(ptr.ToByteArray(10));
         True(ptr.Bytes.IsEmpty);
         Equal(Pointer<int>.Null, ptr);
