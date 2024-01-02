@@ -45,11 +45,11 @@ internal readonly struct LogEntryMetadata
         Debug.Assert(input.Length >= Size);
 
         var reader = new SequenceReader(input);
-        term = reader.ReadInt64(littleEndian: true);
-        timestamp = reader.ReadInt64(littleEndian: true);
-        flags = reader.Read<byte>();
-        identifier = reader.ReadInt32(littleEndian: true);
-        length = reader.ReadInt64(littleEndian: true);
+        term = reader.ReadLittleEndian<long>();
+        timestamp = reader.ReadLittleEndian<long>();
+        flags = reader.ReadByte();
+        identifier = reader.ReadLittleEndian<int>();
+        length = reader.ReadLittleEndian<long>();
 
         position = reader.Position;
     }
@@ -62,7 +62,7 @@ internal readonly struct LogEntryMetadata
 
     internal int? CommandId => (flags & HasIdentifierFlag) != 0 ? identifier : null;
 
-    internal void Serialize(Span<byte> output)
+    public void Format(Span<byte> output)
     {
         var writer = new SpanWriter<byte>(output);
         writer.WriteLittleEndian(Term);

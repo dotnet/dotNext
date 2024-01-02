@@ -33,11 +33,6 @@ public partial class MessageHandler : IInputChannel
     /// <summary>
     /// Initializes a new typed message handler and discover all methods suitable for handling messages.
     /// </summary>
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RpcHandler<,>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(SignalHandler<>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,,>))]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     protected MessageHandler()
     {

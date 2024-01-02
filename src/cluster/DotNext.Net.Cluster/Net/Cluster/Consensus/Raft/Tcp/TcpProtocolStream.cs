@@ -1,20 +1,18 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
-using System.Threading;
-using System.Threading.Tasks;
 using Buffers;
-using static IO.StreamExtensions;
 using ProtocolStream = TransportServices.ConnectionOriented.ProtocolStream;
 
 internal sealed class TcpProtocolStream : ProtocolStream
 {
+    [SuppressMessage("Usage", "CA2213", Justification = "Not owned by this class")]
     internal readonly Stream BaseStream;
 
     internal TcpProtocolStream(Stream transport, MemoryAllocator<byte> allocator, int transmissionBlockSize)
         : base(allocator, transmissionBlockSize)
-    {
-        BaseStream = transport;
-    }
+        => BaseStream = transport;
 
     public override bool CanRead => BaseStream.CanRead;
 
@@ -43,7 +41,7 @@ internal sealed class TcpProtocolStream : ProtocolStream
     private protected override ValueTask<int> ReadFromTransportAsync(Memory<byte> buffer, CancellationToken token)
         => BaseStream.ReadAsync(buffer, token);
 
-    private protected override ValueTask<int> ReadFromTransportAsync(int minimumSize, Memory<byte> buffer, CancellationToken token)
+    private protected override ValueTask<int> ReadFromTransportAsync(Memory<byte> buffer, int minimumSize, CancellationToken token)
         => BaseStream.ReadAtLeastAsync(buffer, minimumSize, cancellationToken: token);
 
     private protected override void WriteToTransport(ReadOnlySpan<byte> buffer)

@@ -3,6 +3,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using IO;
+using static Buffers.ByteBuffer;
 
 internal partial class Client : RaftClusterMember
 {
@@ -35,7 +36,7 @@ internal partial class Client : RaftClusterMember
         private int WriteHeaders(ProtocolStream protocol, in ClusterMemberId sender)
         {
             var writer = protocol.BeginRequestMessage(MessageType.InstallSnapshot);
-            SnapshotMessage.Write(ref writer, in sender, term, snapshotIndex, snapshot);
+            writer.Write<SnapshotMessage>(new(sender, term, snapshotIndex, snapshot));
             return writer.WrittenCount;
         }
 

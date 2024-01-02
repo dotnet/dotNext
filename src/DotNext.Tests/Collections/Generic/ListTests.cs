@@ -40,7 +40,7 @@ public sealed class ListTests : Test
         Equal(2, view[1]);
         Equal(3, view[2]);
         NotEmpty(view);
-        All(view, static value => True(value.IsBetween(0, 3, BoundType.Closed)));
+        All(view, static value => True(value is >= 0 and <= 3));
     }
 
     [Fact]

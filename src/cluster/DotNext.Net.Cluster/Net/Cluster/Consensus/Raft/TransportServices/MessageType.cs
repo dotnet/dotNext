@@ -15,6 +15,4 @@ internal enum MessageType : byte
 
     // response message types
     None = 0,
-    NextEntry = 0B_0000_1010,   // ask for the next record with the specified index
-    Continue = 0B_0000_1011,    // ask for the next data chunk of the record
 }

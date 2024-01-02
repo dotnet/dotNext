@@ -65,8 +65,9 @@ internal partial class Client : RaftClusterMember
             Debug.Assert(config is not null);
 
             var writer = protocol.BeginRequestMessage(MessageType.AppendEntries);
-            AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
+            writer.Write<AppendEntriesMessage>(new(sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount));
             writer.Add(Unsafe.BitCast<bool, byte>(applyConfig));
+            writer.Write<ConfigurationMessage>(new(config));
             writer.WriteLittleEndian(config.Fingerprint);
             writer.WriteLittleEndian(config.Length);
             return writer.WrittenCount;
@@ -122,20 +123,15 @@ internal partial class Client : RaftClusterMember
                 if (protocol.CanWriteFrameSynchronously(LogEntryMetadata.Size + 1) is false)
                     await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
 
-                protocol.AdvanceWriteCursor(WriteLogEntryMetadata(protocol.RemainingBufferSpan, entry));
+                LogEntryMetadata.Create(entry).Format(protocol.RemainingBufferSpan);
+                protocol.AdvanceWriteCursor(LogEntryMetadata.Size);
+
                 protocol.StartFrameWrite();
                 await entry.WriteToAsync(protocol, buffer, token).ConfigureAwait(false);
                 protocol.WriteFinalFrame();
             }
 
             await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
-
-            static int WriteLogEntryMetadata(Span<byte> buffer, TEntry entry)
-            {
-                var writer = new SpanWriter<byte>(buffer);
-                LogEntryMetadata.Create(entry).Format(ref writer);
-                return writer.WrittenCount;
-            }
         }
     }
 

@@ -1,5 +1,4 @@
 using System.Net;
-using System.Runtime.Serialization;
 
 namespace DotNext.Net.Cluster.Discovery;
 
@@ -15,16 +14,6 @@ public abstract class DiscoveryProtocolException : ProtocolViolationException
     /// <param name="message">Human-readable text describing problem.</param>
     protected DiscoveryProtocolException(string message)
         : base(message)
-    {
-    }
-
-    /// <summary>
-    /// Deserialization constructor.
-    /// </summary>
-    /// <param name="info">The serialized information about object.</param>
-    /// <param name="context">The deserialization context.</param>
-    protected DiscoveryProtocolException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

@@ -1,24 +1,31 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Buffers.Binary;
 
-internal static class VoteMessage
+[StructLayout(LayoutKind.Auto)]
+internal readonly record struct VoteMessage(ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm) : IBinaryFormattable<VoteMessage>
 {
-    internal static int Size => sizeof(long) + sizeof(long) + sizeof(long) + ClusterMemberId.Size;
+    public static int Size => sizeof(long) + sizeof(long) + sizeof(long) + ClusterMemberId.Size;
 
-    internal static void Write(ref SpanWriter<byte> writer, in ClusterMemberId id, long term, long lastLogIndex, long lastLogTerm)
+    public void Format(Span<byte> output)
     {
-        id.Format(ref writer);
-        writer.WriteLittleEndian(term);
-        writer.WriteLittleEndian(lastLogIndex);
-        writer.WriteLittleEndian(lastLogTerm);
+        var writer = new SpanWriter<byte>(output);
+        writer.Write(Id);
+        writer.WriteLittleEndian(Term);
+        writer.WriteLittleEndian(LastLogIndex);
+        writer.WriteLittleEndian(LastLogTerm);
     }
 
-    internal static (ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm) Read(ref SpanReader<byte> reader) => new()
+    public static VoteMessage Parse(ReadOnlySpan<byte> input)
     {
-        Id = new(ref reader),
-        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
-        LastLogIndex = reader.ReadLittleEndian<long>(isUnsigned: false),
-        LastLogTerm = reader.ReadLittleEndian<long>(isUnsigned: false),
-    };
+        var reader = new SpanReader<byte>(input);
+        return new(
+            reader.Read<ClusterMemberId>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<long>());
+    }
 }

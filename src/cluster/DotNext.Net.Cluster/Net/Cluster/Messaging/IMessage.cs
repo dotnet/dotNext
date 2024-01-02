@@ -11,7 +11,6 @@ namespace DotNext.Net.Cluster.Messaging;
 /// to Data Transfer Object.
 /// </remarks>
 /// <seealso cref="TextMessage"/>
-/// <seealso cref="BinaryMessage"/>
 /// <seealso cref="StreamMessage"/>
 public interface IMessage : IO.IDataTransferObject
 {

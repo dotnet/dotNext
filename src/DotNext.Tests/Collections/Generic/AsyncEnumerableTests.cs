@@ -30,7 +30,7 @@ public sealed class AsyncEnumerableTests : Test
     public static async Task ForEachTestAsync()
     {
         var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
-        var counter = new SequenceTests.Counter<int>();
+        var counter = new CollectionTests.Counter<int>();
         await list.ForEachAsync(counter.Accept);
         Equal(3, counter.value);
         counter.value = 0;
@@ -66,5 +66,21 @@ public sealed class AsyncEnumerableTests : Test
     {
         using var copy = await Enumerable.Empty<int>().ToAsyncEnumerable().CopyAsync();
         True(copy.IsEmpty);
+    }
+
+    [Fact]
+    public static async Task SkipNullsTestAsync()
+    {
+        var list = new LinkedList<string>();
+        list.AddLast("a");
+        list.AddLast(default(string));
+        list.AddLast("b");
+        list.AddLast(default(string));
+        Equal(4, list.Count);
+
+        var array = await list.ToAsyncEnumerable().SkipNulls().ToArrayAsync();
+        Equal(2, array.Length);
+        True(Array.Exists(array, "a".Equals));
+        True(Array.Exists(array, "b".Equals));
     }
 }

@@ -73,7 +73,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
             output.fs.SetLength(fs.Length);
         }
 
-        internal Task CopyToAsync(IBufferWriter<byte> output, CancellationToken token)
+        internal ValueTask CopyToAsync(IBufferWriter<byte> output, CancellationToken token)
             => fs.CopyToAsync(output, token: token);
 
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
@@ -145,8 +145,8 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// <inheritdoc/>
     protected sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
     {
-        using var writer = new PooledBufferWriter<byte>(allocator) { Capacity = bufferSize };
-        writer.WriteInt64(configuration.Fingerprint, littleEndian: true);
+        using var writer = new PoolingBufferWriter<byte>(allocator) { Capacity = bufferSize };
+        writer.WriteLittleEndian(configuration.Fingerprint);
         await configuration.WriteToAsync(writer, token).ConfigureAwait(false);
 
         proposed.Fingerprint = configuration.Fingerprint;
@@ -181,7 +181,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     {
         var builder = ImmutableHashSet.CreateBuilder(comparer);
 
-        using var buffer = new PooledBufferWriter<byte>(allocator)
+        using var buffer = new PoolingBufferWriter<byte>(allocator)
         {
             Capacity = active.IsEmpty ? bufferSize : int.CreateSaturating(active.Length),
         };

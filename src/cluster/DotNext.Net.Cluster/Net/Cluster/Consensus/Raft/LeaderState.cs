@@ -32,7 +32,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
         this.maxLease = maxLease;
-        lease = ExpiredLease.Instance;
+        lease = new();
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         context = new();

@@ -27,7 +27,7 @@ public partial class PeerController
     {
         if (random.Peek(activeView).TryGet(out var activePeer))
         {
-            PooledArrayBufferWriter<EndPoint> peersToSend;
+            PoolingArrayBufferWriter<EndPoint> peersToSend;
 
             using (var activeViewCopy = activeView.Remove(activePeer).Copy())
             {
@@ -37,7 +37,7 @@ public partial class PeerController
                 random.Shuffle(passiveViewCopy.Span);
 
                 // add randomly selected peers from active and passive views
-                peersToSend = new PooledArrayBufferWriter<EndPoint> { Capacity = shuffleActiveViewCount + shufflePassiveViewCount };
+                peersToSend = new PoolingArrayBufferWriter<EndPoint> { Capacity = shuffleActiveViewCount + shufflePassiveViewCount };
                 peersToSend.Write(activeViewCopy.Span.TrimLength(shuffleActiveViewCount));
                 peersToSend.Write(passiveViewCopy.Span.TrimLength(shufflePassiveViewCount));
             }
@@ -117,7 +117,7 @@ public partial class PeerController
         // add announced peers to the local passive view
         if (ttl is 0)
         {
-            using var randomizedPassiveView = new PooledArrayBufferWriter<EndPoint>();
+            using var randomizedPassiveView = new PoolingArrayBufferWriter<EndPoint>();
 
             // send random part of passive view back to origin
             randomizedPassiveView.AddAll(passiveView);

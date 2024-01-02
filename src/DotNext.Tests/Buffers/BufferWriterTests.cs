@@ -13,45 +13,34 @@ using LengthFormat = IO.LengthFormat;
 
 public sealed class BufferWriterTests : Test
 {
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public static async Task ReadBlittableTypes(bool littleEndian)
+    [Fact]
+    public static async Task ReadBlittableTypes()
     {
-        var bi = new BigInteger(RandomBytes(32));
         var writer = new ArrayBufferWriter<byte>();
-        writer.Write(10M);
-        writer.WriteInt64(42L, littleEndian);
-        writer.WriteInt32(44, littleEndian);
-        writer.WriteInt16(46, littleEndian);
-        writer.WriteBigInteger(in bi, littleEndian, LengthFormat.Compressed);
+        writer.WriteLittleEndian(42L);
+        writer.WriteLittleEndian(44);
+        writer.WriteLittleEndian<short>(46);
 
         IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
-        Equal(10M, await reader.ReadAsync<decimal>());
-        Equal(42L, await reader.ReadInt64Async(littleEndian));
-        Equal(44, await reader.ReadInt32Async(littleEndian));
-        Equal(46, await reader.ReadInt16Async(littleEndian));
-        Equal(bi, await reader.ReadBigIntegerAsync(LengthFormat.Compressed, littleEndian));
+        Equal(42L, await reader.ReadLittleEndianAsync<long>());
+        Equal(44, await reader.ReadLittleEndianAsync<int>());
+        Equal(46, await reader.ReadLittleEndianAsync<short>());
     }
 
-    private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat? lengthEnc)
+    private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat lengthEnc)
     {
         var writer = new ArrayBufferWriter<byte>();
         writer.Encode(value.AsSpan(), encoding, lengthEnc);
         IAsyncBinaryReader reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
-        var result = await (lengthEnc is null ?
-            reader.ReadStringAsync(encoding.GetByteCount(value), encoding) :
-            reader.ReadStringAsync(lengthEnc.GetValueOrDefault(), encoding));
-        Equal(value, result);
+        using var buffer = await reader.DecodeAsync(encoding, lengthEnc);
+        Equal(value, buffer.ToString());
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData(LengthFormat.Compressed)]
-    [InlineData(LengthFormat.Plain)]
-    [InlineData(LengthFormat.PlainLittleEndian)]
-    [InlineData(LengthFormat.PlainBigEndian)]
-    public static async Task ReadWriteBufferedStringAsync(LengthFormat? lengthEnc)
+    [InlineData(LengthFormat.LittleEndian)]
+    [InlineData(LengthFormat.BigEndian)]
+    public static async Task ReadWriteBufferedStringAsync(LengthFormat lengthEnc)
     {
         const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
         await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, lengthEnc);
@@ -64,19 +53,10 @@ public sealed class BufferWriterTests : Test
         await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, lengthEnc);
     }
 
-    [Fact]
-    public static void ArrayBufferToString()
-    {
-        var writer = new ArrayBufferWriter<char>();
-        writer.Write("Hello, world");
-        writer.Write('!');
-        Equal("Hello, world!", writer.BuildString());
-    }
-
     public static IEnumerable<object[]> CharWriters()
     {
-        yield return new object[] { new PooledBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
-        yield return new object[] { new PooledArrayBufferWriter<char>() };
+        yield return new object[] { new PoolingBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
+        yield return new object[] { new PoolingArrayBufferWriter<char>() };
         yield return new object[] { new SparseBufferWriter<char>() };
         yield return new object[] { new SparseBufferWriter<char>(32) };
     }
@@ -91,27 +71,27 @@ public sealed class BufferWriterTests : Test
             writer.Write("Hello, world");
             writer.Write('!');
             writer.WriteLine("!!");
-            writer.WriteFormattable<int>(42, provider: InvariantCulture);
-            writer.WriteFormattable<uint>(56U, provider: InvariantCulture);
-            writer.WriteFormattable<byte>(10, provider: InvariantCulture);
-            writer.WriteFormattable<sbyte>(22, provider: InvariantCulture);
-            writer.WriteFormattable<short>(88, provider: InvariantCulture);
-            writer.WriteFormattable<ushort>(99, provider: InvariantCulture);
-            writer.WriteFormattable<long>(77L, provider: InvariantCulture);
-            writer.WriteFormattable<ulong>(66UL, provider: InvariantCulture);
+            writer.Format(42, provider: InvariantCulture);
+            writer.Format(56U, provider: InvariantCulture);
+            writer.Format<byte>(10, provider: InvariantCulture);
+            writer.Format<sbyte>(22, provider: InvariantCulture);
+            writer.Format<short>(88, provider: InvariantCulture);
+            writer.Format<ushort>(99, provider: InvariantCulture);
+            writer.Format(77L, provider: InvariantCulture);
+            writer.Format(66UL, provider: InvariantCulture);
 
             var guid = Guid.NewGuid();
-            writer.WriteFormattable(guid);
+            writer.Format(guid);
 
             var dt = DateTime.Now;
-            writer.WriteFormattable(dt, provider: InvariantCulture);
+            writer.Format(dt, provider: InvariantCulture);
 
             var dto = DateTimeOffset.Now;
-            writer.WriteFormattable(dto, provider: InvariantCulture);
+            writer.Format(dto, provider: InvariantCulture);
 
-            writer.WriteFormattable<decimal>(42.5M, provider: InvariantCulture);
-            writer.WriteFormattable<float>(32.2F, provider: InvariantCulture);
-            writer.WriteFormattable<double>(56.6D, provider: InvariantCulture);
+            writer.Format(42.5M, provider: InvariantCulture);
+            writer.Format(32.2F, provider: InvariantCulture);
+            writer.Format(56.6D, provider: InvariantCulture);
 
             Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.ToString());
         }
@@ -120,12 +100,12 @@ public sealed class BufferWriterTests : Test
     [Fact]
     public static void EncodeAsString()
     {
-        using (var writer = new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator()))
+        using (var writer = new PoolingBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator()))
         {
             EncodeDecode(writer, Encoding.UTF8);
         }
 
-        using (var writer = new PooledArrayBufferWriter<byte>())
+        using (var writer = new PoolingArrayBufferWriter<byte>())
         {
             EncodeDecode(writer, Encoding.UTF32);
         }
@@ -140,76 +120,70 @@ public sealed class BufferWriterTests : Test
         {
             var encodingContext = new EncodingContext(encoding, true);
             var g = Guid.NewGuid();
-            var bi = new BigInteger(RandomBytes(64));
             var dt = DateTime.Now;
             var dto = DateTimeOffset.Now;
-            writer.Encode<long>(42L, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode<ulong>(12UL, LengthFormat.PlainLittleEndian, in encodingContext, provider: InvariantCulture);
-            writer.Encode<int>(34, LengthFormat.PlainBigEndian, in encodingContext, provider: InvariantCulture);
-            writer.Encode<uint>(78, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode<short>(90, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode<ushort>(12, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
-            writer.Encode<ushort>(12, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode<byte>(10, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
-            writer.Encode<sbyte>(11, LengthFormat.Plain, in encodingContext, format: "X", provider: InvariantCulture);
-            writer.Encode<byte>(10, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode<sbyte>(11, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode(g, LengthFormat.Plain, in encodingContext);
-            writer.Encode(g, LengthFormat.Plain, in encodingContext, format: "X");
-            writer.Encode(dt, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.Encode(dto, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.Encode(dt, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.Encode(dto, LengthFormat.Plain, in encodingContext, format: "O", provider: InvariantCulture);
-            writer.Encode(42.5M, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode<float>(32.2F, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode<double>(56.6D, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
-            writer.Encode(bi, LengthFormat.Plain, in encodingContext, provider: InvariantCulture);
+            writer.Format(42L, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format(12UL, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format(34, in encodingContext, LengthFormat.BigEndian, provider: InvariantCulture);
+            writer.Format(78U, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format<short>(90, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format<ushort>(12, in encodingContext, LengthFormat.LittleEndian, format: "X", provider: InvariantCulture);
+            writer.Format<ushort>(12, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format<byte>(10, in encodingContext, LengthFormat.LittleEndian, format: "X", provider: InvariantCulture);
+            writer.Format<sbyte>(11, in encodingContext, LengthFormat.LittleEndian, format: "X", provider: InvariantCulture);
+            writer.Format<byte>(10, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format<sbyte>(11, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format(g, in encodingContext, LengthFormat.LittleEndian);
+            writer.Format(g, in encodingContext, LengthFormat.LittleEndian, format: "X");
+            writer.Format(dt, in encodingContext, LengthFormat.LittleEndian, format: "O", provider: InvariantCulture);
+            writer.Format(dto, in encodingContext, LengthFormat.LittleEndian, format: "O", provider: InvariantCulture);
+            writer.Format(dt, in encodingContext, LengthFormat.LittleEndian, format: "O", provider: InvariantCulture);
+            writer.Format(dto, in encodingContext, LengthFormat.LittleEndian, format: "O", provider: InvariantCulture);
+            writer.Format(42.5M, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format(32.2F, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
+            writer.Format(56.6D, in encodingContext, LengthFormat.LittleEndian, provider: InvariantCulture);
 
             var decodingContext = new DecodingContext(encoding, true);
             True(writer.TryGetWrittenContent(out var writtenMemory));
             var reader = IAsyncBinaryReader.Create(writtenMemory);
-            Equal(42L, reader.Parse<long>(static (c, p) => long.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(12UL, reader.Parse<ulong>(static (c, p) => ulong.Parse(c, provider: p), LengthFormat.PlainLittleEndian, in decodingContext, provider: InvariantCulture));
-            Equal(34, reader.Parse<int>(static (c, p) => int.Parse(c, provider: p), LengthFormat.PlainBigEndian, in decodingContext, provider: InvariantCulture));
-            Equal(78U, reader.Parse<uint>(static (c, p) => uint.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(90, reader.Parse<short>(static (c, p) => short.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal("C", reader.ReadString(LengthFormat.Plain, in decodingContext));
-            Equal(12, reader.Parse<ushort>(static (c, p) => ushort.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal("A", reader.ReadString(LengthFormat.Plain, in decodingContext));
-            Equal("B", reader.ReadString(LengthFormat.Plain, in decodingContext));
-            Equal(10, reader.Parse<byte>(static (c, p) => byte.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(11, reader.Parse<sbyte>(static (c, p) => sbyte.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(g, reader.Parse<Guid>(static (c, p) => Guid.Parse(c), LengthFormat.Plain, in decodingContext));
-            Equal(g, reader.Parse<Guid>(static (c, p) => Guid.ParseExact(c, "X"), LengthFormat.Plain, in decodingContext));
-            Equal(dt, reader.Parse<DateTime>(static (c, p) => DateTime.Parse(c, p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(dto, reader.Parse<DateTimeOffset>(static (c, p) => DateTimeOffset.Parse(c, p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(dt, reader.Parse<DateTime>(static (c, p) => DateTime.ParseExact(c, "O", p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(dto, reader.Parse<DateTimeOffset>(static (c, p) => DateTimeOffset.ParseExact(c, "O", p, DateTimeStyles.RoundtripKind), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(42.5M, reader.Parse<decimal>(static (c, p) => decimal.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(32.2F, reader.Parse<float>(static (c, p) => float.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(56.6D, reader.Parse<double>(static (c, p) => double.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
-            Equal(bi, reader.Parse<BigInteger>(static (c, p) => BigInteger.Parse(c, provider: p), LengthFormat.Plain, in decodingContext, provider: InvariantCulture));
+            Equal(42L, reader.Parse<IFormatProvider, long>(InvariantCulture, long.Parse, in decodingContext, LengthFormat.LittleEndian));
+            Equal(12UL, reader.Parse<IFormatProvider, ulong>(InvariantCulture, ulong.Parse, in decodingContext, LengthFormat.LittleEndian));
+            Equal(34, reader.Parse<IFormatProvider, int>(InvariantCulture, int.Parse, in decodingContext, LengthFormat.BigEndian));
+            Equal(78U, reader.Parse<uint>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
+            Equal(90, reader.Parse<short>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
+            Equal(12, reader.Parse<ushort>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
+            Equal(10, reader.Parse<byte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
+            Equal(11, reader.Parse<sbyte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
+            Equal(g, reader.Parse<IFormatProvider, Guid>(InvariantCulture, Guid.Parse, in decodingContext, LengthFormat.LittleEndian));
+            Equal(g, reader.Parse<IFormatProvider, Guid>(InvariantCulture, static (c, p) => Guid.ParseExact(c, "X"), in decodingContext, LengthFormat.LittleEndian));
+            Equal(dt, reader.Parse<IFormatProvider, DateTime>(InvariantCulture, static (c, p) => DateTime.Parse(c, p, DateTimeStyles.RoundtripKind), in decodingContext, LengthFormat.LittleEndian));
+            Equal(dto, reader.Parse<IFormatProvider, DateTimeOffset>(InvariantCulture, static (c, p) => DateTimeOffset.Parse(c, p, DateTimeStyles.RoundtripKind), in decodingContext, LengthFormat.LittleEndian));
+            Equal(dt, reader.Parse<IFormatProvider, DateTime>(InvariantCulture, static (c, p) => DateTime.ParseExact(c, "O", p, DateTimeStyles.RoundtripKind), in decodingContext, LengthFormat.LittleEndian));
+            Equal(dto, reader.Parse<IFormatProvider, DateTimeOffset>(InvariantCulture, static (c, p) => DateTimeOffset.ParseExact(c, "O", p, DateTimeStyles.RoundtripKind), in decodingContext, LengthFormat.LittleEndian));
+            Equal(42.5M, reader.Parse<decimal>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Float, InvariantCulture));
+            Equal(32.2F, reader.Parse<float>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Float, InvariantCulture));
+            Equal(56.6D, reader.Parse<double>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Float, InvariantCulture));
         }
     }
 
     [Fact]
     public static void FormatValues()
     {
-        using var writer = new PooledArrayBufferWriter<char> { Capacity = 64 };
+        using var writer = new PoolingArrayBufferWriter<char> { Capacity = 64 };
 
         const string expectedString = "Hello, world!";
-        Equal(expectedString.Length, writer.WriteAsString(expectedString));
+        Equal(expectedString.Length, writer.Format(expectedString));
         Equal(expectedString, writer.ToString());
         writer.Clear();
 
-        Equal(2, writer.WriteAsString(56, provider: InvariantCulture));
+        Equal(2, writer.Format(56, provider: InvariantCulture));
         Equal("56", writer.ToString());
     }
 
     public static IEnumerable<object[]> ContiguousBuffers()
     {
-        yield return new object[] { new PooledBufferWriter<byte>() };
-        yield return new object[] { new PooledArrayBufferWriter<byte>() };
+        yield return new object[] { new PoolingBufferWriter<byte>() };
+        yield return new object[] { new PoolingArrayBufferWriter<byte>() };
     }
 
     [Theory]
@@ -238,7 +212,7 @@ public sealed class BufferWriterTests : Test
     [InlineData(int.MaxValue, int.MinValue)]
     public static void WriteInterpolatedStringToBufferWriter(int x, int y)
     {
-        using var buffer = new PooledArrayBufferWriter<char>();
+        using var buffer = new PoolingArrayBufferWriter<char>();
 
         buffer.Write($"{x,4:X} = {y,-3:X}");
         Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
@@ -252,8 +226,8 @@ public sealed class BufferWriterTests : Test
         var xt = Task.FromResult<int>(x);
         var yt = Task.FromResult<int>(y);
 
-        using var buffer = new PooledArrayBufferWriter<char>();
-        buffer.WriteString($"{await xt,4:X} = {await yt,-3:X}");
+        using var buffer = new PoolingArrayBufferWriter<char>();
+        buffer.Interpolate($"{await xt,4:X} = {await yt,-3:X}");
         Equal($"{x,4:X} = {y,-3:X}", buffer.ToString());
     }
 
@@ -296,21 +270,21 @@ public sealed class BufferWriterTests : Test
     public static void Concatenation()
     {
         var writer = new ArrayBufferWriter<char>();
-        writer.Concat(default(ValueTuple).AsReadOnlySpan<string>());
-        Empty(writer.BuildString());
+        writer.Concat([]);
+        Empty(writer.WrittenSpan.ToString());
 
-        writer.Concat(new ValueTuple<string>("Hello, world!").AsReadOnlySpan());
-        Equal("Hello, world!", writer.BuildString());
+        writer.Concat(["Hello, world!"]);
+        Equal("Hello, world!", writer.WrittenSpan.ToString());
         writer.Clear();
 
-        writer.Concat(("Hello, ", "world!").AsReadOnlySpan());
-        Equal("Hello, world!", writer.BuildString());
+        writer.Concat(["Hello, ", "world!"]);
+        Equal("Hello, world!", writer.WrittenSpan.ToString());
     }
 
     [Fact]
     public static void ChangeWrittenCount()
     {
-        using var buffer = new PooledArrayBufferWriter<int>();
+        using var buffer = new PoolingArrayBufferWriter<int>();
 
         Throws<ArgumentOutOfRangeException>(() => buffer.WrittenCount = 1);
 
@@ -327,7 +301,7 @@ public sealed class BufferWriterTests : Test
     [Fact]
     public static void AdvanceRewind()
     {
-        var buffer = new PooledArrayBufferWriter<int>();
+        var buffer = new PoolingArrayBufferWriter<int>();
 
         Throws<ArgumentOutOfRangeException>(() => buffer.Rewind(1));
 
@@ -345,8 +319,16 @@ public sealed class BufferWriterTests : Test
     public static void EncodeAsUtf8()
     {
         var writer = new ArrayBufferWriter<byte>();
-        writer.EncodeAsUtf8(42);
+        writer.Format(42);
         Equal(2, writer.WrittenCount);
         Equal(42, int.Parse(writer.WrittenSpan));
+    }
+
+    [Fact]
+    public static void Rendering()
+    {
+        var writer = new ArrayBufferWriter<char>();
+        writer.Format(provider: null, CompositeFormat.Parse("{0}, {1}!"), "Hello", "world");
+        Equal("Hello, world!", writer.WrittenSpan.ToString());
     }
 }

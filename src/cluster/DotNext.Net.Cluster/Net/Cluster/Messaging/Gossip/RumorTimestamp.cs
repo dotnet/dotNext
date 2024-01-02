@@ -5,6 +5,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Net.Cluster.Messaging.Gossip;
 
 using Buffers;
+using Buffers.Binary;
 using Hex = Buffers.Text.Hex;
 
 /// <summary>
@@ -57,8 +58,8 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
 
     private RumorTimestamp(ref SpanReader<byte> reader)
     {
-        timestamp = reader.ReadLittleEndian<long>(isUnsigned: false);
-        sequenceNumber = reader.ReadLittleEndian<ulong>(isUnsigned: true);
+        timestamp = reader.ReadLittleEndian<long>();
+        sequenceNumber = reader.ReadLittleEndian<ulong>();
     }
 
     private RumorTimestamp(long timestamp, ulong sequenceNumber)
@@ -70,9 +71,10 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// <summary>
     /// Serializes the timestamp as a sequence of bytes.
     /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    public void Format(ref SpanWriter<byte> writer)
+    /// <param name="output">The buffer.</param>
+    public void Format(Span<byte> output)
     {
+        var writer = new SpanWriter<byte>(output);
         writer.WriteLittleEndian(timestamp);
         writer.WriteLittleEndian(sequenceNumber);
     }
@@ -82,8 +84,11 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// </summary>
     /// <param name="input">The memory block reader.</param>
     /// <returns>The timestamp of the rumor.</returns>
-    static RumorTimestamp IBinaryFormattable<RumorTimestamp>.Parse(ref SpanReader<byte> input)
-        => new(ref input);
+    static RumorTimestamp IBinaryFormattable<RumorTimestamp>.Parse(ReadOnlySpan<byte> input)
+    {
+        var reader = new SpanReader<byte>(input);
+        return new(ref reader);
+    }
 
     /// <summary>
     /// Returns an incremented timestamp.
@@ -115,7 +120,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     public override string ToString()
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
-        Format(ref writer);
+        writer.Write(this);
         return Hex.EncodeToUtf16(writer.WrittenSpan);
     }
 

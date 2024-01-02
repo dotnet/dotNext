@@ -72,9 +72,9 @@ public sealed class MemoryWriterTests : Test
     public static void PooledBufferWriterDefaultCapacity()
     {
         var allocator = MemoryPool<byte>.Shared.ToAllocator();
-        using (var writer = new PooledBufferWriter<byte>(allocator))
+        using (var writer = new PoolingBufferWriter<byte>(allocator))
             WriteReadUsingSpan(writer);
-        using (var writer = new PooledBufferWriter<byte>(allocator))
+        using (var writer = new PoolingBufferWriter<byte>(allocator))
             WriteReadUsingMemory(writer);
     }
 
@@ -82,36 +82,36 @@ public sealed class MemoryWriterTests : Test
     public static void PooledBufferWriterWithCapacity()
     {
         var allocator = MemoryPool<byte>.Shared.ToAllocator();
-        Throws<ArgumentOutOfRangeException>(new Action(() => new PooledBufferWriter<byte> { Capacity = -1 }));
-        using (var writer = new PooledBufferWriter<byte>(allocator) { Capacity = 30 })
+        Throws<ArgumentOutOfRangeException>(new Action(() => new PoolingBufferWriter<byte> { Capacity = -1 }));
+        using (var writer = new PoolingBufferWriter<byte>(allocator) { Capacity = 30 })
             WriteReadUsingSpan(writer);
-        using (var writer = new PooledBufferWriter<byte>(allocator) { Capacity = 20 })
+        using (var writer = new PoolingBufferWriter<byte>(allocator) { Capacity = 20 })
             WriteReadUsingMemory(writer);
     }
 
     [Fact]
     public static void PooledArrayBufferWriterDefaultCapacity()
     {
-        using (var writer = new PooledArrayBufferWriter<byte>())
+        using (var writer = new PoolingArrayBufferWriter<byte>())
             WriteReadUsingSpan(writer);
-        using (var writer = new PooledArrayBufferWriter<byte>())
+        using (var writer = new PoolingArrayBufferWriter<byte>())
             WriteReadUsingMemory(writer);
     }
 
     [Fact]
     public static void PooledArrayBufferWriterWithCapacity()
     {
-        Throws<ArgumentOutOfRangeException>(new Action(() => new PooledArrayBufferWriter<byte> { Capacity = -1 }));
-        using (var writer = new PooledArrayBufferWriter<byte> { Capacity = 30 })
+        Throws<ArgumentOutOfRangeException>(new Action(() => new PoolingArrayBufferWriter<byte> { Capacity = -1 }));
+        using (var writer = new PoolingArrayBufferWriter<byte> { Capacity = 30 })
             WriteReadUsingSpan(writer);
-        using (var writer = new PooledArrayBufferWriter<byte> { Capacity = 20 })
+        using (var writer = new PoolingArrayBufferWriter<byte> { Capacity = 20 })
             WriteReadUsingMemory(writer);
     }
 
     [Fact]
     public static void ReadWriteUsingArray()
     {
-        using var writer = new PooledArrayBufferWriter<byte> { Capacity = 25 };
+        using var writer = new PoolingArrayBufferWriter<byte> { Capacity = 25 };
         True(writer.Capacity >= 25);
         True(writer.WrittenArray.Count == 0);
         Equal(0, writer.WrittenCount);
@@ -146,30 +146,34 @@ public sealed class MemoryWriterTests : Test
     }
 
     [Fact]
-    public static void StressTest()
+    public static async Task StressTest()
     {
         var dict = new Dictionary<string, string>
             {
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
-        using var writer = new PooledArrayBufferWriter<byte>();
+
+        Memory<byte> buffer = new byte[16];
+        using var writer = new PoolingArrayBufferWriter<byte>();
+
         // serialize dictionary to memory
         using (var output = StreamSource.AsStream(writer))
         {
-            DictionarySerializer.Serialize(dict, output);
+            await DictionarySerializer.SerializeAsync(dict, output, buffer);
         }
+
         // deserialize from memory
         using (var input = StreamSource.AsStream(writer.WrittenArray))
         {
-            Equal(dict, DictionarySerializer.Deserialize(input));
+            Equal(dict, await DictionarySerializer.DeserializeAsync(input, buffer));
         }
     }
 
     [Fact]
     public static void ReuseArrayWriter()
     {
-        using var writer = new PooledArrayBufferWriter<byte>();
+        using var writer = new PoolingArrayBufferWriter<byte>();
         var span = writer.GetSpan(10);
         span[0] = 20;
         span[9] = 30;
@@ -188,7 +192,7 @@ public sealed class MemoryWriterTests : Test
     [Fact]
     public static void ReuseMemoryWriter()
     {
-        using var writer = new PooledBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator());
+        using var writer = new PoolingBufferWriter<byte>(MemoryPool<byte>.Shared.ToAllocator());
         Equal(0, writer.Capacity);
         var span = writer.GetSpan(10);
         span[0] = 20;
@@ -210,7 +214,7 @@ public sealed class MemoryWriterTests : Test
     [Fact]
     public static void WriterAsReadOnlyCollection()
     {
-        using var writer = new PooledArrayBufferWriter<int>();
+        using var writer = new PoolingArrayBufferWriter<int>();
         IReadOnlyList<int> collection = writer;
         Empty(collection);
 
@@ -235,7 +239,7 @@ public sealed class MemoryWriterTests : Test
     [Fact]
     public static void WriterAsList()
     {
-        using var writer = new PooledArrayBufferWriter<int>();
+        using var writer = new PoolingArrayBufferWriter<int>();
         IList<int> list = writer;
         False(list.IsReadOnly);
         Empty(writer);
@@ -293,7 +297,7 @@ public sealed class MemoryWriterTests : Test
     public static void Insertion()
     {
         Span<byte> block = stackalloc byte[] { 10, 20, 30 };
-        using var writer = new PooledArrayBufferWriter<byte>();
+        using var writer = new PoolingArrayBufferWriter<byte>();
 
         writer.Insert(0, block);
         Equal(3, writer.WrittenCount);
@@ -331,7 +335,7 @@ public sealed class MemoryWriterTests : Test
     public static void Overwrite()
     {
         Span<byte> block = stackalloc byte[] { 10, 20, 30 };
-        using var writer = new PooledArrayBufferWriter<byte>();
+        using var writer = new PoolingArrayBufferWriter<byte>();
 
         writer.Overwrite(0, block);
         Equal(3, writer.WrittenCount);
@@ -352,7 +356,7 @@ public sealed class MemoryWriterTests : Test
     [Fact]
     public static void RemoveTailElements()
     {
-        using var writer = new PooledArrayBufferWriter<string>()
+        using var writer = new PoolingArrayBufferWriter<string>()
             {
                 "a",
                 "b",
@@ -370,7 +374,7 @@ public sealed class MemoryWriterTests : Test
     [Fact]
     public static void RemoveHeadElements()
     {
-        using var writer = new PooledArrayBufferWriter<string>()
+        using var writer = new PoolingArrayBufferWriter<string>()
             {
                 "a",
                 "b",

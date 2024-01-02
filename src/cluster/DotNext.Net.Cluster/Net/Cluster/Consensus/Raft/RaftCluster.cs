@@ -129,10 +129,15 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private TimeSpan LeaderLeaseDuration => TimeSpan.FromMilliseconds(electionTimeout / clockDriftBound);
 
-    /// <summary>
-    /// Gets the lease that can be used for linearizable read.
-    /// </summary>
-    public ILeaderLease? Lease => (state as LeaderState<TMember>)?.Lease;
+    /// <inheritdoc cref="IRaftCluster.TryGetLeaseToken(out CancellationToken)"/>
+    public bool TryGetLeaseToken(out CancellationToken token)
+    {
+        if (state is LeaderState<TMember> leader)
+            return leader.TryGetLeaseToken(out token);
+
+        token = new(canceled: true);
+        return false;
+    }
 
     /// <summary>
     /// Gets the cancellation token that tracks the leader state of the current node.
@@ -1194,7 +1199,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         EmptyLogEntry entry;
         do
         {
-            entry = new(Term);
+            entry = new() { Term = Term };
             var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
             state.ForceReplication();
             await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);

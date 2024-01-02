@@ -365,7 +365,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
 
         lifecycleTokenSource.Cancel();
 
-        PooledArrayBufferWriter<Task>? responses = null;
+        PoolingArrayBufferWriter<Task>? responses = null;
         try
         {
             responses = new() { Capacity = activeViewCapacity + 1 };

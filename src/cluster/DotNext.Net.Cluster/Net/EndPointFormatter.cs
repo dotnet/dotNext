@@ -156,7 +156,7 @@ public static class EndPointFormatter
     /// </summary>
     /// <param name="reader">The binary reader.</param>
     /// <returns>The deserialized network endpoint address.</returns>
-    public static EndPoint ReadEndPoint(this ref SequenceReader reader) => reader.Read<byte>() switch
+    public static EndPoint ReadEndPoint(this ref SequenceReader reader) => reader.ReadByte() switch
     {
         IPEndPointPrefix => DeserializeIP(ref reader),
         DnsEndPointPrefix => DeserializeHost(ref reader),
@@ -168,26 +168,32 @@ public static class EndPointFormatter
 
     private static UnixDomainSocketEndPoint DeserializeDomainSocket(ref SequenceReader reader)
     {
-        var length = reader.ReadInt32(true);
+        var length = reader.ReadLittleEndian<int>();
 
-        using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true);
+        using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold
+            ? stackalloc byte[length]
+            : new MemoryRental<byte>(length, true);
+
         reader.Read(pathBuffer.Span);
         return new(HostNameEncoding.GetString(pathBuffer.Span));
     }
 
     private static UriEndPoint DeserializeUri(ref SequenceReader reader)
     {
-        var length = reader.ReadInt32(true);
+        var length = reader.ReadLittleEndian<int>();
 
-        using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true);
+        using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold
+            ? stackalloc byte[length]
+            : new MemoryRental<byte>(length, true);
+
         reader.Read(pathBuffer.Span);
         return new(new Uri(HostNameEncoding.GetString(pathBuffer.Span), UriKind.Absolute));
     }
 
     private static IPEndPoint DeserializeIP(ref SequenceReader reader)
     {
-        var port = reader.ReadInt32(true);
-        var bytesCount = reader.Read<byte>();
+        var port = reader.ReadLittleEndian<int>();
+        var bytesCount = reader.ReadByte();
 
         Span<byte> bytes = stackalloc byte[bytesCount];
         reader.Read(bytes);
@@ -197,9 +203,9 @@ public static class EndPointFormatter
 
     private static void DeserializeHost(ref SequenceReader reader, out string hostName, out int port, out AddressFamily family)
     {
-        port = reader.ReadInt32(true);
-        family = (AddressFamily)reader.ReadInt32(true);
-        var length = reader.ReadInt32(true);
+        port = reader.ReadLittleEndian<int>();
+        family = (AddressFamily)reader.ReadLittleEndian<int>();
+        var length = reader.ReadLittleEndian<int>();
 
         using var hostNameBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true);
         reader.Read(hostNameBuffer.Span);
@@ -214,7 +220,7 @@ public static class EndPointFormatter
 
     private static HttpEndPoint DeserializeHttp(ref SequenceReader reader)
     {
-        var secure = reader.Read<bool>();
+        var secure = Unsafe.BitCast<byte, bool>(reader.ReadByte());
         DeserializeHost(ref reader, out var hostName, out var port, out var family);
         return new(hostName, port, secure, family);
     }

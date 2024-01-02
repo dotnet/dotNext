@@ -9,10 +9,10 @@ using IO.Log;
 public partial class PersistentState
 {
     [StructLayout(LayoutKind.Auto)]
-    internal struct CacheRecord : IDisposable
+    internal struct CacheRecord() : IDisposable
     {
         internal MemoryOwner<byte> Content;
-        internal CachedLogEntryPersistenceMode PersistenceMode;
+        internal CachedLogEntryPersistenceMode PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer;
 
         public void Dispose() => Content.Dispose();
     }
@@ -38,13 +38,13 @@ public partial class PersistentState
             init => record.PersistenceMode = value;
         }
 
-        internal MemoryOwner<byte> Content
+        required internal MemoryOwner<byte> Content
         {
             get => record.Content;
             init => record.Content = value;
         }
 
-        public long Term { get; init; }
+        required public long Term { get; init; }
 
         public int? CommandId { get; init; }
 
@@ -54,7 +54,7 @@ public partial class PersistentState
 
         bool ILogEntry.IsSnapshot => false;
 
-        public DateTimeOffset Timestamp { get; init; }
+        required public DateTimeOffset Timestamp { get; init; }
 
         bool IDataTransferObject.IsReusable => true;
 

@@ -3,7 +3,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 /// <summary>
 /// Represents buffering options used for batch processing of log entries.
 /// </summary>
-public class RaftLogEntriesBufferingOptions : RaftLogEntryBufferingOptions
+public class LogEntriesBufferingOptions : LogEntryBufferingOptions
 {
     private const int DefaultMemoryLimit = 10 * 1024 * 1024;
     private int memoryLimit = DefaultMemoryLimit;

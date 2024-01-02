@@ -1,5 +1,5 @@
 using System.Buffers;
-using System.Collections.ObjectModel;
+using System.Collections.Frozen;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -22,7 +22,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
 
     private static Encoding Encoding => Encoding.UTF8;
 
-    internal IReadOnlyDictionary<string, string> Metadata => metadata ?? ReadOnlyDictionary<string, string>.Empty;
+    internal IReadOnlyDictionary<string, string> Metadata => metadata ?? FrozenDictionary<string, string>.Empty;
 
     long? IDataTransferObject.Length => null;
 
@@ -30,7 +30,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
 
     private static void Write(IBufferWriter<byte> writer, IReadOnlyDictionary<string, string> metadata)
     {
-        writer.WriteInt32(metadata.Count, true);
+        writer.WriteLittleEndian(metadata.Count);
 
         var context = new EncodingContext(Encoding, reuseEncoder: true);
         foreach (var (key, value) in metadata)
@@ -43,13 +43,13 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
     private static async ValueTask WriteAsync<TWriter>(TWriter writer, IReadOnlyDictionary<string, string> metadata, CancellationToken token)
         where TWriter : notnull, IAsyncBinaryWriter
     {
-        await writer.WriteInt32Async(metadata.Count, true, token).ConfigureAwait(false);
+        await writer.WriteLittleEndianAsync(metadata.Count, token).ConfigureAwait(false);
 
         var context = new EncodingContext(Encoding, reuseEncoder: true);
         foreach (var (key, value) in metadata)
         {
-            await writer.WriteStringAsync(key.AsMemory(), context, lengthFormat: LengthEncoding, token).ConfigureAwait(false);
-            await writer.WriteStringAsync(value.AsMemory(), context, lengthFormat: LengthEncoding, token).ConfigureAwait(false);
+            await writer.EncodeAsync(key.AsMemory(), context, lengthFormat: LengthEncoding, token).ConfigureAwait(false);
+            await writer.EncodeAsync(value.AsMemory(), context, lengthFormat: LengthEncoding, token).ConfigureAwait(false);
         }
     }
 
@@ -99,19 +99,19 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
 
     private static MetadataTransferObject Read(ref SequenceReader reader)
     {
-        var length = reader.ReadInt32(true);
+        var length = reader.ReadLittleEndian<int>();
         var output = new Dictionary<string, string>(length, StringComparer.Ordinal);
         var context = new DecodingContext(Encoding, reuseDecoder: true);
         while (--length >= 0)
         {
             // read key
-            var key = reader.ReadString(LengthEncoding, context);
+            using var key = reader.Decode(context, LengthEncoding);
 
             // read value
-            var value = reader.ReadString(LengthEncoding, context);
+            using var value = reader.Decode(context, LengthEncoding);
 
             // write pair to the dictionary
-            output.Add(key, value);
+            output.Add(key.ToString(), value.ToString());
         }
 
         output.TrimExcess();
@@ -121,19 +121,19 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
     private static async ValueTask<MetadataTransferObject> ReadAsync<TReader>(TReader reader, CancellationToken token)
         where TReader : notnull, IAsyncBinaryReader
     {
-        var length = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
+        var length = await reader.ReadLittleEndianAsync<int>(token).ConfigureAwait(false);
         var output = new Dictionary<string, string>(length, StringComparer.Ordinal);
         var context = new DecodingContext(Encoding, reuseDecoder: true);
         while (--length >= 0)
         {
             // read key
-            var key = await reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
+            using var key = await reader.DecodeAsync(context, LengthEncoding, token: token).ConfigureAwait(false);
 
             // read value
-            var value = await reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
+            using var value = await reader.DecodeAsync(context, LengthEncoding, token: token).ConfigureAwait(false);
 
             // write pair to the dictionary
-            output.Add(key, value);
+            output.Add(key.ToString(), value.ToString());
         }
 
         output.TrimExcess();

@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext;
 
-using static Buffers.BufferHelpers;
+using static Buffers.Memory;
 
 [ExcludeFromCodeCoverage]
 public abstract class Test : Assert

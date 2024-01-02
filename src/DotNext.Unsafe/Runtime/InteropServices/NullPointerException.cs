@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace DotNext.Runtime.InteropServices;
 
 /// <summary>
@@ -7,11 +5,6 @@ namespace DotNext.Runtime.InteropServices;
 /// </summary>
 public sealed class NullPointerException : System.NullReferenceException
 {
-    private NullPointerException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
-    {
-    }
-
     /// <summary>
     /// Initializes a new exception representing attempt to dereference zero pointer.
     /// </summary>

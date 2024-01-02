@@ -21,7 +21,7 @@ public sealed class ConsensusOnlyStateTests : Test
     public static async Task EmptyLogEntry()
     {
         IPersistentState auditTrail = new ConsensusOnlyState();
-        await auditTrail.AppendAsync(new EmptyLogEntry(10));
+        await auditTrail.AppendAsync(new EmptyLogEntry { Term = 10 });
         Equal(1, auditTrail.LastEntryIndex);
         await auditTrail.CommitAsync(1L);
         Equal(1, auditTrail.LastCommittedEntryIndex);
@@ -43,8 +43,8 @@ public sealed class ConsensusOnlyStateTests : Test
         IPersistentState auditTrail = new ConsensusOnlyState();
         Equal(0, auditTrail.LastEntryIndex);
         Equal(0, auditTrail.LastCommittedEntryIndex);
-        var entry1 = new EmptyLogEntry(41);
-        var entry2 = new EmptyLogEntry(42);
+        var entry1 = new EmptyLogEntry { Term = 41 };
+        var entry2 = new EmptyLogEntry { Term = 42 };
         Equal(1, await auditTrail.AppendAsync(new LogEntryList(entry1, entry2)));
         Equal(0, auditTrail.LastCommittedEntryIndex);
         Equal(2, auditTrail.LastEntryIndex);
@@ -60,7 +60,7 @@ public sealed class ConsensusOnlyStateTests : Test
         };
         await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, 2, CancellationToken.None);
         //now replace entry at index 2 with new entry
-        entry2 = new EmptyLogEntry(43);
+        entry2 = new EmptyLogEntry { Term = 43 };
         await auditTrail.AppendAsync(entry2, 2);
         checker = static (entries, snapshotIndex, token) =>
         {
@@ -103,7 +103,7 @@ public sealed class ConsensusOnlyStateTests : Test
     public static async Task DropRecords()
     {
         IPersistentState auditTrail = new ConsensusOnlyState();
-        Equal(1, await auditTrail.AppendAsync(new LogEntryList(new EmptyLogEntry(42), new EmptyLogEntry(43), new EmptyLogEntry(44))));
+        Equal(1, await auditTrail.AppendAsync(new LogEntryList(new EmptyLogEntry { Term = 42 }, new EmptyLogEntry { Term = 43 }, new EmptyLogEntry { Term = 44 })));
         Equal(2, await auditTrail.DropAsync(2L));
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
         {

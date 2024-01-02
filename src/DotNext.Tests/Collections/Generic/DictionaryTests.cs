@@ -61,7 +61,7 @@ public sealed class DictionaryTests : Test
         False(view.TryGetValue("three", out i));
         False(view.ContainsKey("three"));
         True(view.ContainsKey("two"));
-        All(view, static pair => True(pair.Value.IsBetween(0, 2, BoundType.Closed)));
+        All(view, static pair => True(pair is { Value: >= 0 and <= 2 }));
     }
 
     [Fact]

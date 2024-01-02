@@ -16,8 +16,6 @@ using Membership;
 using Net.Security;
 using Tcp;
 using TransportServices;
-using TransportServices.Datagram;
-using Udp;
 
 public partial class RaftCluster
 {
@@ -90,7 +88,7 @@ public partial class RaftCluster
         public double HeartbeatThreshold
         {
             get => heartbeatThreshold;
-            set => heartbeatThreshold = value.IsBetween(0D, 1D) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            set => heartbeatThreshold = value is > 0D and < 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
@@ -293,144 +291,6 @@ public partial class RaftCluster
         {
             get;
             set;
-        }
-    }
-
-    /// <summary>
-    /// Represents configuration of the local cluster node that relies on UDP transport.
-    /// </summary>
-    public sealed class UdpConfiguration : BuiltInTransportConfiguration
-    {
-        private static readonly IPEndPoint DefaultLocalEndPoint = new(IPAddress.Any, 0);
-
-        private sealed class ExchangePoolFactory : Tuple<ILocalMember, PipeOptions>
-        {
-            internal ExchangePoolFactory(ILocalMember member, PipeOptions options)
-                : base(member, options)
-            {
-            }
-
-            internal ExchangePool Create(int count)
-            {
-                var result = new ExchangePool();
-                while (--count >= 0)
-                    result.Add(new ServerExchange(Item1, Item2));
-                return result;
-            }
-        }
-
-        private int clientChannels;
-        private int datagramSize;
-        private bool dontFragment;
-        private PipeOptions? pipeConfig;
-
-        /// <summary>
-        /// Initializes a new UDP transport settings.
-        /// </summary>
-        /// <param name="localNodeHostAddress">The address used to listen requests to the local node.</param>
-        public UdpConfiguration(IPEndPoint localNodeHostAddress)
-            : base(localNodeHostAddress)
-        {
-            datagramSize = UdpSocket.MinDatagramSize;
-            clientChannels = Environment.ProcessorCount + 1;
-            LocalEndPoint = DefaultLocalEndPoint;
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum number of parallel requests that can be initiated by the client.
-        /// </summary>
-        public int ClientBacklog
-        {
-            get => clientChannels;
-            set => clientChannels = value > 1 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
-        /// <summary>
-        /// Indicates that the IP datagrams can be fragmented.
-        /// </summary>
-        /// <remarks>Default value is <see langword="true"/>.</remarks>
-        /// <seealso cref="DatagramSize"/>
-        [SupportedOSPlatform("linux")]
-        [SupportedOSPlatform("windows")]
-        [SupportedOSPlatform("freebsd")]
-        public bool DontFragment
-        {
-            get => dontFragment || datagramSize == UdpSocket.MinDatagramSize;
-            set => dontFragment = value;
-        }
-
-        /// <summary>
-        /// Gets or sets maximum datagram size, in bytes.
-        /// </summary>
-        /// <remarks>
-        /// Make sure that datagram size matches to MTU if <see cref="DontFragment"/> is set;
-        /// otherwise, UDP packets will be dropped.
-        /// You can use <see cref="Net.NetworkInformation.MtuDiscovery"/> to discover allowed MTU size
-        /// in your network and avoid fragmentation of packets.
-        /// </remarks>
-        public int DatagramSize
-        {
-            get => datagramSize;
-            set => datagramSize = UdpSocket.ValidateDatagramSize(value);
-        }
-
-        /// <summary>
-        /// Gets or sets local network interface to be used for receiving UDP packets
-        /// by Raft cluster member clients.
-        /// </summary>
-        /// <remarks>
-        /// This endpoint is not used for initialization of server, only for clients.
-        /// UDP is connectionless protocol and underlying implementation must know
-        /// which interface should be used for receiving responses from server through UDP
-        /// transport. By default, this property listens on all network interfaces and using
-        /// randomly selected port. For most situations, it's redundant and unsafe.
-        /// </remarks>
-        public IPEndPoint LocalEndPoint { get; set; }
-
-        /// <summary>
-        /// Gets or sets configuration of the <see cref="Pipe"/> used for internal pipelined I/O.
-        /// </summary>
-        [AllowNull]
-        public PipeOptions PipeConfig
-        {
-            get => pipeConfig ?? PipeOptions.Default;
-            set => pipeConfig = value;
-        }
-
-        private UdpClient CreateClient(EndPoint address)
-        {
-            var client = new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, LoggerFactory)
-            {
-                DatagramSize = datagramSize,
-                Ttl = TimeToLive,
-            };
-
-            if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows() || OperatingSystem.IsFreeBSD())
-                client.DontFragment = DontFragment;
-
-            return client;
-        }
-
-        internal override ExchangePeer CreateClient(ILocalMember localMember, EndPoint endPoint)
-            => new(localMember, endPoint, CreateClient)
-            {
-                RequestTimeout = RequestTimeout,
-                PipeConfig = PipeConfig,
-            };
-
-        internal override UdpServer CreateServer(ILocalMember localMember)
-        {
-            var server = new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, new ExchangePoolFactory(localMember, PipeConfig).Create, LoggerFactory)
-            {
-                DatagramSize = datagramSize,
-                ReceiveTimeout = RequestTimeout,
-                Ttl = TimeToLive,
-            };
-
-            if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows() || OperatingSystem.IsFreeBSD())
-                server.DontFragment = DontFragment;
-
-            return server;
         }
     }
 

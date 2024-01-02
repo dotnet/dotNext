@@ -47,13 +47,13 @@ public class DictionarySerializationBenchmark
     {
         await using var output = new MemoryStream(1024);
         var writer = IAsyncBinaryWriter.Create(output, buffer);
-        await writer.WriteInt32Async(data.Count, true);
+        await writer.WriteLittleEndianAsync(data.Count);
 
         var context = new EncodingContext(Encoding.UTF8, true);
         foreach (var (key, value) in data)
         {
-            await writer.WriteStringAsync(key.AsMemory(), context, LengthFormat.Plain);
-            await writer.WriteStringAsync(value.AsMemory(), context, LengthFormat.Plain);
+            await writer.EncodeAsync(key.AsMemory(), context, LengthFormat.Plain);
+            await writer.EncodeAsync(value.AsMemory(), context, LengthFormat.Plain);
         }
     }
 
@@ -70,13 +70,13 @@ public class DictionarySerializationBenchmark
     {
         await using var output = new FileStream(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.Write, FileShare.None, 1024, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         var writer = IAsyncBinaryWriter.Create(output, buffer);
-        await writer.WriteInt32Async(data.Count, true);
+        await writer.WriteLittleEndianAsync(data.Count);
 
         var context = new EncodingContext(Encoding.UTF8, true);
         foreach (var (key, value) in data)
         {
-            await writer.WriteStringAsync(key.AsMemory(), context, LengthFormat.Plain);
-            await writer.WriteStringAsync(value.AsMemory(), context, LengthFormat.Plain);
+            await writer.EncodeAsync(key.AsMemory(), context, LengthFormat.Plain);
+            await writer.EncodeAsync(value.AsMemory(), context, LengthFormat.Plain);
         }
 
         await output.FlushAsync();

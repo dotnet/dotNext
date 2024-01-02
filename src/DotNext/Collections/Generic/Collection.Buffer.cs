@@ -6,7 +6,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Collections.Generic;
 
 using Buffers;
-using static Runtime.Intrinsics;
 
 public static partial class Collection
 {

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Maintenance.CommandLine.Authorization;
 
-using static Buffers.BufferHelpers;
+using static Buffers.CharBuffer;
 using IMaintenanceConsole = IO.IMaintenanceConsole;
 
 internal static class AuthorizationMiddleware

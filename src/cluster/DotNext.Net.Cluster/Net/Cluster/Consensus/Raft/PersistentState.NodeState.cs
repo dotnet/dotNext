@@ -228,7 +228,7 @@ public partial class PersistentState
         {
             votedFor = BoxedClusterMemberId.Box(id);
             buffer[LastVotePresenceOffset] = True;
-            IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));
+            id.Format(buffer.Span.Slice(LastVoteOffset));
         }
 
         internal ref readonly SnapshotMetadata Snapshot => ref snapshot;

@@ -6,7 +6,7 @@ using IO;
 /// <summary>
 /// Represents options for creating buffered Raft log entries.
 /// </summary>
-public class RaftLogEntryBufferingOptions
+public class LogEntryBufferingOptions
 {
     private const int DefaultMemoryThreshold = 32768;
     private const int DefaultFileBufferSize = 4096;

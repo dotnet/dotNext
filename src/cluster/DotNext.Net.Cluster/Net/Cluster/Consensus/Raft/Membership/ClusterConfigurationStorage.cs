@@ -73,7 +73,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
 
     private void Decode(ICollection<TAddress> output, ref SequenceReader reader)
     {
-        for (var count = reader.ReadInt32(true); count > 0; count--)
+        for (var count = reader.ReadLittleEndian<int>(); count > 0; count--)
         {
             output.Add(Decode(ref reader));
         }

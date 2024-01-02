@@ -45,7 +45,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             path.Create();
         bufferingConsumer = configuration.CreateBufferingConsumer();
         writeMode = configuration.WriteMode;
-        backupCompression = configuration.BackupCompression;
+        backupFormat = configuration.BackupFormat;
         bufferSize = configuration.BufferSize;
         Location = path;
         this.recordsPerPartition = recordsPerPartition;
@@ -259,13 +259,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Debug.Assert(bufferingConsumer is not null);
 
         // create buffered copy of all entries
-        BufferedRaftLogEntryList bufferedEntries;
+        BufferedLogEntryList bufferedEntries;
         long? snapshotIndex;
         await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
         try
         {
-            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(bufferingConsumer, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
+            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedLogEntryList, long?)>(bufferingConsumer, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
         }
         finally
         {
@@ -276,7 +276,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         // pass buffered entries to the reader
         try
         {
-            return await reader.ReadAsync<BufferedRaftLogEntry, BufferedRaftLogEntryList>(bufferedEntries, snapshotIndex, token).ConfigureAwait(false);
+            return await reader.ReadAsync<BufferedLogEntry, BufferedLogEntryList>(bufferedEntries, snapshotIndex, token).ConfigureAwait(false);
         }
         finally
         {
@@ -374,7 +374,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);
 
                 // flush if last entry is added to the partition or the last entry is consumed from the iterator
-                if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                if (startIndex == partition.LastIndex || supplier.RemainingCount is 0L)
                     await partition.FlushAsync(token).ConfigureAwait(false);
             }
             else if (!skipCommitted)

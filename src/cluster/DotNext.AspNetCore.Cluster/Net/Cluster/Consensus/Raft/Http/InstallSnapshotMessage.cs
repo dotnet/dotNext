@@ -43,7 +43,7 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Res
             else
             {
                 touched = true;
-                result = new(reader.CopyToAsync(writer, token));
+                result = reader.CopyToAsync(writer, token);
             }
 
             return result;

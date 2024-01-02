@@ -1,28 +1,35 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Buffers.Binary;
 
-internal static class AppendEntriesMessage
+[StructLayout(LayoutKind.Auto)]
+internal readonly record struct AppendEntriesMessage(ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount) : IBinaryFormattable<AppendEntriesMessage>
 {
-    internal static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
+    public static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
 
-    internal static void Write(ref SpanWriter<byte> writer, in ClusterMemberId id, long term, long prevLogIndex, long prevLogTerm, long commitIndex, int entriesCount)
+    public void Format(Span<byte> output)
     {
-        id.Format(ref writer);
-        writer.WriteLittleEndian(term);
-        writer.WriteLittleEndian(prevLogIndex);
-        writer.WriteLittleEndian(prevLogTerm);
-        writer.WriteLittleEndian(commitIndex);
-        writer.WriteLittleEndian(entriesCount);
+        var writer = new SpanWriter<byte>(output);
+        writer.Write(Id);
+        writer.WriteLittleEndian(Term);
+        writer.WriteLittleEndian(PrevLogIndex);
+        writer.WriteLittleEndian(PrevLogTerm);
+        writer.WriteLittleEndian(CommitIndex);
+        writer.WriteLittleEndian(EntriesCount);
     }
 
-    internal static (ClusterMemberId Id, long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, int EntriesCount) Read(ref SpanReader<byte> reader) => new()
+    public static AppendEntriesMessage Parse(ReadOnlySpan<byte> input)
     {
-        Id = new(ref reader),
-        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
-        PrevLogIndex = reader.ReadLittleEndian<long>(isUnsigned: false),
-        PrevLogTerm = reader.ReadLittleEndian<long>(isUnsigned: false),
-        CommitIndex = reader.ReadLittleEndian<long>(isUnsigned: false),
-        EntriesCount = reader.ReadLittleEndian<int>(isUnsigned: false),
-    };
+        var reader = new SpanReader<byte>(input);
+        return new(
+            reader.Read<ClusterMemberId>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<int>());
+    }
 }

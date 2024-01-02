@@ -173,66 +173,30 @@ public sealed class BasicExtensionsTests : Test
     }
 
     [Fact]
-    public static void NormalizeToFloatingPoint()
-    {
-        Equal(1F, int.MaxValue.Normalize<int, float>(int.MinValue, int.MaxValue));
-        Equal(-1F, int.MinValue.Normalize<int, float>(int.MinValue, int.MaxValue));
-
-        Equal(1D, int.MaxValue.Normalize<int, double>(int.MinValue, int.MaxValue));
-        Equal(-1D, int.MinValue.Normalize<int, double>(int.MinValue, int.MaxValue));
-    }
-
-    [Fact]
-    public static void WeightOfUInt64()
-    {
-        var weight = 0UL.Normalize();
-        Equal(0D, weight);
-
-        weight = ulong.MaxValue.Normalize();
-        Equal(0.9999999999999999D, weight);
-
-        weight = (ulong.MaxValue - 1UL).Normalize();
-        Equal(0.9999999999999998D, weight);
-    }
-
-    [Fact]
-    public static void WeightOfInt64()
-    {
-        Equal(unchecked((ulong)long.MaxValue).Normalize(), long.MaxValue.Normalize());
-    }
-
-    [Fact]
-    public static void WeightOfUInt32()
-    {
-        var weight = 0U.Normalize();
-        Equal(0F, weight);
-
-        weight = uint.MaxValue.Normalize();
-        Equal(0.99999994F, weight);
-
-        weight = (uint.MaxValue - 1U).Normalize();
-        Equal(0.9999999F, weight);
-    }
-
-    [Fact]
-    public static void WeightOfInt32()
-    {
-        Equal(unchecked((uint)int.MaxValue).Normalize(), int.MaxValue.Normalize());
-    }
-
-    [Fact]
     public static void Range()
     {
-        True(15M.IsBetween(10M, 20M));
-        False(10M.IsBetween(10M, 20M, BoundType.Open));
-        True(10M.IsBetween(10M, 20M, BoundType.LeftClosed));
-        False(15M.IsBetween(10M, 12M));
+        True(15M.IsBetween(10M.Enclosed(), 20M.Enclosed()));
+        False(10M.IsBetween(10M.Disclosed(), 20M.Disclosed()));
+        True(10M.IsBetween(10M.Enclosed(), 20M.Disclosed()));
+        False(15M.IsBetween(10M.Enclosed(), 12M.Enclosed()));
     }
 
     [Fact]
     public static void LeftGreaterThanRight()
     {
-        False(4L.IsBetween(4L, 3L, BoundType.Closed));
-        False(4L.IsBetween(4L, 4L, BoundType.LeftClosed));
+        False(4L.IsBetween(4L.Enclosed(), 3L.Enclosed()));
+        False(4L.IsBetween(4L.Enclosed(), 4L.Disclosed()));
+    }
+
+    [Fact]
+    public static void InfinityEndpoints()
+    {
+        True(4L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Enclosed()));
+        False(10L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Disclosed()));
+
+        True(4L.IsBetween(0L.Disclosed(), IRangeEndpoint<long>.Infinity));
+        False(10L.IsBetween(10L.Disclosed(), IRangeEndpoint<long>.Infinity));
+
+        True(long.MinValue.IsBetween(IRangeEndpoint<long>.Infinity, IRangeEndpoint<long>.Infinity));
     }
 }

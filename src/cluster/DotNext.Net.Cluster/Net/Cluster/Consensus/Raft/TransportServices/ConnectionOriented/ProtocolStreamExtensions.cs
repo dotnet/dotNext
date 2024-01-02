@@ -4,7 +4,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 using Buffers;
 using IO;
-using Serializable = Runtime.Serialization.Serializable;
+using Runtime.Serialization;
 
 internal static class ProtocolStreamExtensions
 {
@@ -86,7 +86,7 @@ internal static class ProtocolStreamExtensions
         static long? Read(ReadOnlySpan<byte> responseData)
         {
             var reader = new SpanReader<byte>(responseData);
-            return reader.Read() is 0 ? null : reader.ReadLittleEndian<long>(isUnsigned: false);
+            return reader.Read() is 0 ? null : reader.ReadLittleEndian<long>();
         }
     }
 
@@ -100,5 +100,5 @@ internal static class ProtocolStreamExtensions
     }
 
     internal static async ValueTask<IReadOnlyDictionary<string, string>> ReadDictionaryAsync(this ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
-        => (await Serializable.ReadFromAsync<MetadataTransferObject>(protocol, buffer, token).ConfigureAwait(false)).Metadata;
+        => (await ISerializable<MetadataTransferObject>.ReadFromAsync(protocol, buffer, token).ConfigureAwait(false)).Metadata;
 }

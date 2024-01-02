@@ -6,22 +6,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Threading;
 
-internal sealed class FollowerState<TMember> : RaftState<TMember>
+internal sealed class FollowerState<TMember>(IRaftStateMachine<TMember> stateMachine) : RaftState<TMember>(stateMachine)
     where TMember : class, IRaftClusterMember
 {
-    private readonly AsyncAutoResetEvent refreshEvent;
-    private readonly AsyncManualResetEvent suppressionEvent;
-    private readonly CancellationTokenSource trackerCancellation;
+    private readonly AsyncAutoResetEvent refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
+    private readonly AsyncManualResetEvent suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
+    private readonly CancellationTokenSource trackerCancellation = new();
     private Task? tracker;
     private volatile bool timedOut;
-
-    internal FollowerState(IRaftStateMachine<TMember> stateMachine)
-        : base(stateMachine)
-    {
-        refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
-        suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
-        trackerCancellation = new();
-    }
 
     private void SuspendTracking()
     {

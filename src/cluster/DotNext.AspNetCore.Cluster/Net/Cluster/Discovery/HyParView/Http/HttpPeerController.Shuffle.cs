@@ -36,7 +36,7 @@ internal partial class HttpPeerController
 
     private static IReadOnlySet<EndPoint> DeserializeShuffleReply(ref SequenceReader reader)
     {
-        var count = reader.ReadInt32(true);
+        var count = reader.ReadLittleEndian<int>();
         var result = new HashSet<EndPoint>(count);
 
         while (count-- > 0)
@@ -101,7 +101,7 @@ internal partial class HttpPeerController
         }
         else
         {
-            using var buffer = new PooledBufferWriter<byte>(allocator)
+            using var buffer = new PoolingBufferWriter<byte>(allocator)
             {
                 Capacity = int.CreateSaturating(payloadLength),
             };
@@ -118,9 +118,9 @@ internal partial class HttpPeerController
     {
         var sender = reader.ReadEndPoint();
         var origin = reader.ReadEndPoint();
-        var timeToLive = reader.ReadInt32(true);
+        var timeToLive = reader.ReadLittleEndian<int>();
 
-        var count = reader.ReadInt32(true);
+        var count = reader.ReadLittleEndian<int>();
         var peers = new HashSet<EndPoint>(count);
 
         while (count-- > 0)

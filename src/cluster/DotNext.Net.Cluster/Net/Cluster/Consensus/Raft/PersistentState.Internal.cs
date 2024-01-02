@@ -8,6 +8,7 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
+using Buffers.Binary;
 using IO;
 using Intrinsics = Runtime.Intrinsics;
 
@@ -23,7 +24,7 @@ public partial class PersistentState
 
     // Perf: in case of LE, we want to store the metadata in the block of memory as-is
     [StructLayout(LayoutKind.Sequential)]
-    internal readonly struct LogEntryMetadata
+    internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     {
         internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
 
@@ -49,17 +50,18 @@ public partial class PersistentState
         // slow version if target architecture has BE byte order or pointer is not aligned
         private LogEntryMetadata(ref SpanReader<byte> reader)
         {
-            Term = reader.ReadLittleEndian<long>(isUnsigned: false);
-            Timestamp = reader.ReadLittleEndian<long>(isUnsigned: false);
-            Length = reader.ReadLittleEndian<long>(isUnsigned: false);
-            Offset = reader.ReadLittleEndian<long>(isUnsigned: false);
-            flags = (LogEntryFlags)reader.ReadLittleEndian<uint>(isUnsigned: true);
-            identifier = reader.ReadLittleEndian<int>(isUnsigned: false);
+            Term = reader.ReadLittleEndian<long>();
+            Timestamp = reader.ReadLittleEndian<long>();
+            Length = reader.ReadLittleEndian<long>();
+            Offset = reader.ReadLittleEndian<long>();
+            flags = (LogEntryFlags)reader.ReadLittleEndian<uint>();
+            identifier = reader.ReadLittleEndian<int>();
         }
 
         internal LogEntryMetadata(ReadOnlySpan<byte> input)
         {
             Debug.Assert(Intrinsics.AlignOf<LogEntryMetadata>() is sizeof(long));
+            Debug.Assert(Size % sizeof(long) is 0);
             Debug.Assert(input.Length >= Size);
 
             // fast path without any overhead for LE byte order
@@ -89,6 +91,10 @@ public partial class PersistentState
                 metadata = new(ref reader);
             }
         }
+
+        static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ReadOnlySpan<byte> input) => new(input);
+
+        static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
 
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
@@ -168,13 +174,13 @@ public partial class PersistentState
             {
                 var reader = new SpanReader<byte>(input);
                 reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
-                return reader.ReadLittleEndian<long>(isUnsigned: false) + reader.ReadLittleEndian<long>(isUnsigned: false); // Length + Offset
+                return reader.ReadLittleEndian<long>() + reader.ReadLittleEndian<long>(); // Length + Offset
             }
         }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct SnapshotMetadata
+    internal readonly struct SnapshotMetadata : IBinaryFormattable<SnapshotMetadata>
     {
         internal const int Size = sizeof(long) + LogEntryMetadata.Size;
         internal readonly long Index;
@@ -196,6 +202,10 @@ public partial class PersistentState
             : this(new LogEntryMetadata(timeStamp, term, Size, length, id), index)
         {
         }
+
+        static SnapshotMetadata IBinaryFormattable<SnapshotMetadata>.Parse(ReadOnlySpan<byte> input) => new(input);
+
+        static int IBinaryFormattable<SnapshotMetadata>.Size => Size;
 
         internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
             where TLogEntry : IRaftLogEntry
@@ -229,8 +239,8 @@ public partial class PersistentState
 
     internal abstract class ConcurrentStorageAccess : Disposable
     {
+        private readonly bool autoFlush;
         internal readonly SafeFileHandle Handle;
-        private readonly FileStream? streamForFlush;
         private protected readonly FileWriter writer;
         private protected readonly int fileOffset;
         private readonly MemoryAllocator<byte> allocator;
@@ -270,12 +280,10 @@ public partial class PersistentState
             FileName = fileName;
             version = long.MinValue;
 
-            if (readersCount == 1)
+            if (readersCount is 1)
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
 
-            streamForFlush = writeMode is WriteMode.AutoFlush
-                ? new(Handle, FileAccess.Write, bufferSize: 1)
-                : null;
+            autoFlush = writeMode is WriteMode.AutoFlush;
         }
 
         internal long FileSize => RandomAccess.GetLength(Handle);
@@ -308,12 +316,12 @@ public partial class PersistentState
         public virtual ValueTask FlushAsync(CancellationToken token = default)
         {
             Invalidate();
-            return streamForFlush is null ? writer.WriteAsync(token) : FlushToDiskAsync(writer, streamForFlush, token);
+            return autoFlush ? FlushToDiskAsync(writer, token) : writer.WriteAsync(token);
 
-            static async ValueTask FlushToDiskAsync(FileWriter writer, FileStream streamForFlush, CancellationToken token)
+            static async ValueTask FlushToDiskAsync(FileWriter writer, CancellationToken token)
             {
                 await writer.WriteAsync(token).ConfigureAwait(false);
-                streamForFlush.Flush(flushToDisk: true);
+                writer.FlushToDisk();
             }
         }
 
@@ -351,7 +359,6 @@ public partial class PersistentState
                 readers = [];
                 writer.Dispose();
                 Handle.Dispose();
-                streamForFlush?.Dispose();
             }
 
             base.Dispose(disposing);

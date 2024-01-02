@@ -18,7 +18,9 @@ public abstract class MessageAttribute : Attribute
     /// <param name="name">The name of the message.</param>
     protected MessageAttribute(string name)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        Name = name;
     }
 
     /// <summary>

@@ -11,7 +11,7 @@ using Runtime.Serialization;
 public class MessagingClient
 {
     private readonly IOutputChannel channel;
-    private readonly IDictionary<Type, (string MessageName, ContentType MessageType)> messages;
+    private readonly Dictionary<Type, (string MessageName, ContentType MessageType)> messages;
 
     /// <summary>
     /// Constructs a new typed client for messaging.
@@ -114,6 +114,6 @@ public class MessagingClient
         where TInput : notnull, ISerializable<TInput>
     {
         var (name, type) = GetMessageInfo<TInput>();
-        return new(name, payload, type);
+        return new() { Name = name, Payload = payload, Type = type };
     }
 }

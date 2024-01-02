@@ -4,6 +4,7 @@ using System.Text;
 namespace DotNext.Net.Cluster.Messaging;
 
 using IO;
+using Text.Json;
 
 public sealed class MessageTests : Test
 {
@@ -31,60 +32,30 @@ public sealed class MessageTests : Test
         using var content = new MemoryStream();
         await pipe.Reader.CopyToAsync(content);
         content.Seek(0, SeekOrigin.Begin);
-        using (var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true))
-        {
-            Equal("Hello, world!", reader.ReadToEnd());
-        }
-    }
-
-    [Fact]
-    public static async Task BinaryMessagePipeline()
-    {
-        var pipe = new Pipe();
-        var bytes = Encoding.UTF8.GetBytes("abcde");
-        IMessage message = new BinaryMessage(ToReadOnlySequence<byte>(bytes, 2), "msg");
-        ThreadPool.QueueUserWorkItem(async state =>
-        {
-            await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
-            pipe.Writer.Complete();
-        });
-        using var content = new MemoryStream();
-        await pipe.Reader.CopyToAsync(content);
-        content.Seek(0, SeekOrigin.Begin);
-        using (var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true))
-        {
-            Equal("abcde", reader.ReadToEnd());
-        }
-    }
-
-    public sealed class JsonObject
-    {
-        public string Message { get; set; }
-
-        public int Arg { get; set; }
+        using var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true);
+        Equal("Hello, world!", reader.ReadToEnd());
     }
 
     [Fact]
     public static async Task JsonMessageSerialization()
     {
         var pipe = new Pipe();
-        IMessage message = new JsonMessage<JsonObject>("JsonObj", new JsonObject { Message = "Hello, world!", Arg = 42 });
+        IMessage message = new JsonMessage<TestJsonObject> { Name = "JsonObj", Content = new() { StringField = "Hello, world!" } };
         ThreadPool.QueueUserWorkItem(async state =>
         {
             await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
             pipe.Writer.Complete();
         });
 
-        JsonObject obj;
+        TestJsonObject obj;
         using (var content = new MemoryStream())
         {
             await pipe.Reader.CopyToAsync(content);
             content.Seek(0, SeekOrigin.Begin);
-            MessageReader<JsonObject> reader = JsonMessage<JsonObject>.FromJsonAsync;
+            MessageReader<TestJsonObject> reader = JsonSerializable<TestJsonObject>.TransformAsync;
             obj = await reader(new StreamMessage(content, true, "JsonObj"), CancellationToken.None);
         }
 
-        Equal("Hello, world!", obj.Message);
-        Equal(42, obj.Arg);
+        Equal("Hello, world!", obj.StringField.Value);
     }
 }

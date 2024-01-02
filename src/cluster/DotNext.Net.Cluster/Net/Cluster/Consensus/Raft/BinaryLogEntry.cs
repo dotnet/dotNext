@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
+using Buffers.Binary;
 using IO;
 using IO.Log;
 
@@ -11,33 +12,72 @@ using IO.Log;
 /// </summary>
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct BinaryLogEntry<T> : IBinaryLogEntry
-    where T : struct, IBinaryFormattable<T>
+public readonly struct BinaryLogEntry<T>() : IBinaryLogEntry
+    where T : notnull, IBinaryFormattable<T>
 {
-    /// <summary>
-    /// Initializes a new binary log entry.
-    /// </summary>
-    public BinaryLogEntry()
-    {
-    }
-
     /// <summary>
     /// Gets or sets the log entry payload.
     /// </summary>
-    public T Content;
+    required public T Content { get; init; }
 
     /// <summary>
     /// Gets the timestamp of this log entry.
     /// </summary>
-    public readonly DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets Term value associated with this log entry.
     /// </summary>
-    public long Term
+    required public long Term { get; init; }
+
+    /// <summary>
+    /// Gets the command identifier.
+    /// </summary>
+    public int? CommandId { get; init; }
+
+    /// <inheritdoc />
+    bool ILogEntry.IsSnapshot => false;
+
+    /// <inheritdoc />
+    bool IDataTransferObject.IsReusable => true;
+
+    /// <inheritdoc />
+    long? IDataTransferObject.Length => T.Size;
+
+    /// <inheritdoc />
+    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+        => IBinaryFormattable<T>.Format(Content, allocator);
+
+    /// <inheritdoc />
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        => writer.WriteAsync(Content, token);
+}
+
+/// <summary>
+/// Represents default implementation of <see cref="IRaftLogEntry"/>.
+/// </summary>
+[StructLayout(LayoutKind.Auto)]
+public readonly struct BinaryLogEntry() : IBinaryLogEntry
+{
+    private readonly ReadOnlyMemory<byte> content;
+
+    /// <summary>
+    /// Gets the timestamp of this log entry.
+    /// </summary>
+    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
+
+    /// <summary>
+    /// Gets Term value associated with this log entry.
+    /// </summary>
+    required public long Term { get; init; }
+
+    /// <summary>
+    /// Gets the payload of the log entry.
+    /// </summary>
+    required public ReadOnlyMemory<byte> Content
     {
-        readonly get;
-        init;
+        get => content;
+        init => content = value;
     }
 
     /// <summary>
@@ -45,29 +85,35 @@ public struct BinaryLogEntry<T> : IBinaryLogEntry
     /// </summary>
     public int? CommandId
     {
-        readonly get;
+        get;
         init;
     }
 
     /// <inheritdoc />
-    readonly bool ILogEntry.IsSnapshot => false;
+    bool ILogEntry.IsSnapshot => false;
 
     /// <inheritdoc />
-    readonly bool IDataTransferObject.IsReusable => true;
+    long? IDataTransferObject.Length => content.Length;
 
     /// <inheritdoc />
-    readonly long? IDataTransferObject.Length => T.Size;
+    bool IDataTransferObject.IsReusable => true;
 
     /// <inheritdoc />
-    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+    bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
     {
-        var buffer = allocator.AllocateExactly(T.Size);
-        var writer = new SpanWriter<byte>(buffer.Span);
-        Content.Format(ref writer);
-        return buffer;
+        memory = content;
+        return true;
     }
 
     /// <inheritdoc />
-    readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        => writer.WriteFormattableAsync(Content, token);
+    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+        => content.Span.Copy(allocator);
+
+    /// <inheritdoc />
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        => writer.WriteAsync(content, lengthFormat: null, token);
+
+    /// <inheritdoc />
+    ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+        => transformation.TransformAsync(IAsyncBinaryReader.Create(content), token);
 }

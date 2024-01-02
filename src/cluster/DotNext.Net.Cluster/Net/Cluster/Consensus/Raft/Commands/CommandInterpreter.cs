@@ -101,10 +101,10 @@ public partial class CommandInterpreter : Disposable
     /// <typeparam name="TCommand">The type of the command.</typeparam>
     /// <returns>The instance of the log entry containing the command.</returns>
     /// <exception cref="GenericArgumentException"><typeparamref name="TCommand"/> is not registered with <see cref="CommandAttribute{TCommand}"/>.</exception>
-    public RaftLogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
+    public LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
         where TCommand : notnull, ISerializable<TCommand>
         => identifiers.TryGetValue(typeof(TCommand), out var id) ?
-            new RaftLogEntry<TCommand>(term, command, id) :
+            new() { Term = term, Command = command, CommandId = id } :
             throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandId, nameof(command));
 
     private bool TryGetCommandId<TEntry>(ref TEntry entry, out int commandId)

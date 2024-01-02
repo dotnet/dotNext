@@ -19,7 +19,7 @@ using BitVector = Numerics.BitVector;
 [StructLayout(LayoutKind.Auto)]
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 [SuppressMessage("Usage", "CA1001", Justification = "False positive")]
-public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
+public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
 {
     private const byte InMemoryFlag = 0x01;
     private const byte SnapshotFlag = InMemoryFlag << 1;
@@ -33,7 +33,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     private readonly int commandId;
     private readonly byte flags;
 
-    private BufferedRaftLogEntry(string fileName, int bufferSize, long term, DateTimeOffset timestamp, int? id, bool snapshot)
+    private BufferedLogEntry(string fileName, int bufferSize, long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
@@ -42,7 +42,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
     }
 
-    private BufferedRaftLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id, bool snapshot)
+    private BufferedLogEntry(FileStream file, long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
@@ -51,7 +51,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         content = file;
     }
 
-    private BufferedRaftLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id, bool snapshot)
+    private BufferedLogEntry(IGrowableBuffer<byte> buffer, long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
@@ -60,7 +60,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         content = buffer;
     }
 
-    private BufferedRaftLogEntry(long term, DateTimeOffset timestamp, int? id, bool snapshot)
+    private BufferedLogEntry(long term, DateTimeOffset timestamp, int? id, bool snapshot)
     {
         Term = term;
         Timestamp = timestamp;
@@ -105,7 +105,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     /// <inheritdoc/>
     bool IDataTransferObject.IsReusable => true;
 
-    private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryOrFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, CancellationToken token)
+    private static async ValueTask<BufferedLogEntry> CopyToMemoryOrFileAsync<TEntry>(TEntry entry, LogEntryBufferingOptions options, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         var writer = options.CreateBufferingWriter();
@@ -132,10 +132,10 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         return new(fileName, options.BufferSize, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
     }
 
-    private static async ValueTask<BufferedRaftLogEntry> CopyToMemoryAsync<TEntry>(TEntry entry, int length, MemoryAllocator<byte>? allocator, CancellationToken token)
+    private static async ValueTask<BufferedLogEntry> CopyToMemoryAsync<TEntry>(TEntry entry, int length, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        var writer = new PooledBufferWriter<byte>(allocator) { Capacity = length };
+        var writer = new PoolingBufferWriter<byte>(allocator) { Capacity = length };
         try
         {
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
@@ -149,7 +149,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         return new(writer, entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot);
     }
 
-    internal static async ValueTask<BufferedRaftLogEntry> CopyToFileAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, CancellationToken token)
+    internal static async ValueTask<BufferedLogEntry> CopyToFileAsync<TEntry>(TEntry entry, LogEntryBufferingOptions options, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
         var output = new FileStream(options.GetRandomFileName(), new FileStreamOptions
@@ -193,14 +193,14 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
     /// <typeparam name="TEntry">The type of the log entry to be copied.</typeparam>
     /// <returns>Buffered copy of <paramref name="entry"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<BufferedRaftLogEntry> CopyAsync<TEntry>(TEntry entry, RaftLogEntryBufferingOptions options, CancellationToken token)
+    public static ValueTask<BufferedLogEntry> CopyAsync<TEntry>(TEntry entry, LogEntryBufferingOptions options, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        ValueTask<BufferedRaftLogEntry> result;
+        ValueTask<BufferedLogEntry> result;
         if (!entry.Length.TryGetValue(out var length))
             result = CopyToMemoryOrFileAsync(entry, options, token);
         else if (length is 0L)
-            result = new(new BufferedRaftLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
+            result = new(new BufferedLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));
         else if (length <= options.MemoryThreshold)
             result = CopyToMemoryAsync(entry, (int)length, options.MemoryAllocator, token);
         else
@@ -217,7 +217,7 @@ public readonly struct BufferedRaftLogEntry : IRaftLogEntry, IDisposable
         {
             case FileStream fs:
                 fs.Position = 0L;
-                result = new(writer.CopyFromAsync(fs, token));
+                result = writer.CopyFromAsync(fs, count: null, token);
                 break;
             case IGrowableBuffer<byte> buffer:
                 result = buffer.CopyToAsync(writer, token);

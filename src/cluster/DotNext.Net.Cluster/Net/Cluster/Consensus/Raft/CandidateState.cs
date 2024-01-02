@@ -7,7 +7,7 @@ using IO.Log;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 
-internal sealed class CandidateState<TMember> : RaftState<TMember>
+internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMachine, long term) : RaftState<TMember>(stateMachine)
     where TMember : class, IRaftClusterMember
 {
     private enum VotingResult : byte
@@ -18,16 +18,9 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         NotAvailable,
     }
 
-    private readonly CancellationTokenSource votingCancellation;
-    internal readonly long Term;
+    private readonly CancellationTokenSource votingCancellation = new();
+    internal readonly long Term = term;
     private Task? votingTask;
-
-    internal CandidateState(IRaftStateMachine<TMember> stateMachine, long term)
-        : base(stateMachine)
-    {
-        votingCancellation = new();
-        Term = term;
-    }
 
     private async Task VoteAsync(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {

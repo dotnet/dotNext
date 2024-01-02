@@ -233,7 +233,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyFromAsync(Stream source, long? count, CancellationToken token = default)
+    ValueTask CopyFromAsync(Stream source, long? count = null, CancellationToken token = default)
     {
         return source is null
             ? ValueTask.FromException(new ArgumentNullException(nameof(source)))
@@ -275,7 +275,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyFromAsync(PipeReader source, long? count, CancellationToken token = default)
+    ValueTask CopyFromAsync(PipeReader source, long? count = null, CancellationToken token = default)
         => count.HasValue
             ? Pipelines.PipeExtensions.CopyToAsync(source, this, count.GetValueOrDefault(), token)
             : Pipelines.PipeExtensions.CopyToAsync(source, this, token);

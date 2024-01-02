@@ -302,7 +302,7 @@ public interface IAsyncBinaryReader
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync(Stream destination, long? count, CancellationToken token = default)
+    ValueTask CopyToAsync(Stream destination, long? count = null, CancellationToken token = default)
         => CopyToAsync<StreamConsumer>(destination, count, token);
 
     /// <summary>
@@ -314,7 +314,7 @@ public interface IAsyncBinaryReader
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync(PipeWriter destination, long? count, CancellationToken token = default)
+    ValueTask CopyToAsync(PipeWriter destination, long? count = null, CancellationToken token = default)
         => CopyToAsync<PipeConsumer>(destination, count, token);
 
     /// <summary>
@@ -326,7 +326,7 @@ public interface IAsyncBinaryReader
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync(IBufferWriter<byte> destination, long? count, CancellationToken token = default)
+    ValueTask CopyToAsync(IBufferWriter<byte> destination, long? count = null, CancellationToken token = default)
     {
         ValueTask result;
         if (TryGetSequence(out var sequence))
@@ -378,7 +378,7 @@ public interface IAsyncBinaryReader
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token = default)
+    ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long? count = null, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
 
     /// <summary>

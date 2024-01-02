@@ -37,7 +37,7 @@ internal partial class HttpPeerController
     }
 
     private static (EndPoint, EndPoint, int) DeserializeForwardJoinRequest(ref SequenceReader reader)
-        => (reader.ReadEndPoint(), reader.ReadEndPoint(), reader.ReadInt32(true));
+        => (reader.ReadEndPoint(), reader.ReadEndPoint(), reader.ReadLittleEndian<int>());
 
     private static (EndPoint, EndPoint, int) DeserializeForwardJoinRequest(ReadOnlyMemory<byte> content)
     {

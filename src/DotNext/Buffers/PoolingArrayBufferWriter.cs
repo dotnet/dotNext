@@ -451,7 +451,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         }
 
         buffer = newBuffer;
-        PooledArrayBufferWriter.AllocationMeter.Record(newBuffer.LongLength, measurementTags);
+        PoolingArrayBufferWriter.AllocationMeter.Record(newBuffer.LongLength, measurementTags);
     }
 
     /// <inheritdoc />
@@ -470,11 +470,11 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     }
 }
 
-file static class PooledArrayBufferWriter
+file static class PoolingArrayBufferWriter
 {
     internal static readonly Histogram<long> AllocationMeter;
 
-    static PooledArrayBufferWriter()
+    static PoolingArrayBufferWriter()
     {
         var meter = new Meter("DotNext.Buffers.PooledArrayBuffer");
         AllocationMeter = meter.CreateHistogram<long>("capacity", "Capacity");

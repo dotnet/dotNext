@@ -156,7 +156,8 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
         => input.TransformAsync<T?, DeserializingTransformation>(new(), token);
 
     /// <inheritdoc cref="ISerializable{TSelf}.ReadFromAsync{TReader}(TReader, CancellationToken)"/>
-    static async ValueTask<JsonSerializable<T>> ISerializable<JsonSerializable<T>>.ReadFromAsync<TReader>(TReader reader, CancellationToken token)
+    public static async ValueTask<JsonSerializable<T>> ReadFromAsync<TReader>(TReader reader, CancellationToken token = default)
+        where TReader : notnull, IAsyncBinaryReader
         => new() { Value = await DeserializeAsync(reader, token).ConfigureAwait(false) };
 
     /// <inheritdoc />

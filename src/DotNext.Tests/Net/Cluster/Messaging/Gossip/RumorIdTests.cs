@@ -60,8 +60,7 @@ public sealed class RumorIdTests : Test
     {
         var id1 = new RumorTimestamp();
         Span<byte> bytes = stackalloc byte[RumorTimestamp.Size];
-        var writer = new SpanWriter<byte>(bytes);
-        id1.Format(ref writer);
+        id1.Format(bytes);
 
         var id2 = new RumorTimestamp(bytes);
         Equal(id1, id2);

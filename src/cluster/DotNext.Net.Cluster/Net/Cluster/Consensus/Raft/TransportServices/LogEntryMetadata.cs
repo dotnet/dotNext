@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Buffers.Binary;
 using BitVector = Numerics.BitVector;
 
 [StructLayout(LayoutKind.Auto)]
@@ -31,16 +32,23 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     internal LogEntryMetadata(ref SpanReader<byte> reader)
     {
-        Term = reader.ReadLittleEndian<long>(isUnsigned: false);
-        timestamp = reader.ReadLittleEndian<long>(isUnsigned: false);
+        Term = reader.ReadLittleEndian<long>();
+        timestamp = reader.ReadLittleEndian<long>();
         flags = reader.Read();
-        identifier = reader.ReadLittleEndian<int>(isUnsigned: false);
-        length = reader.ReadLittleEndian<long>(isUnsigned: false);
+        identifier = reader.ReadLittleEndian<int>();
+        length = reader.ReadLittleEndian<long>();
     }
 
-    static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
+    internal LogEntryMetadata(ReadOnlySpan<byte> input)
+    {
+        var reader = new SpanReader<byte>(input);
+        this = new(ref reader);
+    }
 
-    public static LogEntryMetadata Parse(ref SpanReader<byte> input) => new(ref input);
+    static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ReadOnlySpan<byte> input)
+        => new(input);
+
+    static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
 
     internal long Term { get; }
 
@@ -52,8 +60,9 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     internal bool IsSnapshot => (flags & SnapshotFlag) is not 0;
 
-    public void Format(ref SpanWriter<byte> writer)
+    public void Format(Span<byte> output)
     {
+        var writer = new SpanWriter<byte>(output);
         writer.WriteLittleEndian(Term);
         writer.WriteLittleEndian(timestamp);
         writer.Add(flags);

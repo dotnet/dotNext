@@ -5,6 +5,7 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
+using DotNext.Buffers.Binary;
 using IO;
 using IRaftLog = IO.Log.IAuditTrail<IRaftLogEntry>;
 using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
@@ -29,13 +30,13 @@ public sealed class DiskBasedStateMachineTests : Test
 
         protected override async ValueTask<long?> ApplyAsync(LogEntry entry)
         {
-            var value = await entry.ToTypeAsync<long, LogEntry>();
-            values.Add(value);
+            var value = await entry.GetReader().ReadAsync<Blittable<long>>();
+            values.Add(value.Value);
 
             long? result;
             if (values.Count > InMemoryCapacity)
             {
-                snapshot = BitConverter.GetBytes(value);
+                snapshot = BitConverter.GetBytes(value.Value);
                 values.Clear();
                 result = sizeof(long);
             }
@@ -90,7 +91,7 @@ public sealed class DiskBasedStateMachineTests : Test
     {
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var auditTrail = new SimpleStateMachine(dir);
-        await auditTrail.AppendAsync(new EmptyLogEntry(10));
+        await auditTrail.AppendAsync(new EmptyLogEntry { Term = 10 });
 
         Equal(1, auditTrail.LastEntryIndex);
         await auditTrail.CommitAsync(1L, CancellationToken.None);

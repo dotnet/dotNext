@@ -19,27 +19,27 @@ public interface IBinaryFormattable<TSelf>
     /// <summary>
     /// Formats object as a sequence of bytes.
     /// </summary>
-    /// <param name="output">The output buffer.</param>
-    void Format(Span<byte> output);
+    /// <param name="destination">The output buffer.</param>
+    void Format(Span<byte> destination);
 
     /// <summary>
     /// Restores the object from its binary representation.
     /// </summary>
-    /// <param name="input">The input buffer.</param>
+    /// <param name="source">The input buffer.</param>
     /// <returns>The restored object.</returns>
-    public static abstract TSelf Parse(ReadOnlySpan<byte> input);
+    public static abstract TSelf Parse(ReadOnlySpan<byte> source);
 
     /// <summary>
     /// Attempts to restore the object from its binary representation.
     /// </summary>
-    /// <param name="input">The input buffer.</param>
+    /// <param name="source">The input buffer.</param>
     /// <param name="result">The restored object.</param>
     /// <returns><see langword="true"/> if the parsing done successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool TryParse(ReadOnlySpan<byte> input, [NotNullWhen(true)] out TSelf? result)
+    public static bool TryParse(ReadOnlySpan<byte> source, [NotNullWhen(true)] out TSelf? result)
     {
-        if (input.Length >= TSelf.Size)
+        if (source.Length >= TSelf.Size)
         {
-            result = TSelf.Parse(input);
+            result = TSelf.Parse(source);
             return true;
         }
 
@@ -64,13 +64,13 @@ public interface IBinaryFormattable<TSelf>
     /// Attempts to format object as a sequence of bytes.
     /// </summary>
     /// <param name="value">The value to convert.</param>
-    /// <param name="output">The output buffer.</param>
+    /// <param name="destination">The output buffer.</param>
     /// <returns><see langword="true"/> if the value converted successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool TryFormat(TSelf value, Span<byte> output)
+    public static bool TryFormat(TSelf value, Span<byte> destination)
     {
-        if (output.Length >= TSelf.Size)
+        if (destination.Length >= TSelf.Size)
         {
-            value.Format(output);
+            value.Format(destination);
             return true;
         }
 
@@ -80,14 +80,14 @@ public interface IBinaryFormattable<TSelf>
     /// <summary>
     /// Restores the object from its binary representation.
     /// </summary>
-    /// <param name="input">The input buffer.</param>
+    /// <param name="source">The input buffer.</param>
     /// <returns>The restored object.</returns>
-    public static TSelf Parse(in ReadOnlySequence<byte> input)
+    public static TSelf Parse(in ReadOnlySequence<byte> source)
     {
-        var fastBuffer = input.FirstSpan;
+        var fastBuffer = source.FirstSpan;
         return fastBuffer.Length >= TSelf.Size
             ? TSelf.Parse(fastBuffer)
-            : ParseSlow(in input);
+            : ParseSlow(in source);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         static TSelf ParseSlow(in ReadOnlySequence<byte> input)

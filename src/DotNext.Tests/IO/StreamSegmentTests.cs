@@ -5,7 +5,7 @@ public sealed class StreamSegmentTests : Test
     [Fact]
     public static void ReadByteSequentially()
     {
-        using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
         Equal(0, segment.Position);
         segment.Adjust(0, 2);
@@ -22,7 +22,7 @@ public sealed class StreamSegmentTests : Test
     [Fact]
     public static void SetPosition()
     {
-        using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
         segment.Adjust(1, 3);
         segment.Position = 1;
@@ -36,7 +36,7 @@ public sealed class StreamSegmentTests : Test
     [Fact]
     public static void ReadRange()
     {
-        using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
         segment.Adjust(1L, 2L);
         var buffer = new byte[4];
@@ -52,7 +52,7 @@ public sealed class StreamSegmentTests : Test
     [Fact]
     public static async Task ReadRangeAsync()
     {
-        using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
         segment.Adjust(1L, 2L);
         var buffer = new byte[4];
@@ -68,7 +68,7 @@ public sealed class StreamSegmentTests : Test
     [Fact]
     public static void ReadApm()
     {
-        using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
         segment.Adjust(1L, 2L);
         var buffer = new byte[4];
@@ -82,7 +82,7 @@ public sealed class StreamSegmentTests : Test
     [Fact]
     public static async Task ExceptionCheck()
     {
-        using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+        using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
         True(segment.CanRead);
         True(segment.CanSeek);

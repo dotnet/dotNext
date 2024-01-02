@@ -161,11 +161,11 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         var outputBuffer = default(BufferWriter<byte>);
         try
         {
-            outputBuffer = new PooledBufferWriter<byte>(ByteBufferAllocator)
+            outputBuffer = new PoolingBufferWriter<byte>(ByteBufferAllocator)
             {
                 Capacity = bufferSize,
             };
-            inputBuffer = new PooledBufferWriter<char>(CharBufferAllocator)
+            inputBuffer = new PoolingBufferWriter<char>(CharBufferAllocator)
             {
                 Capacity = bufferSize,
             };

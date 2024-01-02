@@ -30,18 +30,18 @@ public sealed class CommandInterpreterTests : Test
 
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            await writer.WriteInt32Async(X, true, token);
-            await writer.WriteInt32Async(Y, true, token);
-            await writer.WriteAsync(Type, token);
+            await writer.WriteLittleEndianAsync(X, token);
+            await writer.WriteLittleEndianAsync(Y, token);
+            await writer.WriteLittleEndianAsync((int)Type, token);
         }
 
         public static async ValueTask<BinaryOperationCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
             => new BinaryOperationCommand
             {
-                X = await reader.ReadInt32Async(true, token),
-                Y = await reader.ReadInt32Async(true, token),
-                Type = await reader.ReadAsync<BinaryOperation>(token),
+                X = await reader.ReadLittleEndianAsync<int>(token),
+                Y = await reader.ReadLittleEndianAsync<int>(token),
+                Type = (BinaryOperation)await reader.ReadLittleEndianAsync<int>(token),
             };
     }
 
@@ -52,20 +52,20 @@ public sealed class CommandInterpreterTests : Test
         public int X;
         public UnaryOperation Type;
 
-        long? IDataTransferObject.Length => sizeof(int) + sizeof(UnaryOperation);
+        readonly long? IDataTransferObject.Length => sizeof(int) + sizeof(UnaryOperation);
 
-        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        readonly async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            await writer.WriteInt32Async(X, true, token);
-            await writer.WriteAsync(Type, token);
+            await writer.WriteLittleEndianAsync(X, token);
+            await writer.WriteLittleEndianAsync((int)Type, token);
         }
 
         public static async ValueTask<UnaryOperationCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
             => new UnaryOperationCommand
             {
-                X = await reader.ReadInt32Async(true, token),
-                Type = await reader.ReadAsync<UnaryOperation>(token),
+                X = await reader.ReadLittleEndianAsync<int>(token),
+                Type = (UnaryOperation)await reader.ReadLittleEndianAsync<int>(token),
             };
     }
 
@@ -75,16 +75,16 @@ public sealed class CommandInterpreterTests : Test
 
         public int Value;
 
-        long? IDataTransferObject.Length => sizeof(int);
+        readonly long? IDataTransferObject.Length => sizeof(int);
 
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteInt32Async(Value, true, token);
+        readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => writer.WriteLittleEndianAsync(Value, token);
 
         public static async ValueTask<AssignCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
             => new AssignCommand
             {
-                Value = await reader.ReadInt32Async(true, token),
+                Value = await reader.ReadLittleEndianAsync<int>(token),
             };
     }
 
@@ -94,16 +94,16 @@ public sealed class CommandInterpreterTests : Test
 
         public int Value;
 
-        long? IDataTransferObject.Length => sizeof(int);
+        readonly long? IDataTransferObject.Length => sizeof(int);
 
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteInt32Async(Value, true, token);
+        readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => writer.WriteLittleEndianAsync(Value, token);
 
         public static async ValueTask<SnapshotCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
             => new SnapshotCommand
             {
-                Value = await reader.ReadInt32Async(true, token),
+                Value = await reader.ReadLittleEndianAsync<int>(token),
             };
     }
 
@@ -166,7 +166,7 @@ public sealed class CommandInterpreterTests : Test
 
         internal int Value => interpreter.Value;
 
-        internal RaftLogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
+        internal LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
             where TCommand : struct, ISerializable<TCommand>
             => interpreter.CreateLogEntry(command, Term);
 

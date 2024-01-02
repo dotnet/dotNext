@@ -47,7 +47,7 @@ internal readonly struct EmptyClusterConfiguration
     internal static EmptyClusterConfiguration? ReadFrom(ref SpanReader<byte> reader)
     {
         var configState = reader.Read();
-        var fingerprint = reader.ReadLittleEndian<long>(isUnsigned: false);
+        var fingerprint = reader.ReadLittleEndian<long>();
 
         return configState switch
         {

@@ -5,7 +5,6 @@ using System.Numerics;
 namespace DotNext.Collections.Generic;
 
 using Specialized;
-using static Numerics.Number;
 
 /// <summary>
 /// Represents various extension methods for sets.
@@ -30,10 +29,26 @@ public static class Set
 
         return minValue.CompareTo(maxValue) switch
         {
-            < 0 => FrozenSet<T>.Empty,
+            > 0 => FrozenSet<T>.Empty,
             0 => Singleton(minValue),
-            > 0 => new RangeSet<T>(minValue, maxValue),
+            < 0 => new RangeSet<T>(minValue, maxValue),
         };
+    }
+
+    private static (T MinValue, T MaxValue) GetMinMaxValues<T, TLowerBound, TUpperBound>(TLowerBound lowerBound, TUpperBound upperBound)
+        where T : notnull, IBinaryInteger<T>
+        where TLowerBound : notnull, IFiniteRangeEndpoint<T>
+        where TUpperBound : notnull, IFiniteRangeEndpoint<T>
+    {
+        var minValue = lowerBound.IsOnRight(lowerBound.Value)
+            ? lowerBound.Value
+            : lowerBound.Value + T.One;
+
+        var maxValue = upperBound.IsOnLeft(upperBound.Value)
+            ? upperBound.Value
+            : upperBound.Value - T.One;
+
+        return (minValue, maxValue);
     }
 
     /// <summary>

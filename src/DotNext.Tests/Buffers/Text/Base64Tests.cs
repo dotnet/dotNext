@@ -82,7 +82,7 @@ public sealed class Base64Tests : Test
     public static void DecodeInvalidBlock()
     {
         var decoder = new Base64Decoder();
-        using var writer = new PooledArrayBufferWriter<byte>();
+        using var writer = new PoolingArrayBufferWriter<byte>();
         decoder.DecodeFromUtf8("AB"u8, writer);
         True(decoder.NeedMoreData);
         Equal(0, writer.WrittenCount);

@@ -128,7 +128,9 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
             else
             {
                 consumed = true;
-                result = metadata.Length > 0L ? reader.ReadBlockAsync(metadata.Length, writer, token) : new();
+                result = metadata.Length > 0L
+                    ? reader.CopyToAsync(writer, metadata.Length, token)
+                    : ValueTask.CompletedTask;
             }
 
             return result;
@@ -356,7 +358,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         {
             var metadata = LogEntryMetadata.Create(entry);
             buffer = buffer.Slice(0, LogEntryMetadata.Size);
-            metadata.Serialize(buffer.Span);
+            metadata.Format(buffer.Span);
             return output.WriteAsync(buffer, token);
         }
 
@@ -415,7 +417,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         private static string GetCommandIdHeaderValue(int? id)
             => id.HasValue ? id.GetValueOrDefault().ToString(InvariantCulture) : string.Empty;
 
-        private static ValueTask EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer, CancellationToken token)
+        private static ValueTask<long> EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer, CancellationToken token)
         {
             if (writeDivider)
             {
@@ -431,7 +433,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
             // Extra CRLF to end headers (even if there are no headers)
             builder.Write(CrLf);
-            return output.WriteStringAsync(builder.WrittenMemory, context, buffer, token: token);
+            return output.EncodeAsync(builder.WrittenMemory, context, lengthFormat: null, buffer, token);
         }
 
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
@@ -441,42 +443,41 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         {
             const int maxChars = 256;   // it is empiric value measured using Console.WriteLine(builder.Length)
             var encodingContext = new EncodingContext(Encoding.Latin1, reuseEncoder: true);
-            using (var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, encodingContext.Encoding.GetMaxByteCount(maxChars)))
-            using (var builder = new PooledArrayBufferWriter<char> { Capacity = maxChars })
+            using var encodingBuffer = new MemoryOwner<byte>(ArrayPool<byte>.Shared, encodingContext.Encoding.GetMaxByteCount(maxChars));
+            using var builder = new PoolingArrayBufferWriter<char> { Capacity = maxChars };
+
+            // encode configuration in raw format without boundaries
+            await configuration.WriteToAsync(stream, encodingBuffer.Memory, token).ConfigureAwait(false);
+
+            // write
+            builder.Write(DoubleDash);
+            builder.Write(boundary);
+            builder.Write(CrLf);
+
+            // write start boundary
+            await stream.EncodeAsync(builder.WrittenMemory, encodingContext, lengthFormat: null, encodingBuffer.Memory, token).ConfigureAwait(false);
+            encodingContext.Reset();
+
+            // write each nested content
+            var writeDivider = false;
+            for (var i = 0; i < entries.Count; i++)
             {
-                // encode configuration in raw format without boundaries
-                await configuration.WriteToAsync(stream, encodingBuffer.Memory, token).ConfigureAwait(false);
+                var entry = entries[i];
 
-                // write
-                builder.Write(DoubleDash);
-                builder.Write(boundary);
-                builder.Write(CrLf);
-
-                // write start boundary
-                await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory, token: token).ConfigureAwait(false);
-                encodingContext.Reset();
-
-                // write each nested content
-                var writeDivider = false;
-                for (var i = 0; i < entries.Count; i++)
-                {
-                    var entry = entries[i];
-
-                    builder.Clear(true);
-                    await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer.Memory, token).ConfigureAwait(false);
-                    encodingContext.Reset();
-                    Debug.Assert(builder.WrittenCount <= maxChars);
-                    writeDivider = true;
-                    await entry.WriteToAsync(stream, token: token).ConfigureAwait(false);
-                }
-
-                // write footer
                 builder.Clear(true);
-                builder.Write(CrLf + DoubleDash);
-                builder.Write(boundary);
-                builder.Write(DoubleDash + CrLf);
-                await stream.WriteStringAsync(builder.WrittenMemory, encodingContext, encodingBuffer.Memory, token: token).ConfigureAwait(false);
+                await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer.Memory, token).ConfigureAwait(false);
+                encodingContext.Reset();
+                Debug.Assert(builder.WrittenCount <= maxChars);
+                writeDivider = true;
+                await entry.WriteToAsync(stream, token: token).ConfigureAwait(false);
             }
+
+            // write footer
+            builder.Clear(true);
+            builder.Write(CrLf + DoubleDash);
+            builder.Write(boundary);
+            builder.Write(DoubleDash + CrLf);
+            await stream.EncodeAsync(builder.WrittenMemory, encodingContext, lengthFormat: null, encodingBuffer.Memory, token).ConfigureAwait(false);
         }
 
         protected override bool TryComputeLength(out long length)

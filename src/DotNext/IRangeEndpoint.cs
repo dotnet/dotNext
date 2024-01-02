@@ -57,10 +57,10 @@ public readonly struct EnclosedEndpoint<T> : IFiniteRangeEndpoint<T>
     }
 
     /// <inheritdoc/>
-    bool IRangeEndpoint<T>.IsOnLeft(T value) => value.CompareTo(value) <= 0;
+    bool IRangeEndpoint<T>.IsOnLeft(T value) => value.CompareTo(Value) <= 0;
 
     /// <inheritdoc/>
-    bool IRangeEndpoint<T>.IsOnRight(T value) => value.CompareTo(value) >= 0;
+    bool IRangeEndpoint<T>.IsOnRight(T value) => value.CompareTo(Value) >= 0;
 
     /// <summary>
     /// Converts enclosed endpoint to disclosed endpoint.
@@ -69,6 +69,12 @@ public readonly struct EnclosedEndpoint<T> : IFiniteRangeEndpoint<T>
     /// <returns>The disclosed endpoint.</returns>
     public static DisclosedEndpoint<T> operator ~(EnclosedEndpoint<T> endpoint)
         => new() { Value = endpoint.Value };
+
+    /// <summary>
+    /// Creates a range endpoint that is included to the range.
+    /// </summary>
+    /// <param name="value">The value of the endpoint.</param>
+    public static implicit operator EnclosedEndpoint<T>(T value) => new() { Value = value };
 }
 
 /// <summary>
@@ -100,6 +106,12 @@ public readonly struct DisclosedEndpoint<T> : IFiniteRangeEndpoint<T>
     /// <returns>The enclosed endpoint.</returns>
     public static EnclosedEndpoint<T> operator ~(DisclosedEndpoint<T> endpoint)
         => new() { Value = endpoint.Value };
+
+    /// <summary>
+    /// Creates a range endpoint that is excluded from the range.
+    /// </summary>
+    /// <param name="value">The value of the endpoint.</param>
+    public static implicit operator DisclosedEndpoint<T>(T value) => new() { Value = value };
 }
 
 file sealed class InfinityEndpoint<T> : IRangeEndpoint<T>

@@ -49,7 +49,7 @@ internal static class Result
 
     internal static Result<bool> Read(ref SpanReader<byte> reader) => new()
     {
-        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
+        Term = reader.ReadLittleEndian<long>(),
         Value = Unsafe.BitCast<byte, bool>(reader.Read()),
     };
 
@@ -61,7 +61,7 @@ internal static class Result
 
     internal static Result<PreVoteResult> ReadPreVoteResult(ref SpanReader<byte> reader) => new()
     {
-        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
+        Term = reader.ReadLittleEndian<long>(),
         Value = (PreVoteResult)reader.Read(),
     };
 
@@ -73,7 +73,7 @@ internal static class Result
 
     internal static Result<HeartbeatResult> ReadHeartbeatResult(ref SpanReader<byte> reader) => new()
     {
-        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
+        Term = reader.ReadLittleEndian<long>(),
         Value = (HeartbeatResult)reader.Read(),
     };
 

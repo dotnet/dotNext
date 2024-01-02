@@ -17,10 +17,10 @@ internal static class HeartbeatMessage
 
     internal static (long Term, long PrevLogIndex, long PrevLogTerm, long CommitIndex, EmptyClusterConfiguration? Configuration) Read(ref SpanReader<byte> reader) => new()
     {
-        Term = reader.ReadLittleEndian<long>(isUnsigned: false),
-        PrevLogIndex = reader.ReadLittleEndian<long>(isUnsigned: false),
-        PrevLogTerm = reader.ReadLittleEndian<long>(isUnsigned: false),
-        CommitIndex = reader.ReadLittleEndian<long>(isUnsigned: false),
+        Term = reader.ReadLittleEndian<long>(),
+        PrevLogIndex = reader.ReadLittleEndian<long>(),
+        PrevLogTerm = reader.ReadLittleEndian<long>(),
+        CommitIndex = reader.ReadLittleEndian<long>(),
         Configuration = EmptyClusterConfiguration.ReadFrom(ref reader),
     };
 }

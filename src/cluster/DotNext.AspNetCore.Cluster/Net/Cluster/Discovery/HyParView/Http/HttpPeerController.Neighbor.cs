@@ -38,7 +38,7 @@ internal partial class HttpPeerController
     }
 
     private static (EndPoint, bool) DeserializeNeighborRequest(ref SequenceReader reader)
-        => (reader.ReadEndPoint(), reader.Read<bool>());
+        => (reader.ReadEndPoint(), Unsafe.BitCast<byte, bool>(reader.ReadByte()));
 
     private static (EndPoint, bool) DeserializeNeighborRequest(ReadOnlyMemory<byte> buffer)
     {

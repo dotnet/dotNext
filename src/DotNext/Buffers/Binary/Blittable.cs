@@ -17,17 +17,19 @@ public struct Blittable<T> : IBinaryFormattable<Blittable<T>>
     required public T Value;
 
     /// <inheritdoc/>
-    readonly void IBinaryFormattable<Blittable<T>>.Format(Span<byte> output)
-        => Span.AsReadOnlyBytes(in Value).CopyTo(output);
+    readonly void IBinaryFormattable<Blittable<T>>.Format(Span<byte> destination)
+        => Span.AsReadOnlyBytes(in Value).CopyTo(destination);
 
     /// <inheritdoc cref="IBinaryFormattable{TSelf}.Size"/>
     static int IBinaryFormattable<Blittable<T>>.Size => Unsafe.SizeOf<T>();
 
     /// <inheritdoc cref="IBinaryFormattable{TSelf}.Parse(ReadOnlySpan{byte})"/>
-    static Blittable<T> IBinaryFormattable<Blittable<T>>.Parse(ReadOnlySpan<byte> input)
+    static Blittable<T> IBinaryFormattable<Blittable<T>>.Parse(ReadOnlySpan<byte> source)
     {
         Unsafe.SkipInit(out Blittable<T> result);
-        input.CopyTo(Span.AsBytes(ref result.Value));
+        var destination = Span.AsBytes(ref result.Value);
+        source = source.Slice(0, destination.Length);
+        source.CopyTo(destination);
         return result;
     }
 }

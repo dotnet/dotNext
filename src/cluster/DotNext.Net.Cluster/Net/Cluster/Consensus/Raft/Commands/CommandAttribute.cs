@@ -5,19 +5,14 @@ using Runtime.Serialization;
 /// <summary>
 /// Registers command type in the interpreter.
 /// </summary>
+/// <param name="id">The identifier of the log entry.</param>
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public abstract class CommandAttribute : Attribute
+public abstract class CommandAttribute(int id) : Attribute
 {
-    /// <summary>
-    /// Initializes a new attribute.
-    /// </summary>
-    /// <param name="id">The identifier of the log entry.</param>
-    protected CommandAttribute(int id) => Id = id;
-
     /// <summary>
     /// Gets unique identifier of the log entry.
     /// </summary>
-    public int Id { get; }
+    public int Id => id;
 
     internal abstract Type CommandType { get; }
 }

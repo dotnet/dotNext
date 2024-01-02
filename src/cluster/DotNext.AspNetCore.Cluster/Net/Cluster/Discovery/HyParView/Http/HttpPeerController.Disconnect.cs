@@ -36,7 +36,7 @@ internal partial class HttpPeerController
     }
 
     private static (EndPoint, bool) DeserializeDisconnectRequest(ref SequenceReader reader)
-        => (reader.ReadEndPoint(), reader.Read<bool>());
+        => (reader.ReadEndPoint(), Unsafe.BitCast<byte, bool>(reader.ReadByte()));
 
     private static (EndPoint, bool) DeserializeDisconnectRequest(ReadOnlyMemory<byte> buffer)
     {

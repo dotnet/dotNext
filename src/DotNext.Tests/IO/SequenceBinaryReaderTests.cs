@@ -5,6 +5,7 @@ using System.Text;
 namespace DotNext.IO;
 
 using Buffers;
+using DotNext.Buffers.Binary;
 using static Pipelines.PipeExtensions;
 
 public sealed class SequenceBinaryReaderTests : Test
@@ -46,28 +47,26 @@ public sealed class SequenceBinaryReaderTests : Test
         Equal(expected, actual);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public static void ReadBlittableType(bool littleEndian)
+    [Fact]
+    public static void ReadBlittableType()
     {
         var writer = new ArrayBufferWriter<byte>();
-        writer.Write(10M);
-        writer.WriteInt64(42L, littleEndian);
-        writer.WriteUInt64(43UL, littleEndian);
-        writer.WriteInt32(44, littleEndian);
-        writer.WriteUInt32(45U, littleEndian);
-        writer.WriteInt16(46, littleEndian);
-        writer.WriteUInt16(47, littleEndian);
+        writer.Write<Blittable<decimal>>(new() { Value = 10M });
+        writer.WriteLittleEndian(42L);
+        writer.WriteLittleEndian(43UL);
+        writer.WriteLittleEndian(44);
+        writer.WriteBigEndian(45U);
+        writer.WriteBigEndian<short>(46);
+        writer.WriteBigEndian<ushort>(47);
 
         var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
-        Equal(10M, reader.Read<decimal>());
-        Equal(42L, reader.ReadInt64(littleEndian));
-        Equal(43UL, reader.ReadUInt64(littleEndian));
-        Equal(44, reader.ReadInt32(littleEndian));
-        Equal(45U, reader.ReadUInt32(littleEndian));
-        Equal(46, reader.ReadInt16(littleEndian));
-        Equal(47, reader.ReadUInt16(littleEndian));
+        Equal(10M, reader.Read<Blittable<decimal>>().Value);
+        Equal(42L, reader.ReadLittleEndian<long>());
+        Equal(43UL, reader.ReadLittleEndian<ulong>());
+        Equal(44, reader.ReadLittleEndian<int>());
+        Equal(45U, reader.ReadBigEndian<uint>());
+        Equal(46, reader.ReadBigEndian<short>());
+        Equal(47, reader.ReadBigEndian<ushort>());
     }
 
     [Fact]
@@ -90,27 +89,24 @@ public sealed class SequenceBinaryReaderTests : Test
         Throws<EndOfStreamException>(() => reader.Read(block.AsSpan()));
     }
 
-    private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat? lengthEnc)
+    private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, LengthFormat lengthEnc)
     {
+        Memory<byte> buffer = new byte[16];
         using var ms = new MemoryStream();
-        await ms.WriteStringAsync(value.AsMemory(), encoding, lengthEnc);
+        await ms.EncodeAsync(value.AsMemory(), encoding, lengthEnc, buffer);
         ms.Position = 0;
         IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ms.ToArray());
         True(reader.TryGetRemainingBytesCount(out long remainingCount));
         Equal(ms.Length, remainingCount);
-        var result = await (lengthEnc is null ?
-            reader.ReadStringAsync(encoding.GetByteCount(value), encoding) :
-            reader.ReadStringAsync(lengthEnc.GetValueOrDefault(), encoding));
-        Equal(value, result);
+        using var result = await reader.DecodeAsync(encoding, lengthEnc);
+        Equal(value, result.ToString());
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData(LengthFormat.Compressed)]
-    [InlineData(LengthFormat.Plain)]
-    [InlineData(LengthFormat.PlainLittleEndian)]
-    [InlineData(LengthFormat.PlainBigEndian)]
-    public static async Task ReadWriteBufferedStringAsync(LengthFormat? lengthEnc)
+    [InlineData(LengthFormat.LittleEndian)]
+    [InlineData(LengthFormat.BigEndian)]
+    public static async Task ReadWriteBufferedStringAsync(LengthFormat lengthEnc)
     {
         const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
         await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, lengthEnc);

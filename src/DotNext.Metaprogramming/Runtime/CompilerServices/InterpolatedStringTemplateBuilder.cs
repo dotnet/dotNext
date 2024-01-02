@@ -77,12 +77,12 @@ public struct InterpolatedStringTemplateBuilder
             }
 
             output.Add('{');
-            output.Write(position++, provider: InvariantCulture);
+            output.Format(position++, provider: InvariantCulture);
 
             if (alignment is not 0)
             {
                 output.Add(',');
-                output.Write(alignment, provider: InvariantCulture);
+                output.Format(alignment, provider: InvariantCulture);
             }
 
             if (literalOrFormat is { Length: > 0 })
@@ -111,7 +111,7 @@ public struct InterpolatedStringTemplateBuilder
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private List<Segment> Segments => segments ??= new();
+    private List<Segment> Segments => segments ??= [];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private readonly ReadOnlySpan<Segment> SegmentsSpan => CollectionsMarshal.AsSpan(segments);
@@ -164,13 +164,15 @@ public struct InterpolatedStringTemplateBuilder
         var providerParameter = Expression.Parameter(typeof(IFormatProvider), "provider");
         var allocatorParameter = Expression.Parameter(typeof(MemoryAllocator<char>), "allocator");
 
-        var parameters = new List<ParameterExpression>(SegmentsSpan.Length + 2);
-        parameters.Add(providerParameter);
+        var parameters = new List<ParameterExpression>(SegmentsSpan.Length + 2)
+        {
+            providerParameter,
+        };
 
         var statements = new List<Expression>();
 
         // instantiate buffer writer
-        var ctor = writerLocal.Type.GetConstructor(new[] { typeof(Span<char>), allocatorParameter.Type });
+        var ctor = writerLocal.Type.GetConstructor([typeof(Span<char>), allocatorParameter.Type]);
         Debug.Assert(ctor is not null);
         Expression expr = Expression.New(
             ctor,
@@ -179,7 +181,7 @@ public struct InterpolatedStringTemplateBuilder
         statements.Add(Expression.Assign(writerLocal, expr));
 
         // instantiate handler
-        ctor = handlerLocal.Type.GetConstructor(new[] { typeof(int), typeof(int), writerLocal.Type.MakeByRefType(), providerParameter.Type });
+        ctor = handlerLocal.Type.GetConstructor([typeof(int), typeof(int), writerLocal.Type.MakeByRefType(), providerParameter.Type]);
         Debug.Assert(ctor is not null);
         expr = Expression.New(
             ctor,

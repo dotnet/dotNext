@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using System.Numerics;
+using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
 
@@ -8,18 +9,20 @@ using static IO.StreamExtensions;
 public sealed class PersistentChannelTests : Test
 {
     private sealed class SerializationChannel<T> : PersistentChannel<T, T>
-        where T : unmanaged
+        where T : notnull, IBinaryInteger<T>
     {
+        private readonly byte[] buffer = new byte[64];
+
         internal SerializationChannel(PersistentChannelOptions options)
             : base(options)
         {
         }
 
         protected override ValueTask<T> DeserializeAsync(Stream input, CancellationToken token)
-            => input.ReadAsync<T>(token);
+            => input.ReadLittleEndianAsync<T>(buffer, token);
 
         protected override ValueTask SerializeAsync(T input, Stream output, CancellationToken token)
-            => output.WriteAsync<T>(input, token);
+            => output.WriteLittleEndianAsync<T>(input, buffer, token);
     }
 
     [Theory]
@@ -33,8 +36,8 @@ public sealed class PersistentChannelTests : Test
     [InlineData(true, true, 10240)]
     public static async Task ReadWrite(bool singleReader, bool singleWriter, long initialSize)
     {
-        Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
-        using var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
+        Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>();
+        using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
         False(channel.Writer.TryWrite(g1));
         await channel.Writer.WriteAsync(g1);
         await channel.Writer.WriteAsync(g2);
@@ -50,16 +53,16 @@ public sealed class PersistentChannelTests : Test
     [Fact]
     public static async Task Persistence()
     {
-        Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
+        Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>();
         var options = new PersistentChannelOptions { BufferSize = 1024 };
-        using (var channel = new SerializationChannel<Guid>(options))
+        using (var channel = new SerializationChannel<Int128>(options))
         {
             await channel.Writer.WriteAsync(g1);
             await channel.Writer.WriteAsync(g2);
             await channel.Writer.WriteAsync(g3);
             Equal(g1, await channel.Reader.ReadAsync());
         }
-        using (var channel = new SerializationChannel<Guid>(options))
+        using (var channel = new SerializationChannel<Int128>(options))
         {
             Equal(2L, channel.RemainingCount);
             Equal(g2, await channel.Reader.ReadAsync());
@@ -76,8 +79,8 @@ public sealed class PersistentChannelTests : Test
             SingleWriter = true,
             PartitionCapacity = 3
         };
-        Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
-        using var channel = new SerializationChannel<Guid>(options);
+        Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>(), g4 = Random.Shared.Next<Int128>();
+        using var channel = new SerializationChannel<Int128>(options);
         await channel.Writer.WriteAsync(g1);
         await channel.Writer.WriteAsync(g2);
         await channel.Writer.WriteAsync(g3);
@@ -97,8 +100,8 @@ public sealed class PersistentChannelTests : Test
             SingleWriter = true,
             PartitionCapacity = 3
         };
-        Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
-        using (var channel = new SerializationChannel<Guid>(options))
+        Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>(), g4 = Random.Shared.Next<Int128>();
+        using (var channel = new SerializationChannel<Int128>(options))
         {
             await channel.Writer.WriteAsync(g1);
             await channel.Writer.WriteAsync(g2);
@@ -108,7 +111,7 @@ public sealed class PersistentChannelTests : Test
             Equal(g1, await channel.Reader.ReadAsync());
             Equal(0.25D, channel.Throughput);
         }
-        using (var channel = new SerializationChannel<Guid>(options))
+        using (var channel = new SerializationChannel<Int128>(options))
         {
             Equal(0.25D, channel.Throughput);
             Equal(g2, await channel.Reader.ReadAsync());
@@ -120,24 +123,24 @@ public sealed class PersistentChannelTests : Test
         }
     }
 
-    private static async Task Produce(ChannelWriter<decimal> writer, decimal startInclusive, decimal endExclusive)
+    private static async Task Produce(ChannelWriter<Int128> writer, Int128 startInclusive, Int128 endExclusive)
     {
-        for (decimal i = startInclusive; i < endExclusive; i++)
+        for (Int128 i = startInclusive; i < endExclusive; i++)
             await writer.WriteAsync(i);
     }
 
-    private static async Task Consume(ChannelReader<decimal> reader, decimal startInclusive, decimal endExclusive)
+    private static async Task Consume(ChannelReader<Int128> reader, Int128 startInclusive, Int128 endExclusive)
     {
-        for (decimal i = startInclusive; i < endExclusive; i++)
+        for (Int128 i = startInclusive; i < endExclusive; i++)
             Equal(i, await reader.ReadAsync());
     }
 
-    private static async Task ConsumeInRange(ChannelReader<decimal> reader)
+    private static async Task ConsumeInRange(ChannelReader<Int128> reader)
     {
-        const decimal LowerBound = 0M;
-        const decimal UpperBound = 500M;
-        for (decimal i = LowerBound; i < UpperBound; i++)
-            True((await reader.ReadAsync()).IsBetween(LowerBound, UpperBound, BoundType.LeftClosed));
+        Int128 lowerBound = 0;
+        Int128 upperBound = 500;
+        for (Int128 i = lowerBound; i < upperBound; i++)
+            True((await reader.ReadAsync()).IsBetween(lowerBound.Enclosed(), upperBound.Disclosed()));
     }
 
     [Theory]
@@ -145,9 +148,9 @@ public sealed class PersistentChannelTests : Test
     [InlineData(102400L)]
     public static async Task ProduceConsumeConcurrently(long initialSize)
     {
-        using var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, PartitionCapacity = 100, InitialPartitionSize = initialSize });
-        var consumer = Consume(channel.Reader, 0M, 500M);
-        var producer = Produce(channel.Writer, 0M, 500M);
+        using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, PartitionCapacity = 100, InitialPartitionSize = initialSize });
+        var consumer = Consume(channel.Reader, 0, 500);
+        var producer = Produce(channel.Writer, 0, 500);
         await Task.WhenAll(consumer, producer);
     }
 
@@ -158,10 +161,10 @@ public sealed class PersistentChannelTests : Test
     [InlineData(102400L, false)]
     public static async Task ProduceConsumeInParallel(long initialSize, bool singleReader)
     {
-        using var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = false, PartitionCapacity = 100, InitialPartitionSize = initialSize });
+        using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = false, PartitionCapacity = 100, InitialPartitionSize = initialSize });
         var consumer = ConsumeInRange(channel.Reader);
-        var producer1 = Produce(channel.Writer, 0M, 250M);
-        var producer2 = Produce(channel.Writer, 250M, 500M);
+        var producer1 = Produce(channel.Writer, 0, 250);
+        var producer2 = Produce(channel.Writer, 250, 500);
         await Task.WhenAll(consumer, producer1, producer2);
     }
 
@@ -176,13 +179,13 @@ public sealed class PersistentChannelTests : Test
     [InlineData(true, true, 10240)]
     public static async Task ChannelCompletion(bool singleReader, bool singleWriter, long initialSize)
     {
-        Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
-        using var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
+        Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>();
+        using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
         await channel.Writer.WriteAsync(g1);
         await channel.Writer.WriteAsync(g2);
         await channel.Writer.WriteAsync(g3);
         True(channel.Writer.TryComplete());
-        await ThrowsAsync<ChannelClosedException>(channel.Writer.WriteAsync(Guid.Empty).AsTask);
+        await ThrowsAsync<ChannelClosedException>(channel.Writer.WriteAsync(Int128.Zero).AsTask);
 
         True(channel.Reader.Completion.IsCompletedSuccessfully);
         Equal(g1, await channel.Reader.ReadAsync());
@@ -197,8 +200,8 @@ public sealed class PersistentChannelTests : Test
     [Fact]
     public static async Task ReliableEnumeration()
     {
-        Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
-        using var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { ReliableEnumeration = true });
+        Int128 g1 = Random.Shared.Next<Int128>(), g2 = Random.Shared.Next<Int128>(), g3 = Random.Shared.Next<Int128>();
+        using var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { ReliableEnumeration = true });
 
         await channel.Writer.WriteAsync(g1);
         await channel.Writer.WriteAsync(g2);
@@ -229,40 +232,40 @@ public sealed class PersistentChannelTests : Test
     public static async Task RegressionIssue136()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+        using (var channel = new SerializationChannel<Int128>(new PersistentChannelOptions
         { Location = path, PartitionCapacity = 3 }))
         {
-            await Produce(channel.Writer, 0M, 30M);
+            await Produce(channel.Writer, 0, 30);
         }
 
-        using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+        using (var channel = new SerializationChannel<Int128>(new PersistentChannelOptions
         { Location = path, PartitionCapacity = 3 }))
         {
-            await Produce(channel.Writer, 30M, 60M);
+            await Produce(channel.Writer, 30, 60);
         }
 
-        using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions
+        using (var channel = new SerializationChannel<Int128>(new PersistentChannelOptions
         { Location = path, PartitionCapacity = 3 }))
         {
             channel.Writer.Complete();
             await Consume(channel.Reader);
         }
 
-        static async Task Produce(ChannelWriter<decimal> writer, decimal start, decimal end)
+        static async Task Produce(ChannelWriter<Int128> writer, Int128 start, Int128 end)
         {
-            for (decimal i = start; i < end; i++)
+            for (Int128 i = start; i < end; i++)
             {
                 await writer.WriteAsync(i);
             }
         }
 
-        static async Task Consume(ChannelReader<decimal> reader)
+        static async Task Consume(ChannelReader<Int128> reader)
         {
             var array = await reader.ReadAllAsync().ToArrayAsync();
             Equal(60, array.Length);
 
             for (var i = 0; i < array.Length; i++)
-                Equal(new decimal(i), array[i]);
+                Equal(i, array[i]);
         }
     }
 
@@ -270,23 +273,23 @@ public sealed class PersistentChannelTests : Test
     public static async Task ReentrantConsumption()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await ProduceTestSet(path, 0M, 1000M);
-        await ProduceTestSet(path, 1000M, 2000M);
-        await ProduceTestSet(path, 2000M, 3000M);
+        await ProduceTestSet(path, 0, 1000);
+        await ProduceTestSet(path, 1000, 2000);
+        await ProduceTestSet(path, 2000, 3000);
 
-        await ConsumeTestSet(path, 0M, 3000M);
+        await ConsumeTestSet(path, 0, 3000);
 
-        static async Task ProduceTestSet(string path, decimal startInclusive, decimal endExclusive)
+        static async Task ProduceTestSet(string path, Int128 startInclusive, Int128 endExclusive)
         {
-            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { Location = path }))
+            using (var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { Location = path }))
             {
                 await Produce(channel.Writer, startInclusive, endExclusive);
             }
         }
 
-        static async Task ConsumeTestSet(string path, decimal startInclusive, decimal endExclusive)
+        static async Task ConsumeTestSet(string path, Int128 startInclusive, Int128 endExclusive)
         {
-            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { Location = path }))
+            using (var channel = new SerializationChannel<Int128>(new PersistentChannelOptions { Location = path }))
             {
                 await Consume(channel.Reader, startInclusive, endExclusive);
             }

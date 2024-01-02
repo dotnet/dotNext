@@ -113,7 +113,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, [NotNullWhen(true)] ref Partition? partition)
     {
         builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
-        return currentIndex.IsBetween(startIndex, endIndex, BoundType.Closed) && TryGetPartition(currentIndex, ref partition);
+        return currentIndex.IsBetween(startIndex.Enclosed(), endIndex.Enclosed()) && TryGetPartition(currentIndex, ref partition);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

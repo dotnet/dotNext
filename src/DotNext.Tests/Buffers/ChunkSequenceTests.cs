@@ -8,7 +8,7 @@ public sealed class ChunkSequenceTests : Test
     public static void Concatenation()
     {
         ReadOnlyMemory<byte> block1 = default, block2 = default;
-        Equal(Array.Empty<byte>(), block1.Concat(block2).ToArray());
+        Equal([], block1.Concat(block2).ToArray());
 
         block1 = new byte[] { 1, 2 };
         Equal([1, 2], block1.Concat(block2).ToArray());
@@ -25,7 +25,7 @@ public sealed class ChunkSequenceTests : Test
     public static void Concatenation2()
     {
         ReadOnlyMemory<byte> block1 = default, block2 = default;
-        Equal(Array.Empty<byte>(), new[] { block1, block2 }.ToReadOnlySequence().ToArray());
+        Equal([], new[] { block1, block2 }.ToReadOnlySequence().ToArray());
 
         block1 = new byte[] { 1, 2 };
         Equal([1, 2], new List<ReadOnlyMemory<byte>> { block1, block2 }.ToReadOnlySequence().ToArray());

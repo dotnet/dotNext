@@ -59,8 +59,7 @@ internal abstract partial class Server : Disposable, IServer
 
         static ValueTask<Result<bool>> Invoke(ILocalMember localMember, ReadOnlySpan<byte> requestData, CancellationToken token)
         {
-            var reader = new SpanReader<byte>(requestData);
-            var request = VoteMessage.Read(ref reader);
+            var request = VoteMessage.Parse(requestData);
             return localMember.VoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, token);
         }
     }
@@ -75,8 +74,7 @@ internal abstract partial class Server : Disposable, IServer
 
         static ValueTask<Result<PreVoteResult>> Invoke(ILocalMember localMember, ReadOnlySpan<byte> requestData, CancellationToken token)
         {
-            var reader = new SpanReader<byte>(requestData);
-            var request = PreVoteMessage.Read(ref reader);
+            var request = PreVoteMessage.Parse(requestData);
             return localMember.PreVoteAsync(request.Id, request.Term, request.LastLogIndex, request.LastLogTerm, token);
         }
     }
@@ -111,7 +109,7 @@ internal abstract partial class Server : Disposable, IServer
         using (var snapshot = new ReceivedSnapshot(protocol))
         {
             protocol.AdvanceReadCursor(SnapshotMessage.Size);
-            response = await localMember.InstallSnapshotAsync(snapshot.Id, snapshot.Term, snapshot, snapshot.Index, token).ConfigureAwait(false);
+            response = await localMember.InstallSnapshotAsync(snapshot.Message.Id, snapshot.Message.Term, snapshot, snapshot.Message.SnapshotIndex, token).ConfigureAwait(false);
         }
 
         if (response.Value is HeartbeatResult.Rejected)
@@ -132,7 +130,7 @@ internal abstract partial class Server : Disposable, IServer
         Result<HeartbeatResult> response;
 
         await protocol.ReadAsync(AppendEntriesHeadersSize, token).ConfigureAwait(false);
-        using (var entries = new ReceivedLogEntries(protocol, BufferAllocator, token))
+        using (var entries = new ReceivedLogEntries(protocol, BufferAllocator, out var applyConfig, token))
         {
             protocol.AdvanceReadCursor(AppendEntriesHeadersSize);
 
@@ -144,7 +142,7 @@ internal abstract partial class Server : Disposable, IServer
             }
 
             protocol.ResetReadState();
-            response = await localMember.AppendEntriesAsync(entries.Id, entries.Term, entries, entries.PrevLogIndex, entries.PrevLogTerm, entries.CommitIndex, entries.Configuration, entries.ApplyConfig, token).ConfigureAwait(false);
+            response = await localMember.AppendEntriesAsync(entries.Id, entries.Term, entries, entries.PrevLogIndex, entries.PrevLogTerm, entries.CommitIndex, entries.Configuration, applyConfig, token).ConfigureAwait(false);
 
             // skip remaining log entries
             while (await entries.MoveNextAsync().ConfigureAwait(false))

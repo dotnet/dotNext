@@ -60,7 +60,7 @@ public class TextMessage : IMessage
         var bufferWriter = writer.TryGetBufferWriter();
         if (bufferWriter is null)
         {
-            result = writer.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
+            result = new(writer.EncodeAsync(Content.AsMemory(), Type.GetEncoding(), lengthFormat: null, token).AsTask());
         }
         else
         {

@@ -112,7 +112,7 @@ public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null)
     private protected override void Resize(int newSize)
     {
         buffer.Resize(newSize, allocator);
-        PooledBufferWriter.AllocationMeter.Record(buffer.Length, measurementTags);
+        PoolingBufferWriter.AllocationMeter.Record(buffer.Length, measurementTags);
     }
 
     /// <inheritdoc/>
@@ -123,11 +123,11 @@ public sealed class PoolingBufferWriter<T>(MemoryAllocator<T>? allocator = null)
     }
 }
 
-file static class PooledBufferWriter
+file static class PoolingBufferWriter
 {
     internal static readonly Histogram<int> AllocationMeter;
 
-    static PooledBufferWriter()
+    static PoolingBufferWriter()
     {
         var meter = new Meter("DotNext.Buffers.PooledBuffer");
         AllocationMeter = meter.CreateHistogram<int>("capacity", description: "Capacity");

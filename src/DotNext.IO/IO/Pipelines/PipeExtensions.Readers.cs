@@ -101,7 +101,7 @@ public static partial class PipeExtensions
     /// <returns>The decoded value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token)
+    public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : notnull, IBinaryFormattable<T>
     {
         return T.Size <= BinaryFormattable256Reader<T>.MaxSize
@@ -118,7 +118,7 @@ public static partial class PipeExtensions
     /// <returns>The integer value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public static ValueTask<T> ReadLittleEndianAsync<T>(this PipeReader reader, CancellationToken token)
+    public static ValueTask<T> ReadLittleEndianAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : notnull, IBinaryInteger<T>
     {
         var type = typeof(T);
@@ -136,7 +136,7 @@ public static partial class PipeExtensions
     /// <returns>The integer value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public static ValueTask<T> ReadBigEndianAsync<T>(this PipeReader reader, CancellationToken token)
+    public static ValueTask<T> ReadBigEndianAsync<T>(this PipeReader reader, CancellationToken token = default)
         where T : notnull, IBinaryInteger<T>
     {
         var type = typeof(T);
@@ -375,18 +375,6 @@ public static partial class PipeExtensions
     }
 
     /// <summary>
-    /// Copies the data from the pipe to the buffer.
-    /// </summary>
-    /// <param name="reader">The pipe to read from.</param>
-    /// <param name="destination">The buffer writer used as destination.</param>
-    /// <param name="count">The number of bytes to copy.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask CopyToAsync(this PipeReader reader, IBufferWriter<byte> destination, long count, CancellationToken token = default)
-        => CopyToAsync(reader, new BufferConsumer<byte>(destination), count, token);
-
-    /// <summary>
     /// Reads the block of memory.
     /// </summary>
     /// <param name="reader">The pipe reader.</param>
@@ -538,11 +526,12 @@ public static partial class PipeExtensions
     public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this PipeReader reader, [EnumeratorCancellation] CancellationToken token = default)
     {
         ReadResult result;
+        ReadOnlySequence<byte> buffer;
         do
         {
             result = await reader.ReadAsync(token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(reader, token);
-            var buffer = result.Buffer;
+            buffer = result.Buffer;
             var consumed = buffer.Start;
 
             try

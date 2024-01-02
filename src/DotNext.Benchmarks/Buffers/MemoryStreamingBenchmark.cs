@@ -54,7 +54,7 @@ public class MemoryStreamingBenchmark
     [Benchmark(Description = "PooledArrayBufferWriter<byte>")]
     public void WriteToGrowableBuffer()
     {
-        using var buffer = new PooledArrayBufferWriter<byte>();
+        using var buffer = new PoolingArrayBufferWriter<byte>();
         using var ms = buffer.AsStream();
         Write(ms);
     }

@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using System.IO.Compression;
+using System.Formats.Tar;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -131,13 +131,13 @@ public partial class PersistentState
         /// Gets or sets compression level used
         /// to create backup archive.
         /// </summary>
-        public CompressionLevel BackupCompression { get; set; } = CompressionLevel.Optimal;
+        public TarEntryFormat BackupFormat { get; set; } = TarEntryFormat.Pax;
 
         /// <summary>
         /// If set then every read operations will be performed
         /// on buffered copy of the log entries.
         /// </summary>
-        public RaftLogEntriesBufferingOptions? CopyOnReadOptions
+        public LogEntriesBufferingOptions? CopyOnReadOptions
         {
             get;
             set;

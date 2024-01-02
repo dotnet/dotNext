@@ -1,6 +1,5 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
-using Buffers;
 using IO;
 using IO.Log;
 
@@ -8,27 +7,22 @@ internal partial class Server
 {
     private sealed class ReceivedSnapshot : StreamTransferObject, IRaftLogEntry
     {
-        internal readonly ClusterMemberId Id;
-        internal readonly long Term, Index;
-        private readonly LogEntryMetadata metadata;
+        internal readonly SnapshotMessage Message;
 
         internal ReceivedSnapshot(ProtocolStream stream)
             : base(stream, leaveOpen: true)
-        {
-            var reader = new SpanReader<byte>(stream.WrittenBufferSpan);
-            (Id, Term, Index, metadata) = SnapshotMessage.Read(ref reader);
-        }
+            => Message = SnapshotMessage.Parse(stream.WrittenBufferSpan);
 
-        DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
+        DateTimeOffset ILogEntry.Timestamp => Message.Metadata.Timestamp;
 
-        long? IDataTransferObject.Length => metadata.Length;
+        long? IDataTransferObject.Length => Message.Metadata.Length;
 
-        int? IRaftLogEntry.CommandId => metadata.CommandId;
+        int? IRaftLogEntry.CommandId => Message.Metadata.CommandId;
 
-        long IRaftLogEntry.Term => metadata.Term;
+        long IRaftLogEntry.Term => Message.Metadata.Term;
 
         public override bool IsReusable => false;
 
-        bool ILogEntry.IsSnapshot => metadata.IsSnapshot;
+        bool ILogEntry.IsSnapshot => Message.Metadata.IsSnapshot;
     }
 }

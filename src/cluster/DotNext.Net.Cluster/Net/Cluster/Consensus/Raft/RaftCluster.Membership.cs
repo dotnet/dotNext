@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
@@ -76,11 +74,6 @@ public partial class RaftCluster<TMember>
     {
         internal ConcurrentMembershipModificationException()
             : base(ExceptionMessages.ConcurrentMembershipUpdate)
-        {
-        }
-
-        private ConcurrentMembershipModificationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
     }

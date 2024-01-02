@@ -8,6 +8,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster;
 
 using Buffers;
+using Buffers.Binary;
 using IO.Hashing;
 using Hex = Buffers.Text.Hex;
 using HttpEndPoint = Http.HttpEndPoint;
@@ -114,28 +115,24 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         family = random.Next();
     }
 
-    /// <summary>
-    /// Deserializes the cluster member ID.
-    /// </summary>
-    /// <param name="reader">The memory block reader.</param>
-    public ClusterMemberId(ref SpanReader<byte> reader)
+    private ClusterMemberId(ref SpanReader<byte> reader)
     {
         address = new(reader.Read(16));
-        lengthAndPort = reader.ReadLittleEndian<ulong>(isUnsigned: true);
-        family = reader.ReadLittleEndian<int>(isUnsigned: false);
+        lengthAndPort = reader.ReadLittleEndian<ulong>();
+        family = reader.ReadLittleEndian<int>();
     }
 
-    /// <inheritdoc cref="IBinaryFormattable{T}.Parse(ref SpanReader{byte})"/>
-    static ClusterMemberId IBinaryFormattable<ClusterMemberId>.Parse(ref SpanReader<byte> input)
-        => new(ref input);
+    /// <inheritdoc cref="IBinaryFormattable{T}.Parse(ReadOnlySpan{byte})"/>
+    static ClusterMemberId IBinaryFormattable<ClusterMemberId>.Parse(ReadOnlySpan<byte> input)
+        => new(input);
 
     /// <summary>
     /// Serializes the value as a sequence of bytes.
     /// </summary>
-    /// <param name="writer">The memory block writer.</param>
-    /// <exception cref="InternalBufferOverflowException"><paramref name="writer"/> is not large enough.</exception>
-    public void Format(ref SpanWriter<byte> writer)
+    /// <param name="output">The output buffer.</param>
+    public void Format(Span<byte> output)
     {
+        var writer = new SpanWriter<byte>(output);
         address.TryWriteBytes(writer.Slide(16));
         writer.WriteLittleEndian(lengthAndPort);
         writer.WriteLittleEndian(family);
@@ -189,7 +186,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public override string ToString()
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
-        Format(ref writer);
+        writer.Write(this);
         return Hex.EncodeToUtf16(writer.WrittenSpan);
     }
 

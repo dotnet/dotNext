@@ -30,7 +30,7 @@ internal partial class Server
         bool IDataTransferObject.IsReusable => true;
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(buffer.Memory, lengthFormat: null, token);
+            => writer.Invoke(buffer.Memory, token);
 
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
         {
