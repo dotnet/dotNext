@@ -37,11 +37,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             // nothing to do here
         }
-
-        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
-        {
-            // nothing to do here
-        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;

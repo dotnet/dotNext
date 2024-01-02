@@ -23,11 +23,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         readonly bool ILockManager.IsLockAllowed => Value;
 
         void ILockManager.AcquireLock() => Value = false;
-
-        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
-        {
-            // nothing to do here
-        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;

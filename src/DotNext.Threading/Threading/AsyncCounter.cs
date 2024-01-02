@@ -37,11 +37,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         readonly bool ILockManager.IsLockAllowed => Value > 0L;
 
         void ILockManager.AcquireLock() => Decrement();
-
-        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
-        {
-            // nothing to do here
-        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;

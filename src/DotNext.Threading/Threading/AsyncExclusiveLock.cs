@@ -27,11 +27,6 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         public void AcquireLock() => state = true;
 
         internal void ExitLock() => state = false;
-
-        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
-        {
-            // nothing to do here
-        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;

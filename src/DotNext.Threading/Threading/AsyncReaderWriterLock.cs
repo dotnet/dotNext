@@ -85,41 +85,47 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ReadLockManager : ILockManager<WaitNode>
+    private struct ReadLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(in this)).IsReadLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsReadLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(in this)).AcquireReadLock();
+            => state.AcquireReadLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Read;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct WriteLockManager : ILockManager<WaitNode>
+    private struct WriteLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<WriteLockManager, State>(ref Unsafe.AsRef(this)).IsWriteLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsWriteLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<WriteLockManager, State>(ref Unsafe.AsRef(this)).AcquireWriteLock();
+            => state.AcquireWriteLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Exclusive;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct UpgradeManager : ILockManager<WaitNode>
+    private struct UpgradeManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<UpgradeManager, State>(ref Unsafe.AsRef(this)).IsUpgradeToWriteLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsUpgradeToWriteLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<UpgradeManager, State>(ref Unsafe.AsRef(this)).AcquireWriteLock();
+            => state.AcquireWriteLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Upgrade;
     }
 

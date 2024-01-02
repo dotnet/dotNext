@@ -61,28 +61,32 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct WeakLockManager : ILockManager<WaitNode>
+    private struct WeakLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(in this)).IsWeakLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsWeakLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(in this)).AcquireWeakLock();
+            => state.AcquireWeakLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = false;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct StrongLockManager : ILockManager<WaitNode>
+    private struct StrongLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(in this)).IsStrongLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsStrongLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(in this)).AcquireStrongLock();
+            => state.AcquireStrongLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = true;
     }
 

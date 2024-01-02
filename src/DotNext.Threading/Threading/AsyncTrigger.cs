@@ -23,11 +23,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         {
             // nothing to do here
         }
-
-        void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
-        {
-            // nothing to do here
-        }
     }
 
     private static LockManager manager;
@@ -311,10 +306,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         bool ILockManager.IsLockAllowed => Condition.Invoke();
 
         readonly void ILockManager.AcquireLock()
-        {
-        }
-
-        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
         {
         }
     }

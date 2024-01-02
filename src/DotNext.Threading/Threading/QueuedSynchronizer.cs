@@ -145,7 +145,7 @@ public class QueuedSynchronizer : Disposable
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
-        manager.InitializeNode(node);
+        TLockManager.InitializeNode(node);
         node.Initialize(this, throwOnTimeout);
         EnqueueNode(node);
         return node;
@@ -525,7 +525,9 @@ public class QueuedSynchronizer : Disposable
     private protected interface ILockManager<in TNode> : ILockManager
         where TNode : WaitNode
     {
-        void InitializeNode(TNode node);
+        static virtual void InitializeNode(TNode node)
+        {
+        }
     }
 
     /// <summary>
