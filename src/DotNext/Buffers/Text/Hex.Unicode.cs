@@ -76,7 +76,7 @@ public static partial class Hex
                 do
                 {
                     var lowNibbles = Fetch(ref bytePtr);
-                    var highNibbles = Vector256.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
+                    var highNibbles = (lowNibbles.AsUInt32() >>> 4).AsByte().AsByte();
 
                     // combine high nibbles and low nibbles, then do table lookup
                     var result = Avx2.UnpackLow(highNibbles, lowNibbles);
@@ -85,7 +85,7 @@ public static partial class Hex
                     result = Avx2.Shuffle(result, utf16Mask);
 
                     // save vector back to memory block
-                    Vector256.StoreUnsafe(result, ref As<char, byte>(ref charPtr));
+                    result.StoreUnsafe(ref As<char, byte>(ref charPtr));
 
                     bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
                     charPtr = ref Add(ref charPtr, charsCountPerIteration);
@@ -133,7 +133,7 @@ public static partial class Hex
                 do
                 {
                     var lowNibbles = Vector128.CreateScalarUnsafe(ReadUnaligned<uint>(ref bytePtr)).AsByte();
-                    var highNibbles = Vector128.ShiftRightLogical(lowNibbles.AsUInt32(), 4).AsByte();
+                    var highNibbles = (lowNibbles.AsUInt32() >>> 4).AsByte();
 
                     // combine high nibbles and low nibbles, then do table lookup
                     var result = Sse2.UnpackLow(highNibbles, lowNibbles);
@@ -142,7 +142,7 @@ public static partial class Hex
                     result = Ssse3.Shuffle(result, utf16Mask);
 
                     // save vector back to memory block
-                    Vector128.StoreUnsafe(result, ref As<char, byte>(ref charPtr));
+                    result.StoreUnsafe(ref As<char, byte>(ref charPtr));
 
                     bytePtr = ref Add(ref bytePtr, bytesCountPerIteration);
                     charPtr = ref Add(ref charPtr, charsCountPerIteration);
