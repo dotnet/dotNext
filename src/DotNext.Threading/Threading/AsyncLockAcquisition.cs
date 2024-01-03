@@ -15,47 +15,47 @@ public static class AsyncLockAcquisition
     private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)
         where T : class
     {
-        switch (obj)
-        {
-            case null:
-                throw new ArgumentNullException(nameof(obj));
-            case AsyncReaderWriterLock rwl:
-                return rwl;
-            case AsyncSharedLock or ReaderWriterLockSlim or AsyncExclusiveLock or SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock:
-            case string str when string.IsInterned(str) is not null:
-                throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
-            default:
-                return obj.GetUserData().GetOrSet(ReaderWriterLock);
-        }
+        ArgumentNullException.ThrowIfNull(obj);
+
+        if (obj is AsyncReaderWriterLock rwl)
+            return rwl;
+
+        if (GC.GetGeneration(obj) is int.MaxValue || obj is AsyncSharedLock or ReaderWriterLockSlim or AsyncExclusiveLock or SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock)
+            throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
+
+        return obj.GetUserData().GetOrSet(ReaderWriterLock);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AsyncLock GetExclusiveLock<T>(this T obj)
         where T : class
     {
+        ArgumentNullException.ThrowIfNull(obj);
+
         AsyncLock @lock;
-        switch (obj)
+        if (obj is AsyncSharedLock shared)
         {
-            case null:
-                throw new ArgumentNullException(nameof(obj));
-            case AsyncSharedLock shared:
-                @lock = AsyncLock.Exclusive(shared);
-                break;
-            case AsyncExclusiveLock exclusive:
-                @lock = AsyncLock.Exclusive(exclusive);
-                break;
-            case SemaphoreSlim semaphore:
-                @lock = AsyncLock.Semaphore(semaphore);
-                break;
-            case AsyncReaderWriterLock rwl:
-                @lock = AsyncLock.WriteLock(rwl);
-                break;
-            case ReaderWriterLockSlim or WaitHandle or System.Threading.ReaderWriterLock:
-            case string str when string.IsInterned(str) is not null:
-                throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
-            default:
-                @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));
-                break;
+            @lock = AsyncLock.Exclusive(shared);
+        }
+        else if (obj is AsyncExclusiveLock exclusive)
+        {
+            @lock = AsyncLock.Exclusive(exclusive);
+        }
+        else if (obj is SemaphoreSlim semaphore)
+        {
+            @lock = AsyncLock.Semaphore(semaphore);
+        }
+        else if (obj is AsyncReaderWriterLock rwl)
+        {
+            @lock = AsyncLock.WriteLock(rwl);
+        }
+        else if (GC.GetGeneration(obj) is int.MaxValue || obj is ReaderWriterLockSlim or WaitHandle or System.Threading.ReaderWriterLock)
+        {
+            throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
+        }
+        else
+        {
+            @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));
         }
 
         return @lock;
