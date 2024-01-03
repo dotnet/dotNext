@@ -29,7 +29,7 @@ public static partial class Collection
             List<T> typedList => Span.Copy(CollectionsMarshal.AsSpan(typedList), allocator),
             T[] array => Span.Copy(array, allocator),
             string str => Unsafe.BitCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
-            ArraySegment<T> segment => Span.Copy<T>(segment.AsSpan(), allocator),
+            ArraySegment<T> segment => Span.Copy(segment.AsSpan(), allocator),
             ICollection<T> collection => collection.Count == 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
             IReadOnlyCollection<T> collection => collection.Count == 0 ? default : CopySlow(enumerable, collection.Count, allocator),
             _ => CopySlow(enumerable, GetSize(enumerable, sizeHint), allocator),
@@ -52,8 +52,7 @@ public static partial class Collection
             foreach (var item in enumerable)
                 writer.Add(item);
 
-            MemoryOwner<T> result;
-            if (!writer.TryDetachBuffer(out result))
+            if (!writer.TryDetachBuffer(out MemoryOwner<T> result))
                 result = writer.WrittenSpan.Copy(allocator);
 
             return result;
