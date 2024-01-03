@@ -99,7 +99,7 @@ public static class BasicExtensions
     public static bool TryGetValue<T>(this T? nullable, out T value)
         where T : struct
     {
-        value = nullable.GetValueOrDefault();
+        value = Nullable.GetValueRefOrDefaultRef(in nullable);
         return nullable.HasValue;
     }
 
