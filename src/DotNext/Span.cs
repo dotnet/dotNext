@@ -123,6 +123,18 @@ public static partial class Span
     /// <typeparam name="T">The type of items in the span.</typeparam>
     /// <param name="span">A contiguous region of arbitrary memory.</param>
     /// <param name="maxLength">Maximum length.</param>
+    /// <returns>Trimmed span.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
+    public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
+        => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
+
+    /// <summary>
+    /// Trims the span to specified length if it exceeds it.
+    /// If length is less that <paramref name="maxLength" /> then the original span returned.
+    /// </summary>
+    /// <typeparam name="T">The type of items in the span.</typeparam>
+    /// <param name="span">A contiguous region of arbitrary memory.</param>
+    /// <param name="maxLength">Maximum length.</param>
     /// <param name="rest">The rest of <paramref name="span"/>.</param>
     /// <returns>Trimmed span.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
@@ -160,18 +172,6 @@ public static partial class Span
 
         return span;
     }
-
-    /// <summary>
-    /// Trims the span to specified length if it exceeds it.
-    /// If length is less that <paramref name="maxLength" /> then the original span returned.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the span.</typeparam>
-    /// <param name="span">A contiguous region of arbitrary memory.</param>
-    /// <param name="maxLength">Maximum length.</param>
-    /// <returns>Trimmed span.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
-    public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
-        => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
 
     private static int IndexOf<T, TComparer>(ReadOnlySpan<T> span, T value, int startIndex, TComparer comparer)
         where TComparer : struct, ISupplier<T, T, bool>
