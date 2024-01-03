@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace DotNext;
@@ -349,7 +348,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MemberNotNull(nameof(ValueOrDefault))]
     public T OrThrow<TException>()
         where TException : Exception, new()
-        => OrThrow<Activator<TException>>(new Activator<TException>());
+        => OrThrow(new Activator<TException>());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [MemberNotNull(nameof(ValueOrDefault))]

@@ -280,7 +280,7 @@ public partial struct UserDataStorage
         {
             Debug.Assert(slot.IsAllocated);
 
-            Set<TValue>(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
+            Set(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
         }
 
         private Optional<TValue> Remove<TValue>(int typeIndex, int valueIndex)
@@ -326,6 +326,6 @@ public partial struct UserDataStorage
         ref var partition = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Partitions), bucketIndex);
 
         ConditionalWeakTable<object, BackingStorage> newStorage;
-        return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = new(), null) ?? newStorage;
+        return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
     }
 }
