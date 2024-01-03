@@ -415,7 +415,7 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
         }
 
         private static string GetCommandIdHeaderValue(int? id)
-            => id.HasValue ? id.GetValueOrDefault().ToString(InvariantCulture) : string.Empty;
+            => id.HasValue ? Nullable.GetValueRefOrDefaultRef(in id).ToString(InvariantCulture) : string.Empty;
 
         private static ValueTask<long> EncodeHeadersToStreamAsync(Stream output, BufferWriter<char> builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer, CancellationToken token)
         {
