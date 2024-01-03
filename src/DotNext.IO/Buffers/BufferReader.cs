@@ -4,7 +4,7 @@ namespace DotNext.Buffers;
 
 internal static class BufferReader
 {
-    internal static SequencePosition Append<TParser>(this ref TParser parser, ReadOnlySequence<byte> input)
+    internal static SequencePosition Append<TParser>(this ref TParser parser, in ReadOnlySequence<byte> input)
         where TParser : struct, IBufferReader
     {
         var position = input.Start;

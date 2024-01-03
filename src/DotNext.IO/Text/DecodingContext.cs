@@ -56,7 +56,7 @@ public readonly struct DecodingContext(Encoding encoding, bool reuseDecoder) : I
     internal static int GetChars(in ReadOnlySequence<byte> bytes, ref SequencePosition position, Encoding encoding, Decoder decoder, Span<char> buffer)
     {
         int charsWritten;
-        if (bytes.TryGet(ref position, out var source, advance: false))
+        if (bytes.TryGet(ref position, out var source, advance: false) && !source.IsEmpty)
         {
             var bytesToRead = buffer.Length / encoding.GetMaxByteCount(1);
             bytesToRead = Math.Min(bytesToRead, source.Length);

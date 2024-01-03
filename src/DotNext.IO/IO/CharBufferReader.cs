@@ -21,13 +21,13 @@ internal sealed class CharBufferReader : TextBufferReader
     }
 
     public override int Peek()
-        => sequence.TryGet(ref position, out var block, false) && !block.IsEmpty ? block.Span[0] : InvalidChar;
+        => sequence.TryGet(ref position, out var block, advance: false) && !block.IsEmpty ? block.Span[0] : InvalidChar;
 
     /// <inheritdoc />
     public override int Read(Span<char> buffer)
     {
         int result;
-        if (!buffer.IsEmpty && sequence.TryGet(ref position, out var block, false) && !block.IsEmpty)
+        if (!buffer.IsEmpty && sequence.TryGet(ref position, out var block, advance: false) && !block.IsEmpty)
         {
             block.Span.CopyTo(buffer, out result);
             position = sequence.GetPosition(result, position);
@@ -58,7 +58,7 @@ internal sealed class CharBufferReader : TextBufferReader
 
         // this variable is needed to save temporary the length of characters that are candidates for line termination string
         var newLineBufferPosition = 0;
-        while (sequence.TryGet(ref position, out var block, false) && !block.IsEmpty)
+        while (sequence.TryGet(ref position, out var block, advance: false) && !block.IsEmpty)
         {
             foreach (var ch in block.Span)
             {

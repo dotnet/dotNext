@@ -190,7 +190,15 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="chunk">The chunk of bytes.</param>
     /// <returns><see langword="true"/> if the next chunk is obtained successfully; <see langword="false"/> if the end of the stream reached.</returns>
     public bool TryRead(out ReadOnlyMemory<byte> chunk)
-        => RemainingSequence.TryGet(ref position, out chunk);
+    {
+        var remaining = RemainingSequence;
+        if (remaining.TryGet(ref position, out chunk, advance: false))
+        {
+            position = remaining.GetPosition(chunk.Length, position);
+        }
+
+        return !chunk.IsEmpty;
+    }
 
     /// <summary>
     /// Tries to read the next chunk.

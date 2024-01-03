@@ -368,19 +368,27 @@ public sealed class AsyncBinaryReaderWriterTests : Test
                 await reader.CopyToAsync(destStream);
                 Equal(content, destStream.ToArray());
             }
+        }
+    }
 
-            using (var sourceStream = new MemoryStream(content, false))
-            {
-                var writer = source.CreateWriter();
-                await writer.CopyFromAsync(sourceStream, sourceStream.Length);
-                if (source is PipeSource pipe)
-                    await pipe.CompleteWriterAsync();
+    [Theory]
+    [MemberData(nameof(GetSources))]
+    public static async Task CopyFromStreamToStreamWithLength(IAsyncBinaryReaderWriterSource source)
+    {
+        var content = new byte[] { 1, 2, 3 };
 
-                var reader = source.CreateReader();
-                using var destStream = new MemoryStream(256);
-                await reader.CopyToAsync(destStream, sourceStream.Length);
-                Equal(content, destStream.ToArray());
-            }
+        await using (source)
+        {
+            using var sourceStream = new MemoryStream(content, false);
+            var writer = source.CreateWriter();
+            await writer.CopyFromAsync(sourceStream, sourceStream.Length);
+            if (source is PipeSource pipe)
+                await pipe.CompleteWriterAsync();
+
+            var reader = source.CreateReader();
+            using var destStream = new MemoryStream(256);
+            await reader.CopyToAsync(destStream, sourceStream.Length);
+            Equal(content, destStream.ToArray());
         }
     }
 
@@ -404,19 +412,27 @@ public sealed class AsyncBinaryReaderWriterTests : Test
                 await reader.CopyToAsync<StreamConsumer>(destStream);
                 Equal(content, destStream.ToArray());
             }
+        }
+    }
 
-            using (var sourceStream = new MemoryStream(content, false))
-            {
-                var writer = source.CreateWriter();
-                await writer.CopyFromAsync(sourceStream, sourceStream.Length);
-                if (source is PipeSource pipe)
-                    await pipe.CompleteWriterAsync();
+    [Theory]
+    [MemberData(nameof(GetSources))]
+    public static async Task CopyFromStreamToConsumerWithLength(IAsyncBinaryReaderWriterSource source)
+    {
+        var content = new byte[] { 1, 2, 3 };
 
-                var reader = source.CreateReader();
-                using var destStream = new MemoryStream(256);
-                await reader.CopyToAsync<StreamConsumer>(destStream, sourceStream.Length);
-                Equal(content, destStream.ToArray());
-            }
+        await using (source)
+        {
+            using var sourceStream = new MemoryStream(content, false);
+            var writer = source.CreateWriter();
+            await writer.CopyFromAsync(sourceStream, sourceStream.Length);
+            if (source is PipeSource pipe)
+                await pipe.CompleteWriterAsync();
+
+            var reader = source.CreateReader();
+            using var destStream = new MemoryStream(256);
+            await reader.CopyToAsync<StreamConsumer>(destStream, sourceStream.Length);
+            Equal(content, destStream.ToArray());
         }
     }
 
@@ -440,19 +456,27 @@ public sealed class AsyncBinaryReaderWriterTests : Test
                 await reader.CopyToAsync(destination);
                 Equal(content, destination.WrittenSpan.ToArray());
             }
+        }
+    }
 
-            using (var sourceStream = new MemoryStream(content, false))
-            {
-                var writer = source.CreateWriter();
-                await writer.CopyFromAsync(sourceStream, sourceStream.Length);
-                if (source is PipeSource pipe)
-                    await pipe.CompleteWriterAsync();
+    [Theory]
+    [MemberData(nameof(GetSources))]
+    public static async Task CopyFromStreamToBufferWithLength(IAsyncBinaryReaderWriterSource source)
+    {
+        var content = new byte[] { 1, 2, 3 };
 
-                var reader = source.CreateReader();
-                var destination = new ArrayBufferWriter<byte>(256);
-                await reader.CopyToAsync(destination, sourceStream.Length);
-                Equal(content, destination.WrittenSpan.ToArray());
-            }
+        await using (source)
+        {
+            using var sourceStream = new MemoryStream(content, false);
+            var writer = source.CreateWriter();
+            await writer.CopyFromAsync(sourceStream, sourceStream.Length);
+            if (source is PipeSource pipe)
+                await pipe.CompleteWriterAsync();
+
+            var reader = source.CreateReader();
+            var destination = new ArrayBufferWriter<byte>(256);
+            await reader.CopyToAsync(destination, sourceStream.Length);
+            Equal(content, destination.WrittenSpan.ToArray());
         }
     }
 

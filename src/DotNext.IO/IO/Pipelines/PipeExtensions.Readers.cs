@@ -30,13 +30,15 @@ public static partial class PipeExtensions
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<TResult> ReadSlowAsync(PipeReader reader, TParser parser, CancellationToken token)
         {
-            var completed = false;
-            for (SequencePosition consumed; parser.RemainingBytes > 0 && !completed; reader.AdvanceTo(consumed))
+            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(reader, token);
-                consumed = parser.Append(readResult.Buffer);
-                completed = readResult.IsCompleted;
+                var buffer = readResult.Buffer;
+                if (buffer.IsEmpty)
+                    break;
+
+                consumed = parser.Append(buffer);
             }
 
             return parser.EndOfStream<TResult, TParser>();
@@ -57,13 +59,15 @@ public static partial class PipeExtensions
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         static async ValueTask ReadSlowAsync(PipeReader reader, TParser parser, CancellationToken token)
         {
-            var completed = false;
-            for (SequencePosition consumed; parser.RemainingBytes > 0 && !completed; reader.AdvanceTo(consumed))
+            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(reader, token);
-                consumed = parser.Append(readResult.Buffer);
-                completed = readResult.IsCompleted;
+                var buffer = readResult.Buffer;
+                if (buffer.IsEmpty)
+                    break;
+
+                consumed = parser.Append(buffer);
             }
 
             parser.EndOfStream();
@@ -359,12 +363,12 @@ public static partial class PipeExtensions
                 {
                     buffer = buffer.Slice(consumed, count);
                 }
-                else if (result.IsCompleted)
+                else if (buffer.IsEmpty)
                 {
                     throw new EndOfStreamException();
                 }
 
-                while (buffer.TryGet(ref consumed, out var block))
+                for (ReadOnlyMemory<byte> block; buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty; count -= block.Length, consumed = buffer.GetPosition(block.Length, consumed))
                     await consumer.Invoke(block, token).ConfigureAwait(false);
             }
             finally
@@ -536,10 +540,8 @@ public static partial class PipeExtensions
 
             try
             {
-                for (var position = consumed; buffer.TryGet(ref position, out var block); consumed = position)
+                for (ReadOnlyMemory<byte> block; buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty; consumed = buffer.GetPosition(block.Length, consumed))
                     yield return block;
-
-                consumed = buffer.End;
             }
             finally
             {
