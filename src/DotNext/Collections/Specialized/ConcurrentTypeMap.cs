@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized;
 
-using Threading;
-
 /// <summary>
 /// Represents thread-safe implementation of <see cref="ITypeMap{TValue}"/> interface.
 /// </summary>
