@@ -20,7 +20,7 @@ public class StringBuildingBenchmark
         for (var i = 0; i < 100; i++)
         {
             writer.Write(StringValue);
-            writer.WriteFormattable(int.MaxValue);
+            writer.Format(int.MaxValue);
             writer.WriteLine();
         }
 
@@ -34,7 +34,7 @@ public class StringBuildingBenchmark
         for (var i = 0; i < 100; i++)
         {
             writer.Write(StringValue);
-            writer.WriteFormattable(int.MaxValue);
+            writer.Format(int.MaxValue);
             writer.WriteLine();
         }
 

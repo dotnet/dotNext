@@ -52,8 +52,8 @@ public class DictionarySerializationBenchmark
         var context = new EncodingContext(Encoding.UTF8, true);
         foreach (var (key, value) in data)
         {
-            await writer.EncodeAsync(key.AsMemory(), context, LengthFormat.Plain);
-            await writer.EncodeAsync(value.AsMemory(), context, LengthFormat.Plain);
+            await writer.EncodeAsync(key.AsMemory(), context, LengthFormat.LittleEndian);
+            await writer.EncodeAsync(value.AsMemory(), context, LengthFormat.LittleEndian);
         }
     }
 
@@ -75,8 +75,8 @@ public class DictionarySerializationBenchmark
         var context = new EncodingContext(Encoding.UTF8, true);
         foreach (var (key, value) in data)
         {
-            await writer.EncodeAsync(key.AsMemory(), context, LengthFormat.Plain);
-            await writer.EncodeAsync(value.AsMemory(), context, LengthFormat.Plain);
+            await writer.EncodeAsync(key.AsMemory(), context, LengthFormat.LittleEndian);
+            await writer.EncodeAsync(value.AsMemory(), context, LengthFormat.LittleEndian);
         }
 
         await output.FlushAsync();
