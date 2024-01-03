@@ -158,10 +158,10 @@ public abstract class Disposable : IDisposable
     /// Disposes many objects in safe manner.
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
-    public static void Dispose(params IDisposable?[] objects)
+    public static void Dispose(ReadOnlySpan<IDisposable?> objects)
     {
-        for (nuint i = 0; i < objects.GetLength(); i++)
-            objects[i]?.Dispose();
+        foreach (var obj in objects)
+            obj?.Dispose();
     }
 
     /// <summary>

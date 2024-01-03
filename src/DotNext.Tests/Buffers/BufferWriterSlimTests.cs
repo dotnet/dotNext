@@ -310,7 +310,7 @@ public sealed class BufferWriterSlimTests : Test
     public static void Rendering()
     {
         var writer = new BufferWriterSlim<char>();
-        writer.Format(provider: null, CompositeFormat.Parse("{0}, {1}!"), "Hello", "world");
+        writer.Format(CompositeFormat.Parse("{0}, {1}!"), ["Hello", "world"]);
         Equal("Hello, world!", writer.ToString());
     }
 }

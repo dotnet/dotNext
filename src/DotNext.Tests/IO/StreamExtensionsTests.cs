@@ -130,7 +130,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine(ms2);
+        using var combined = ms1.Combine([ms2]);
         True(combined.CanRead);
         False(combined.CanWrite);
         False(combined.CanSeek);
@@ -144,9 +144,9 @@ public sealed class StreamExtensionsTests : Test
     [Fact]
     public static async Task CombineStreamsAsync()
     {
-        await using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
-        await using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
-        await using var combined = new[] { ms1, ms2 }.Combine();
+        await using var ms1 = new MemoryStream([1, 2, 3]);
+        await using var ms2 = new MemoryStream([4, 5, 6]);
+        await using var combined = ms1.Combine([ms2]);
 
         var buffer = new byte[6];
         await combined.ReadExactlyAsync(buffer);
@@ -157,9 +157,9 @@ public sealed class StreamExtensionsTests : Test
     [Fact]
     public static void CopyCombinedStreams()
     {
-        using var ms1 = new MemoryStream(new byte[] { 1, 2, 3 });
-        using var ms2 = new MemoryStream(new byte[] { 4, 5, 6 });
-        using var combined = ms1.Combine(ms2);
+        using var ms1 = new MemoryStream([1, 2, 3]);
+        using var ms2 = new MemoryStream([4, 5, 6]);
+        using var combined = ms1.Combine([ms2]);
         using var result = new MemoryStream();
 
         combined.CopyTo(result, 128);
@@ -171,7 +171,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine(ms2);
+        await using var combined = ms1.Combine([ms2]);
         await using var result = new MemoryStream();
 
         await combined.CopyToAsync(result, 128);
@@ -183,7 +183,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine(ms2);
+        using var combined = ms1.Combine([ms2]);
 
         Equal(1, combined.ReadByte());
         Equal(2, combined.ReadByte());
@@ -199,7 +199,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine(ms2);
+        await using var combined = ms1.Combine([ms2]);
 
         Throws<NotSupportedException>(() => combined.SetLength(0L));
         Throws<NotSupportedException>(() => combined.Seek(0L, default));

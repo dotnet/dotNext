@@ -23,13 +23,6 @@ public static partial class StreamExtensions
     /// <param name="stream">The stream to combine.</param>
     /// <param name="others">A collection of streams.</param>
     /// <returns>An object that represents multiple streams as one logical stream.</returns>
-    public static Stream Combine(this Stream stream, params Stream[] others)
-        => others is { Length: > 0 } ? new SparseStream(others.Prepend(stream)) : stream;
-
-    /// <summary>
-    /// Combines multiple readable streams.
-    /// </summary>
-    /// <param name="streams">A collection of readable streams.</param>
-    /// <returns>An object that represents multiple streams as one logical stream.</returns>
-    public static Stream Combine(this IEnumerable<Stream> streams) => new SparseStream(streams);
+    public static Stream Combine(this Stream stream, ReadOnlySpan<Stream> others)
+        => others is { Length: > 0 } ? new SparseStream([stream, .. others]) : stream;
 }

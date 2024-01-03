@@ -1,7 +1,9 @@
 using System.Numerics;
-using DotNext.Buffers.Binary;
+using System.Text;
 
 namespace DotNext.Buffers;
+
+using Binary;
 
 public sealed class SpanReaderTests : Test
 {
@@ -365,5 +367,13 @@ public sealed class SpanReaderTests : Test
         }
 
         True(raised);
+    }
+
+    [Fact]
+    public static void Rendering()
+    {
+        var writer = new SpanWriter<char>(stackalloc char[16]);
+        True(writer.TryFormat(CompositeFormat.Parse("{0}, {1}!"), ["Hello", "world"]));
+        Equal("Hello, world!", writer.WrittenSpan.ToString());
     }
 }

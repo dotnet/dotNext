@@ -55,22 +55,27 @@ public static class CharBuffer
     /// Writes formatted string to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
-    /// <param name="provider">A culture-specific formatting information.</param>
     /// <param name="format">Formatting template.</param>
     /// <param name="args">The arguments to be rendered as a part of template.</param>
+    /// <param name="provider">A culture-specific formatting information.</param>
     /// <returns>The number of written characters.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
-    public static int Format(this IBufferWriter<char> writer, IFormatProvider? provider, CompositeFormat format, params object?[] args)
+    public static int Format(this IBufferWriter<char> writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider = null)
     {
         const int maxBufferSize = int.MaxValue / 2;
-        for (var bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+
+        int bufferSize;
+        for (bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
         {
             var buffer = writer.GetSpan(bufferSize);
             if (buffer.TryWrite(provider, format, out bufferSize, args))
-                return bufferSize;
+                break;
 
             bufferSize = buffer.Length;
         }
+
+        writer.Advance(bufferSize);
+        return bufferSize;
     }
 
     /// <summary>
@@ -188,22 +193,27 @@ public static class CharBuffer
     /// Writes formatted string to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
-    /// <param name="provider">A culture-specific formatting information.</param>
     /// <param name="format">Formatting template.</param>
     /// <param name="args">The arguments to be rendered as a part of template.</param>
+    /// <param name="provider">A culture-specific formatting information.</param>
     /// <returns>The number of written characters.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
-    public static int Format(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, CompositeFormat format, params object?[] args)
+    public static int Format(this ref BufferWriterSlim<char> writer, CompositeFormat format, scoped ReadOnlySpan<object?> args, IFormatProvider? provider = null)
     {
         const int maxBufferSize = int.MaxValue / 2;
-        for (var bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+
+        int bufferSize;
+        for (bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
         {
             var buffer = writer.InternalGetSpan(bufferSize);
             if (buffer.TryWrite(provider, format, out bufferSize, args))
-                return bufferSize;
+                break;
 
             bufferSize = buffer.Length;
         }
+
+        writer.Advance(bufferSize);
+        return bufferSize;
     }
 
     /// <summary>
@@ -313,7 +323,7 @@ public static class CharBuffer
     /// <param name="args">The arguments to be rendered as a part of template.</param>
     /// <param name="provider">A culture-specific formatting information.</param>
     /// <returns><see langword="true"/> if <paramref name="writer"/> has enough free space to place rendered string; otherwise, <see langword="false"/>.</returns>
-    public static bool TryFormat(this ref SpanWriter<char> writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider = null)
+    public static bool TryFormat(this ref SpanWriter<char> writer, CompositeFormat format, scoped ReadOnlySpan<object?> args, IFormatProvider? provider = null)
     {
         bool result;
         if (result = writer.RemainingSpan.TryWrite(provider, format, out var charsWritten, args))

@@ -23,7 +23,7 @@ public sealed class DisposableTests : Test
         var obj2 = new DisposableObject();
         False(obj1.IsDisposed);
         False(obj2.IsDisposed);
-        Disposable.Dispose(obj1, obj2, null);
+        Disposable.Dispose([obj1, obj2, null]);
         True(obj1.IsDisposed);
         True(obj2.IsDisposed);
     }
