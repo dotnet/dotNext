@@ -75,15 +75,9 @@ public ref partial struct BufferWriterSlim<T>
         readonly get => position;
         set
         {
-            if ((uint)value > (uint)Capacity)
-                ThrowArgumentOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)value, (uint)Capacity, nameof(value));
 
             position = value;
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowArgumentOutOfRangeException()
-                => throw new ArgumentOutOfRangeException(nameof(value));
         }
     }
 
@@ -161,8 +155,7 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void Advance(int count)
     {
-        if (count < 0)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         var newPosition = position + count;
         if (newPosition > Capacity)
@@ -182,18 +175,13 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
     public void Rewind(int count)
     {
-        if ((uint)count > (uint)position)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)position, nameof(count));
 
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
             Buffer.Slice(count).Clear();
 
         position -= count;
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowCountOutOfRangeException() => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Writes elements to this buffer.
@@ -289,8 +277,7 @@ public ref partial struct BufferWriterSlim<T>
     {
         get
         {
-            if ((uint)index >= (uint)position)
-                throw new ArgumentOutOfRangeException(nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)position, nameof(index));
 
             return ref Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), index);
         }

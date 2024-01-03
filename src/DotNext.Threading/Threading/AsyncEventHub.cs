@@ -22,8 +22,7 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than or equal to zero.</exception>
     public AsyncEventHub(int count)
     {
-        if (count < 1)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 
         sources = new TaskCompletionSource[count];
 
@@ -153,8 +152,7 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
     public bool ResetAndPulse(int eventIndex)
     {
-        if ((uint)eventIndex >= (uint)sources.Length)
-            throw new ArgumentOutOfRangeException(nameof(eventIndex));
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)sources.Length, nameof(eventIndex));
 
         var result = false;
         lock (sources)
@@ -185,8 +183,7 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
     public bool Pulse(int eventIndex)
     {
-        if ((uint)eventIndex >= (uint)sources.Length)
-            throw new ArgumentOutOfRangeException(nameof(eventIndex));
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)sources.Length, nameof(eventIndex));
 
         lock (sources)
         {
@@ -235,8 +232,7 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="eventIndexes"/> is not equal to the length of <paramref name="flags"/>.</exception>
     public void ResetAndPulse(ReadOnlySpan<int> eventIndexes, Span<bool> flags)
     {
-        if (eventIndexes.Length != flags.Length)
-            throw new ArgumentOutOfRangeException(nameof(flags));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(eventIndexes.Length, flags.Length, nameof(flags));
 
         lock (sources)
         {
@@ -295,8 +291,7 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="eventIndexes"/> is not equal to the length of <paramref name="flags"/>.</exception>
     public void Pulse(ReadOnlySpan<int> eventIndexes, Span<bool> flags)
     {
-        if (eventIndexes.Length != flags.Length)
-            throw new ArgumentOutOfRangeException(nameof(flags));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(eventIndexes.Length, flags.Length, nameof(flags));
 
         if (eventIndexes.IsEmpty)
             return;
@@ -341,8 +336,7 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="flags"/> is less than <see cref="Count"/>.</exception>
     public void PulseAll(Span<bool> flags)
     {
-        if (flags.Length < sources.Length)
-            throw new ArgumentOutOfRangeException(nameof(flags));
+        ArgumentOutOfRangeException.ThrowIfLessThan(flags.Length, sources.Length, nameof(flags));
 
         lock (sources)
         {

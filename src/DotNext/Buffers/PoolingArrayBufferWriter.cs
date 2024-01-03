@@ -86,8 +86,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     void IList<T>.RemoveAt(int index)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        if ((uint)index >= (uint)position)
-            throw new ArgumentOutOfRangeException(nameof(index));
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)position, nameof(index));
 
         RemoveAt(index);
     }
@@ -291,10 +290,9 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
 
     private T[] GetRawArray(int sizeHint)
     {
-        if (sizeHint < 0)
-            throw new ArgumentOutOfRangeException(nameof(sizeHint));
-
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
         ObjectDisposedException.ThrowIf(IsDisposed, this);
+
         CheckAndResizeBuffer(sizeHint);
         return buffer;
     }

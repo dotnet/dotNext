@@ -16,8 +16,7 @@ public static partial class BinaryTransformations
     public static void BitwiseAnd<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseAndTransformation>(x, y);
     }
@@ -32,8 +31,7 @@ public static partial class BinaryTransformations
     public static void AndNot<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseAndNotTransformation>(x, y);
     }
@@ -48,8 +46,7 @@ public static partial class BinaryTransformations
     public static void BitwiseOr<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseOrTransformation>(x, y);
     }
@@ -64,8 +61,7 @@ public static partial class BinaryTransformations
     public static void BitwiseXor<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseXorTransformation>(x, y);
     }

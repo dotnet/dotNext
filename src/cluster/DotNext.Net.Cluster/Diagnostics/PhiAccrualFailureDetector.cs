@@ -25,8 +25,7 @@ public partial class PhiAccrualFailureDetector : IFailureDetector, ISupplier<dou
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="estimatedFirstHeartbeat"/> is less than or equal to <see cref="TimeSpan.Zero"/>.</exception>
     public PhiAccrualFailureDetector(TimeSpan estimatedFirstHeartbeat)
     {
-        if (estimatedFirstHeartbeat <= default(TimeSpan))
-            throw new ArgumentOutOfRangeException(nameof(estimatedFirstHeartbeat));
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(estimatedFirstHeartbeat, TimeSpan.Zero);
 
         const int defaultMaxSampleSize = 100;
         var mean = estimatedFirstHeartbeat.TotalMilliseconds;

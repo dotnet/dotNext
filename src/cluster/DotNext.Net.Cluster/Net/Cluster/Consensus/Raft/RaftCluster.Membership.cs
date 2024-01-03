@@ -249,8 +249,7 @@ public partial class RaftCluster<TMember>
     protected async Task<bool> AddMemberAsync<TAddress>(TMember member, int rounds, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
         where TAddress : notnull
     {
-        if (rounds <= 0)
-            throw new ArgumentOutOfRangeException(nameof(rounds));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rounds);
 
         if (!membershipState.FalseToTrue())
             throw new ConcurrentMembershipModificationException();

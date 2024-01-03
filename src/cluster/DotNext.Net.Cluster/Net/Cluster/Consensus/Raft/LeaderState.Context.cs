@@ -94,7 +94,7 @@ internal partial class LeaderState<TMember>
         private void ResizeAndRemoveDeadEntries()
         {
             if (entries.Length == Array.MaxLength)
-                throw new OutOfMemoryException();
+                throw new InsufficientMemoryException();
 
             var oldEntries = entries;
             entries = new ContextEntry?[entries.Length <= HalfMaxSize ? entries.Length << 1 : entries.Length + 1];

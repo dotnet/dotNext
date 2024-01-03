@@ -62,8 +62,8 @@ public partial class PersistentState
             get => bufferSize;
             set
             {
-                if (value < MinBufferSize)
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, MinBufferSize);
+
                 bufferSize = value;
             }
         }

@@ -43,8 +43,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncTrigger(int concurrencyLevel)
     {
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         pool = new(OnCompleted, concurrencyLevel);
     }

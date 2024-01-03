@@ -141,9 +141,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     public ReadOnlySequence<T> Read(ref SequencePosition position, long count)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         NormalizePosition(ref position);
         Chunk<T>? head = null, tail = null;
@@ -222,9 +220,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         where TConsumer : notnull, IReadOnlySpanConsumer<T>
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         NormalizePosition(ref position);
 

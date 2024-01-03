@@ -146,8 +146,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         var session = sessionManager.Take();
         try
         {
-            if (startIndex > LastEntryIndex + 1L)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, LastEntryIndex + 1L);
 
             // start commit task in parallel
             count = GetCommitIndexAndCount(ref commitIndex);

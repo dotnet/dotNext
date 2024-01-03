@@ -92,8 +92,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is too small.</exception>
     public ClusterMemberId(ReadOnlySpan<byte> bytes)
     {
-        if (bytes.Length < Size)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfLessThan(bytes.Length, Size, nameof(bytes));
 
         var reader = new SpanReader<byte>(bytes);
         this = new(ref reader);

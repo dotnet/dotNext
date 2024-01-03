@@ -428,8 +428,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         try
         {
             var tailIndex = state.TailIndex;
-            if (startIndex > tailIndex)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, tailIndex);
 
             // wrong assumption, tail of the log can be rewritten so we need exclusive lock
             if (startIndex != tailIndex)
@@ -533,8 +532,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
 
                 var tailIndex = state.TailIndex;
-                if (startIndex > tailIndex)
-                    throw new ArgumentOutOfRangeException(nameof(startIndex));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, tailIndex);
 
                 if (startIndex != tailIndex)
                 {
@@ -693,8 +691,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         where TEntry : notnull, IRaftLogEntry
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        if (entries.RemainingCount == 0L)
+        if (entries.RemainingCount is 0L)
             throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
+
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
         var startIndex = state.TailIndex;
         try

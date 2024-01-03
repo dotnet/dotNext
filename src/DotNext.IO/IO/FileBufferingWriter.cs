@@ -308,11 +308,17 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <inheritdoc/>
     public void Advance(int count)
     {
-        if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
         if (position > buffer.Length - count)
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
+
         position += count;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidOperationException()
+            => throw new InvalidOperationException();
     }
 
     private MemoryEvaluationResult PrepareMemory(int size, out Memory<byte> output)

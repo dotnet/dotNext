@@ -104,8 +104,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
     public AsyncSharedLock(long concurrencyLevel, bool limitedConcurrency = true)
     {
-        if (concurrencyLevel < 1L)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         state = new(concurrencyLevel);
         pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);

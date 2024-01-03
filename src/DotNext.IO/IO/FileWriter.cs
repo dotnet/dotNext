@@ -118,8 +118,7 @@ public partial class FileWriter : Disposable, IFlushable
         get => fileOffset;
         set
         {
-            if (value < 0L)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             if (HasBufferedData)
                 throw new InvalidOperationException();

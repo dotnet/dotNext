@@ -19,8 +19,7 @@ internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : Re
         get => sequence.GetOffset(position);
         set
         {
-            if ((ulong)value > (ulong)sequence.Length)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)sequence.Length, nameof(value));
 
             position = sequence.GetPosition(value);
         }
@@ -73,8 +72,7 @@ internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : Re
         if (newPosition < 0L)
             throw new IOException();
 
-        if (newPosition > sequence.Length)
-            throw new ArgumentOutOfRangeException(nameof(offset));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(newPosition, sequence.Length, nameof(offset));
 
         position = sequence.GetPosition(newPosition);
         return newPosition;

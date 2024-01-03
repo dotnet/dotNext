@@ -406,8 +406,7 @@ public partial class PersistentState
         {
             get
             {
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)Count);
 
                 var absoluteIndex = StartIndex;
 

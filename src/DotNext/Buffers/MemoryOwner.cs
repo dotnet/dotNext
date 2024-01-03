@@ -151,8 +151,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 0 or greater than the length of <paramref name="array"/>.</exception>
     public MemoryOwner(T[] array, int length)
     {
-        if ((uint)length > (uint)array.Length)
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)length, (uint)array.Length, nameof(length));
 
         this.array = length > 0 ? array : null;
         this.length = length;

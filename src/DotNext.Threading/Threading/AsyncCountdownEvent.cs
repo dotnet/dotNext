@@ -53,10 +53,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// </exception>
     public AsyncCountdownEvent(long initialCount, int concurrencyLevel)
     {
-        if (initialCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(initialCount));
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         manager = new(initialCount);
         pool = new(OnCompleted, concurrencyLevel);
@@ -214,10 +212,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     public bool Reset(long count)
     {
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
-
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
         ObjectDisposedException.ThrowIf(IsDisposed, this);
+
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)

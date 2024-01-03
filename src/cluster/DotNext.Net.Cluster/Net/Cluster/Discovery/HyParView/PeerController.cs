@@ -47,15 +47,10 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     /// </exception>
     protected PeerController(IPeerConfiguration configuration)
     {
-        if (configuration.ActiveViewCapacity <= 1)
-            throw new ArgumentOutOfRangeException(nameof(configuration));
-        if (configuration.PassiveViewCapacity < configuration.ActiveViewCapacity)
-            throw new ArgumentOutOfRangeException(nameof(configuration));
-
-        if (configuration.ActiveRandomWalkLength <= 0)
-            throw new ArgumentOutOfRangeException(nameof(configuration));
-        if (configuration.PassiveRandomWalkLength > configuration.ActiveRandomWalkLength || configuration.PassiveRandomWalkLength <= 0)
-            throw new ArgumentOutOfRangeException(nameof(configuration));
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(configuration.ActiveViewCapacity, 1, nameof(configuration));
+        ArgumentOutOfRangeException.ThrowIfLessThan(configuration.PassiveViewCapacity, configuration.ActiveViewCapacity, nameof(configuration));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(configuration.ActiveRandomWalkLength, nameof(configuration));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)configuration.PassiveRandomWalkLength, (uint)configuration.ActiveRandomWalkLength, nameof(configuration));
 
         activeViewCapacity = configuration.ActiveViewCapacity;
         passiveViewCapacity = configuration.PassiveViewCapacity;

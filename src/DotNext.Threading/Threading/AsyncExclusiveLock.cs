@@ -39,8 +39,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncExclusiveLock(int concurrencyLevel)
     {
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         pool = new(OnCompleted, concurrencyLevel);
     }

@@ -36,11 +36,8 @@ public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, T
     /// </exception>
     public ConcurrentCache(int capacity, int concurrencyLevel, CacheEvictionPolicy evictionPolicy, IEqualityComparer<TKey>? keyComparer = null)
     {
-        if (capacity < 1)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
-
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         buckets = new KeyValuePair?[capacity];
         Span.Initialize<object>(locks = new object[capacity]);

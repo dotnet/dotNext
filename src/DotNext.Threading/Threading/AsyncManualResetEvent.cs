@@ -47,8 +47,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncManualResetEvent(bool initialState, int concurrencyLevel)
     {
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         manager = new(initialState);
         pool = new(OnCompleted, concurrencyLevel);

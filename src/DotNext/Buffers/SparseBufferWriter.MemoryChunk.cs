@@ -81,8 +81,7 @@ public partial class SparseBufferWriter<T>
         internal void Advance(int count)
         {
             var length = writtenCount + count;
-            if ((uint)length > (uint)owner.Length)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)length, (uint)owner.Length, nameof(length));
 
             writtenCount = length;
         }

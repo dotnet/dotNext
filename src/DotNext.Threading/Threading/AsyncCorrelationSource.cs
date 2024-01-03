@@ -35,8 +35,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncCorrelationSource(int concurrencyLevel, IEqualityComparer<TKey>? comparer = null)
     {
-        if (concurrencyLevel <= 0L)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         buckets = new Bucket[concurrencyLevel];
         this.comparer = comparer;

@@ -40,8 +40,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="bytes"/> is less than <see cref="Size"/>.</exception>
     public RumorTimestamp(ReadOnlySpan<byte> bytes)
     {
-        if (bytes.Length < Size)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfLessThan(bytes.Length, Size, nameof(bytes));
 
         var reader = new SpanReader<byte>(bytes);
         this = new(ref reader);

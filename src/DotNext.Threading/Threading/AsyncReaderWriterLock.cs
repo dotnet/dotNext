@@ -202,8 +202,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncReaderWriterLock(int concurrencyLevel)
     {
-        if (concurrencyLevel <= 0)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         state = new();
         pool = new(OnCompleted, concurrencyLevel);

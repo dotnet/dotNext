@@ -26,6 +26,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         internal EntryList(long[] log, long count, long offset, long snapshotTerm)
         {
             Debug.Assert(offset + count <= log.LongLength);
+
             terms = log;
             this.count = count;
             this.offset = offset;
@@ -36,8 +37,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         {
             get
             {
-                if ((ulong)index >= (ulong)count)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((ulong)index, (ulong)count, nameof(index));
 
                 EmptyLogEntry result;
                 if (offset >= 0L)
@@ -157,9 +157,9 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             // copy terms
             for (var i = 0; await entries.MoveNextAsync().ConfigureAwait(false) && i < newEntries.LongLength; i++, token.ThrowIfCancellationRequested())
             {
-                if (entries.Current.IsSnapshot)
-                    throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
-                newEntries[i] = entries.Current.Term;
+                newEntries[i] = entries.Current is { IsSnapshot: false } entry
+                    ? entry.Term
+                    : throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
             }
 
             // now concat existing array of terms
@@ -172,8 +172,8 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <inheritdoc/>
     async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted, CancellationToken token)
     {
-        if (startIndex < 0L)
-            throw new ArgumentOutOfRangeException(nameof(startIndex));
+        ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+
         using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
             await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
     }
@@ -259,6 +259,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         {
             if (startIndex <= LastCommittedEntryIndex)
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+
             count = LastEntryIndex - startIndex + 1L;
             LastEntryIndex = startIndex - 1L;
             log = log[0..^(int)count];
@@ -320,12 +321,12 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <returns>The result of the transformation applied to the range of the log entries.</returns>
     public async ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
     {
-        if (startIndex < 0L)
-            throw new ArgumentOutOfRangeException(nameof(startIndex));
-        if (endIndex < 0L)
-            throw new ArgumentOutOfRangeException(nameof(endIndex));
+        ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+        ArgumentOutOfRangeException.ThrowIfNegative(endIndex);
+
         if (endIndex < startIndex)
             return await reader.ReadAsync<EmptyLogEntry, EmptyLogEntry[]>([], null, token).ConfigureAwait(false);
+
         using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
             return await ReadCoreAsync(reader, startIndex, endIndex, token).ConfigureAwait(false);
     }
@@ -340,8 +341,8 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     /// <returns>The result of the transformation applied to the range of the log entries.</returns>
     public async ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, CancellationToken token)
     {
-        if (startIndex < 0L)
-            throw new ArgumentOutOfRangeException(nameof(startIndex));
+        ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+
         using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
             return await ReadCoreAsync(reader, startIndex, LastEntryIndex, token).ConfigureAwait(false);
     }

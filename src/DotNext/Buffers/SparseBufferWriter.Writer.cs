@@ -24,16 +24,13 @@ public partial class SparseBufferWriter<T> : IBufferWriter<T>
     private Memory<T> GetMemory(int sizeHint)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
-        switch (sizeHint)
+        if (sizeHint is 0)
         {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(sizeHint));
-            case 0:
-                return GetMemory();
+            return GetMemory();
         }
-
-        if (last is null)
+        else if (last is null)
         {
             first = last = new PooledMemoryChunk(allocator, sizeHint);
         }

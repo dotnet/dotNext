@@ -29,8 +29,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="participantCount"/> is less than 0.</exception>
     public AsyncBarrier(long participantCount)
     {
-        if (participantCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(participantCount));
+        ArgumentOutOfRangeException.ThrowIfNegative(participantCount);
 
         participants = participantCount;
         countdown = new(participants);
@@ -104,8 +103,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public void RemoveParticipants(long participantCount)
     {
-        if (participantCount > ParticipantsRemaining)
-            throw new ArgumentOutOfRangeException(nameof(participantCount));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(participantCount, ParticipantsRemaining);
 
         countdown.Signal(participantCount);
         Interlocked.Add(ref participants, -participantCount);

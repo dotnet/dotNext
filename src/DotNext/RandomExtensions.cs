@@ -233,9 +233,7 @@ public static class RandomExtensions
     public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
     {
         ArgumentNullException.ThrowIfNull(random);
-
-        if (length < 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
 
         string result;
         if (length is 0 || allowedChars.IsEmpty)

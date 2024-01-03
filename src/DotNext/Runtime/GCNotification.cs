@@ -97,8 +97,7 @@ public abstract partial class GCNotification
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="generation"/> is less than 0 or greater than <see cref="GC.MaxGeneration"/>.</exception>
     public static GCNotification GCTriggered(int generation)
     {
-        if (generation < 0 || generation > GC.MaxGeneration)
-            throw new ArgumentOutOfRangeException(nameof(generation));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)generation, (uint)GC.MaxGeneration, nameof(generation));
 
         return new GenerationFilter(generation);
     }

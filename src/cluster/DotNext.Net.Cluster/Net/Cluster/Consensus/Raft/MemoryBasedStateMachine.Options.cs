@@ -93,8 +93,7 @@ public partial class MemoryBasedStateMachine
             get => snapshotBufferSize ?? BufferSize;
             set
             {
-                if (value < MinBufferSize)
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, MinBufferSize);
 
                 snapshotBufferSize = value;
             }

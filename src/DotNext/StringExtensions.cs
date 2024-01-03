@@ -37,23 +37,9 @@ public static class StringExtensions
     [return: NotNullIfNotNull(nameof(str))]
     public static string? TrimLength(this string? str, int maxLength)
     {
-        if (maxLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxLength));
+        ArgumentOutOfRangeException.ThrowIfNegative(maxLength);
 
-        if (str is null)
-        {
-            // return null string
-        }
-        else if (maxLength is 0)
-        {
-            str = string.Empty;
-        }
-        else if (str.Length > maxLength)
-        {
-            str = new string(str.AsSpan().Slice(0, maxLength));
-        }
-
-        return str;
+        return str?.AsSpan().TrimLength(maxLength).ToString();
     }
 
     /// <summary>

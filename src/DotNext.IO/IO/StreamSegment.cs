@@ -43,10 +43,9 @@ public sealed class StreamSegment : Stream, IFlushable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the reamining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
     public void Adjust(long offset, long length)
     {
-        if ((ulong)offset > (ulong)BaseStream.Length)
-            throw new ArgumentOutOfRangeException(nameof(offset));
-        if ((ulong)length > (ulong)(BaseStream.Length - offset))
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)BaseStream.Length, nameof(offset));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)(BaseStream.Length - offset), nameof(length));
+
         this.length = length;
         this.offset = offset;
         BaseStream.Position = offset;
@@ -79,8 +78,7 @@ public sealed class StreamSegment : Stream, IFlushable
         get => BaseStream.Position - offset;
         set
         {
-            if ((ulong)value > (ulong)length)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)length, nameof(value));
 
             BaseStream.Position = offset + value;
         }
@@ -148,8 +146,7 @@ public sealed class StreamSegment : Stream, IFlushable
         if (newPosition < 0L)
             throw new IOException();
 
-        if (newPosition > length)
-            throw new ArgumentOutOfRangeException(nameof(offset));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(newPosition, length, nameof(offset));
 
         Position = newPosition;
         return newPosition;
@@ -158,8 +155,7 @@ public sealed class StreamSegment : Stream, IFlushable
     /// <inheritdoc/>
     public override void SetLength(long value)
     {
-        if ((ulong)value > (ulong)(BaseStream.Length - BaseStream.Position))
-            throw new ArgumentOutOfRangeException(nameof(value));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)(BaseStream.Length - BaseStream.Position), nameof(value));
 
         length = value;
     }
