@@ -91,6 +91,16 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     public int Length { get; private set; }
 
+    public ref T this[int index]
+    {
+        get
+        {
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)Length, nameof(index));
+
+            return ref Unsafe.Add(ref Unsafe.AsRef<T>(address), index);
+        }
+    }
+
     internal void Reallocate(int length)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
