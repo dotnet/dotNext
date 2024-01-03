@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Base64 = System.Buffers.Text.Base64;
 
 namespace DotNext.Buffers.Text;
 
@@ -36,11 +36,7 @@ public partial struct Base64Encoder : IResettable
     /// <summary>
     /// Gets the maximum size of the input block of bytes to encode.
     /// </summary>
-    public const int MaxInputSize = int.MaxValue / 4 * 3;
-
-    private const int DecodingBufferSize = 258;
-
-    private const int EncodingBufferSize = (DecodingBufferSize + 2) / 3 * 4;
+    public const int MaxInputSize = int.MaxValue / 4 * 3 - MaxBufferedDataSize;
 
     // 2 bytes reserved if the input is not a multiple of 3
     private ushort reservedBuffer;
@@ -70,6 +66,9 @@ public partial struct Base64Encoder : IResettable
             return MemoryMarshal.CreateReadOnlySpan(in InToRef<ushort, byte>(in reservedBuffer), reservedBufferSize);
         }
     }
+
+    private readonly int GetMaxEncodedLength(int length)
+        => Base64.GetMaxEncodedToUtf8Length(length + reservedBufferSize);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [UnscopedRef]

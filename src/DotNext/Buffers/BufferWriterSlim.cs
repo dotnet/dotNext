@@ -43,8 +43,6 @@ public ref partial struct BufferWriterSlim<T>
     {
         initialBuffer = buffer;
         this.allocator = allocator;
-        extraBuffer = default;
-        position = 0;
     }
 
     /// <summary>
@@ -57,10 +55,8 @@ public ref partial struct BufferWriterSlim<T>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(initialCapacity);
 
-        initialBuffer = default;
         this.allocator = allocator;
         extraBuffer = initialCapacity is 0 ? default : allocator.AllocateAtLeast(initialCapacity);
-        position = 0;
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
