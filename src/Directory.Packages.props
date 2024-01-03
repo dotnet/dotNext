@@ -6,8 +6,6 @@
     <!--Compile-time dependencies-->
     <PackageVersion Include="Fody" Version="6.8.0"/>
     <PackageVersion Include="InlineIL.Fody" Version="1.7.4"/>
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
-    <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118"/>
   </ItemGroup>
   <ItemGroup>
     <!--System packages-->

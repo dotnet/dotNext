@@ -24,6 +24,7 @@
 	<Description>Provides various extensions of .NET Base Class Library</Description>
     <PackageIcon>logo.png</PackageIcon>
   <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+  <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -52,9 +53,7 @@
   <ItemGroup>
     <PackageReference Include="Fody" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
     <PackageReference Include="System.IO.Hashing" />
-    <PackageReference Include="StyleCop.Analyzers" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

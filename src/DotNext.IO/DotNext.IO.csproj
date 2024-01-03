@@ -24,6 +24,7 @@
     <Description>Common API surface for decoding and encoding data from/to stream or I/O pipe</Description>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -50,9 +51,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
     <PackageReference Include="System.IO.Pipelines"/>
-    <PackageReference Include="StyleCop.Analyzers" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
   </ItemGroup>
 

@@ -21,6 +21,7 @@
     <PackageTags>consensus;raft;aspnetcore;HyParView</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -61,8 +62,6 @@
     <PackageReference Include="Microsoft.Extensions.Http"/>
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
-    <PackageReference Include="StyleCop.Analyzers" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="System.Runtime.Caching"/>
     <ProjectReference Include="..\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" />
   </ItemGroup>
