@@ -9,7 +9,7 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.IO;
 
 using Buffers;
-using DotNext.Buffers.Binary;
+using Buffers.Binary;
 using Text;
 
 public sealed class AsyncBinaryReaderWriterTests : Test
