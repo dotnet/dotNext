@@ -45,7 +45,7 @@ internal readonly struct TaskType
     }
 
     internal MethodCallExpression AdjustTaskType(MethodCallExpression startMachineCall)
-        => IsValueTask ? startMachineCall : Expression.Call(startMachineCall, nameof(ValueTask.AsTask), Type.EmptyTypes);
+        => IsValueTask ? startMachineCall : Expression.Call(startMachineCall, nameof(ValueTask.AsTask), []);
 
     internal Type ResultType => resultType ?? typeof(void);
 

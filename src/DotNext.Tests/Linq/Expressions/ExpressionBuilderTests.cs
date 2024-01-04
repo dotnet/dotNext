@@ -508,7 +508,7 @@ public sealed class ExpressionBuilderTests : Test
     public static void ConvertToResult()
     {
         var parameter = Expression.Parameter(typeof(string));
-        var methodCall = Expression.Call(typeof(int), nameof(int.Parse), Type.EmptyTypes, parameter);
+        var methodCall = Expression.Call(typeof(int), nameof(int.Parse), [], parameter);
         var lambda = Expression.Lambda<Func<string, Result<int>>>(methodCall.AsResult(), parameter).Compile();
 
         Equal(42, lambda("42"));

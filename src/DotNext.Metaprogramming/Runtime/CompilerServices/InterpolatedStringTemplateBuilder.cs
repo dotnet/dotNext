@@ -50,7 +50,7 @@ public struct InterpolatedStringTemplateBuilder
                 statement = Expression.Call(
                     handler,
                     nameof(BufferWriterSlimInterpolatedStringHandler.AppendLiteral),
-                    Type.EmptyTypes,
+                    [],
                     Expression.Constant(literalOrFormat, typeof(string)));
             }
             else
@@ -59,7 +59,7 @@ public struct InterpolatedStringTemplateBuilder
                 statement = Expression.Call(
                     handler,
                     nameof(BufferWriterSlimInterpolatedStringHandler.AppendFormatted),
-                    new[] { argumentType },
+                    [argumentType],
                     inputVar,
                     Expression.Constant(alignment, typeof(int)),
                     Expression.Constant(literalOrFormat, typeof(string)));
@@ -202,11 +202,11 @@ public struct InterpolatedStringTemplateBuilder
         parameters.Add(allocatorParameter);
 
         // call handler.ToString()
-        statements.Add(Expression.Call(handlerLocal, nameof(BufferWriterSlimInterpolatedStringHandler.ToString), Type.EmptyTypes));
+        statements.Add(Expression.Call(handlerLocal, nameof(BufferWriterSlimInterpolatedStringHandler.ToString), []));
 
         // try-finally block to dispose the writer
         expr = Expression.Block(statements);
-        expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<char>.Dispose), Type.EmptyTypes));
+        expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<char>.Dispose), []));
         expr = Expression.Block(new[] { preallocatedBufferLocal, writerLocal, handlerLocal }, expr);
 
         return Expression.Lambda(

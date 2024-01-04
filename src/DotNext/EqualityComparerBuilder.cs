@@ -265,13 +265,13 @@ public readonly struct EqualityComparerBuilder<T>
                 expr = field.FieldType switch
                 {
                     { IsPointer: true } => Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr),
-                    { IsPrimitive: true } => Expression.Call(expr, nameof(GetHashCode), Type.EmptyTypes),
+                    { IsPrimitive: true } => Expression.Call(expr, nameof(GetHashCode), []),
                     { IsValueType: true } => HashCodeMethodForValueType(expr, Expression.Constant(SaltedHashCode)),
                     { IsSZArray: true } => HashCodeMethodForArrayElementType(expr, Expression.Constant(SaltedHashCode)),
                     _ => Expression.Condition(
                         Expression.ReferenceEqual(expr, Expression.Constant(null, expr.Type)),
                         Expression.Constant(0, typeof(int)),
-                        Expression.Call(expr, nameof(GetHashCode), Type.EmptyTypes)),
+                        Expression.Call(expr, nameof(GetHashCode), [])),
                 };
 
                 expr = Expression.Assign(hashCodeTemp, Expression.Add(Expression.Multiply(hashCodeTemp, Expression.Constant(-1521134295)), expr));

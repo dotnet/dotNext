@@ -186,7 +186,7 @@ public static class TypeExtensions
     /// </code>
     /// </example>
     public static Type[] GetGenericArguments([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type, Type genericDefinition)
-        => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Type.EmptyTypes;
+        => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? [];
 
     /// <summary>
     /// Indicates that object of one type can be implicitly converted into another without boxing.

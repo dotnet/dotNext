@@ -35,15 +35,15 @@ public sealed class AwaitExpression : CustomExpression
         const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;
         if (configureAwait)
         {
-            MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, new[] { typeof(bool) }, null);
+            MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, [typeof(bool)], modifiers: null);
             if (configureMethod is not null)
                 expression = expression.Call(configureMethod, false.Const());
         }
 
         // expression type must have type with GetAwaiter() method
-        MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, Type.EmptyTypes, null);
+        MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, [], modifiers: null);
         GetAwaiter = expression.Call(getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetAwaiterMethod(expression.Type)));
-        getAwaiter = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, Type.EmptyTypes, null);
+        getAwaiter = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, [], modifiers: null);
         GetResultMethod = getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetResultMethod(GetAwaiter.Type));
     }
 

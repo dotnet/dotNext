@@ -48,7 +48,7 @@ public sealed class LambdaTests : Test
         {
             Try(() =>
             {
-                Await(Expression.Call(typeof(Task), nameof(Task.Yield), Type.EmptyTypes));
+                Await(Expression.Call(typeof(Task), nameof(Task.Yield), []));
                 Throw<InvalidOperationException>();
             })
             .Catch(typeof(InvalidOperationException), e =>
