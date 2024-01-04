@@ -15,7 +15,7 @@ public sealed class RequiredAttribute<T> : RequiredAttribute
     public bool AllowNull
     {
         get;
-        set;
+        init;
     }
 
     /// <inheritdoc/>

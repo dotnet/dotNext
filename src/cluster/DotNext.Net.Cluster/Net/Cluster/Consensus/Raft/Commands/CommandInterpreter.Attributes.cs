@@ -21,6 +21,6 @@ public partial class CommandInterpreter
         /// Indicates that attributed handler is a special handler of snapshot
         /// log entry.
         /// </summary>
-        public bool IsSnapshotHandler { get; set; }
+        public bool IsSnapshotHandler { get; init; }
     }
 }
