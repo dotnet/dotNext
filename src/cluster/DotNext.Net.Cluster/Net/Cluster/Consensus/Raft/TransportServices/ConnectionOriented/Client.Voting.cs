@@ -7,17 +7,8 @@ using static Buffers.ByteBuffer;
 internal partial class Client : RaftClusterMember
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct VoteExchange : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
+    private readonly struct VoteExchange(long term, long lastLogIndex, long lastLogTerm) : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
     {
-        private readonly long term, lastLogIndex, lastLogTerm;
-
-        internal VoteExchange(long term, long lastLogIndex, long lastLogTerm)
-        {
-            this.term = term;
-            this.lastLogIndex = lastLogIndex;
-            this.lastLogTerm = lastLogTerm;
-        }
-
         ValueTask IClientExchange<Result<bool>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             var writer = protocol.BeginRequestMessage(MessageType.Vote);

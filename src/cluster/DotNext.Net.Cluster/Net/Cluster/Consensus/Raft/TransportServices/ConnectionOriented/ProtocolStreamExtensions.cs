@@ -8,7 +8,7 @@ using Runtime.Serialization;
 
 internal static class ProtocolStreamExtensions
 {
-    internal static ValueTask WriteResultAsync(this ProtocolStream protocol, in Result<bool> result, CancellationToken token)
+    internal static ValueTask WriteBoolResultAsync(this ProtocolStream protocol, in Result<bool> result, CancellationToken token)
     {
         protocol.Reset();
         Result.AsFormattable(result).Format(protocol.RemainingBufferSpan);

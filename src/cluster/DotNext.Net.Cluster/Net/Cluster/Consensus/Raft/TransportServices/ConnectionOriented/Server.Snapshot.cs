@@ -5,13 +5,9 @@ using IO.Log;
 
 internal partial class Server
 {
-    private sealed class ReceivedSnapshot : StreamTransferObject, IRaftLogEntry
+    private sealed class ReceivedSnapshot(ProtocolStream stream) : StreamTransferObject(stream, leaveOpen:true), IRaftLogEntry
     {
-        internal readonly SnapshotMessage Message;
-
-        internal ReceivedSnapshot(ProtocolStream stream)
-            : base(stream, leaveOpen: true)
-            => Message = SnapshotMessage.Parse(stream.WrittenBufferSpan);
+        internal readonly SnapshotMessage Message = SnapshotMessage.Parse(stream.WrittenBufferSpan);
 
         DateTimeOffset ILogEntry.Timestamp => Message.Metadata.Timestamp;
 

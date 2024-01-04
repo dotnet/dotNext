@@ -7,22 +7,9 @@ using static Buffers.ByteBuffer;
 
 internal partial class Client : RaftClusterMember
 {
-    private sealed class InstallSnapshotExchange : IClientExchange<Result<HeartbeatResult>>
+    private sealed class InstallSnapshotExchange(long term, IRaftLogEntry snapshot, long snapshotIndex) : IClientExchange<Result<HeartbeatResult>>
     {
         private const string Name = "InstallSnapshot";
-
-        private readonly IRaftLogEntry snapshot;
-        private readonly long term, snapshotIndex;
-
-        internal InstallSnapshotExchange(long term, IRaftLogEntry snapshot, long snapshotIndex)
-        {
-            Debug.Assert(snapshot is not null);
-            Debug.Assert(snapshot.IsSnapshot);
-
-            this.term = term;
-            this.snapshot = snapshot;
-            this.snapshotIndex = snapshotIndex;
-        }
 
         async ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
