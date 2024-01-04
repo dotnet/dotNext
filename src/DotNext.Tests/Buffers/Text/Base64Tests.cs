@@ -287,7 +287,7 @@ public sealed class Base64Tests : Test
     }
 
     [Fact]
-    public static void CheckEndOfUnicodeData()
+    public static void CheckEndOfUtf16Data()
     {
         var decoder = new Base64Decoder();
         var owner = decoder.DecodeFromUtf16("AA==");
@@ -298,7 +298,7 @@ public sealed class Base64Tests : Test
     }
 
     [Fact]
-    public static void CheckEndOfUnicodeDataWithBufferWriter()
+    public static void CheckEndOfUtf16WithBufferWriter()
     {
         var decoder = new Base64Decoder();
         var writer = new ArrayBufferWriter<byte>();
@@ -307,6 +307,28 @@ public sealed class Base64Tests : Test
         Equal(1, writer.WrittenCount);
 
         Throws<FormatException>(() => decoder.DecodeFromUtf16("A==", writer));
+    }
+
+    [Fact]
+    public static void CheckEndOfUtf16DataWithBufferWriterSlim()
+    {
+        var decoder = new Base64Decoder();
+        var writer = new BufferWriterSlim<byte>();
+        decoder.DecodeFromUtf16("AA==", ref writer);
+        False(decoder.NeedMoreData);
+        Equal(1, writer.WrittenCount);
+
+        var thrown = false;
+        try
+        {
+            decoder.DecodeFromUtf16("A==", ref writer);
+        }
+        catch (FormatException)
+        {
+            thrown = true;
+        }
+
+        True(thrown);
     }
 
     [Fact]
@@ -330,5 +352,27 @@ public sealed class Base64Tests : Test
         Equal(1, writer.WrittenCount);
 
         Throws<FormatException>(() => decoder.DecodeFromUtf8("A=="u8, writer));
+    }
+
+    [Fact]
+    public static void CheckEndOfUtf8DataWithBufferWriterSlim()
+    {
+        var decoder = new Base64Decoder();
+        var writer = new BufferWriterSlim<byte>();
+        decoder.DecodeFromUtf8("AA=="u8, ref writer);
+        False(decoder.NeedMoreData);
+        Equal(1, writer.WrittenCount);
+
+        var thrown = false;
+        try
+        {
+            decoder.DecodeFromUtf8("A=="u8, ref writer);
+        }
+        catch (FormatException)
+        {
+            thrown = true;
+        }
+
+        True(thrown);
     }
 }
