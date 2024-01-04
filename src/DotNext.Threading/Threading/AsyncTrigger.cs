@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
+using Patterns;
 using Tasks;
 using Tasks.Pooling;
 
@@ -309,9 +309,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         }
     }
 
-    private sealed class EmptyWaitQueueExceptionFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
+    private sealed class EmptyWaitQueueExceptionFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>, ISingleton<EmptyWaitQueueExceptionFactory>
     {
-        internal static readonly EmptyWaitQueueExceptionFactory Instance = new();
+        public static EmptyWaitQueueExceptionFactory Instance { get; } = new();
 
         private EmptyWaitQueueExceptionFactory()
         {

@@ -1,5 +1,6 @@
 namespace DotNext.Net.Cluster.Messaging;
 
+using Patterns;
 using Runtime.Serialization;
 
 public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.Builder>

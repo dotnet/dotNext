@@ -1,12 +1,14 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using Patterns;
+
 internal partial class Client : RaftClusterMember
 {
-    private sealed class MetadataExchange : IClientExchange<IReadOnlyDictionary<string, string>>
+    private sealed class MetadataExchange : IClientExchange<IReadOnlyDictionary<string, string>>, ISingleton<MetadataExchange>
     {
         private const string Name = "Metadata";
 
-        internal static readonly MetadataExchange Instance = new();
+        public static MetadataExchange Instance { get; } = new();
 
         private MetadataExchange()
         {

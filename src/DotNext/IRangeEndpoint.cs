@@ -1,5 +1,7 @@
 namespace DotNext;
 
+using Patterns;
+
 /// <summary>
 /// Represents range endpoint.
 /// </summary>
@@ -114,10 +116,10 @@ public readonly struct DisclosedEndpoint<T> : IFiniteRangeEndpoint<T>
     public static implicit operator DisclosedEndpoint<T>(T value) => new() { Value = value };
 }
 
-file sealed class InfinityEndpoint<T> : IRangeEndpoint<T>
+file sealed class InfinityEndpoint<T> : IRangeEndpoint<T>, ISingleton<InfinityEndpoint<T>>
     where T : notnull
 {
-    public static readonly InfinityEndpoint<T> Instance = new();
+    public static InfinityEndpoint<T> Instance { get; } = new();
 
     private InfinityEndpoint()
     {

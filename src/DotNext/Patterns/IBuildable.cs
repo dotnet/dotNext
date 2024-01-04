@@ -1,4 +1,4 @@
-namespace DotNext;
+namespace DotNext.Patterns;
 
 /// <summary>
 /// Represents builder pattern contract.

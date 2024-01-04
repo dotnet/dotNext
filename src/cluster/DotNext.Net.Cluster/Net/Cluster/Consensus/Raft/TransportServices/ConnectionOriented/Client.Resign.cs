@@ -1,12 +1,14 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using Patterns;
+
 internal partial class Client : RaftClusterMember
 {
-    private sealed class ResignExchange : IClientExchange<bool>
+    private sealed class ResignExchange : IClientExchange<bool>, ISingleton<ResignExchange>
     {
         private const string Name = "Resign";
 
-        internal static readonly ResignExchange Instance = new();
+        public static ResignExchange Instance { get; } = new();
 
         private ResignExchange()
         {

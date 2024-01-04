@@ -2,6 +2,8 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime;
 
+using Patterns;
+
 public partial class GCNotification
 {
     private protected GCNotification()
@@ -104,9 +106,9 @@ public partial class GCNotification
             => info.MemoryLoadBytes <= info.HighMemoryLoadThresholdBytes * threshold;
     }
 
-    private sealed class HeapCompactionFilter : GCNotification
+    private sealed class HeapCompactionFilter : GCNotification, ISingleton<HeapCompactionFilter>
     {
-        internal static readonly HeapCompactionFilter Instance = new();
+        public static HeapCompactionFilter Instance { get; } = new();
 
         private HeapCompactionFilter()
         {
@@ -116,9 +118,9 @@ public partial class GCNotification
             => info.Compacted;
     }
 
-    private sealed class GCEvent : GCNotification
+    private sealed class GCEvent : GCNotification, ISingleton<GCEvent>
     {
-        internal static readonly GCEvent Instance = new();
+        public static GCEvent Instance { get; } = new();
 
         private GCEvent()
         {

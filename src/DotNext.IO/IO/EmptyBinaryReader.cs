@@ -5,12 +5,13 @@ using System.IO.Pipelines;
 namespace DotNext.IO;
 
 using Buffers;
+using Patterns;
 using AsyncEnumerable = Collections.Generic.AsyncEnumerable;
 using DecodingContext = Text.DecodingContext;
 
-internal sealed class EmptyBinaryReader : IAsyncBinaryReader
+internal sealed class EmptyBinaryReader : IAsyncBinaryReader, ISingleton<EmptyBinaryReader>
 {
-    internal static readonly EmptyBinaryReader Instance = new();
+    public static EmptyBinaryReader Instance { get; } = new();
 
     private EmptyBinaryReader()
     {

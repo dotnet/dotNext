@@ -1,6 +1,12 @@
 namespace DotNext;
 
-internal static class Sentinel
+using Patterns;
+
+internal sealed class Sentinel : ISingleton<Sentinel>
 {
-    internal static readonly object Instance = new();
+    public static Sentinel Instance { get; } = new();
+
+    private Sentinel()
+    {
+    }
 }

@@ -2,12 +2,14 @@ using System.Diagnostics;
 
 namespace DotNext.Collections.Generic;
 
+using Patterns;
+
 public static partial class AsyncEnumerable
 {
     [DebuggerDisplay("Count = 0")]
-    private sealed class EmptyEnumerator<T> : IAsyncEnumerator<T>, IAsyncEnumerable<T>
+    private sealed class EmptyEnumerator<T> : IAsyncEnumerator<T>, IAsyncEnumerable<T>, ISingleton<EmptyEnumerator<T>>
     {
-        internal static readonly EmptyEnumerator<T> Instance = new();
+        public static EmptyEnumerator<T> Instance { get; } = new();
 
         private EmptyEnumerator()
         {
