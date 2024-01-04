@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Connections;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -20,7 +20,7 @@ public static class RaftClusterConfiguration
     /// <typeparam name="TConfig">The type implementing <see cref="IClusterMemberLifetime"/>.</typeparam>
     /// <param name="services">A collection of services provided by DI container.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
+    public static IServiceCollection ConfigureCluster<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TConfig>(this IServiceCollection services)
         where TConfig : class, IClusterMemberLifetime
         => services.AddSingleton<IClusterMemberLifetime, TConfig>();
 
@@ -34,7 +34,7 @@ public static class RaftClusterConfiguration
     /// <typeparam name="TPersistentState">The type representing custom persistence engine.</typeparam>
     /// <param name="services">A collection of services provided by DI container.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UsePersistenceEngine<TPersistentState>(this IServiceCollection services)
+    public static IServiceCollection UsePersistenceEngine<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TPersistentState>(this IServiceCollection services)
         where TPersistentState : PersistentState
     {
         Func<IServiceProvider, TPersistentState> engineCast = ServiceProviderServiceExtensions.GetRequiredService<TPersistentState>;
@@ -57,7 +57,7 @@ public static class RaftClusterConfiguration
     /// <typeparam name="TImplementation">The type representing custom persistence engine.</typeparam>
     /// <param name="services">A collection of services provided by DI container.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UsePersistenceEngine<TEngine, TImplementation>(this IServiceCollection services)
+    public static IServiceCollection UsePersistenceEngine<TEngine, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
         where TEngine : class
         where TImplementation : PersistentState, TEngine
     {
@@ -77,7 +77,7 @@ public static class RaftClusterConfiguration
     /// <typeparam name="TStorage">The type of the storage service.</typeparam>
     /// <param name="services">A collection of services.</param>
     /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UseConfigurationStorage<TStorage>(this IServiceCollection services)
+    public static IServiceCollection UseConfigurationStorage<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TStorage>(this IServiceCollection services)
         where TStorage : class, IClusterConfigurationStorage<UriEndPoint>
         => services.AddSingleton<IClusterConfigurationStorage<UriEndPoint>, TStorage>();
 

@@ -130,7 +130,7 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         response.StatusCode = StatusCodes.Status200OK;
         response.ContentType = message.Type.ToString();
         response.ContentLength = message.Length;
-        response.Headers.Add(MessageNameHeader, message.Name);
+        response.Headers.Append(MessageNameHeader, message.Name);
         await response.StartAsync(token).ConfigureAwait(false);
         await message.WriteToAsync(response.BodyWriter, token).ConfigureAwait(false);
         var result = await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);
