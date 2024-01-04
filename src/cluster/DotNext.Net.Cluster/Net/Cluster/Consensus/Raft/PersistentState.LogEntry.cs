@@ -6,6 +6,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO;
+using Buffers.Binary;
 using Text.Json;
 
 public partial class PersistentState
@@ -229,9 +230,27 @@ public partial class PersistentState
     /// </summary>
     /// <typeparam name="T">JSON-serializable type.</typeparam>
     /// <param name="content">JSON-serializable content of the log entry.</param>
-    /// <returns>The log entry representing JSON-serializable content.</returns>
+    /// <returns>The log entry encapsulating JSON-serializable content.</returns>
     /// <seealso cref="JsonSerializable{T}.TransformAsync{TInput}(TInput, CancellationToken)"/>
     public JsonLogEntry<T> CreateJsonLogEntry<T>(T? content)
         where T : notnull, IJsonSerializable<T>
+        => new() { Term = Term, Content = content };
+
+    /// <summary>
+    /// Creates a log entry with binary payload.
+    /// </summary>
+    /// <param name="content">Binary payload.</param>
+    /// <returns>The log entry encapsulating binary payload.</returns>
+    public BinaryLogEntry CreateBinaryLogEntry(ReadOnlyMemory<byte> content)
+        => new() { Term = Term, Content = content };
+
+    /// <summary>
+    /// Creates a log entry with binary payload.
+    /// </summary>
+    /// <typeparam name="T">The type representing a payload convertible to binary format.</typeparam>
+    /// <param name="content">Binary payload.</param>
+    /// <returns>The log entry encapsulating binary payload.</returns>
+    public BinaryLogEntry<T> CreateBinaryLogEntry<T>(T content)
+        where T : notnull, IBinaryFormattable<T>
         => new() { Term = Term, Content = content };
 }
