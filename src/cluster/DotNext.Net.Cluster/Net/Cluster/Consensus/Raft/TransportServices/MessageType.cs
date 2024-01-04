@@ -5,7 +5,6 @@ internal enum MessageType : byte
     // request message types
     Vote = 0B_0000_0001,
     Resign = 0B_0000_0010,
-    Heartbeat = 0B_0000_0011,
     AppendEntries = 0B_0000_0100,
     InstallSnapshot = 0B_0000_0101,
     Metadata = 0B_0000_0110,
