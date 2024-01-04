@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Maintenance.CommandLine.Authentication;
@@ -15,7 +17,7 @@ public static class AuthenticationServices
     /// <returns>A modified registry of services.</returns>
     /// <seealso cref="PasswordAuthenticationHandler"/>
     /// <seealso cref="LinuxUdsPeerAuthenticationHandler"/>
-    public static IServiceCollection UseApplicationMaintenanceInterfaceAuthentication<T>(this IServiceCollection services)
+    public static IServiceCollection UseApplicationMaintenanceInterfaceAuthentication<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]T>(this IServiceCollection services)
         where T : class, IAuthenticationHandler
         => services.AddSingleton<IAuthenticationHandler, T>();
 }

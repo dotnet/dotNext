@@ -52,34 +52,37 @@ public sealed class DataTransferObjectTests : Test
     [Fact]
     public static async Task BufferedDTO()
     {
+        var expected = 42L;
         using var dto = new MemoryTransferObject(sizeof(long));
-        Span.AsReadOnlyBytes(42L).CopyTo(dto.Content.Span);
+        Span.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
         Equal(sizeof(long), dto.As<IDataTransferObject>().Length);
         True(dto.As<IDataTransferObject>().IsReusable);
         var writer = new ArrayBufferWriter<byte>();
         await dto.WriteToAsync(writer);
         Equal(sizeof(long), writer.WrittenCount);
-        Equal(42L, BitConverter.ToInt64(writer.WrittenSpan));
+        Equal(expected, BitConverter.ToInt64(writer.WrittenSpan));
         var memory = await dto.ToByteArrayAsync();
-        Equal(42L, BitConverter.ToInt64(memory, 0));
+        Equal(expected, BitConverter.ToInt64(memory, 0));
     }
 
     [Fact]
     public static async Task DecodeAsAllocatedBuffer()
     {
+        var expected = 42L;
         using var dto = new MemoryTransferObject(sizeof(long));
-        Span.AsReadOnlyBytes(42L).CopyTo(dto.Content.Span);
+        Span.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
         using var memory = await dto.ToMemoryAsync();
-        Equal(42L, BitConverter.ToInt64(memory.Span));
+        Equal(expected, BitConverter.ToInt64(memory.Span));
     }
 
     [Fact]
     public static async Task ToBlittableType()
     {
+        var expected = 42M;
         var bytes = new byte[sizeof(decimal)];
-        Span.AsReadOnlyBytes(42M).CopyTo(bytes);
+        Span.AsReadOnlyBytes(in expected).CopyTo(bytes);
         var dto = new BinaryTransferObject(bytes);
-        Equal(42M, (await ISerializable<BlittableTransferObject<decimal>>.TransformAsync(dto)).Content);
+        Equal(expected, (await ISerializable<BlittableTransferObject<decimal>>.TransformAsync(dto)).Content);
     }
 
     [Fact]

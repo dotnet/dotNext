@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,12 +21,12 @@ public static class HostingServices
     /// <typeparam name="TProvider">The type implementing <see cref="IApplicationStatusProvider"/>.</typeparam>
     /// <param name="services">A registry of services.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationStatusProvider<TProvider>(this IServiceCollection services)
+    public static IServiceCollection UseApplicationStatusProvider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]TProvider>(this IServiceCollection services)
         where TProvider : class, IApplicationStatusProvider
     {
         return services
             .AddSingleton<IApplicationStatusProvider, TProvider>()
-            .AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+            .AddSingleton(CreateCommand);
 
         static ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
             => ApplicationMaintenanceCommand.Create(services.GetRequiredService<IApplicationStatusProvider>());

@@ -1,5 +1,4 @@
 ﻿using DotNext;
-using DotNext.IO;
 using DotNext.Net.Cluster.Consensus.Raft;
 
 namespace RaftNode;
@@ -18,10 +17,10 @@ internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier
         }
 
         protected override async ValueTask ApplyAsync(LogEntry entry)
-            => value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
+            => value = await entry.GetReader().ReadLittleEndianAsync<long>().ConfigureAwait(false);
 
         public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(value, token);
+            => writer.WriteLittleEndianAsync(value, token);
     }
 
     private long content;
@@ -40,7 +39,7 @@ internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier
 
     private async ValueTask UpdateValue(LogEntry entry)
     {
-        var value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
+        var value = await entry.GetReader().ReadLittleEndianAsync<long>().ConfigureAwait(false);
         Volatile.Write(ref content, value);
         Console.WriteLine($"Accepting value {value}");
     }
