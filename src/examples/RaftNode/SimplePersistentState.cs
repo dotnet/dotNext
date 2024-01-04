@@ -3,18 +3,13 @@ using DotNext.Net.Cluster.Consensus.Raft;
 
 namespace RaftNode;
 
-internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier<long>
+internal sealed class SimplePersistentState(string path) : MemoryBasedStateMachine(path, 50, new Options { InitialPartitionSize = 50 * 8 }), ISupplier<long>
 {
     internal const string LogLocation = "logLocation";
 
-    private sealed class SimpleSnapshotBuilder : IncrementalSnapshotBuilder
+    private sealed class SimpleSnapshotBuilder(in SnapshotBuilderContext context) : IncrementalSnapshotBuilder(context)
     {
         private long value;
-
-        public SimpleSnapshotBuilder(in SnapshotBuilderContext context)
-            : base(context)
-        {
-        }
 
         protected override async ValueTask ApplyAsync(LogEntry entry)
             => value = await entry.GetReader().ReadLittleEndianAsync<long>().ConfigureAwait(false);
@@ -24,11 +19,6 @@ internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier
     }
 
     private long content;
-
-    public SimplePersistentState(string path)
-        : base(path, 50, new Options { InitialPartitionSize = 50 * 8 })
-    {
-    }
 
     public SimplePersistentState(IConfiguration configuration)
         : this(configuration[LogLocation] ?? string.Empty)
@@ -45,7 +35,7 @@ internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier
     }
 
     protected override ValueTask ApplyAsync(LogEntry entry)
-        => entry.Length == 0L ? new ValueTask() : UpdateValue(entry);
+        => entry.Length is 0L ? ValueTask.CompletedTask : UpdateValue(entry);
 
     protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
     {
