@@ -5,13 +5,8 @@ internal interface IGCCallback
     void StopTracking() => GC.SuppressFinalize(this);
 }
 
-internal sealed class GCIntermediateReference : WeakReference
+internal sealed class GCIntermediateReference(object obj) : WeakReference(obj, obj is IGCCallback)
 {
-    internal GCIntermediateReference(object obj)
-        : base(obj, obj is IGCCallback)
-    {
-    }
-
     internal void Clear()
     {
         switch (Target)

@@ -51,7 +51,8 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// <seealso cref="Commands.CommandInterpreter"/>
     protected abstract ValueTask<long?> ApplyAsync(LogEntry entry);
 
-    private ValueTask<long?> ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new(default(long?)) : ApplyAsync(entry);
+    private ValueTask<long?> ApplyCoreAsync(LogEntry entry)
+        => entry.IsEmpty ? ValueTask.FromResult<long?>(null) : ApplyAsync(entry);
 
     private protected sealed override long LastTerm => Volatile.Read(in lastTerm);
 

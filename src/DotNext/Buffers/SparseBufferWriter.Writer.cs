@@ -1,11 +1,9 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Buffers;
 
 public partial class SparseBufferWriter<T> : IBufferWriter<T>
 {
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private unsafe Memory<T> GetMemory()
     {
         switch (last)

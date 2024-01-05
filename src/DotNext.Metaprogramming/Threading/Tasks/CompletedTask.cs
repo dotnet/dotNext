@@ -8,16 +8,11 @@ namespace DotNext.Threading.Tasks;
 /// Represents <see cref="Task"/> or <see cref="ValueTask"/>
 /// completed synchronously.
 /// </summary>
+/// <param name="failure">The exception with which to complete the task.</param>
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct CompletedTask
+internal readonly struct CompletedTask(Exception failure)
 {
-    private readonly Exception? failure;
-
-    /// <summary>
-    ///  Creates task that has completed with a specified exception.
-    /// </summary>
-    /// <param name="failure">The exception with which to complete the task.</param>
-    public CompletedTask(Exception failure) => this.failure = failure;
+    private readonly Exception? failure = failure;
 
     /// <summary>
     /// Obtains <see cref="Task"/> completed synchronously.
@@ -43,6 +38,7 @@ internal readonly struct CompletedTask
 internal readonly struct CompletedTask<T>
 {
     private readonly Exception? failure;
+
     [AllowNull]
     private readonly T result;
 

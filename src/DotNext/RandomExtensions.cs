@@ -3,10 +3,10 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
-using DotNext.Numerics;
 
 namespace DotNext;
 
+using Numerics;
 using UInt32LocalBuffer = Buffers.MemoryRental<uint>;
 
 /// <summary>

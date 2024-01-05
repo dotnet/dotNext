@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -91,7 +90,6 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         throw new ArgumentOutOfRangeException(nameof(offset));
     }
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private static ReadOnlyMemory<T> Read(ref SequencePosition position, ref long count)
     {
         Debug.Assert(count >= 0L);

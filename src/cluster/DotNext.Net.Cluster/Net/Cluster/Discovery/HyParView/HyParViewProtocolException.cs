@@ -3,15 +3,8 @@ namespace DotNext.Net.Cluster.Discovery.HyParView;
 /// <summary>
 /// Represents violation of Raft protocol.
 /// </summary>
+/// <param name="message">Human-readable text describing problem.</param>
 [Serializable]
-public class HyParViewProtocolException : DiscoveryProtocolException
+public class HyParViewProtocolException(string message) : DiscoveryProtocolException(message)
 {
-    /// <summary>
-    /// Initializes a new exception.
-    /// </summary>
-    /// <param name="message">Human-readable text describing problem.</param>
-    public HyParViewProtocolException(string message)
-        : base(message)
-    {
-    }
 }

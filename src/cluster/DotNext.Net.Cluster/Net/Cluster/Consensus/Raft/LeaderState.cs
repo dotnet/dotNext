@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Runtime;
 using System.Runtime.CompilerServices;
@@ -107,7 +106,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         return MemberResponse.Exception;
     }
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private void CheckMemberHealthStatus(IFailureDetector? detector, TMember member)
     {
         switch (detector)
