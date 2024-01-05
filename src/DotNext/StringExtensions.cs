@@ -39,7 +39,11 @@ public static class StringExtensions
     {
         ArgumentOutOfRangeException.ThrowIfNegative(maxLength);
 
-        return str?.AsSpan().TrimLength(maxLength).ToString();
+        return str is null || str.Length <= maxLength
+            ? str
+            : maxLength is 0
+            ? string.Empty
+            : new(str.AsSpan(0, maxLength));
     }
 
     /// <summary>
