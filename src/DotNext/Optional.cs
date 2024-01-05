@@ -712,6 +712,16 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => first.HasValue ? first : second;
 
     /// <summary>
+    /// Returns the value if present; otherwise return default value.
+    /// </summary>
+    /// <param name="optional">The optional value.</param>
+    /// <param name="defaultValue">The value to be returned if there is no value present.</param>
+    /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
+    [return: NotNullIfNotNull(nameof(defaultValue))]
+    public static T? operator |(in Optional<T> optional, T? defaultValue)
+        => optional.Or(defaultValue);
+
+    /// <summary>
     /// Determines whether two containers are empty or have values.
     /// </summary>
     /// <param name="first">The first container.</param>

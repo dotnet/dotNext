@@ -72,12 +72,32 @@ public interface IOptionMonad<T, TSelf> : IOptionMonad<T>
     /// </summary>
     /// <param name="container">The container to check.</param>
     /// <returns><see langword="true"/> if this container has value; otherwise, <see langword="false"/>.</returns>
-    public static abstract bool operator true(in TSelf container);
+    public static virtual bool operator true(in TSelf container)
+        => container.HasValue;
 
     /// <summary>
     /// Checks whether the container has no value.
     /// </summary>
     /// <param name="container">The container to check.</param>
     /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
-    public static abstract bool operator false(in TSelf container);
+    public static virtual bool operator false(in TSelf container)
+        => container.HasValue is false;
+
+    /// <summary>
+    /// Returns the value if present; otherwise return default value.
+    /// </summary>
+    /// <param name="container">The container to check.</param>
+    /// <param name="defaultValue">The value to be returned if there is no value present.</param>
+    /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
+    public static virtual T? operator |(in TSelf container, T? defaultValue)
+        => container.Or(defaultValue);
+
+    /// <summary>
+    /// Returns non-empty container.
+    /// </summary>
+    /// <param name="x">The first container.</param>
+    /// <param name="y">The second container.</param>
+    /// <returns>The first non-empty container.</returns>
+    public static virtual TSelf operator |(in TSelf x, in TSelf y)
+        => x.HasValue ? x : y;
 }

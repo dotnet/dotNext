@@ -294,6 +294,24 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     public Exception? Error => exception?.SourceException;
 
     /// <summary>
+    /// Returns the value if present; otherwise return default value.
+    /// </summary>
+    /// <param name="result">The result to check.</param>
+    /// <param name="defaultValue">The value to be returned if this result is unsuccessful.</param>
+    /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
+    public static T? operator |(in Result<T> result, T? defaultValue)
+        => result.Or(defaultValue);
+
+    /// <summary>
+    /// Tries to return successful result.
+    /// </summary>
+    /// <param name="x">The first container.</param>
+    /// <param name="y">The second container.</param>
+    /// <returns>The first successful result.</returns>
+    public static Result<T> operator |(in Result<T> x, in Result<T> y)
+        => x.IsSuccessful ? x : y;
+
+    /// <summary>
     /// Gets boxed representation of the result.
     /// </summary>
     /// <returns>The boxed representation of the result.</returns>
@@ -606,6 +624,24 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// </summary>
     /// <returns>The textual representation of this object.</returns>
     public override string? ToString() => IsSuccessful ? value?.ToString() : errorCode.ToString();
+
+    /// <summary>
+    /// Returns the value if present; otherwise return default value.
+    /// </summary>
+    /// <param name="result">The result to check.</param>
+    /// <param name="defaultValue">The value to be returned if this result is unsuccessful.</param>
+    /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
+    public static T? operator |(in Result<T, TError> result, T? defaultValue)
+        => result.Or(defaultValue);
+
+    /// <summary>
+    /// Tries to return successful result.
+    /// </summary>
+    /// <param name="x">The first container.</param>
+    /// <param name="y">The second container.</param>
+    /// <returns>The first successful result.</returns>
+    public static Result<T, TError> operator |(in Result<T, TError> x, in Result<T, TError> y)
+        => x.IsSuccessful ? x : y;
 
     /// <summary>
     /// Converts the result into <see cref="Optional{T}"/>.
