@@ -40,8 +40,7 @@ public static class LockAcquisition
     /// <returns>The acquired read lock.</returns>
     public static Lock.Holder AcquireReadLock<T>(this T obj)
         where T : class
-        =>
-        Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire();
+        => Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire();
 
     /// <summary>
     /// Acquires read lock for the specified object.

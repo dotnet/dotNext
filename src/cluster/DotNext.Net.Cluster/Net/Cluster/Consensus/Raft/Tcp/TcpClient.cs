@@ -131,8 +131,11 @@ internal sealed class TcpClient : Client, ITcpTransport
         }
 
         ITcpTransport.ConfigureSocket(socket, linger, ttl);
-        var transport = new TcpStream(socket, owns: true);
-        transport.WriteTimeout = (int)RequestTimeout.TotalMilliseconds;
+        var transport = new TcpStream(socket, owns: true)
+        {
+            WriteTimeout = (int)RequestTimeout.TotalMilliseconds
+        };
+
         TcpProtocolStream protocol;
         if (SslOptions is null)
         {

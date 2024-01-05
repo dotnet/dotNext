@@ -3,7 +3,6 @@ using System.CommandLine;
 using System.CommandLine.Parsing;
 using DotNext.Maintenance.CommandLine;
 using DotNext.Maintenance.CommandLine.Binding;
-using Microsoft.Extensions.Hosting;
 
 var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 Console.WriteLine($"Print nc -U {path} in separated Terminal session to get access to Application Management Interface");

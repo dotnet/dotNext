@@ -42,7 +42,7 @@ public static class HostingServices
     public static IServiceCollection RegisterMaintenanceCommand(this IServiceCollection services, string name, Action<ApplicationMaintenanceCommand> action)
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
@@ -64,7 +64,7 @@ public static class HostingServices
         where TDependency : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
@@ -88,7 +88,7 @@ public static class HostingServices
         where TDependency2 : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
@@ -114,7 +114,7 @@ public static class HostingServices
         where TDependency3 : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
