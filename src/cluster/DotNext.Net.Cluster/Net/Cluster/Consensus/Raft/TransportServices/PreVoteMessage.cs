@@ -1,24 +1,31 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Buffers.Binary;
 
-internal static class PreVoteMessage
+[StructLayout(LayoutKind.Auto)]
+internal readonly record struct PreVoteMessage(ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm) : IBinaryFormattable<PreVoteMessage>
 {
-    internal static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + sizeof(long);
+    public static int Size => ClusterMemberId.Size + sizeof(long) + sizeof(long) + sizeof(long);
 
-    internal static void Write(ref SpanWriter<byte> writer, in ClusterMemberId id, long term, long lastLogIndex, long lastLogTerm)
+    public void Format(Span<byte> output)
     {
-        id.Format(ref writer);
-        writer.WriteInt64(term, true);
-        writer.WriteInt64(lastLogIndex, true);
-        writer.WriteInt64(lastLogTerm, true);
+        var writer = new SpanWriter<byte>(output);
+        writer.Write(Id);
+        writer.WriteLittleEndian(Term);
+        writer.WriteLittleEndian(LastLogIndex);
+        writer.WriteLittleEndian(LastLogTerm);
     }
 
-    internal static (ClusterMemberId Id, long Term, long LastLogIndex, long LastLogTerm) Read(ref SpanReader<byte> reader) => new()
+    public static PreVoteMessage Parse(ReadOnlySpan<byte> input)
     {
-        Id = new(ref reader),
-        Term = reader.ReadInt64(true),
-        LastLogIndex = reader.ReadInt64(true),
-        LastLogTerm = reader.ReadInt64(true),
-    };
+        var reader = new SpanReader<byte>(input);
+        return new(
+            reader.Read<ClusterMemberId>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<long>(),
+            reader.ReadLittleEndian<long>());
+    }
 }

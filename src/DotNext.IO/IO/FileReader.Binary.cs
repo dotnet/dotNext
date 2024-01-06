@@ -1,35 +1,72 @@
 using System.Buffers;
-using System.IO.Pipelines;
+using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.IO;
 
 using Buffers;
+using Buffers.Binary;
 using Text;
-using PipeConsumer = Pipelines.PipeConsumer;
 
 public partial class FileReader : IAsyncBinaryReader
 {
-    private bool TryRead<T>(out T value)
-        where T : unmanaged
+    private ValueTask<TResult> ReadAsync<TResult, TParser>(TParser parser, CancellationToken token)
+        where TParser : struct, IBufferReader, ISupplier<TResult>
     {
+        return HasBufferedData && Read(ref parser) && parser.RemainingBytes is 0
+            ? ValueTask.FromResult(parser.Invoke())
+            : ReadSlowAsync<TResult, TParser>(parser, token);
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<TResult> ReadSlowAsync<TResult, TParser>(TParser parser, CancellationToken token)
+        where TParser : struct, IBufferReader, ISupplier<TResult>
+    {
+        while (parser.RemainingBytes > 0 && await ReadAsync(token).ConfigureAwait(false) && Read(ref parser)) ;
+
+        return parser.EndOfStream<TResult, TParser>();
+    }
+
+    private ValueTask ReadAsync<TParser>(TParser parser, CancellationToken token)
+        where TParser : struct, IBufferReader
+    {
+        return HasBufferedData && Read(ref parser) && parser.RemainingBytes is 0
+            ? ValueTask.CompletedTask
+            : ReadSlowAsync(parser, token);
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask ReadSlowAsync<TParser>(TParser parser, CancellationToken token)
+        where TParser : struct, IBufferReader
+    {
+        while (parser.RemainingBytes > 0 && await ReadAsync(token).ConfigureAwait(false) && Read(ref parser)) ;
+
+        parser.EndOfStream();
+    }
+
+    private bool Read<TParser>(ref TParser parser)
+        where TParser : struct, IBufferReader
+    {
+        Debug.Assert(HasBufferedData);
+
+        var buffer = TrimLength(Buffer, length);
+        buffer = buffer.TrimLength(parser.RemainingBytes);
+
         bool result;
-        if (result = MemoryMarshal.TryRead(TrimLength(Buffer, length).Span, out value))
+        if (result = buffer.IsEmpty is false)
         {
-            var count = Unsafe.SizeOf<T>();
-            Consume(count);
-            length -= count;
+            parser.Invoke(buffer.Span);
+            Consume(buffer.Length);
+            length -= buffer.Length;
         }
 
         return result;
     }
 
     /// <summary>
-    /// Decodes the value of blittable type.
+    /// Decodes the value of binary formattable type.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="T">The type of the result.</typeparam>
@@ -37,113 +74,77 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
-        where T : unmanaged
+        where T : notnull, IBinaryFormattable<T>
     {
-        ValueTask<T> result;
-
-        if (IsDisposed)
-        {
-            result = new(GetDisposedTask<T>());
-        }
-        else if (length < Unsafe.SizeOf<T>())
-        {
-            result = ValueTask.FromException<T>(new EndOfStreamException());
-        }
-        else if (BufferLength >= Unsafe.SizeOf<T>())
-        {
-            try
-            {
-                result = TryRead(out T value)
-                    ? new(value)
-                    : throw new EndOfStreamException();
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<T>(e);
-            }
-        }
-        else
-        {
-            result = ReadSlowAsync<T>(token);
-        }
-
-        return result;
-    }
-
-    private async ValueTask<T> ReadSlowAsync<T>(CancellationToken token)
-        where T : unmanaged
-    {
-        using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), exactSize: true);
-        await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-        return MemoryMarshal.Read<T>(buffer.Span);
-    }
-
-    private int Read7BitEncodedInt()
-    {
-        var decoder = new SevenBitEncodedInt.Reader();
-        var reader = new SpanReader<byte>(BufferSpan);
-        bool moveNext;
-        do
-        {
-            var b = length > 0L ? reader.Read() : -1;
-            moveNext = b >= 0 ? decoder.Append((byte)b) : throw new EndOfStreamException();
-            length -= 1L;
-        }
-        while (moveNext);
-
-        Consume(reader.ConsumedCount);
-        return (int)decoder.Result;
-    }
-
-    private int ReadLength(LengthFormat lengthFormat)
-    {
-        int result;
-        var littleEndian = BitConverter.IsLittleEndian;
-
-        switch (lengthFormat)
-        {
-            default:
-                throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-            case LengthFormat.Plain:
-                if (TryRead(out result))
-                    break;
-                throw new EndOfStreamException();
-            case LengthFormat.PlainLittleEndian:
-                littleEndian = true;
-                goto case LengthFormat.Plain;
-            case LengthFormat.PlainBigEndian:
-                littleEndian = false;
-                goto case LengthFormat.Plain;
-            case LengthFormat.Compressed:
-                result = Read7BitEncodedInt();
-                break;
-        }
-
-        result.ReverseIfNeeded(littleEndian);
-        return result;
+        return T.Size <= BinaryFormattable256Reader<T>.MaxSize
+            ? ReadAsync<T, BinaryFormattable256Reader<T>>(new(), token)
+            : ReadAsync<T, BinaryFormattableReader<T>>(new(), token);
     }
 
     /// <summary>
-    /// Reads length-prefixed block of bytes.
+    /// Reads integer encoded in little-endian format.
     /// </summary>
-    /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
-    /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
+    /// <typeparam name="T">The integer type.</typeparam>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The decoded block of bytes.</returns>
+    /// <returns>The integer value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public ValueTask<T> ReadLittleEndianAsync<T>(CancellationToken token = default)
+        where T : notnull, IBinaryInteger<T>
+    {
+        var type = typeof(T);
+        return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
+            ? ReadAsync<T, WellKnownIntegerReader<T>>(WellKnownIntegerReader<T>.LittleEndian(), token)
+            : ReadAsync<T, IntegerReader<T>>(IntegerReader<T>.LittleEndian(), token);
+    }
+
+    /// <summary>
+    /// Reads integer encoded in big-endian format.
+    /// </summary>
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The integer value.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public ValueTask<T> ReadBigEndianAsync<T>(CancellationToken token = default)
+        where T : notnull, IBinaryInteger<T>
+    {
+        var type = typeof(T);
+        return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
+            ? ReadAsync<T, WellKnownIntegerReader<T>>(WellKnownIntegerReader<T>.BigEndian(), token)
+            : ReadAsync<T, IntegerReader<T>>(IntegerReader<T>.BigEndian(), token);
+    }
+
+    /// <inheritdoc/>
+    ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)
+        => ReadAsync<TReader, BufferReader<TReader>>(reader, token);
+
+    private ValueTask<int> ReadLengthAsync(LengthFormat lengthFormat, CancellationToken token) => lengthFormat switch
+    {
+        LengthFormat.LittleEndian => ReadLittleEndianAsync<int>(token),
+        LengthFormat.BigEndian => ReadBigEndianAsync<int>(token),
+        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedInt.Reader>(new(), token),
+        _ => ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(lengthFormat))),
+    };
+
+    /// <summary>
+    /// Reads the memory block.
+    /// </summary>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="allocator">An allocator of the resulting buffer.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The rented buffer containing the memory block.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public async ValueTask<MemoryOwner<byte>> ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
-        if (BufferLength < SevenBitEncodedInt.MaxSize)
-            await ReadAsync(token).ConfigureAwait(false);
-
-        var length = ReadLength(lengthFormat);
-
         MemoryOwner<byte> result;
+        var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (length > 0)
         {
-            result = allocator.Invoke(length, true);
-            await ReadBlockAsync(result.Memory, token).ConfigureAwait(false);
+            result = allocator.AllocateExactly(length);
+            await ReadAsync<MemoryBlockReader>(new(result.Memory), token).ConfigureAwait(false);
         }
         else
         {
@@ -153,194 +154,128 @@ public partial class FileReader : IAsyncBinaryReader
         return result;
     }
 
-    private async ValueTask<int> ReadStringAsync(Memory<char> result, DecodingContext context, CancellationToken token)
-    {
-        var decoder = context.GetDecoder();
-        var resultOffset = 0;
-
-        for (int remainingBytes = result.Length, consumedBytes; remainingBytes > 0; Consume(consumedBytes), remainingBytes -= consumedBytes)
-        {
-            if (BufferLength < remainingBytes && !await ReadAsync(token).ConfigureAwait(false))
-                throw new EndOfStreamException();
-
-            var buffer = TrimLength(Buffer.TrimLength(remainingBytes), length);
-            resultOffset += decoder.GetChars(buffer.Span, result.Span.Slice(resultOffset), remainingBytes <= BufferLength);
-            consumedBytes = buffer.Length;
-            length -= consumedBytes;
-        }
-
-        return resultOffset;
-    }
-
     /// <summary>
-    /// Decodes the string.
+    /// Decodes the sequence of characters.
     /// </summary>
-    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
     /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="allocator">The allocator of the buffer of characters.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The decoded string.</returns>
+    /// <returns>The buffer of characters.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public async ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)
+    public async ValueTask<MemoryOwner<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
-        if (BufferLength < SevenBitEncodedInt.MaxSize)
-            await ReadAsync(token).ConfigureAwait(false);
+        MemoryOwner<char> result;
+        var lengthInBytes = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
 
-        var length = ReadLength(lengthFormat);
-
-        if (length <= 0)
-            return string.Empty;
-
-        if (this.length < length)
-            throw new EndOfStreamException();
-
-        using var result = MemoryAllocator.Allocate<char>(length, true);
-        length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
-        return new string(result.Span.Slice(0, length));
-    }
-
-    /// <summary>
-    /// Decodes the string.
-    /// </summary>
-    /// <param name="length">The length of the encoded string, in bytes.</param>
-    /// <param name="context">The decoding context containing string characters encoding.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The decoded string.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public async ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
-    {
-        if (length == 0)
-            return string.Empty;
-
-        if (this.length < length)
-            throw new EndOfStreamException();
-
-        using var result = MemoryAllocator.Allocate<char>(length, true);
-        length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
-        return new string(result.Span.Slice(0, length));
-    }
-
-    /// <summary>
-    /// Parses the value encoded as a set of characters.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <param name="parser">The parser.</param>
-    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
-    /// <param name="context">The decoding context containing string characters encoding.</param>
-    /// <param name="provider">The format provider.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The parsed value.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    /// <exception cref="FormatException">The string is in wrong format.</exception>
-    public async ValueTask<T> ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull
-    {
-        if (BufferLength < SevenBitEncodedInt.MaxSize)
-            await ReadAsync(token).ConfigureAwait(false);
-
-        var length = ReadLength(lengthFormat);
-
-        if (length <= 0)
-            return parser(ReadOnlySpan<char>.Empty, provider);
-
-        if (this.length < length)
-            throw new EndOfStreamException();
-
-        using var result = MemoryAllocator.Allocate<char>(length, true);
-        length = await ReadStringAsync(result.Memory, context, token).ConfigureAwait(false);
-        return parser(result.Span.Slice(0, length), provider);
-    }
-
-    /// <summary>
-    /// Parses the value encoded as a sequence of bytes.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The parsed value.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    [RequiresPreviewFeatures]
-    public ValueTask<T> ParseAsync<T>(CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
-    {
-        ValueTask<T> result;
-
-        if (IsDisposed)
+        if (lengthInBytes > 0)
         {
-            result = new(GetDisposedTask<T>());
-        }
-        else if (length < T.Size)
-        {
-            result = ValueTask.FromException<T>(new EndOfStreamException());
-        }
-        else if (BufferLength >= T.Size)
-        {
-            try
-            {
-                result = new(ParseFast<T>());
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<T>(e);
-            }
+            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
+
+            result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token).ConfigureAwait(false));
         }
         else
         {
-            result = ParseSlowAsync<T>(token);
+            result = default;
         }
 
         return result;
     }
 
-    [RequiresPreviewFeatures]
-    private T ParseFast<T>()
-        where T : notnull, IBinaryFormattable<T>
+    /// <summary>
+    /// Decodes the sequence of characters.
+    /// </summary>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="buffer">The buffer of characters.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The enumerator of characters.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
     {
-        Debug.Assert(BufferLength >= T.Size);
+        var lengthInBytes = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
 
-        var reader = new SpanReader<byte>(BufferSpan.Slice(0, T.Size));
-        var result = T.Parse(ref reader);
-        Consume(reader.ConsumedCount);
-        length -= reader.ConsumedCount;
-        return result;
-    }
-
-    [RequiresPreviewFeatures]
-    private async ValueTask<T> ParseSlowAsync<T>(CancellationToken token)
-        where T : notnull, IBinaryFormattable<T>
-    {
-        using var buffer = MemoryAllocator.Allocate<byte>(T.Size, exactSize: true);
-        await ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
-        return IBinaryFormattable<T>.Parse(buffer.Span);
+        for (var decoder = context.GetDecoder(); lengthInBytes > 0;)
+        {
+            var state = new DecodingReader(context.Encoding, decoder, lengthInBytes, buffer);
+            var writtenChars = await ReadAsync<int, DecodingReader>(state, token).ConfigureAwait(false);
+            yield return buffer.Slice(0, writtenChars);
+            lengthInBytes -= state.RemainingBytes;
+        }
     }
 
     /// <summary>
-    /// Decodes an arbitrary integer value.
+    /// Parses the sequence of characters encoded as UTF-8.
     /// </summary>
-    /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+    /// <typeparam name="T">The type that supports parsing from UTF-8.</typeparam>
+    /// <param name="lengthFormat">The format of the string length (in bytes) encoded in the stream.</param>
+    /// <param name="provider">Culture-specific formatting information.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The decoded value.</returns>
+    /// <returns>The result of parsing.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public async ValueTask<BigInteger> ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default)
+        where T : notnull, IUtf8SpanParsable<T>
     {
-        if (BufferLength < SevenBitEncodedInt.MaxSize)
-            await ReadAsync(token).ConfigureAwait(false);
+        var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
 
-        var length = ReadLength(lengthFormat);
         if (length <= 0)
-            return BigInteger.Zero;
+            return T.Parse([], provider);
 
-        if (this.length < length)
-            throw new EndOfStreamException();
+        // fast path without allocation of temp buffer
+        if (TryConsume(length, out var block))
+        {
+            block = TrimLength(block, this.length);
+            this.length -= block.Length;
+            return block.Length == length
+                ? T.Parse(block.Span, provider)
+                : throw new EndOfStreamException();
+        }
 
-        using var block = MemoryAllocator.Allocate<byte>(length, exactSize: true);
-        await ReadBlockAsync(block.Memory, token).ConfigureAwait(false);
-        return new BigInteger(block.Span, isBigEndian: !littleEndian);
+        // slow path with temp buffer
+        using var buffer = allocator.AllocateExactly(length);
+        await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
+        return T.Parse(buffer.Span, provider);
+    }
+
+    /// <summary>
+    /// Parses the numeric value from UTF-8 encoded characters.
+    /// </summary>
+    /// <typeparam name="T">The numeric type.</typeparam>
+    /// <param name="lengthFormat">The format of the string length (in bytes) encoded in the stream.</param>
+    /// <param name="style">A combination of number styles.</param>
+    /// <param name="provider">Culture-specific formatting information.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The result of parsing.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
+        where T : notnull, INumberBase<T>
+    {
+        var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+
+        if (length <= 0)
+            return T.Parse(ReadOnlySpan<byte>.Empty, style, provider);
+
+        // fast path without allocation of temp buffer
+        if (TryConsume(length, out var block))
+        {
+            block = TrimLength(block, this.length);
+            this.length -= block.Length;
+            return block.Length == length
+                ? T.Parse(block.Span, provider)
+                : throw new EndOfStreamException();
+        }
+
+        using var buffer = allocator.AllocateExactly(length);
+        await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
+        return T.Parse(buffer.Span, provider);
     }
 
     /// <summary>
@@ -351,7 +286,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async Task CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
+    public async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         for (ReadOnlyMemory<byte> buffer; length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
@@ -363,64 +298,40 @@ public partial class FileReader : IAsyncBinaryReader
     }
 
     /// <summary>
-    /// Copies the content to the specified stream.
+    /// Reads the entire content using the specified delegate.
     /// </summary>
-    /// <param name="output">The output stream receiving object content.</param>
-    /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task CopyToAsync(Stream output, CancellationToken token = default)
-        => CopyToAsync<StreamConsumer>(output, token);
-
-    /// <summary>
-    /// Copies the content to the specified pipe writer.
-    /// </summary>
-    /// <param name="output">The writer.</param>
-    /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task CopyToAsync(PipeWriter output, CancellationToken token = default)
-        => CopyToAsync<PipeConsumer>(output, token);
-
-    /// <summary>
-    /// Copies the content to the specified buffer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task CopyToAsync(IBufferWriter<byte> writer, CancellationToken token = default)
-        => CopyToAsync(new BufferConsumer<byte>(writer), token);
-
-    /// <summary>
-    /// Reads the block of bytes.
-    /// </summary>
-    /// <param name="output">The output buffer.</param>
+    /// <param name="consumer">The content reader.</param>
+    /// <param name="count">The number of bytes to copy.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="EndOfStreamException">The expected block cannot be obtained.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask ReadBlockAsync(Memory<byte> output, CancellationToken token = default)
+    /// <exception cref="EndOfStreamException">The underlying file doesn't have enough bytes to read.</exception>
+    public async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long count, CancellationToken token = default)
+        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        if (length < output.Length)
-            throw new EndOfStreamException();
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        output = TrimLength(output, length);
-
-        for (int writtenBytes; !output.IsEmpty; output = output.Slice(writtenBytes))
+        for (ReadOnlyMemory<byte> buffer; count > 0L && length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
         {
-            writtenBytes = await ReadAsync(output, token).ConfigureAwait(false);
-
-            if (writtenBytes == 0)
-                throw new EndOfStreamException();
-
-            length -= writtenBytes;
+            buffer = TrimLength(Buffer, length).TrimLength(int.CreateSaturating(count));
+            await consumer.Invoke(buffer, token).ConfigureAwait(false);
+            length -= buffer.Length;
+            count -= buffer.Length;
         }
+
+        if (count > 0L)
+            throw new EndOfStreamException();
     }
+
+    /// <inheritdoc/>
+    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
+        => count.HasValue ? CopyToAsync(consumer, count.GetValueOrDefault(), token) : CopyToAsync(consumer, token);
 
     /// <inheritdoc />
     ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
-        => ReadBlockAsync(output, token);
+        => ReadAsync<MemoryBlockReader>(new(output), token);
 
     /// <inheritdoc />
     ValueTask IAsyncBinaryReader.SkipAsync(long bytes, CancellationToken token)
@@ -436,11 +347,10 @@ public partial class FileReader : IAsyncBinaryReader
         }
         else
         {
-            result = new();
+            result = ValueTask.CompletedTask;
             try
             {
                 Skip(bytes);
-                length -= bytes;
             }
             catch (Exception e)
             {

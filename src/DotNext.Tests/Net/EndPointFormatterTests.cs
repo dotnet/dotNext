@@ -10,18 +10,6 @@ using HttpEndPoint = Http.HttpEndPoint;
 
 public sealed class EndPointFormatterTests : Test
 {
-    // TODO: Remove in .NET 7/8 because of https://github.com/dotnet/runtime/pull/69722
-    private sealed class UnixDomainSocketEndPointComparer : IEqualityComparer<EndPoint>
-    {
-        internal static readonly UnixDomainSocketEndPointComparer Instance = new();
-
-        bool IEqualityComparer<EndPoint>.Equals(EndPoint x, EndPoint y)
-            => string.Equals(x?.ToString(), y?.ToString(), StringComparison.Ordinal);
-
-        int IEqualityComparer<EndPoint>.GetHashCode(EndPoint obj)
-            => string.GetHashCode(obj.ToString(), StringComparison.Ordinal);
-    }
-
     public static IEnumerable<object[]> GetTestEndPoints()
     {
         yield return new object[] { new DnsEndPoint("host", 3262), EqualityComparer<EndPoint>.Default };
@@ -37,8 +25,8 @@ public sealed class EndPointFormatterTests : Test
 
         if (Socket.OSSupportsUnixDomainSockets)
         {
-            yield return new object[] { new UnixDomainSocketEndPoint("@abstract"), UnixDomainSocketEndPointComparer.Instance };
-            yield return new object[] { new UnixDomainSocketEndPoint(Path.GetTempFileName()), UnixDomainSocketEndPointComparer.Instance };
+            yield return new object[] { new UnixDomainSocketEndPoint("@abstract"), EqualityComparer<EndPoint>.Default };
+            yield return new object[] { new UnixDomainSocketEndPoint(Path.GetTempFileName()), EqualityComparer<EndPoint>.Default };
         }
     }
 

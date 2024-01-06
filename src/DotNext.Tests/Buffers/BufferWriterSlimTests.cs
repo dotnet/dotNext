@@ -1,3 +1,4 @@
+using System.Text;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers;
@@ -20,7 +21,7 @@ public sealed class BufferWriterSlimTests : Test
         Equal(10, builder[0]);
         Equal(20, builder[1]);
 
-        builder.Write(new int[] { 30, 40 });
+        builder.Write([30, 40]);
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(30, builder[2]);
@@ -28,11 +29,11 @@ public sealed class BufferWriterSlimTests : Test
         Span<int> result = stackalloc int[5];
         builder.WrittenSpan.CopyTo(result, out var writtenCount);
         Equal(4, writtenCount);
-        Equal(new int[] { 10, 20, 30, 40, 0 }, result.ToArray());
+        Equal([10, 20, 30, 40, 0], result.ToArray());
 
         builder.Clear(true);
         Equal(0, builder.WrittenCount);
-        builder.Write(new int[] { 50, 60, 70, 80 });
+        builder.Write([50, 60, 70, 80]);
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(50, builder[0]);
@@ -42,7 +43,7 @@ public sealed class BufferWriterSlimTests : Test
 
         builder.Clear(false);
         Equal(0, builder.WrittenCount);
-        builder.Write(new int[] { 10, 20, 30, 40 });
+        builder.Write([10, 20, 30, 40]);
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(10, builder[0]);
@@ -73,27 +74,27 @@ public sealed class BufferWriterSlimTests : Test
             writer.Write("Hello, world");
             writer.Add('!');
             writer.WriteLine("!!");
-            writer.WriteFormattable<int>(42, provider: InvariantCulture);
-            writer.WriteFormattable<uint>(56U, provider: InvariantCulture);
-            writer.WriteFormattable<byte>(10, provider: InvariantCulture);
-            writer.WriteFormattable<sbyte>(22, provider: InvariantCulture);
-            writer.WriteFormattable<short>(88, provider: InvariantCulture);
-            writer.WriteFormattable<ushort>(99, provider: InvariantCulture);
-            writer.WriteFormattable<long>(77L, provider: InvariantCulture);
-            writer.WriteFormattable<ulong>(66UL, provider: InvariantCulture);
+            writer.Format(42, provider: InvariantCulture);
+            writer.Format(56U, provider: InvariantCulture);
+            writer.Format<byte>(10, provider: InvariantCulture);
+            writer.Format<sbyte>(22, provider: InvariantCulture);
+            writer.Format<short>(88, provider: InvariantCulture);
+            writer.Format<ushort>(99, provider: InvariantCulture);
+            writer.Format(77L, provider: InvariantCulture);
+            writer.Format(66UL, provider: InvariantCulture);
 
             var guid = Guid.NewGuid();
-            writer.WriteFormattable(guid);
+            writer.Format(guid, provider: InvariantCulture);
 
             var dt = DateTime.Now;
-            writer.WriteFormattable(dt, provider: InvariantCulture);
+            writer.Format(dt, provider: InvariantCulture);
 
             var dto = DateTimeOffset.Now;
-            writer.WriteFormattable(dto, provider: InvariantCulture);
+            writer.Format(dto, provider: InvariantCulture);
 
-            writer.WriteFormattable<decimal>(42.5M, provider: InvariantCulture);
-            writer.WriteFormattable<float>(32.2F, provider: InvariantCulture);
-            writer.WriteFormattable<double>(56.6D, provider: InvariantCulture);
+            writer.Format(42.5M, provider: InvariantCulture);
+            writer.Format(32.2F, provider: InvariantCulture);
+            writer.Format(56.6D, provider: InvariantCulture);
 
             Equal("Hello, world!!!" + Environment.NewLine + "4256102288997766" + guid + dt.ToString(InvariantCulture) + dto.ToString(InvariantCulture) + "42.532.256.6", writer.ToString());
         }
@@ -109,44 +110,32 @@ public sealed class BufferWriterSlimTests : Test
         var builder = new BufferWriterSlim<byte>(stackalloc byte[512]);
         try
         {
-            builder.WriteInt16(short.MinValue, true);
-            builder.WriteInt16(short.MaxValue, false);
-            builder.WriteUInt16(42, true);
-            builder.WriteUInt16(ushort.MaxValue, false);
-            builder.WriteInt32(int.MaxValue, true);
-            builder.WriteInt32(int.MinValue, false);
-            builder.WriteUInt32(42, true);
-            builder.WriteUInt32(uint.MaxValue, false);
-            builder.WriteInt64(long.MaxValue, true);
-            builder.WriteInt64(long.MinValue, false);
-            builder.WriteUInt64(42, true);
-            builder.WriteUInt64(ulong.MaxValue, false);
-            builder.WriteSingle(float.MaxValue, true);
-            builder.WriteSingle(float.MinValue, false);
-            builder.WriteDouble(double.MaxValue, true);
-            builder.WriteDouble(double.MinValue, false);
-            builder.WriteHalf(Half.MaxValue, true);
-            builder.WriteHalf(Half.MinValue, false);
+            builder.WriteLittleEndian(short.MinValue);
+            builder.WriteBigEndian(short.MaxValue);
+            builder.WriteLittleEndian<ushort>(42);
+            builder.WriteBigEndian(ushort.MaxValue);
+            builder.WriteLittleEndian(int.MaxValue);
+            builder.WriteBigEndian(int.MinValue);
+            builder.WriteLittleEndian(42U);
+            builder.WriteBigEndian(uint.MaxValue);
+            builder.WriteLittleEndian(long.MaxValue);
+            builder.WriteBigEndian(long.MinValue);
+            builder.WriteLittleEndian(42UL);
+            builder.WriteBigEndian(ulong.MaxValue);
 
             var reader = new SpanReader<byte>(builder.WrittenSpan);
-            Equal(short.MinValue, reader.ReadInt16(true));
-            Equal(short.MaxValue, reader.ReadInt16(false));
-            Equal(42, reader.ReadUInt16(true));
-            Equal(ushort.MaxValue, reader.ReadUInt16(false));
-            Equal(int.MaxValue, reader.ReadInt32(true));
-            Equal(int.MinValue, reader.ReadInt32(false));
-            Equal(42U, reader.ReadUInt32(true));
-            Equal(uint.MaxValue, reader.ReadUInt32(false));
-            Equal(long.MaxValue, reader.ReadInt64(true));
-            Equal(long.MinValue, reader.ReadInt64(false));
-            Equal(42UL, reader.ReadUInt64(true));
-            Equal(ulong.MaxValue, reader.ReadUInt64(false));
-            Equal(float.MaxValue, reader.ReadSingle(true));
-            Equal(float.MinValue, reader.ReadSingle(false));
-            Equal(double.MaxValue, reader.ReadDouble(true));
-            Equal(double.MinValue, reader.ReadDouble(false));
-            Equal(Half.MaxValue, reader.ReadHalf(true));
-            Equal(Half.MinValue, reader.ReadHalf(false));
+            Equal(short.MinValue, reader.ReadLittleEndian<short>());
+            Equal(short.MaxValue, reader.ReadBigEndian<short>());
+            Equal(42, reader.ReadLittleEndian<ushort>());
+            Equal(ushort.MaxValue, reader.ReadBigEndian<ushort>());
+            Equal(int.MaxValue, reader.ReadLittleEndian<int>());
+            Equal(int.MinValue, reader.ReadBigEndian<int>());
+            Equal(42U, reader.ReadLittleEndian<uint>());
+            Equal(uint.MaxValue, reader.ReadBigEndian<uint>());
+            Equal(long.MaxValue, reader.ReadLittleEndian<long>());
+            Equal(long.MinValue, reader.ReadBigEndian<long>());
+            Equal(42UL, reader.ReadLittleEndian<ulong>());
+            Equal(ulong.MaxValue, reader.ReadBigEndian<ulong>());
         }
         finally
         {
@@ -179,11 +168,11 @@ public sealed class BufferWriterSlimTests : Test
         try
         {
             const string expectedString = "Hello, world!";
-            Equal(expectedString.Length, writer.WriteAsString(expectedString));
+            Equal(expectedString.Length, writer.Format(expectedString));
             Equal(expectedString, writer.ToString());
             writer.Clear();
 
-            Equal(2, writer.WriteAsString(56, provider: InvariantCulture));
+            Equal(2, writer.Format(56));
             Equal("56", writer.ToString());
         }
         finally
@@ -198,14 +187,14 @@ public sealed class BufferWriterSlimTests : Test
         var writer = new BufferWriterSlim<char>(stackalloc char[32]);
         try
         {
-            writer.Concat(Array.Empty<string>());
+            writer.Concat([]);
             Empty(writer.ToString());
 
-            writer.Concat(new[] { "Hello, world!" });
+            writer.Concat(["Hello, world!"]);
             Equal("Hello, world!", writer.ToString());
             writer.Clear(reuseBuffer: true);
 
-            writer.Concat(("Hello, ", "world!").AsReadOnlySpan());
+            writer.Concat(["Hello, ", "world!"]);
             Equal("Hello, world!", writer.ToString());
         }
         finally
@@ -243,7 +232,7 @@ public sealed class BufferWriterSlimTests : Test
         False(writer.TryPop(buffer));
         True(writer.TryPop(Span<int>.Empty));
 
-        writer.Write(stackalloc int[] { 10, 20, 30 });
+        writer.Write([10, 20, 30]);
         True(writer.TryPop(buffer.Slice(0, 2)));
         Equal(20, buffer[0]);
         Equal(30, buffer[1]);
@@ -306,5 +295,22 @@ public sealed class BufferWriterSlimTests : Test
 
         buffer.WrittenCount = 1;
         Equal(42, buffer[0]);
+    }
+
+    [Fact]
+    public static void EncodeAsUtf8()
+    {
+        var writer = new BufferWriterSlim<byte>();
+        writer.Format(42);
+        Equal(2, writer.WrittenCount);
+        Equal(42, int.Parse(writer.WrittenSpan));
+    }
+
+    [Fact]
+    public static void Rendering()
+    {
+        var writer = new BufferWriterSlim<char>();
+        writer.Format(CompositeFormat.Parse("{0}, {1}!"), ["Hello", "world"]);
+        Equal("Hello, world!", writer.ToString());
     }
 }

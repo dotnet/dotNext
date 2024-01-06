@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming;
 
 using static Reflection.DelegateType;
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents lambda function builder.
@@ -112,7 +112,7 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
         if (recursion is not null)
         {
             body = Expression.Block(
-                Seq.Singleton(recursion),
+                List.Singleton(recursion),
                 Expression.Assign(recursion, Expression.Lambda<TDelegate>(body, tailCall, Parameters)),
                 Expression.Invoke(recursion, Parameters));
         }

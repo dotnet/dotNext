@@ -26,7 +26,7 @@ public readonly struct ElectionTimeout
     /// <summary>
     /// Gets lower possible value of leader election timeout, in milliseconds.
     /// </summary>
-    public int LowerValue
+    required public int LowerValue
     {
         get => lowerValue;
         init => lowerValue = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
@@ -35,10 +35,10 @@ public readonly struct ElectionTimeout
     /// <summary>
     /// Gets upper possible value of leader election timeout, in milliseconds.
     /// </summary>
-    public int UpperValue
+    required public int UpperValue
     {
         get => upperValue;
-        init => upperValue = value is > 0 and < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(upperValue));
+        init => upperValue = value is > 0 and < int.MaxValue ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>

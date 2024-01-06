@@ -21,13 +21,13 @@ public struct ReaderWriterSpinLock
         private readonly uint version;
         private readonly bool valid;
 
-        internal LockStamp(in uint version)
+        internal LockStamp(ref readonly uint version)
         {
-            this.version = version.VolatileRead();
+            this.version = Volatile.Read(in version);
             valid = true;
         }
 
-        internal bool IsValid(in uint version) => valid && this.version == version.VolatileRead();
+        internal bool IsValid(in uint version) => valid && this.version == Volatile.Read(in version);
 
         private bool Equals(in LockStamp other)
             => version == other.version && valid == other.valid;
@@ -86,7 +86,7 @@ public struct ReaderWriterSpinLock
     /// Returns a stamp that can be validated later.
     /// </summary>
     /// <returns>Optimistic read stamp. May be invalid.</returns>
-    public LockStamp TryOptimisticRead()
+    public readonly LockStamp TryOptimisticRead()
     {
         // Ordering of version and lock state must be respected:
         // Write lock acquisition changes the state to Acquired and then increments the version.

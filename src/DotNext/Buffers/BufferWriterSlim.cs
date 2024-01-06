@@ -10,14 +10,14 @@ namespace DotNext.Buffers;
 /// Represents stack-allocated buffer writer.
 /// </summary>
 /// <remarks>
-/// This type is similar to <see cref="PooledArrayBufferWriter{T}"/> and <see cref="PooledBufferWriter{T}"/>
+/// This type is similar to <see cref="PoolingArrayBufferWriter{T}"/> and <see cref="PoolingBufferWriter{T}"/>
 /// classes but it tries to avoid on-heap allocation. Moreover, it can use pre-allocated stack
 /// memory as a initial buffer used for writing. If builder requires more space then pooled
 /// memory used.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
-/// <seealso cref="PooledArrayBufferWriter{T}"/>
-/// <seealso cref="PooledBufferWriter{T}"/>
+/// <seealso cref="PoolingArrayBufferWriter{T}"/>
+/// <seealso cref="PoolingBufferWriter{T}"/>
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
@@ -43,8 +43,6 @@ public ref partial struct BufferWriterSlim<T>
     {
         initialBuffer = buffer;
         this.allocator = allocator;
-        extraBuffer = default;
-        position = 0;
     }
 
     /// <summary>
@@ -55,13 +53,10 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than zero.</exception>
     public BufferWriterSlim(int initialCapacity, MemoryAllocator<T>? allocator = null)
     {
-        if (initialCapacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(initialCapacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(initialCapacity);
 
-        initialBuffer = default;
         this.allocator = allocator;
-        extraBuffer = initialCapacity is 0 ? default : allocator.Invoke(initialCapacity, exactSize: false);
-        position = 0;
+        extraBuffer = initialCapacity is 0 ? default : allocator.AllocateAtLeast(initialCapacity);
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -76,15 +71,9 @@ public ref partial struct BufferWriterSlim<T>
         readonly get => position;
         set
         {
-            if ((uint)value > (uint)Capacity)
-                ThrowArgumentOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)value, (uint)Capacity, nameof(value));
 
             position = value;
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowArgumentOutOfRangeException()
-                => throw new ArgumentOutOfRangeException(nameof(value));
         }
     }
 
@@ -117,15 +106,9 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="OutOfMemoryException">The requested buffer size is not available.</exception>
     public Span<T> GetSpan(int sizeHint = 0)
     {
-        if (sizeHint < 0)
-            ThrowArgumentOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
         return InternalGetSpan(sizeHint);
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowArgumentOutOfRangeException()
-            => throw new ArgumentOutOfRangeException(nameof(sizeHint));
     }
 
     internal Span<T> InternalGetSpan(int sizeHint)
@@ -139,7 +122,7 @@ public ref partial struct BufferWriterSlim<T>
             // need to copy initial buffer
             if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out newSize))
             {
-                extraBuffer = allocator.Invoke(newSize, exactSize: false);
+                extraBuffer = allocator.AllocateAtLeast(newSize);
                 initialBuffer.CopyTo(result = extraBuffer.Span);
             }
             else
@@ -151,7 +134,7 @@ public ref partial struct BufferWriterSlim<T>
         {
             // no need to copy initial buffer
             if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out newSize))
-                extraBuffer.Resize(newSize, exactSize: false, allocator);
+                extraBuffer.Resize(newSize, allocator);
 
             result = extraBuffer.Span;
         }
@@ -168,8 +151,7 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public void Advance(int count)
     {
-        if (count < 0)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         var newPosition = position + count;
         if (newPosition > Capacity)
@@ -189,18 +171,13 @@ public ref partial struct BufferWriterSlim<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero or greater than <see cref="WrittenCount"/>.</exception>
     public void Rewind(int count)
     {
-        if ((uint)count > (uint)position)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)position, nameof(count));
 
         if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
             Buffer.Slice(count).Clear();
 
         position -= count;
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowCountOutOfRangeException() => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Writes elements to this buffer.
@@ -296,8 +273,7 @@ public ref partial struct BufferWriterSlim<T>
     {
         get
         {
-            if ((uint)index >= (uint)position)
-                throw new ArgumentOutOfRangeException(nameof(index));
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)position, nameof(index));
 
             return ref Unsafe.Add(ref MemoryMarshal.GetReference(Buffer), index);
         }

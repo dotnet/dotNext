@@ -7,7 +7,7 @@ public partial class ServiceProviderFactory
     /// </summary>
     public sealed class Builder : ISupplier<IServiceProvider>, IResettable
     {
-        private readonly IDictionary<Type, object?> services = new Dictionary<Type, object?>();
+        private readonly Dictionary<Type, object?> services = new();
 
         /// <summary>
         /// Registers service of the specified type.
@@ -41,10 +41,7 @@ public partial class ServiceProviderFactory
         /// <summary>
         /// Clears internal state of this builder and makes it reusable for subsequent calls.
         /// </summary>
-        public void Clear() => services.Clear();
-
-        /// <inheritdoc />
-        void IResettable.Reset() => Clear();
+        public void Reset() => services.Clear();
 
         /// <inheritdoc />
         IServiceProvider ISupplier<IServiceProvider>.Invoke() => Build();

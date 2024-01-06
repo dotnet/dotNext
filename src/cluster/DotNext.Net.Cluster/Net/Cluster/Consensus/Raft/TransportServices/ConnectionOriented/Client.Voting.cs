@@ -1,27 +1,18 @@
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using static Buffers.ByteBuffer;
+
 internal partial class Client : RaftClusterMember
 {
-    [RequiresPreviewFeatures]
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct VoteExchange : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
+    private readonly struct VoteExchange(long term, long lastLogIndex, long lastLogTerm) : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>
     {
-        private readonly long term, lastLogIndex, lastLogTerm;
-
-        internal VoteExchange(long term, long lastLogIndex, long lastLogTerm)
-        {
-            this.term = term;
-            this.lastLogIndex = lastLogIndex;
-            this.lastLogTerm = lastLogTerm;
-        }
-
         ValueTask IClientExchange<Result<bool>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             var writer = protocol.BeginRequestMessage(MessageType.Vote);
-            VoteMessage.Write(ref writer, in localMember.Id, term, lastLogIndex, lastLogTerm);
+            writer.Write<PreVoteMessage>(new(localMember.Id, term, lastLogIndex, lastLogTerm));
             protocol.AdvanceWriteCursor(writer.WrittenCount);
             return protocol.WriteToTransportAsync(token);
         }
@@ -34,7 +25,7 @@ internal partial class Client : RaftClusterMember
         ValueTask IClientExchange<Result<PreVoteResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
             var writer = protocol.BeginRequestMessage(MessageType.PreVote);
-            PreVoteMessage.Write(ref writer, in localMember.Id, term, lastLogIndex, lastLogTerm);
+            writer.Write<PreVoteMessage>(new(localMember.Id, term, lastLogIndex, lastLogTerm));
             protocol.AdvanceWriteCursor(writer.WrittenCount);
             return protocol.WriteToTransportAsync(token);
         }
@@ -45,11 +36,9 @@ internal partial class Client : RaftClusterMember
         static string IClientExchange<Result<PreVoteResult>>.Name => "PreVote";
     }
 
-    [RequiresPreviewFeatures]
     private protected sealed override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => RequestAsync<Result<bool>, VoteExchange>(new(term, lastLogIndex, lastLogTerm), token);
 
-    [RequiresPreviewFeatures]
     private protected sealed override Task<Result<PreVoteResult>> PreVoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         => RequestAsync<Result<PreVoteResult>, VoteExchange>(new(term, lastLogIndex, lastLogTerm), token);
 }

@@ -1,20 +1,17 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.IO;
 
 using SparseBufferWriter = Buffers.SparseBufferWriter<byte>;
 
-internal sealed class SparseMemoryStream : ReadOnlyStream
+internal sealed class SparseMemoryStream(SparseBufferWriter writer) : ReadOnlyStream
 {
-    private SparseBufferWriter.MemoryChunk? current;
+    [SuppressMessage("Usage", "CA2213", Justification = "Not owned by this class")]
+    private SparseBufferWriter.MemoryChunk? current = writer.FirstChunk;
     private long position;
     private int offset; // offset within the current chunk
 
-    internal SparseMemoryStream(SparseBufferWriter writer)
-    {
-        current = writer.FirstChunk;
-        Length = writer.WrittenCount;
-    }
-
-    public override long Length { get; }
+    public override long Length { get; } = writer.WrittenCount;
 
     public override bool CanSeek => false;
 

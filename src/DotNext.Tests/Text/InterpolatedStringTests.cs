@@ -8,7 +8,7 @@ public sealed class InterpolatedStringTests : Test
     public static void AllocateString()
     {
         int x = 10, y = 20;
-        using var actual = InterpolatedString.Allocate(null, $"{x} + {y} = {x + y}");
+        using var actual = InterpolatedString.Interpolate(null, $"{x} + {y} = {x + y}");
         Equal($"{x} + {y} = {x + y}", actual.Span.ToString());
     }
 

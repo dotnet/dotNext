@@ -5,8 +5,6 @@ using System;
 
 namespace DotNext;
 
-using Intrinsics = Runtime.Intrinsics;
-
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class GenericEnumBenchmark
@@ -19,13 +17,6 @@ public class GenericEnumBenchmark
         where T : struct, IConvertible
         => value.ToInt64(null);
 
-    private static T ToEnum<T>(int value)
-        where T : unmanaged, Enum
-    {
-        Intrinsics.Bitcast(value, out T result);
-        return result;
-    }
-
     [Benchmark]
     public int ToInt32UsingConstrainedCall() => ToInt32(EnvironmentVariableTarget.Machine);
 
@@ -33,14 +24,11 @@ public class GenericEnumBenchmark
     public long ToInt64UsingConstrainedCall() => ToInt64(EnvironmentVariableTarget.Machine);
 
     [Benchmark]
-    public int ToInt32UsingGenericConverter() => EnvironmentVariableTarget.Machine.ToInt32();
+    public int ToInt32UsingGenericConverter() => EnumConverter.FromEnum<EnvironmentVariableTarget, int>(EnvironmentVariableTarget.Machine);
 
     [Benchmark]
-    public long ToInt64UsingGenericConverter() => EnvironmentVariableTarget.Machine.ToInt64();
+    public long ToInt64UsingGenericConverter() => EnumConverter.FromEnum<EnvironmentVariableTarget, long>(EnvironmentVariableTarget.Machine);
 
     [Benchmark]
-    public EnvironmentVariableTarget ToEnumUsingBitcast() => ToEnum<EnvironmentVariableTarget>(2);
-
-    [Benchmark]
-    public EnvironmentVariableTarget ToEnumUsingGenericConverter() => 2.ToEnum<EnvironmentVariableTarget>();
+    public EnvironmentVariableTarget ToEnumUsingGenericConverter() => EnumConverter.ToEnum<EnvironmentVariableTarget, int>(2);
 }

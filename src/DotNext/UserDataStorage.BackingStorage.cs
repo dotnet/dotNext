@@ -21,8 +21,7 @@ public partial struct UserDataStorage
 
                 for (var i = 0; i < array.Length; i++)
                 {
-                    var value = (array.GetValue(i) as ISupplier<object?>)?.Invoke();
-                    if (value is not null)
+                    if ((array.GetValue(i) as ISupplier<object?>)?.Invoke() is { } value)
                         output[UserDataSlot.ToString(typeIndex, i + 1)] = value;
                 }
             }
@@ -165,7 +164,7 @@ public partial struct UserDataStorage
         {
             if (isEmpty)
             {
-                tables = Array.Empty<BackingStorageEntry>();
+                tables = [];
             }
             else
             {
@@ -281,7 +280,7 @@ public partial struct UserDataStorage
         {
             Debug.Assert(slot.IsAllocated);
 
-            Set<TValue>(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
+            Set(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
         }
 
         private Optional<TValue> Remove<TValue>(int typeIndex, int valueIndex)
@@ -327,6 +326,6 @@ public partial struct UserDataStorage
         ref var partition = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Partitions), bucketIndex);
 
         ConditionalWeakTable<object, BackingStorage> newStorage;
-        return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = new(), null) ?? newStorage;
+        return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
     }
 }

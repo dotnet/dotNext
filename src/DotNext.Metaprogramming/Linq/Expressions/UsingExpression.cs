@@ -4,7 +4,7 @@ using System.Reflection;
 namespace DotNext.Linq.Expressions;
 
 using static Reflection.DisposableType;
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents <c>using</c> or <c>await using</c> expression.
@@ -156,6 +156,6 @@ public sealed class UsingExpression : CustomExpression
 
         return assignment is null ?
             MakeTry(Type, Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type))), null, null) :
-            Block(Type, Seq.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
+            Block(Type, List.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
     }
 }

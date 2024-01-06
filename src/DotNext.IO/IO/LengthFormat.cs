@@ -7,24 +7,15 @@ public enum LengthFormat : byte
 {
     /// <summary>
     /// Use 32-bit integer value to represent octet string length
-    /// using native endianness.
-    /// </summary>
-    /// <remarks>
-    /// This format provides the best performance.
-    /// </remarks>
-    Plain = 0,
-
-    /// <summary>
-    /// Use 32-bit integer value to represent octet string length
     /// using little-endian byte order.
     /// </summary>
-    PlainLittleEndian,
+    LittleEndian = 0,
 
     /// <summary>
     /// Use 32-bit integer value to represent octet string length
     /// using big-endian byte order.
     /// </summary>
-    PlainBigEndian,
+    BigEndian,
 
     /// <summary>
     /// Use 7-bit encoded compressed integer value to represent octet string length.

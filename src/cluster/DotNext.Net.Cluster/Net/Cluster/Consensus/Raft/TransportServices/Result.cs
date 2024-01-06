@@ -1,83 +1,59 @@
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Buffers.Binary;
+using static Runtime.Intrinsics;
 
-internal static class Result
+internal readonly struct Result : IBinaryFormattable<Result>
 {
     internal const int Size = sizeof(long) + sizeof(byte);
 
-    internal static void Write(ref SpanWriter<byte> writer, in Result<bool> result)
+    private readonly Result<byte> value;
+
+    private Result(long term, byte value) => this.value = new() { Term = term, Value = value };
+
+    static int IBinaryFormattable<Result>.Size => Size;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static ref readonly Result AsFormattable<T>(in Result<T> result)
+        where T : unmanaged
     {
-        writer.WriteInt64(result.Term, true);
-        writer.Add(result.Value.ToByte());
+        Debug.Assert(AreCompatible<T, byte>());
+
+        return ref Unsafe.As<Result<T>, Result>(ref Unsafe.AsRef(in result));
     }
 
-    internal static int Write(Span<byte> output, in Result<bool> result)
+    internal static ref readonly Result AsFormattable(in Result<bool> result)
+        => ref AsFormattable<bool>(in result);
+
+    internal static ref readonly Result AsFormattable(in Result<PreVoteResult> result)
+        => ref AsFormattable<PreVoteResult>(in result);
+
+    internal static ref readonly Result AsFormattable(in Result<HeartbeatResult> result)
+        => ref AsFormattable<HeartbeatResult>(in result);
+
+    public void Format(Span<byte> destination)
     {
-        var writer = new SpanWriter<byte>(output);
-        Write(ref writer, in result);
-        return writer.WrittenCount;
+        var writer = new SpanWriter<byte>(destination);
+        writer.WriteLittleEndian(value.Term);
+        writer.Add() = value.Value;
     }
 
-    internal static void WritePreVoteResult(ref SpanWriter<byte> writer, in Result<PreVoteResult> result)
+    public static Result Parse(ReadOnlySpan<byte> source)
     {
-        writer.WriteInt64(result.Term, true);
-        writer.Add((byte)result.Value);
+        var reader = new SpanReader<byte>(source);
+        return new(reader.ReadLittleEndian<long>(), reader.Read());
     }
 
-    internal static int WritePreVoteResult(Span<byte> output, in Result<PreVoteResult> result)
-    {
-        var writer = new SpanWriter<byte>(output);
-        WritePreVoteResult(ref writer, in result);
-        return writer.WrittenCount;
-    }
+    public static implicit operator Result<bool>(Result value)
+        => Unsafe.BitCast<Result, Result<bool>>(value);
 
-    internal static void WriteHeartbeatResult(ref SpanWriter<byte> writer, in Result<HeartbeatResult> result)
-    {
-        writer.WriteInt64(result.Term, true);
-        writer.Add((byte)result.Value);
-    }
+    public static implicit operator Result<PreVoteResult>(Result value)
+        => Unsafe.BitCast<Result, Result<PreVoteResult>>(value);
 
-    internal static int WriteHeartbeatResult(Span<byte> output, in Result<HeartbeatResult> result)
-    {
-        var writer = new SpanWriter<byte>(output);
-        WriteHeartbeatResult(ref writer, in result);
-        return writer.WrittenCount;
-    }
-
-    internal static Result<bool> Read(ref SpanReader<byte> reader) => new()
-    {
-        Term = reader.ReadInt64(true),
-        Value = ValueTypeExtensions.ToBoolean(reader.Read()),
-    };
-
-    internal static Result<bool> Read(ReadOnlySpan<byte> input)
-    {
-        var reader = new SpanReader<byte>(input);
-        return Read(ref reader);
-    }
-
-    internal static Result<PreVoteResult> ReadPreVoteResult(ref SpanReader<byte> reader) => new()
-    {
-        Term = reader.ReadInt64(true),
-        Value = (PreVoteResult)reader.Read(),
-    };
-
-    internal static Result<PreVoteResult> ReadPreVoteResult(ReadOnlySpan<byte> input)
-    {
-        var reader = new SpanReader<byte>(input);
-        return ReadPreVoteResult(ref reader);
-    }
-
-    internal static Result<HeartbeatResult> ReadHeartbeatResult(ref SpanReader<byte> reader) => new()
-    {
-        Term = reader.ReadInt64(true),
-        Value = (HeartbeatResult)reader.Read(),
-    };
-
-    internal static Result<HeartbeatResult> ReadHeartbeatResult(ReadOnlySpan<byte> input)
-    {
-        var reader = new SpanReader<byte>(input);
-        return ReadHeartbeatResult(ref reader);
-    }
+    public static implicit operator Result<HeartbeatResult>(Result value)
+        => Unsafe.BitCast<Result, Result<HeartbeatResult>>(value);
 }

@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Debug = System.Diagnostics.Debug;
 
@@ -18,7 +19,7 @@ internal partial class HttpPeerController
         EndPoint sender;
         bool highPriority;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             // fast path, no need to allocate temp buffer
             (sender, highPriority) = DeserializeNeighborRequest(result.Buffer, out var position);
@@ -27,8 +28,8 @@ internal partial class HttpPeerController
         else
         {
             // slow path, allocate temp buffer
-            using var buffer = allocator.Invoke(payloadLength, true);
-            await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            using var buffer = allocator.AllocateExactly(payloadLength);
+            await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             (sender, highPriority) = DeserializeNeighborRequest(buffer.Memory);
         }
 
@@ -37,7 +38,7 @@ internal partial class HttpPeerController
     }
 
     private static (EndPoint, bool) DeserializeNeighborRequest(ref SequenceReader reader)
-        => (reader.ReadEndPoint(), ValueTypeExtensions.ToBoolean(reader.Read<byte>()));
+        => (reader.ReadEndPoint(), Unsafe.BitCast<byte, bool>(reader.ReadByte()));
 
     private static (EndPoint, bool) DeserializeNeighborRequest(ReadOnlyMemory<byte> buffer)
     {
@@ -69,7 +70,7 @@ internal partial class HttpPeerController
         try
         {
             writer.WriteEndPoint(localNode);
-            writer.Add(highPriority.ToByte());
+            writer.Add(Unsafe.BitCast<bool, byte>(highPriority));
 
             if (!writer.TryDetachBuffer(out result))
                 result = writer.WrittenSpan.Copy(allocator);

@@ -1,12 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Buffers.Binary;
 using BitVector = Numerics.BitVector;
 
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 {
@@ -18,12 +17,11 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     private readonly byte flags;
     private readonly int identifier;
 
-    [SuppressMessage("StyleCop.CSharp.LayoutRules", "SA1500", Justification = "False positive")]
     private LogEntryMetadata(long term, DateTimeOffset timestamp, bool isSnapshot, int? commandId, long? length)
     {
         Term = term;
         this.timestamp = timestamp.UtcTicks;
-        flags = BitVector.ToByte(stackalloc bool[] { commandId.HasValue, isSnapshot });
+        flags = BitVector.FromBits<byte>([commandId.HasValue, isSnapshot]);
         identifier = commandId.GetValueOrDefault();
         this.length = length.GetValueOrDefault(-1L);
     }
@@ -34,16 +32,23 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     internal LogEntryMetadata(ref SpanReader<byte> reader)
     {
-        Term = reader.ReadInt64(true);
-        timestamp = reader.ReadInt64(true);
+        Term = reader.ReadLittleEndian<long>();
+        timestamp = reader.ReadLittleEndian<long>();
         flags = reader.Read();
-        identifier = reader.ReadInt32(true);
-        length = reader.ReadInt64(true);
+        identifier = reader.ReadLittleEndian<int>();
+        length = reader.ReadLittleEndian<long>();
     }
 
-    static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
+    internal LogEntryMetadata(ReadOnlySpan<byte> input)
+    {
+        var reader = new SpanReader<byte>(input);
+        this = new(ref reader);
+    }
 
-    public static LogEntryMetadata Parse(ref SpanReader<byte> input) => new(ref input);
+    static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ReadOnlySpan<byte> input)
+        => new(input);
+
+    static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
 
     internal long Term { get; }
 
@@ -51,17 +56,17 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     internal long? Length => length >= 0L ? length : null;
 
-    internal int? CommandId => (flags & IdentifierFlag) != 0 ? identifier : null;
+    internal int? CommandId => (flags & IdentifierFlag) is not 0 ? identifier : null;
 
-    internal bool IsSnapshot => (flags & SnapshotFlag) != 0;
+    internal bool IsSnapshot => (flags & SnapshotFlag) is not 0;
 
-    public void Format(ref SpanWriter<byte> writer)
+    public void Format(Span<byte> output)
     {
-        writer.WriteInt64(Term, true);
-        writer.WriteInt64(timestamp, true);
+        var writer = new SpanWriter<byte>(output);
+        writer.WriteLittleEndian(Term);
+        writer.WriteLittleEndian(timestamp);
         writer.Add(flags);
-        writer.WriteInt32(identifier, true);
-        writer.WriteInt64(length, true);
+        writer.WriteLittleEndian(identifier);
+        writer.WriteLittleEndian(length);
     }
 }
-#pragma warning restore CA2252

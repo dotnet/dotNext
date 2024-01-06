@@ -1,5 +1,5 @@
 using System.Buffers;
-using System.Numerics;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -13,143 +13,69 @@ using LengthFormat = IO.LengthFormat;
 /// </summary>
 public static class BufferWriter
 {
-    private const int InitialCharBufferSize = 128;
     private const int MaxBufferSize = int.MaxValue / 2;
 
     /// <summary>
-    /// Encodes value of blittable type.
+    /// Writes the sequence of elements to the buffer.
     /// </summary>
-    /// <typeparam name="T">The blittable type to encode.</typeparam>
+    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
     /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to write.</param>
-    public static void Write<T>(this IBufferWriter<byte> writer, in T value)
-        where T : unmanaged
-        => writer.Write(Span.AsReadOnlyBytes(in value));
-
-    /// <summary>
-    /// Encodes an arbitrary large integer as raw bytes.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
-    public static void WriteBigInteger(this IBufferWriter<byte> writer, in BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null)
+    /// <param name="value">The sequence of elements to be written.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Write<T>(this IBufferWriter<T> writer, in ReadOnlySequence<T> value)
     {
-        var length = value.GetByteCount();
-        if (lengthFormat.HasValue)
-            WriteLength(writer, length, lengthFormat.GetValueOrDefault());
-
-        if (!value.TryWriteBytes(writer.GetSpan(length), out length, isBigEndian: !littleEndian))
-            throw new InternalBufferOverflowException();
-
-        writer.Advance(length);
-    }
-
-    /// <summary>
-    /// Encodes 64-bit signed integer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    public static void WriteInt64(this IBufferWriter<byte> writer, long value, bool littleEndian)
-    {
-        value.ReverseIfNeeded(littleEndian);
-        Write(writer, value);
-    }
-
-    /// <summary>
-    /// Encodes 64-bit unsigned integer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    [CLSCompliant(false)]
-    public static void WriteUInt64(this IBufferWriter<byte> writer, ulong value, bool littleEndian)
-    {
-        value.ReverseIfNeeded(littleEndian);
-        Write(writer, value);
-    }
-
-    /// <summary>
-    /// Encodes 32-bit signed integer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    public static void WriteInt32(this IBufferWriter<byte> writer, int value, bool littleEndian)
-    {
-        value.ReverseIfNeeded(littleEndian);
-        Write(writer, value);
-    }
-
-    /// <summary>
-    /// Encodes 32-bit unsigned integer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    [CLSCompliant(false)]
-    public static void WriteUInt32(this IBufferWriter<byte> writer, uint value, bool littleEndian)
-    {
-        value.ReverseIfNeeded(littleEndian);
-        Write(writer, value);
-    }
-
-    /// <summary>
-    /// Encodes 16-bit signed integer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    public static void WriteInt16(this IBufferWriter<byte> writer, short value, bool littleEndian)
-    {
-        value.ReverseIfNeeded(littleEndian);
-        Write(writer, value);
-    }
-
-    /// <summary>
-    /// Encodes 16-bit unsigned integer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    [CLSCompliant(false)]
-    public static void WriteUInt16(this IBufferWriter<byte> writer, ushort value, bool littleEndian)
-    {
-        value.ReverseIfNeeded(littleEndian);
-        Write(writer, value);
-    }
-
-    internal static int Write7BitEncodedInt(this IBufferWriter<byte> output, int value)
-    {
-        var writer = new MemoryWriter(output.GetMemory(SevenBitEncodedInt.MaxSize));
-        SevenBitEncodedInt.Encode(ref writer, (uint)value);
-        output.Advance(writer.ConsumedBytes);
-        return writer.ConsumedBytes;
-    }
-
-    internal static int WriteLength(this IBufferWriter<byte> writer, int length, LengthFormat lengthFormat)
-    {
-        switch (lengthFormat)
+        if (value.IsSingleSegment)
         {
-            default:
-                throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-            case LengthFormat.PlainLittleEndian:
-                length.ReverseIfNeeded(true);
-                goto case LengthFormat.Plain;
-            case LengthFormat.PlainBigEndian:
-                length.ReverseIfNeeded(false);
-                goto case LengthFormat.Plain;
-            case LengthFormat.Plain:
-                Write(writer, length);
-                return sizeof(int);
-            case LengthFormat.Compressed:
-                return Write7BitEncodedInt(writer, length);
+            writer.Write(value.FirstSpan);
+        }
+        else
+        {
+            WriteSlow(writer, in value);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        static void WriteSlow(IBufferWriter<T> writer, in ReadOnlySequence<T> value)
+        {
+            foreach (var segment in value)
+                writer.Write(segment.Span);
         }
     }
 
-    internal static int WriteLength(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, LengthFormat lengthFormat, Encoding encoding)
-        => WriteLength(writer, encoding.GetByteCount(value), lengthFormat);
+    internal static unsafe int WriteLength(this ref SpanWriter<byte> destination, int value, LengthFormat lengthFormat)
+    {
+        delegate*<ref SpanWriter<byte>, int, int> writer = lengthFormat switch
+        {
+            LengthFormat.LittleEndian => &ByteBuffer.WriteLittleEndian,
+            LengthFormat.BigEndian => &ByteBuffer.WriteBigEndian,
+            LengthFormat.Compressed => &Write7BitEncodedInt,
+            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
+        };
+
+        return writer(ref destination, value);
+
+        static int Write7BitEncodedInt(ref SpanWriter<byte> writer, int value)
+        {
+            foreach (var b in new SevenBitEncodedInt(value))
+            {
+                writer.Add() = b;
+            }
+
+            return writer.WrittenCount;
+        }
+    }
+
+    internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
+    {
+        var writer = new SpanWriter<byte>(buffer.GetSpan(SevenBitEncodedInt.MaxSize));
+        buffer.Advance(writer.WriteLength(length, lengthFormat));
+        return writer.WrittenCount;
+    }
+
+    internal static int WriteLength(Span<byte> buffer, int length, LengthFormat lengthFormat)
+    {
+        var writer = new SpanWriter<byte>(buffer);
+        return writer.WriteLength(length, lengthFormat);
+    }
 
     /// <summary>
     /// Encodes string using the specified encoding.
@@ -159,10 +85,10 @@ public static class BufferWriter
     /// <param name="context">The encoding context.</param>
     /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
     /// <returns>The number of written bytes.</returns>
-    public static long WriteString(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, LengthFormat? lengthFormat = null)
+    public static long Encode(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, LengthFormat? lengthFormat = null)
     {
-        var result = lengthFormat.HasValue
-            ? WriteLength(writer, value, lengthFormat.GetValueOrDefault(), context.Encoding)
+        long result = lengthFormat.HasValue
+            ? writer.WriteLength(context.Encoding.GetByteCount(value), lengthFormat.GetValueOrDefault())
             : 0L;
 
         context.GetEncoder().Convert(value, writer, true, out var bytesWritten, out _);
@@ -171,7 +97,7 @@ public static class BufferWriter
         return result;
     }
 
-    private static bool TryWriteFormattable<T>(IBufferWriter<byte> writer, T value, Span<char> buffer, LengthFormat? lengthFormat, in EncodingContext context, ReadOnlySpan<char> format, IFormatProvider? provider, out long bytesWritten)
+    private static bool TryFormat<T>(IBufferWriter<byte> writer, T value, Span<char> buffer, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan<char> format, IFormatProvider? provider, out long bytesWritten)
         where T : notnull, ISpanFormattable
     {
         if (!value.TryFormat(buffer, out var charsWritten, format, provider))
@@ -182,8 +108,9 @@ public static class BufferWriter
 
         ReadOnlySpan<char> result = buffer.Slice(0, charsWritten);
         bytesWritten = lengthFormat.HasValue
-            ? WriteLength(writer, result, lengthFormat.GetValueOrDefault(), context.Encoding)
+            ? writer.WriteLength(context.Encoding.GetByteCount(result), lengthFormat.GetValueOrDefault())
             : 0L;
+
         context.GetEncoder().Convert(result, writer, true, out var bytesUsed, out _);
         bytesWritten += bytesUsed;
         return true;
@@ -195,26 +122,80 @@ public static class BufferWriter
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The type value to be written as string.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
     /// <param name="context">The context describing encoding of characters.</param>
+    /// <param name="lengthFormat">String length encoding format.</param>
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
+    /// <param name="allocator">The allocator of internal buffer of characters.</param>
     /// <returns>The number of written bytes.</returns>
     [SkipLocalsInit]
-    public static long WriteFormattable<T>(this IBufferWriter<byte> writer, T value, LengthFormat? lengthFormat, in EncodingContext context, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    public static long Format<T>(this IBufferWriter<byte> writer, T value, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null)
         where T : notnull, ISpanFormattable
     {
         // attempt to allocate char buffer on the stack
-        Span<char> charBuffer = stackalloc char[InitialCharBufferSize];
-        if (!TryWriteFormattable(writer, value, charBuffer, lengthFormat, in context, format, provider, out var bytesWritten))
+        Span<char> charBuffer = stackalloc char[MemoryRental<char>.StackallocThreshold];
+        if (!TryFormat(writer, value, charBuffer, in context, lengthFormat, format, provider, out var bytesWritten))
         {
-            for (var charBufferSize = InitialCharBufferSize * 2; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
+            for (var charBufferSize = charBuffer.Length << 1; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
             {
-                using var owner = new MemoryRental<char>(charBufferSize, false);
-                if (TryWriteFormattable(writer, value, owner.Span, lengthFormat, in context, format, provider, out bytesWritten))
+                using var owner = allocator.AllocateAtLeast(charBufferSize);
+                if (TryFormat(writer, value, owner.Span, in context, lengthFormat, format, provider, out bytesWritten))
                     break;
+
                 charBufferSize = owner.Length;
             }
+        }
+
+        return bytesWritten;
+    }
+
+    /// <summary>
+    /// Encodes formatted value as a set of UTF-8 bytes using the specified encoding.
+    /// </summary>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The type value to be written as string.</param>
+    /// <param name="lengthFormat">String length encoding format.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <returns>The number of written bytes.</returns>
+    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough free space to place UTF-8 bytes.</exception>
+    public static int Format<T>(this IBufferWriter<byte> writer, T value, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+        where T : notnull, IUtf8SpanFormattable
+    {
+        var expectedLengthSize = lengthFormat switch
+        {
+            null => 0,
+            LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
+            LengthFormat.Compressed => SevenBitEncodedInt.MaxSize,
+            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
+        };
+
+        int bytesWritten;
+        for (int bufferSize = 0, actualLengthSize; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+        {
+            var buffer = writer.GetSpan(bufferSize);
+
+            if (buffer.Length < expectedLengthSize || !value.TryFormat(buffer.Slice(expectedLengthSize), out bytesWritten, format, provider))
+            {
+                bufferSize = buffer.Length;
+                continue;
+            }
+
+            actualLengthSize = lengthFormat.HasValue
+                ? WriteLength(buffer.Slice(0, expectedLengthSize), bytesWritten, lengthFormat.GetValueOrDefault())
+                : 0;
+
+            if (actualLengthSize < expectedLengthSize)
+            {
+                Debug.Assert(lengthFormat is LengthFormat.Compressed);
+
+                // this is possible for Compressed format only
+                buffer.Slice(expectedLengthSize).CopyTo(buffer.Slice(actualLengthSize));
+            }
+
+            writer.Advance(bytesWritten += actualLengthSize);
+            break;
         }
 
         return bytesWritten;
@@ -229,7 +210,7 @@ public static class BufferWriter
     /// <param name="provider">The format provider.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>The number of produced bytes.</returns>
-    public static int WriteString(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer), nameof(provider))] ref EncodingInterpolatedStringHandler handler)
+    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer), nameof(provider))] in EncodingInterpolatedStringHandler handler)
         => handler.WrittenCount;
 
     /// <summary>
@@ -237,8 +218,9 @@ public static class BufferWriter
     /// </summary>
     /// <param name="writer">The output buffer.</param>
     /// <param name="context">The encoding context.</param>
+    /// <param name="buffer">The preallocated buffer to be used for placing characters during encoding.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>The number of produced bytes.</returns>
-    public static int WriteString(this IBufferWriter<byte> writer, in EncodingContext context, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context))] ref EncodingInterpolatedStringHandler handler)
-        => WriteString(writer, in context, Span<char>.Empty, null, ref handler);
+    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer))] in EncodingInterpolatedStringHandler handler)
+        => Interpolate(writer, in context, buffer, provider: null, in handler);
 }

@@ -10,10 +10,10 @@ internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
 {
     private sealed class BufferedStreamWriter : Disposable, IStandardStreamWriter
     {
-        private readonly PooledBufferWriter<char> buffer;
+        private readonly PoolingBufferWriter<char> buffer;
 
         internal BufferedStreamWriter(int capacity, MemoryAllocator<char>? allocator)
-            => buffer = new() { BufferAllocator = allocator, Capacity = capacity };
+            => buffer = new(allocator) { Capacity = capacity };
 
         internal IBufferWriter<char> BufferWriter => buffer;
 

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
@@ -8,57 +7,55 @@ namespace DotNext.Threading;
 /// </summary>
 public static class AsyncLockAcquisition
 {
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<AsyncReaderWriterLock> ReaderWriterLock = new();
 
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<AsyncExclusiveLock> ExclusiveLock = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AsyncReaderWriterLock GetReaderWriterLock<T>(this T obj)
         where T : class
     {
-        switch (obj)
-        {
-            case null:
-                throw new ArgumentNullException(nameof(obj));
-            case AsyncReaderWriterLock rwl:
-                return rwl;
-            case AsyncSharedLock or ReaderWriterLockSlim or AsyncExclusiveLock or SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock:
-            case string str when string.IsInterned(str) is not null:
-                throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
-            default:
-                return obj.GetUserData().GetOrSet(ReaderWriterLock);
-        }
+        ArgumentNullException.ThrowIfNull(obj);
+
+        if (obj is AsyncReaderWriterLock rwl)
+            return rwl;
+
+        if (GC.GetGeneration(obj) is int.MaxValue || obj is AsyncSharedLock or ReaderWriterLockSlim or AsyncExclusiveLock or SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock)
+            throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
+
+        return obj.GetUserData().GetOrSet(ReaderWriterLock);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static AsyncLock GetExclusiveLock<T>(this T obj)
         where T : class
     {
+        ArgumentNullException.ThrowIfNull(obj);
+
         AsyncLock @lock;
-        switch (obj)
+        if (obj is AsyncSharedLock shared)
         {
-            case null:
-                throw new ArgumentNullException(nameof(obj));
-            case AsyncSharedLock shared:
-                @lock = AsyncLock.Exclusive(shared);
-                break;
-            case AsyncExclusiveLock exclusive:
-                @lock = AsyncLock.Exclusive(exclusive);
-                break;
-            case SemaphoreSlim semaphore:
-                @lock = AsyncLock.Semaphore(semaphore);
-                break;
-            case AsyncReaderWriterLock rwl:
-                @lock = AsyncLock.WriteLock(rwl);
-                break;
-            case ReaderWriterLockSlim or WaitHandle or System.Threading.ReaderWriterLock:
-            case string str when string.IsInterned(str) is not null:
-                throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
-            default:
-                @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));
-                break;
+            @lock = AsyncLock.Exclusive(shared);
+        }
+        else if (obj is AsyncExclusiveLock exclusive)
+        {
+            @lock = AsyncLock.Exclusive(exclusive);
+        }
+        else if (obj is SemaphoreSlim semaphore)
+        {
+            @lock = AsyncLock.Semaphore(semaphore);
+        }
+        else if (obj is AsyncReaderWriterLock rwl)
+        {
+            @lock = AsyncLock.WriteLock(rwl);
+        }
+        else if (GC.GetGeneration(obj) is int.MaxValue || obj is ReaderWriterLockSlim or WaitHandle or System.Threading.ReaderWriterLock)
+        {
+            throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
+        }
+        else
+        {
+            @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));
         }
 
         return @lock;
@@ -126,79 +123,4 @@ public static class AsyncLockAcquisition
     /// <returns>The acquired lock holder.</returns>
     public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token)
         where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(token);
-
-    /// <summary>
-    /// Suspends <see cref="ObjectDisposedException"/> if the target lock
-    /// has been disposed.
-    /// </summary>
-    /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
-    /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
-    /// to avoid <see cref="ObjectDisposedException"/> if the lock is already disposed
-    /// at the time of the call. If the lock is disposed then this method returns empty <see cref="AsyncLock.Holder"/>.
-    /// </remarks>
-    /// <param name="result">The result of the lock acquisition.</param>
-    /// <returns>The task representing the lock acquisition.</returns>
-    [Obsolete("Catch exception manually instead.")]
-    public static async ValueTask<AsyncLock.Holder> SuppressDisposedState(this ValueTask<AsyncLock.Holder> result)
-    {
-        try
-        {
-            return await result.ConfigureAwait(false);
-        }
-        catch (ObjectDisposedException)
-        {
-            return default;
-        }
-    }
-
-    /// <summary>
-    /// Suspends cancellation of lock acquisition and converts the canceled operation result
-    /// into unsuccessfully acquired lock.
-    /// </summary>
-    /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
-    /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
-    /// to avoid <see cref="OperationCanceledException"/> if the lock acquisition is already canceled
-    /// at the time of the call. If the acqusition is canceled then this method returns empty <see cref="AsyncLock.Holder"/>.
-    /// </remarks>
-    /// <param name="result">The result of the lock acquisition.</param>
-    /// <returns>The task representing the lock acquisition.</returns>
-    [Obsolete("Catch exception manually instead.")]
-    public static async ValueTask<AsyncLock.Holder> SuppressCancellation(this ValueTask<AsyncLock.Holder> result)
-    {
-        try
-        {
-            return await result.ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            return default;
-        }
-    }
-
-    /// <summary>
-    /// Suspends cancellation of lock acquisition or <see cref="ObjectDisposedException"/> if the target lock
-    /// has been disposed.
-    /// </summary>
-    /// <remarks>
-    /// This method is usually combined with <see cref="AsyncLock.AcquireAsync(CancellationToken)"/> or
-    /// <see cref="AsyncLock.TryAcquireAsync(TimeSpan, CancellationToken)"/> calls
-    /// to replace <see cref="OperationCanceledException"/> or <see cref="OperationCanceledException"/>
-    /// with empty <see cref="AsyncLock.Holder"/>.
-    /// </remarks>
-    /// <param name="result">The result of the lock acquisition.</param>
-    /// <returns>The task representing the lock acquisition.</returns>
-    [Obsolete("Catch exception manually instead.")]
-    public static async ValueTask<AsyncLock.Holder> SuppressDisposedStateOrCancellation(this ValueTask<AsyncLock.Holder> result)
-    {
-        try
-        {
-            return await result.ConfigureAwait(false);
-        }
-        catch (Exception e) when (e is OperationCanceledException or ObjectDisposedException)
-        {
-            return default;
-        }
-    }
 }

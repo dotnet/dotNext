@@ -1,10 +1,8 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
 
 namespace DotNext.Threading;
 
+using Runtime;
 using static Tasks.Synchronization;
 
 /// <summary>
@@ -12,11 +10,10 @@ using static Tasks.Synchronization;
 /// </summary>
 /// <typeparam name="T">The type of object that is being asynchronously initialized.</typeparam>
 [DebuggerDisplay($"IsValueCreated = {{{nameof(IsValueCreated)}}}")]
-public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
+public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
 {
     private const string NotAvailable = "<NotAvailable>";
-    private readonly bool resettable;
-    private readonly object syncRoot;
+    private readonly BoxedValue<bool> resettable; // used as monitor
     private Task<T>? task;
     private Func<CancellationToken, Task<T>>? factory;
 
@@ -26,21 +23,9 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     /// <param name="value">Already computed value.</param>
     public AsyncLazy(T value)
     {
-        task = System.Threading.Tasks.Task.FromResult(value);
-        syncRoot = new();
+        task = Task.FromResult(value);
+        resettable = BoxedValue<bool>.Box(false);
     }
-
-    /// <summary>
-    /// Initializes a new instance of lazy value.
-    /// </summary>
-    /// <param name="valueFactory">The function used to compute actual value.</param>
-    /// <param name="resettable"><see langword="true"/> if previously computed value can be removed and computation executed again when it will be requested; <see langword="false"/> if value can be computed exactly once.</param>
-    /// <exception cref="ArgumentException"><paramref name="valueFactory"/> is <see langword="null"/>.</exception>
-    [Obsolete("Use another constructor that accepts a factory with CancellationToken support.", error: true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [ExcludeFromCodeCoverage]
-    public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
-        => throw new NotImplementedException();
 
     /// <summary>
     /// Initializes a new instance of lazy value.
@@ -51,8 +36,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
     public AsyncLazy(Func<CancellationToken, Task<T>> valueFactory, bool resettable = false)
     {
         factory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
-        this.resettable = resettable;
-        syncRoot = new();
+        this.resettable = BoxedValue<bool>.Box(resettable);
     }
 
     private void AttachFactoryErasureCallback(Task expectedTask)
@@ -63,7 +47,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         {
             if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(ref task), expectedTask))
             {
-                lock (syncRoot)
+                lock (resettable)
                 {
                     if (ReferenceEquals(task, expectedTask))
                         factory = null;
@@ -91,7 +75,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         Task<T>? t;
         bool fastExit;
 
-        lock (syncRoot)
+        lock (resettable)
         {
             t = task; // read barrier is provided by monitor
 
@@ -137,16 +121,6 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         => Volatile.Read(ref task) is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
 
     /// <summary>
-    /// Gets task representing asynchronous computation of lazy value.
-    /// </summary>
-    /// <seealso cref="WithCancellation"/>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [Obsolete("Use WithCancellation(CancellationToken) method instead.", error: true)]
-    [ExcludeFromCodeCoverage]
-    public Task<T> Task => WithCancellation(CancellationToken.None);
-
-    /// <summary>
     /// Removes already computed value from the current object.
     /// </summary>
     /// <returns><see langword="true"/> if previous value is removed successfully; <see langword="false"/> if value is still computing or this instance is not resettable.</returns>
@@ -155,7 +129,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         bool result;
         if (result = resettable && Volatile.Read(ref task) is null or { IsCompleted: true })
         {
-            lock (syncRoot)
+            lock (resettable)
             {
                 if (result = task is null or { IsCompleted: true })
                     task = null;
@@ -165,25 +139,8 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>
         return result;
     }
 
-    /// <summary>
-    /// Gets awaiter for the asynchronous operation responsible for computing value.
-    /// </summary>
-    /// <returns>The task awaiter.</returns>
-    [Obsolete("Use WithCancellation(CancellationToken) method instead.", error: true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [ExcludeFromCodeCoverage]
-    public TaskAwaiter<T> GetAwaiter() => Task.GetAwaiter();
-
-    /// <summary>
-    /// Configures an awaiter used to await asynchronous lazy initialization.
-    /// </summary>
-    /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
-    /// <returns>An object used to await asynchronous lazy initialization.</returns>
-    [Obsolete("Use WithCancellation(CancellationToken) method instead.", error: true)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [ExcludeFromCodeCoverage]
-    public ConfiguredTaskAwaitable<T> ConfigureAwait(bool continueOnCapturedContext)
-        => Task.ConfigureAwait(continueOnCapturedContext);
+    /// <inheritdoc/>
+    void IResettable.Reset() => Reset();
 
     /// <summary>
     /// Returns textual representation of this object.

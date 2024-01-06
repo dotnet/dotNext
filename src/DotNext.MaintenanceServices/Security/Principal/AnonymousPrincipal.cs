@@ -2,9 +2,11 @@ using System.Security.Principal;
 
 namespace DotNext.Security.Principal;
 
-internal sealed class AnonymousPrincipal : IPrincipal, IIdentity
+using Patterns;
+
+internal sealed class AnonymousPrincipal : IPrincipal, IIdentity, ISingleton<AnonymousPrincipal>
 {
-    internal static readonly AnonymousPrincipal Instance = new();
+    public static AnonymousPrincipal Instance { get; } = new();
 
     IIdentity IPrincipal.Identity => this;
 

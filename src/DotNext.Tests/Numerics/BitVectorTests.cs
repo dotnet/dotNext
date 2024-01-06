@@ -12,10 +12,10 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToByte()
     {
-        Equal(0, BitVector.ToByte(ReadOnlySpan<bool>.Empty));
-        Equal(3, BitVector.ToByte(stackalloc bool[] { true, true }));
-        Equal(8, BitVector.ToByte(stackalloc bool[] { false, false, false, true }));
-        Equal(byte.MaxValue, BitVector.ToByte(CreateVector(8, true)));
+        Equal(0, BitVector.FromBits<byte>([]));
+        Equal(3, BitVector.FromBits<byte>([true, true]));
+        Equal(8, BitVector.FromBits<byte>([false, false, false, true]));
+        Equal(byte.MaxValue, BitVector.FromBits<byte>(CreateVector(8, true)));
     }
 
     [Fact]
@@ -24,53 +24,19 @@ public sealed class BitVectorTests : Test
         var value = byte.MaxValue;
         var buffer = new bool[8];
 
-        BitVector.FromByte(value, buffer);
+        BitVector.GetBits(value, buffer);
         Array.TrueForAll(buffer, static bit => bit);
 
         value = 3;
         Array.Clear(buffer);
-        BitVector.FromByte(value, buffer);
+        BitVector.GetBits(value, buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
 
         value = 8;
         Array.Clear(buffer);
-        BitVector.FromByte(value, buffer);
-        False(buffer[0]);
-        False(buffer[1]);
-        False(buffer[2]);
-        True(buffer[3]);
-    }
-
-    [Fact]
-    public static void BitsToSByte()
-    {
-        Equal(0, BitVector.ToSByte(ReadOnlySpan<bool>.Empty));
-        Equal(3, BitVector.ToSByte(stackalloc bool[] { true, true }));
-        Equal(8, BitVector.ToSByte(stackalloc bool[] { false, false, false, true }));
-        Equal(-1, BitVector.ToSByte(CreateVector(8, true)));
-    }
-
-    [Fact]
-    public static void SByteToBits()
-    {
-        sbyte value = -1;
-        var buffer = new bool[8];
-
-        BitVector.FromSByte(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
-
-        value = 3;
-        Array.Clear(buffer);
-        BitVector.FromSByte(value, buffer);
-        True(buffer[0]);
-        True(buffer[1]);
-        False(buffer[2]);
-
-        value = 8;
-        Array.Clear(buffer);
-        BitVector.FromSByte(value, buffer);
+        BitVector.GetBits(value, buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
@@ -80,11 +46,11 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToInt16()
     {
-        Equal(0, BitVector.ToInt16(ReadOnlySpan<bool>.Empty));
-        Equal(3, BitVector.ToInt16(stackalloc bool[] { true, true }));
-        Equal(8, BitVector.ToInt16(stackalloc bool[] { false, false, false, true }));
-        Equal(short.MaxValue, BitVector.ToInt16(CreateVector(15, true)));
-        Equal(-1, BitVector.ToInt16(CreateVector(16, true)));
+        Equal(0, BitVector.FromBits<short>([]));
+        Equal(3, BitVector.FromBits<short>([true, true]));
+        Equal(8, BitVector.FromBits<short>([false, false, false, true]));
+        Equal(short.MaxValue, BitVector.FromBits<short>(CreateVector(15, true)));
+        Equal(-1, BitVector.FromBits<short>(CreateVector(16, true)));
     }
 
     [Fact]
@@ -93,53 +59,19 @@ public sealed class BitVectorTests : Test
         short value = -1;
         var buffer = new bool[16];
 
-        BitVector.FromInt16(value, buffer);
+        BitVector.GetBits(value, buffer);
         Array.TrueForAll(buffer, static bit => bit);
 
         value = 3;
         Array.Clear(buffer);
-        BitVector.FromInt16(value, buffer);
+        BitVector.GetBits(value, buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
 
         value = 8;
         Array.Clear(buffer);
-        BitVector.FromInt16(value, buffer);
-        False(buffer[0]);
-        False(buffer[1]);
-        False(buffer[2]);
-        True(buffer[3]);
-    }
-
-    [Fact]
-    public static void BitsToUInt16()
-    {
-        Equal(0, BitVector.ToUInt16(ReadOnlySpan<bool>.Empty));
-        Equal(3, BitVector.ToUInt16(stackalloc bool[] { true, true }));
-        Equal(8, BitVector.ToUInt16(stackalloc bool[] { false, false, false, true }));
-        Equal(ushort.MaxValue, BitVector.ToUInt16(CreateVector(16, true)));
-    }
-
-    [Fact]
-    public static void UInt16ToBits()
-    {
-        var value = ushort.MaxValue;
-        var buffer = new bool[16];
-
-        BitVector.FromUInt16(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
-
-        value = 3;
-        Array.Clear(buffer);
-        BitVector.FromUInt16(value, buffer);
-        True(buffer[0]);
-        True(buffer[1]);
-        False(buffer[2]);
-
-        value = 8;
-        Array.Clear(buffer);
-        BitVector.FromUInt16(value, buffer);
+        BitVector.GetBits(value, buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
@@ -149,11 +81,11 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToInt32()
     {
-        Equal(0, BitVector.ToInt32(ReadOnlySpan<bool>.Empty));
-        Equal(3, BitVector.ToInt32(stackalloc bool[] { true, true }));
-        Equal(8, BitVector.ToInt32(stackalloc bool[] { false, false, false, true }));
-        Equal(int.MaxValue, BitVector.ToInt32(CreateVector(31, true)));
-        Equal(-1, BitVector.ToInt32(CreateVector(32, true)));
+        Equal(0, BitVector.FromBits<int>([]));
+        Equal(3, BitVector.FromBits<int>([true, true]));
+        Equal(8, BitVector.FromBits<int>([false, false, false, true]));
+        Equal(int.MaxValue, BitVector.FromBits<int>(CreateVector(31, true)));
+        Equal(-1, BitVector.FromBits<int>(CreateVector(32, true)));
     }
 
     [Fact]
@@ -162,53 +94,19 @@ public sealed class BitVectorTests : Test
         int value = -1;
         var buffer = new bool[32];
 
-        BitVector.FromInt32(value, buffer);
+        BitVector.GetBits(value, buffer);
         Array.TrueForAll(buffer, static bit => bit);
 
         value = 3;
         Array.Clear(buffer);
-        BitVector.FromInt32(value, buffer);
+        BitVector.GetBits(value, buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
 
         value = 8;
         Array.Clear(buffer);
-        BitVector.FromInt32(value, buffer);
-        False(buffer[0]);
-        False(buffer[1]);
-        False(buffer[2]);
-        True(buffer[3]);
-    }
-
-    [Fact]
-    public static void BitsToUInt32()
-    {
-        Equal(0U, BitVector.ToUInt32(ReadOnlySpan<bool>.Empty));
-        Equal(3U, BitVector.ToUInt32(stackalloc bool[] { true, true }));
-        Equal(8U, BitVector.ToUInt32(stackalloc bool[] { false, false, false, true }));
-        Equal(uint.MaxValue, BitVector.ToUInt32(CreateVector(32, true)));
-    }
-
-    [Fact]
-    public static void UInt32ToBits()
-    {
-        var value = uint.MaxValue;
-        var buffer = new bool[32];
-
-        BitVector.FromUInt32(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
-
-        value = 3;
-        Array.Clear(buffer);
-        BitVector.FromUInt32(value, buffer);
-        True(buffer[0]);
-        True(buffer[1]);
-        False(buffer[2]);
-
-        value = 8;
-        Array.Clear(buffer);
-        BitVector.FromUInt32(value, buffer);
+        BitVector.GetBits(value, buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
@@ -218,11 +116,11 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToInt64()
     {
-        Equal(0L, BitVector.ToInt64(ReadOnlySpan<bool>.Empty));
-        Equal(3L, BitVector.ToInt64(stackalloc bool[] { true, true }));
-        Equal(8L, BitVector.ToInt64(stackalloc bool[] { false, false, false, true }));
-        Equal(long.MaxValue, BitVector.ToInt64(CreateVector(63, true)));
-        Equal(-1L, BitVector.ToInt32(CreateVector(64, true)));
+        Equal(0L, BitVector.FromBits<long>([]));
+        Equal(3L, BitVector.FromBits<long>([true, true]));
+        Equal(8L, BitVector.FromBits<long>([false, false, false, true]));
+        Equal(long.MaxValue, BitVector.FromBits<long>(CreateVector(63, true)));
+        Equal(-1L, BitVector.FromBits<long>(CreateVector(64, true)));
     }
 
     [Fact]
@@ -231,125 +129,27 @@ public sealed class BitVectorTests : Test
         long value = -1;
         var buffer = new bool[64];
 
-        BitVector.FromInt64(value, buffer);
+        BitVector.GetBits(value, buffer);
         Array.TrueForAll(buffer, static bit => bit);
 
         value = 3;
         Array.Clear(buffer);
-        BitVector.FromInt64(value, buffer);
+        BitVector.GetBits(value, buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
 
         value = 8;
         Array.Clear(buffer);
-        BitVector.FromInt64(value, buffer);
+        BitVector.GetBits(value, buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
         True(buffer[3]);
-    }
 
-    [Fact]
-    public static void BitsToUInt64()
-    {
-        Equal(0UL, BitVector.ToUInt64(ReadOnlySpan<bool>.Empty));
-        Equal(3UL, BitVector.ToUInt64(stackalloc bool[] { true, true }));
-        Equal(8UL, BitVector.ToUInt64(stackalloc bool[] { false, false, false, true }));
-        Equal(ulong.MaxValue, BitVector.ToUInt64(CreateVector(64, true)));
-    }
-
-    [Fact]
-    public static void UInt64ToBits()
-    {
-        var value = ulong.MaxValue;
-        var buffer = new bool[64];
-
-        BitVector.FromUInt64(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
-
-        value = 3;
+        value = 1L << 62;
         Array.Clear(buffer);
-        BitVector.FromUInt64(value, buffer);
-        True(buffer[0]);
-        True(buffer[1]);
-        False(buffer[2]);
-
-        value = 8;
-        Array.Clear(buffer);
-        BitVector.FromUInt64(value, buffer);
-        False(buffer[0]);
-        False(buffer[1]);
-        False(buffer[2]);
-        True(buffer[3]);
-    }
-
-    [Fact]
-    public static void BitsToNativeInt()
-    {
-        const nint minusOne = -1;
-        Equal((nint)0, BitVector.ToInt(ReadOnlySpan<bool>.Empty));
-        Equal((nint)3, BitVector.ToInt(stackalloc bool[] { true, true }));
-        Equal((nint)8, BitVector.ToInt(stackalloc bool[] { false, false, false, true }));
-        Equal(minusOne, BitVector.ToInt(CreateVector(IntPtr.Size * 8, true)));
-    }
-
-    [Fact]
-    public static void NativeIntToBits()
-    {
-        var value = nint.MaxValue;
-        var buffer = new bool[IntPtr.Size * 8];
-
-        BitVector.FromInt(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
-
-        value = 3;
-        Array.Clear(buffer);
-        BitVector.FromInt(value, buffer);
-        True(buffer[0]);
-        True(buffer[1]);
-        False(buffer[2]);
-
-        value = 8;
-        Array.Clear(buffer);
-        BitVector.FromInt(value, buffer);
-        False(buffer[0]);
-        False(buffer[1]);
-        False(buffer[2]);
-        True(buffer[3]);
-    }
-
-    [Fact]
-    public static void BitsToNativeUInt()
-    {
-        Equal((nuint)0, BitVector.ToUInt(ReadOnlySpan<bool>.Empty));
-        Equal((nuint)3, BitVector.ToUInt(stackalloc bool[] { true, true }));
-        Equal((nuint)8, BitVector.ToUInt(stackalloc bool[] { false, false, false, true }));
-        Equal(nuint.MaxValue, BitVector.ToUInt(CreateVector(IntPtr.Size * 8, true)));
-    }
-
-    [Fact]
-    public static void NativeUIntToBits()
-    {
-        var value = nuint.MaxValue;
-        var buffer = new bool[IntPtr.Size * 8];
-
-        BitVector.FromUInt(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
-
-        value = 3;
-        Array.Clear(buffer);
-        BitVector.FromUInt(value, buffer);
-        True(buffer[0]);
-        True(buffer[1]);
-        False(buffer[2]);
-
-        value = 8;
-        Array.Clear(buffer);
-        BitVector.FromUInt(value, buffer);
-        False(buffer[0]);
-        False(buffer[1]);
-        False(buffer[2]);
-        True(buffer[3]);
+        BitVector.GetBits(value, buffer);
+        True(buffer[62]);
     }
 }

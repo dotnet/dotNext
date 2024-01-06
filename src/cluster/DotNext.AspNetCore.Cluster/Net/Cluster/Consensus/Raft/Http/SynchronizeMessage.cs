@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -8,8 +7,6 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Buffers;
-using IO.Pipelines;
-using static IO.StreamExtensions;
 
 internal sealed class SynchronizeMessage : HttpMessage, IHttpMessage<long?>
 {
@@ -48,14 +45,13 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessage<long?>
             var stream = await content.ReadAsStreamAsync(token).ConfigureAwait(false);
             await using (stream.ConfigureAwait(false))
             {
-                using var buffer = MemoryAllocator.Allocate<byte>(sizeof(long), exactSize: true);
-                await stream.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+                using var buffer = Memory.AllocateExactly<byte>(sizeof(long));
+                await stream.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
                 return ReadInt64LittleEndian(buffer.Span);
             }
         }
     }
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, long? commitIndex, CancellationToken token)
@@ -80,8 +76,7 @@ internal sealed class SynchronizeMessage : HttpMessage, IHttpMessage<long?>
         static async Task SaveAsync(HttpResponse response, long commitIndex, CancellationToken token)
         {
             await response.StartAsync(token).ConfigureAwait(false);
-            var result = await response.BodyWriter.WriteInt64Async(commitIndex, littleEndian: true, token).ConfigureAwait(false);
-            result.ThrowIfCancellationRequested(token);
+            response.BodyWriter.WriteLittleEndian(commitIndex);
         }
     }
 }

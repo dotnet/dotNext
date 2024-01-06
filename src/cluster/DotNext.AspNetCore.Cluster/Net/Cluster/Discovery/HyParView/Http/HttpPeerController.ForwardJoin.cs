@@ -18,7 +18,7 @@ internal partial class HttpPeerController
         EndPoint sender, joinedPeer;
         int timeToLive;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             // fast path, no need to allocate temp buffer
             (sender, joinedPeer, timeToLive) = DeserializeForwardJoinRequest(result.Buffer, out var position);
@@ -27,8 +27,8 @@ internal partial class HttpPeerController
         else
         {
             // slow path, allocate temp buffer
-            using var buffer = allocator.Invoke(payloadLength, true);
-            await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            using var buffer = allocator.AllocateExactly(payloadLength);
+            await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             (sender, joinedPeer, timeToLive) = DeserializeForwardJoinRequest(buffer.Memory);
         }
 
@@ -37,7 +37,7 @@ internal partial class HttpPeerController
     }
 
     private static (EndPoint, EndPoint, int) DeserializeForwardJoinRequest(ref SequenceReader reader)
-        => (reader.ReadEndPoint(), reader.ReadEndPoint(), reader.ReadInt32(true));
+        => (reader.ReadEndPoint(), reader.ReadEndPoint(), reader.ReadLittleEndian<int>());
 
     private static (EndPoint, EndPoint, int) DeserializeForwardJoinRequest(ReadOnlyMemory<byte> content)
     {
@@ -70,7 +70,7 @@ internal partial class HttpPeerController
         {
             writer.WriteEndPoint(localNode);
             writer.WriteEndPoint(joinedPeer);
-            writer.WriteInt32(timeToLive, true);
+            writer.WriteLittleEndian(timeToLive);
 
             if (!writer.TryDetachBuffer(out result))
                 result = writer.WrittenSpan.Copy(allocator);

@@ -39,14 +39,14 @@ public sealed class GrowableBufferTests : Test
         var expected = RandomBytes(5000);
         writer.Write(expected);
         actual = new byte[expected.Length];
-        writer.CopyTo<ReadOnlySpanConsumer<byte, ArrayCopyOperation>>(new ReadOnlySpanConsumer<byte, ArrayCopyOperation>(&ArrayCopyOperation.Append, new ArrayCopyOperation(actual)));
+        writer.CopyTo<ReadOnlySpanConsumer<byte, ArrayCopyOperation>>(new(&ArrayCopyOperation.Append, new ArrayCopyOperation(actual)));
         Equal(expected, actual);
     }
 
     [Fact]
     public static void ReadWriteUsingPooledBufferWriter()
     {
-        using var writer = new PooledBufferWriter<byte>();
+        using var writer = new PoolingBufferWriter<byte>();
         Null(writer.As<IGrowableBuffer<byte>>().Capacity);
         ReadWriteTest(writer);
     }
@@ -54,7 +54,7 @@ public sealed class GrowableBufferTests : Test
     [Fact]
     public static void ReadWriteUsingPooledArrayBufferWriter()
     {
-        using var writer = new PooledArrayBufferWriter<byte>() { Capacity = 8 };
+        using var writer = new PoolingArrayBufferWriter<byte>() { Capacity = 8 };
         Null(writer.As<IGrowableBuffer<byte>>().Capacity);
         ReadWriteTest(writer);
     }

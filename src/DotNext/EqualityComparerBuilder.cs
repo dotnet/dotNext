@@ -6,9 +6,10 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
+using Collections.Generic;
 using Reflection;
 using Intrinsics = Runtime.Intrinsics;
-using Seq = Collections.Generic.Sequence;
+using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>
 /// Generates hash code and equality check functions for the particular type.
@@ -21,6 +22,7 @@ using Seq = Collections.Generic.Sequence;
 public readonly struct EqualityComparerBuilder<T>
 {
     private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+    private const BindingFlags NonPublicStaticFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
     private readonly IReadOnlySet<string>? excludedFields;
 
@@ -134,19 +136,19 @@ public readonly struct EqualityComparerBuilder<T>
         if (itemType.IsUnmanaged())
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
-            return typeof(OneDimensionalArray)
-                    .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), 1, PublicStaticFlags, null, new[] { arrayType, arrayType }, null)!
+            return typeof(Span)
+                    .GetMethod(nameof(Span.BitwiseEquals), 1, NonPublicStaticFlags, null, [arrayType, arrayType], null)!
                     .MakeGenericMethod(itemType);
         }
 
         if (itemType.IsValueType)
         {
-            return typeof(Seq)
-                .GetMethod(nameof(Seq.SequenceEqual), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)!
+            return typeof(Collection)
+                .GetMethod(nameof(Collection.SequenceEqual), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)!
                 .MakeGenericMethod(itemType);
         }
 
-        return new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Seq.SequenceEqual).Method;
+        return new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Collection.SequenceEqual).Method;
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
@@ -163,12 +165,12 @@ public readonly struct EqualityComparerBuilder<T>
         if (itemType.IsUnmanaged())
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
-            return typeof(OneDimensionalArray)
-                      .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, new[] { arrayType, typeof(bool) }, null)!
+            return typeof(FNV1a32)
+                      .GetMethod(nameof(FNV1a32.Hash), 1, NonPublicStaticFlags, null, [arrayType, typeof(bool)], null)!
                       .MakeGenericMethod(itemType);
         }
 
-        return typeof(Seq).GetMethod(nameof(Seq.SequenceHashCode), PublicStaticFlags)!
+        return typeof(Collection).GetMethod(nameof(Collection.SequenceHashCode), PublicStaticFlags)!
             .MakeGenericMethod(itemType);
     }
 
@@ -263,13 +265,13 @@ public readonly struct EqualityComparerBuilder<T>
                 expr = field.FieldType switch
                 {
                     { IsPointer: true } => Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr),
-                    { IsPrimitive: true } => Expression.Call(expr, nameof(GetHashCode), Type.EmptyTypes),
+                    { IsPrimitive: true } => Expression.Call(expr, nameof(GetHashCode), []),
                     { IsValueType: true } => HashCodeMethodForValueType(expr, Expression.Constant(SaltedHashCode)),
                     { IsSZArray: true } => HashCodeMethodForArrayElementType(expr, Expression.Constant(SaltedHashCode)),
                     _ => Expression.Condition(
                         Expression.ReferenceEqual(expr, Expression.Constant(null, expr.Type)),
                         Expression.Constant(0, typeof(int)),
-                        Expression.Call(expr, nameof(GetHashCode), Type.EmptyTypes)),
+                        Expression.Call(expr, nameof(GetHashCode), [])),
                 };
 
                 expr = Expression.Assign(hashCodeTemp, Expression.Add(Expression.Multiply(hashCodeTemp, Expression.Constant(-1521134295)), expr));
@@ -278,7 +280,7 @@ public readonly struct EqualityComparerBuilder<T>
         }
 
         expressions.Add(hashCodeTemp);
-        expr = Expression.Block(typeof(int), Seq.Singleton(hashCodeTemp), expressions);
+        expr = Expression.Block(typeof(int), List.Singleton(hashCodeTemp), expressions);
         return Expression.Lambda<Func<T, int>>(expr, false, inputParam).Compile();
     }
 
@@ -306,7 +308,7 @@ public readonly struct EqualityComparerBuilder<T>
     {
         var t = typeof(T);
 
-        return t.IsPrimitive || t.IsEnum || t.IsOneOf(typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset))
+        return t.IsPrimitive || t.IsEnum || t.IsOneOf([typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset)])
             ? EqualityComparer<T>.Default
             : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 using Debug = System.Diagnostics.Debug;
@@ -6,7 +5,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
-using static Threading.AtomicInt64;
 using IAsyncBinaryReader = IO.IAsyncBinaryReader;
 
 public partial class DiskBasedStateMachine
@@ -48,7 +46,7 @@ public partial class DiskBasedStateMachine
         var snapshotLength = await InstallSnapshotAsync(snapshot).ConfigureAwait(false);
         LastCommittedEntryIndex = snapshotIndex;
         LastEntryIndex = Math.Max(snapshotIndex, LastEntryIndex);
-        lastTerm.VolatileWrite(snapshot.Term);
+        Volatile.Write(ref lastTerm, snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
         UpdateSnapshotInfo(SnapshotMetadata.Create(snapshot, snapshotIndex, snapshotLength));
         await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);

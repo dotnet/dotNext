@@ -46,7 +46,7 @@ public sealed class SparseBufferWriterTests : Test
         True(writer.TryGetWrittenContent(out var segment));
         True(segment.IsEmpty);
 
-        writer.Write(10);
+        writer.Add(10);
         True(writer.IsSingleSegment);
         True(writer.TryGetWrittenContent(out segment));
         Equal(10, segment.Span[0]);

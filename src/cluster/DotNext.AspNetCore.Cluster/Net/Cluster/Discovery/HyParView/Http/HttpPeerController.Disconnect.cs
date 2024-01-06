@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 using Debug = System.Diagnostics.Debug;
 
@@ -18,15 +19,15 @@ internal partial class HttpPeerController
         EndPoint sender;
         bool isAlive;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             (sender, isAlive) = DeserializeDisconnectRequest(result.Buffer, out var position);
             request.BodyReader.AdvanceTo(position);
         }
         else
         {
-            using var buffer = allocator.Invoke(payloadLength, true);
-            await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            using var buffer = allocator.AllocateExactly(payloadLength);
+            await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             (sender, isAlive) = DeserializeDisconnectRequest(buffer.Memory);
         }
 
@@ -35,7 +36,7 @@ internal partial class HttpPeerController
     }
 
     private static (EndPoint, bool) DeserializeDisconnectRequest(ref SequenceReader reader)
-        => (reader.ReadEndPoint(), ValueTypeExtensions.ToBoolean(reader.Read<byte>()));
+        => (reader.ReadEndPoint(), Unsafe.BitCast<byte, bool>(reader.ReadByte()));
 
     private static (EndPoint, bool) DeserializeDisconnectRequest(ReadOnlyMemory<byte> buffer)
     {
@@ -67,7 +68,7 @@ internal partial class HttpPeerController
         try
         {
             writer.WriteEndPoint(localNode);
-            writer.Add(isAlive.ToByte());
+            writer.Add(Unsafe.BitCast<bool, byte>(isAlive));
 
             if (!writer.TryDetachBuffer(out result))
                 result = writer.WrittenSpan.Copy(allocator);

@@ -31,8 +31,7 @@ public interface IAuditTrail
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
     async ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
     {
-        if (index < 0L)
-            throw new ArgumentOutOfRangeException(nameof(index));
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
 
         while (LastCommittedEntryIndex < index)
             await WaitForCommitAsync(token).ConfigureAwait(false);
@@ -167,7 +166,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
 
     /// <inheritdoc />
     ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
-        => ReadAsync<TResult>(reader, startIndex, endIndex, token);
+        => ReadAsync(reader, startIndex, endIndex, token);
 
     /// <summary>
     /// Gets log entries starting from the specified index to the last log entry.
@@ -184,7 +183,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
 
     /// <inheritdoc />
     ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, CancellationToken token)
-        => ReadAsync<TResult>(reader, startIndex, token);
+        => ReadAsync(reader, startIndex, token);
 
     /// <summary>
     /// Adds uncommitted log entries into this log.

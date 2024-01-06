@@ -80,7 +80,7 @@ internal partial class LeaderState<TMember>
             entries = new ContextEntry?[sizeHint <= HalfMaxSize ? sizeHint << 1 : sizeHint];
         }
 
-        public Context() => entries = Array.Empty<ContextEntry?>();
+        public Context() => entries = [];
 
         private static int GetIndex(int hashCode, int boundary)
             => (hashCode & int.MaxValue) % boundary;
@@ -94,7 +94,7 @@ internal partial class LeaderState<TMember>
         private void ResizeAndRemoveDeadEntries()
         {
             if (entries.Length == Array.MaxLength)
-                throw new OutOfMemoryException();
+                throw new InsufficientMemoryException();
 
             var oldEntries = entries;
             entries = new ContextEntry?[entries.Length <= HalfMaxSize ? entries.Length << 1 : entries.Length + 1];
@@ -202,7 +202,7 @@ internal partial class LeaderState<TMember>
                 entry = null;
             }
 
-            entries = Array.Empty<ContextEntry?>();
+            entries = [];
         }
     }
 

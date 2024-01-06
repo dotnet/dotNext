@@ -40,7 +40,7 @@ public sealed class ListTests : Test
         Equal(2, view[1]);
         Equal(3, view[2]);
         NotEmpty(view);
-        All(view, static value => True(value.IsBetween(0, 3, BoundType.Closed)));
+        All(view, static value => True(value is >= 0 and <= 3));
     }
 
     [Fact]
@@ -115,22 +115,6 @@ public sealed class ListTests : Test
     }
 
     [Fact]
-    public static void ShuffleArray()
-    {
-        var array = new int[] { 1, 2, 3, 4, 5, 6, 7 };
-        array.Shuffle(Random.Shared);
-        True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
-    }
-
-    [Fact]
-    public static void ShuffleList()
-    {
-        var array = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
-        array.Shuffle(Random.Shared);
-        True(array[0] != 1 || array[1] != 2 || array[2] != 3 || array[3] != 4 || array[4] != 5);
-    }
-
-    [Fact]
     public static void ArraySlice()
     {
         var segment = List.Slice(new int[] { 10, 20, 30 }, 0..2);
@@ -155,5 +139,13 @@ public sealed class ListTests : Test
         Equal(2, span.Length);
         Equal(10, span[0]);
         Equal(20, span[1]);
+    }
+
+    [Fact]
+    public static void SingletonCollection()
+    {
+        var collection = List.Singleton(42);
+        NotEmpty(collection);
+        Equal(42, collection.First());
     }
 }

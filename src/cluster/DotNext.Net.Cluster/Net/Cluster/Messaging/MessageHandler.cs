@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -32,11 +33,6 @@ public partial class MessageHandler : IInputChannel
     /// <summary>
     /// Initializes a new typed message handler and discover all methods suitable for handling messages.
     /// </summary>
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(RpcHandler<,>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(SignalHandler<>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,,,,>))]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     protected MessageHandler()
     {
@@ -150,9 +146,8 @@ public partial class MessageHandler : IInputChannel
 
     private MessageHandler(IDictionary<string, RpcHandler> rpcHandlers, IDictionary<string, SignalHandler> signalHandlers)
     {
-        // TODO: Migrate to FrozenDictionary in .NET 8
-        this.rpcHandlers = new Dictionary<string, RpcHandler>(rpcHandlers, NameComparer);
-        this.signalHandlers = new Dictionary<string, SignalHandler>(signalHandlers, NameComparer);
+        this.rpcHandlers = rpcHandlers.ToFrozenDictionary(NameComparer);
+        this.signalHandlers = signalHandlers.ToFrozenDictionary(NameComparer);
     }
 
     /// <inheritdoc/>

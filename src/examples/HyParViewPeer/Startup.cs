@@ -57,7 +57,7 @@ internal sealed class Startup
             => headers.Add(SenderAddressHeader, address.ToString());
 
         internal static Uri ParseSenderAddress(HttpRequest request)
-            => new(request.Headers[SenderAddressHeader], UriKind.Absolute);
+            => new(request.Headers[SenderAddressHeader]!, UriKind.Absolute);
 
         private static void AddRumorId(HttpRequestHeaders headers, in RumorTimestamp id)
             => headers.Add(SenderIdHeader, id.ToString());

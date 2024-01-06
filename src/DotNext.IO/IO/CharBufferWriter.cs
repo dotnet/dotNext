@@ -31,29 +31,29 @@ internal sealed unsafe class CharBufferWriter<TWriter> : TextBufferWriter<char, 
     public override void Write(ReadOnlySpan<char> buffer) => writeImpl(writer, buffer);
 
     public override void Write(decimal value)
-        => writer.WriteFormattable(value, provider: FormatProvider);
+        => writer.Format(value, provider: FormatProvider);
 
     public override void Write(double value)
-        => writer.WriteFormattable(value, provider: FormatProvider);
+        => writer.Format(value, provider: FormatProvider);
 
     public override void Write(float value)
-        => writer.WriteFormattable(value, provider: FormatProvider);
+        => writer.Format(value, provider: FormatProvider);
 
     public override void Write(int value)
-        => writer.WriteFormattable(value, provider: FormatProvider);
+        => writer.Format(value, provider: FormatProvider);
 
     public override void Write(long value)
-        => writer.WriteFormattable(value, provider: FormatProvider);
+        => writer.Format(value, provider: FormatProvider);
 
     public override void Write(uint value)
-        => writer.WriteFormattable(value, provider: FormatProvider);
+        => writer.Format(value, provider: FormatProvider);
 
     public override void Write(ulong value)
-        => writer.WriteFormattable(value, provider: FormatProvider);
+        => writer.Format(value, provider: FormatProvider);
 
     private protected override void Write(ISpanFormattable formattable)
-        => writer.WriteFormattable(formattable, provider: FormatProvider);
+        => writer.Format(formattable, provider: FormatProvider);
 
     public override string ToString()
-        => writer is ArrayBufferWriter<char> buffer ? buffer.BuildString() : writer.ToString() ?? string.Empty;
+        => writer is ArrayBufferWriter<char> buffer ? buffer.WrittenSpan.ToString() : writer.ToString() ?? string.Empty;
 }

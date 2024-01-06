@@ -83,7 +83,7 @@ public static partial class ConfigurationExtensions
     /// </summary>
     /// <remarks>
     /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
-    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
+    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults(IHostBuilder, Action{IWebHostBuilder})"/>.
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <returns>The modified host builder.</returns>
@@ -109,7 +109,7 @@ public static partial class ConfigurationExtensions
     /// </summary>
     /// <remarks>
     /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
-    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
+    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults(IHostBuilder, Action{IWebHostBuilder})"/>.
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <param name="memberConfig">The delegate that allows to resolve location of local member configuration.</param>
@@ -142,7 +142,7 @@ public static partial class ConfigurationExtensions
     /// </summary>
     /// <remarks>
     /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
-    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
+    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults(IHostBuilder, Action{IWebHostBuilder})"/>.
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <param name="memberConfig">The delegate that allows to resolve location of local member configuration.</param>
@@ -170,7 +170,7 @@ public static partial class ConfigurationExtensions
     /// </summary>
     /// <remarks>
     /// Should be called exactly after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
-    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
+    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults(IHostBuilder, Action{IWebHostBuilder})"/>.
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <param name="memberConfigSection">The name of local member configuration section.</param>

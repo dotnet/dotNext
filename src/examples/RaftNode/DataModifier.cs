@@ -26,7 +26,7 @@ internal sealed class DataModifier : BackgroundService
 
                 try
                 {
-                    var entry = new Int64LogEntry { Content = newValue, Term = cluster.Term };
+                    var entry = new Int64LogEntry { Value = newValue, Term = cluster.Term };
                     await cluster.ReplicateAsync(entry, stoppingToken);
                 }
                 catch (Exception e)

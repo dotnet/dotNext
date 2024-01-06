@@ -7,17 +7,12 @@ namespace DotNext.ComponentModel.DataAnnotations;
 /// Specifies the minimum and maximum length of characters that are allowed in a data field
 /// of type <see cref="Optional{T}"/>.
 /// </summary>
-public sealed class OptionalStringLengthAttribute : StringLengthAttribute
+/// <remarks>
+/// Initializes a new attribute.
+/// </remarks>
+/// <param name="maximumLength">The maximum length of a string.</param>
+public sealed class OptionalStringLengthAttribute(int maximumLength) : StringLengthAttribute(maximumLength)
 {
-    /// <summary>
-    /// Initializes a new attribute.
-    /// </summary>
-    /// <param name="maximumLength">The maximum length of a string.</param>
-    public OptionalStringLengthAttribute(int maximumLength)
-        : base(maximumLength)
-    {
-    }
-
     /// <inheritdoc/>
     public override bool IsValid(object? value)
         => base.IsValid(value is Optional<string> ? Unsafe.Unbox<Optional<string>>(value).ValueOrDefault : value);

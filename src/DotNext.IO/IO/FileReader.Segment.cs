@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
 
 namespace DotNext.IO;
 
@@ -8,29 +9,20 @@ using Buffers;
 
 public partial class FileReader
 {
-    private readonly struct SegmentLength : IEquatable<SegmentLength>, IEquatable<long>
+    private readonly struct SegmentLength(long? value) :
+        IEquatable<SegmentLength>,
+        IEquatable<long>,
+        IComparisonOperators<SegmentLength, long, bool>,
+        IEqualityOperators<SegmentLength, SegmentLength, bool>,
+        IAdditionOperators<SegmentLength, long, SegmentLength>,
+        ISubtractionOperators<SegmentLength, long, SegmentLength>
     {
-        private readonly long value;
+        private readonly long value = value.GetValueOrDefault(-1L);
 
-        private SegmentLength(long value)
-            => this.value = value;
-
-        internal SegmentLength(long? value)
+        public SegmentLength()
+            : this(null)
         {
-            switch (value)
-            {
-                case null:
-                    this = Infinite;
-                    break;
-                case < 0L:
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                default:
-                    this.value = value.GetValueOrDefault();
-                    break;
-            }
         }
-
-        internal static SegmentLength Infinite => new(-1L);
 
         internal bool IsInfinite => value < 0L;
 
@@ -83,7 +75,7 @@ public partial class FileReader
         public static explicit operator long(SegmentLength x) => x.value;
     }
 
-    private SegmentLength length = SegmentLength.Infinite;
+    private SegmentLength length = new();
 
     /// <summary>
     /// Limits the number of available bytes to read.
@@ -92,14 +84,19 @@ public partial class FileReader
     /// This limit is applicable only to the methods of <see cref="IAsyncBinaryReader"/> interface
     /// implemented by this class.
     /// </remarks>
-    /// <param name="value">The number of available bytes to read; or <see langword="null"/> to allow read to the end of the file.</param>
+    /// <value>The number of available bytes to read; or <see langword="null"/> to allow read to the end of the file.</value>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is negative.</exception>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public void SetSegmentLength(long? value) => length = new(value);
+    public long? ReaderSegmentLength
+    {
+        set
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(value.GetValueOrDefault());
+
+            length = new(value);
+        }
+    }
 
     private static ReadOnlyMemory<byte> TrimLength(ReadOnlyMemory<byte> buffer, SegmentLength length)
-        => length.IsInfinite ? buffer : buffer.TrimLength(ValueTypeExtensions.Truncate((long)length));
-
-    private static Memory<byte> TrimLength(Memory<byte> buffer, SegmentLength length)
-        => length.IsInfinite ? buffer : buffer.TrimLength(ValueTypeExtensions.Truncate((long)length));
+        => length.IsInfinite ? buffer : buffer.TrimLength(int.CreateSaturating((long)length));
 }

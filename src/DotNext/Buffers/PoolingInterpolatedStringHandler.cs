@@ -35,12 +35,11 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
         var length = (charsPerPlaceholder * formattedCount) + literalLength;
 
         buffer = (uint)length <= (uint)Array.MaxLength
-            ? allocator.Invoke(length, exactSize: false)
+            ? allocator.AllocateAtLeast(length)
             : throw new InsufficientMemoryException();
 
         this.allocator = allocator;
         this.provider = provider;
-        count = 0;
     }
 
     /// <inheritdoc />
@@ -107,7 +106,7 @@ public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposa
     private Span<char> GetSpan(int sizeHint)
     {
         if (IGrowableBuffer<char>.GetBufferSize(sizeHint, buffer.Length, count, out sizeHint))
-            buffer.Resize(sizeHint, exactSize: false, allocator);
+            buffer.Resize(sizeHint, allocator);
 
         return buffer.Span.Slice(count);
     }

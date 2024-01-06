@@ -1,29 +1,15 @@
-using System.Runtime.Versioning;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using IO;
+using static Buffers.ByteBuffer;
 
 internal partial class Client : RaftClusterMember
 {
-    [RequiresPreviewFeatures]
-    private sealed class InstallSnapshotExchange : IClientExchange<Result<HeartbeatResult>>
+    private sealed class InstallSnapshotExchange(long term, IRaftLogEntry snapshot, long snapshotIndex) : IClientExchange<Result<HeartbeatResult>>
     {
         private const string Name = "InstallSnapshot";
-
-        private readonly IRaftLogEntry snapshot;
-        private readonly long term, snapshotIndex;
-
-        internal InstallSnapshotExchange(long term, IRaftLogEntry snapshot, long snapshotIndex)
-        {
-            Debug.Assert(snapshot is not null);
-            Debug.Assert(snapshot.IsSnapshot);
-
-            this.term = term;
-            this.snapshot = snapshot;
-            this.snapshotIndex = snapshotIndex;
-        }
 
         async ValueTask IClientExchange<Result<HeartbeatResult>>.RequestAsync(ILocalMember localMember, ProtocolStream protocol, Memory<byte> buffer, CancellationToken token)
         {
@@ -37,7 +23,7 @@ internal partial class Client : RaftClusterMember
         private int WriteHeaders(ProtocolStream protocol, in ClusterMemberId sender)
         {
             var writer = protocol.BeginRequestMessage(MessageType.InstallSnapshot);
-            SnapshotMessage.Write(ref writer, in sender, term, snapshotIndex, snapshot);
+            writer.Write<SnapshotMessage>(new(sender, term, snapshotIndex, snapshot));
             return writer.WrittenCount;
         }
 
@@ -47,7 +33,6 @@ internal partial class Client : RaftClusterMember
         static string IClientExchange<Result<HeartbeatResult>>.Name => Name;
     }
 
-    [RequiresPreviewFeatures]
     private protected sealed override Task<Result<HeartbeatResult>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         => RequestAsync<Result<HeartbeatResult>, InstallSnapshotExchange>(new(term, snapshot, snapshotIndex), token);
 }

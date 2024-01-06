@@ -39,5 +39,5 @@ public class SequenceBuilder<T> : SparseBufferWriter<T>, IReadOnlySequenceSource
     }
 
     /// <inheritdoc />
-    ReadOnlySequence<T> IReadOnlySequenceSource<T>.Sequence => BufferHelpers.ToReadOnlySequence(this);
+    ReadOnlySequence<T> IReadOnlySequenceSource<T>.Sequence => Memory.ToReadOnlySequence(this);
 }

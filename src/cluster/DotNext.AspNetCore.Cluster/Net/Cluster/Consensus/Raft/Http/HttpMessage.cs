@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -52,7 +51,6 @@ internal abstract class HttpMessage
     internal static string GetMessageType(HttpRequest request)
         => ParseHeader(request.Headers, MessageTypeHeader);
 
-    [RequiresPreviewFeatures]
     internal static void SetMessageType<TMessage>(HttpRequestMessage request)
         where TMessage : class, IHttpMessage
         => request.Headers.Add(MessageTypeHeader, TMessage.MessageType);
@@ -106,7 +104,7 @@ internal abstract class HttpMessage
         {
             foreach (var header in values)
             {
-                if (parser(header, out var result))
+                if (header is not null && parser(header, out var result))
                     return result;
             }
         }

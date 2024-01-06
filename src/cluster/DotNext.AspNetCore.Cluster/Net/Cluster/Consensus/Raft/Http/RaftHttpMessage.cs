@@ -53,14 +53,14 @@ internal abstract class RaftHttpMessage : HttpMessage
 
     private protected static Task SaveResponseAsync(HttpResponse response, in Result<bool> result, CancellationToken token)
     {
-        response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return HttpMessage.SaveResponseAsync(response, result.Value, token);
+        response.Headers.Append(TermHeader, result.Term.ToString(InvariantCulture));
+        return SaveResponseAsync(response, result.Value, token);
     }
 
     private protected static Task SaveResponseAsync<T>(HttpResponse response, in Result<T> result, CancellationToken token)
         where T : struct, Enum
     {
-        response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-        return HttpMessage.SaveResponseAsync(response, result.Value, token);
+        response.Headers.Append(TermHeader, result.Term.ToString(InvariantCulture));
+        return SaveResponseAsync(response, result.Value, token);
     }
 }

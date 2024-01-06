@@ -97,8 +97,7 @@ public abstract partial class GCNotification
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="generation"/> is less than 0 or greater than <see cref="GC.MaxGeneration"/>.</exception>
     public static GCNotification GCTriggered(int generation)
     {
-        if (generation < 0 || generation > GC.MaxGeneration)
-            throw new ArgumentOutOfRangeException(nameof(generation));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)generation, (uint)GC.MaxGeneration, nameof(generation));
 
         return new GenerationFilter(generation);
     }
@@ -111,7 +110,7 @@ public abstract partial class GCNotification
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="threshold"/> is invalid.</exception>
     public static GCNotification HeapFragmentation(double threshold)
     {
-        if (!double.IsFinite(threshold) || !threshold.IsBetween(0D, 1D, BoundType.RightClosed))
+        if (!double.IsFinite(threshold) || threshold is <= 0D or > 1D)
             throw new ArgumentOutOfRangeException(nameof(threshold));
 
         return new HeapFragmentationThresholdFilter(threshold);
@@ -129,7 +128,7 @@ public abstract partial class GCNotification
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="threshold"/> is invalid.</exception>
     public static GCNotification MemoryThreshold(double threshold)
     {
-        if (!double.IsFinite(threshold) || !threshold.IsBetween(0D, 1D, BoundType.RightClosed))
+        if (!double.IsFinite(threshold) || threshold is <= 0D or > 1D)
             throw new ArgumentOutOfRangeException(nameof(threshold));
 
         return new MemoryThresholdFilter(threshold);

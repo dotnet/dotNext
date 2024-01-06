@@ -55,7 +55,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         foreach (var subCommand in commands)
             root.Add(subCommand);
 
-        foreach (var authOption in authHandler?.GetGlobalOptions() ?? Array.Empty<Option>())
+        foreach (var authOption in authHandler?.GetGlobalOptions() ?? [])
             root.AddGlobalOption(authOption);
 
         return new CommandLineBuilder(root)

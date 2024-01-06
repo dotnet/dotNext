@@ -2,7 +2,7 @@
 
 namespace DotNext.Linq.Expressions;
 
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Provides an expression refer to a single object or structure so
@@ -89,5 +89,5 @@ public sealed class WithExpression : CustomExpression
     /// </summary>
     /// <returns>Translated expression.</returns>
     public override Expression Reduce()
-        => assignment is null ? Body : Block(Seq.Singleton(Variable), assignment, Body);
+        => assignment is null ? Body : Block(List.Singleton(Variable), assignment, Body);
 }

@@ -27,11 +27,6 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         public void AcquireLock() => state = true;
 
         internal void ExitLock() => state = false;
-
-        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
-        {
-            // nothing to do here
-        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -44,8 +39,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncExclusiveLock(int concurrencyLevel)
     {
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         pool = new(OnCompleted, concurrencyLevel);
     }
@@ -85,7 +79,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryAcquire()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
@@ -218,7 +212,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         ManualResetCompletionSource? suspendedCaller;
         lock (SyncRoot)

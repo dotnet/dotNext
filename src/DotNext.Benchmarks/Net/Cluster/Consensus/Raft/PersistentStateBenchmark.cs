@@ -67,9 +67,9 @@ public class PersistentStateBenchmark
         var state = new TestPersistentState(path, configuration);
         var bytes = new byte[PayloadSize];
         Random.Shared.NextBytes(bytes);
-        await state.AppendAsync(new RaftLogEntry { Term = 10L, Content = bytes }, addToCache);
+        await state.AppendAsync(new BinaryLogEntry { Term = 10L, Content = bytes }, addToCache);
         Random.Shared.NextBytes(bytes);
-        await state.AppendAsync(new RaftLogEntry { Term = 20L, Content = bytes }, addToCache);
+        await state.AppendAsync(new BinaryLogEntry { Term = 20L, Content = bytes }, addToCache);
         this.state = state;
     }
 
@@ -112,10 +112,10 @@ public class PersistentStateBenchmark
     public void DropAddedLogEntryAsync() => state.DbgChangeLastIndex(0L);
 
     [Benchmark]
-    public async Task WriteCachedLogEntryAsync() => await state.AppendAsync(new RaftLogEntry { Term = 10L, Content = writePayload });
+    public async Task WriteCachedLogEntryAsync() => await state.AppendAsync(new BinaryLogEntry { Term = 10L, Content = writePayload });
 
     [Benchmark]
-    public async Task WriteUncachedLogEntryAsync() => await state.AppendAsync(new RaftLogEntry { Term = 10L, Content = writePayload });
+    public async Task WriteUncachedLogEntryAsync() => await state.AppendAsync(new BinaryLogEntry { Term = 10L, Content = writePayload });
 
     [GlobalSetup(Target = nameof(WriteToFileAsync))]
     public void CreateTempFile()

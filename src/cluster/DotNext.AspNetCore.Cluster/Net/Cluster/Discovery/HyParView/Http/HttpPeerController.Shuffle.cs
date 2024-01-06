@@ -18,15 +18,15 @@ internal partial class HttpPeerController
     {
         IReadOnlySet<EndPoint> peers;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             peers = DeserializeShuffleReply(result.Buffer, out var position);
             request.BodyReader.AdvanceTo(position);
         }
         else
         {
-            using var buffer = allocator.Invoke(payloadLength, true);
-            await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            using var buffer = allocator.AllocateExactly(payloadLength);
+            await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             peers = DeserializeShuffleReply(buffer.Memory);
         }
 
@@ -36,7 +36,7 @@ internal partial class HttpPeerController
 
     private static IReadOnlySet<EndPoint> DeserializeShuffleReply(ref SequenceReader reader)
     {
-        var count = reader.ReadInt32(true);
+        var count = reader.ReadLittleEndian<int>();
         var result = new HashSet<EndPoint>(count);
 
         while (count-- > 0)
@@ -73,7 +73,7 @@ internal partial class HttpPeerController
 
         try
         {
-            writer.WriteInt32(peers.Count, true);
+            writer.WriteLittleEndian(peers.Count);
             foreach (var peer in peers)
                 writer.WriteEndPoint(peer);
 
@@ -94,17 +94,16 @@ internal partial class HttpPeerController
         IReadOnlySet<EndPoint> peers;
         int timeToLive;
 
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             (sender, origin, timeToLive, peers) = DeserializeShuffleRequest(result.Buffer, out var position);
             request.BodyReader.AdvanceTo(position);
         }
         else
         {
-            using var buffer = new PooledBufferWriter<byte>
+            using var buffer = new PoolingBufferWriter<byte>(allocator)
             {
-                BufferAllocator = allocator,
-                Capacity = payloadLength.Truncate(),
+                Capacity = int.CreateSaturating(payloadLength),
             };
 
             await request.BodyReader.CopyToAsync(buffer, token).ConfigureAwait(false);
@@ -119,9 +118,9 @@ internal partial class HttpPeerController
     {
         var sender = reader.ReadEndPoint();
         var origin = reader.ReadEndPoint();
-        var timeToLive = reader.ReadInt32(true);
+        var timeToLive = reader.ReadLittleEndian<int>();
 
-        var count = reader.ReadInt32(true);
+        var count = reader.ReadLittleEndian<int>();
         var peers = new HashSet<EndPoint>(count);
 
         while (count-- > 0)
@@ -164,9 +163,9 @@ internal partial class HttpPeerController
         {
             writer.WriteEndPoint(localNode);
             writer.WriteEndPoint(origin);
-            writer.WriteInt32(timeToLive, true);
+            writer.WriteLittleEndian(timeToLive);
 
-            writer.WriteInt32(peers.Count, true);
+            writer.WriteLittleEndian(peers.Count);
             foreach (var peer in peers)
                 writer.WriteEndPoint(peer);
 

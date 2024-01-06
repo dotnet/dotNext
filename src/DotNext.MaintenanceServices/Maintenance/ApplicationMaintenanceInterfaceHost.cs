@@ -161,14 +161,12 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         var outputBuffer = default(BufferWriter<byte>);
         try
         {
-            outputBuffer = new PooledBufferWriter<byte>
+            outputBuffer = new PoolingBufferWriter<byte>(ByteBufferAllocator)
             {
-                BufferAllocator = ByteBufferAllocator,
                 Capacity = bufferSize,
             };
-            inputBuffer = new PooledBufferWriter<char>
+            inputBuffer = new PoolingBufferWriter<char>(CharBufferAllocator)
             {
-                BufferAllocator = CharBufferAllocator,
                 Capacity = bufferSize,
             };
 
@@ -177,7 +175,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
             {
                 int commandLength;
 
-                using (var buffer = ByteBufferAllocator.Invoke(bufferSize, exactSize: false))
+                using (var buffer = ByteBufferAllocator.AllocateAtLeast(bufferSize))
                 {
                     commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, token).ConfigureAwait(false);
                 }

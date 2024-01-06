@@ -39,13 +39,13 @@ public readonly struct ListSegment<T> : IList<T>, IReadOnlyList<T>
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int ToAbsoluteIndex(int index)
-        => index.IsBetween(0, Count, BoundType.LeftClosed) ? index + startIndex : throw new ArgumentOutOfRangeException(nameof(index));
+        => index.IsBetween(0.Enclosed(), Count.Disclosed()) ? index + startIndex : throw new ArgumentOutOfRangeException(nameof(index));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool ToRelativeIndex(ref int index)
     {
         index -= startIndex;
-        return index.IsBetween(0, Count, BoundType.LeftClosed);
+        return index.IsBetween(0.Enclosed(), Count.Disclosed());
     }
 
     /// <summary>

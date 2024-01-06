@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,12 +21,12 @@ public static class HostingServices
     /// <typeparam name="TProvider">The type implementing <see cref="IApplicationStatusProvider"/>.</typeparam>
     /// <param name="services">A registry of services.</param>
     /// <returns>A modified registry of services.</returns>
-    public static IServiceCollection UseApplicationStatusProvider<TProvider>(this IServiceCollection services)
+    public static IServiceCollection UseApplicationStatusProvider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]TProvider>(this IServiceCollection services)
         where TProvider : class, IApplicationStatusProvider
     {
         return services
             .AddSingleton<IApplicationStatusProvider, TProvider>()
-            .AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+            .AddSingleton(CreateCommand);
 
         static ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
             => ApplicationMaintenanceCommand.Create(services.GetRequiredService<IApplicationStatusProvider>());
@@ -41,7 +42,7 @@ public static class HostingServices
     public static IServiceCollection RegisterMaintenanceCommand(this IServiceCollection services, string name, Action<ApplicationMaintenanceCommand> action)
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
@@ -63,7 +64,7 @@ public static class HostingServices
         where TDependency : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
@@ -87,7 +88,7 @@ public static class HostingServices
         where TDependency2 : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {
@@ -113,7 +114,7 @@ public static class HostingServices
         where TDependency3 : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
-        return services.AddSingleton<ApplicationMaintenanceCommand>(CreateCommand);
+        return services.AddSingleton(CreateCommand);
 
         ApplicationMaintenanceCommand CreateCommand(IServiceProvider services)
         {

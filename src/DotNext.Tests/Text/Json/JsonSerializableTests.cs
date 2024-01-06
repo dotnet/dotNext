@@ -88,7 +88,7 @@ public sealed class JsonSerializableTests : Test
         JsonSerializable<TestJsonObject> actual;
         await using (var stream = await SerializeToStreamAsync(expected))
         {
-            actual = await Serializable.ReadFromAsync<JsonSerializable<TestJsonObject>>(stream);
+            actual = await ISerializable<JsonSerializable<TestJsonObject>>.ReadFromAsync(stream);
         }
 
         Equal(expected, actual);
@@ -136,7 +136,7 @@ public sealed class JsonSerializableTests : Test
         JsonSerializable<TestJsonObject> actual;
         await using (var stream = await SerializeToStreamAsync(expected))
         {
-            actual = await Serializable.ReadFromAsync<JsonSerializable<TestJsonObject>>(PipeReader.Create(stream));
+            actual = await ISerializable<JsonSerializable<TestJsonObject>>.ReadFromAsync(PipeReader.Create(stream));
         }
 
         Equal(expected, actual);

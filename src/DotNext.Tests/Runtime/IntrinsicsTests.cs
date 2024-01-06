@@ -18,7 +18,7 @@ public class IntrinsicsTests : Test
         Equal(Guid.Empty, g);
         g = Guid.NewGuid();
         Equal(field, g);
-        True(Intrinsics.AreSame(in field, in g));
+        True(Unsafe.AreSame(in field, in g));
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class IntrinsicsTests : Test
         Null(f);
         f = "Hello, world!";
         Equal(str, f);
-        True(Intrinsics.AreSame(in str, in f));
+        True(Unsafe.AreSame(in str, in f));
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class IntrinsicsTests : Test
     public static void AddressOfLocal()
     {
         var i = 20;
-        True(Intrinsics.AddressOf(i) != IntPtr.Zero);
+        True(Intrinsics.AddressOf(in i) != IntPtr.Zero);
     }
 
     [Fact]
@@ -80,14 +80,6 @@ public class IntrinsicsTests : Test
     }
 
     [Fact]
-    public static unsafe void BitwiseHashCode()
-    {
-        var i = 42L;
-        NotEqual(0, Intrinsics.GetHashCode32(&i, (nuint)sizeof(long)));
-        NotEqual(0L, Intrinsics.GetHashCode64(&i, (nuint)sizeof(long)));
-    }
-
-    [Fact]
     public static void CopyBlock()
     {
         char[] chars1 = new[] { 'a', 'b', 'c' };
@@ -104,23 +96,6 @@ public class IntrinsicsTests : Test
         Intrinsics.Copy(&a, &b);
         Equal(a, b);
         Equal(42, b);
-    }
-
-    [Fact]
-    public static unsafe void ZeroMem()
-    {
-        var g = Guid.NewGuid();
-        Intrinsics.ClearBits(&g, (nuint)sizeof(Guid));
-        Equal(Guid.Empty, g);
-    }
-
-    [Fact]
-    [Obsolete]
-    public static void ReadonlyRef2()
-    {
-        var array = new[] { "a", "b", "c" };
-        ref readonly var element = ref array.GetReadonlyRef<string, ICloneable>(2);
-        Equal("c", element.Clone());
     }
 
     [Fact]
@@ -163,26 +138,6 @@ public class IntrinsicsTests : Test
     }
 
     [Fact]
-    public static void Bitcast()
-    {
-        var point = new Point { X = 40, Y = 100 };
-        Intrinsics.Bitcast(point, out decimal dec);
-        Intrinsics.Bitcast(dec, out point);
-        Equal(40, point.X);
-        Equal(100, point.Y);
-        Intrinsics.Bitcast<uint, int>(2U, out var i);
-        Equal(2, i);
-    }
-
-    [Fact]
-    public static void BitcastToLargerValueType()
-    {
-        var point = new Point { X = 40, Y = 100 };
-        Intrinsics.Bitcast(point, out Guid g);
-        False(g == Guid.Empty);
-    }
-
-    [Fact]
     public static void LightweightTypeOf()
     {
         var handle = Intrinsics.TypeOf<string>();
@@ -215,22 +170,6 @@ public class IntrinsicsTests : Test
     }
 
     [Fact]
-    public static void HasFlag()
-    {
-        static void HasFlag<T>(T value, T validFlag, T invalidFlag)
-            where T : struct, Enum
-        {
-            True(Intrinsics.HasFlag(value, validFlag));
-            False(Intrinsics.HasFlag(value, invalidFlag));
-        }
-
-        HasFlag(BindingFlags.Public | BindingFlags.Instance, BindingFlags.Public, BindingFlags.Static);
-        HasFlag(ByteEnum.Two, ByteEnum.Two, ByteEnum.One);
-        HasFlag(ShortEnum.Two, ShortEnum.Two, ShortEnum.One);
-        HasFlag(LongEnum.Two, LongEnum.Two, LongEnum.One);
-    }
-
-    [Fact]
     public static void CastObject()
     {
         Throws<InvalidCastException>(() => Intrinsics.Cast<string>(null));
@@ -254,29 +193,6 @@ public class IntrinsicsTests : Test
     }
 
     [Fact]
-    public static void ThrowObjectAsException()
-    {
-        Throws<InvalidOperationException>(() => Intrinsics.Throw(new InvalidOperationException()));
-        var e = Throws<RuntimeWrappedException>(() => Intrinsics.Throw("String"));
-        Equal("String", e.WrappedException);
-        Throws<InvalidOperationException>(new Action(() => throw Intrinsics.Error(new InvalidOperationException())));
-        e = Throws<RuntimeWrappedException>(new Action(() => throw Intrinsics.Error("String")));
-        Equal("String", e.WrappedException);
-    }
-
-    [Fact]
-    public static void ObjectClone()
-    {
-        var obj = new IntrinsicsTests();
-        var obj2 = Intrinsics.ShallowCopy(obj);
-        obj.field = Guid.NewGuid();
-        obj2.str = string.Empty;
-        NotEqual(obj.field, obj2.field);
-        NotEqual(obj.str, obj2.str);
-        NotSame(obj, obj2);
-    }
-
-    [Fact]
     public static void ArrayLength()
     {
         int[] array = { 42 };
@@ -287,66 +203,11 @@ public class IntrinsicsTests : Test
     }
 
     [Fact]
-    public static void ThrowOnNullReference()
-    {
-        ref int value = ref Unsafe.NullRef<int>();
-
-        var thrown = false;
-        try
-        {
-            Intrinsics.ThrowIfNull(in value);
-        }
-        catch (NullReferenceException)
-        {
-            thrown = true;
-        }
-
-        True(thrown);
-    }
-
-    [Fact]
-    public static void ReverseUInt32()
-    {
-        uint i = uint.MaxValue >> 1, tmp = i;
-        Intrinsics.Reverse(ref i);
-
-        if (BitConverter.IsLittleEndian)
-        {
-            Equal(BinaryPrimitives.ReadUInt32BigEndian(Span.AsReadOnlyBytes(in tmp)), i);
-        }
-        else
-        {
-            Equal(BinaryPrimitives.ReadUInt32LittleEndian(Span.AsReadOnlyBytes(in tmp)), i);
-        }
-    }
-
-    [Fact]
     public static void HasFinalizer()
     {
         True(Intrinsics.HasFinalizer(new WeakReference(null)));
         False(Intrinsics.HasFinalizer(string.Empty));
         False(Intrinsics.HasFinalizer(new object()));
-    }
-
-    private sealed class ObjectWithFinalizer
-    {
-        internal bool IsFinalizerCalled;
-
-        ~ObjectWithFinalizer() => IsFinalizerCalled = true;
-    }
-
-    [Fact]
-    public static void InvokeFinalizer()
-    {
-        var obj = new ObjectWithFinalizer();
-        False(obj.IsFinalizerCalled);
-        Intrinsics.Finalize(obj);
-        True(obj.IsFinalizerCalled);
-
-        obj.IsFinalizerCalled = false;
-        GC.SuppressFinalize(obj);
-        Intrinsics.Finalize(obj);
-        True(obj.IsFinalizerCalled);
     }
 
     [Fact]
@@ -356,27 +217,5 @@ public class IntrinsicsTests : Test
         Equal(8, Intrinsics.AlignOf<long>());
         Equal(8, Intrinsics.AlignOf<ValueTuple<byte, long>>());
         Equal(IntPtr.Size, Intrinsics.AlignOf<string>());
-    }
-
-    [Fact]
-    public static void IsAtomicWrite()
-    {
-        True(Intrinsics.IsAtomic<byte>());
-        True(Intrinsics.IsAtomic<sbyte>());
-        True(Intrinsics.IsAtomic<bool>());
-        True(Intrinsics.IsAtomic<short>());
-        True(Intrinsics.IsAtomic<ushort>());
-        True(Intrinsics.IsAtomic<int>());
-        True(Intrinsics.IsAtomic<uint>());
-        True(Intrinsics.IsAtomic<long>());
-        True(Intrinsics.IsAtomic<ulong>());
-        True(Intrinsics.IsAtomic<nint>());
-        True(Intrinsics.IsAtomic<nuint>());
-        True(Intrinsics.IsAtomic<object>());
-        True(Intrinsics.IsAtomic<ValueTuple<object>>());
-
-        False(Intrinsics.IsAtomic<ValueTuple<byte, long>>());
-        False(Intrinsics.IsAtomic<ValueTuple<byte, byte>>());
-        False(Intrinsics.IsAtomic<Guid>());
     }
 }

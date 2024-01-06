@@ -1,4 +1,4 @@
-using System.Runtime.Versioning;
+using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
@@ -11,7 +11,6 @@ using IClusterConfiguration = Membership.IClusterConfiguration;
 internal partial class Client : RaftClusterMember
 {
     // optimized version for empty heartbeats (it has no field to store empty entries)
-    [RequiresPreviewFeatures]
     private class AppendEntriesExchange : IClientExchange<Result<HeartbeatResult>>, IResettable
     {
         private const string Name = "AppendEntries";
@@ -66,10 +65,11 @@ internal partial class Client : RaftClusterMember
             Debug.Assert(config is not null);
 
             var writer = protocol.BeginRequestMessage(MessageType.AppendEntries);
-            AppendEntriesMessage.Write(ref writer, in sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount);
-            writer.Add(applyConfig.ToByte());
-            writer.WriteInt64(config.Fingerprint, true);
-            writer.WriteInt64(config.Length, true);
+            writer.Write<AppendEntriesMessage>(new(sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount));
+            writer.Add(Unsafe.BitCast<bool, byte>(applyConfig));
+            writer.Write<ConfigurationMessage>(new(config));
+            writer.WriteLittleEndian(config.Fingerprint);
+            writer.WriteLittleEndian(config.Length);
             return writer.WrittenCount;
         }
 
@@ -79,7 +79,6 @@ internal partial class Client : RaftClusterMember
         static string IClientExchange<Result<HeartbeatResult>>.Name => Name;
     }
 
-    [RequiresPreviewFeatures]
     private sealed class AppendEntriesExchange<TEntry, TList> : AppendEntriesExchange, IClientExchange<Result<HeartbeatResult>>
         where TEntry : notnull, IRaftLogEntry
         where TList : notnull, IReadOnlyList<TEntry>
@@ -124,24 +123,18 @@ internal partial class Client : RaftClusterMember
                 if (protocol.CanWriteFrameSynchronously(LogEntryMetadata.Size + 1) is false)
                     await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
 
-                protocol.AdvanceWriteCursor(WriteLogEntryMetadata(protocol.RemainingBufferSpan, entry));
+                LogEntryMetadata.Create(entry).Format(protocol.RemainingBufferSpan);
+                protocol.AdvanceWriteCursor(LogEntryMetadata.Size);
+
                 protocol.StartFrameWrite();
                 await entry.WriteToAsync(protocol, buffer, token).ConfigureAwait(false);
                 protocol.WriteFinalFrame();
             }
 
             await protocol.WriteToTransportAsync(token).ConfigureAwait(false);
-
-            static int WriteLogEntryMetadata(Span<byte> buffer, TEntry entry)
-            {
-                var writer = new SpanWriter<byte>(buffer);
-                LogEntryMetadata.Create(entry).Format(ref writer);
-                return writer.WrittenCount;
-            }
         }
     }
 
-    [RequiresPreviewFeatures]
     private protected sealed override Task<Result<HeartbeatResult>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
     {
         if (entries.Count is 0)

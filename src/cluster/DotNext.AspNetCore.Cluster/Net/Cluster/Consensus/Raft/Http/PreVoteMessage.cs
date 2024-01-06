@@ -1,4 +1,3 @@
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -40,7 +39,6 @@ internal sealed class PreVoteMessage : RaftHttpMessage, IHttpMessage<Result<PreV
 
     Task<Result<PreVoteResult>> IHttpMessage<Result<PreVoteResult>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseEnumResponseAsync<PreVoteResult>(response, token);
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, Result<PreVoteResult> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);

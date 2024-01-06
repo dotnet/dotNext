@@ -8,18 +8,11 @@ using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<char>;
 /// Represents implementation of <see cref="IReadOnlySpanConsumer"/>
 /// in the form of the writer to <see cref="TextWriter"/>.
 /// </summary>
+/// <param name="output">The text writer.</param>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct TextConsumer : IReadOnlySpanConsumer, IFlushable, IEquatable<TextConsumer>
+public readonly record struct TextConsumer(TextWriter output) : IReadOnlySpanConsumer, IFlushable, IEquatable<TextConsumer>
 {
-    private readonly TextWriter output;
-
-    /// <summary>
-    /// Wraps the text writer.
-    /// </summary>
-    /// <param name="output">The text writer.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-    public TextConsumer(TextWriter output)
-        => this.output = output ?? throw new ArgumentNullException(nameof(output));
+    private readonly TextWriter output = output ?? throw new ArgumentNullException(nameof(output));
 
     /// <summary>
     /// Gets a value indicating that the underlying text writer is <see langword="null"/>.

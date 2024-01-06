@@ -13,7 +13,7 @@ public static class Func
     /// </summary>
     /// <typeparam name="T">The target type.</typeparam>
     /// <returns>The predicate instance.</returns>
-    public static Func<object?, bool> IsTypeOf<T>() => ObjectExtensions.IsTypeOf<T>;
+    public static Func<object?, bool> IsTypeOf<T>() => BasicExtensions.IsTypeOf<T>;
 
     /// <summary>
     /// Returns predicate implementing nullability check.
@@ -25,7 +25,7 @@ public static class Func
     /// </remarks>
     public static Func<T, bool> IsNull<T>()
         where T : class?
-        => ObjectExtensions.IsNull;
+        => BasicExtensions.IsNull;
 
     /// <summary>
     /// Returns predicate checking that input argument
@@ -38,7 +38,7 @@ public static class Func
     /// </remarks>
     public static Func<T, bool> IsNotNull<T>()
         where T : class?
-        => ObjectExtensions.IsNotNull;
+        => BasicExtensions.IsNotNull;
 
     /// <summary>
     /// The function which returns input argument
@@ -52,7 +52,7 @@ public static class Func
     /// </remarks>
     public static Func<TInput, TOutput> Identity<TInput, TOutput>()
         where TInput : TOutput
-        => ObjectExtensions.Identity<TInput, TOutput>;
+        => BasicExtensions.Identity<TInput, TOutput>;
 
     /// <summary>
     /// The converter which returns input argument

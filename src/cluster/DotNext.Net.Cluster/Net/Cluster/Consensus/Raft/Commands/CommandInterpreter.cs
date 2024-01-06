@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -64,7 +65,7 @@ public partial class CommandInterpreter : Disposable
             if (handlerAttr is not null && method.ReturnType == typeof(ValueTask))
             {
                 var parameters = method.GetParameterTypes();
-                if (GetLength(parameters) != 2 || !parameters[0].IsValueType || parameters[1] != typeof(CancellationToken))
+                if (parameters.GetLength() is not 2 || !parameters[0].IsValueType || parameters[1] != typeof(CancellationToken))
                     continue;
                 var commandType = parameters[0];
                 if (!identifiers.TryGetValue(commandType, out var commandId))
@@ -88,7 +89,7 @@ public partial class CommandInterpreter : Disposable
     private CommandInterpreter(IDictionary<int, CommandHandler> interpreters, IDictionary<Type, int> identifiers, int? snapshotCommandId)
     {
         this.interpreters = CreateRegistry(interpreters);
-        this.identifiers = new Dictionary<Type, int>(identifiers); // TODO: Migrate to FrozenDictionary in .NET 8
+        this.identifiers = identifiers.ToFrozenDictionary();
         this.snapshotCommandId = snapshotCommandId;
     }
 
@@ -103,7 +104,7 @@ public partial class CommandInterpreter : Disposable
     public LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command, long term)
         where TCommand : notnull, ISerializable<TCommand>
         => identifiers.TryGetValue(typeof(TCommand), out var id) ?
-            new LogEntry<TCommand>(term, command, id) :
+            new() { Term = term, Command = command, CommandId = id } :
             throw new GenericArgumentException<TCommand>(ExceptionMessages.MissingCommandId, nameof(command));
 
     private bool TryGetCommandId<TEntry>(ref TEntry entry, out int commandId)

@@ -278,5 +278,5 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
         => GetAsyncEnumerator(Version, token);
 
-    internal uint Version => version.VolatileRead();
+    internal uint Version => Volatile.Read(in version);
 }

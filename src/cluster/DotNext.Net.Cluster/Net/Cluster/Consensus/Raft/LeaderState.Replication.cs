@@ -24,7 +24,7 @@ internal partial class LeaderState<TMember>
 
         // reusable fields
         private IClusterConfiguration configuration;
-        private long commitIndex, precedingTerm, term;
+        private long commitIndex, term, precedingTerm;
         private bool applyConfig;
 
         // state
@@ -43,6 +43,13 @@ internal partial class LeaderState<TMember>
             continuation = Complete;
         }
 
+        internal long PrecedingIndex => replicationIndex;
+
+        internal long PrecedingTerm
+        {
+            set => precedingTerm = value;
+        }
+
         internal IFailureDetector? FailureDetector
         {
             init;
@@ -54,8 +61,7 @@ internal partial class LeaderState<TMember>
             IClusterConfiguration? proposedConfig,
             long commitIndex,
             long term,
-            long precedingIndex,
-            long precedingTerm)
+            long precedingIndex)
         {
             Debug.Assert(activeConfig is not null);
 
@@ -78,7 +84,18 @@ internal partial class LeaderState<TMember>
             this.commitIndex = commitIndex;
             this.term = term;
             replicationIndex = precedingIndex;
-            this.precedingTerm = precedingTerm;
+        }
+
+        internal void Initialize(
+            IClusterConfiguration activeConfig,
+            IClusterConfiguration? proposedConfig,
+            long commitIndex,
+            long term,
+            long precedingIndex,
+            long precedingTerm)
+        {
+            Initialize(activeConfig, proposedConfig, commitIndex, term, precedingIndex);
+            PrecedingTerm = precedingTerm;
         }
 
         public virtual void Reset()
@@ -193,7 +210,6 @@ internal partial class LeaderState<TMember>
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed correctly by Dispose() method")]
     private readonly SingleProducerMultipleConsumersCoordinator replicationQueue;
-    private readonly Func<TMember, Replicator> replicatorFactory, localReplicatorFactory;
 
     private ValueTask<bool> WaitForReplicationAsync(Timestamp startTime, TimeSpan period, CancellationToken token)
     {
@@ -234,14 +250,10 @@ internal partial class LeaderState<TMember>
         }
     }
 
-    private Replicator CreateReplicator(TMember member) => new(member, Logger)
-    {
-        FailureDetector = detectorFactory?.Invoke(maxLease, member),
-    };
-
-    private Replicator CreateLocalMemberReplicator(TMember member) => new(member, Logger);
-
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
     private static async Task<Result<bool>> SpawnReplicationAsync(Replicator replicator, IAuditTrail<IRaftLogEntry> auditTrail, long currentIndex, CancellationToken token)
-        => await replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false);
+    {
+        replicator.PrecedingTerm = await auditTrail.GetTermAsync(replicator.PrecedingIndex, token).ConfigureAwait(false);
+        return await replicator.ReplicateAsync(auditTrail, currentIndex, token).ConfigureAwait(false);
+    }
 }

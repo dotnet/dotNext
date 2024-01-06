@@ -1,14 +1,11 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Buffers.Binary;
 
 public static partial class BinaryTransformations
 {
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
-
     /// <summary>
     /// Performs bitwise AND operation between two vectors in-place.
     /// </summary>
@@ -19,8 +16,7 @@ public static partial class BinaryTransformations
     public static void BitwiseAnd<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseAndTransformation>(x, y);
     }
@@ -35,8 +31,7 @@ public static partial class BinaryTransformations
     public static void AndNot<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseAndNotTransformation>(x, y);
     }
@@ -51,8 +46,7 @@ public static partial class BinaryTransformations
     public static void BitwiseOr<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseOrTransformation>(x, y);
     }
@@ -67,8 +61,7 @@ public static partial class BinaryTransformations
     public static void BitwiseXor<T>(this ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
     {
-        if (x.Length != y.Length)
-            throw new ArgumentOutOfRangeException(nameof(x));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(x.Length, y.Length, nameof(y));
 
         Transform<T, BitwiseXorTransformation>(x, y);
     }
@@ -81,9 +74,7 @@ public static partial class BinaryTransformations
     public static void OnesComplement<T>(this Span<T> values)
         where T : unmanaged
         => Transform<T, OnesComplementTransformation>(values);
-#pragma warning restore CA2252
 
-    [RequiresPreviewFeatures]
     private static void Transform<TTransformation>(ref byte x, int length)
         where TTransformation : struct, IUnaryTransformation<nuint>, IUnaryTransformation<Vector<byte>>
     {
@@ -115,7 +106,6 @@ public static partial class BinaryTransformations
         }
     }
 
-    [RequiresPreviewFeatures]
     private static unsafe void Transform<T, TTransformation>(Span<T> values)
         where T : unmanaged
         where TTransformation : struct, IUnaryTransformation<nuint>, IUnaryTransformation<Vector<byte>>
@@ -130,7 +120,6 @@ public static partial class BinaryTransformations
         }
     }
 
-    [RequiresPreviewFeatures]
     private static void Transform<TTransformation>([In] ref byte x, ref byte y, int length)
         where TTransformation : struct, IBinaryTransformation<nuint>, IBinaryTransformation<Vector<byte>>
     {
@@ -168,7 +157,6 @@ public static partial class BinaryTransformations
         }
     }
 
-    [RequiresPreviewFeatures]
     private static unsafe void Transform<T, TTransformation>(ReadOnlySpan<T> x, Span<T> y)
         where T : unmanaged
         where TTransformation : struct, IBinaryTransformation<nuint>, IBinaryTransformation<Vector<byte>>
@@ -184,7 +172,6 @@ public static partial class BinaryTransformations
         }
     }
 
-    [RequiresPreviewFeatures]
     private readonly struct BitwiseAndTransformation : IBinaryTransformation<nuint>, IBinaryTransformation<Vector<byte>>
     {
         static Vector<byte> IBinaryTransformation<Vector<byte>>.Transform(Vector<byte> x, Vector<byte> y) => Vector.BitwiseAnd(x, y);
@@ -192,7 +179,6 @@ public static partial class BinaryTransformations
         static nuint IBinaryTransformation<nuint>.Transform(nuint x, nuint y) => x & y;
     }
 
-    [RequiresPreviewFeatures]
     private readonly struct BitwiseOrTransformation : IBinaryTransformation<nuint>, IBinaryTransformation<Vector<byte>>
     {
         static Vector<byte> IBinaryTransformation<Vector<byte>>.Transform(Vector<byte> x, Vector<byte> y) => Vector.BitwiseOr(x, y);
@@ -200,7 +186,6 @@ public static partial class BinaryTransformations
         static nuint IBinaryTransformation<nuint>.Transform(nuint x, nuint y) => x | y;
     }
 
-    [RequiresPreviewFeatures]
     private readonly struct BitwiseXorTransformation : IBinaryTransformation<nuint>, IBinaryTransformation<Vector<byte>>
     {
         static Vector<byte> IBinaryTransformation<Vector<byte>>.Transform(Vector<byte> x, Vector<byte> y) => Vector.Xor(x, y);
@@ -208,7 +193,6 @@ public static partial class BinaryTransformations
         static nuint IBinaryTransformation<nuint>.Transform(nuint x, nuint y) => x ^ y;
     }
 
-    [RequiresPreviewFeatures]
     private readonly struct BitwiseAndNotTransformation : IBinaryTransformation<nuint>, IBinaryTransformation<Vector<byte>>
     {
         static Vector<byte> IBinaryTransformation<Vector<byte>>.Transform(Vector<byte> x, Vector<byte> y) => Vector.AndNot(x, y);
@@ -216,7 +200,6 @@ public static partial class BinaryTransformations
         static nuint IBinaryTransformation<nuint>.Transform(nuint x, nuint y) => x & ~y;
     }
 
-    [RequiresPreviewFeatures]
     private readonly struct OnesComplementTransformation : IUnaryTransformation<nuint>, IUnaryTransformation<Vector<byte>>
     {
         static Vector<byte> IUnaryTransformation<Vector<byte>>.Transform(Vector<byte> value) => Vector.OnesComplement(value);

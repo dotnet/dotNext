@@ -24,7 +24,7 @@ switch (args.Length)
 
 Console.WriteLine("Starting node...");
 
-var configuration = new Dictionary<string, string>
+var configuration = new Dictionary<string, string?>
 {
     {"lowerShufflePeriod", "1000"},
     {"upperShufflePeriod", "5000"},

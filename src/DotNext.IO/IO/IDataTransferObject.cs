@@ -10,7 +10,7 @@ using Buffers;
 /// </summary>
 /// <remarks>
 /// Typically, this interface is used for variable-length data units while
-/// <see cref="Buffers.IBinaryFormattable{TSelf}"/> can be used for simple fixed-length structures.
+/// <see cref="Buffers.Binary.IBinaryFormattable{TSelf}"/> can be used for simple fixed-length structures.
 /// </remarks>
 /// <seealso cref="IAsyncBinaryReader"/>
 /// <seealso cref="IAsyncBinaryWriter"/>
@@ -62,7 +62,7 @@ public interface IDataTransferObject
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        where TWriter : IAsyncBinaryWriter;
+        where TWriter : notnull, IAsyncBinaryWriter;
 
     private static void ResetStream(Stream stream, bool resetStream)
     {
@@ -114,7 +114,7 @@ public interface IDataTransferObject
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
         where TTransformation : notnull, ITransformation<TResult>
     {
-        var buffer = allocator.Invoke(DefaultBufferSize, false);
+        var buffer = allocator.AllocateAtLeast(DefaultBufferSize);
         try
         {
             return await transformation.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
@@ -161,7 +161,7 @@ public interface IDataTransferObject
     {
         Debug.Assert(length <= Array.MaxLength);
 
-        using var writer = new PooledArrayBufferWriter<byte> { Capacity = (int)length };
+        using var writer = new PoolingArrayBufferWriter<byte> { Capacity = (int)length };
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
         return await parser.TransformAsync(new SequenceReader(writer.WrittenMemory), token).ConfigureAwait(false);
     }
@@ -174,7 +174,7 @@ public interface IDataTransferObject
         var output = new FileBufferingWriter(asyncIO: true);
         await using (output.ConfigureAwait(false))
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, exactSize: false);
+            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
@@ -207,7 +207,7 @@ public interface IDataTransferObject
 
         await using (fs.ConfigureAwait(false))
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(DefaultBufferSize, false);
+            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);

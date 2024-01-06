@@ -368,21 +368,6 @@ public sealed class ExpressionBuilderTests : Test
         Equal(ExpressionType.New, range.Reduce().NodeType);
     }
 
-    private interface IListOfInt64 : IList<long>
-    {
-
-    }
-
-    private sealed class ListOfInt64 : List<long>, IListOfInt64
-    {
-        public long[] Slice(int start, int length)
-        {
-            var result = new long[length];
-            CopyTo(start, result, 0, length);
-            return result;
-        }
-    }
-
     [Fact]
     public static void CollectionAccess()
     {
@@ -403,12 +388,12 @@ public sealed class ExpressionBuilderTests : Test
         lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
         Equal(43L, lambda.DynamicInvoke(new[] { 42L, 43L }));
 
-        parameter = Expression.Parameter(typeof(IListOfInt64));
-        lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
-        Equal(42L, lambda.DynamicInvoke(new ListOfInt64 { 42L, 43L }));
+        parameter = Expression.Parameter(typeof(List<long>));
+        lambda = Expression.Lambda<Func<List<long>, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+        Equal(42L, lambda.DynamicInvoke(new List<long> { 42L, 43L }));
 
-        lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
-        Equal(43L, lambda.DynamicInvoke(new ListOfInt64 { 42L, 43L }));
+        lambda = Expression.Lambda<Func<List<long>, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
+        Equal(43L, lambda.DynamicInvoke(new List<long> { 42L, 43L }));
 
         parameter = Expression.Parameter(typeof(string));
         lambda = Expression.Lambda<Func<string, char>>(parameter.ElementAt(1.Index(false)), parameter).Compile();
@@ -420,7 +405,7 @@ public sealed class ExpressionBuilderTests : Test
     {
         var parameter = Expression.Parameter(typeof(long[]));
         var lambda = Expression.Lambda<Func<long[], long[]>>(parameter.Slice(1.Index(false), 0.Index(true)), parameter).Compile();
-        Equal(new[] { 1L, 2L, 4L }[1..^0], lambda(new[] { 1L, 2L, 4L }));
+        Equal(new[] { 1L, 2L, 4L }[1..^0], lambda([1L, 2L, 4L]));
     }
 
     [Fact]
@@ -437,9 +422,9 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void ListSlice()
     {
-        var parameter = Expression.Parameter(typeof(ListOfInt64));
-        var lambda = Expression.Lambda<Func<ListOfInt64, long[]>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
-        Equal(new[] { 3L, 5L }, lambda(new ListOfInt64 { 1L, 3L, 5L, 7L }));
+        var parameter = Expression.Parameter(typeof(List<long>));
+        var lambda = Expression.Lambda<Func<List<long>, List<long>>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
+        Equal(new[] { 3L, 5L }, lambda(new List<long> { 1L, 3L, 5L, 7L }));
     }
 
     [Fact]
@@ -523,7 +508,7 @@ public sealed class ExpressionBuilderTests : Test
     public static void ConvertToResult()
     {
         var parameter = Expression.Parameter(typeof(string));
-        var methodCall = Expression.Call(typeof(int), nameof(int.Parse), Type.EmptyTypes, parameter);
+        var methodCall = Expression.Call(typeof(int), nameof(int.Parse), [], parameter);
         var lambda = Expression.Lambda<Func<string, Result<int>>>(methodCall.AsResult(), parameter).Compile();
 
         Equal(42, lambda("42"));

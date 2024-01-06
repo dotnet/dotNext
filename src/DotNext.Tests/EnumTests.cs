@@ -1,4 +1,6 @@
-﻿namespace DotNext;
+﻿using System.Numerics;
+
+namespace DotNext;
 
 public sealed class EnumTests : Test
 {
@@ -61,32 +63,32 @@ public sealed class EnumTests : Test
     private static void FromPrimitive<TEnum>(TEnum zero, TEnum one, TEnum two)
         where TEnum : struct, Enum
     {
-        Equal(zero, ((sbyte)0).ToEnum<TEnum>());
-        Equal(zero, ((byte)0).ToEnum<TEnum>());
-        Equal(zero, ((short)0).ToEnum<TEnum>());
-        Equal(zero, ((ushort)0).ToEnum<TEnum>());
-        Equal(zero, 0.ToEnum<TEnum>());
-        Equal(zero, 0U.ToEnum<TEnum>());
-        Equal(zero, 0L.ToEnum<TEnum>());
-        Equal(zero, 0UL.ToEnum<TEnum>());
+        Equal(zero, EnumConverter.ToEnum<TEnum, sbyte>(0));
+        Equal(zero, EnumConverter.ToEnum<TEnum, byte>(0));
+        Equal(zero, EnumConverter.ToEnum<TEnum, short>(0));
+        Equal(zero, EnumConverter.ToEnum<TEnum, ushort>(0));
+        Equal(zero,EnumConverter.ToEnum<TEnum, int>(0));
+        Equal(zero, EnumConverter.ToEnum<TEnum, uint>(0U));
+        Equal(zero, EnumConverter.ToEnum<TEnum, long>(0L));
+        Equal(zero, EnumConverter.ToEnum<TEnum, ulong>(0UL));
 
-        Equal(one, ((sbyte)1).ToEnum<TEnum>());
-        Equal(one, ((byte)1).ToEnum<TEnum>());
-        Equal(one, ((short)1).ToEnum<TEnum>());
-        Equal(one, ((ushort)1).ToEnum<TEnum>());
-        Equal(one, 1.ToEnum<TEnum>());
-        Equal(one, 1U.ToEnum<TEnum>());
-        Equal(one, 1L.ToEnum<TEnum>());
-        Equal(one, 1UL.ToEnum<TEnum>());
+        Equal(one, EnumConverter.ToEnum<TEnum, sbyte>(1));
+        Equal(one, EnumConverter.ToEnum<TEnum, byte>(1));
+        Equal(one, EnumConverter.ToEnum<TEnum, short>(1));
+        Equal(one, EnumConverter.ToEnum<TEnum, ushort>(1));
+        Equal(one,EnumConverter.ToEnum<TEnum, int>(1));
+        Equal(one, EnumConverter.ToEnum<TEnum, uint>(1U));
+        Equal(one, EnumConverter.ToEnum<TEnum, long>(1L));
+        Equal(one, EnumConverter.ToEnum<TEnum, ulong>(1UL));
 
-        Equal(two, ((sbyte)2).ToEnum<TEnum>());
-        Equal(two, ((byte)2).ToEnum<TEnum>());
-        Equal(two, ((short)2).ToEnum<TEnum>());
-        Equal(two, ((ushort)2).ToEnum<TEnum>());
-        Equal(two, 2.ToEnum<TEnum>());
-        Equal(two, 2U.ToEnum<TEnum>());
-        Equal(two, 2L.ToEnum<TEnum>());
-        Equal(two, 2UL.ToEnum<TEnum>());
+        Equal(two, EnumConverter.ToEnum<TEnum, sbyte>(2));
+        Equal(two, EnumConverter.ToEnum<TEnum, byte>(2));
+        Equal(two, EnumConverter.ToEnum<TEnum, short>(2));
+        Equal(two, EnumConverter.ToEnum<TEnum, ushort>(2));
+        Equal(two,EnumConverter.ToEnum<TEnum, int>(2));
+        Equal(two, EnumConverter.ToEnum<TEnum, uint>(2U));
+        Equal(two, EnumConverter.ToEnum<TEnum, long>(2L));
+        Equal(two, EnumConverter.ToEnum<TEnum, ulong>(2UL));
     }
 
     [Fact]
@@ -105,32 +107,32 @@ public sealed class EnumTests : Test
     private static void ToPrimitive<TEnum>(TEnum zero, TEnum one, TEnum two)
         where TEnum : struct, Enum
     {
-        Equal(0, zero.ToByte());
-        Equal(0, zero.ToSByte());
-        Equal(0, zero.ToInt16());
-        Equal(0, zero.ToUInt16());
-        Equal(0, zero.ToInt32());
-        Equal(0U, zero.ToUInt32());
-        Equal(0L, zero.ToInt64());
-        Equal(0UL, zero.ToUInt64());
+        Equal(0, EnumConverter.FromEnum<TEnum, byte>(zero));
+        Equal(0, EnumConverter.FromEnum<TEnum, sbyte>(zero));
+        Equal(0, EnumConverter.FromEnum<TEnum, short>(zero));
+        Equal(0, EnumConverter.FromEnum<TEnum, ushort>(zero));
+        Equal(0, EnumConverter.FromEnum<TEnum, int>(zero));
+        Equal(0U, EnumConverter.FromEnum<TEnum, uint>(zero));
+        Equal(0L, EnumConverter.FromEnum<TEnum, long>(zero));
+        Equal(0UL, EnumConverter.FromEnum<TEnum, ulong>(zero));
 
-        Equal(1, one.ToByte());
-        Equal(1, one.ToSByte());
-        Equal(1, one.ToInt16());
-        Equal(1, one.ToUInt16());
-        Equal(1, one.ToInt32());
-        Equal(1U, one.ToUInt32());
-        Equal(1L, one.ToInt64());
-        Equal(1UL, one.ToUInt64());
+        Equal(1, EnumConverter.FromEnum<TEnum, byte>(one));
+        Equal(1, EnumConverter.FromEnum<TEnum, sbyte>(one));
+        Equal(1, EnumConverter.FromEnum<TEnum, short>(one));
+        Equal(1, EnumConverter.FromEnum<TEnum, ushort>(one));
+        Equal(1, EnumConverter.FromEnum<TEnum, int>(one));
+        Equal(1U, EnumConverter.FromEnum<TEnum, uint>(one));
+        Equal(1L, EnumConverter.FromEnum<TEnum, long>(one));
+        Equal(1UL, EnumConverter.FromEnum<TEnum, ulong>(one));
 
-        Equal(2, two.ToByte());
-        Equal(2, two.ToSByte());
-        Equal(2, two.ToInt16());
-        Equal(2, two.ToUInt16());
-        Equal(2, two.ToInt32());
-        Equal(2U, two.ToUInt32());
-        Equal(2L, two.ToInt64());
-        Equal(2UL, two.ToUInt64());
+        Equal(2, EnumConverter.FromEnum<TEnum, byte>(two));
+        Equal(2, EnumConverter.FromEnum<TEnum, sbyte>(two));
+        Equal(2, EnumConverter.FromEnum<TEnum, short>(two));
+        Equal(2, EnumConverter.FromEnum<TEnum, ushort>(two));
+        Equal(2, EnumConverter.FromEnum<TEnum, int>(two));
+        Equal(2U, EnumConverter.FromEnum<TEnum, uint>(two));
+        Equal(2L, EnumConverter.FromEnum<TEnum, long>(two));
+        Equal(2UL, EnumConverter.FromEnum<TEnum, ulong>(two));
     }
 
     [Fact]
@@ -151,16 +153,10 @@ public sealed class EnumTests : Test
     {
         var expected = (EnvironmentVariableTarget)(-1);
 
-        Equal(-1, expected.ToSByte());
-        Throws<OverflowException>(() => expected.ToByte());
+        Equal(-1, EnumConverter.FromEnum<EnvironmentVariableTarget, sbyte>(expected));
+        Throws<OverflowException>(() => EnumConverter.FromEnum<EnvironmentVariableTarget, byte>(expected));
 
-        Equal(-1, expected.ToInt16());
-        Throws<OverflowException>(() => expected.ToUInt16());
-
-        Equal(-1, expected.ToInt32());
-        Throws<OverflowException>(() => expected.ToUInt32());
-
-        Equal(-1L, expected.ToInt64());
-        Throws<OverflowException>(() => expected.ToUInt64());
+        Equal(-1, EnumConverter.FromEnum<EnvironmentVariableTarget, short>(expected));
+        Throws<OverflowException>(() => EnumConverter.FromEnum<EnvironmentVariableTarget, ushort>(expected));
     }
 }

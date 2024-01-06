@@ -1,6 +1,9 @@
 using System.Numerics;
+using System.Text;
 
 namespace DotNext.Buffers;
+
+using Binary;
 
 public sealed class SpanReaderTests : Test
 {
@@ -78,16 +81,16 @@ public sealed class SpanReaderTests : Test
     {
         var writer = new SpanWriter<byte>(stackalloc byte[sizeof(Guid)]);
         var expected = Guid.NewGuid();
-        True(writer.TryWrite(in expected));
+        True(writer.TryWrite(new Blittable<Guid> { Value = expected }));
 
         var reader = new SpanReader<byte>(writer.Span);
-        True(reader.TryRead(out Guid actual));
-        Equal(expected, actual);
+        True(reader.TryRead(out Blittable<Guid> actual));
+        Equal(expected, actual.Value);
 
         writer.Reset();
         reader.Reset();
-        writer.Write(in expected);
-        Equal(expected, reader.Read<Guid>());
+        writer.Write(new Blittable<Guid> { Value = expected });
+        Equal(expected, reader.Read<Blittable<Guid>>().Value);
     }
 
     [Fact]
@@ -96,7 +99,7 @@ public sealed class SpanReaderTests : Test
         var reader = new SpanReader<byte>();
         Equal(0, reader.RemainingCount);
         Equal(0, reader.ConsumedCount);
-        Equal(Array.Empty<byte>(), reader.ReadToEnd().ToArray());
+        Equal([], reader.ReadToEnd().ToArray());
 
         var exceptionThrown = false;
         try
@@ -112,7 +115,7 @@ public sealed class SpanReaderTests : Test
         False(reader.TryRead(new byte[1]));
         False(reader.TryRead(1, out _));
         False(reader.TryRead(out _));
-        False(reader.TryRead(out Guid value));
+        False(reader.TryRead(out Blittable<Guid> _));
 
         Equal(0, reader.Read(new byte[1]));
 
@@ -183,40 +186,32 @@ public sealed class SpanReaderTests : Test
     {
         var buffer = new byte[1024];
         var writer = new SpanWriter<byte>(buffer);
-        writer.WriteInt16(short.MinValue, true);
-        writer.WriteInt16(short.MaxValue, false);
-        writer.WriteUInt16(42, true);
-        writer.WriteUInt16(ushort.MaxValue, false);
-        writer.WriteInt32(int.MaxValue, true);
-        writer.WriteInt32(int.MinValue, false);
-        writer.WriteUInt32(42, true);
-        writer.WriteUInt32(uint.MaxValue, false);
-        writer.WriteInt64(long.MaxValue, true);
-        writer.WriteInt64(long.MinValue, false);
-        writer.WriteUInt64(42, true);
-        writer.WriteUInt64(ulong.MaxValue, false);
-        writer.WriteSingle(float.MaxValue, true);
-        writer.WriteSingle(float.MinValue, false);
-        writer.WriteDouble(double.MaxValue, true);
-        writer.WriteDouble(double.MinValue, false);
+        writer.WriteLittleEndian(short.MinValue);
+        writer.WriteBigEndian(short.MaxValue);
+        writer.WriteLittleEndian<ushort>(42);
+        writer.WriteBigEndian(ushort.MaxValue);
+        writer.WriteLittleEndian(int.MaxValue);
+        writer.WriteBigEndian(int.MinValue);
+        writer.WriteLittleEndian(42U);
+        writer.WriteBigEndian(uint.MaxValue);
+        writer.WriteLittleEndian(long.MaxValue);
+        writer.WriteBigEndian(long.MinValue);
+        writer.WriteLittleEndian(42UL);
+        writer.WriteBigEndian(ulong.MaxValue);
 
         var reader = new SpanReader<byte>(buffer);
-        Equal(short.MinValue, reader.ReadInt16(true));
-        Equal(short.MaxValue, reader.ReadInt16(false));
-        Equal(42, reader.ReadUInt16(true));
-        Equal(ushort.MaxValue, reader.ReadUInt16(false));
-        Equal(int.MaxValue, reader.ReadInt32(true));
-        Equal(int.MinValue, reader.ReadInt32(false));
-        Equal(42U, reader.ReadUInt32(true));
-        Equal(uint.MaxValue, reader.ReadUInt32(false));
-        Equal(long.MaxValue, reader.ReadInt64(true));
-        Equal(long.MinValue, reader.ReadInt64(false));
-        Equal(42UL, reader.ReadUInt64(true));
-        Equal(ulong.MaxValue, reader.ReadUInt64(false));
-        Equal(float.MaxValue, reader.ReadSingle(true));
-        Equal(float.MinValue, reader.ReadSingle(false));
-        Equal(double.MaxValue, reader.ReadDouble(true));
-        Equal(double.MinValue, reader.ReadDouble(false));
+        Equal(short.MinValue, reader.ReadLittleEndian<short>());
+        Equal(short.MaxValue, reader.ReadBigEndian<short>());
+        Equal(42U, reader.ReadLittleEndian<ushort>());
+        Equal(ushort.MaxValue, reader.ReadBigEndian<ushort>());
+        Equal(int.MaxValue, reader.ReadLittleEndian<int>());
+        Equal(int.MinValue, reader.ReadBigEndian<int>());
+        Equal(42U, reader.ReadLittleEndian<uint>());
+        Equal(uint.MaxValue, reader.ReadBigEndian<uint>());
+        Equal(long.MaxValue, reader.ReadLittleEndian<long>());
+        Equal(long.MinValue, reader.ReadBigEndian<long>());
+        Equal(42UL, reader.ReadLittleEndian<ulong>());
+        Equal(ulong.MaxValue, reader.ReadBigEndian<ulong>());
     }
 
     [Fact]
@@ -306,10 +301,20 @@ public sealed class SpanReaderTests : Test
     public static void WriteFormattable()
     {
         var writer = new SpanWriter<char>(stackalloc char[32]);
-        writer.Write(42, "X");
+        True(writer.TryFormat(42, format: "X"));
 
         Equal(2, writer.WrittenCount);
         Equal("2A", new string(writer.WrittenSpan));
+    }
+
+    [Fact]
+    public static void WriteUtf8Formattable()
+    {
+        var writer = new SpanWriter<byte>(stackalloc byte[32]);
+        True(writer.TryFormat(42, format: "X"));
+
+        Equal(2, writer.WrittenCount);
+        True(MemoryExtensions.SequenceEqual("2A"u8, writer.WrittenSpan));
     }
 
     [Fact]
@@ -362,5 +367,13 @@ public sealed class SpanReaderTests : Test
         }
 
         True(raised);
+    }
+
+    [Fact]
+    public static void Rendering()
+    {
+        var writer = new SpanWriter<char>(stackalloc char[16]);
+        True(writer.TryFormat(CompositeFormat.Parse("{0}, {1}!"), ["Hello", "world"]));
+        Equal("Hello, world!", writer.WrittenSpan.ToString());
     }
 }

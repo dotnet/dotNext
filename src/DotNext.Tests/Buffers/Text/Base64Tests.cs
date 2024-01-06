@@ -8,23 +8,6 @@ using IO;
 public sealed class Base64Tests : Test
 {
     [Theory]
-    [InlineData(17, 256)]
-    [InlineData(12, 256)]
-    [InlineData(32, 256)]
-    [InlineData(512, 1024)]
-    public static void DecodeBase64BytesToBufferWriter(int chunkSize, int size)
-    {
-        var expected = RandomBytes(size);
-        var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
-        var actual = new ArrayBufferWriter<byte>();
-        var decoder = new Base64Decoder();
-        decoder.DecodeFromUtf8(base64, actual);
-        False(decoder.NeedMoreData);
-
-        Equal(expected, actual.WrittenSpan.ToArray());
-    }
-
-    [Theory]
     [InlineData(17)]
     [InlineData(32)]
     [InlineData(63)]
@@ -39,70 +22,14 @@ public sealed class Base64Tests : Test
         Equal(expected, actual.Span.ToArray());
     }
 
-    [Theory]
-    [InlineData(17, 256)]
-    [InlineData(12, 256)]
-    [InlineData(32, 256)]
-    [InlineData(512, 1024)]
-    public static void DecodeBase64BytesToCallback(int chunkSize, int size)
-    {
-        var expected = RandomBytes(size);
-        var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
-        var actual = new ArrayBufferWriter<byte>();
-        var decoder = new Base64Decoder();
-        foreach (var segment in base64)
-            decoder.DecodeFromUtf8(segment.Span, static (input, output) => output.Write(input), actual);
-        False(decoder.NeedMoreData);
-
-        Equal(expected, actual.WrittenSpan.ToArray());
-    }
-
-    [Theory]
-    [InlineData(17, 256)]
-    [InlineData(12, 256)]
-    [InlineData(32, 256)]
-    [InlineData(512, 1024)]
-    public static unsafe void DecodeBase64BytesToFunctionPointer(int chunkSize, int size)
-    {
-        var expected = RandomBytes(size);
-        var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
-        var actual = new ArrayBufferWriter<byte>();
-        var decoder = new Base64Decoder();
-        foreach (var segment in base64)
-            decoder.DecodeFromUtf8(segment.Span, &Callback, actual);
-        False(decoder.NeedMoreData);
-
-        Equal(expected, actual.WrittenSpan.ToArray());
-
-        static void Callback(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
-            => output.Write(input);
-    }
-
     [Fact]
     public static void DecodeInvalidBlock()
     {
         var decoder = new Base64Decoder();
-        using var writer = new PooledArrayBufferWriter<byte>();
+        using var writer = new PoolingArrayBufferWriter<byte>();
         decoder.DecodeFromUtf8("AB"u8, writer);
         True(decoder.NeedMoreData);
         Equal(0, writer.WrittenCount);
-    }
-
-    [Theory]
-    [InlineData(17, 256)]
-    [InlineData(12, 256)]
-    [InlineData(32, 256)]
-    [InlineData(512, 1024)]
-    public static void DecodeBase64CharsToBufferWriter(int chunkSize, int size)
-    {
-        var expected = RandomBytes(size);
-        var base64 = ToReadOnlySequence<char>(Convert.ToBase64String(expected).AsMemory(), chunkSize);
-        var actual = new ArrayBufferWriter<byte>();
-        var decoder = new Base64Decoder();
-        decoder.DecodeFromUtf16(base64, actual);
-        False(decoder.NeedMoreData);
-
-        Equal(expected, actual.WrittenSpan.ToArray());
     }
 
     [Theory]
@@ -121,68 +48,6 @@ public sealed class Base64Tests : Test
     }
 
     [Theory]
-    [InlineData(25, 25)]
-    [InlineData(17, 256)]
-    [InlineData(12, 256)]
-    [InlineData(32, 256)]
-    [InlineData(512, 1024)]
-    public static void DecodeBase64CharsToCallback(int chunkSize, int size)
-    {
-        var expected = RandomBytes(size);
-        var base64 = ToReadOnlySequence<char>(Convert.ToBase64String(expected).AsMemory(), chunkSize);
-        var actual = new ArrayBufferWriter<byte>();
-        var decoder = new Base64Decoder();
-        foreach (var segment in base64)
-            decoder.DecodeFromUtf16(segment.Span, static (input, output) => output.Write(input), actual);
-        False(decoder.NeedMoreData);
-
-        Equal(expected, actual.WrittenSpan.ToArray());
-    }
-
-    [Theory]
-    [InlineData(25, 25)]
-    [InlineData(17, 256)]
-    [InlineData(12, 256)]
-    [InlineData(32, 256)]
-    [InlineData(512, 1024)]
-    public static unsafe void DecodeBase64CharsToFunctionPointer(int chunkSize, int size)
-    {
-        var expected = RandomBytes(size);
-        var base64 = ToReadOnlySequence<char>(Convert.ToBase64String(expected).AsMemory(), chunkSize);
-        var actual = new ArrayBufferWriter<byte>();
-        var decoder = new Base64Decoder();
-        foreach (var segment in base64)
-            decoder.DecodeFromUtf16(segment.Span, &Callback, actual);
-        False(decoder.NeedMoreData);
-
-        Equal(expected, actual.WrittenSpan.ToArray());
-
-        static void Callback(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
-            => output.Write(input);
-    }
-
-    [Theory]
-    [InlineData(25, 25)]
-    [InlineData(17, 256)]
-    [InlineData(12, 256)]
-    [InlineData(32, 256)]
-    [InlineData(512, 1024)]
-    public static void DecodeBase64BytesToStream(int chunkSize, int size)
-    {
-        var expected = RandomBytes(size);
-        var base64 = ToReadOnlySequence<byte>(Encoding.UTF8.GetBytes(Convert.ToBase64String(expected)), chunkSize);
-        var actual = new ArrayBufferWriter<byte>();
-        var decoder = new Base64Decoder();
-
-        using var ms = new MemoryStream(size);
-        foreach (var segment in base64)
-            decoder.DecodeFromUtf8(segment.Span, ms);
-
-        ms.Flush();
-        Equal(expected, ms.ToArray());
-    }
-
-    [Theory]
     [InlineData(17)]
     [InlineData(32)]
     [InlineData(63)]
@@ -198,7 +63,7 @@ public sealed class Base64Tests : Test
 
         encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), writer, flush: false);
         encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
+        Equal(0, encoder.BufferedData.Length);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
@@ -212,15 +77,15 @@ public sealed class Base64Tests : Test
     [InlineData(63)]
     [InlineData(512)]
     [InlineData(1024)]
-    public static void EncodeToBufferWriterChars(int size)
+    public static void EncodeToBufferWriterUtf16(int size)
     {
         var expected = RandomBytes(size);
 
         var encoder = new Base64Encoder();
         var writer = new ArrayBufferWriter<char>();
 
-        encoder.EncodeToChars(expected.AsSpan(0, size / 2), writer, flush: false);
-        encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), writer, flush: true);
+        encoder.EncodeToUtf16(expected.AsSpan(0, size / 2), writer, flush: false);
+        encoder.EncodeToUtf16(expected.AsSpan().Slice(size / 2), writer, flush: true);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
@@ -234,7 +99,7 @@ public sealed class Base64Tests : Test
     [InlineData(63)]
     [InlineData(512)]
     [InlineData(1024)]
-    public static void EncodeToBytes(int size)
+    public static void EncodeToUtf8(int size)
     {
         var expected = RandomBytes(size);
 
@@ -253,12 +118,12 @@ public sealed class Base64Tests : Test
     [InlineData(63)]
     [InlineData(512)]
     [InlineData(1024)]
-    public static void EncodeToChars(int size)
+    public static void EncodeToUtf16(int size)
     {
         var expected = RandomBytes(size);
 
         var encoder = new Base64Encoder();
-        using var base64 = encoder.EncodeToChars(expected, flush: true);
+        using var base64 = encoder.EncodeToUtf16(expected, flush: true);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(base64.Span);
@@ -271,15 +136,15 @@ public sealed class Base64Tests : Test
     {
         var encoder = new Base64Encoder();
         var writer = new ArrayBufferWriter<byte>();
-        byte[] expected = { 1, 2 };
+        byte[] expected = [1, 2];
 
         encoder.EncodeToUtf8(expected, writer, flush: false);
         True(encoder.HasBufferedData);
 
-        Span<byte> base64 = stackalloc byte[4];
-        Equal(2, encoder.GetBufferedData(base64));
-        Equal(expected, base64.Slice(0, 2).ToArray());
+        Equal(2, encoder.BufferedData.Length);
+        Equal(expected, encoder.BufferedData.Slice(0, 2).ToArray());
 
+        Span<byte> base64 = stackalloc byte[Base64Encoder.MaxCharsToFlush];
         Equal(4, encoder.Flush(base64));
     }
 
@@ -288,9 +153,9 @@ public sealed class Base64Tests : Test
     {
         var encoder = new Base64Encoder();
         var writer = new ArrayBufferWriter<char>();
-        byte[] expected = { 1, 2 };
+        byte[] expected = [1, 2];
 
-        encoder.EncodeToChars(expected, writer, flush: false);
+        encoder.EncodeToUtf16(expected, writer, flush: false);
         True(encoder.HasBufferedData);
 
         Span<char> base64 = stackalloc char[4];
@@ -303,15 +168,15 @@ public sealed class Base64Tests : Test
     [InlineData(63)]
     [InlineData(512)]
     [InlineData(1024)]
-    public static void EncodeToStringBuilder(int size)
+    public static void EncodeToBufferWriterSlimUtf16(int size)
     {
         var expected = RandomBytes(size);
 
         var encoder = new Base64Encoder();
-        var writer = new StringBuilder();
+        var writer = new BufferWriterSlim<char>();
 
-        encoder.EncodeToChars(expected.AsSpan(0, size / 2), writer, flush: false);
-        encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), writer, flush: true);
+        encoder.EncodeToUtf16(expected.AsSpan(0, size / 2), ref writer, flush: false);
+        encoder.EncodeToUtf16(expected.AsSpan().Slice(size / 2), ref writer, flush: true);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf16(writer.ToString());
@@ -325,128 +190,20 @@ public sealed class Base64Tests : Test
     [InlineData(63)]
     [InlineData(512)]
     [InlineData(1024)]
-    public static void EncodeToTextWriter(int size)
+    public static void EncodeToBufferWriterSlimUtf8(int size)
     {
         var expected = RandomBytes(size);
 
         var encoder = new Base64Encoder();
-        using var writer = new StringWriter();
+        var writer = new BufferWriterSlim<byte>();
 
-        encoder.EncodeToChars(expected.AsSpan(0, size / 2), writer, flush: false);
-        encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), writer, flush: true);
-
-        var decoder = new Base64Decoder();
-        using var actual = decoder.DecodeFromUtf16(writer.ToString());
-
-        Equal(expected, actual.Span.ToArray());
-    }
-
-    [Theory]
-    [InlineData(17)]
-    [InlineData(32)]
-    [InlineData(63)]
-    [InlineData(512)]
-    [InlineData(1024)]
-    public static void EncodeToCallbackUtf8(int size)
-    {
-        var expected = RandomBytes(size);
-
-        var encoder = new Base64Encoder();
-        False(encoder.HasBufferedData);
-        var writer = new ArrayBufferWriter<byte>();
-
-        encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), Write, writer, flush: false);
-        encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
+        encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), ref writer, flush: false);
+        encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), ref writer, flush: true);
 
         var decoder = new Base64Decoder();
         using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
 
         Equal(expected, actual.Span.ToArray());
-
-        static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
-            => output.Write(input);
-    }
-
-    [Theory]
-    [InlineData(17)]
-    [InlineData(32)]
-    [InlineData(63)]
-    [InlineData(512)]
-    [InlineData(1024)]
-    public static void EncodeToCallbackChars(int size)
-    {
-        var expected = RandomBytes(size);
-
-        var encoder = new Base64Encoder();
-        False(encoder.HasBufferedData);
-        var writer = new ArrayBufferWriter<char>();
-
-        encoder.EncodeToChars(expected.AsSpan(0, size / 2), Write, writer, flush: false);
-        encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
-
-        var decoder = new Base64Decoder();
-        using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
-
-        Equal(expected, actual.Span.ToArray());
-
-        static void Write(ReadOnlySpan<char> input, ArrayBufferWriter<char> output)
-            => output.Write(input);
-    }
-
-    [Theory]
-    [InlineData(17)]
-    [InlineData(32)]
-    [InlineData(63)]
-    [InlineData(512)]
-    [InlineData(1024)]
-    public static unsafe void EncodeToFunctionPointerUtf8(int size)
-    {
-        var expected = RandomBytes(size);
-
-        var encoder = new Base64Encoder();
-        False(encoder.HasBufferedData);
-        var writer = new ArrayBufferWriter<byte>();
-
-        encoder.EncodeToUtf8(expected.AsSpan(0, size / 2), &Write, writer, flush: false);
-        encoder.EncodeToUtf8(expected.AsSpan().Slice(size / 2), &Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
-
-        var decoder = new Base64Decoder();
-        using var actual = decoder.DecodeFromUtf8(writer.WrittenSpan);
-
-        Equal(expected, actual.Span.ToArray());
-
-        static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
-            => output.Write(input);
-    }
-
-    [Theory]
-    [InlineData(17)]
-    [InlineData(32)]
-    [InlineData(63)]
-    [InlineData(512)]
-    [InlineData(1024)]
-    public static unsafe void EncodeToFunctionPointerChars(int size)
-    {
-        var expected = RandomBytes(size);
-
-        var encoder = new Base64Encoder();
-        False(encoder.HasBufferedData);
-        var writer = new ArrayBufferWriter<char>();
-
-        encoder.EncodeToChars(expected.AsSpan(0, size / 2), &Write, writer, flush: false);
-        encoder.EncodeToChars(expected.AsSpan().Slice(size / 2), &Write, writer, flush: true);
-        Equal(0, encoder.BufferedDataSize);
-
-        var decoder = new Base64Decoder();
-        using var actual = decoder.DecodeFromUtf16(writer.WrittenSpan);
-
-        Equal(expected, actual.Span.ToArray());
-
-        static void Write(ReadOnlySpan<char> input, ArrayBufferWriter<char> output)
-            => output.Write(input);
     }
 
     [Theory]
@@ -465,7 +222,7 @@ public sealed class Base64Tests : Test
         {
             using var destination = new StringWriter();
 
-            await foreach (var chunk in Base64Encoder.EncodeToCharsAsync(source.ReadAllAsync(16)))
+            await foreach (var chunk in Base64Encoder.EncodeToUtf16Async(source.ReadAllAsync(16)))
             {
                 await destination.WriteAsync(chunk);
             }
@@ -530,7 +287,7 @@ public sealed class Base64Tests : Test
     }
 
     [Fact]
-    public static void CheckEndOfUnicodeData()
+    public static void CheckEndOfUtf16Data()
     {
         var decoder = new Base64Decoder();
         var owner = decoder.DecodeFromUtf16("AA==");
@@ -541,18 +298,37 @@ public sealed class Base64Tests : Test
     }
 
     [Fact]
-    public static void CheckEndOfUnicodeDataWithConsumer()
+    public static void CheckEndOfUtf16WithBufferWriter()
     {
         var decoder = new Base64Decoder();
         var writer = new ArrayBufferWriter<byte>();
-        decoder.DecodeFromUtf16("AA==", Write, writer);
+        decoder.DecodeFromUtf16("AA==", writer);
         False(decoder.NeedMoreData);
         Equal(1, writer.WrittenCount);
 
-        Throws<FormatException>(() => decoder.DecodeFromUtf16("A==", Write, writer));
+        Throws<FormatException>(() => decoder.DecodeFromUtf16("A==", writer));
+    }
 
-        static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
-            => output.Write(input);
+    [Fact]
+    public static void CheckEndOfUtf16DataWithBufferWriterSlim()
+    {
+        var decoder = new Base64Decoder();
+        var writer = new BufferWriterSlim<byte>();
+        decoder.DecodeFromUtf16("AA==", ref writer);
+        False(decoder.NeedMoreData);
+        Equal(1, writer.WrittenCount);
+
+        var thrown = false;
+        try
+        {
+            decoder.DecodeFromUtf16("A==", ref writer);
+        }
+        catch (FormatException)
+        {
+            thrown = true;
+        }
+
+        True(thrown);
     }
 
     [Fact]
@@ -567,17 +343,36 @@ public sealed class Base64Tests : Test
     }
 
     [Fact]
-    public static void CheckEndOfUtf8DataWithConsumer()
+    public static void CheckEndOfUtf8DataWithBufferWriter()
     {
         var decoder = new Base64Decoder();
         var writer = new ArrayBufferWriter<byte>();
-        decoder.DecodeFromUtf8("AA=="u8, Write, writer);
+        decoder.DecodeFromUtf8("AA=="u8, writer);
         False(decoder.NeedMoreData);
         Equal(1, writer.WrittenCount);
 
-        Throws<FormatException>(() => decoder.DecodeFromUtf8("A=="u8, Write, writer));
+        Throws<FormatException>(() => decoder.DecodeFromUtf8("A=="u8, writer));
+    }
 
-        static void Write(ReadOnlySpan<byte> input, ArrayBufferWriter<byte> output)
-            => output.Write(input);
+    [Fact]
+    public static void CheckEndOfUtf8DataWithBufferWriterSlim()
+    {
+        var decoder = new Base64Decoder();
+        var writer = new BufferWriterSlim<byte>();
+        decoder.DecodeFromUtf8("AA=="u8, ref writer);
+        False(decoder.NeedMoreData);
+        Equal(1, writer.WrittenCount);
+
+        var thrown = false;
+        try
+        {
+            decoder.DecodeFromUtf8("A=="u8, ref writer);
+        }
+        catch (FormatException)
+        {
+            thrown = true;
+        }
+
+        True(thrown);
     }
 }

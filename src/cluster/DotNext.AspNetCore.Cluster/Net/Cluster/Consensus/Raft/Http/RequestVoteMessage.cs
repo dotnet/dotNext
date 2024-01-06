@@ -1,5 +1,4 @@
-﻿using System.Runtime.Versioning;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
 
@@ -42,7 +41,6 @@ internal sealed class RequestVoteMessage : RaftHttpMessage, IHttpMessage<Result<
 
     Task<Result<bool>> IHttpMessage<Result<bool>>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token) => ParseBoolResponseAsync(response, token);
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponseAsync(response, result, token);

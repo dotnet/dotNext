@@ -9,7 +9,14 @@ internal partial class HttpPeerController
     private const string MessageTypeHeader = "X-HyParView-Message-Type";
 
     private static string GetMessageType(HttpRequest request)
-        => request.Headers.TryGetValue(MessageTypeHeader, out var values) ? values[0] : string.Empty;
+    {
+        string? result = null;
+
+        if (request.Headers.TryGetValue(MessageTypeHeader, out var values))
+            result = values[0];
+
+        return result ?? string.Empty;
+    }
 
     internal Task ProcessRequest(HttpContext context)
     {

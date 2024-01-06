@@ -40,7 +40,7 @@ public sealed class FileBufferingWriterTests : Test
 
         using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
         var actual = new byte[expected.Length];
-        fs.ReadBlock(actual);
+        fs.ReadExactly(actual);
         Equal(expected, actual);
     }
 
@@ -344,37 +344,41 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(100)]
     [InlineData(1000)]
     [InlineData(10000)]
-    public static void StressTest(int threshold)
+    public static async Task StressTest(int threshold)
     {
         var dict = new Dictionary<string, string>
             {
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
+
+        Memory<byte> buffer = new byte[16];
         using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
-        DictionarySerializer.Serialize(dict, writer);
+        await DictionarySerializer.SerializeAsync(dict, writer, buffer);
         using var manager = writer.GetWrittenContent();
         using var source = StreamSource.AsStream(manager.Memory);
-        Equal(dict, DictionarySerializer.Deserialize(source));
+        Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
 
     [Theory]
     [InlineData(100)]
     [InlineData(1000)]
     [InlineData(10000)]
-    public static void StressTest2(int threshold)
+    public static async Task StressTest2(int threshold)
     {
         var dict = new Dictionary<string, string>
             {
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
+
+        Memory<byte> buffer = new byte[16];
         using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
-        DictionarySerializer.Serialize(dict, writer);
+        await DictionarySerializer.SerializeAsync(dict, writer, buffer);
         using var source = new MemoryStream(1024);
         writer.CopyTo(source);
         source.Position = 0L;
-        Equal(dict, DictionarySerializer.Deserialize(source));
+        Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
 
     [Fact]
@@ -393,17 +397,19 @@ public sealed class FileBufferingWriterTests : Test
     [InlineData(100)]
     [InlineData(1000)]
     [InlineData(10000)]
-    public static void StressTest4(int threshold)
+    public static async Task StressTest4(int threshold)
     {
         var dict = new Dictionary<string, string>
             {
                 {"Key1", "Value1"},
                 {"Key2", "Value2"}
             };
+
+        Memory<byte> buffer = new byte[16];
         using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
-        DictionarySerializer.Serialize(dict, writer);
+        await DictionarySerializer.SerializeAsync(dict, writer, buffer);
         using var source = writer.GetWrittenContentAsStream();
-        Equal(dict, DictionarySerializer.Deserialize(source));
+        Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
 
     [Theory]

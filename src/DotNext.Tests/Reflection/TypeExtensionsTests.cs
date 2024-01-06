@@ -115,16 +115,6 @@ public sealed class TypeExtensionsTests : Test
     }
 
     [Fact]
-    public static void ReflectMember()
-    {
-        NotNull(Reflector.MemberOf<FieldInfo, Func<string>>(() => string.Empty));
-        NotNull(Reflector.MemberOf<PropertyInfo, Func<Optional<string>>>(() => Optional<string>.None));
-        NotNull(Reflector.MemberOf<ConstructorInfo, Func<string>>(() => new string('a', 3)));
-        NotNull(Reflector.MemberOf<MethodInfo, Func<decimal, decimal>>(static x => -x));
-        Null(Reflector.MemberOf<MemberInfo, Func<int, int>>(static i => -i));
-    }
-
-    [Fact]
     public static unsafe void DefaultValues()
     {
         Null(typeof(string).GetDefaultValue());

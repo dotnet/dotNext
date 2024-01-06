@@ -1,34 +1,14 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using static System.Runtime.InteropServices.MemoryMarshal;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
-
-using StringTemplate = Buffers.MemoryTemplate<char>;
 
 /// <summary>
 /// Represents various extension methods for type <see cref="string"/>.
 /// </summary>
 public static class StringExtensions
 {
-    /// <summary>
-    /// Returns alternative string if first string argument
-    /// is <see langword="null"/> or empty.
-    /// </summary>
-    /// <example>
-    /// This method is equivalent to the following code:
-    /// <code>
-    /// var result = string.IsNullOrEmpty(str) ? alt : str;
-    /// </code>
-    /// </example>
-    /// <param name="str">A string to check.</param>
-    /// <param name="alt">Alternative string to be returned if original string is <see langword="null"/> or empty.</param>
-    /// <returns>Original or alternative string.</returns>
-    [Obsolete("This method is easily replaceable with pattern matching: expression is { Length: > 0 } str ? str : alt")]
-    public static string IfNullOrEmpty(this string? str, string alt)
-        => str is { Length: > 0 } ? str : alt;
-
     /// <summary>
     /// Reverse string characters.
     /// </summary>
@@ -57,23 +37,13 @@ public static class StringExtensions
     [return: NotNullIfNotNull(nameof(str))]
     public static string? TrimLength(this string? str, int maxLength)
     {
-        if (maxLength < 0)
-            throw new ArgumentOutOfRangeException(nameof(maxLength));
+        ArgumentOutOfRangeException.ThrowIfNegative(maxLength);
 
-        if (str is null)
-        {
-            // return null string
-        }
-        else if (maxLength is 0)
-        {
-            str = string.Empty;
-        }
-        else if (str.Length > maxLength)
-        {
-            str = new string(str.AsSpan().Slice(0, maxLength));
-        }
-
-        return str;
+        return str is null || str.Length <= maxLength
+            ? str
+            : maxLength is 0
+            ? string.Empty
+            : new(str.AsSpan(0, maxLength));
     }
 
     /// <summary>
@@ -90,31 +60,4 @@ public static class StringExtensions
         var (start, length) = range.GetOffsetAndLength(str.Length);
         return str.Substring(start, length);
     }
-
-    /// <summary>
-    /// Compiles string template.
-    /// </summary>
-    /// <param name="template">The string representing template with placeholders.</param>
-    /// <param name="placeholder">The placeholder in the template.</param>
-    /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
-    public static StringTemplate AsTemplate(this string template, string placeholder)
-        => new(template.AsMemory(), placeholder);
-
-    /// <summary>
-    /// Compiles string template.
-    /// </summary>
-    /// <param name="template">The string representing template with placeholders.</param>
-    /// <param name="placeholder">The placeholder in the template.</param>
-    /// <returns>The compiled template that can be used to replace all placeholders with their original values.</returns>
-    public static StringTemplate AsTemplate(this string template, char placeholder)
-        => new(template.AsMemory(), CreateReadOnlySpan(ref placeholder, 1));
-
-    /// <summary>
-    /// Checks whether the growable string is <see langword="null"/> or empty.
-    /// </summary>
-    /// <param name="builder">The builder to check.</param>
-    /// <returns><see langword="true"/>, if builder is <see langword="null"/> or empty.</returns>
-    [Obsolete("This method is easily replaceable with pattern matching: sb is not { Length: > 0 };")]
-    public static bool IsNullOrEmpty([NotNullWhen(false)] this StringBuilder? builder)
-        => builder is not { Length: > 0 };
 }

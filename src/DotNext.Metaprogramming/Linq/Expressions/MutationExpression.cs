@@ -27,11 +27,11 @@ public sealed class MutationExpression : CustomExpression
                 // .ctor()
                 // no constructor
                 const BindingFlags ctorFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly;
-                cloneMethodOrCtor = recordStruct.GetConstructor(ctorFlags, new[] { recordStruct }) ?? recordStruct.GetConstructor(ctorFlags, Type.EmptyTypes);
+                cloneMethodOrCtor = recordStruct.GetConstructor(ctorFlags, [recordStruct]) ?? recordStruct.GetConstructor(ctorFlags, []);
                 break;
             case { IsClass: true } recordClass:
                 const BindingFlags methodFlags = BindingFlags.Public | ctorFlags;
-                cloneMethodOrCtor = recordClass.GetMethod(CloneMethodName, methodFlags, Type.EmptyTypes);
+                cloneMethodOrCtor = recordClass.GetMethod(CloneMethodName, methodFlags, []);
                 if (cloneMethodOrCtor is null)
                     goto default;
                 break;
@@ -88,7 +88,7 @@ public sealed class MutationExpression : CustomExpression
         var result = cloneMethodOrCtor switch
         {
             MethodInfo cloneMethod => Call(Expression, cloneMethod),
-            ConstructorInfo ctor => New(ctor, ctor.GetParameters().Length is 0 ? Array.Empty<Expression>() : new[] { Expression }),
+            ConstructorInfo ctor => New(ctor, ctor.GetParameters().Length is 0 ? [] : [Expression]),
             _ => Expression,
         };
 

@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized;
 
-using Threading;
-
 /// <summary>
 /// Represents thread-safe implementation of <see cref="ITypeMap{TValue}"/> interface.
 /// </summary>
@@ -18,7 +16,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     internal sealed class Entry
     {
-        private int state; // volatile
+        private volatile int state;
         internal TValue? Value;
 
         internal int AcquireLock()
@@ -26,14 +24,14 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             int currentState;
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                currentState = state.VolatileRead();
+                currentState = state;
 
-                if (currentState is not LockedState && state.CompareAndSet(currentState, LockedState))
+                if (currentState is not LockedState && Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
                     return currentState;
             }
         }
 
-        internal void ReleaseLock(int newState) => state.VolatileWrite(newState);
+        internal void ReleaseLock(int newState) => state = newState;
 
         internal bool HasValue
         {
@@ -43,7 +41,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
                 for (var spinner = new SpinWait(); ; spinner.SpinOnce())
                 {
-                    currentState = state.VolatileRead();
+                    currentState = state;
 
                     if (currentState is LockedState)
                         continue;
@@ -59,7 +57,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                currentState = state.VolatileRead();
+                currentState = state;
 
                 if (currentState is LockedState)
                     continue;
@@ -67,7 +65,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 if (currentState != expectedState)
                     return false;
 
-                if (state.CompareAndSet(currentState, LockedState))
+                if (Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
                     return true;
             }
         }
@@ -88,10 +86,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
     public ConcurrentTypeMap(int capacity)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity]);
+        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 
@@ -313,16 +310,6 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         => Set(ITypeMap.GetIndex<TKey>(), newValue, out oldValue);
 
-    /// <summary>
-    /// Replaces the existing value with a new value.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="newValue">A new value.</param>
-    /// <returns>The replaced value.</returns>
-    [Obsolete("Use Set overload instead")]
-    public Optional<TValue> Replace<TKey>(TValue newValue)
-        => Set(ITypeMap.GetIndex<TKey>(), newValue, out var oldValue) ? Optional.Some(oldValue!) : Optional.None<TValue>();
-
     private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {
         for (Entry[] entries; ;)
@@ -454,10 +441,9 @@ public class ConcurrentTypeMap : ITypeMap
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
     public ConcurrentTypeMap(int capacity)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity]);
+        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 

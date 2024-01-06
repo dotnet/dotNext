@@ -23,7 +23,7 @@ switch (args.LongLength)
 
 static Task UseAspNetCoreHost(int port, string? persistentStorage = null)
 {
-    var configuration = new Dictionary<string, string>
+    var configuration = new Dictionary<string, string?>
             {
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "150" },
@@ -90,18 +90,6 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
 static void ConfigureLogging(ILoggingBuilder builder)
     => builder.AddConsole().SetMinimumLevel(LogLevel.Error);
 
-static Task UseUdpTransport(int port, string? persistentStorage)
-{
-    var configuration = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
-    {
-        LowerElectionTimeout = 150,
-        UpperElectionTimeout = 300,
-        DatagramSize = 1024,
-        ColdStart = false,
-    };
-    return UseConfiguration(configuration, persistentStorage);
-}
-
 static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
 {
     var configuration = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
@@ -137,8 +125,6 @@ static Task StartNode(string protocol, int port, string? persistentStorage = nul
         case "http":
         case "https":
             return UseAspNetCoreHost(port, persistentStorage);
-        case "udp":
-            return UseUdpTransport(port, persistentStorage);
         case "tcp":
             return UseTcpTransport(port, persistentStorage, false);
         case "tcp+ssl":

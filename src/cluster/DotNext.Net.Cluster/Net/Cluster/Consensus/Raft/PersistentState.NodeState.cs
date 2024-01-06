@@ -58,7 +58,7 @@ public partial class PersistentState
         {
             Debug.Assert(Capacity >= LastVoteOffset + sizeof(long));
 
-            buffer = allocator.Invoke(Capacity, true);
+            buffer = allocator.AllocateExactly(Capacity);
             if (File.Exists(fileName))
             {
                 handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.SequentialScan);
@@ -88,7 +88,7 @@ public partial class PersistentState
             lastIndex = ReadInt64LittleEndian(bufferSpan.Slice(LastIndexOffset));
             lastApplied = ReadInt64LittleEndian(bufferSpan.Slice(LastAppliedOffset));
             snapshot = new(bufferSpan.Slice(SnapshotMetadataOffset));
-            if (ValueTypeExtensions.ToBoolean(bufferSpan[LastVotePresenceOffset]))
+            if (Unsafe.BitCast<byte, bool>(bufferSpan[LastVotePresenceOffset]))
                 votedFor = BoxedClusterMemberId.Box(new ClusterMemberId(bufferSpan.Slice(LastVoteOffset)));
             this.integrityCheck = integrityCheck;
         }
@@ -170,37 +170,37 @@ public partial class PersistentState
 
         internal long CommitIndex
         {
-            get => commitIndex.VolatileRead();
+            get => Volatile.Read(in commitIndex);
             set
             {
                 WriteInt64LittleEndian(buffer.Span.Slice(CommitIndexOffset), value);
-                commitIndex.VolatileWrite(value);
+                Volatile.Write(ref commitIndex, value);
             }
         }
 
         internal long LastApplied
         {
-            get => lastApplied.VolatileRead();
+            get => Volatile.Read(in lastApplied);
             set
             {
                 WriteInt64LittleEndian(buffer.Span.Slice(LastAppliedOffset), value);
-                lastApplied.VolatileWrite(value);
+                Volatile.Write(ref lastApplied, value);
             }
         }
 
         internal long LastIndex
         {
-            get => lastIndex.VolatileRead();
+            get => Volatile.Read(in lastIndex);
             set
             {
                 WriteInt64LittleEndian(buffer.Span.Slice(LastIndexOffset), value);
-                lastIndex.VolatileWrite(value);
+                Volatile.Write(ref lastIndex, value);
             }
         }
 
         internal long TailIndex => LastIndex + 1L;
 
-        internal long Term => term.VolatileRead();
+        internal long Term => Volatile.Read(in term);
 
         internal void UpdateTerm(long value, bool resetLastVote)
         {
@@ -211,12 +211,12 @@ public partial class PersistentState
                 buffer[LastVotePresenceOffset] = False;
             }
 
-            term.VolatileWrite(value);
+            Volatile.Write(ref term, value);
         }
 
         internal long IncrementTerm(ClusterMemberId id)
         {
-            var result = term.IncrementAndGet();
+            var result = Interlocked.Increment(ref term);
             WriteInt64LittleEndian(buffer.Span.Slice(TermOffset), result);
             UpdateVotedFor(id);
             return result;
@@ -228,9 +228,7 @@ public partial class PersistentState
         {
             votedFor = BoxedClusterMemberId.Box(id);
             buffer[LastVotePresenceOffset] = True;
-#pragma warning disable CA2252 // TODO: Remove in .NET 7
-            IBinaryFormattable<ClusterMemberId>.Format(id, buffer.Span.Slice(LastVoteOffset));
-#pragma warning restore CA2252
+            id.Format(buffer.Span.Slice(LastVoteOffset));
         }
 
         internal ref readonly SnapshotMetadata Snapshot => ref snapshot;

@@ -19,6 +19,7 @@ public partial class FileReader : Disposable
     /// Represents the file handle.
     /// </summary>
     protected readonly SafeFileHandle handle;
+    private readonly MemoryAllocator<byte>? allocator;
     private MemoryOwner<byte> buffer;
     private int bufferStart, bufferEnd;
     private long fileOffset;
@@ -42,16 +43,27 @@ public partial class FileReader : Disposable
     public FileReader(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle);
+        ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        if (fileOffset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(fileOffset));
-
-        if (bufferSize <= 16)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-        buffer = allocator.Invoke(bufferSize, exactSize: false);
+        buffer = allocator.AllocateAtLeast(bufferSize);
         this.handle = handle;
         this.fileOffset = fileOffset;
+        this.allocator = allocator;
+    }
+
+    /// <summary>
+    /// Initializes a new buffered file reader.
+    /// </summary>
+    /// <param name="source">Readable file stream.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The buffer allocator.</param>
+    /// <exception cref="ArgumentException"><paramref name="source"/> is not readable.</exception>
+    public FileReader(FileStream source, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
+        : this(source.SafeFileHandle, source.Position, bufferSize, allocator)
+    {
+        if (source.CanRead is false)
+            throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
     }
 
     /// <summary>
@@ -64,8 +76,7 @@ public partial class FileReader : Disposable
         get => fileOffset;
         set
         {
-            if (value < 0L)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             if (HasBufferedData)
                 throw new InvalidOperationException();
@@ -111,9 +122,7 @@ public partial class FileReader : Disposable
     public void Consume(int bytes)
     {
         var newPosition = bytes + bufferStart;
-
-        if ((uint)newPosition > (uint)bufferEnd)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)newPosition, (uint)bufferEnd, nameof(bytes));
 
         if (newPosition == bufferEnd)
         {
@@ -125,6 +134,35 @@ public partial class FileReader : Disposable
         }
 
         fileOffset += bytes;
+    }
+
+    /// <summary>
+    /// Attempts to consume buffered data.
+    /// </summary>
+    /// <param name="bytes">The number of bytes to consume.</param>
+    /// <param name="buffer">The slice of internal buffer containing consumed bytes.</param>
+    /// <returns><see langword="true"/> if the specified number of bytes is consumed successfully; otherwise, <see langword="false"/>.</returns>
+    public bool TryConsume(int bytes, out ReadOnlyMemory<byte> buffer)
+    {
+        var newPosition = bytes + bufferStart;
+        if ((uint)newPosition > (uint)bufferEnd)
+        {
+            buffer = default;
+            return false;
+        }
+
+        buffer = this.buffer.Memory.Slice(bufferStart, bytes);
+        if (newPosition == bufferEnd)
+        {
+            ClearBuffer();
+        }
+        else
+        {
+            bufferStart = newPosition;
+        }
+
+        fileOffset += bytes;
+        return true;
     }
 
     /// <summary>
@@ -146,7 +184,7 @@ public partial class FileReader : Disposable
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public async ValueTask<bool> ReadAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var buffer = this.buffer.Memory;
 
@@ -178,7 +216,7 @@ public partial class FileReader : Disposable
     /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
     public bool Read()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var buffer = this.buffer.Span;
 
@@ -212,10 +250,9 @@ public partial class FileReader : Disposable
         if (IsDisposed)
             return new(GetDisposedTask<int>());
 
-        if (output.IsEmpty)
-            return new(0);
-
-        return HasBufferedData || output.Length < buffer.Length
+        return output.IsEmpty
+            ? ValueTask.FromResult(0)
+            : HasBufferedData || output.Length < buffer.Length
             ? ReadBufferedAsync(output, token)
             : ReadDirectAsync(output, token);
     }
@@ -254,7 +291,7 @@ public partial class FileReader : Disposable
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     public int Read(Span<byte> output)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         int count;
 
@@ -292,10 +329,8 @@ public partial class FileReader : Disposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is less than zero.</exception>
     public void Skip(long bytes)
     {
-        ThrowIfDisposed();
-
-        if (bytes < 0L)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        ArgumentOutOfRangeException.ThrowIfNegative(bytes);
 
         if (bytes < BufferLength)
         {

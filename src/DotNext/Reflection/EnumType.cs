@@ -11,7 +11,7 @@ public static class EnumType
         where TEnum : struct, Enum
     {
         const BindingFlags publicStaticField = BindingFlags.Public | BindingFlags.Static;
-        return Enum.GetName<TEnum>(value) is { Length: > 0 } fieldName ? typeof(TEnum).GetField(fieldName, publicStaticField) : null;
+        return Enum.GetName(value) is { Length: > 0 } fieldName ? typeof(TEnum).GetField(fieldName, publicStaticField) : null;
     }
 
     /// <summary>
@@ -36,5 +36,5 @@ public static class EnumType
     public static IEnumerable<TAttribute> GetCustomAttributes<TEnum, TAttribute>(this TEnum value)
         where TEnum : struct, Enum
         where TAttribute : Attribute
-        => GetField(value)?.GetCustomAttributes<TAttribute>(false) ?? Array.Empty<TAttribute>();
+        => GetField(value)?.GetCustomAttributes<TAttribute>(false) ?? [];
 }

@@ -4,7 +4,6 @@ using System.Security.Principal;
 namespace DotNext.Maintenance.CommandLine.Authentication;
 
 using IMaintenanceConsole = IO.IMaintenanceConsole;
-using AnonymousPrincipal = Security.Principal.AnonymousPrincipal;
 
 internal static class AuthenticationMiddleware
 {

@@ -100,7 +100,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, CancellationToken token)
         {
             var responseMsg = await (handlers.TryReceiveMessage(sender, message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException())).ConfigureAwait(false);
-            return await Serializable.TransformAsync<IMessage, TResponse>(responseMsg, token).ConfigureAwait(false);
+            return await ISerializable<TResponse>.TransformAsync(responseMsg, token).ConfigureAwait(false);
         }
     }
 

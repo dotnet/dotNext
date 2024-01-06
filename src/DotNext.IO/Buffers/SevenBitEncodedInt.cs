@@ -1,38 +1,83 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-internal static class SevenBitEncodedInt
+internal struct SevenBitEncodedInt
 {
     internal const int MaxSize = 5;
 
-    [StructLayout(LayoutKind.Auto)]
-    internal struct Reader
+    private uint value;
+    private byte shift;
+
+    internal SevenBitEncodedInt(int value) => this.value = (uint)value;
+
+    internal bool Append(byte b)
     {
-        private uint result;
-        private int shift;
+        if (shift is MaxSize * 7)
+            throw new InvalidDataException();
 
-        internal bool Append(byte b)
-        {
-            if (shift == MaxSize * 7)
-                throw new InvalidDataException();
-            result |= (b & 0x7FU) << shift;
-            shift += 7;
-            return (b & 0x80U) != 0U;
-        }
-
-        internal readonly uint Result => result;
+        value |= (b & 0x7FU) << shift;
+        shift += 7;
+        return (b & 0x80U) is not 0U;
     }
 
-    internal static void Encode<TWriter>(ref TWriter writer, uint value)
-        where TWriter : struct, IConsumer<byte>
+    internal readonly int Value => (int)value;
+
+    internal readonly int CopyTo(Span<byte> buffer)
     {
-        while (value >= 0x80U)
+        var writer = new SpanWriter<byte>(buffer);
+        foreach (var b in this)
         {
-            writer.Invoke((byte)(value | 0x80U));
-            value >>= 7;
+            writer.Add(b);
         }
 
-        writer.Invoke((byte)value);
+        return writer.WrittenCount;
+    }
+
+    public readonly Enumerator GetEnumerator() => new(value);
+
+    internal struct Enumerator
+    {
+        private uint value;
+        private byte current;
+        private bool completed;
+
+        internal Enumerator(uint value) => this.value = value;
+
+        public readonly byte Current => current;
+
+        public bool MoveNext()
+        {
+            if (completed)
+                return false;
+
+            if (value >= 0x80U)
+            {
+                current = (byte)(value | 0x80U);
+                value >>= 7;
+            }
+            else
+            {
+                current = (byte)value;
+                completed = true;
+            }
+
+            return true;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    internal struct Reader() : IBufferReader, ISupplier<int>
+    {
+        private SevenBitEncodedInt value;
+        private bool completed;
+
+        readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(!completed);
+
+        void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> source)
+            => completed = value.Append(MemoryMarshal.GetReference(source)) is false;
+
+        readonly int ISupplier<int>.Invoke() => value.Value;
     }
 }

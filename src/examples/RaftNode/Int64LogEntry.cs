@@ -4,11 +4,20 @@ using DotNext.Net.Cluster.Consensus.Raft;
 
 namespace RaftNode;
 
-internal sealed class Int64LogEntry : BinaryTransferObject<long>, IRaftLogEntry
+internal readonly struct Int64LogEntry() : IRaftLogEntry
 {
+    required public long Value { get; init; }
+
     bool ILogEntry.IsSnapshot => false;
 
-    public long Term { get; init; }
+    required public long Term { get; init; }
 
     public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
+
+    bool IDataTransferObject.IsReusable => true;
+
+    long? IDataTransferObject.Length => null;
+
+    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        => writer.WriteLittleEndianAsync(Value, token);
 }

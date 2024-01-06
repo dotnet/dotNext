@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 using Debug = System.Diagnostics.Debug;
@@ -25,7 +24,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
     private sealed class SingleReaderBuffer : IReadBuffer
     {
-        private AtomicBoolean readyToRead;
+        private Atomic.Boolean readyToRead;
         [AllowNull]
         private T value;
 
@@ -58,13 +57,12 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     private readonly IReadBuffer buffer;
     private readonly FileStreamFactory fileFactory;
     private readonly IChannelReader<T> reader;
-    private readonly IncrementingEventCounter? readRate;
     private readonly bool reliableEnumeration;
     private AsyncLock readLock;
     private Partition? readTopic;
     private ChannelCursor cursor;
 
-    internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader, bool reliableEnumeration, IncrementingEventCounter? readRate)
+    internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader, bool reliableEnumeration)
     {
         this.reader = reader;
         if (singleReader)
@@ -87,7 +85,6 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         };
 
         cursor = new(reader.Location, StateFileName);
-        this.readRate = readRate;
         this.reliableEnumeration = reliableEnumeration;
     }
 
@@ -105,7 +102,6 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     public override bool TryRead([MaybeNullWhen(false)] out T item)
     {
         var result = buffer.TryRead(out item);
-        readRate?.Increment();
         IChannel.ReadRateMeter.Add(1, reader.MeasurementTags);
         return result;
     }
@@ -134,9 +130,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             await EndReadAsync(readTopic.Stream.Position, token).ConfigureAwait(false);
         }
 
-        readRate?.Increment();
         IChannel.ReadRateMeter.Add(1, reader.MeasurementTags);
-
         return result;
     }
 
@@ -256,7 +250,6 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             else
             {
                 await reader.EndReadAsync(offset).ConfigureAwait(false);
-                reader.readRate?.Increment();
                 IChannel.ReadRateMeter.Add(1, reader.reader.MeasurementTags);
                 dryRun = false;
             }

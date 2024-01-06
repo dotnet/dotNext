@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
@@ -78,7 +77,7 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         }
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => new(writer.CopyFromAsync(requestStream, token));
+            => writer.CopyFromAsync(requestStream, count: null, token);
 
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
             => IDataTransferObject.TransformAsync<TResult, TTransformation>(requestStream, transformation, false, token);
@@ -131,7 +130,7 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         response.StatusCode = StatusCodes.Status200OK;
         response.ContentType = message.Type.ToString();
         response.ContentLength = message.Length;
-        response.Headers.Add(MessageNameHeader, message.Name);
+        response.Headers.Append(MessageNameHeader, message.Name);
         await response.StartAsync(token).ConfigureAwait(false);
         await message.WriteToAsync(response.BodyWriter, token).ConfigureAwait(false);
         var result = await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);
@@ -157,14 +156,13 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         }
     }
 
-    [RequiresPreviewFeatures]
     private protected static async Task<T> ParseResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
         where T : notnull, ISerializable<T>
     {
         var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
         try
         {
-            return await Serializable.ReadFromAsync<T>(content, token: token).ConfigureAwait(false);
+            return await ISerializable<T>.ReadFromAsync(content, token: token).ConfigureAwait(false);
         }
         finally
         {
@@ -172,7 +170,6 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
         }
     }
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 }
 
@@ -195,7 +192,6 @@ internal sealed class CustomSerializableMessage<T> : CustomMessage, IHttpMessage
     {
     }
 
-    [RequiresPreviewFeatures]
     Task<T> IHttpMessage<T>.ParseResponseAsync(HttpResponseMessage response, CancellationToken token)
         => ParseResponseAsync<T>(response, token);
 }

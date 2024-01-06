@@ -8,8 +8,8 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
+using Buffers.Binary;
 using IO;
-using static Threading.AtomicInt64;
 using Intrinsics = Runtime.Intrinsics;
 
 public partial class PersistentState
@@ -24,7 +24,7 @@ public partial class PersistentState
 
     // Perf: in case of LE, we want to store the metadata in the block of memory as-is
     [StructLayout(LayoutKind.Sequential)]
-    internal readonly struct LogEntryMetadata
+    internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     {
         internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
 
@@ -50,17 +50,18 @@ public partial class PersistentState
         // slow version if target architecture has BE byte order or pointer is not aligned
         private LogEntryMetadata(ref SpanReader<byte> reader)
         {
-            Term = reader.ReadInt64(true);
-            Timestamp = reader.ReadInt64(true);
-            Length = reader.ReadInt64(true);
-            Offset = reader.ReadInt64(true);
-            flags = (LogEntryFlags)reader.ReadUInt32(true);
-            identifier = reader.ReadInt32(true);
+            Term = reader.ReadLittleEndian<long>();
+            Timestamp = reader.ReadLittleEndian<long>();
+            Length = reader.ReadLittleEndian<long>();
+            Offset = reader.ReadLittleEndian<long>();
+            flags = (LogEntryFlags)reader.ReadLittleEndian<uint>();
+            identifier = reader.ReadLittleEndian<int>();
         }
 
         internal LogEntryMetadata(ReadOnlySpan<byte> input)
         {
             Debug.Assert(Intrinsics.AlignOf<LogEntryMetadata>() is sizeof(long));
+            Debug.Assert(Size % sizeof(long) is 0);
             Debug.Assert(input.Length >= Size);
 
             // fast path without any overhead for LE byte order
@@ -91,6 +92,10 @@ public partial class PersistentState
             }
         }
 
+        static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ReadOnlySpan<byte> input) => new(input);
+
+        static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
+
         internal int? Id => (flags & LogEntryFlags.HasIdentifier) != 0U ? identifier : null;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -106,12 +111,12 @@ public partial class PersistentState
         private void FormatSlow(Span<byte> output)
         {
             var writer = new SpanWriter<byte>(output);
-            writer.WriteInt64(Term, true);
-            writer.WriteInt64(Timestamp, true);
-            writer.WriteInt64(Length, true);
-            writer.WriteInt64(Offset, true);
-            writer.WriteUInt32((uint)flags, true);
-            writer.WriteInt32(identifier, true);
+            writer.WriteLittleEndian(Term);
+            writer.WriteLittleEndian(Timestamp);
+            writer.WriteLittleEndian(Length);
+            writer.WriteLittleEndian(Offset);
+            writer.WriteLittleEndian((uint)flags);
+            writer.WriteLittleEndian(identifier);
         }
 
         public void Format(Span<byte> output)
@@ -136,7 +141,7 @@ public partial class PersistentState
             else
             {
                 // 32-bit LE case, the pointer may not be aligned to 8 bytes
-                Unsafe.WriteUnaligned<LogEntryMetadata>(ref ptr, this);
+                Unsafe.WriteUnaligned(ref ptr, this);
             }
         }
 
@@ -169,13 +174,13 @@ public partial class PersistentState
             {
                 var reader = new SpanReader<byte>(input);
                 reader.Advance(sizeof(long) + sizeof(long)); // skip Term and Timestamp
-                return reader.ReadInt64(true) + reader.ReadInt64(true); // Length + Offset
+                return reader.ReadLittleEndian<long>() + reader.ReadLittleEndian<long>(); // Length + Offset
             }
         }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct SnapshotMetadata
+    internal readonly struct SnapshotMetadata : IBinaryFormattable<SnapshotMetadata>
     {
         internal const int Size = sizeof(long) + LogEntryMetadata.Size;
         internal readonly long Index;
@@ -197,6 +202,10 @@ public partial class PersistentState
             : this(new LogEntryMetadata(timeStamp, term, Size, length, id), index)
         {
         }
+
+        static SnapshotMetadata IBinaryFormattable<SnapshotMetadata>.Parse(ReadOnlySpan<byte> input) => new(input);
+
+        static int IBinaryFormattable<SnapshotMetadata>.Size => Size;
 
         internal static SnapshotMetadata Create<TLogEntry>(TLogEntry snapshot, long index, long length)
             where TLogEntry : IRaftLogEntry
@@ -230,8 +239,8 @@ public partial class PersistentState
 
     internal abstract class ConcurrentStorageAccess : Disposable
     {
+        private readonly bool autoFlush;
         internal readonly SafeFileHandle Handle;
-        private readonly FileStream? streamForFlush;
         private protected readonly FileWriter writer;
         private protected readonly int fileOffset;
         private readonly MemoryAllocator<byte> allocator;
@@ -271,17 +280,15 @@ public partial class PersistentState
             FileName = fileName;
             version = long.MinValue;
 
-            if (readersCount == 1)
+            if (readersCount is 1)
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
 
-            streamForFlush = writeMode is WriteMode.AutoFlush
-                ? new(Handle, FileAccess.Write, bufferSize: 1)
-                : null;
+            autoFlush = writeMode is WriteMode.AutoFlush;
         }
 
         internal long FileSize => RandomAccess.GetLength(Handle);
 
-        internal void Invalidate() => version.IncrementAndGet();
+        internal void Invalidate() => Interlocked.Increment(ref version);
 
         internal ValueTask SetWritePositionAsync(long position, CancellationToken token = default)
         {
@@ -309,12 +316,12 @@ public partial class PersistentState
         public virtual ValueTask FlushAsync(CancellationToken token = default)
         {
             Invalidate();
-            return streamForFlush is null ? writer.WriteAsync(token) : FlushToDiskAsync(writer, streamForFlush, token);
+            return autoFlush ? FlushToDiskAsync(writer, token) : writer.WriteAsync(token);
 
-            static async ValueTask FlushToDiskAsync(FileWriter writer, FileStream streamForFlush, CancellationToken token)
+            static async ValueTask FlushToDiskAsync(FileWriter writer, CancellationToken token)
             {
                 await writer.WriteAsync(token).ConfigureAwait(false);
-                streamForFlush.Flush(flushToDisk: true);
+                writer.FlushToDisk();
             }
         }
 
@@ -325,13 +332,14 @@ public partial class PersistentState
 
             ref var result = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
 
+            var version = Volatile.Read(in this.version);
             if (result is null)
             {
-                result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version.VolatileRead());
+                result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version);
             }
             else
             {
-                result.VerifyVersion(version.VolatileRead());
+                result.VerifyVersion(version);
             }
 
             return result;
@@ -348,10 +356,9 @@ public partial class PersistentState
                     stream?.Dispose();
                 }
 
-                readers = Array.Empty<VersionedFileReader?>();
+                readers = [];
                 writer.Dispose();
                 Handle.Dispose();
-                streamForFlush?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -399,8 +406,7 @@ public partial class PersistentState
         {
             get
             {
-                if (index < 0 || index >= Count)
-                    throw new ArgumentOutOfRangeException(nameof(index));
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)Count);
 
                 var absoluteIndex = StartIndex;
 

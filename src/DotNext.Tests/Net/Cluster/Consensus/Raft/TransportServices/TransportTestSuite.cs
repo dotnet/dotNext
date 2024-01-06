@@ -5,7 +5,6 @@ using System.Net;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
-using Datagram;
 using IO;
 using IO.Log;
 using IClusterConfiguration = Membership.IClusterConfiguration;
@@ -80,7 +79,7 @@ public abstract class TransportTestSuite : RaftTest
 
         async ValueTask ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
         {
-            using var buffer = MemoryAllocator.Allocate<byte>(configurationLength.Truncate(), true);
+            using var buffer = Memory.AllocateExactly<byte>(int.CreateSaturating(configurationLength));
             await configurationReader(buffer.Memory, token).ConfigureAwait(false);
             Equal(42L, fingerprint);
             ReceivedConfiguration = buffer.Memory.ToArray();
@@ -187,21 +186,6 @@ public abstract class TransportTestSuite : RaftTest
         public IReadOnlyDictionary<string, string> Metadata { get; }
     }
 
-    private protected static Func<int, ExchangePool> ExchangePoolFactory(ILocalMember localMember)
-    {
-        ExchangePool CreateExchangePool(int count)
-        {
-            var result = new ExchangePool();
-            while (--count >= 0)
-                result.Add(new ServerExchange(localMember));
-            return result;
-        }
-        return CreateExchangePool;
-    }
-
-    private protected static Func<ServerExchange> ServerExchangeFactory(ILocalMember localMember)
-        => () => new ServerExchange(localMember);
-
     private protected static MemoryAllocator<byte> DefaultAllocator => ArrayPool<byte>.Shared.ToAllocator();
 
     private protected delegate IServer ServerFactory(ILocalMember localMember, EndPoint address, TimeSpan timeout);
@@ -284,9 +268,7 @@ public abstract class TransportTestSuite : RaftTest
         Equal(x.Term, y.Term);
         Equal(x.Timestamp, y.Timestamp);
         Equal(x.IsSnapshot, y.IsSnapshot);
-        True(x.Content.IsSingleSegment);
-        True(y.Content.IsSingleSegment);
-        True(x.Content.FirstSpan.SequenceEqual(y.Content.FirstSpan));
+        True(x.Content.Span.SequenceEqual(y.Content.Span));
     }
 
     private protected async Task SendingLogEntriesTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior, bool useEmptyEntry)
@@ -421,9 +403,9 @@ public abstract class TransportTestSuite : RaftTest
                     break;
             }
 
-            True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.FirstSpan));
+            True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.Span));
             member.ReceivedEntries.Clear();
-            member.ReceivedConfiguration = Array.Empty<byte>();
+            member.ReceivedConfiguration = [];
         }
     }
 
@@ -443,7 +425,7 @@ public abstract class TransportTestSuite : RaftTest
         var config = new BufferedClusterConfiguration(RandomBytes(payloadSize)) { Fingerprint = 42L };
         var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, Array.Empty<BufferedEntry>(), 1L, 56L, 10L, config, payloadSize is 0, CancellationToken.None);
 
-        True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.FirstSpan));
+        True(member.ReceivedConfiguration.AsSpan().SequenceEqual(config.Content.Span));
     }
 
     private protected async Task SendingSynchronizationRequestTest(ServerFactory serverFactory, ClientFactory clientFactory)
@@ -526,8 +508,8 @@ public abstract class TransportTestSuite : RaftTest
 
         // force replication to renew the lease
         await host1.ForceReplicationAsync();
-        NotNull(host1.Lease);
-        False(host1.Lease.Token.IsCancellationRequested);
+        True(host1.TryGetLeaseToken(out var leaseToken));
+        False(leaseToken.IsCancellationRequested);
         False(host1.LeadershipToken.IsCancellationRequested);
 
         // add two nodes to the cluster

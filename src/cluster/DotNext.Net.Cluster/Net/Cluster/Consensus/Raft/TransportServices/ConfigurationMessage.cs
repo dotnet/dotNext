@@ -1,17 +1,33 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
+using Buffers.Binary;
+using Membership;
 
-internal static class ConfigurationMessage
+[StructLayout(LayoutKind.Auto)]
+internal readonly record struct ConfigurationMessage(long Fingerprint, long Length) : IBinaryFormattable<ConfigurationMessage>
 {
     internal const int Size = sizeof(long) + sizeof(long);
 
-    internal static void Write(ref SpanWriter<byte> writer, long fingerprint, long length)
+    static int IBinaryFormattable<ConfigurationMessage>.Size => Size;
+
+    internal ConfigurationMessage(IClusterConfiguration config)
+        : this(config.Fingerprint, config.Length)
     {
-        writer.WriteInt64(fingerprint, true);
-        writer.WriteInt64(length, true);
     }
 
-    internal static (long Fingerprint, long Length) Read(ref SpanReader<byte> reader)
-        => (reader.ReadInt64(true), reader.ReadInt64(true));
+    public void Format(Span<byte> output)
+    {
+        var writer = new SpanWriter<byte>(output);
+        writer.WriteLittleEndian(Fingerprint);
+        writer.WriteLittleEndian(Length);
+    }
+
+    public static ConfigurationMessage Parse(ReadOnlySpan<byte> input)
+    {
+        var reader = new SpanReader<byte>(input);
+        return new(reader.ReadLittleEndian<long>(), reader.ReadLittleEndian<long>());
+    }
 }

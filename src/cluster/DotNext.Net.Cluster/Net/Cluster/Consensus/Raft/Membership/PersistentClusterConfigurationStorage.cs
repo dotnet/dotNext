@@ -73,14 +73,14 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
             output.fs.SetLength(fs.Length);
         }
 
-        internal Task CopyToAsync(IBufferWriter<byte> output, CancellationToken token)
+        internal ValueTask CopyToAsync(IBufferWriter<byte> output, CancellationToken token)
             => fs.CopyToAsync(output, token: token);
 
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             // this method should be safe for concurrent invocations
             var handle = fs.SafeFileHandle;
-            using var buffer = allocator.Invoke(bufferSize, exactSize: false);
+            using var buffer = allocator.AllocateAtLeast(bufferSize);
 
             for (int offset = PayloadOffset, count; (count = await RandomAccess.ReadAsync(handle, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
             {
@@ -145,8 +145,8 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// <inheritdoc/>
     protected sealed override async ValueTask ProposeAsync(IClusterConfiguration configuration, CancellationToken token = default)
     {
-        using var writer = new PooledBufferWriter<byte> { BufferAllocator = allocator, Capacity = bufferSize };
-        writer.WriteInt64(configuration.Fingerprint, littleEndian: true);
+        using var writer = new PoolingBufferWriter<byte>(allocator) { Capacity = bufferSize };
+        writer.WriteLittleEndian(configuration.Fingerprint);
         await configuration.WriteToAsync(writer, token).ConfigureAwait(false);
 
         proposed.Fingerprint = configuration.Fingerprint;
@@ -179,12 +179,11 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
     /// <inheritdoc/>
     protected sealed override async ValueTask LoadConfigurationAsync(CancellationToken token = default)
     {
-        var builder = ImmutableHashSet.CreateBuilder<TAddress>(comparer);
+        var builder = ImmutableHashSet.CreateBuilder(comparer);
 
-        using var buffer = new PooledBufferWriter<byte>
+        using var buffer = new PoolingBufferWriter<byte>(allocator)
         {
-            BufferAllocator = allocator,
-            Capacity = active.IsEmpty ? bufferSize : active.Length.Truncate(),
+            Capacity = active.IsEmpty ? bufferSize : int.CreateSaturating(active.Length),
         };
 
         // restore active configuration
@@ -219,7 +218,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         try
         {
-            writer.WriteInt64(fingerprint, true);
+            writer.WriteLittleEndian(fingerprint);
             Encode(configuration, ref writer);
 
             if (!writer.TryDetachBuffer(out result))

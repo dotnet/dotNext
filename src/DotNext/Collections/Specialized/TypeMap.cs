@@ -27,10 +27,9 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
     public TypeMap(int capacity)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        entries = capacity is 0 ? Array.Empty<Entry>() : new Entry[capacity];
+        entries = capacity is 0 ? [] : new Entry[capacity];
     }
 
     /// <summary>
@@ -133,16 +132,6 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
     public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         => Set(ITypeMap.GetIndex<TKey>(), newValue, out oldValue);
-
-    /// <summary>
-    /// Replaces the existing value with a new value.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="newValue">A new value.</param>
-    /// <returns>The replaced value.</returns>
-    [Obsolete("Use Set overload instead")]
-    public Optional<TValue> Replace<TKey>(TValue newValue)
-        => Set(ITypeMap.GetIndex<TKey>(), newValue, out var oldValue) ? Optional.Some(oldValue!) : Optional.None<TValue>();
 
     /// <summary>
     /// Determines whether the map has association between the value and the specified type.
@@ -257,10 +246,9 @@ public partial class TypeMap : ITypeMap
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
     public TypeMap(int capacity)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        entries = capacity is 0 ? Array.Empty<object>() : new object?[capacity];
+        entries = capacity is 0 ? [] : new object?[capacity];
     }
 
     /// <summary>

@@ -15,11 +15,11 @@ public sealed class ResultMessage : ISerializable<ResultMessage>
     long? IDataTransferObject.Length => sizeof(int);
 
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        => writer.WriteInt32Async(Result, true, token);
+        => writer.WriteLittleEndianAsync(Result, token);
 
     public static async ValueTask<ResultMessage> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
         where TReader : notnull, IAsyncBinaryReader
-        => await reader.ReadInt32Async(true, token);
+        => await reader.ReadLittleEndianAsync<int>(token);
 
     public static implicit operator ResultMessage(int value) => new() { Result = value };
 }

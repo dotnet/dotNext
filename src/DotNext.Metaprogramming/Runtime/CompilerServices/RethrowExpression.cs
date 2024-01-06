@@ -12,7 +12,7 @@ internal sealed class RethrowExpression : StateMachineExpression
     public override Expression Reduce() => Rethrow();
 
     internal static Expression Dispatch(ParameterExpression exceptionHolder)
-        => Call(typeof(ExceptionDispatchInfo), nameof(ExceptionDispatchInfo.Throw), Type.EmptyTypes, exceptionHolder);
+        => Call(typeof(ExceptionDispatchInfo), nameof(ExceptionDispatchInfo.Throw), [], exceptionHolder);
 
     internal override Expression Reduce(ParameterExpression stateMachine)
         => stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Rethrow));

@@ -53,9 +53,9 @@ public partial class MessageHandler
 
         private async Task<IMessage> HandleAsync(ISubscriber sender, IMessage request, object? context, CancellationToken token)
         {
-            var input = await request.TransformAsync<IMessage, TInput>(token).ConfigureAwait(false);
+            var input = await ISerializable<TInput>.TransformAsync(request, token).ConfigureAwait(false);
             var output = await HandleAsync(sender, input, context, token).ConfigureAwait(false);
-            return new Message<TOutput>(outputMessageName, output, outputMessageType);
+            return new Message<TOutput>(outputMessageType) { Name = outputMessageName, Payload = output };
         }
 
         RpcHandler ISupplier<RpcHandler>.Invoke() => HandleAsync;

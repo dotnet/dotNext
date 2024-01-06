@@ -86,7 +86,7 @@ public static partial class Synchronization
             var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
             result = new(awaiter.GetRawResult());
         }
-        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        catch (AggregateException e) when (e.InnerExceptions.Count is 1)
         {
             result = new(e.InnerExceptions[0]);
         }
@@ -117,7 +117,7 @@ public static partial class Synchronization
             var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
             result = new(awaiter.GetRawResult());
         }
-        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        catch (AggregateException e) when (e.InnerExceptions.Count is 1)
         {
             result = new(e.InnerExceptions[0]);
         }

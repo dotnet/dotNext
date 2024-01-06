@@ -1,10 +1,9 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Specialized;
-
-using Collections.Generic;
 
 /// <summary>
 /// Represents immutable list of delegates.
@@ -16,7 +15,7 @@ using Collections.Generic;
 /// </remarks>
 /// <typeparam name="TDelegate">The type of delegates in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate> // TODO: Workaround for https://github.com/dotnet/runtime/issues/4556
+public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // TODO: Workaround for https://github.com/dotnet/runtime/issues/4556
     where TDelegate : MulticastDelegate
 {
     /// <summary>
@@ -90,9 +89,10 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
 
     private InvocationList(TDelegate[] array, TDelegate d)
     {
-        Array.Resize(ref array, array.Length + 1);
-        array[array.Length - 1] = d;
-        list = array;
+        var list = new TDelegate[array.Length + 1];
+        array.CopyTo(list.AsSpan());
+        list[^1] = d;
+        this.list = list;
     }
 
     private InvocationList(TDelegate d1, TDelegate d2)
@@ -138,10 +138,10 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
         else
         {
             var array = Unsafe.As<TDelegate[]>(list);
-            long index = Array.IndexOf(array, d);
+            var index = Array.IndexOf(array, d);
 
-            if (index >= 0L)
-                array = OneDimensionalArray.RemoveAt(array, index);
+            if (index >= 0)
+                array = DotNext.Span.ConcatToArray<TDelegate>(array.AsSpan(0, index), array.AsSpan(index + 1));
 
             result = new(array);
         }
@@ -158,6 +158,9 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
         TDelegate => 1,
         _ => Unsafe.As<TDelegate[]>(list).Length,
     };
+
+    /// <inheritdoc cref="IReadOnlyList{T}.this[int]"/>
+    public TDelegate this[int index] => Span[index];
 
     /// <summary>
     /// Combines the delegates in the list to a single delegate.
@@ -196,7 +199,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
 
     private IEnumerator<TDelegate> GetEnumeratorCore() => list switch
     {
-        null => Sequence.GetEmptyEnumerator<TDelegate>(),
+        null => Enumerable.Empty<TDelegate>().GetEnumerator(),
         TDelegate d => new SingletonList<TDelegate>.Enumerator(d),
         _ => Unsafe.As<IEnumerable<TDelegate>>(list).GetEnumerator(),
     };
@@ -207,14 +210,16 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumeratorCore();
 
-    private static ReadOnlySpan<TDelegate> GetSpan(in object? list) => list switch
+    /// <summary>
+    /// Gets a span over list of delegates.
+    /// </summary>
+    [UnscopedRef]
+    public ReadOnlySpan<TDelegate> Span => list switch
     {
-        null => ReadOnlySpan<TDelegate>.Empty,
+        null => [],
         TDelegate => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<object, TDelegate>(ref Unsafe.AsRef(in list)), 1),
         _ => Unsafe.As<TDelegate[]>(list),
     };
-
-    internal static ReadOnlySpan<TDelegate> GetList(in InvocationList<TDelegate> list) => GetSpan(in list.list);
 }
 
 /// <summary>
@@ -223,16 +228,6 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyCollection<TDelegate
 public static class InvocationList
 {
     /// <summary>
-    /// Gets a span over the delegates in the list.
-    /// </summary>
-    /// <typeparam name="TDelegate">The type of the delegates.</typeparam>
-    /// <param name="delegates">The list of delegates.</param>
-    /// <returns>A span over the delegates in the list.</returns>
-    public static ReadOnlySpan<TDelegate> AsSpan<TDelegate>(this ref InvocationList<TDelegate> delegates)
-        where TDelegate : MulticastDelegate
-        => InvocationList<TDelegate>.GetList(in delegates);
-
-    /// <summary>
     /// Invokes all actions in the list.
     /// </summary>
     /// <typeparam name="T">The type of the action argument.</typeparam>
@@ -240,7 +235,7 @@ public static class InvocationList
     /// <param name="arg">The argument of the action.</param>
     public static void Invoke<T>(this InvocationList<Action<T>> actions, T arg)
     {
-        foreach (var action in actions.AsSpan())
+        foreach (var action in actions.Span)
             action(arg);
     }
 
@@ -254,7 +249,7 @@ public static class InvocationList
     /// <param name="arg2">The second argument of the action.</param>
     public static void Invoke<T1, T2>(this InvocationList<Action<T1, T2>> actions, T1 arg1, T2 arg2)
     {
-        foreach (var action in actions.AsSpan())
+        foreach (var action in actions.Span)
             action(arg1, arg2);
     }
 }

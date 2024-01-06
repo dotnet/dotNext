@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
@@ -12,12 +12,10 @@ using Membership;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 using static Threading.LinkedTokenSourceFactory;
-using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 
 internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private const int MaxTermCacheSize = 100;
     private readonly long currentTerm;
     private readonly CancellationTokenSource timerCancellation;
     internal readonly CancellationToken LeadershipToken; // cached to avoid ObjectDisposedException
@@ -33,28 +31,19 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
         this.maxLease = maxLease;
-        lease = ExpiredLease.Instance;
+        lease = new();
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         context = new();
-        replicatorFactory = CreateReplicator;
-        localReplicatorFactory = CreateLocalMemberReplicator;
+        replicatorFactory = localReplicatorFactory = CreateDefaultReplicator;
     }
 
-    internal ILeaderStateMetrics? Metrics
-    {
-        private get;
-        init;
-    }
-
-    // highly unlikely that this method completes asynchronously
-    private async ValueTask<(long, long, int)> SendHeartbeatsAsync(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
+    private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
     {
         Replicator replicator;
         Task<Result<bool>> response;
         long commitIndex = auditTrail.LastCommittedEntryIndex,
-            currentIndex = auditTrail.LastEntryIndex,
-            minPrecedingIndex = 0L;
+            currentIndex = auditTrail.LastEntryIndex;
 
         var majority = 0;
 
@@ -65,15 +54,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             if (member.IsRemote)
             {
                 var precedingIndex = member.State.PrecedingIndex;
-                minPrecedingIndex = Math.Min(minPrecedingIndex, precedingIndex);
-
-                // try to get term from the cache to avoid touching audit trail for each member
-                if (!precedingTermCache.TryGet(precedingIndex, out var precedingTerm))
-                    precedingTermCache.Add(precedingIndex, precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false));
 
                 // fork replication procedure
                 replicator = context.GetOrCreate(member, replicatorFactory);
-                replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex, precedingTerm);
+                replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex);
                 response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, token);
             }
             else
@@ -85,14 +69,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
 
         responsePipe.Complete();
         majority = (majority >> 1) + 1;
-
-        // Clear cache:
-        // 1. Best case: remove all entries from the cache up to the minimal observed index (those entries will never be requested)
-        // 2. Worst case: cleanup the entire cache because one of the members too far behind of the leader (perhaps, it's unavailable)
-        if (precedingTermCache.ApproximatedCount < MaxTermCacheSize)
-            precedingTermCache.RemovePriorTo(minPrecedingIndex);
-        else
-            precedingTermCache.Clear();
 
         return (currentIndex, commitIndex, majority);
     }
@@ -130,7 +106,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         return MemberResponse.Exception;
     }
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private void CheckMemberHealthStatus(IFailureDetector? detector, TMember member)
     {
         switch (detector)
@@ -153,6 +128,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         var enumerator = members.GetEnumerator();
         try
         {
+            var forced = false;
             for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !token.IsCancellationRequested; responsePipe.Reset(), ReuseEnumerator(ref members, ref enumerator))
             {
                 var startTime = new Timestamp();
@@ -160,15 +136,27 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 // do not resume suspended callers that came after the barrier, resume them in the next iteration
                 replicationQueue.SwitchValve();
 
-                // we want to minimize GC intrusion during replication process
-                // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
-                var scope = GCLatencyModeScope.SustainedLowLatency;
+                GCLatencyMode latencyMode;
+                if (forced)
+                {
+                    // in case of forced (initiated programmatically, not by timeout) replication
+                    // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
+                    Unsafe.SkipInit(out latencyMode);
+                }
+                else
+                {
+                    // we want to minimize GC intrusion during replication process
+                    // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
+                    latencyMode = GCSettings.LatencyMode;
+                    GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+                }
+
                 try
                 {
                     // Perf: the code in this block is inlined instead of moved to separated method because
                     // we want to prevent allocation of state machine on every call
-                    (long currentIndex, long commitIndex, int majority) = await SendHeartbeatsAsync(responsePipe, auditTrail, configurationStorage, enumerator, token).ConfigureAwait(false);
-                    int quorum = 0, commitQuorum = 0;
+                    int quorum = 0, commitQuorum = 0, majority;
+                    (long currentIndex, long commitIndex, majority) = ForkHeartbeats(responsePipe, auditTrail, configurationStorage, enumerator, token);
 
                     while (await responsePipe.WaitToReadAsync(token).ConfigureAwait(false))
                     {
@@ -217,8 +205,10 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 finally
                 {
                     var broadcastTime = startTime.ElapsedMilliseconds;
-                    scope.Dispose();
-                    Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
+
+                    if (forced)
+                        GCSettings.LatencyMode = latencyMode;
+
                     LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
                 }
 
@@ -226,7 +216,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 replicationQueue.Drain();
 
                 // wait for heartbeat timeout or forced replication
-                await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);
+                forced = await WaitForReplicationAsync(startTime, period, token).ConfigureAwait(false);
             }
         }
         finally
@@ -273,6 +263,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
 
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, members, token);
+        LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
 
     protected override async ValueTask DisposeAsyncCore()
@@ -306,7 +297,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
             replicationEvent.Dispose();
 
-            precedingTermCache.Clear();
             context.Dispose();
         }
 
@@ -322,7 +312,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     }
 }
 
-internal static class LeaderState
+file static class LeaderState
 {
     internal static readonly Histogram<double> BroadcastTimeMeter = Metrics.Instrumentation.ServerSide.CreateHistogram<double>("broadcast-time", unit: "ms", description: "Heartbeat Broadcasting Time");
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-leader-count", description: "Number of Transitions of Leader State");

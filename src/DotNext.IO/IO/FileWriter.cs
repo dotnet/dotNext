@@ -19,6 +19,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// Represents the file handle.
     /// </summary>
     protected readonly SafeFileHandle handle;
+    private readonly MemoryAllocator<byte>? allocator;
     private MemoryOwner<byte> buffer;
     private int bufferOffset;
     private long fileOffset;
@@ -42,16 +43,27 @@ public partial class FileWriter : Disposable, IFlushable
     public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle);
+        ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        if (fileOffset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(fileOffset));
-
-        if (bufferSize <= 16)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-        buffer = allocator.Invoke(bufferSize, exactSize: false);
+        buffer = allocator.AllocateAtLeast(bufferSize);
         this.handle = handle;
         this.fileOffset = fileOffset;
+        this.allocator = allocator;
+    }
+
+    /// <summary>
+    /// Creates a new writer backed by the file.
+    /// </summary>
+    /// <param name="destination">Writable file stream.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The buffer allocator.</param>
+    /// <exception cref="ArgumentException"><paramref name="destination"/> is not writable.</exception>
+    public FileWriter(FileStream destination, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
+        : this(destination.SafeFileHandle, destination.Position, bufferSize, allocator)
+    {
+        if (!destination.CanWrite)
+            throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
     }
 
     private ReadOnlyMemory<byte> WrittenMemory => buffer.Memory.Slice(0, bufferOffset);
@@ -81,8 +93,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
     public void Produce(int bytes)
     {
-        if ((uint)bytes > (uint)FreeCapacity)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)bytes, (uint)FreeCapacity, nameof(bytes));
 
         bufferOffset += bytes;
     }
@@ -107,8 +118,7 @@ public partial class FileWriter : Disposable, IFlushable
         get => fileOffset;
         set
         {
-            if (value < 0L)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             if (HasBufferedData)
                 throw new InvalidOperationException();
@@ -159,6 +169,17 @@ public partial class FileWriter : Disposable, IFlushable
         return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Flushes the operating system buffers for the given file to disk.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
+    public void FlushToDisk()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+
+        RandomAccess.FlushToDisk(handle);
+    }
+
     /// <inheritdoc />
     Task IFlushable.FlushAsync(CancellationToken token) => WriteAsync(token).AsTask();
 
@@ -168,7 +189,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     public void Write()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (HasBufferedData)
             FlushCore();
@@ -242,7 +263,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     public void Write(ReadOnlySpan<byte> input)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (input.Length <= FreeCapacity)
         {

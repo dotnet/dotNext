@@ -48,40 +48,4 @@ public sealed class AsyncLockTests : Test
         holder.Dispose();
         Equal(3, sem.CurrentCount);
     }
-
-    [Fact]
-    [Obsolete]
-    public static void DisposedState()
-    {
-        var l = AsyncLock.Exclusive();
-        l.Dispose();
-        var result = l.AcquireAsync(CancellationToken.None).SuppressDisposedState();
-        True(result.IsCompletedSuccessfully);
-        False(result.Result);
-    }
-
-    [Fact]
-    [Obsolete]
-    public static void CanceledState()
-    {
-        var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
-        True(t.IsCanceled);
-        t = t.SuppressCancellation();
-        False(t.IsCanceled);
-        False(t.Result);
-    }
-
-    [Fact]
-    [Obsolete]
-    public static void DisposedOrCanceledState()
-    {
-        var t = ValueTask.FromCanceled<AsyncLock.Holder>(new CancellationToken(true));
-        t = t.SuppressDisposedStateOrCancellation();
-        False(t.IsCanceled);
-        False(t.Result);
-        t = ValueTask.FromException<AsyncLock.Holder>(new ObjectDisposedException("obj"));
-        t = t.SuppressDisposedStateOrCancellation();
-        False(t.IsFaulted);
-        False(t.Result);
-    }
 }

@@ -8,7 +8,7 @@ public sealed class ElectionTimeoutTests : Test
         var timeout = new ElectionTimeout { LowerValue = 10, UpperValue = 20 };
         Equal(10, timeout.LowerValue);
         Equal(20, timeout.UpperValue);
-        True(timeout.RandomTimeout(Random.Shared).IsBetween(10, 20, BoundType.Closed));
+        True(timeout.RandomTimeout(Random.Shared) is >= 10 and <= 20);
     }
 
     [Fact]

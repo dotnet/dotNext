@@ -29,21 +29,16 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     IReadOnlyCollection<IRaftClusterMember> Members { get; }
 
     /// <summary>
-    /// Establishes metrics collector.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    MetricsCollector Metrics { init; }
-
-    /// <summary>
     /// Defines persistent state for the Raft-based cluster.
     /// </summary>
     new IPersistentState AuditTrail { get; set; }
 
     /// <summary>
-    /// Gets the lease that can be used to perform the read with linerizability guarantees.
+    /// Tries to get the lease that can be used to perform the read with linerizability guarantees.
     /// </summary>
-    /// <value>The lease; or <see langword="null"/> if the current node is not a leader.</value>
-    ILeaderLease? Lease { get; }
+    /// <param name="token">The token representing lease.</param>
+    /// <returns><see langword="true"/> if the current node is leader; otherwise, <see langword="false"/>.</returns>
+    bool TryGetLeaseToken(out CancellationToken token);
 
     /// <summary>
     /// Gets the token that can be used to track leader state.

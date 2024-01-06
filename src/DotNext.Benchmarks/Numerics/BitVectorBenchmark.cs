@@ -12,28 +12,24 @@ public class BitVectorBenchmark
     [Benchmark(Description = "8 bits")]
     public void Get8Bits()
     {
-        Span<bool> bits = stackalloc bool[8];
-        BitVector.FromByte(52, bits);
+        BitVector.GetBits<byte>(52, stackalloc bool[8]);
     }
 
     [Benchmark(Description = "16 bits")]
     public void Get16Bits()
     {
-        Span<bool> bits = stackalloc bool[16];
-        BitVector.FromUInt16(52, bits);
+        BitVector.GetBits<ushort>(52, stackalloc bool[16]);
     }
 
     [Benchmark(Description = "32 bits")]
     public void Get32Bits()
     {
-        Span<bool> bits = stackalloc bool[32];
-        BitVector.FromUInt32(52U, bits);
+        BitVector.GetBits(52U, stackalloc bool[32]);
     }
 
     [Benchmark(Description = "64 bits")]
     public void Get64Bits()
     {
-        Span<bool> bits = stackalloc bool[64];
-        BitVector.FromUInt64(52UL, bits);
+        BitVector.GetBits(52UL, stackalloc bool[64]);
     }
 }

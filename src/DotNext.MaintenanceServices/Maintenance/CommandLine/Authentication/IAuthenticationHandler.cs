@@ -22,5 +22,5 @@ public interface IAuthenticationHandler
     /// Gets global options that can be used to authenticate the command.
     /// </summary>
     /// <returns>A collection of global options.</returns>
-    IEnumerable<Option> GetGlobalOptions() => Array.Empty<Option>();
+    IEnumerable<Option> GetGlobalOptions() => Enumerable.Empty<Option>();
 }

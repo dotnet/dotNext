@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
@@ -16,7 +15,7 @@ public sealed class RequiredAttribute<T> : RequiredAttribute
     public bool AllowNull
     {
         get;
-        set;
+        init;
     }
 
     /// <inheritdoc/>

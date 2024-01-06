@@ -29,8 +29,7 @@ public sealed class ClusterMemberIdTests : Test
     {
         var id1 = new ClusterMemberId(Random.Shared);
         Span<byte> bytes = stackalloc byte[ClusterMemberId.Size];
-        var writer = new SpanWriter<byte>(bytes);
-        id1.Format(ref writer);
+        id1.Format(bytes);
 
         var id2 = new ClusterMemberId(bytes);
         Equal(id1, id2);

@@ -1,5 +1,3 @@
-using System.Runtime.Versioning;
-
 namespace DotNext;
 
 /// <summary>
@@ -29,7 +27,6 @@ public interface IResultMonad<T, TError> : IOptionMonad<T>
 /// <typeparam name="T">The type of the result.</typeparam>
 /// <typeparam name="TError">The type that represents an error.</typeparam>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
-[RequiresPreviewFeatures]
 public interface IResultMonad<T, TError, TSelf> : IResultMonad<T, TError>, IOptionMonad<T, TSelf>
     where TError : notnull
     where TSelf : struct, IResultMonad<T, TError, TSelf>
@@ -46,5 +43,6 @@ public interface IResultMonad<T, TError, TSelf> : IResultMonad<T, TError>, IOpti
     /// </summary>
     /// <param name="result">The result to be converted.</param>
     /// <returns>The converted result.</returns>
-    public static abstract implicit operator Optional<T>(in TSelf result);
+    public static virtual implicit operator Optional<T>(in TSelf result)
+        => new(result.ValueOrDefault);
 }

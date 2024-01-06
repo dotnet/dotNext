@@ -12,7 +12,7 @@ using static Reflection.CollectionType;
 /// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
 /// and <see cref="IDictionary{TKey, TValue}"/>.
 /// </summary>
-public static class Dictionary
+public static partial class Dictionary
 {
     /// <summary>
     /// Provides strongly-typed access to dictionary indexer.
@@ -352,13 +352,4 @@ public static class Dictionary
     /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
     public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, Converter<TValue, TResult> mapper)
         => new(dictionary, mapper);
-
-    /// <summary>
-    /// Gets empty read-only dictionary.
-    /// </summary>
-    /// <typeparam name="TKey">The type of the key.</typeparam>
-    /// <typeparam name="TValue">The type of the value.</typeparam>
-    /// <returns>The empty dictionary.</returns>
-    public static IReadOnlyDictionary<TKey, TValue> Empty<TKey, TValue>()
-        => EmptyDictionary<TKey, TValue>.Instance;
 }

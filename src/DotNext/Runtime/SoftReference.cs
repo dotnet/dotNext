@@ -19,17 +19,8 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     where T : class
 {
     // tracks generation of Target in each GC collection using Finalizer as a callback
-    private sealed class Tracker : IGCCallback
+    private sealed class Tracker(SoftReference<T> parent, SoftReferenceOptions options) : IGCCallback
     {
-        private readonly SoftReferenceOptions options;
-        private readonly SoftReference<T> parent;
-
-        internal Tracker(SoftReference<T> parent, SoftReferenceOptions options)
-        {
-            this.options = options;
-            this.parent = parent;
-        }
-
         ~Tracker()
         {
             // Thread safety: preserve order of fields
@@ -177,7 +168,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
     T? IOptionMonad<T>.Or(T? defaultValue) => Target ?? defaultValue;
 
     /// <inheritdoc />
-    T? IOptionMonad<T>.OrDefault() => Target;
+    T? IOptionMonad<T>.ValueOrDefault => Target;
 
     /// <inheritdoc />
     T IOptionMonad<T>.OrInvoke(Func<T> defaultFunc) => Target ?? defaultFunc();
@@ -259,7 +250,7 @@ public class SoftReferenceOptions
     public double MemoryThreshold
     {
         get => memoryThreshold;
-        init => memoryThreshold = double.IsFinite(value) && value.IsBetween(0D, 1D, BoundType.RightClosed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        init => memoryThreshold = double.IsFinite(value) && value is > 0D and <= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     internal bool KeepTracking(object target)
