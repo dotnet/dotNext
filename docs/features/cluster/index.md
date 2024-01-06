@@ -34,7 +34,6 @@ There are two types of messages:
 The message can be transferred to the particular member using [ISubscriber](xref:DotNext.Net.Cluster.Messaging.ISubscriber) interface which is the extension of `IClusterMember` interface.
 
 Usually, you don't to implement `IMessage` interface directly due to existence of ready-to-use realizations:
-1. [BinaryMessage](xref:DotNext.Net.Cluster.Messaging.BinaryMessage) for raw binary content
 1. [StreamMessage](xref:DotNext.Net.Cluster.Messaging.StreamMessage) for message which payload is represented by [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream). It it suitable for large payload when it is stored on the disk
 1. [TextMessage](xref:DotNext.Net.Cluster.Messaging.TextMessage) for textual content
 1. [JsonMessage&lt;T&gt;](xref:DotNext.Net.Cluster.Messaging.JsonMessage`1) for JSON-serializable types

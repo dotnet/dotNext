@@ -8,12 +8,12 @@ Dynamic Buffers
 
 With .NEXT, you have this flexibility.
 
-# PooledBufferWriter
-[PooledBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PooledBufferWriter`1) is similar to `ArrayBufferWriter` but accepts [memory allocator](xref:DotNext.Buffers.MemoryAllocator`1) that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one. 
+# PoolingBufferWriter
+[PoolingBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PoolingBufferWriter`1) is similar to `ArrayBufferWriter` but accepts [memory allocator](xref:DotNext.Buffers.MemoryAllocator`1) that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one. 
 ```csharp
 using DotNext.Buffers;
 
-using var writer = new PooledBufferWriter<byte> { BufferAllocator = ArrayPool<byte>.Shared.ToAllocator() };
+using var writer = new PoolingBufferWriter<byte> { BufferAllocator = ArrayPool<byte>.Shared.ToAllocator() };
 Span<byte> span = writer.GetSpan(1024);
 new byte[512].AsSpan().CopyTo(span);
 span.Advance(512);
@@ -21,14 +21,14 @@ var result = writer.WrittenMemory;  //length is 512
 ```
 In contrast to `ArrayBufferWriter`, you must not use written memory if `Dispose` is called. When `Dispose` method is called, the internal buffer returns to the pool.
 
-# PooledArrayBufferWriter
-[PooledArrayBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PooledArrayBufferWriter`1) class exposes the similar functionality to `PooledBufferWriter` class but specialized for working with [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1). As a result, you can make writes or obtain written memory using [ArraySegment&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1).
+# PoolingArrayBufferWriter
+[PoolingArrayBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PoolingArrayBufferWriter`1) class exposes the similar functionality to `PoolingArrayBufferWriter` class but specialized for working with [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1). As a result, you can make writes or obtain written memory using [ArraySegment&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1).
 ```csharp
 using DotNext.Buffers;
 using DotNext.IO;
 using System;
 
-using var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared };
+using var writer = new PoolingArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared };
 ArraySegment<byte> array = writer.GetArray(1024);
 array[0] = 42;
 array[1] = 43;
@@ -55,7 +55,7 @@ Sparse buffer writer also implements [IBufferWriter&lt;T&gt;](https://docs.micro
 
 Suppose that sparse buffer has rented memory block of size _1024_ bytes, and _1000_ bytes of them already occupied. If you want to write a block of size _100_ bytes represented by [ReadOnlySpan&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1) then use `SparseBufferWriter<T>.Write(ReadOnlySpan<T>)` method. It writes the first _24_ bytes to the existing memory block and then rents a new segment to store the rest of the input buffer, _76_ bytes. Therefore, `Write` method cannot cause fragmentation of memory blocks. However, if we want to obtain a memory block for writing via `GetMemory(int)` method then sparse buffer cannot utilize _24_ bytes of free memory from the existing chunk because the returned buffer must be at least _100_ bytes of contiguous memory. In this case, sparse buffer rents a new chunk with the size of at least _100_ bytes and marks _24_ bytes from the previous chunk as unused.
 
-The implementation of `GetMemory(int)` and `GetSpan(int)` methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than [PooledBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PooledBufferWriter`1) which requires reallocation when rented memory block is not enough to place a new data.
+The implementation of `GetMemory(int)` and `GetSpan(int)` methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than [PoolingBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PoolingBufferWriter`1) which requires reallocation when rented memory block is not enough to place a new data.
 
 Additionally, you can use [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-based API to read from or write to the sparse buffer. [StreamSource](xref:DotNext.IO.StreamSource) provides `AsStream` extension method that can be used to create readable or writable stream over the buffer:
 ```csharp
@@ -82,7 +82,7 @@ using var buffer = new SparseBufferWriter<byte>(256, SparseBufferGrowth.Exponent
 ```
 
 # BufferWriterSlim
-[BufferWriterSlim&lt;T&gt;](xref:DotNext.Buffers.BufferWriterSlim`1) is a lightweight version of [PooledBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PooledBufferWriter`1) class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.
+[BufferWriterSlim&lt;T&gt;](xref:DotNext.Buffers.BufferWriterSlim`1) is a lightweight version of [PoolingBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PoolingBufferWriter`1) class with its own unique features. The instance of writer always allocated on the stack because the type is declared as ref-like value type. Additionally, the writer allows to use stack-allocated memory for placing new elements.
 
 If initial buffer overflows then `BufferWriterSlim<T>` obtains rented buffer from the pool and copies the initial buffer into it.
 ```csharp
@@ -98,20 +98,20 @@ This type has the following limitations:
 * Focused on [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type, there is no interop with types from [System.Collections.Generic](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic) namespace.
 
 # Char Buffer
-[StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PooledBufferWriter<T>`, `PooledArrayBufferWriter<T>`, `SparseBufferWriter<T>` and `BufferWriterSlim<T>` types as described above. But we need suitable methods for adding characters to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](xref:DotNext.Buffers.BufferWriter) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
+[StringBuilder](https://docs.microsoft.com/en-us/dotnet/api/system.text.stringbuilder) is a great tool from .NET standard library to construct strings dynamically. However, it uses heap-based allocation of chunks and increases GC workload. The solution is to use pooled memory for growing buffer and release it when no longer needed. This approach is implemented by `PoolingBufferWriter<T>`, `PoolingArrayBufferWriter<T>`, `SparseBufferWriter<T>` and `BufferWriterSlim<T>` types as described above. But we need suitable methods for adding characters to the builder similar to the methods of `StringBuilder`. They are provided as extension methods declared in [BufferWriter](xref:DotNext.Buffers.BufferWriter) class for all objects implementing [IBufferWriter&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface:
 ```csharp
 using DotNext.Buffers;
 
-using var writer = new PooledArrayBufferWriter<char> { BufferPool = ArrayPool<char>.Shared };
+using var writer = new PoolingArrayBufferWriter<char> { BufferPool = ArrayPool<char>.Shared };
 writer.Write("Hello,");
 writer.Write(' ');
 writer.Write("world!");
 writer.WriteLine();
-writer.WriteFormattable(2);
+writer.Format(2);
 writer.Write('+');
-writer.WriteFormattable(2);
+writer.Format(2);
 writer.Write('=');
-writer.WriteFormattable(4);
+writer.Format(4);
 
 string result = writer.ToString();
 ```
@@ -122,7 +122,7 @@ using DotNext.Buffers;
 using System.IO;
 using static DotNext.IO.TextWriterExtensions;
 
-using var buffer = new PooledArrayBufferWriter<char> { BufferPool = ArrayPool<char>.Shared };
+using var buffer = new PoolingArrayBufferWriter<char> { BufferPool = ArrayPool<char>.Shared };
 using TextWriter writer = buffer.AsTextWriter();
 writer.Write("Hello,");
 writer.Write(' ');
@@ -143,20 +143,20 @@ using DotNext.Buffers;
 
 int x = 10, y = 20;
 using var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
-buffer.WriteString($"{x} + {y} = {x + y}");
+buffer.Interpolate($"{x} + {y} = {x + y}");
 
 string result = buffer.ToString();
 ```
 
 Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see [BufferWriterSlimInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler), [BufferWriterInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler), and [PoolingInterpolatedStringHandler](xref:DotNext.Buffers.PoolingInterpolatedStringHandler) data types.
 
-[BufferHelpers](xref:DotNext.Buffers.BufferHelpers) class offers extension methods for efficient concatenation of strings:
+[CharBuffer](xref:DotNext.Buffers.CharBuffer) class offers extension methods for efficient concatenation of strings:
 ```csharp
 using DotNext.Buffers;
 
 int x = 10, y = 20;
 using var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
-buffer.Concat(("Hello,", " ", "world!").AsReadOnlySpan());
+buffer.Concat(["Hello,", " ", "world!"]);
 ```
 
 # How to choose?
@@ -164,8 +164,8 @@ The following table describes the main differences between various growable buff
 
 | Buffer Writer | When to use | Compatible with async methods | Space complexity (write operation) |
 | ---- | ---- | ---- | ---- |
-| `PooledArrayBufferWriter<T>` | General applicability when initial capacity is known | Yes | o(1), O(n) |
-| `PooledBufferWriter<T>` | If custom [memory allocator](xref:DotNext.Buffers.MemoryAllocator`1) is required. For instance, if you want to use [unmanaged memory pool](xref:DotNext.Buffers.UnmanagedMemoryPool`1) | Yes | o(1), O(n) |
+| `PoolingArrayBufferWriter<T>` | General applicability when initial capacity is known | Yes | o(1), O(n) |
+| `PoolingBufferWriter<T>` | If custom [memory allocator](xref:DotNext.Buffers.MemoryAllocator`1) is required. For instance, if you want to use [unmanaged memory pool](xref:DotNext.Buffers.UnmanagedMemoryPool`1) | Yes | o(1), O(n) |
 | `BufferWriterSlim<T>` | If you have knowledge about optimal size of initial buffer which can be allocated on the stack. In this case the writer allows to avoid renting the buffer and doesn't allocate itself on the managed heap | No | o(1), O(n) |
 | `SparseBufferWriter<T>` | If optimal size of initial buffer is not known and the length of the written data varies widely | Yes | o(1), O(1) |
 

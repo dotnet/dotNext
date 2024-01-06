@@ -13,36 +13,20 @@ The library provides advanced atomic operations for the following types:
     * [double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
     * [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
 	* [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr)
-    * [Reference types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types)
+	* [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.uintptr)
 * One-dimensional arrays
 
 Numeric types have the following atomic operations:
-* _VolatileRead_
-* _VolatileWrite_
-* _IncrementAndGet_ - atomic increment of the field
-* _DecrementAndGet_ - atomic decrement of the field
-* _CompareAndSet_ - atomic modification of the field based on comparison
-* _Add_ - atomic arithemtic addition
-* _GetAndSet_, _SetAndGet_ - atomic modification of the field with ability to obtain modified value as a result
 * _AccumulateAndGet_, _GetAndAccumulate_ - atomic modification of the field where modification logic is based on the supplied value and custom accumulator binary function
 * _UpdateAndGet_, _GetAndUpdate_ - atomic modification of the field where modification logic is based in the custom unary function
 
 Reference types have similar set of atomic operations except arithmetic operations such as increment, decrement and addition.
 
 # Atomic operations for scalar types
-Atomic operations are extension methods grouped by specific target scalar types:
-* [AtomicInt32](xref:DotNext.Threading.AtomicInt32) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.int32)
-* [AtomicUInt32](xref:DotNext.Threading.AtomicUInt32) for [int](https://docs.microsoft.com/en-us/dotnet/api/system.uint32)
-* [AtomicInt64](xref:DotNext.Threading.AtomicInt64) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.int64)
-* [AtomicUInt64](xref:DotNext.Threading.AtomicUInt64) for [long](https://docs.microsoft.com/en-us/dotnet/api/system.uint64)
-* [AtomicSingle](xref:DotNext.Threading.AtomicSingle) for [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
-* [AtomicDouble](xref:DotNext.Threading.AtomicDouble) for [double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
-* [AtomicIntPtr](xref:DotNext.Threading.AtomicIntPtr) for [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr)
-* [AtomicReference](xref:DotNext.Threading.AtomicReference) for [reference types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types)
+Atomic operations are extension methods exposed by [AtomicInt32](xref:DotNext.Threading.Atomic) class.
 
 Atomic operations for some data types represented by atomic containers instread of extension methods:
-* [AtomicBoolean](xref:DotNext.Threading.AtomicBoolean) for [bool](https://docs.microsoft.com/en-us/dotnet/api/system.boolean) data type
-* [AtomicEnum&lt;TEnum&gt;](xref:DotNext.Threading.AtomicEnum`1) for **enum** data types
+* [Atomic.Boolean](xref:DotNext.Threading.Atomic.Boolean) for [bool](https://docs.microsoft.com/en-us/dotnet/api/system.boolean) data type
 
 The following example demonstrates how to use advanced atomic operations
 ```csharp
@@ -54,27 +38,9 @@ public class TestClass
 
     public void IncByTwo() => field.UpdateAndGet(x => x + 2);   //update field with a sum of its value and constant 2 atomically
 
-    public void IncByTwo2() => field.Add(2);    //the same effect
-
     public long Sub(long value) => field.AccumulateAndGet(value, (current, v) => current - value); //the same as field -= value but performed atomically
 }
 ```
-
-# Atomic operations for arrays
-C# doesn't provide volatile access to array elements syntactically in contrast with volatile fields. .NEXT library provides the same set of atomic operations as for scalar types with a small difference: array atomic operation accept element index as additional argument.
-
-The second approach utilizes extension method.
-```csharp
-using DotNext.Threading;
-
-var array = new double[10];
-var result = array.IncrementAndGet(2);   //2 is an index of array element to be modified
-result = array.VolatileRead(2);  //atomic read of array element
-array.VolatileWrite(2, 30D);  //atomic modification of array element
-```
-
-# Atomic operations with pointers
-Working with unmanaged memory in multithreaded application also requires atomic operations and volatile memory access. [AtomicPointer](xref:DotNext.Threading.AtomicPointer) provides all necessary functionality as extension methods for [Pointer&lt;T&gt;](xref:DotNext.Runtime.InteropServices.Pointer`1) data type.
 
 # Atomic access for arbitrary value types
 Volatile memory access is hardware dependent feature. For instance, on x86 atomic read/write can be guaranteed for 32-bit data types only. On x86_64, this guarantee is extended to 64-bit data type. What if you need to have hardware-independent atomic read/write for arbitrary value type? The naive solution is to use [Synchronized](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.methodimploptions#System_Runtime_CompilerServices_MethodImplOptions_Synchronized) method. It can be declared in class only, not in value type. If your volatile field declared in value type then you cannot use such kind of methods or you need to create container in the form of the class which requires allocation on the heap.

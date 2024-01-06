@@ -172,12 +172,23 @@ The first approach is very simple but may be not optimal for real application be
 ## JSON log entries
 At the time of appending of a new log entry, it can be created as follows:
 ```csharp
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using DotNext.Net.Cluster.Consensus.Raft;
+using DotNext.Text.Json;
 
-struct SubtractCommand
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(SubtractCommand))]
+public partial class SerializationContext : JsonSerializerContext
+{
+}
+
+struct SubtractCommand : IJsonSerializable<SubtractCommand>
 {
 	public int X { get; set; }
 	public int Y { get; set; }
+
+	static JsonTypeInfo<TestJsonObject> IJsonSerializable<TestJsonObject>.TypeInfo => SerializationContext.Default.SubtractCommand;
 }
 
 MemoryBasedStateMachine state = ...;
@@ -185,11 +196,11 @@ var entry = state.CreateJsonLogEntry(new SubtractCommand { X = 10, Y = 20 });
 await state.AppendAsync(entry);
 ```
 
-`SubtractCommand` must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to explicitly specify the optional parameters of `CreateJsonLogEntry` method to provide type identification independent from .NET type system.
+`SubtractCommand` must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to use [JSON polymorphic serialization](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism).
 
 Now the written log entry can be deserialized and interpreted easily inside of `AppendAsync` method:
 ```csharp
-using DotNext.IO;
+using DotNext.Text.Json;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
 
@@ -199,17 +210,11 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 	
     protected override async ValueTask ApplyAsync(LogEntry entry)
 	{
-		switch (await entry.DeserializeFromJsonAsync())
-		{
-			case SubtractCommand command:
-				Value = command.X - command.Y; // interpreting the command
-				break;
-		}
+		var command = await JsonSerializable<TestJsonObject>.TransformAsync(entry);
+		Value = command.X - command.Y; // interpreting the command
 	}
 }
 ```
-
-`DeserializeFromJsonAsync` accepts type resolver as an optional argument. If default type resolution mechanism is used then persistent state stores type information in the form of fullt-qualified type name including assembly name.
 
 ## Command Interpreter
 Interpreting of the custom log entries can be implemented with help of [Command Pattern](https://en.wikipedia.org/wiki/Command_pattern). [CommandInterpreter](xref:DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter) is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.

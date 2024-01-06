@@ -31,13 +31,14 @@ ICollection<string> collection = new string[] { "a", "b", "c" };
 var array = collection.ToArray();   //array = new [] {"a", "b", "c" }
 ```
 
-# Singleton list
+# Singleton list and set
 The library provides optimized version of the list with the single element in it.
 
 ```csharp
 using DotNext.Collections.Generic;
 
 IReadOnlyList<string> list = List.Singleton("a");
+IReadOnlySet<string> set = Set.Singleton("a");
 ```
 
 # Collection items concatenation
@@ -92,11 +93,11 @@ using MemoryOwner<int> copy = GetItems().Copy();
 
 Now the elements can be accessed using the indexer of [MemoryOwner&lt;T&gt;](xref:DotNext.Buffers.MemoryOwner`1) data type. The memory of the copied elements is rented from the pool. You can override memory allocation logic and pass custom [MemoryAllocator&lt;T&gt;](xref:DotNext.Buffers.MemoryAllocator`1) to `Copy` method.
 
-# Randomize elements
-`Shuffle` extension method of [List](xref:DotNext.Collections.Generic.List) class can be used to randomize the order of the elements within the list:
+# Generic range
+[Enumerable.Range](https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.range) from .NET library supports only arguments of type **int**. [Set.Range](xref:DotNext.Collections.Generic.Set) method from .NEXT allows to construct ordered set from a range of numbers:
 ```csharp
-using static DotNext.Collections.Generic.List;
+using DotNext.Collections.Generic;
 
-IList<int> items = new int[] { 10, 20, 30, 40 };
-items.Shuffle(Random.Shared);
+IReadOnlySet<long> set = Set.Range<long, DisclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 3L); // [1, 2]
+set = Set.Range<long, EnclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 3L); // [0, 1, 2]
 ```

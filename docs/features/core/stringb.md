@@ -7,10 +7,10 @@ using DotNext.Buffers;
 using var writer = new BufferWriterSlim<char>(stackalloc char[128]); // preallocate initial buffer on the stack
 
 int x = 10, y = 20;
-writer.WriteString($"{x} + {y} = {x + y}");
+writer.Interpolate($"{x} + {y} = {x + y}");
 writer.WriteLine();
 writer.Write("Hello, world!");
-writer.WriteFormattable(42, "X");
+writer.Format(42, "X");
 
 Span<char> writtenSpan = writer.WrittenSpan;
 string result = writer.ToString();

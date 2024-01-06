@@ -11,7 +11,7 @@ Func<string, int> parser = int.Parse;
 Result<int> result = parser.TryInvoke("42");
 if (result)  //successful
 {
-    var i = (int) result;
+    var i = (int)result;
 }
 else
 {

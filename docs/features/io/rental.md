@@ -58,12 +58,12 @@ Additionally, .NEXT offers special abstraction layer for memory pooling which is
 # Growable Buffers
 If size of the required buffer is not known and can grow dynamically then you need to use [Dynamic Buffers](./buffers.md) that are based on memory pooling mechanism as well.
 
-Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) easily using extension methods from [StreamSource](xref:DotNext.IO.StreamSource) class. With [PooledArrayBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PooledArrayBufferWriter`1) class, it's possible to read/write bytes using stream and utilize memory pooling:
+Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) easily using extension methods from [StreamSource](xref:DotNext.IO.StreamSource) class. With [PoolingArrayBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PoolingArrayBufferWriter`1) class, it's possible to read/write bytes using stream and utilize memory pooling:
 ```csharp
 using DotNext.Buffers;
 using DotNext.IO;
 
-using var writer = new PooledArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared };
+using var writer = new PoolingArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared };
 
 // write bytes using stream
 using Stream writeStream = StreamSource.AsStream(writer);

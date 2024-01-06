@@ -26,11 +26,6 @@ var white = Plus(Color.Red, Color.Green, Color.Blue);
 white == Color.White;   //true
 ```
 
-# Flag
-[System.Enum](https://docs.microsoft.com/en-us/dotnet/api/system.enum) class has public instance method `HasFlag` that allows to check whether the one or more bits are set in the enumeration. However, it causes boxing of the argument. There is no generic version of this method in standard library to avoid boxing.
-
-.NEXT library offers fast version of `HasFlag` method that prevents boxing. It's represented by static method located in [Intrinsics](xref:DotNext.Runtime.Intrinsics) class.
-
 # Attributes
 [EnumType](xref:DotNext.Reflection.EnumType) static classes exposes access to custom attributes attached to the enum member.
 

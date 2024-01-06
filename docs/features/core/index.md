@@ -84,8 +84,8 @@ Cached delegate instances for mostly used delegate types: [Predicate&lt;T&gt;](h
 using DotNext;
 
 Func<int, int> identity = Func.Identity<int>(); //identity delegate which returns input argument without any changes
-Predicate<string> truePredicate = Predicate.Constant<string>(true); // predicate which always returns true
-Predicate<object> falsePredicate = Predicate.Constant<string>(false); //predicate which always returns false
+Predicate<bool> truePredicate = Predicate.Constant<bool>(true); // predicate which always returns true
+Predicate<bool> falsePredicate = Predicate.Constant<bool>(false); //predicate which always returns false
 Predicate<string> nullCheck = Predicate.IsNull<string>(); //predicate checking whether the input argument is null
 Predicate<string> notNullCheck = Predicate.IsNotNull<string>(); //predicate checking whether the input argument is not null
 ```
@@ -117,74 +117,35 @@ Func<string, int> openDelegate = DelegateHelpers.CreateDelegate<string, int>(has
 Func<int> closedDelegate = DelegateHelpers.CreateDelegate<string, int>(hashCode, "Hello, world!");
 ```
 
-# Comparable data types
-Related class: [Comparison](xref:DotNext.Comparison)
-
 ## Range check
 Checks whether the given value is in specific range.
 ```csharp
 using DotNext;
 
-var b = 10.IsBetween(5, 11, BoundType.Closed); //b == true
-b = 10.IsBetween(0, 4); //b == false
-var i = 5.Clamp(4, 10); //i == 5
-i = 5.Clamp(6, 10); //i == 6
-i = 5.Clamp(0, 4); //i == 4
+var b = 10.IsBetween(5.Enclosed(), 11.Enclosed()); //b == true
+b = 10.IsBetween(0.Disclosed(), 4.Disclosed()); //b == false
 ```
 
 # Equality check
-Related classes: [ObjectExtensions](xref:DotNext.ObjectExtensions), [ValueTypeExtensions](xref:DotNext.ValueTypeExtensions).
+Related classes: [BasicExtensions](xref:DotNext.BasicExtensions).
 
 Extension method _IsOneOf_ allows to check whether the value is equal to one of the given values.
 
 ```csharp
 using DotNext;
 
-var b = 42.IsOneOf(0, 5, 42, 3); //b == true
+var b = 42.IsOneOf([0, 5, 42, 3]); //b == true
 
-b = "a".IsOneOf("b", "c", "d"); //b == false
+b = "a".IsOneOf(["b", "c", "d"]); //b == false
 ```
-
-# Array extensions
-Related classes: [OneDimensionalArray](xref:DotNext.OneDimensionalArray).
-
-Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.
 
 ## Equality check
 _BitwiseEquals_ extension method performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. `int`, `long`, `System.Guid`.
 
 ```csharp
 var array2 = new int[] { 1, 2, 3 };
-array2.BitwiseEquals(new [] {1, 2, 4});    //false
+Span.BitwiseEquals(new [] {1, 2, 4}, array2);    //false
 ```
-
-## Functional iterator
-Extension method `ForEach` allows to iterate over array elements and, optionally, modify array element.
-
-```csharp
-var array = new string[] {"ab", "bc" };
-array.ForEach((long index, ref string element) => {
-    if(element == "ab")
-        element = "";
-});
-```
-
-## Insertion and Removal
-Extension methods _Insert_, _Slice_, _RemoveLast_ and _RemoveFirst_ allow to return modified array according with semantics of chosen method:
-```csharp
-var array = new string[] {"a", "b"};
-array = array.Insert("c", 2);   //array == new []{"a", "b", "c"}
-
-array = array.RemoveLast(2);    //array == new []{"a"}
-
-array = new string[] {"a", "b", "c"};
-array = array.RemoveFirst(2);   //array == new []{"c"}
-
-array = new string[]{"a", "b", "c", "d"}; 
-array = array.Slice(1, 2);      //array == new []{"b", "c"}
-```
-
-The same behavior can be achieved using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type. However, these methods support large arrays where index and length cannot be represented by **int** data type.
 
 # Timestamp
 [Timestamp](xref:DotNext.Diagnostics.Timestamp) value type can be used as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch) when you need to measure time intervals.

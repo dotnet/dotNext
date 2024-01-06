@@ -7,7 +7,10 @@ Raft is a consensus algorithm suitable for building _master-replica_ clusters wi
 * Replication
 * Cluster configuration management
 
-The core of Raft implementation is [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1) class which contains transport-agnostic implementation of Raft algorithm. First-class support of Raft in ASP.NET Core as well as other features are based on this class.
+The core of Raft implementation is [RaftCluster&lt;TMember&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1) class which contains transport-agnostic implementation of Raft algorithm. First-class support of Raft in ASP.NET Core as well as other features are based on this class. In addition to original Raft implementation, the library provides the following augmentations and extensions:
+* Pre-voting phase
+* Standby state
+* Automatic failure detection and reconfiguration of membership list
 
 # Consensus
 Correctness of consensus algorithm is tightly coupled with Write-Ahead Log defined via `AuditTrail` property of [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface or via Dependency Injection. If your application requires only consensus without replication of real data then [ConsensusOnlyState](xref:DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState) implementation is used. Note that this implementation is used by default as well. It is lighweight and fast. However it doesn't store state on disk. Consider to use [persistent WAL](./wal.md) as fully-featured persistent log for Raft.
@@ -81,13 +84,12 @@ A new member can be proposed using [IRaftHttpCluster.AddMemberAsync](xref:DotNex
 .NEXT supports the following network transports:
 * HTTP 1.1, HTTP 2.0, and HTTP 3.0
 * TCP transport
-* UDP transport
 * Generic transport on top of [ASP.NET Core Connections](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.connections) abstractions. See [CustomTransportConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.CustomTransportConfiguration) class for more information.
 
-TCP and UDP network transports shipped with `DotNext.Net.Cluster` library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized [application protocol](https://en.wikipedia.org/wiki/Application_layer) on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming are limited:
+TCP network transport shipped with `DotNext.Net.Cluster` library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized [application protocol](https://en.wikipedia.org/wiki/Application_layer) on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming are limited:
 * General-purpose messaging between nodes is not supported via [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface
 
-Cluster programming model using TCP, UDP, and generic transports is unified and exposed via [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class. The following example demonstrates usage of this class:
+Cluster programming model using TCP, and generic transports is unified and exposed via [RaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) class. The following example demonstrates usage of this class:
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
 
@@ -442,45 +444,8 @@ TCP transport is WAN friendly and support transport-level encryption. However, t
 
 The recommended relationship between timeouts: `ConnectTimeout < RequestTimeout < LowerElectionTimeout`. In practice, _ConnectTimeout_ should be as small as possible to avoid impact on the cluster by disconnected nodes.
 
-## UDP Transport
-UDP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport doesn't use persistent connection in contrast to TCP. As a result, it has no TCP overhead related to congestion and flow control of messages. These capabilities are implemented by application protocol itself. However, retransmission of lost packets is not implemented. The transport uses pessimistic approach and interprets lost packets as connection timeout. This is reasonable approach because the leader node examines other cluster members periodically and the next attempt may be successful. Some Raft messages such as _Vote_ and _Heartbeat_ with empty set of log entries (or if log entries are small enough) for replication can be easily placed to single datagram without fragmentation.
-
-The transport has very low overhead which is equal to ~20 bytes per datagram. Therefore, most Raft messages can be placed to single datagram without streaming per request.
-
-UDP transport cannot detect path [MTU](https://en.wikipedia.org/wiki/Maximum_transmission_unit) automatically and, by default, it uses minimal safe size of the datagram to avoid fragmentation. If need automatic path MTU discovery then use [MTU discovery](../core/mtu.md) mechanism from .NEXT. After that, you can specify datagram size using configuration properties.
-
-This transport can be configured using [UdpConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UdpConfiguration) class:
-
-| Configuration parameter | Required | Default Value | Description |
-| ---- | ---- | ---- | ---- |
-| ServerBacklog | No | Equal to the number of cluster members | The number of incoming requests that can be handled simultaneously |
-| ClientBacklog | No | Equal to the number of logical processor on the host machine | The number of outbound requests that can be initiated by the local node |
-| DontFragment | No | true | Indicates that datagram cannot be fragmented by the underlying network layer such as IP (DF flag) |
-| DatagramSize | No | 300 bytes | Represents UDP datagram size. For maximum performance, this property must be set to the maximum allowed transmission unit size by your network |
-| LocalEndPoint | No | 0.0.0.0 with random port | Used for receiving responses from other cluster nodes |
-| PipeConfig | No | [PipeOptions.Default](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipeoptions.default) | The configuration of I/O pipeline used for passing bytes between application and network transport |
-| TimeToLive | No | 64 |  Time To Live (TTL) value of Internet Protocol (IP) packets |
-
-The following example demonstrates configuration of UDP transport:
-```csharp
-using DotNext.Net.Cluster.Consensus.Raft;
-
-RaftCluster.NodeConfiguration config = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback));
-using var cluster = new RaftCluster(config);
-await cluster.StartAsync(CancellationToken.None); //starts hosting of the local node
-//the code for working with cluster instance
-await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local node
-```
-
-If you are using Docker/LXC/Windows container for the clustered microservices based on UDP transport then you can leave `LocalEndPoint` untouched. Otherwise, it's recommended to use the address of the appropriate local network interface.
-
-UDP transport is WAN unfriendly. It should not be used in unreliable networks. However, it's much faster than TCP transport. It is recommended to use this protocol in the following situations:
-* Cluster nodes are hosted in the same rack
-* Cluster nodes are hosted in the different racks but located in the same datacenter and racks connected by high-speed physical interface such as FibreChannel.
-* Cluster nodes are in Docker/LXC/Windows containers running on the same physical host
-
 # Example
-There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/dotnet/dotNext/tree/master/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `tcp+ssl`, `udp`.
+There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/dotnet/dotNext/tree/master/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `tcp+ssl`.
 
 Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
@@ -561,7 +526,7 @@ Transport- and serialization-agnostic implementation of Raft is represented by [
 ## Existing Implementations
 .NEXT library ships multiple network transports: 
 * [RaftHttpCluster](https://github.com/dotnet/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs) as a part of `DotNext.AspNetCore.Cluster` library offers HTTP 1.1/HTTP 2/HTTP 3 implementations adopted for ASP.NET Core framework
-* [TransportServices](https://github.com/dotnet/dotNext/tree/develop/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/TransportServices) as a part of `DotNext.Net.Cluster` library contains reusable network transport layer for UDP and TCP transport shipped as a part of this library
+* [TransportServices](https://github.com/dotnet/dotNext/tree/develop/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/TransportServices) as a part of `DotNext.Net.Cluster` library contains reusable network transport layer TCP transport shipped as a part of this library
 
 All these implementations can be used as examples of transport for Raft messages.
 

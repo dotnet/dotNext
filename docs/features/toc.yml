@@ -15,12 +15,8 @@
       href: core/result.md
     - name: Atomic Operations
       href: core/atomic.md
-    - name: Generic specialization with constant values
-      href: core/constgen.md
     - name: Synchronization Enhancements
       href: core/sync.md
-    - name: Asynchronous Delegates
-      href: core/asyncd.md
     - name: Intrinsics
       href: core/intrinsics.md
     - name: Path MTU Discovery
@@ -29,8 +25,6 @@
       href: core/base64.md
     - name: Value Type Enhancements
       href: core/valuetype.md
-    - name: Typed Reference
-      href: core/ref.md
     - name: Soft Reference
       href: core/softref.md
     - name: TypeMap
@@ -81,15 +75,11 @@
       href: threading/tasksrc.md
     - name: Delayed Tasks
       href: threading/dtask.md
-- name: Type Classes
-  href: concept.md
 - name: Advanced Reflection
   href: reflection/index.md
   items:
     - name: Open and Closed Delegates
       href: reflection/delegate.md
-    - name: Fast Reflection
-      href: reflection/fast.md
 - name: Metaprogramming
   href: metaprogramming/index.md
   items:

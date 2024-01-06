@@ -67,7 +67,7 @@ using DotNext.IO;
 using var ms1 = new MemoryStream();
 using var ms2 = new MemoryStream();
 
-using var stream = ms1.Combine(ms2);
+using var stream = ms1.Combine([ms2]);
 ```
 
 Note that the result stream is read-only and not seekable.
@@ -83,31 +83,9 @@ using System.IO.Pipelines;
 
 const string value = "Hello, world!";
 var pipe = new Pipe();
-await pipe.Writer.WriteStringAsync(value.AsMemory(), Encoding.UTF8, 0, LengthFormat.Plain);
-string result = await pipe.Reader.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
-```
-
-In advance to strings, the library supports decoding and encoding values of arbitrary blittable value types.
-```csharp
-using DotNext.IO.Pipelines;
-using System.IO.Pipelines;
-
-var pipe = new Pipe();
-await pipe.Writer.WriteAsync(Guid.NewGuid());
-Guid result = await pipe.Reader.ReadAsync<Guid>();
-```
-
-Starting with version _2.6.0_, there is [BufferWriter](xref:DotNext.Buffers.BufferWriter) class with extension methods for [IBufferWriter&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1) interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:
-```csharp
-using DotNext.IO;
-using DotNext.IO.Pipelines;
-using System.IO.Pipelines;
-using System.Text;
-
-var pipe = new Pipe();
-pipe.Writer.Write(Guid.NewGuid());
-pipe.Writer.WriteString("Hello, world!".AsSpan(), Encoding.UTF8, LengthFormat.Plain);
+pipe.Writer.Encode(value, Encoding.UTF8, LengthFormat.LittleEndian);
 await pipe.Writer.FlushAsync();
+MemoryOwner<char> result = await pipe.Reader.DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian);
 ```
 
 `ReadAllAsync` extension method allows to enumerate over the contents of a pipe in a convenient way:
@@ -130,8 +108,8 @@ using System.Text;
 
 ReadOnlySequence<byte> sequence = ...;
 SequenceReader reader = new(sequence);
-int i = reader.ReadInt32(BitConverter.IsLittleEndian);
-string str = reader.ReadString(LengthFormat.Plain, Encoding.UTF8);
+int i = reader.ReadLittleEndian<int>(BitConverter.IsLittleEndian);
+MemoryOwner<char> str = reader.Decode(Encoding.UTF8, LengthFormat.LittleEndian);
 ```
 
 # File-Buffering Writer

@@ -1,1 +1,0 @@
-The page has been replaced by [this article](./raft.md).

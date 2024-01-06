@@ -7,8 +7,6 @@ The following example demonstrates usage of this type:
 using DotNext;
 using DotNext.Collections.Generic;
 
-IEnumerable<int> array = new int[] { 1, 2, 3 };
-Optional<int> i = array.FirstOrNone(); //extension method from Sequence class
 var value = (int)i; //cast is supported
 if(i.TryGet(out value))
 {
@@ -19,8 +17,8 @@ if(i)   //if i has value
     value = i.Value;
 }
 value = i.OrThrow<ArgumentException>();
-value = i.Or(-1);   //returns -1 if i has no value
-value = i.OrDefault(); //returns default(int) if i has no value
+value = i | -1;   //returns -1 if i has no value
+value = i.ValueOrDefault; //returns default(int) if i has no value
 value = i.OrInvoke(() => 10); //calls lambda if i has no value
 ```
 
@@ -32,14 +30,14 @@ Let's take a look at the following code:
 using DotNext;
 using System;
 
-static Optional<string> FirstOrNull(string[] array)
+static Optional<string> FirstOrNone(string[] array)
     => array.Length > 0 ? array[0] : Optional<string>.None;
 
 string[] array1 = { null };
-Optional<string> first1 = FirstOrNull(array1);
+Optional<string> first1 = FirstOrNone(array1);
 
 string[] array2 = Array.Empty<string>();
-Optional<string> first2 = FirstOrNull(array2);
+Optional<string> first2 = FirstOrNone(array2);
 ```
 
 `HasValue` property of both values `first1` and `first2` is **false**. However, `first1` actually represents the first element from the array. But the element is **null**. `first2` is empty because the array is empty. This situation is equivalent to the following code:
@@ -47,7 +45,7 @@ Optional<string> first2 = FirstOrNull(array2);
 using DotNext;
 
 var first1 = new Optional<string>(null);
-var first2 = Optional<string>.None;    //or default(Optional<string>)
+var first2 = Optional.None<string>();    //or default(Optional<string>)
 ```
 
 Is it possible to distinguish the absence of value from **null** value? The answer is yes. There are two additional properties:
@@ -56,7 +54,7 @@ Is it possible to distinguish the absence of value from **null** value? The answ
 
 Now it's possible to apply additional logic to the optional result:
 ```csharp
-Optional<string> first = FirstOrNull(array);
+Optional<string> first = FirstOrNone(array);
 
 switch (first)
 {
