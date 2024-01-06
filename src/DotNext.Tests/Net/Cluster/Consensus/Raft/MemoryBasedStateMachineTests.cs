@@ -60,16 +60,16 @@ public sealed class MemoryBasedStateMachineTests : Test
 
         private sealed class SimpleSnapshotBuilder(in SnapshotBuilderContext context) : IncrementalSnapshotBuilder(in context)
         {
-            private Blittable<long> currentValue;
+            private Blittable<long> snapshot;
 
             protected internal override async ValueTask ApplyAsync(LogEntry entry)
             {
                 True(entry.Index > 0L);
-                currentValue = await entry.GetReader().ReadAsync<Blittable<long>>();
+                snapshot = await entry.GetReader().ReadAsync<Blittable<long>>();
             }
 
             public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-                => writer.WriteAsync(currentValue, token);
+                => writer.WriteAsync(snapshot, token);
         }
 
         internal PersistentStateWithSnapshot(string path, bool useCaching, CompactionMode compactionMode = default)
