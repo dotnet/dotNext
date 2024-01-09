@@ -1,12 +1,10 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace DotNext.IO.Pipelines;
 
 using Buffers;
-using DotNext.Buffers.Binary;
 
 public sealed class PipeExtensionsTests : Test
 {
