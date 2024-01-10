@@ -15,11 +15,11 @@ Span<int> s = stackalloc int[4];
 The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:
 
 1. [UnmanagedMemoryPool&lt;T&gt;](xref:DotNext.Buffers.UnmanagedMemoryPool`1) provides allocation of unmanaged memory
-1. [IUnmanagedMemoryOwner&lt;T&gt;](xref:DotNext.Buffers.IUnmanagedMemoryOwner`1) provides structured access to the allocated unmanaged memory.
+1. [IUnmanagedMemory&lt;T&gt;](xref:DotNext.Buffers.IUnmanagedMemory`1) provides structured access to the allocated unmanaged memory.
 
 All unmanaged data types are not thread-safe. However, there are various extension methods in [AtomicPointer](xref:DotNext.Threading.AtomicPointer) class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
 
-`IUnmanagedMemoryOwner<T>`implements [IUnmanagedMemory](xref:DotNext.Runtime.InteropServices.IUnmanagedMemory) and supports direct memory manipulations:
+`IUnmanagedMemory<T>`derives from [IUnmanagedMemory](xref:DotNext.Runtime.InteropServices.IUnmanagedMemory) and supports direct memory manipulations:
 * `Pointer` property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks
 * `Bytes` property provides memory access using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type. It is less flexible in comparison with pointer but safe because it implements bound checks
 
@@ -67,14 +67,14 @@ private static void UnsafeMethod()
 > [!IMPORTANT]
 > Typed pointer doesn't provide range checks.
 
-Volatile operations are fully supported by pointer of one of the following types: `long`, `int`, `byte`, `bool`, `float`, `double`, `ulong`, `uint`, `sbyte`, `IntPtr`:
+Volatile operations are fully supported by pointer:
 ```csharp
+using System.Threading;
 using DotNext.Runtime.InteropServices;
 using DotNext.Threading;
 
 Pointer<long> ptr;
-ptr.VolatileWrite(42L);
-var i = ptr.VolatileRead();
-i = ptr.IncrementAndGetValue(); //i == 43
+Volatile.Write(ref ptr.Value, 42L);
+var i = Volatile.Read(in ptr.Value);
+i = Interlocked.Increment(ref ptr.Value); //i == 43
 ```
-See [here](xref:DotNext.Threading.AtomicPointer) for complete list of volatile operations.

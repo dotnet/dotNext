@@ -4,7 +4,7 @@ Structured Memory Access
 
 This gap is closed by [UnmanagedMemoryPool&lt;T&gt;](xref:DotNext.Buffers.UnmanagedMemoryPool`1) class which allows to allocate a block of unmanaged memory in full compliance with [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1) interface. Now it is possible to represent unmanaged memory as `Memory<T>` value type.
 
-The block of unmanaged memory can be allocated using static method `Allocate` that has [IUnmanagedMemoryOwner&lt;T&gt;](xref:DotNext.Buffers.IUnmanagedMemoryOwner`1) return type. This interface is derived from [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1) so the memory block can be easily represented as `Memory<T>` value type.
+The block of unmanaged memory can be allocated using static method `Allocate` that has [IUnmanagedMemory&lt;T&gt;](xref:DotNext.Buffers.IUnmanagedMemory`1) return type. This interface is derived from [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1) so the memory block can be easily represented as `Memory<T>` value type.
 
 If you need to work with unmanaged memory as with memory pool then it is possible to instantiate `UnmanagedMemoryPool<T>` class and use it in the same manner as `MemoryPool<T>` from .NET standard library.
 

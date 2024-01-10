@@ -364,54 +364,9 @@ Raft algorithm requires additional persistent state in order to basic audit trai
 Information about reliable persistent state that uses non-volatile storage is located in the separated [article](./wal.md). However, its usage turns your microservice into stateful service because its state must be persisted on a disk. Consider this fact if you are using containerization technologies such as Docker or LXC.
 
 ### Metrics
-It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector) class. The reporting mechanism is agnostic to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
-
-The class contains methods that are called automatically. You can override them and implement necessary reporting logic. By default, these methods report metrics to .NET Performance Counters.
-
-The metrics collector should be registered as singleton service using Dependency Injection. However, the type of the service used for registration should of [MetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector) type.
-
-```csharp
-using DotNext.Net.Cluster.Consensus.Raft;
-using DotNext.Net.Cluster.Consensus.Raft.Http;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-sealed class MyCollector : HttpMetricsCollector
-{
-	public override void ReportResponseTime(TimeSpan value)
-    {
-		//report response time of the cluster member
-    } 
-
-	public override void ReportBroadcastTime(TimeSpan value)
-    {
-		//report broadcast time measured during sending the request to all cluster members
-    }
-}
-
-sealed class Startup 
-{
-    private readonly IConfiguration configuration;
-
-    public Startup(IConfiguration configuration) => this.configuration = configuration;
-
-    public void Configure(IApplicationBuilder app)
-    {
-        app.UseConsensusProtocolHandler()
-			.RedirectToLeader("/endpoint1")
-			.RedirectToLeader("/endpoint2");
-    }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-		services.AddSingleton<MetricsCollector, MyCollector>();
-    }
-}
-```
-
-It is possible to derive directly from [MetricsCollector](xref:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector) if you don't need to receive metrics related to HTTP-specific implementation of Raft algorithm.
+Raft node internals can be measured using any OpenTelemetry-compliant tool or [dotnet-counters](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-collection). .NEXT instrumented with modern [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-instrumentation) API so you can use the following counters:
+* DotNext.Net.Cluster.Consensus.Raft.Server - for server-side metrics
+* DotNext.Net.Cluster.Consensus.Raft.Client - for client-side metrics
 
 ## TCP Transport
 TCP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport can be configured using [TcpConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration) class:

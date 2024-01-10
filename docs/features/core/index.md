@@ -205,7 +205,7 @@ Hex.EncodeToUtf16(bytes, hex); //now hex == 081018
 ```
 
 # Polling of Concurrent Collections
-[IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1) is a common interface for concurrent collections in .NET library. Consumer of such collection uses `TryTake` or more specialized method provided by subclasses to obtain elements from the collection. For convenience, [Sequence](xref:DotNext.Collections.Generic.Sequence) static class offers `GetConsumer` extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic **foreach** loop:
+[IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1) is a common interface for concurrent collections in .NET library. Consumer of such collection uses `TryTake` or more specialized method provided by subclasses to obtain elements from the collection. For convenience, [Collection](xref:DotNext.Collections.Generic.Collection) static class offers `GetConsumer` extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic **foreach** loop:
 ```csharp
 using DotNext.Collections.Concurrent;
 using System.Collections.Concurrent;

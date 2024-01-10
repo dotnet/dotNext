@@ -4,7 +4,7 @@ Converting base64-encoded binary content in streaming scenarios may be difficult
 * As UTF-8 encoded characters in the form of the sequence of bytes
 * As UTF-16 encoded characters in the form of the sequence of chars
 
-[Base64Decoder](xref:DotNext.Text.Base64Decoder) type is a specially designed for decoding base64-encoded content for streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.
+[Base64Decoder](xref:DotNext.Buffers.Text.Base64Decoder) type is a specially designed for decoding base64-encoded content for streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.
 
 The following example demonstrates how to decode base64-encoded content represented by UTF-8 encoded characters from the stream:
 ```csharp
@@ -19,7 +19,7 @@ var bytes = new ArrayBufferWriter<byte>();
 decoder.DecodeFromUtf8(base64, bytes);
 ```
 
-[Base64Encoder](xref:DotNext.Text.Base64Encoder) type provides encoding for streaming scenarios.
+[Base64Encoder](xref:DotNext.Buffers.Text.Base64Encoder) type provides encoding for streaming scenarios.
 ```csharp
 using System.Buffers;
 using DotNext.Buffers.Text;

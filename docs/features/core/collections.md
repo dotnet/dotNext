@@ -42,7 +42,7 @@ IReadOnlySet<string> set = Set.Singleton("a");
 ```
 
 # Collection items concatenation
-Extension method _ToString_ from class [Sequence](xref:DotNext.Collections.Generic.Sequence) allows to convert collection items into single plain string. Each item is separated by the specified delimiter.
+Extension method _ToString_ from class [Collection](xref:DotNext.Collections.Generic.Collection) allows to convert collection items into single plain string. Each item is separated by the specified delimiter.
 
 ```csharp
 using DotNext.Collections.Generic;

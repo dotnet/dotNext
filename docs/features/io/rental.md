@@ -24,7 +24,10 @@ public static unsafe string Reverse(this string str)
 {
   if (str.Length == 0) return str;
   const int stackallocThreshold = 128;
-  using MemoryRental<char> result = str.Length <= stackallocThreshold ? new MemoryRental<char>(stackalloc char[stackallocThreshold], str.Length) : new MemoryRental<char>(str.Length);
+  using MemoryRental<char> result = str.Length <= stackallocThreshold
+    ? new(stackalloc char[stackallocThreshold], str.Length)
+    : new(str.Length);
+
   str.AsSpan().CopyTo(result.Span);
   result.Span.Reverse();
   fixed (char* ptr = result.Span)
@@ -53,7 +56,7 @@ rentedMemory.Memory.Slice(0, 5);
 ```
 The value type implements [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1) interface so you can easly access pooled memory in a uniform way.
 
-Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](xref:DotNext.Buffers.MemoryAllocator`1) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [MemoryAllocator](xref:DotNext.Buffers.MemoryAllocator) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
+Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](xref:DotNext.Buffers.MemoryAllocator`1) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [Memory](xref:DotNext.Buffers.Memory) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
 
 # Growable Buffers
 If size of the required buffer is not known and can grow dynamically then you need to use [Dynamic Buffers](./buffers.md) that are based on memory pooling mechanism as well.
@@ -63,7 +66,7 @@ Dynamic buffers can be combined with [streams](https://docs.microsoft.com/en-us/
 using DotNext.Buffers;
 using DotNext.IO;
 
-using var writer = new PoolingArrayBufferWriter<byte> { BufferPool = ArrayPool<byte>.Shared };
+using var writer = new PoolingArrayBufferWriter<byte>(ArrayPool<byte>.Shared);
 
 // write bytes using stream
 using Stream writeStream = StreamSource.AsStream(writer);
