@@ -9,8 +9,8 @@
 This chapter gives a quick overview of these libraries. Read [articles](./features/core/index.md) for a closer look at all available features.
 
 Prerequisites:
-* Runtime: .NET 6
-* OS: Linux, Windows, MacOS, WebAssembly
+* Runtime: .NET 8
+* OS: Linux, Windows, MacOS, WASM, WASI
 * Architecture: any if supported by the underlying .NET Runtime
 
 # DotNext
