@@ -16,12 +16,9 @@ Prerequisites:
 # DotNext
 <a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.svg?logo=NuGet"></a> ![Downloads](https://img.shields.io/nuget/dt/dotnext.svg)<br/>
 This library is the core of .NEXT which extends .NET standard library with
-  * Enum API to work with arbitrary **enum** types
-  * Thread-safe advanced atomic operations to work with **int**, **long**, **bool**, **double**, **float**, **IntPtr**, arbitrary reference and value types
+  * Generic ranges
   * Unified representation of various synchronization primitives in the form of the lock
-  * Generic specialization with constant values
   * Generation of random strings
-  * Fast comparison of arrays
   * Ad-hoc user data associated with arbitrary object
   * A rich set of dynamic buffer types
   * Fast HEX conversion
@@ -29,15 +26,6 @@ This library is the core of .NEXT which extends .NET standard library with
   * [Optional](features/core/optional.md) and [Result](features/core/result.md) monads
   * [Soft Reference](features/core/softref.md) and [async GC notifications](features/core/gcnotif.md)
   * [LRU/LFU cache](features/core/cache.md)
-
-# DotNext.Reflection
-<a href="https://www.nuget.org/packages/dotnext.reflection/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.reflection.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.reflection.svg)<br/>
-.NET Reflection is slow because relies on late-bound calls when every actual argument should be validated. There is alternative approach: dynamic code generation optimized for every member call. Reflection library from .NEXT family provides provides fully-featured fast reflection using dynamic code generation. Invocation cost is comparable to direct call. Check [Benchmarks](benchmarks.md) to see how it is fast.
-
-> [!IMPORTANT]
-> `DotNext.Reflection` library doesn't receive new features anymore and will be deprecated soon. See [this post](https://github.com/dotnet/dotNext/discussions/142) for more information.
-
-Additionally, the library provides support of [Type Classes](https://github.com/dotnet/csharplang/issues/110). You don't need to wait for C# language of version _X_ to obtain this feature.
 
 # DotNext.Metaprogramming
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.metaprogramming.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.metaprogramming.svg)<br/>
