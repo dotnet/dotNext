@@ -12,10 +12,6 @@
         },
         {
           "files": [ "**.csproj" ],
-          "src": "../src/DotNext.Reflection/"
-        },
-        {
-          "files": [ "**.csproj" ],
           "src": "../src/DotNext.Metaprogramming/"
         },
         {
