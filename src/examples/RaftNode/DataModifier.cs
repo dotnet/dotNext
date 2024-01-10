@@ -3,17 +3,8 @@ using DotNext.Net.Cluster.Consensus.Raft;
 
 namespace RaftNode;
 
-internal sealed class DataModifier : BackgroundService
+internal sealed class DataModifier(IRaftCluster cluster, ISupplier<long> valueProvider) : BackgroundService
 {
-    private readonly IRaftCluster cluster;
-    private readonly ISupplier<long> valueProvider;
-
-    public DataModifier(IRaftCluster cluster, ISupplier<long> provider)
-    {
-        this.cluster = cluster;
-        valueProvider = provider;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));

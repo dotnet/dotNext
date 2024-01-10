@@ -32,4 +32,7 @@ public struct Blittable<T> : IBinaryFormattable<Blittable<T>>
         source.CopyTo(destination);
         return result;
     }
+
+    /// <inheritdoc/>
+    public readonly override string? ToString() => Value.ToString();
 }

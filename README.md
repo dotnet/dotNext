@@ -24,7 +24,7 @@
 Quick overview of additional features:
 
 * [Attachment of user data to an arbitrary objects](https://dotnet.github.io/dotNext/features/core/userdata.html)
-* Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
+* Extended set of [atomic operations](https://dotnet.github.io/dotNext/features/core/atomic.html)
 * Fast conversion of bytes to hexadecimal representation and vice versa with [Hex](https://dotnet.github.io/dotNext/api/DotNext.Buffers.Text.Hex.html) class
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://dotnet.github.io/dotNext/features/threading/rwlock.html)
 * [Atomic](https://dotnet.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types
@@ -44,14 +44,14 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-19-2023
+Release Date: 01-10-2024
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/4.15.3">DotNext.Net.Cluster 4.15.3</a>
-* `SustainedLowLatency` GC mode is now applied for heartbeats round initiated by heartbeat timeout. A round forced by replication programmatically doesn't set this mode that allows GC to be more intrusive. This trade-off provides better balance between memory consumption and replication time
-* Updated dependencies
+.NEXT 5.0.0 has been released! The primary goal of the new release is migration to .NET 8 to fully utilize its features such as [Generic Math](https://learn.microsoft.com/en-us/dotnet/standard/generics/math) and static abstract interface members. 5.x is not fully backward compatible with 4.x because of breaking changes in the API. Most of changes done in DotNext, DotNext.IO, and DotNext.Unsafe libraries. UDP transport for Raft is completely removed in favor of existing TCP implementation. There is a plan to implement multiplexed TCP connection and Raft sharding. New features:
+* Numeric ranges for LINQ. Thanks to Generic Math
+* Little-endian and big-endian readers/writer for various buffer types. Again thanks to Generic Math
+* UTF-8 formatting support for various buffer types
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/4.15.3">DotNext.AspNetCore.Cluster 4.15.3</a>
-* Updated dependencies
+DotNext.Reflection library is deprecated and no longer maintained.
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
@@ -64,7 +64,8 @@ The libraries are versioned according with [Semantic Versioning 2.0](https://sem
 | 1.x | .NET Standard 2.0 | :x: |
 | 2.x | .NET Standard 2.1 | :x: |
 | 3.x | .NET Standard 2.1, .NET 5 | :x: |
-| 4.x | .NET 6 | :heavy_check_mark: |
+| 4.x | .NET 6 | :white_check_mark: |
+| 5.x | .NET 8 | :heavy_check_mark: |
 
 :x: - unsupported, :white_check_mark: - bug and security fixes only, :heavy_check_mark: - active development
 

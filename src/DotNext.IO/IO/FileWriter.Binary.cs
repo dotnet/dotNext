@@ -25,6 +25,7 @@ public partial class FileWriter : IAsyncBinaryWriter
             try
             {
                 writer(Buffer.Span, arg);
+                bufferOffset += length;
             }
             catch (Exception e)
             {
@@ -48,6 +49,8 @@ public partial class FileWriter : IAsyncBinaryWriter
     {
         await FlushCoreAsync(token).ConfigureAwait(false);
         writer(BufferSpan, arg);
+
+        Debug.Assert(bufferOffset is 0);
         bufferOffset = length;
     }
 
