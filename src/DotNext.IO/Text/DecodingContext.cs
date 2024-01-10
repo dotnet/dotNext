@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DotNext.Text;
@@ -52,23 +51,4 @@ public readonly struct DecodingContext(Encoding encoding, bool reuseDecoder) : I
     /// </summary>
     /// <param name="encoding">The text encoding.</param>
     public static implicit operator DecodingContext(Encoding encoding) => new(encoding, false);
-
-    internal static int GetChars(in ReadOnlySequence<byte> bytes, ref SequencePosition position, Encoding encoding, Decoder decoder, Span<char> buffer)
-    {
-        int charsWritten;
-        if (bytes.TryGet(ref position, out var source, advance: false) && !source.IsEmpty)
-        {
-            var bytesToRead = buffer.Length / encoding.GetMaxByteCount(1);
-            bytesToRead = Math.Min(bytesToRead, source.Length);
-
-            charsWritten = decoder.GetChars(source.Span.Slice(0, bytesToRead), buffer, bytes.Length <= bytesToRead);
-            position = bytes.GetPosition(bytesToRead, position);
-        }
-        else
-        {
-            charsWritten = 0;
-        }
-
-        return charsWritten;
-    }
 }

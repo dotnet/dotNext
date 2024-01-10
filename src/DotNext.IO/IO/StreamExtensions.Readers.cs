@@ -11,6 +11,7 @@ using Buffers;
 using Buffers.Binary;
 using Numerics;
 using Text;
+using AsyncEnumerable = Collections.Generic.AsyncEnumerable;
 
 public static partial class StreamExtensions
 {
@@ -221,18 +222,33 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this Stream stream, DecodingContext context, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, [EnumeratorCancellation] CancellationToken token = default)
+    public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this Stream stream, DecodingContext context, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, CancellationToken token = default)
     {
-        ThrowIfEmpty(byteBuffer);
-        ThrowIfEmpty(charBuffer);
-
-        var lengthInBytes = await ReadLengthAsync(stream, lengthFormat, byteBuffer, token).ConfigureAwait(false);
-        for (var decoder = context.GetDecoder(); lengthInBytes > 0;)
+        string paramName;
+        if (byteBuffer.IsEmpty)
         {
-            var state = new DecodingReader(context.Encoding, decoder, lengthInBytes, charBuffer);
+            paramName = nameof(byteBuffer);
+        }
+        else if (charBuffer.IsEmpty)
+        {
+            paramName = nameof(charBuffer);
+        }
+        else
+        {
+            return DecodeAsync(stream, context.GetDecoder(), lengthFormat, charBuffer, byteBuffer, token);
+        }
+
+        return AsyncEnumerable.Throw<ReadOnlyMemory<char>>(new ArgumentException(ExceptionMessages.BufferTooSmall, paramName));
+    }
+
+    private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Stream stream, Decoder decoder, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, [EnumeratorCancellation] CancellationToken token = default)
+    {
+        var lengthInBytes = await ReadLengthAsync(stream, lengthFormat, byteBuffer, token).ConfigureAwait(false);
+        for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
+        {
+            state = new(decoder, lengthInBytes, charBuffer);
             var writtenChars = await ReadAsync<int, DecodingReader>(stream, state, byteBuffer, token).ConfigureAwait(false);
             yield return charBuffer.Slice(0, writtenChars);
-            lengthInBytes -= state.RemainingBytes;
         }
     }
 

@@ -161,7 +161,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         {
             var buffer = Buffer;
             var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
-            encoder.Convert(chars.Span.Slice(0, maxChars), buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+            encoder.Convert(chars.Span, buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
             await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
         }
 

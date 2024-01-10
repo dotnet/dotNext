@@ -130,7 +130,7 @@ public static partial class StreamExtensions
         var encoder = context.GetEncoder();
         for (int charsUsed; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesWritten)
         {
-            encoder.Convert(chars.Span.Slice(0, maxChars), buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+            encoder.Convert(chars.Span, buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
             await stream.WriteAsync(buffer.Slice(0, bytesWritten), token).ConfigureAwait(false);
         }
 

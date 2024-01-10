@@ -5,7 +5,7 @@ using System.Text;
 namespace DotNext.IO;
 
 using Buffers;
-using DotNext.Buffers.Binary;
+using Buffers.Binary;
 using static Pipelines.PipeExtensions;
 
 public sealed class SequenceBinaryReaderTests : Test
@@ -117,5 +117,29 @@ public sealed class SequenceBinaryReaderTests : Test
         await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, lengthEnc);
         await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, lengthEnc);
         await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, lengthEnc);
+    }
+
+    [Theory]
+    [InlineData("UTF-8")]
+    [InlineData("UTF-16LE")]
+    [InlineData("UTF-16BE")]
+    [InlineData("UTF-32LE")]
+    [InlineData("UTF-32BE")]
+    public static void EncodeDecodeUsingEnumerator(string encodingName)
+    {
+        var encoding = Encoding.GetEncoding(encodingName);
+
+        const string value = "Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!";
+        var writer = new ArrayBufferWriter<byte>();
+        writer.Encode(value, encoding, LengthFormat.Compressed);
+
+        var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+        Span<char> charBuffer = stackalloc char[9];
+
+        var bufferWriter = new ArrayBufferWriter<char>(value.Length);
+        foreach (var chunk in reader.Decode(encoding, LengthFormat.Compressed, charBuffer))
+            bufferWriter.Write(chunk);
+
+        Equal(value, bufferWriter.WrittenSpan.ToString());
     }
 }
