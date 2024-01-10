@@ -15,9 +15,9 @@ Span<int> s = stackalloc int[4];
 The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:
 
 1. [UnmanagedMemoryPool&lt;T&gt;](xref:DotNext.Buffers.UnmanagedMemoryPool`1) provides allocation of unmanaged memory
-1. [IUnmanagedMemory&lt;T&gt;](xref:DotNext.Buffers.IUnmanagedMemory`1) provides structured access to the allocated unmanaged memory.
+1. [IUnmanagedMemory&lt;T&gt;](xref:DotNext.Runtime.InteropServices.IUnmanagedMemory`1) provides structured access to the allocated unmanaged memory.
 
-All unmanaged data types are not thread-safe. However, there are various extension methods in [AtomicPointer](xref:DotNext.Threading.AtomicPointer) class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
+All unmanaged data types are not thread-safe.
 
 `IUnmanagedMemory<T>`derives from [IUnmanagedMemory](xref:DotNext.Runtime.InteropServices.IUnmanagedMemory) and supports direct memory manipulations:
 * `Pointer` property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks
