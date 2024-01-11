@@ -177,6 +177,9 @@ dotnet_diagnostic.CA2011.severity = error
 # CA2014: Do not use stackalloc in loops
 dotnet_diagnostic.CA2014.severity = error
 
+# CA2016: Forward the CancellationToken parameter to methods that take one
+dotnet_diagnostic.CA2016.severity = warning
+
 # SA1106: Code should not contain empty statements
 dotnet_diagnostic.SA1106.severity = none
 
