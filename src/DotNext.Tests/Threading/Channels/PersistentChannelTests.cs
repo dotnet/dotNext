@@ -11,7 +11,8 @@ public sealed class PersistentChannelTests : Test
     private sealed class SerializationChannel<T> : PersistentChannel<T, T>
         where T : notnull, IBinaryInteger<T>
     {
-        private readonly byte[] buffer = new byte[64];
+        private readonly byte[] readBuffer = new byte[64];
+        private readonly byte[] writeBuffer = new byte[64];
 
         internal SerializationChannel(PersistentChannelOptions options)
             : base(options)
@@ -19,10 +20,10 @@ public sealed class PersistentChannelTests : Test
         }
 
         protected override ValueTask<T> DeserializeAsync(Stream input, CancellationToken token)
-            => input.ReadLittleEndianAsync<T>(buffer, token);
+            => input.ReadLittleEndianAsync<T>(readBuffer, token);
 
         protected override ValueTask SerializeAsync(T input, Stream output, CancellationToken token)
-            => output.WriteLittleEndianAsync<T>(input, buffer, token);
+            => output.WriteLittleEndianAsync(input, writeBuffer, token);
     }
 
     [Theory]
