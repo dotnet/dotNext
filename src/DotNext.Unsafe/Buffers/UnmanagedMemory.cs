@@ -85,6 +85,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
         address = allocator((nuint)length, (nuint)sizeof(T));
         owner = true;
+        Length = length;
     }
 
     protected nuint Address => (nuint)address;

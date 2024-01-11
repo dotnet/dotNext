@@ -23,8 +23,8 @@ public sealed class SingletonListTests : Test
         list.CopyTo(array, 0);
         Equal(52, array[0]);
 
-        Throws<IndexOutOfRangeException>(() => list[1] = 62);
-        Throws<IndexOutOfRangeException>(() => list[1].CompareTo(52));
+        Throws<ArgumentOutOfRangeException>(() => list[1] = 62);
+        Throws<ArgumentOutOfRangeException>(() => list[1].CompareTo(52));
         Throws<NotSupportedException>(() => list.Remove(42));
         Throws<NotSupportedException>(() => list.RemoveAt(0));
         Throws<NotSupportedException>(() => list.Add(42));

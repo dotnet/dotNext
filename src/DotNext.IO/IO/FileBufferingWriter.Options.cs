@@ -43,7 +43,7 @@ public partial class FileBufferingWriter
         internal bool IsAsynchronous => (options & FileOptions.Asynchronous) != 0;
 
         internal SafeFileHandle CreateBackingFileHandle(int preallocationSize, out string fileName)
-            => File.OpenHandle(fileName = temporary ? Path.Combine(path, Path.GetRandomFileName()) : path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options, preallocationSize);
+            => File.OpenHandle(fileName = temporary ? Path.Combine(path, Path.GetRandomFileName()) : path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, options, preallocationSize);
     }
 
     /// <summary>

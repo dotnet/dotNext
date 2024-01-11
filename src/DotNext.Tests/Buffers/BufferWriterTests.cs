@@ -151,7 +151,10 @@ public sealed class BufferWriterTests : Test
             Equal(34, reader.Parse<IFormatProvider, int>(InvariantCulture, int.Parse, in decodingContext, LengthFormat.BigEndian));
             Equal(78U, reader.Parse<uint>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
             Equal(90, reader.Parse<short>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
+            Equal(12, reader.Parse<ushort>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.HexNumber, InvariantCulture));
             Equal(12, reader.Parse<ushort>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
+            Equal(10, reader.Parse<byte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.HexNumber, InvariantCulture));
+            Equal(11, reader.Parse<sbyte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.HexNumber, InvariantCulture));
             Equal(10, reader.Parse<byte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
             Equal(11, reader.Parse<sbyte>(in decodingContext, LengthFormat.LittleEndian, NumberStyles.Integer, InvariantCulture));
             Equal(g, reader.Parse<IFormatProvider, Guid>(InvariantCulture, Guid.Parse, in decodingContext, LengthFormat.LittleEndian));

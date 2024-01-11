@@ -43,13 +43,13 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     /// <param name="index">The index of the element to retrieve.</param>
     /// <value>The element at the specified index.</value>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> the index is invalid.</exception>
-    /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
     public new ref T this[int index]
     {
         get
         {
-            ObjectDisposedException.ThrowIf(IsDisposed, this);
-            return ref buffer[index];
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)position, nameof(index));
+
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buffer), index);
         }
     }
 

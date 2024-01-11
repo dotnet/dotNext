@@ -306,7 +306,7 @@ public sealed class StreamSourceTests : Test
         src.Position = 1;
         var checker = new CallbackChecker();
         var ar = src.BeginRead(buffer, 0, 2, checker.DoCallback, "state");
-        False(ar.CompletedSynchronously);
+        True(ar.CompletedSynchronously);
         Equal("state", ar.AsyncState);
         True(await checker.Task);
         Equal(2, src.EndRead(ar));
