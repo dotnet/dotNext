@@ -138,7 +138,7 @@ public partial class PersistentState
                 if (!reader.HasBufferedData || metadata.Offset < reader.FilePosition || metadata.Offset > reader.ReadPosition)
                 {
                     // attempt to read past or too far behind, clear the buffer
-                    reader.ClearBuffer();
+                    reader.Reset();
                     reader.FilePosition = metadata.Offset;
                 }
                 else

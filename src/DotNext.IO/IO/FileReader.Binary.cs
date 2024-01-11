@@ -61,7 +61,7 @@ public partial class FileReader : IAsyncBinaryReader
                 return false;
 
             parser.Invoke(buffer.Span);
-            Consume(buffer.Length);
+            ConsumeUnsafe(buffer.Length);
             length -= buffer.Length;
         }
         while (parser.RemainingBytes > 0);
@@ -295,7 +295,7 @@ public partial class FileReader : IAsyncBinaryReader
     public async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
         where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        for (ReadOnlyMemory<byte> buffer; length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
+        for (ReadOnlyMemory<byte> buffer; length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); ConsumeUnsafe(buffer.Length))
         {
             buffer = TrimLength(Buffer, length);
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
@@ -319,7 +319,7 @@ public partial class FileReader : IAsyncBinaryReader
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        for (ReadOnlyMemory<byte> buffer; count > 0L && length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); Consume(buffer.Length))
+        for (ReadOnlyMemory<byte> buffer; count > 0L && length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); ConsumeUnsafe(buffer.Length))
         {
             buffer = TrimLength(Buffer, length).TrimLength(int.CreateSaturating(count));
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
@@ -336,8 +336,15 @@ public partial class FileReader : IAsyncBinaryReader
         => count.HasValue ? CopyToAsync(consumer, count.GetValueOrDefault(), token) : CopyToAsync(consumer, token);
 
     /// <inheritdoc />
-    ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
-        => ReadAsync<MemoryBlockReader>(new(output), token);
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    async ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
+    {
+        var count = await ReadAsync(TrimLength(output, length), token).ConfigureAwait(false);
+        if (count < output.Length)
+            throw new EndOfStreamException();
+
+        length -= count;
+    }
 
     /// <inheritdoc />
     ValueTask IAsyncBinaryReader.SkipAsync(long bytes, CancellationToken token)

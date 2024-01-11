@@ -99,4 +99,7 @@ public partial class FileReader
 
     private static ReadOnlyMemory<byte> TrimLength(ReadOnlyMemory<byte> buffer, SegmentLength length)
         => length.IsInfinite ? buffer : buffer.TrimLength(int.CreateSaturating((long)length));
+
+    private static Memory<byte> TrimLength(Memory<byte> buffer, SegmentLength length)
+        => length.IsInfinite ? buffer : buffer.TrimLength(int.CreateSaturating((long)length));
 }
