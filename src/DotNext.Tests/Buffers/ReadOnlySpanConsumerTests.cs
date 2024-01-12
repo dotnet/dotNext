@@ -32,8 +32,8 @@ public sealed class ReadOnlySpanConsumerTests : Test
     {
         var ms = new ArrayBufferWriter<char>();
         IReadOnlySpanConsumer<char> consumer = new BufferConsumer<char>(ms);
-        consumer.Invoke(new ReadOnlySpan<char>(new char[] { '1', '2' }));
-        consumer.Invoke(new ReadOnlyMemory<char>(new char[] { '3', '4' }), default);
+        consumer.Invoke(stackalloc char[] { '1', '2' });
+        consumer.Invoke(new char[] { '3', '4' }, default);
         Equal("1234", ms.WrittenSpan.ToString());
     }
 
