@@ -91,12 +91,16 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     public override IMemoryOwner<T> Rent(int length = -1)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan(length, MaxBufferSize);
+        ArgumentOutOfRangeException.ThrowIfZero(length);
+
+        if (length < 0)
+            length = defaultBufferSize;
 
         PoolingUnmanagedMemoryOwner<T> result;
 
         unsafe
         {
-            result = new PoolingUnmanagedMemoryOwner<T>(Math.Max(length, defaultBufferSize), allocator)
+            result = new PoolingUnmanagedMemoryOwner<T>(length, allocator)
             {
                 OnDisposed = removeMemory,
             };
