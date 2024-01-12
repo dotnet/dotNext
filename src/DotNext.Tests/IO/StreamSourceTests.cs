@@ -289,7 +289,7 @@ public sealed class StreamSourceTests : Test
         var buffer = new byte[4];
         src.Position = 1;
         var ar = src.BeginRead(buffer, 0, 2, null, "state");
-        False(ar.CompletedSynchronously);
+        True(ar.CompletedSynchronously);
         Equal("state", ar.AsyncState);
         True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
         Equal(2, src.EndRead(ar));
