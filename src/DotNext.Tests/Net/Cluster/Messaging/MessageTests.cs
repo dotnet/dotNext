@@ -13,7 +13,7 @@ public sealed class MessageTests : Test
     {
         IMessage message = new TextMessage("Hello, world!", "msg");
         using var content = new MemoryStream(1024);
-        await message.WriteToAsync(content).ConfigureAwait(false);
+        await message.WriteToAsync(content);
         content.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true);
         Equal("Hello, world!", reader.ReadToEnd());

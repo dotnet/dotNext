@@ -271,7 +271,7 @@ public sealed class DiskBasedStateMachineTests : Test
                 False(readResult[2].IsSnapshot);
                 return default;
             };
-            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 6, 9, CancellationToken.None).ConfigureAwait(false);
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 6, 9);
         }
     }
 }

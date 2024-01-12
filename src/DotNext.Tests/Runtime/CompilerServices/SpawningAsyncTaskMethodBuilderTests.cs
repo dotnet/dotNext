@@ -34,7 +34,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     }
 
     [Fact]
-    public static async void CancellationOfSpawnedMethod()
+    public static async Task CancellationOfSpawnedMethod()
     {
         var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId, new(true));
         await Task.WhenAny(task);

@@ -5,17 +5,17 @@ namespace DotNext.Threading.Tasks;
 public sealed class ConversionTests : Test
 {
     [Fact]
-    public static void Nullable()
+    public static async Task Nullable()
     {
         var t = Task.FromResult(10).ToNullable();
-        Equal(10, t.Result);
+        Equal(10, await t);
     }
 
     [Fact]
-    public static void TypeConversion()
+    public static async Task TypeConversion()
     {
         var t = Task.FromResult("12").Convert(int.Parse);
-        Equal(12, t.Result);
+        Equal(12, await t);
     }
 
     [Fact]

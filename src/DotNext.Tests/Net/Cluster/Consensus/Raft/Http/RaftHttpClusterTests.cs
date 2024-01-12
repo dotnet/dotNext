@@ -87,7 +87,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await host3.StartAsync();
 
         await listener.Task.WaitAsync(DefaultTimeout);
-        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await listener.Task).EndPoint, EndPointFormatter.UriEndPointComparer);
 
         // add two nodes to the cluster
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress));
@@ -159,7 +159,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await host2.StartAsync();
 
         await listener.Task.WaitAsync(DefaultTimeout);
-        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await listener.Task).EndPoint, EndPointFormatter.UriEndPointComparer);
 
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress));
         await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
@@ -231,7 +231,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await host2.StartAsync();
 
         await listener.Task.WaitAsync(DefaultTimeout);
-        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await listener.Task).EndPoint, EndPointFormatter.UriEndPointComparer);
 
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress));
         await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
@@ -303,7 +303,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await host3.StartAsync();
 
         await listener.Task.WaitAsync(DefaultTimeout);
-        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await listener.Task).EndPoint, EndPointFormatter.UriEndPointComparer);
 
         // add two nodes to the cluster
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress));
@@ -437,7 +437,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await host3.StartAsync();
 
         await listener.Task.WaitAsync(DefaultTimeout);
-        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), listener.Task.Result.EndPoint, EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(GetLocalClusterView(host1).LocalMemberAddress), (await listener.Task).EndPoint, EndPointFormatter.UriEndPointComparer);
 
         // add two nodes to the cluster
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress));
