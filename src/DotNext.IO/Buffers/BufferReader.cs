@@ -8,10 +8,10 @@ internal static class BufferReader
         where TParser : struct, IBufferReader
     {
         var position = input.Start;
-        for (int consumedBytes, remainingBytes; (remainingBytes = parser.RemainingBytes) > 0; position = input.GetPosition(consumedBytes, position))
+        for (int consumedBytes, remainingBytes; (remainingBytes = parser.RemainingBytes) > 0 && input.TryGet(ref position, out var block, advance: false) && !block.IsEmpty; position = input.GetPosition(consumedBytes, position))
         {
-            var block = input.NextBlock(ref position).TrimLength(remainingBytes);
-            parser.Invoke(block);
+            block = block.TrimLength(remainingBytes);
+            parser.Invoke(block.Span);
             consumedBytes = block.Length;
         }
 
@@ -28,7 +28,4 @@ internal static class BufferReader
     internal static TResult EndOfStream<TResult, TParser>(this ref TParser parser)
         where TParser : struct, IBufferReader, ISupplier<TResult>
         => parser.RemainingBytes is 0 || !TParser.ThrowOnPartialData ? parser.Invoke() : throw new EndOfStreamException();
-
-    private static ReadOnlySpan<byte> NextBlock(this in ReadOnlySequence<byte> sequence, ref SequencePosition position)
-        => sequence.TryGet(ref position, out var block, advance: false) && !block.IsEmpty ? block.Span : throw new EndOfStreamException();
 }
