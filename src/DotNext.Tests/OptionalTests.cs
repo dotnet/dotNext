@@ -219,12 +219,12 @@ public sealed class OptionalTest : Test
     public static void GettingReference()
     {
         var optional = Optional<int>.None;
-        Throws<InvalidOperationException>(() => Optional.GetReference<int, InvalidOperationException>(optional));
-        Throws<InvalidOperationException>(() => Optional.GetReference(in optional));
+        Throws<InvalidOperationException>(() => optional.GetReference<InvalidOperationException>());
+        Throws<InvalidOperationException>(() => optional.ValueRef);
         optional = 23;
-        Equal(23, Optional.GetReference<int, InvalidOperationException>(optional));
-        Equal(23, Optional.GetReference(optional, static () => new InvalidOperationException()));
-        Equal(23, Optional.GetReference(in optional));
+        Equal(23, optional.GetReference<InvalidOperationException>());
+        Equal(23, optional.GetReference(static () => new InvalidOperationException()));
+        Equal(23, optional.ValueRef);
     }
 
     [Fact]

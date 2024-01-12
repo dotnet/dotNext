@@ -13,7 +13,7 @@ public static class Predicate
     /// </summary>
     /// <typeparam name="T">The target type.</typeparam>
     /// <returns>The predicate instance.</returns>
-    public static Predicate<object?> IsTypeOf<T>() => ObjectExtensions.IsTypeOf<T>;
+    public static Predicate<object?> IsTypeOf<T>() => BasicExtensions.IsTypeOf<T>;
 
     /// <summary>
     /// Returns predicate implementing nullability check.
@@ -25,7 +25,7 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T> IsNull<T>()
         where T : class?
-        => ObjectExtensions.IsNull;
+        => BasicExtensions.IsNull;
 
     /// <summary>
     /// Returns predicate checking that input argument
@@ -38,7 +38,7 @@ public static class Predicate
     /// </remarks>
     public static Predicate<T> IsNotNull<T>()
         where T : class?
-        => ObjectExtensions.IsNotNull;
+        => BasicExtensions.IsNotNull;
 
     /// <summary>
     /// Returns predicate checking that input argument of value type
@@ -73,28 +73,6 @@ public static class Predicate
     }
 
     /// <summary>
-    /// Returns a predicate which always returns <see langword="true"/>.
-    /// </summary>
-    /// <typeparam name="T">Type of predicate argument.</typeparam>
-    /// <returns>A predicate which always returns <see langword="true"/>.</returns>
-    /// <remarks>
-    /// This method returns the same instance of predicate on every call.
-    /// </remarks>
-    [Obsolete("Use Constant method instead.")]
-    public static Predicate<T> True<T>() => Constant<T>(value: true);
-
-    /// <summary>
-    /// Returns a predicate which always returns <see langword="false"/>.
-    /// </summary>
-    /// <typeparam name="T">Type of predicate argument.</typeparam>
-    /// <returns>A predicate which always returns <see langword="false"/>.</returns>
-    /// <remarks>
-    /// This method returns the same instance of predicate on every call.
-    /// </remarks>
-    [Obsolete("Use Constant method instead.")]
-    public static Predicate<T> False<T>() => Constant<T>(value: false);
-
-    /// <summary>
     /// Represents predicate as type <see cref="Func{T,Boolean}"/>.
     /// </summary>
     /// <param name="predicate">A predicate to convert.</param>
@@ -125,19 +103,8 @@ public static class Predicate
     public static Predicate<T> Negate<T>(this Predicate<T> predicate)
         => predicate is not null ? predicate.Negate : throw new ArgumentNullException(nameof(predicate));
 
-    private sealed class BinaryOperator<T>
+    private sealed class BinaryOperator<T>(Predicate<T> left, Predicate<T> right)
     {
-        private readonly Predicate<T> left, right;
-
-        internal BinaryOperator(Predicate<T> left, Predicate<T> right)
-        {
-            Debug.Assert(left is not null);
-            Debug.Assert(right is not null);
-
-            this.left = left;
-            this.right = right;
-        }
-
         internal bool Or(T value) => left(value) || right(value);
 
         internal bool And(T value) => left(value) && right(value);

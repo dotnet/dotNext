@@ -40,20 +40,6 @@ public abstract class Disposable : IDisposable
     private string ObjectName => GetType().Name;
 
     /// <summary>
-    /// Throws exception if this object is disposed.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">Object is disposed.</exception>
-    protected void ThrowIfDisposed()
-    {
-        if (IsDisposed)
-            Throw();
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        void Throw() => throw new ObjectDisposedException(ObjectName);
-    }
-
-    /// <summary>
     /// Gets a task representing <see cref="ObjectDisposedException"/> exception.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -172,10 +158,10 @@ public abstract class Disposable : IDisposable
     /// Disposes many objects in safe manner.
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
-    public static void Dispose(params IDisposable?[] objects)
+    public static void Dispose(ReadOnlySpan<IDisposable?> objects)
     {
-        for (nint i = 0; i < GetLength(objects); i++)
-            objects[i]?.Dispose();
+        foreach (var obj in objects)
+            obj?.Dispose();
     }
 
     /// <summary>

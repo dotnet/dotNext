@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -12,7 +10,7 @@ namespace DotNext.Collections.Specialized;
 /// </summary>
 /// <typeparam name="T">The type of the element in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
+public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>
 {
     /// <summary>
     /// Represents an enumerator over the collection containing a single element.
@@ -48,7 +46,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
         /// <returns><see langword="true"/> if the enumerator advanced successfully; otherwise, <see langword="false"/>.</returns>
         public bool MoveNext()
         {
-            if (state == NotRequestedState)
+            if (state is NotRequestedState)
             {
                 state = RequestedState;
                 return true;
@@ -62,25 +60,15 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
         /// </summary>
         public void Reset()
         {
-            if (state == RequestedState)
+            if (state is RequestedState)
                 state = NotRequestedState;
         }
     }
 
     /// <summary>
-    /// Initializes a new list with one element.
+    /// The item of the list.
     /// </summary>
-    /// <param name="item">The element in the list.</param>
-    public SingletonList(T item) => Item = item;
-
-    /// <summary>
-    /// Gets or sets the item in this list.
-    /// </summary>
-    public T Item
-    {
-        readonly get;
-        set;
-    }
+    required public T Item;
 
     /// <summary>
     /// Gets or sets the item in this list.
@@ -94,25 +82,18 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
     {
         readonly get
         {
-            if (index != 0)
-                ThrowIndexOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfNotEqual(index, 0);
 
             return Item;
         }
 
         set
         {
-            if (index != 0)
-                ThrowIndexOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfNotEqual(index, 0);
 
             Item = value;
         }
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowIndexOutOfRangeException()
-        => throw new IndexOutOfRangeException(ExceptionMessages.IndexShouldBeZero);
 
     /// <inheritdoc />
     readonly object? ITuple.this[int index] => this[index];
@@ -146,7 +127,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
     readonly void ICollection<T>.Add(T item) => throw new NotSupportedException();
 
     /// <inheritdoc />
-    readonly int IList<T>.IndexOf(T item) => EqualityComparer<T>.Default.Equals(Item, item).ToInt32() - 1;
+    readonly int IList<T>.IndexOf(T item) => Unsafe.BitCast<bool, byte>(EqualityComparer<T>.Default.Equals(Item, item)) - 1;
 
     /// <inheritdoc />
     readonly void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
@@ -171,5 +152,69 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple
     /// </summary>
     /// <param name="item">The item in the list.</param>
     /// <returns>The collection containing the list.</returns>
-    public static implicit operator SingletonList<T>(T item) => new(item);
+    public static implicit operator SingletonList<T>(T item) => new() { Item = item };
+
+    /// <inheritdoc />
+    readonly bool IReadOnlySet<T>.Contains(T item) => EqualityComparer<T>.Default.Equals(Item, item);
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.Overlaps(IEnumerable<T> other)
+        => other.Contains(Item);
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.SetEquals(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count is 1 && other.Contains(Item);
+
+        using var enumerator = other.GetEnumerator();
+        return enumerator.MoveNext()
+            && EqualityComparer<T>.Default.Equals(Item, enumerator.Current)
+            && !enumerator.MoveNext();
+    }
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsSubsetOf(IEnumerable<T> other)
+        => other.Contains(Item);
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsProperSubsetOf(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count > 1 && other.Contains(Item);
+
+        var matched = false;
+        foreach (var candidate in other)
+        {
+            if (matched)
+                return true;
+
+            if (EqualityComparer<T>.Default.Equals(Item, candidate))
+                matched = true;
+        }
+
+        return false;
+    }
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsProperSupersetOf(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count is 0;
+
+        using var enumerator = other.GetEnumerator();
+        return enumerator.MoveNext() is false;
+    }
+
+    /// <inheritdoc/>
+    readonly bool IReadOnlySet<T>.IsSupersetOf(IEnumerable<T> other)
+    {
+        if (other.TryGetNonEnumeratedCount(out var count))
+            return count is 0 || (count is 1 && other.Contains(Item));
+
+        using var enumerator = other.GetEnumerator();
+        return !enumerator.MoveNext()
+            || EqualityComparer<T>.Default.Equals(Item, enumerator.Current)
+            && !enumerator.MoveNext();
+    }
 }

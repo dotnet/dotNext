@@ -6,7 +6,7 @@ using Buffers;
 
 public sealed class StreamSourceTests : Test
 {
-    private static readonly byte[] data = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 };
+    private static readonly byte[] data = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
 
     public static IEnumerable<object[]> TestBuffers()
     {
@@ -182,7 +182,7 @@ public sealed class StreamSourceTests : Test
         buffer.Write(in sequence);
         using var src = buffer.AsStream(true);
         Span<byte> dest = new byte[data.Length];
-        src.ReadBlock(dest);
+        src.ReadExactly(dest);
         Equal(data, dest.ToArray());
     }
 
@@ -224,7 +224,7 @@ public sealed class StreamSourceTests : Test
         Equal(src.Length, sequence.Length);
         Equal(0L, src.Position);
         Memory<byte> dest = new byte[data.Length];
-        await src.ReadBlockAsync(dest);
+        await src.ReadExactlyAsync(dest);
         Equal(src.Length, src.Position);
         Equal(data, dest.ToArray());
     }
@@ -289,7 +289,7 @@ public sealed class StreamSourceTests : Test
         var buffer = new byte[4];
         src.Position = 1;
         var ar = src.BeginRead(buffer, 0, 2, null, "state");
-        False(ar.CompletedSynchronously);
+        True(ar.CompletedSynchronously);
         Equal("state", ar.AsyncState);
         True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
         Equal(2, src.EndRead(ar));
@@ -306,7 +306,7 @@ public sealed class StreamSourceTests : Test
         src.Position = 1;
         var checker = new CallbackChecker();
         var ar = src.BeginRead(buffer, 0, 2, checker.DoCallback, "state");
-        False(ar.CompletedSynchronously);
+        True(ar.CompletedSynchronously);
         Equal("state", ar.AsyncState);
         True(await checker.Task);
         Equal(2, src.EndRead(ar));
@@ -369,7 +369,7 @@ public sealed class StreamSourceTests : Test
     }
 
     [Fact]
-    public static void StressTest()
+    public static async Task StressTest()
     {
         ReadOnlySequence<byte> sequence;
         var dict = new Dictionary<string, string>
@@ -378,15 +378,16 @@ public sealed class StreamSourceTests : Test
                 {"Key2", "Value2"}
             };
 
+        Memory<byte> buffer = new byte[16];
         using (var ms = new MemoryStream(1024))
         {
-            DictionarySerializer.Serialize(dict, ms);
+            await DictionarySerializer.SerializeAsync(dict, ms, buffer);
             ms.Position = 0L;
             sequence = ToReadOnlySequence<byte>(ms.ToArray(), 10);
         }
 
         using var stream = sequence.AsStream();
-        Equal(dict, DictionarySerializer.Deserialize(stream));
+        Equal(dict, await DictionarySerializer.DeserializeAsync(stream, buffer));
     }
 
     private sealed class FlushCounter

@@ -1,3 +1,5 @@
+using Debug = System.Diagnostics.Debug;
+
 namespace DotNext.Threading;
 
 /// <summary>
@@ -86,5 +88,30 @@ public static class LinkedTokenSourceFactory
         }
 
         return result;
+    }
+
+    private sealed class Linked2CancellationTokenSource : LinkedCancellationTokenSource
+    {
+        private readonly CancellationTokenRegistration registration1, registration2;
+
+        internal Linked2CancellationTokenSource(in CancellationToken token1, in CancellationToken token2)
+        {
+            Debug.Assert(token1.CanBeCanceled);
+            Debug.Assert(token2.CanBeCanceled);
+
+            registration1 = token1.UnsafeRegister(CancellationCallback, this);
+            registration2 = token2.UnsafeRegister(CancellationCallback, this);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                registration1.Dispose();
+                registration2.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

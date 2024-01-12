@@ -1,44 +1,72 @@
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
+using System.Runtime.InteropServices;
 using Buffers;
 using IO;
 using IO.Log;
 
 internal partial class Server
 {
-    private sealed class ReceivedLogEntries : Disposable, ILogEntryProducer<ReceivedLogEntries>, IRaftLogEntry
+    private sealed class ReceivedLogEntries : MemoryManager<byte>, ILogEntryProducer<ReceivedLogEntries>, IRaftLogEntry
     {
-        internal readonly ClusterMemberId Id;
-        internal readonly long Term, PrevLogIndex, PrevLogTerm, CommitIndex;
-        internal readonly bool ApplyConfig;
         private readonly ProtocolStream stream;
         private readonly CancellationToken token;
         internal readonly InMemoryClusterConfiguration Configuration;
-        private readonly MemoryAllocator<byte> allocator;
         private int entriesCount;
         private LogEntryMetadata metadata;
         private bool consumed;
+        private Buffer buffer;
+        private Buffer[]? pinnedBuffer;
 
-        internal ReceivedLogEntries(ProtocolStream stream, MemoryAllocator<byte> allocator, CancellationToken token)
+        internal ReceivedLogEntries(ProtocolStream stream, MemoryAllocator<byte> allocator, out bool applyConfig, CancellationToken token)
         {
             this.stream = stream;
             this.token = token;
             consumed = true;
 
             var reader = new SpanReader<byte>(stream.WrittenBufferSpan);
-            (Id, Term, PrevLogIndex, PrevLogTerm, CommitIndex, entriesCount) = AppendEntriesMessage.Read(ref reader);
-            ApplyConfig = ValueTypeExtensions.ToBoolean(reader.Read());
+            (buffer.Id, buffer.Term, buffer.PrevLogIndex, buffer.PrevLogTerm, buffer.CommitIndex, entriesCount) = reader.Read<AppendEntriesMessage>();
+            applyConfig = Unsafe.BitCast<byte, bool>(reader.Read());
 
-            var fingerprint = reader.ReadInt64(true);
-            var configLength = reader.ReadInt64(true);
+            var (fingerprint, configLength) = reader.Read<ConfigurationMessage>();
+            stream.AdvanceReadCursor(reader.ConsumedCount);
 
             Configuration = configLength > 0L
-                ? new(allocator(checked((int)configLength)), fingerprint)
+                ? new(allocator(int.CreateChecked(configLength)), fingerprint)
                 : new(fingerprint);
-            this.allocator = allocator;
+        }
+
+        internal ClusterMemberId Id => buffer.Id;
+
+        internal long Term => buffer.Term;
+
+        internal long PrevLogIndex => buffer.PrevLogIndex;
+
+        internal long PrevLogTerm => buffer.PrevLogTerm;
+
+        internal long CommitIndex => buffer.CommitIndex;
+
+        public override Span<byte> GetSpan()
+        {
+            ref var buffer = ref pinnedBuffer is null
+                ? ref this.buffer
+                : ref MemoryMarshal.GetArrayDataReference(pinnedBuffer);
+
+            return Span.AsBytes(ref buffer);
+        }
+
+        public override unsafe MemoryHandle Pin(int elementIndex = 0)
+        {
+            pinnedBuffer ??= GC.AllocateUninitializedArray<Buffer>(length: 1, pinned: true);
+            return new(Unsafe.AsPointer(ref pinnedBuffer[elementIndex]));
+        }
+
+        public override void Unpin()
+        {
         }
 
         public async ValueTask<bool> MoveNextAsync()
@@ -54,7 +82,7 @@ internal partial class Server
             {
                 // read metadata
                 await stream.ReadAsync(LogEntryMetadata.Size, token).ConfigureAwait(false);
-                metadata = ParseLogEntryMetadata(stream.WrittenBufferSpan);
+                metadata = new(stream.WrittenBufferSpan);
                 stream.AdvanceReadCursor(LogEntryMetadata.Size);
 
                 consumed = false;
@@ -63,12 +91,6 @@ internal partial class Server
             }
 
             return result;
-
-            static LogEntryMetadata ParseLogEntryMetadata(ReadOnlySpan<byte> responseData)
-            {
-                var reader = new SpanReader<byte>(responseData);
-                return LogEntryMetadata.Parse(ref reader);
-            }
         }
 
         long ILogEntryProducer<ReceivedLogEntries>.RemainingCount => entriesCount;
@@ -92,17 +114,13 @@ internal partial class Server
             Debug.Assert(!consumed);
 
             consumed = true;
-            return new(writer.CopyFromAsync(stream, token));
+            return writer.CopyFromAsync(stream, count: null, token);
         }
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-        async ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
+        ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         {
-            // we don't need large buffer. It is used for encoding some special data types, such as strings
-            using var buffer = allocator.Invoke(length: 512, exactSize: false);
-            var result = await IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, buffer.Memory, token).ConfigureAwait(false);
             consumed = true;
-            return result;
+            return IDataTransferObject.TransformAsync<TResult, TTransformation>(stream, transformation, resetStream: false, Memory, token);
         }
 
         protected override void Dispose(bool disposing)
@@ -111,10 +129,32 @@ internal partial class Server
             {
                 Configuration.Dispose();
             }
-
-            base.Dispose(disposing);
         }
 
-        ValueTask IAsyncDisposable.DisposeAsync() => DisposeAsync();
+        ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            var result = ValueTask.CompletedTask;
+            try
+            {
+                Dispose(disposing: true);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
+            finally
+            {
+                GC.SuppressFinalize(this);
+            }
+
+            return result;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private struct Buffer
+    {
+        internal ClusterMemberId Id;
+        internal long Term, PrevLogIndex, PrevLogTerm, CommitIndex;
     }
 }

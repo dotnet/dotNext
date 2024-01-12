@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.Tracing;
 using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
@@ -60,26 +59,6 @@ public sealed class PersistentChannelOptions : ChannelOptions
     /// file on disk during writing.
     /// </remarks>
     public long InitialPartitionSize
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Specifies counter for write operations.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public IncrementingEventCounter? WriteRateCounter
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Specifiies counter for read operations.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public IncrementingEventCounter? ReadRateCounter
     {
         get;
         set;

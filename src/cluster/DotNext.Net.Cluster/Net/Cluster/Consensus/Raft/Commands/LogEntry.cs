@@ -9,33 +9,26 @@ using Runtime.Serialization;
 /// Represents Raft log entry containing custom command.
 /// </summary>
 /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
+/// <seealso cref="Text.Json.JsonSerializable{T}"/>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct LogEntry<TCommand> : IRaftLogEntry // TODO: Rename to RaftLogEntry
+public readonly struct LogEntry<TCommand>() : IRaftLogEntry
     where TCommand : notnull, ISerializable<TCommand>
 {
-    internal LogEntry(long term, TCommand command, int id)
-    {
-        Term = term;
-        Timestamp = DateTimeOffset.UtcNow;
-        Command = command;
-        CommandId = id;
-    }
-
     /// <summary>
     /// Gets the command associated with this log entry.
     /// </summary>
-    public TCommand Command { get; }
+    required public TCommand Command { get; init; }
 
     /// <inheritdoc />
-    public long Term { get; }
+    required public long Term { get; init; }
 
     /// <inheritdoc />
-    public DateTimeOffset Timestamp { get; }
+    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets identifier of the underlying command associated with this log entry.
     /// </summary>
-    public int CommandId { get; }
+    required public int CommandId { get; init; }
 
     /// <inheritdoc />
     int? IRaftLogEntry.CommandId => CommandId;

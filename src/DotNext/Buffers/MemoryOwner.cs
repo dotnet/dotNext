@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -152,8 +151,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 0 or greater than the length of <paramref name="array"/>.</exception>
     public MemoryOwner(T[] array, int length)
     {
-        if ((uint)length > (uint)array.Length)
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)length, (uint)array.Length, nameof(length));
 
         this.array = length > 0 ? array : null;
         this.length = length;
@@ -167,30 +165,6 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     public MemoryOwner(T[] array)
         : this(array, array.Length)
     {
-    }
-
-    /// <summary>
-    /// Rents the memory block and wrap it to the <see cref="MemoryOwner{T}"/> type.
-    /// </summary>
-    /// <typeparam name="TArg">The type of the argument to be passed to the provider.</typeparam>
-    /// <param name="provider">The provider that allows to rent the memory.</param>
-    /// <param name="length">The length of the memory block to rent.</param>
-    /// <param name="arg">The argument to be passed to the provider.</param>
-    /// <param name="exactSize">
-    /// <see langword="true"/> to preserve the requested length;
-    /// <see langword="false"/> to use actual length of the rented memory block.
-    /// </param>
-    /// <returns>Rented memory block.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="provider"/> is zero pointer.</exception>
-    [CLSCompliant(false)]
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe MemoryOwner<T> Create<TArg>(delegate*<int, TArg, IMemoryOwner<T>> provider, int length, TArg arg, bool exactSize = true)
-    {
-        if (provider is null)
-            throw new ArgumentNullException(nameof(provider));
-
-        return length == 0 ? default : new(provider(length, arg), exactSize ? length : null);
     }
 
     /// <summary>
@@ -320,30 +294,16 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// <param name="index">The index of the element in memory.</param>
     /// <value>The managed pointer to the item.</value>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
-    public readonly ref T this[nint index]
+    public readonly ref T this[int index]
     {
         get
         {
             AssertValid();
-
-            if ((nuint)index >= (nuint)length)
-                ThrowArgumentOutOfRangeException();
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)length, nameof(index));
 
             return ref Unsafe.Add(ref First, index);
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowArgumentOutOfRangeException() => throw new ArgumentOutOfRangeException(nameof(index));
         }
     }
-
-    /// <summary>
-    /// Gets managed pointer to the item in the rented memory.
-    /// </summary>
-    /// <param name="index">The index of the element in memory.</param>
-    /// <value>The managed pointer to the item.</value>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
-    public readonly ref T this[int index] => ref this[(nint)index];
 
     internal readonly void Clear(bool clearBuffer)
     {
@@ -371,4 +331,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         Clear(RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         this = default;
     }
+
+    /// <inheritdoc/>
+    public override readonly string ToString() => Span.ToString();
 }

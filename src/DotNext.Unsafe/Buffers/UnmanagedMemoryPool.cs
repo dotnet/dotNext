@@ -1,7 +1,10 @@
 ﻿using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
+
+using Runtime.InteropServices;
 
 /// <summary>
 /// Represents pool of unmanaged memory.
@@ -10,31 +13,68 @@ namespace DotNext.Buffers;
 public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     where T : unmanaged
 {
-    private readonly Action<IUnmanagedMemoryOwner<T>>? removeMemory;
+    private readonly Action<IUnmanagedMemory<T>>? removeMemory;
     private readonly int defaultBufferSize;
+    private readonly unsafe delegate*<nuint, nuint, void* > allocator;
     private volatile Action? ownerDisposal;
 
     /// <summary>
     /// Initializes a new pool of unmanaged memory.
     /// </summary>
     /// <param name="maxBufferSize">The maximum allowed number of elements that can be allocated by the pool.</param>
-    /// <param name="defaultBufferSize">The default number of elements that can be allocated by the pool.</param>
-    /// <param name="trackAllocations"><see langword="true"/> to release allocated unmanaged memory when <see cref="Dispose(bool)"/> is called; otherwise, <see langword="false"/>.</param>
-    public UnmanagedMemoryPool(int maxBufferSize, int defaultBufferSize = 32, bool trackAllocations = false)
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxBufferSize"/> is negative or zero.</exception>
+    public UnmanagedMemoryPool(int maxBufferSize)
     {
-        if (maxBufferSize < 1)
-            throw new ArgumentOutOfRangeException(nameof(maxBufferSize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxBufferSize);
+
+        const int defaultBufferSize = 32;
         MaxBufferSize = maxBufferSize;
         this.defaultBufferSize = Math.Min(defaultBufferSize, maxBufferSize);
-        removeMemory = trackAllocations ? new Action<IUnmanagedMemoryOwner<T>>(RemoveTracking) : null;
+
+        unsafe
+        {
+            allocator = &NativeMemory.Alloc;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the size of memory block allocated by default.
+    /// </summary>
+    public int DefaultBufferSize
+    {
+        get => defaultBufferSize;
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+
+            defaultBufferSize = Math.Min(value, MaxBufferSize);
+        }
+    }
+
+    /// <summary>
+    /// Indicates that destruction of this pool releases the memory rented by this pool.
+    /// </summary>
+    /// <value><see langword="true"/> to release allocated unmanaged memory when <see cref="Dispose(bool)"/> is called; otherwise, <see langword="false"/>.</value>
+    public bool TrackAllocations
+    {
+        get => removeMemory is not null;
+        init => removeMemory = value ? RemoveTracking : null;
+    }
+
+    /// <summary>
+    /// Sets a value indicating that the allocated unmanaged memory must be filled with zeroes.
+    /// </summary>
+    public unsafe bool AllocateZeroedMemory
+    {
+        init => allocator = value ? &NativeMemory.AllocZeroed : &NativeMemory.Alloc;
     }
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private void RemoveTracking(IUnmanagedMemoryOwner<T> owner)
+    private void RemoveTracking(IUnmanagedMemory<T> owner)
         => ownerDisposal -= owner.Dispose;
 
     [MethodImpl(MethodImplOptions.Synchronized)]
-    private void AddTracking(IUnmanagedMemoryOwner<T> owner)
+    private void AddTracking(IUnmanagedMemory<T> owner)
         => ownerDisposal += owner.Dispose;
 
     /// <summary>
@@ -50,13 +90,25 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is greater than <see cref="MaxBufferSize"/>.</exception>
     public override IMemoryOwner<T> Rent(int length = -1)
     {
-        if (length > MaxBufferSize)
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(length, MaxBufferSize);
+        ArgumentOutOfRangeException.ThrowIfZero(length);
+
         if (length < 0)
             length = defaultBufferSize;
-        var result = new UnmanagedMemoryOwner<T>(length, zeroMem: true, true) { OnDisposed = removeMemory };
+
+        PoolingUnmanagedMemoryOwner<T> result;
+
+        unsafe
+        {
+            result = new PoolingUnmanagedMemoryOwner<T>(length, allocator)
+            {
+                OnDisposed = removeMemory,
+            };
+        }
+
         if (removeMemory is not null)
             AddTracking(result);
+
         return result;
     }
 
@@ -71,4 +123,36 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
             Interlocked.Exchange(ref ownerDisposal, null)?.Invoke();
         }
     }
+}
+
+file sealed class PoolingUnmanagedMemoryOwner<T> : UnmanagedMemoryOwner<T>, IUnmanagedMemory<T>
+    where T : unmanaged
+{
+    required internal Action<IUnmanagedMemory<T>>? OnDisposed;
+
+    internal unsafe PoolingUnmanagedMemoryOwner(int length, delegate*<nuint, nuint, void* > allocator)
+        : base(length, allocator)
+    {
+    }
+
+    /// <summary>
+    /// Releases unmanaged memory that was allocated by this object.
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> to release all resources; <see langword="false"/> to release unmanaged memory only.</param>
+    protected override void Dispose(bool disposing)
+    {
+        try
+        {
+            OnDisposed?.Invoke(this);
+            OnDisposed = null;
+        }
+        finally
+        {
+            base.Dispose(disposing);
+        }
+    }
+
+    void IUnmanagedMemory<T>.Reallocate(int length) => throw new NotSupportedException();
+
+    bool IUnmanagedMemory<T>.SupportsReallocation => false;
 }

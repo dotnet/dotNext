@@ -16,7 +16,7 @@ internal partial class HttpPeerController
     private async Task ProcessJoinAsync(HttpRequest request, HttpResponse response, int payloadLength, CancellationToken token)
     {
         EndPoint joinedPeer;
-        if (request.BodyReader.TryReadBlock(payloadLength, out var result))
+        if (request.BodyReader.TryReadExactly(payloadLength, out var result))
         {
             // fast path, no need to allocate temp buffer
             joinedPeer = DeserializeJoinRequest(result.Buffer, out var position);
@@ -25,8 +25,8 @@ internal partial class HttpPeerController
         else
         {
             // slow path, copy to temp buffer
-            using var buffer = allocator.Invoke(payloadLength, true);
-            await request.BodyReader.ReadBlockAsync(buffer.Memory, token).ConfigureAwait(false);
+            using var buffer = allocator.AllocateExactly(payloadLength);
+            await request.BodyReader.ReadExactlyAsync(buffer.Memory, token).ConfigureAwait(false);
             joinedPeer = DeserializeJoinRequest(buffer.Memory);
         }
 

@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions;
 
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents expression that is protected by null check, e.g. safe navigation operator (?. in C#).
@@ -96,6 +96,6 @@ public sealed class NullSafetyExpression : CustomExpression
         Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
         return assignment is null ?
             conditional :
-            Block(body.Type, Seq.Singleton(Target), assignment, conditional);
+            Block(body.Type, List.Singleton(Target), assignment, conditional);
     }
 }

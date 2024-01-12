@@ -7,8 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
 using Membership;
-using Metrics;
-using Threading;
 using TransportServices;
 
 /// <summary>
@@ -18,14 +16,12 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 {
     private protected static readonly Histogram<double> ResponseTimeMeter = Raft.Metrics.Instrumentation.ClientSide.CreateHistogram<double>("response-time", unit: "ms", description: "Response Time");
 
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
-    private readonly IClientMetricsCollector? metrics;
     private protected readonly ILocalMember localMember;
     private readonly TimeSpan requestTimeout;
     internal readonly ClusterMemberId Id;
     private protected readonly KeyValuePair<string, object?> cachedRemoteAddressAttribute;
     private volatile IReadOnlyDictionary<string, string>? metadataCache;
-    private AtomicEnum<ClusterMemberStatus> status;
+    private volatile ClusterMemberStatus status;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> statusChangedHandlers;
     private IRaftClusterMember.ReplicationState state;
 
@@ -36,18 +32,10 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
 
         this.localMember = localMember;
         EndPoint = endPoint;
-        status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
         Id = ClusterMemberId.FromEndPoint(endPoint);
         requestTimeout = TimeSpan.FromSeconds(30);
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, endPoint.ToString());
         IsRemote = localMember.Id != Id;
-    }
-
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
-    internal IClientMetricsCollector? Metrics
-    {
-        get => metrics;
-        init => metrics = value;
     }
 
     internal TimeSpan RequestTimeout
@@ -81,8 +69,11 @@ public abstract class RaftClusterMember : Disposable, IRaftClusterMember
     /// </summary>
     public ClusterMemberStatus Status
     {
-        get => IsRemote ? status.Value : ClusterMemberStatus.Available;
+        get => IsRemote ? status : ClusterMemberStatus.Available;
+
+#pragma warning disable CS0420
         private protected set => IClusterMember.OnMemberStatusChanged(this, ref status, value, statusChangedHandlers);
+#pragma warning restore CS0420
     }
 
     /// <summary>

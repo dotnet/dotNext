@@ -19,15 +19,15 @@ public sealed class AddMessage : ISerializable<AddMessage>
 
     async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
-        await writer.WriteInt32Async(X, true, token);
-        await writer.WriteInt32Async(Y, true, token);
+        await writer.WriteLittleEndianAsync(X, token);
+        await writer.WriteLittleEndianAsync(Y, token);
     }
 
     public static async ValueTask<AddMessage> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
         where TReader : notnull, IAsyncBinaryReader
         => new AddMessage
         {
-            X = await reader.ReadInt32Async(true, token),
-            Y = await reader.ReadInt32Async(true, token),
+            X = await reader.ReadLittleEndianAsync<int>(token),
+            Y = await reader.ReadLittleEndianAsync<int>(token),
         };
 }

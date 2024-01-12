@@ -9,47 +9,43 @@ using Runtime.Serialization;
 /// Represents typed message.
 /// </summary>
 /// <typeparam name="T">The payload of the message.</typeparam>
-internal sealed class Message<T> : IMessage
+internal sealed class Message<T>() : IMessage
     where T : notnull, ISerializable<T>
 {
-    /// <summary>
-    /// Initializes a new message.
-    /// </summary>
-    /// <param name="name">The name of the message.</param>
-    /// <param name="payload">The payload of the message.</param>
-    /// <param name="type">MIME type of the message.</param>
-    public Message(string name, T payload, string? type = null)
-        : this(name, payload, type is null ? null : new ContentType(type))
-    {
-    }
+    private readonly string name = string.Empty;
+    private ContentType? type;
 
-    /// <summary>
-    /// Initializes a new message.
-    /// </summary>
-    /// <param name="name">The name of the message.</param>
-    /// <param name="payload">The payload of the message.</param>
-    /// <param name="type">MIME type of the message.</param>
-    public Message(string name, T payload, ContentType? type)
-    {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        Type = type ?? new ContentType(MediaTypeNames.Application.Octet);
-        Payload = payload;
-    }
+    internal Message(string? mediaType)
+        : this()
+        => type = mediaType is { Length: > 0 } ? new(mediaType) : new(MediaTypeNames.Application.Octet);
 
     /// <summary>
     /// Gets payload of this message.
     /// </summary>
-    public T Payload { get; }
+    required public T Payload { get; init; }
 
     /// <summary>
     /// Gets name of this message.
     /// </summary>
-    public string Name { get; }
+    required public string Name
+    {
+        get => name;
+        init
+        {
+            ArgumentException.ThrowIfNullOrEmpty(value);
+
+            name = value;
+        }
+    }
 
     /// <summary>
     /// Gets MIME type of this message.
     /// </summary>
-    public ContentType Type { get; }
+    public ContentType Type
+    {
+        get => type ??= new(MediaTypeNames.Application.Octet);
+        init => type = value;
+    }
 
     /// <inheritdoc/>
     long? IDataTransferObject.Length => Payload.Length;

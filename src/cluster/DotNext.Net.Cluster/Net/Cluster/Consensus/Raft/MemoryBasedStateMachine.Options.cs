@@ -1,5 +1,3 @@
-using System.Diagnostics.Tracing;
-
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 public partial class MemoryBasedStateMachine
@@ -95,8 +93,7 @@ public partial class MemoryBasedStateMachine
             get => snapshotBufferSize ?? BufferSize;
             set
             {
-                if (value < MinBufferSize)
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, MinBufferSize);
 
                 snapshotBufferSize = value;
             }
@@ -125,16 +122,6 @@ public partial class MemoryBasedStateMachine
         /// </remarks>
         /// <seealso cref="PersistentState.AppendAsync{TEntry}(TEntry, bool, CancellationToken)"/>
         public LogEntryCacheEvictionPolicy CacheEvictionPolicy
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the counter used to measure the number of squashed log entries.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public IncrementingEventCounter? CompactionCounter
         {
             get;
             set;

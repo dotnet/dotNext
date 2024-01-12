@@ -7,6 +7,8 @@ public sealed class OptionalConverterFactoryTests : Test
     [Fact]
     public static void UndefinedValues()
     {
+        True(JsonSerializer.IsReflectionEnabledByDefault);
+
         var expected = new TestJsonObject
         {
             IntegerValue = Optional.None<int>(),

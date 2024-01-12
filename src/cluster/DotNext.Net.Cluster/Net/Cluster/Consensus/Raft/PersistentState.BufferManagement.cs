@@ -10,24 +10,24 @@ using static IO.DataTransferObject;
 
 public partial class PersistentState
 {
-    internal sealed class BufferingLogEntryConsumer : ConcurrentBag<BufferedRaftLogEntry[]>, ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>
+    internal sealed class BufferingLogEntryConsumer : ConcurrentBag<BufferedLogEntry[]>, ILogEntryConsumer<IRaftLogEntry, (BufferedLogEntryList, long?)>
     {
-        private readonly RaftLogEntriesBufferingOptions options;
+        private readonly LogEntriesBufferingOptions options;
 
-        internal BufferingLogEntryConsumer(RaftLogEntriesBufferingOptions options)
+        internal BufferingLogEntryConsumer(LogEntriesBufferingOptions options)
             => this.options = options;
 
-        ValueTask<(BufferedRaftLogEntryList, long?)> ILogEntryConsumer<IRaftLogEntry, (BufferedRaftLogEntryList, long?)>.ReadAsync<TEntry, TList>(TList list, long? snapshotIndex, CancellationToken token)
+        ValueTask<(BufferedLogEntryList, long?)> ILogEntryConsumer<IRaftLogEntry, (BufferedLogEntryList, long?)>.ReadAsync<TEntry, TList>(TList list, long? snapshotIndex, CancellationToken token)
         {
             var count = list.Count;
 
             // make the array available to GC if it has inappropriate length
             if (!TryTake(out var array) || array.Length < count)
-                array = new BufferedRaftLogEntry[count];
+                array = new BufferedLogEntry[count];
 
-            return CopyAsync(BufferedRaftLogEntryList.BufferizeAsync<TEntry, TList>(list, options, token), new(array, 0, count), snapshotIndex);
+            return CopyAsync(BufferedLogEntryList.BufferizeAsync<TEntry, TList>(list, options, token), new(array, 0, count), snapshotIndex);
 
-            static async ValueTask<(BufferedRaftLogEntryList, long?)> CopyAsync(IAsyncEnumerator<BufferedRaftLogEntry> source, ArraySegment<BufferedRaftLogEntry> destination, long? snapshotIndex)
+            static async ValueTask<(BufferedLogEntryList, long?)> CopyAsync(IAsyncEnumerator<BufferedLogEntry> source, ArraySegment<BufferedLogEntry> destination, long? snapshotIndex)
             {
                 try
                 {
@@ -41,7 +41,7 @@ public partial class PersistentState
                     await source.DisposeAsync().ConfigureAwait(false);
                 }
 
-                return new(new BufferedRaftLogEntryList(destination), snapshotIndex);
+                return new(new BufferedLogEntryList(destination), snapshotIndex);
             }
         }
     }
@@ -143,21 +143,13 @@ public partial class PersistentState
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct BufferManager
+    internal readonly struct BufferManager(IBufferManagerSettings options)
     {
-        private readonly MemoryAllocator<CacheRecord>? cacheAllocator;
-        private readonly MemoryAllocator<LogEntry> entryAllocator;
-
-        internal BufferManager(IBufferManagerSettings options)
-        {
-            cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<CacheRecord>() : null;
-            BufferAllocator = options.GetMemoryAllocator<byte>();
-            entryAllocator = options.GetMemoryAllocator<LogEntry>();
-        }
+        private readonly MemoryAllocator<CacheRecord>? cacheAllocator = options.UseCaching ? options.GetMemoryAllocator<CacheRecord>() : null;
 
         internal bool IsCachingEnabled => cacheAllocator is not null;
 
-        internal MemoryAllocator<byte> BufferAllocator { get; }
+        internal MemoryAllocator<byte> BufferAllocator { get; } = options.GetMemoryAllocator<byte>();
 
         internal MemoryOwner<CacheRecord> AllocLogEntryCache(int recordsPerPartition)
             => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);

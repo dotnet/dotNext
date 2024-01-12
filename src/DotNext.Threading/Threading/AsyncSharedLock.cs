@@ -38,11 +38,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
 
-        internal readonly long RemainingLocks => remainingLocks.VolatileRead();
+        internal readonly long RemainingLocks => Volatile.Read(in remainingLocks);
 
         internal readonly bool IsWeakLockAllowed => remainingLocks > 0L;
 
-        internal void AcquireWeakLock() => remainingLocks.DecrementAndGet();
+        internal void AcquireWeakLock() => Interlocked.Decrement(ref remainingLocks);
 
         internal void ExitLock()
         {
@@ -61,28 +61,32 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct WeakLockManager : ILockManager<WaitNode>
+    private struct WeakLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(this)).IsWeakLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsWeakLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<WeakLockManager, State>(ref Unsafe.AsRef(this)).AcquireWeakLock();
+            => state.AcquireWeakLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = false;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct StrongLockManager : ILockManager<WaitNode>
+    private struct StrongLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(this)).IsStrongLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsStrongLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<StrongLockManager, State>(ref Unsafe.AsRef(this)).AcquireStrongLock();
+            => state.AcquireStrongLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.IsStrongLock = true;
     }
 
@@ -100,8 +104,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
     public AsyncSharedLock(long concurrencyLevel, bool limitedConcurrency = true)
     {
-        if (concurrencyLevel < 1L)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         state = new(concurrencyLevel);
         pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
@@ -150,7 +153,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     private bool TryAcquire<TManager>()
         where TManager : struct, ILockManager<WaitNode>
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref GetLockManager<TManager>());
@@ -272,7 +275,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Downgrade()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -294,7 +297,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)

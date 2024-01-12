@@ -10,7 +10,8 @@ public sealed class TimeoutTests : Test
         True(timeout.IsInfinite);
         if (timeout) Fail("Unexpected timeout value");
         Equal(InfiniteTimeSpan, timeout);
-        Equal(InfiniteTimeSpan, timeout.RemainingTime);
+        True(timeout.TryGetRemainingTime(out var remainingTime));
+        Equal(InfiniteTimeSpan, remainingTime);
 
         timeout.ThrowIfExpired(out var remaining);
         Equal(InfiniteTimeSpan, remaining);

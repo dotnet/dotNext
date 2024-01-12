@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace DotNext;
 
@@ -161,7 +160,7 @@ public sealed class DelegateHelpersTests : Test
             types[argCount] = typeof(int);
             var funcType = Expression.GetFuncType(types);
             var parameters = new ParameterExpression[argCount];
-            parameters.ForEach(static (ref ParameterExpression p, nint _) => p = Expression.Parameter(typeof(string)));
+            parameters.AsSpan().ForEach(static (ref ParameterExpression p, int _) => p = Expression.Parameter(typeof(string)));
             //prepare args
             var args = new object[parameters.LongLength + 1];
             Array.Fill(args, string.Empty);
@@ -232,28 +231,6 @@ public sealed class DelegateHelpersTests : Test
         NotNull(action);
         action(obj, 42);
         Equal(42, obj.Prop);
-    }
-
-    [Fact]
-    public static void BindFunction()
-    {
-        static int Sum(in int x, in int y) => x + y;
-
-        Function<int, int, int> fn = Sum;
-
-        Equal(42, fn.Bind(40).Invoke(2));
-    }
-
-    [Fact]
-    public static void BindProcedure()
-    {
-        static void Append(in StringBuilder x, in int y) => x.Append(y);
-
-        Procedure<StringBuilder, int> proc = Append;
-
-        var builder = new StringBuilder();
-        proc.Bind(builder).Invoke(42);
-        Equal("42", builder.ToString(), StringComparer.Ordinal);
     }
 
     [Fact]

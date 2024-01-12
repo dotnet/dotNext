@@ -35,16 +35,6 @@ public interface ITypeMap<TValue> : IReadOnlyTypeMap<TValue>
     bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue);
 
     /// <summary>
-    /// Replaces the existing value with a new value.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <param name="newValue">A new value.</param>
-    /// <returns>The replaced value.</returns>
-    [Obsolete("Use Set overload instead")]
-    Optional<TValue> Replace<TKey>(TValue newValue)
-        => Set<TKey>(newValue, out var oldValue) ? Optional.Some(oldValue!) : Optional.None<TValue>();
-
-    /// <summary>
     /// Attempts to remove the value from the map.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>

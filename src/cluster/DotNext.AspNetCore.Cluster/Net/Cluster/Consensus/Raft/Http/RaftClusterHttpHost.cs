@@ -63,10 +63,6 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
     /// </description>
     /// </item>
     /// <item>
-    /// <term><see cref="MetricsCollector"/></term>
-    /// <description>Allows to capture runtime metrics associated with the local node.</description>
-    /// </item>
-    /// <item>
     /// <term><see cref="ClusterMemberAnnouncer{TAddress}"/> of type <see cref="UriEndPoint"/></term>
     /// <description>Allows to announce a new node the cluster leader.</description>
     /// </item>
@@ -89,9 +85,6 @@ public class RaftClusterHttpHost : Disposable, IHostedService, IAsyncDisposable
             configurator: activationContext.GetService<IClusterMemberLifetime>(),
             configStorage: activationContext.GetService<IClusterConfigurationStorage<UriEndPoint>>(),
             httpHandlerFactory: activationContext.GetService<IHttpMessageHandlerFactory>(),
-#pragma warning disable CS0618
-            metrics: activationContext.GetService<MetricsCollector>(),
-#pragma warning restore CS0618
             announcer: activationContext.GetService<ClusterMemberAnnouncer<UriEndPoint>>())
         {
             FailureDetectorFactory = activationContext.GetService<Func<TimeSpan, IRaftClusterMember, IFailureDetector>>(),

@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Connections;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -7,14 +8,14 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster;
 
 using Buffers;
+using Buffers.Binary;
+using IO.Hashing;
 using Hex = Buffers.Text.Hex;
-using Intrinsics = Runtime.Intrinsics;
-using HttpEndPoint = Net.Http.HttpEndPoint;
+using HttpEndPoint = Http.HttpEndPoint;
 
 /// <summary>
 /// Represents unique identifier of cluster member.
 /// </summary>
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFormattable<ClusterMemberId>
 {
@@ -40,8 +41,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     private ClusterMemberId(DnsEndPoint endPoint)
     {
         Span<byte> bytes = stackalloc byte[16];
-        bytes.Clear();
-        WriteInt64LittleEndian(bytes, Span.BitwiseHashCode64(endPoint.Host.AsSpan(), false));
+        WriteInt64LittleEndian(bytes, FNV1a64.Hash<char>(endPoint.Host));
         address = new(bytes);
 
         lengthAndPort = Combine(endPoint.Host.Length, endPoint.Port);
@@ -50,11 +50,10 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
 
     private ClusterMemberId(HttpEndPoint endPoint)
     {
-        Span<byte> bytes = stackalloc byte[16];
-        bytes.Clear();
-        WriteInt64LittleEndian(bytes, Span.BitwiseHashCode64(endPoint.Host.AsSpan(), false));
-        bytes[sizeof(long)] = endPoint.IsSecure.ToByte();
-        address = new(bytes);
+        var writer = new SpanWriter<byte>(stackalloc byte[16]);
+        writer.WriteLittleEndian(FNV1a64.Hash<char>(endPoint.Host));
+        writer.Add(Unsafe.BitCast<bool, byte>(endPoint.IsSecure));
+        address = new(writer.Span);
 
         lengthAndPort = Combine(endPoint.Host.Length, endPoint.Port);
         family = (int)endPoint.AddressFamily;
@@ -62,11 +61,11 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
 
     private ClusterMemberId(Uri uri)
     {
-        Span<byte> bytes = stackalloc byte[16];
-        WriteInt32LittleEndian(bytes, Span.BitwiseHashCode(uri.Scheme.AsSpan(), false));
-        WriteInt32LittleEndian(bytes.Slice(sizeof(int)), Span.BitwiseHashCode(uri.Host.AsSpan(), false));
-        WriteInt64LittleEndian(bytes.Slice(sizeof(long)), Span.BitwiseHashCode64(uri.PathAndQuery.AsSpan(), false));
-        address = new(bytes);
+        var writer = new SpanWriter<byte>(stackalloc byte[16]);
+        writer.WriteLittleEndian(FNV1a32.Hash<char>(uri.Scheme));
+        writer.WriteLittleEndian(FNV1a32.Hash<char>(uri.Host));
+        writer.WriteLittleEndian(FNV1a64.Hash<char>(uri.PathAndQuery));
+        address = new(writer.Span);
 
         lengthAndPort = Combine(uri.AbsoluteUri.Length, uri.Port);
         family = (int)uri.HostNameType;
@@ -76,7 +75,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         Span<byte> bytes = stackalloc byte[16];
         bytes.Clear();
-        WriteInt64LittleEndian(bytes, Intrinsics.GetHashCode64(static (address, index) => address[index], address.Size, address, false));
+        WriteInt64LittleEndian(bytes, FNV1a64.Hash(static (address, index) => address[index], address.Size, address));
         this.address = new(bytes);
 
         lengthAndPort = unchecked((uint)address.Size);
@@ -93,8 +92,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is too small.</exception>
     public ClusterMemberId(ReadOnlySpan<byte> bytes)
     {
-        if (bytes.Length < Size)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfLessThan(bytes.Length, Size, nameof(bytes));
 
         var reader = new SpanReader<byte>(bytes);
         this = new(ref reader);
@@ -116,31 +114,27 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         family = random.Next();
     }
 
-    /// <summary>
-    /// Deserializes the cluster member ID.
-    /// </summary>
-    /// <param name="reader">The memory block reader.</param>
-    public ClusterMemberId(ref SpanReader<byte> reader)
+    private ClusterMemberId(ref SpanReader<byte> reader)
     {
         address = new(reader.Read(16));
-        lengthAndPort = reader.ReadUInt64(true);
-        family = reader.ReadInt32(true);
+        lengthAndPort = reader.ReadLittleEndian<ulong>();
+        family = reader.ReadLittleEndian<int>();
     }
 
-    /// <inheritdoc cref="IBinaryFormattable{T}.Parse(ref SpanReader{byte})"/>
-    static ClusterMemberId IBinaryFormattable<ClusterMemberId>.Parse(ref SpanReader<byte> input)
-        => new(ref input);
+    /// <inheritdoc cref="IBinaryFormattable{T}.Parse(ReadOnlySpan{byte})"/>
+    static ClusterMemberId IBinaryFormattable<ClusterMemberId>.Parse(ReadOnlySpan<byte> input)
+        => new(input);
 
     /// <summary>
     /// Serializes the value as a sequence of bytes.
     /// </summary>
-    /// <param name="writer">The memory block writer.</param>
-    /// <exception cref="System.IO.InternalBufferOverflowException"><paramref name="writer"/> is not large enough.</exception>
-    public void Format(ref SpanWriter<byte> writer)
+    /// <param name="output">The output buffer.</param>
+    public void Format(Span<byte> output)
     {
+        var writer = new SpanWriter<byte>(output);
         address.TryWriteBytes(writer.Slide(16));
-        writer.WriteUInt64(lengthAndPort, true);
-        writer.WriteInt32(family, true);
+        writer.WriteLittleEndian(lengthAndPort);
+        writer.WriteLittleEndian(family);
     }
 
     /// <summary>
@@ -191,7 +185,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public override string ToString()
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
-        Format(ref writer);
+        writer.Write(this);
         return Hex.EncodeToUtf16(writer.WrittenSpan);
     }
 
@@ -239,4 +233,3 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
         => !x.Equals(in y);
 }
-#pragma warning restore CA2252

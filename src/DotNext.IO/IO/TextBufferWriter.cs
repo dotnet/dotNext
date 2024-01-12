@@ -41,7 +41,7 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
         }
     }
 
-    public Task FlushAsync(CancellationToken token)
+    public override Task FlushAsync(CancellationToken token)
     {
         if (flushAsync is null)
         {

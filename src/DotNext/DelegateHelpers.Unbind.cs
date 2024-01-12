@@ -6,8 +6,8 @@ public static partial class DelegateHelpers
         where T : MulticastDelegate
         => del.Target switch
         {
-            Closure closure when ObjectExtensions.IsContravariant(closure.Target, targetType) => ChangeType<T, EmptyTargetRewriter>(closure.Delegate, default),
-            object target when ObjectExtensions.IsContravariant(target, targetType) => ChangeType<T, TargetRewriter>(del, default),
+            Closure closure when BasicExtensions.IsContravariant(closure.Target, targetType) => ChangeType<T, EmptyTargetRewriter>(closure.Delegate, default),
+            object target when BasicExtensions.IsContravariant(target, targetType) => ChangeType<T, TargetRewriter>(del, default),
             _ => throw new InvalidOperationException(),
         };
 

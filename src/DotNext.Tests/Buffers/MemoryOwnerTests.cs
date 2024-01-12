@@ -68,35 +68,35 @@ public sealed class MemoryOwnerTests : Test
 
     public static IEnumerable<object[]> GetArrayAllocators()
     {
-        yield return new[] { MemoryAllocator.GetArrayAllocator<int>() };
-        yield return new[] { MemoryAllocator.GetPinnedArrayAllocator<int>() };
+        yield return new[] { Memory.GetArrayAllocator<int>() };
+        yield return new[] { Memory.GetPinnedArrayAllocator<int>() };
     }
 
     [Theory]
     [MemberData(nameof(GetArrayAllocators))]
     public static void ArrayAllocation(MemoryAllocator<int> allocator)
     {
-        using var owner = allocator.Invoke(4, false);
+        using var owner = allocator(4);
         Equal(4, owner.Length);
     }
 
     [Fact]
     public static void ArrayAllocatorCache()
     {
-        Same(MemoryAllocator.GetArrayAllocator<byte>(), MemoryAllocator.GetArrayAllocator<byte>());
+        Same(Memory.GetArrayAllocator<byte>(), Memory.GetArrayAllocator<byte>());
     }
 
     [Fact]
     public static void RawReference()
     {
         var owner = new MemoryOwner<byte>(Array.Empty<byte>());
-        True(Unsafe.IsNullRef(ref BufferHelpers.GetReference(in owner)));
+        True(Unsafe.IsNullRef(ref Memory.GetReference(in owner)));
 
         owner = default;
-        True(Unsafe.IsNullRef(ref BufferHelpers.GetReference(in owner)));
+        True(Unsafe.IsNullRef(ref Memory.GetReference(in owner)));
 
-        owner = new(new byte[] { 10 });
-        Equal(10, BufferHelpers.GetReference(in owner));
+        owner = new([10]);
+        Equal(10, Memory.GetReference(in owner));
     }
 
     [Fact]
@@ -107,7 +107,7 @@ public sealed class MemoryOwnerTests : Test
         False(buffer.TryResize(10));
         Throws<ArgumentOutOfRangeException>(() => buffer.TryResize(-1));
 
-        buffer = new MemoryOwner<byte>(new byte[] { 10, 20, 30 });
+        buffer = new MemoryOwner<byte>([10, 20, 30]);
         True(buffer.TryResize(1));
         True(buffer.TryResize(3));
         False(buffer.TryResize(10));
@@ -116,13 +116,13 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ResizeBuffer()
     {
-        var allocator = MemoryAllocator.GetArrayAllocator<byte>();
+        var allocator = Memory.GetArrayAllocator<byte>();
         var buffer = default(MemoryOwner<byte>);
 
-        buffer.Resize(10, false, allocator);
+        buffer.Resize(10, allocator);
         Equal(10, buffer.Length);
 
-        buffer.Resize(3, false, allocator);
+        buffer.Resize(3, allocator);
         Equal(3, buffer.Length);
 
         True(buffer.TryResize(10));

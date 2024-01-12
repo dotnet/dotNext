@@ -5,13 +5,13 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Net.Cluster.Messaging.Gossip;
 
 using Buffers;
+using Buffers.Binary;
 using Hex = Buffers.Text.Hex;
 
 /// <summary>
 /// Represents Lamport timestamp of the rumor mixed with the timestamp returned
 /// by the local clock.
 /// </summary>
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryFormattable<RumorTimestamp>, IComparable<RumorTimestamp>
 {
@@ -40,8 +40,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="bytes"/> is less than <see cref="Size"/>.</exception>
     public RumorTimestamp(ReadOnlySpan<byte> bytes)
     {
-        if (bytes.Length < Size)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfLessThan(bytes.Length, Size, nameof(bytes));
 
         var reader = new SpanReader<byte>(bytes);
         this = new(ref reader);
@@ -58,8 +57,8 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
 
     private RumorTimestamp(ref SpanReader<byte> reader)
     {
-        timestamp = reader.ReadInt64(true);
-        sequenceNumber = reader.ReadUInt64(true);
+        timestamp = reader.ReadLittleEndian<long>();
+        sequenceNumber = reader.ReadLittleEndian<ulong>();
     }
 
     private RumorTimestamp(long timestamp, ulong sequenceNumber)
@@ -71,11 +70,12 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// <summary>
     /// Serializes the timestamp as a sequence of bytes.
     /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    public void Format(ref SpanWriter<byte> writer)
+    /// <param name="output">The buffer.</param>
+    public void Format(Span<byte> output)
     {
-        writer.WriteInt64(timestamp, true);
-        writer.WriteUInt64(sequenceNumber, true);
+        var writer = new SpanWriter<byte>(output);
+        writer.WriteLittleEndian(timestamp);
+        writer.WriteLittleEndian(sequenceNumber);
     }
 
     /// <summary>
@@ -83,8 +83,11 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     /// </summary>
     /// <param name="input">The memory block reader.</param>
     /// <returns>The timestamp of the rumor.</returns>
-    static RumorTimestamp IBinaryFormattable<RumorTimestamp>.Parse(ref SpanReader<byte> input)
-        => new(ref input);
+    static RumorTimestamp IBinaryFormattable<RumorTimestamp>.Parse(ReadOnlySpan<byte> input)
+    {
+        var reader = new SpanReader<byte>(input);
+        return new(ref reader);
+    }
 
     /// <summary>
     /// Returns an incremented timestamp.
@@ -116,7 +119,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     public override string ToString()
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
-        Format(ref writer);
+        writer.Write(this);
         return Hex.EncodeToUtf16(writer.WrittenSpan);
     }
 
@@ -245,4 +248,3 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     public static RumorTimestamp Next(ref RumorTimestamp location)
         => new(location.timestamp, Interlocked.Increment(ref Unsafe.AsRef(in location.sequenceNumber)));
 }
-#pragma warning restore CA2252

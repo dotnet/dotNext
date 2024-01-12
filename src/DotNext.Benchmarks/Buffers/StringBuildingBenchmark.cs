@@ -16,11 +16,11 @@ public class StringBuildingBenchmark
     [Benchmark]
     public string BuildStringUsingPooledArrayBufferWriter()
     {
-        using var writer = new PooledArrayBufferWriter<char>();
+        using var writer = new PoolingArrayBufferWriter<char>();
         for (var i = 0; i < 100; i++)
         {
             writer.Write(StringValue);
-            writer.WriteFormattable(int.MaxValue);
+            writer.Format(int.MaxValue);
             writer.WriteLine();
         }
 
@@ -34,7 +34,7 @@ public class StringBuildingBenchmark
         for (var i = 0; i < 100; i++)
         {
             writer.Write(StringValue);
-            writer.WriteFormattable(int.MaxValue);
+            writer.Format(int.MaxValue);
             writer.WriteLine();
         }
 
@@ -69,7 +69,7 @@ public class StringBuildingBenchmark
             for (var i = 0; i < 100; i++)
             {
                 writer.Write(StringValue);
-                writer.WriteFormattable(int.MaxValue);
+                writer.Format(int.MaxValue);
                 writer.WriteLine();
             }
 
@@ -90,7 +90,7 @@ public class StringBuildingBenchmark
             for (var i = 0; i < 100; i++)
             {
                 writer.Write(StringValue);
-                writer.WriteFormattable(int.MaxValue);
+                writer.Format(int.MaxValue);
                 writer.WriteLine();
             }
 

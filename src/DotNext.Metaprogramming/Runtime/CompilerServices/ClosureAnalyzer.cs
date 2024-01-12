@@ -6,7 +6,6 @@ namespace DotNext.Runtime.CompilerServices;
 
 internal sealed class ClosureAnalyzer : ExpressionVisitor
 {
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<bool> ClosureVariableSlot = new();
 
     private readonly ICollection<ParameterExpression> locals;

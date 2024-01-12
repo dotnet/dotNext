@@ -2,9 +2,6 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO;
 
-using static Threading.AsyncDelegate;
-using static Threading.Tasks.Continuation;
-
 internal abstract class WriterStream<TOutput> : Stream, IFlushable
     where TOutput : notnull, IFlushable
 {
@@ -50,43 +47,10 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
     public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
         => WriteAsync(buffer.AsMemory(offset, count), token).AsTask();
 
-    private async Task WriteWithTimeoutAsync(ReadOnlyMemory<byte> buffer)
-    {
-        using var source = new CancellationTokenSource(WriteTimeout);
-        await WriteAsync(buffer, source.Token).ConfigureAwait(false);
-    }
-
     public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-    {
-        Task task;
-        if (CanTimeout)
-        {
-            task = WriteWithTimeoutAsync(buffer.AsMemory(offset, count));
+        => TaskToAsyncResult.Begin(WriteAsync(buffer, offset, count), callback, state);
 
-            // attach state only if it's necessary
-            if (state is not null)
-                task = task.AttachState(state);
-
-            if (callback is not null)
-                task.OnCompleted(callback);
-        }
-        else
-        {
-            task = new Action<object?>(_ => Write(buffer, offset, count)).BeginInvoke(state, callback);
-        }
-
-        return task;
-    }
-
-    private static void EndWrite(Task task)
-    {
-        using (task)
-        {
-            task.Wait();
-        }
-    }
-
-    public override void EndWrite(IAsyncResult ar) => EndWrite((Task)ar);
+    public override void EndWrite(IAsyncResult ar) => TaskToAsyncResult.End(ar);
 
     public sealed override void CopyTo(Stream destination, int bufferSize) => throw new NotSupportedException();
 

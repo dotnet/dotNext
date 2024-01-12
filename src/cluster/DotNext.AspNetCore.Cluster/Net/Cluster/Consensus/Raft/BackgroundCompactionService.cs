@@ -6,22 +6,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using IO.Log;
 
 [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
-internal sealed class BackgroundCompactionService : BackgroundService
+internal sealed class BackgroundCompactionService(PersistentState state) : BackgroundService
 {
-    private readonly IAuditTrail state;
-    private readonly Func<CancellationToken, ValueTask>? compaction;
-
-    public BackgroundCompactionService(PersistentState state)
+    private readonly Func<CancellationToken, ValueTask>? compaction = state switch
     {
-        this.state = state;
-
-        compaction = state switch
-        {
-            ILogCompactionSupport support => support.ForceCompactionAsync,
-            MemoryBasedStateMachine mbsm when mbsm.IsBackgroundCompaction => mbsm.ForceIncrementalCompactionAsync,
-            _ => null,
-        };
-    }
+        ILogCompactionSupport support => support.ForceCompactionAsync,
+        MemoryBasedStateMachine mbsm when mbsm.IsBackgroundCompaction => mbsm.ForceIncrementalCompactionAsync,
+        _ => null,
+    };
 
     protected override async Task ExecuteAsync(CancellationToken token)
     {

@@ -6,16 +6,8 @@ using IClusterConfiguration = Membership.IClusterConfiguration;
 
 internal partial class Server
 {
-    private sealed class InMemoryClusterConfiguration : Disposable, IClusterConfiguration
+    private sealed class InMemoryClusterConfiguration(MemoryOwner<byte> buffer, long fingerprint) : Disposable, IClusterConfiguration
     {
-        private MemoryOwner<byte> buffer;
-
-        internal InMemoryClusterConfiguration(MemoryOwner<byte> buffer, long fingerprint)
-        {
-            this.buffer = buffer;
-            Fingerprint = fingerprint;
-        }
-
         internal InMemoryClusterConfiguration(long fingerprint)
             : this(default, fingerprint)
         {
@@ -23,14 +15,14 @@ internal partial class Server
 
         internal Memory<byte> Content => buffer.Memory;
 
-        public long Fingerprint { get; }
+        public long Fingerprint => fingerprint;
 
         long IClusterConfiguration.Length => buffer.Length;
 
         bool IDataTransferObject.IsReusable => true;
 
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(buffer.Memory, lengthFormat: null, token);
+            => writer.Invoke(buffer.Memory, token);
 
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
         {

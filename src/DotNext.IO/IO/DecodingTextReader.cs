@@ -18,14 +18,13 @@ internal sealed class DecodingTextReader : TextBufferReader
 
     internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
     {
-        if (bufferSize <= 0)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
         this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
         decoder = encoding.GetDecoder();
         this.sequence = sequence;
         this.allocator = allocator;
-        buffer = allocator.Invoke(bufferSize, false);
+        buffer = allocator.AllocateAtLeast(bufferSize);
     }
 
     private Span<char> Buffer => buffer.Span;
@@ -95,7 +94,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         {
             do
             {
-                ref var first = ref BufferHelpers.GetReference(in buffer);
+                ref var first = ref Memory.GetReference(in buffer);
 
                 do
                 {
@@ -140,7 +139,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 
     private string ReadToEnd(int bufferSize, bool bufferNotEmpty)
     {
-        using var output = allocator.Invoke(bufferSize, false);
+        using var output = allocator.AllocateAtLeast(bufferSize);
         var writer = new SpanWriter<char>(output.Span);
         if (bufferNotEmpty)
         {

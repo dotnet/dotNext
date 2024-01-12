@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using AtomicBoolean = Threading.AtomicBoolean;
+using AtomicBoolean = Threading.Atomic.Boolean;
 
 public partial class PersistentState
 {

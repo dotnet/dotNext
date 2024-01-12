@@ -17,13 +17,12 @@ using Messaging;
 using Net.Http;
 using IFailureDetector = Diagnostics.IFailureDetector;
 using HttpProtocolVersion = Net.Http.HttpProtocolVersion;
-using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
 [SuppressMessage("Performance", "CA1812", Justification = "This class is instantiated by DI container")]
 internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IRaftHttpCluster, IHostedService, IHostingContext
 {
     private readonly IClusterMemberLifetime? configurator;
-    private readonly IDisposable configurationTracker;
+    private readonly IDisposable? configurationTracker;
     private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
     private readonly TimeSpan requestTimeout, raftRpcTimeout, connectTimeout;
     private readonly bool openConnectionForEachRequest, coldStart;
@@ -43,12 +42,9 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IPersistentState? auditTrail = null,
         IClusterConfigurationStorage<UriEndPoint>? configStorage = null,
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
-#pragma warning disable CS0618
-        MetricsCollector? metrics = null,
-#pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null,
         Func<TimeSpan, IRaftClusterMember, IFailureDetector>? failureDetectorFactory = null)
-        : this(config, messageHandlers, loggerFactory.CreateLogger<RaftHttpCluster>(), configurator, auditTrail, configStorage, httpHandlerFactory, metrics, announcer)
+        : this(config, messageHandlers, loggerFactory.CreateLogger<RaftHttpCluster>(), configurator, auditTrail, configStorage, httpHandlerFactory, announcer)
     {
         FailureDetectorFactory = failureDetectorFactory;
     }
@@ -61,9 +57,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         IPersistentState? auditTrail = null,
         IClusterConfigurationStorage<UriEndPoint>? configStorage = null,
         IHttpMessageHandlerFactory? httpHandlerFactory = null,
-#pragma warning disable CS0618
-        MetricsCollector? metrics = null,
-#pragma warning restore CS0618
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null)
         : base(config.CurrentValue, GetMeasurementTags(config.CurrentValue, out var localNode))
     {
@@ -94,9 +87,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         ConfigurationStorage = configStorage ?? new InMemoryClusterConfigurationStorage();
         this.httpHandlerFactory = httpHandlerFactory;
         Logger = logger;
-#pragma warning disable CS0618
-        Metrics = metrics;
-#pragma warning restore CS0618
         this.announcer = announcer;
 
         // track changes in configuration, do not track membership
@@ -123,9 +113,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         var result = new RaftClusterMember(this, address)
         {
             Timeout = requestTimeout,
-#pragma warning disable CS0618
-            Metrics = Metrics as IClientMetricsCollector,
-#pragma warning restore CS0618
         };
 
         result.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
@@ -142,7 +129,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
     ISubscriber? IMessageBus.Leader => Leader;
 
-    private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string name)
+    private void ConfigurationChanged(HttpClusterMemberConfiguration configuration, string? name)
     {
         metadata = new(configuration.Metadata);
     }
@@ -248,7 +235,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     {
         if (disposing)
         {
-            configurationTracker.Dispose();
+            configurationTracker?.Dispose();
             duplicationDetector.Dispose();
             messageHandlers = ImmutableList<IInputChannel>.Empty;
             configurationEvents.Writer.TryComplete(new ObjectDisposedException(GetType().Name));

@@ -6,18 +6,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 /// Represents arguments for all events related to Raft cluster members.
 /// </summary>
 /// <typeparam name="TMember">The type of the cluster member.</typeparam>
-public class RaftClusterMemberEventArgs<TMember> : ClusterMemberEventArgs
+/// <param name="member">The type of the member.</param>
+public class RaftClusterMemberEventArgs<TMember>(TMember member) : ClusterMemberEventArgs(member)
     where TMember : class, IRaftClusterMember
 {
-    /// <summary>
-    /// Initializes a new set of arguments for the event.
-    /// </summary>
-    /// <param name="member">The type of the member.</param>
-    public RaftClusterMemberEventArgs(TMember member)
-        : base(member)
-    {
-    }
-
     /// <summary>
     /// Gets the member associated with the event.
     /// </summary>

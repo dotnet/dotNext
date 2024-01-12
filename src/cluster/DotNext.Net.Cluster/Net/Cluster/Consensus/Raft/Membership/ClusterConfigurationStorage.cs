@@ -55,7 +55,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
 
     private protected void Encode(IReadOnlyCollection<TAddress> configuration, ref BufferWriterSlim<byte> output)
     {
-        output.WriteInt32(configuration.Count, true);
+        output.WriteLittleEndian(configuration.Count);
 
         foreach (var address in configuration)
         {
@@ -73,7 +73,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
 
     private void Decode(ICollection<TAddress> output, ref SequenceReader reader)
     {
-        for (var count = reader.ReadInt32(true); count > 0; count--)
+        for (var count = reader.ReadLittleEndian<int>(); count > 0; count--)
         {
             output.Add(Decode(ref reader));
         }
@@ -246,7 +246,7 @@ public abstract class ClusterConfigurationStorage<TAddress> : Disposable, IClust
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask OnActiveConfigurationChanged(TAddress address, bool isAdded, CancellationToken token)
     {
-        foreach (Func<TAddress, bool, CancellationToken, ValueTask> handler in handlers?.GetInvocationList() ?? Array.Empty<Func<TAddress, bool, CancellationToken, ValueTask>>())
+        foreach (Func<TAddress, bool, CancellationToken, ValueTask> handler in handlers?.GetInvocationList() ?? [])
             await handler.Invoke(address, isAdded, token).ConfigureAwait(false);
     }
 

@@ -2,18 +2,11 @@ using System.Buffers;
 
 namespace DotNext.IO;
 
-using static Buffers.BufferHelpers;
+using static Buffers.Memory;
 
-internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
+internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : ReadOnlyStream
 {
-    private ReadOnlySequence<byte> sequence;
-    private SequencePosition position;
-
-    internal ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence)
-    {
-        this.sequence = sequence;
-        position = sequence.Start;
-    }
+    private SequencePosition position = sequence.Start;
 
     private ReadOnlySequence<byte> RemainingSequence => sequence.Slice(position);
 
@@ -26,8 +19,7 @@ internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
         get => sequence.GetOffset(position);
         set
         {
-            if ((ulong)value > (ulong)sequence.Length)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)sequence.Length, nameof(value));
 
             position = sequence.GetPosition(value);
         }
@@ -80,8 +72,7 @@ internal sealed class ReadOnlyMemoryStream : ReadOnlyStream
         if (newPosition < 0L)
             throw new IOException();
 
-        if (newPosition > sequence.Length)
-            throw new ArgumentOutOfRangeException(nameof(offset));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(newPosition, sequence.Length, nameof(offset));
 
         position = sequence.GetPosition(newPosition);
         return newPosition;

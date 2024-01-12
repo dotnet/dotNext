@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 
 namespace DotNext;
 
@@ -49,7 +50,7 @@ public static class Result
     /// </summary>
     /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
     /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
-    public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType && resultType.GetGenericTypeDefinition().IsOneOf(typeof(Result<>), typeof(Result<,>));
+    public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType && resultType.GetGenericTypeDefinition().IsOneOf([typeof(Result<>), typeof(Result<,>)]);
 
     /// <summary>
     /// Returns the underlying type argument of the specified result type.
@@ -73,35 +74,12 @@ public static class Result
     /// <param name="e">The exception to be placed to the container.</param>
     /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
     public static Result<T> FromException<T>(Exception e) => new(e);
-
-    /// <summary>
-    /// Gets a reference to the underlying value.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <param name="result">The result container.</param>
-    /// <returns>The reference to the result.</returns>
-    /// <exception cref="Exception">The result is unavailable.</exception>
-    public static ref readonly T GetReference<T>(in Result<T> result)
-        => ref Result<T>.GetReference(in result);
-
-    /// <summary>
-    /// Gets a reference to the underlying value.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <typeparam name="TError">The type of the error code.</typeparam>
-    /// <param name="result">The result container.</param>
-    /// <returns>The reference to the result.</returns>
-    /// <exception cref="UndefinedResultException{TError}">The result is undefined.</exception>
-    public static ref readonly T GetReference<T, TError>(in Result<T, TError> result)
-        where TError : struct, Enum
-        => ref Result<T, TError>.GetReference(in result);
 }
 
 /// <summary>
 /// Represents a result of operation which can be actual result or exception.
 /// </summary>
 /// <typeparam name="T">The type of the value stored in the Result monad.</typeparam>
-#pragma warning disable CA2252  // TODO: Remove in .NET 7
 [StructLayout(LayoutKind.Auto)]
 public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
 {
@@ -125,20 +103,13 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     public Result(Exception error)
     {
         exception = ExceptionDispatchInfo.Capture(error);
-        value = default!;
+        Unsafe.SkipInit(out value);
     }
 
     private Result(ExceptionDispatchInfo dispatchInfo)
     {
         value = default!;
         exception = dispatchInfo;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ref readonly T GetReference(in Result<T> result)
-    {
-        result.Validate();
-        return ref result.value;
     }
 
     /// <summary>
@@ -182,6 +153,28 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
             return value;
         }
     }
+
+    /// <summary>
+    /// Gets a reference to the underlying value.
+    /// </summary>
+    /// <value>The reference to the result.</value>
+    /// <exception cref="Exception">The result is unavailable.</exception>
+    [UnscopedRef]
+    [JsonIgnore]
+    public ref readonly T ValueRef
+    {
+        get
+        {
+            Validate();
+            return ref value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the value if present; otherwise return default value.
+    /// </summary>
+    /// <value>The value, if present, otherwise <c>default</c>.</value>
+    public T? ValueOrDefault => value;
 
     private void Validate() => exception?.Throw();
 
@@ -251,12 +244,6 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
     public T? Or(T? defaultValue) => exception is null ? value : defaultValue;
 
-    /// <summary>
-    /// Returns the value if present; otherwise return default value.
-    /// </summary>
-    /// <returns>The value, if present, otherwise <c>default</c>.</returns>
-    public T? OrDefault() => value;
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private T OrInvoke<TSupplier>(TSupplier defaultFunc)
         where TSupplier : struct, ISupplier<T>
@@ -305,6 +292,24 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// Gets exception associated with this result.
     /// </summary>
     public Exception? Error => exception?.SourceException;
+
+    /// <summary>
+    /// Returns the value if present; otherwise return default value.
+    /// </summary>
+    /// <param name="result">The result to check.</param>
+    /// <param name="defaultValue">The value to be returned if this result is unsuccessful.</param>
+    /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
+    public static T? operator |(in Result<T> result, T? defaultValue)
+        => result.Or(defaultValue);
+
+    /// <summary>
+    /// Tries to return successful result.
+    /// </summary>
+    /// <param name="x">The first container.</param>
+    /// <param name="y">The second container.</param>
+    /// <returns>The first successful result.</returns>
+    public static Result<T> operator |(in Result<T> x, in Result<T> y)
+        => x.IsSuccessful ? x : y;
 
     /// <summary>
     /// Gets boxed representation of the result.
@@ -395,7 +400,6 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public Result(T value)
     {
         this.value = value;
-        errorCode = default(TError);
     }
 
     /// <summary>
@@ -405,7 +409,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="error"/> represents a successful code.</exception>
     public Result(TError error)
     {
-        value = default!;
+        Unsafe.SkipInit(out value);
         errorCode = Intrinsics.IsDefault(in error) ? throw new ArgumentOutOfRangeException(nameof(error)) : error;
     }
 
@@ -416,13 +420,6 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <returns>The unsuccessful result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="error"/> represents a successful code.</exception>
     static Result<T, TError> IResultMonad<T, TError, Result<T, TError>>.FromError(TError error) => new(error);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ref readonly T GetReference(in Result<T, TError> result)
-    {
-        result.Validate();
-        return ref result.value;
-    }
 
     /// <summary>
     /// Gets boxed representation of the result.
@@ -442,6 +439,28 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
             return value;
         }
     }
+
+    /// <summary>
+    /// Gets a reference to the underlying value.
+    /// </summary>
+    /// <value>The reference to the result.</value>
+    /// <exception cref="UndefinedResultException{TError}">The value is unavailable.</exception>
+    [UnscopedRef]
+    [JsonIgnore]
+    public ref readonly T ValueRef
+    {
+        get
+        {
+            Validate();
+            return ref value;
+        }
+    }
+
+    /// <summary>
+    /// Returns the value if present; otherwise return default value.
+    /// </summary>
+    /// <returns>The value, if present, otherwise <c>default</c>.</returns>
+    public T? ValueOrDefault => value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Validate()
@@ -487,12 +506,6 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// </summary>
     /// <returns>Option monad representing value in this monad.</returns>
     public Optional<T> TryGet() => IsSuccessful ? new(value) : Optional<T>.None;
-
-    /// <summary>
-    /// Returns the value if present; otherwise return default value.
-    /// </summary>
-    /// <returns>The value, if present, otherwise <c>default</c>.</returns>
-    public T? OrDefault() => value;
 
     /// <summary>
     /// Returns the value if present; otherwise return default value.
@@ -613,6 +626,24 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public override string? ToString() => IsSuccessful ? value?.ToString() : errorCode.ToString();
 
     /// <summary>
+    /// Returns the value if present; otherwise return default value.
+    /// </summary>
+    /// <param name="result">The result to check.</param>
+    /// <param name="defaultValue">The value to be returned if this result is unsuccessful.</param>
+    /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
+    public static T? operator |(in Result<T, TError> result, T? defaultValue)
+        => result.Or(defaultValue);
+
+    /// <summary>
+    /// Tries to return successful result.
+    /// </summary>
+    /// <param name="x">The first container.</param>
+    /// <param name="y">The second container.</param>
+    /// <returns>The first successful result.</returns>
+    public static Result<T, TError> operator |(in Result<T, TError> x, in Result<T, TError> y)
+        => x.IsSuccessful ? x : y;
+
+    /// <summary>
     /// Converts the result into <see cref="Optional{T}"/>.
     /// </summary>
     /// <param name="result">The result to be converted.</param>
@@ -661,4 +692,3 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <returns><see langword="false"/> if this result is successful; <see langword="true"/> if this result represents exception.</returns>
     public static bool operator false(in Result<T, TError> result) => !result.IsSuccessful;
 }
-#pragma warning restore CA2252

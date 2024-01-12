@@ -166,14 +166,6 @@ internal static partial class LogMessages
     public const string SnapshotInstallationFailed = "Critical error detected while installing snapshot of audit trail";
 
     [LoggerMessage(
-        EventIdOffset + 19,
-        LogLevel.Error,
-        "Datagram with id {PacketId} has dropped from remote endpoint {Member} because it cannot be dispatched to appropriate logical channel",
-        EventName = $"{EventIdPrefix}.{nameof(PacketDropped)}"
-    )]
-    public static partial void PacketDropped(this ILogger logger, TransportServices.Datagram.CorrelationId packetId, EndPoint? member);
-
-    [LoggerMessage(
         EventIdOffset + 20,
         LogLevel.Error,
         "Too many pallel requests",

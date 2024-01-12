@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Runtime;
 using System.Runtime.CompilerServices;
@@ -32,17 +31,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         timerCancellation = new();
         LeadershipToken = timerCancellation.Token;
         this.maxLease = maxLease;
-        lease = ExpiredLease.Instance;
+        lease = new();
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         replicationQueue = new() { MeasurementTags = stateMachine.MeasurementTags };
         context = new();
         replicatorFactory = localReplicatorFactory = CreateDefaultReplicator;
-    }
-
-    internal ILeaderStateMetrics? Metrics
-    {
-        private get;
-        init;
     }
 
     private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members, CancellationToken token)
@@ -113,7 +106,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         return MemberResponse.Exception;
     }
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private void CheckMemberHealthStatus(IFailureDetector? detector, TMember member)
     {
         switch (detector)
@@ -217,7 +209,6 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     if (forced)
                         GCSettings.LatencyMode = latencyMode;
 
-                    Metrics?.ReportBroadcastTime(TimeSpan.FromMilliseconds(broadcastTime));
                     LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
                 }
 
@@ -272,6 +263,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         }
 
         heartbeatTask = DoHeartbeats(period, transactionLog, configurationStorage, members, token);
+        LeaderState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
 
     protected override async ValueTask DisposeAsyncCore()
@@ -320,7 +312,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     }
 }
 
-internal static class LeaderState
+file static class LeaderState
 {
     internal static readonly Histogram<double> BroadcastTimeMeter = Metrics.Instrumentation.ServerSide.CreateHistogram<double>("broadcast-time", unit: "ms", description: "Heartbeat Broadcasting Time");
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-leader-count", description: "Number of Transitions of Leader State");

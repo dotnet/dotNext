@@ -1,5 +1,4 @@
-﻿using System.Runtime.Versioning;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
@@ -27,7 +26,7 @@ internal sealed class MetadataMessage : HttpMessage, IHttpMessage<MemberMetadata
             var stream = await content.ReadAsStreamAsync(token).ConfigureAwait(false);
             try
             {
-                return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, MemberMetadata.TypeInfo, token).ConfigureAwait(false) ?? new MemberMetadata();
+                return await JsonSerializer.DeserializeAsync(stream, MemberMetadata.TypeInfo, token).ConfigureAwait(false) ?? new();
             }
             finally
             {
@@ -38,7 +37,6 @@ internal sealed class MetadataMessage : HttpMessage, IHttpMessage<MemberMetadata
 
     void IHttpMessage.PrepareRequest(HttpRequestMessage request) => PrepareRequest(request);
 
-    [RequiresPreviewFeatures]
     static string IHttpMessage.MessageType => MessageType;
 
     internal static Task SaveResponseAsync(HttpResponse response, MemberMetadata metadata, CancellationToken token)

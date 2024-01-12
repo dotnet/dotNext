@@ -8,12 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 public interface IClusterMemberConfiguration
 {
     /// <summary>
-    /// Indicates that each part of cluster in partitioned network allow to elect its own leader.
-    /// </summary>
-    [Obsolete("This property is no longer supported.", error: true)]
-    bool Partitioning => false;
-
-    /// <summary>
     /// Gets or sets threshold of the heartbeat timeout.
     /// </summary>
     /// <remarks>

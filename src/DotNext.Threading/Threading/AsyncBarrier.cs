@@ -29,8 +29,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="participantCount"/> is less than 0.</exception>
     public AsyncBarrier(long participantCount)
     {
-        if (participantCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(participantCount));
+        ArgumentOutOfRangeException.ThrowIfNegative(participantCount);
 
         participants = participantCount;
         countdown = new(participants);
@@ -42,12 +41,12 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <summary>
     /// Gets the number of the barrier's current phase.
     /// </summary>
-    public long CurrentPhaseNumber => currentPhase.VolatileRead();
+    public long CurrentPhaseNumber => Volatile.Read(in currentPhase);
 
     /// <summary>
     /// Gets the total number of participants in the barrier.
     /// </summary>
-    public long ParticipantCount => participants.VolatileRead();
+    public long ParticipantCount => Volatile.Read(in participants);
 
     /// <summary>
     /// Gets the number of participants in the barrier that haven't yet signaled in the current phase.
@@ -70,7 +69,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public long AddParticipants(long participantCount)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         switch (participantCount)
         {
@@ -80,7 +79,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
                 return CurrentPhaseNumber;
             default:
                 countdown.AddCountAndReset(participantCount);
-                participants.AddAndGet(participantCount);
+                Interlocked.Add(ref participants, participantCount);
                 goto case 0L;
         }
     }
@@ -104,11 +103,10 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public void RemoveParticipants(long participantCount)
     {
-        if (participantCount > ParticipantsRemaining)
-            throw new ArgumentOutOfRangeException(nameof(participantCount));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(participantCount, ParticipantsRemaining);
 
         countdown.Signal(participantCount);
-        participants.AddAndGet(-participantCount);
+        Interlocked.Add(ref participants, -participantCount);
     }
 
     /// <summary>
@@ -132,7 +130,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="BarrierPostPhaseException"><see cref="PostPhase(long)"/> fails.</exception>
     public async ValueTask<bool> SignalAndWaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (ParticipantCount is 0L)
             throw new InvalidOperationException();
@@ -142,7 +140,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
         {
             try
             {
-                await PostPhase(currentPhase.AddAndGet(1L)).ConfigureAwait(false);
+                await PostPhase(Interlocked.Increment(ref currentPhase)).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -163,7 +161,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
     /// <exception cref="BarrierPostPhaseException"><see cref="PostPhase(long)"/> fails.</exception>
     public async ValueTask SignalAndWaitAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (ParticipantCount is 0L)
             throw new InvalidOperationException();
@@ -173,7 +171,7 @@ public class AsyncBarrier : Disposable, IAsyncEvent
         {
             try
             {
-                await PostPhase(currentPhase.AddAndGet(1L)).ConfigureAwait(false);
+                await PostPhase(Interlocked.Increment(ref currentPhase)).ConfigureAwait(false);
             }
             catch (Exception e)
             {

@@ -1,8 +1,10 @@
 namespace DotNext.IO;
 
-internal sealed class EmptyDataTransferObject : IDataTransferObject
+using Patterns;
+
+internal sealed class EmptyDataTransferObject : IDataTransferObject, ISingleton<EmptyDataTransferObject>
 {
-    internal static readonly EmptyDataTransferObject Instance = new();
+    public static EmptyDataTransferObject Instance { get; } = new();
 
     private EmptyDataTransferObject()
     {

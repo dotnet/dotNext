@@ -49,7 +49,7 @@ public sealed class ResultTests : Test
         Throws<ArithmeticException>(() => r.Value);
         NotNull(r.Error);
         Equal(20M, r.Or(20M));
-        Equal(0M, r.OrDefault());
+        Equal(0M, r.ValueOrDefault);
         Null(r.OrNull());
     }
 
@@ -60,7 +60,7 @@ public sealed class ResultTests : Test
         Equal(EnvironmentVariableTarget.Machine, Throws<UndefinedResultException<EnvironmentVariableTarget>>(() => r.Value).ErrorCode);
         Equal(EnvironmentVariableTarget.Machine, r.Error);
         Equal(20M, r.Or(20M));
-        Equal(0M, r.OrDefault());
+        Equal(0M, r.ValueOrDefault);
         Null(r.OrNull());
     }
 

@@ -113,8 +113,8 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
     {
         if (segmentSize <= 0 || segmentSize > size)
             throw new ArgumentOutOfRangeException(nameof(segmentSize));
-        if (size <= 0)
-            throw new ArgumentOutOfRangeException(nameof(size));
+
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
 
         mappedFile = file;
         segmentLength = segmentSize;
@@ -185,7 +185,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
     {
         get
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             if (totalLength == 0)
                 return ReadOnlySequence<byte>.Empty;
 
@@ -196,7 +196,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
 
     private unsafe Span<byte> GetSpan(in Segment window)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (current != window)
         {
@@ -232,5 +232,14 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
 
         ptr = null;
         base.Dispose(disposing);
+    }
+}
+
+file static class MemoryMappedViewAccessorExtensions
+{
+    internal static void ReleasePointerAndDispose(this MemoryMappedViewAccessor accessor)
+    {
+        accessor.SafeMemoryMappedViewHandle.ReleasePointer();
+        accessor.Dispose();
     }
 }

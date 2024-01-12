@@ -45,7 +45,7 @@ internal sealed class AdvancedDebugProvider : Disposable, ILoggerProvider
                 return;
 
             var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
-            buffer.WriteString($"[{prefix}]({new Timestamp()}){logLevel}: {message}");
+            buffer.Interpolate($"[{prefix}]({new Timestamp()}){logLevel}: {message}");
 
             if (exception is not null)
             {

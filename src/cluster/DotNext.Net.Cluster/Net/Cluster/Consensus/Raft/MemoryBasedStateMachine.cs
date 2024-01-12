@@ -8,7 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Runtime.CompilerServices;
-using static Threading.AtomicInt64;
 
 /// <summary>
 /// Represents memory-based state machine with snapshotting support.
@@ -42,7 +41,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private readonly CompactionMode compaction;
     private readonly bool replayOnInitialize, evictOnCommit;
     private readonly int snapshotBufferSize;
-    private readonly Action<double>? compactionCounter;
 
     private long lastTerm;  // term of last committed entry, volatile
 
@@ -66,10 +64,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         // with concurrent compaction, we will release cached log entries according to partition lifetime
         evictOnCommit = compaction is not CompactionMode.Incremental && configuration.CacheEvictionPolicy is LogEntryCacheEvictionPolicy.OnCommit;
-#pragma warning disable CS0618
-        compactionCounter = ToDelegate(configuration.CompactionCounter);
-#pragma warning restore CS0618
-
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode, initialSize: configuration.InitialPartitionSize);
     }
 
@@ -85,7 +79,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     {
     }
 
-    private protected sealed override long LastTerm => lastTerm.VolatileRead();
+    private protected sealed override long LastTerm => Volatile.Read(in lastTerm);
 
     /// <summary>
     /// Gets a value indicating that log compaction should
@@ -113,16 +107,13 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             await ApplyIfNotEmptyAsync(builder, current.Read(sessionId, currentIndex)).ConfigureAwait(false);
         }
 
-        // update counter
-        var count = upperBoundIndex - SnapshotInfo.Index;
-        compactionCounter?.Invoke(count);
-        CompactionRateMeter.Add(count, measurementTags);
+        CompactionRateMeter.Add(upperBoundIndex - SnapshotInfo.Index, measurementTags);
     }
 
     private bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, [NotNullWhen(true)] ref Partition? partition)
     {
         builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
-        return currentIndex.IsBetween(startIndex, endIndex, BoundType.Closed) && TryGetPartition(currentIndex, ref partition);
+        return currentIndex.IsBetween(startIndex.Enclosed(), endIndex.Enclosed()) && TryGetPartition(currentIndex, ref partition);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -243,7 +234,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             sessionManager.Return(session);
         }
 
-        lastTerm.VolatileWrite(snapshot.Term);
+        Volatile.Write(ref lastTerm, snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
         await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
         OnCommit(1L);
@@ -270,8 +261,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         var session = sessionManager.Take();
         try
         {
-            if (startIndex > LastEntryIndex + 1L)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, LastEntryIndex + 1L);
 
             // start commit task in parallel
             count = GetCommitIndexAndCount(ref commitIndex);
@@ -612,10 +602,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             incrementalBuilder.Builder.RefreshTimestamp();
             UpdateSnapshotInfo(await incrementalBuilder.Builder.BuildAsync(upperBoundIndex).ConfigureAwait(false));
 
-            var count = upperBoundIndex - SnapshotInfo.Index;
-            compactionCounter?.Invoke(count);
-            CompactionRateMeter.Add(count, measurementTags);
-
+            CompactionRateMeter.Add(upperBoundIndex - SnapshotInfo.Index, measurementTags);
             return true;
         }
 
@@ -696,7 +683,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             {
                 var entry = partition.Read(sessionId, startIndex, out var persisted);
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
-                lastTerm.VolatileWrite(entry.Term);
+                Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
                 if (!persisted)
@@ -726,7 +713,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <returns>The task representing asynchronous state of the method.</returns>
     public async Task ReplayAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
         try
@@ -739,7 +726,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             {
                 entry = new(in SnapshotInfo) { ContentReader = snapshot[session] };
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
-                lastTerm.VolatileWrite(entry.Term);
+                Volatile.Write(ref lastTerm, entry.Term);
                 startIndex = entry.Index;
             }
             else
@@ -773,7 +760,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <inheritdoc />
     public override async Task InitializeAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         await base.InitializeAsync(token).ConfigureAwait(false);
 
@@ -784,7 +771,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <inheritdoc />
     protected sealed override async Task ClearAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
         try
         {

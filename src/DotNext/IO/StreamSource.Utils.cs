@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,21 +9,8 @@ using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
 public static partial class StreamSource
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ReadOnlySpanWriter<TArg> : IReadOnlySpanConsumer, IFlushable
+    private readonly struct ReadOnlySpanWriter<TArg>(ReadOnlySpanAction<byte, TArg> output, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync) : IReadOnlySpanConsumer, IFlushable
     {
-        private readonly ReadOnlySpanAction<byte, TArg> output;
-        private readonly TArg arg;
-        private readonly Action<TArg>? flush;
-        private readonly Func<TArg, CancellationToken, Task>? flushAsync;
-
-        internal ReadOnlySpanWriter(ReadOnlySpanAction<byte, TArg> output, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
-        {
-            this.output = output;
-            this.arg = arg;
-            this.flush = flush;
-            this.flushAsync = flushAsync;
-        }
-
         void IFlushable.Flush() => Flush(flush, flushAsync, arg);
 
         Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, arg, token);
@@ -33,21 +19,8 @@ public static partial class StreamSource
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ReadOnlyMemoryWriter<TArg> : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+    private readonly struct ReadOnlyMemoryWriter<TArg>(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> output, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
     {
-        private readonly Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> output;
-        private readonly TArg arg;
-        private readonly Action<TArg>? flush;
-        private readonly Func<TArg, CancellationToken, Task>? flushAsync;
-
-        internal ReadOnlyMemoryWriter(Func<ReadOnlyMemory<byte>, TArg, CancellationToken, ValueTask> output, TArg arg, Action<TArg>? flush, Func<TArg, CancellationToken, Task>? flushAsync)
-        {
-            this.output = output;
-            this.arg = arg;
-            this.flush = flush;
-            this.flushAsync = flushAsync;
-        }
-
         void IFlushable.Flush() => Flush(flush, flushAsync, arg);
 
         Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, arg, token);
@@ -57,20 +30,9 @@ public static partial class StreamSource
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct BufferWriter<TBuffer> : IReadOnlySpanConsumer, IFlushable
+    private readonly struct BufferWriter<TBuffer>(TBuffer output, Action<TBuffer>? flush, Func<TBuffer, CancellationToken, Task>? flushAsync) : IReadOnlySpanConsumer, IFlushable
         where TBuffer : class, IBufferWriter<byte>
     {
-        private readonly TBuffer output;
-        private readonly Action<TBuffer>? flush;
-        private readonly Func<TBuffer, CancellationToken, Task>? flushAsync;
-
-        internal BufferWriter(TBuffer output, Action<TBuffer>? flush, Func<TBuffer, CancellationToken, Task>? flushAsync)
-        {
-            this.output = output;
-            this.flush = flush;
-            this.flushAsync = flushAsync;
-        }
-
         void IFlushable.Flush() => Flush(flush, flushAsync, output);
 
         Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, output, token);
@@ -80,21 +42,9 @@ public static partial class StreamSource
 
     // should be used if TBuffer is IReadOnlySpanConsumer
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct DelegatingWriter<TBuffer> : IReadOnlySpanConsumer, IFlushable
+    private readonly struct DelegatingWriter<TBuffer>(TBuffer output, Action<TBuffer>? flush, Func<TBuffer, CancellationToken, Task>? flushAsync) : IReadOnlySpanConsumer, IFlushable
         where TBuffer : class, IBufferWriter<byte>
     {
-        private readonly TBuffer output;
-        private readonly Action<TBuffer>? flush;
-        private readonly Func<TBuffer, CancellationToken, Task>? flushAsync;
-
-        internal DelegatingWriter(TBuffer output, Action<TBuffer>? flush, Func<TBuffer, CancellationToken, Task>? flushAsync)
-        {
-            Debug.Assert(output is IReadOnlySpanConsumer);
-            this.output = output;
-            this.flush = flush;
-            this.flushAsync = flushAsync;
-        }
-
         void IFlushable.Flush() => Flush(flush, flushAsync, output);
 
         Task IFlushable.FlushAsync(CancellationToken token) => FlushAsync(flush, flushAsync, output, token);

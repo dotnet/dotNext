@@ -4,65 +4,49 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 internal partial class LeaderState<TMember>
 {
-    private sealed class LeaderLease : CancellationTokenSource, ILeaderLease
+    private sealed class Lease : CancellationTokenSource
     {
-        private readonly CancellationToken cachedToken; // cached to avoid ObjectDisposedException
+        internal readonly new CancellationToken Token; // cached to avoid ObjectDisposedException
 
-        internal LeaderLease() => cachedToken = Token;
+        internal Lease() => Token = base.Token;
 
-        CancellationToken ILeaderLease.Token => cachedToken;
-
-        bool ILeaderLease.IsExpired => IsCancellationRequested;
-    }
-
-    private sealed class ExpiredLease : ILeaderLease
-    {
-        internal static readonly ExpiredLease Instance = new();
-
-        private ExpiredLease()
+        internal bool TryRenew(TimeSpan leaseTime)
         {
+            try
+            {
+                // refreshes the internal timer without invalidating cancellation subscriptions
+                if (leaseTime <= TimeSpan.Zero)
+                {
+                    Cancel(throwOnFirstException: false);
+                    return true;
+                }
+
+                CancelAfter(leaseTime);
+            }
+            catch (ObjectDisposedException)
+            {
+                return false;
+            }
+
+            return Token.IsCancellationRequested is false;
         }
-
-        CancellationToken ILeaderLease.Token => new(canceled: true);
-
-        bool ILeaderLease.IsExpired => true;
     }
 
     private readonly TimeSpan maxLease;
-    private volatile ILeaderLease? lease; // null if disposed, ExpiredLease, or LeaderLease
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
+    // Concurrency profile: multiple readers, single writer
+    [SuppressMessage("Usage", "CA2213", Justification = "Disposed using DestroyLease() method")]
+    private volatile Lease? lease; // null if disposed
+
     private void RenewLease(TimeSpan elapsed)
     {
         var currentLease = lease;
-
-        // lease is expired, create a new lease
-        switch (currentLease)
+        if (currentLease is not null && currentLease.TryRenew(elapsed = maxLease - elapsed) is false)
         {
-            case null: // lease is destroyed, just leave the method
-                break;
-            case { IsExpired: true }:
-                goto default;
-            case LeaderLease resettable: // reuse existing instance of CTS, if possible
-                if (!resettable.TryReset())
-                    goto default;
-
-                resettable.CancelAfter(maxLease - elapsed);
-                break;
-            default:
-                if (elapsed < maxLease)
-                    Renew(maxLease - elapsed);
-
-                break;
-        }
-
-        void Renew(TimeSpan leaseTime)
-        {
-            var newLease = new LeaderLease();
-            if (ReferenceEquals(currentLease, Interlocked.CompareExchange(ref lease, newLease, currentLease)))
+            var newLease = new Lease();
+            if (ReferenceEquals(Interlocked.CompareExchange(ref lease, newLease, currentLease), currentLease))
             {
-                (currentLease as LeaderLease)?.Dispose();
-                newLease.CancelAfter(leaseTime);
+                newLease.CancelAfter(elapsed);
             }
             else
             {
@@ -73,7 +57,7 @@ internal partial class LeaderState<TMember>
 
     private void DestroyLease()
     {
-        if (Interlocked.Exchange(ref lease, null) is LeaderLease disposable)
+        if (Interlocked.Exchange(ref lease, null) is { } disposable)
         {
             try
             {
@@ -86,5 +70,15 @@ internal partial class LeaderState<TMember>
         }
     }
 
-    internal ILeaderLease? Lease => lease;
+    internal bool TryGetLeaseToken(out CancellationToken token)
+    {
+        if (lease is { } tokenSource)
+        {
+            token = tokenSource.Token;
+            return true;
+        }
+
+        token = new(canceled: true);
+        return false;
+    }
 }

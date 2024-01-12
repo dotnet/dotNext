@@ -19,14 +19,14 @@ using static Reflection.TaskType;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct DynamicTaskAwaitable
 {
-    private static readonly CallSite<Func<CallSite, Task, object?>> GetResultCallSite = CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
-
     /// <summary>
     /// Provides an object that waits for the completion of an asynchronous task.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
+        private static CallSite<Func<CallSite, Task, object?>>? getResultCallSite;
+
         private readonly Task task;
         private readonly ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter;
 
@@ -55,20 +55,28 @@ public readonly struct DynamicTaskAwaitable
         private static bool IsTaskWithResult(Type type)
             => type != CompletedTaskType && type.IsConstructedGenericType;
 
+        [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         internal object? GetRawResult()
             => IsTaskWithResult(task.GetType()) ?
-                GetResultCallSite.Target.Invoke(GetResultCallSite, task) :
+                GetRawResult(task) :
                 Missing.Value;
+
+        [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+        private static object? GetRawResult(Task task)
+        {
+            var callSite = getResultCallSite ??= CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
+            return callSite.Target(callSite, task);
+        }
 
         /// <summary>
         /// Gets dynamically typed task result.
         /// </summary>
-        /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
+        /// <returns>The result of the completed task; or <see cref="Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
         [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         public dynamic? GetResult()
         {
             if (IsTaskWithResult(task.GetType()))
-                return GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+                return GetRawResult(task);
 
             awaiter.GetResult();
             return Missing.Value;

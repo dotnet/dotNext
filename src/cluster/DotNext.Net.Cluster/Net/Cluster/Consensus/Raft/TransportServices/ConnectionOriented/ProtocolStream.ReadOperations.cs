@@ -48,7 +48,7 @@ internal partial class ProtocolStream
     {
         Debug.Assert(bufferEnd < buffer.Length);
 
-        bufferEnd += await ReadFromTransportAsync(count, RemainingBuffer, token).ConfigureAwait(false);
+        bufferEnd += await ReadFromTransportAsync(RemainingBuffer, count, token).ConfigureAwait(false);
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -183,7 +183,7 @@ internal partial class ProtocolStream
 
     private async ValueTask StartFrameReadAsync(int frameHeaderRemainingBytes, CancellationToken token)
     {
-        bufferEnd += await ReadFromTransportAsync(frameHeaderRemainingBytes, buffer.Memory.Slice(bufferEnd), token).ConfigureAwait(false);
+        bufferEnd += await ReadFromTransportAsync(RemainingBuffer, frameHeaderRemainingBytes, token).ConfigureAwait(false);
         EndReadFrameHeader();
     }
 

@@ -10,8 +10,6 @@ using Membership;
 using Messaging;
 using Net.Http;
 using Runtime.Serialization;
-using Threading;
-using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 using Timestamp = Diagnostics.Timestamp;
 
 internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, ISubscriber
@@ -26,13 +24,10 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     internal readonly ClusterMemberId Id;
     internal readonly UriEndPoint EndPoint;
     private readonly KeyValuePair<string, object?> cachedRemoteAddressAttribute;
-    private AtomicEnum<ClusterMemberStatus> status;
+    private volatile ClusterMemberStatus status;
     private volatile MemberMetadata? metadata;
     private InvocationList<Action<ClusterMemberStatusChangedEventArgs<RaftClusterMember>>> memberStatusChanged;
     private IRaftClusterMember.ReplicationState state;
-
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.")]
-    internal IClientMetricsCollector? Metrics;
 
     static RaftClusterMember()
     {
@@ -44,7 +39,6 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         : base(remoteMember.Uri, context.CreateHttpHandler(), true)
     {
         this.context = context;
-        status = new(ClusterMemberStatus.Unknown);
         EndPoint = remoteMember;
         cachedRemoteAddressAttribute = new(IRaftClusterMember.RemoteAddressMeterAttributeName, remoteMember.ToString());
         Id = ClusterMemberId.FromEndPoint(remoteMember);
@@ -66,9 +60,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
     private async Task<TResponse> SendAsync<TResponse, TMessage>(TMessage message, CancellationToken token)
         where TMessage : class, IHttpMessage<TResponse>
     {
-#pragma warning disable CA2252
         context.Logger.SendingRequestToMember(EndPoint, TMessage.MessageType);
-#pragma warning restore CA2252
         var request = new HttpRequestMessage
         {
             RequestUri = resourcePath,
@@ -76,9 +68,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             VersionPolicy = DefaultVersionPolicy,
         };
 
-#pragma warning disable CA2252
         HttpMessage.SetMessageType<TMessage>(request);
-#pragma warning restore CA2252
         message.PrepareRequest(request);
 
         // setup additional timeout control token needed if actual timeout
@@ -111,9 +101,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         }
         catch (HttpRequestException e)
         {
-#pragma warning disable CA2252
             if (response is null || TMessage.IsMemberUnavailable(e.StatusCode))
-#pragma warning restore CA2252
                 throw MemberUnavailable(e);
 
             throw new UnexpectedStatusCodeException(response, e);
@@ -139,14 +127,9 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
             request.Dispose();
 
             var responseTime = timeStamp.ElapsedMilliseconds;
-#pragma warning disable CS0618
-            Metrics?.ReportResponseTime(TimeSpan.FromMilliseconds(responseTime));
-#pragma warning restore CS0618
             ResponseTimeMeter.Record(
                 responseTime,
-#pragma warning disable CA2252
                 new(IRaftClusterMember.MessageTypeAttributeName, TMessage.MessageType),
-#pragma warning restore CA2252
                 cachedRemoteAddressAttribute);
         }
 
@@ -282,8 +265,11 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
 
     public ClusterMemberStatus Status
     {
-        get => IsRemote ? status.Value : ClusterMemberStatus.Available;
+        get => IsRemote ? status : ClusterMemberStatus.Available;
+
+#pragma warning disable CS0420
         private set => IClusterMember.OnMemberStatusChanged(this, ref status, value, memberStatusChanged);
+#pragma warning restore CS0420
     }
 
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)

@@ -20,7 +20,7 @@ public partial class PersistentState
     private protected sealed class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
-        private static readonly CacheRecord EmptyRecord = new() { PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer };
+        private static readonly CacheRecord EmptyRecord = new();
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
         private MemoryOwner<CacheRecord> entryCache;
@@ -42,7 +42,7 @@ public partial class PersistentState
             PartitionNumber = partitionNumber;
 
             // allocate metadata segment
-            metadata = manager.BufferAllocator.Invoke(fileOffset, true);
+            metadata = manager.BufferAllocator.AllocateExactly(fileOffset);
             metadataFlushStartAddress = int.MaxValue;
 
             entryCache = manager.AllocLogEntryCache(recordsPerPartition);

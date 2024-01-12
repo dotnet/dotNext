@@ -203,7 +203,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
 
             if (IsDisposing)
             {
@@ -240,7 +240,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         lock (SyncRoot)
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             if (termination is not null)
                 throw new InvalidOperationException();
 
@@ -259,7 +259,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         get
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             return termination is not null;
         }
     }

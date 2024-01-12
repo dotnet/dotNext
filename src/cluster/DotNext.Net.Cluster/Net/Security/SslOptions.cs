@@ -11,19 +11,6 @@ public class SslOptions
     private SslClientAuthenticationOptions? clientOptions;
 
     /// <summary>
-    /// Initializes a new SSL options with preconfigured options for server and client.
-    /// </summary>
-    /// <param name="serverOptions">Server-side SSL options.</param>
-    /// <param name="clientOptions">Client-side SSL options.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="clientOptions"/> or <paramref name="serverOptions"/> is <see langword="null"/>.</exception>
-    [Obsolete("Use init-only properties to initialize the instance")]
-    public SslOptions(SslServerAuthenticationOptions serverOptions, SslClientAuthenticationOptions clientOptions)
-    {
-        this.serverOptions = serverOptions ?? throw new ArgumentNullException(nameof(serverOptions));
-        this.clientOptions = clientOptions ?? throw new ArgumentNullException(nameof(clientOptions));
-    }
-
-    /// <summary>
     /// Initializes empty SSL options for server and client.
     /// </summary>
     public SslOptions()

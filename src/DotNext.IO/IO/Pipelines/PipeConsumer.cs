@@ -1,16 +1,15 @@
+using System.Buffers;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.IO.Pipelines;
 
+using Buffers;
+
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct PipeConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+internal readonly struct PipeConsumer(PipeWriter writer) : IReadOnlySpanConsumer<byte>
 {
-    private readonly PipeWriter writer;
-
-    internal PipeConsumer(PipeWriter writer) => this.writer = writer ?? throw new ArgumentNullException(nameof(writer));
-
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private static async ValueTask Write(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
     {
@@ -20,6 +19,8 @@ internal readonly struct PipeConsumer : ISupplier<ReadOnlyMemory<byte>, Cancella
 
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
         => Write(writer, input, token);
+
+    void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> span) => writer.Write(span);
 
     public static implicit operator PipeConsumer(PipeWriter writer) => new(writer);
 }

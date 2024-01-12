@@ -4,8 +4,8 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.CustomTransport;
 
 using Buffers;
+using IO.Pipelines;
 using ProtocolStream = TransportServices.ConnectionOriented.ProtocolStream;
-using static IO.Pipelines.ResultExtensions;
 
 internal sealed class ProtocolPipeStream : ProtocolStream
 {
@@ -51,46 +51,9 @@ internal sealed class ProtocolPipeStream : ProtocolStream
     private protected override async ValueTask WriteToTransportAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
         => (await pipe.Output.WriteAsync(buffer, token).ConfigureAwait(false)).ThrowIfCancellationRequested(token);
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private static async ValueTask<int> ReadAsync(PipeReader reader, Memory<byte> destination, CancellationToken token)
-    {
-        var result = await reader.ReadAsync(token).ConfigureAwait(false);
-        result.Buffer.CopyTo(destination.Span, out var readCount);
-        reader.AdvanceTo(result.Buffer.GetPosition(readCount));
-        if (result.IsCanceled)
-            throw new OperationCanceledException(token.IsCancellationRequested ? token : new(true));
-
-        return readCount;
-    }
-
     private protected override ValueTask<int> ReadFromTransportAsync(Memory<byte> destination, CancellationToken token)
-        => ReadAsync(pipe.Input, destination, token);
+        => pipe.Input.ReadAsync(destination, token);
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private static async ValueTask<int> ReadAsync(PipeReader reader, int minimumSize, Memory<byte> destination, CancellationToken token)
-    {
-        var result = await reader.ReadAtLeastAsync(minimumSize, token).ConfigureAwait(false);
-        int readCount;
-        var position = result.Buffer.Start;
-        try
-        {
-            result.Buffer.CopyTo(destination.Span, out readCount);
-            if (minimumSize > readCount)
-                throw new EndOfStreamException();
-
-            position = result.Buffer.GetPosition(readCount, position);
-        }
-        finally
-        {
-            reader.AdvanceTo(position);
-        }
-
-        if (result.IsCanceled)
-            throw new OperationCanceledException(token.IsCancellationRequested ? token : new(true));
-
-        return readCount;
-    }
-
-    private protected override ValueTask<int> ReadFromTransportAsync(int minimumSize, Memory<byte> destination, CancellationToken token)
-        => ReadAsync(pipe.Input, minimumSize, destination, token);
+    private protected override ValueTask<int> ReadFromTransportAsync(Memory<byte> destination, int minimumSize, CancellationToken token)
+        => pipe.Input.ReadAtLeastAsync(destination, minimumSize, token);
 }

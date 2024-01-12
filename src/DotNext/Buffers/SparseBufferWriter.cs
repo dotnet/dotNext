@@ -14,8 +14,8 @@ namespace DotNext.Buffers;
 /// usage can produce holes in the sparse buffer. To avoid holes, use public members only.
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the memory.</typeparam>
-/// <seealso cref="PooledArrayBufferWriter{T}"/>
-/// <seealso cref="PooledBufferWriter{T}"/>
+/// <seealso cref="PoolingArrayBufferWriter{T}"/>
+/// <seealso cref="PoolingBufferWriter{T}"/>
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FragmentedBytes = {{{nameof(FragmentedBytes)}}}")]
 public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
 {
@@ -38,8 +38,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="chunkSize"/> is less than or equal to zero.</exception>
     public SparseBufferWriter(int chunkSize, SparseBufferGrowth growth = SparseBufferGrowth.None, MemoryAllocator<T>? allocator = null)
     {
-        if (chunkSize <= 0)
-            throw new ArgumentOutOfRangeException(nameof(chunkSize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(chunkSize);
 
         this.chunkSize = chunkSize;
         this.allocator = allocator;
@@ -48,9 +47,9 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         {
             this.growth = growth switch
             {
-                SparseBufferGrowth.Linear => &BufferHelpers.LinearGrowth,
-                SparseBufferGrowth.Exponential => &BufferHelpers.ExponentialGrowth,
-                _ => &BufferHelpers.NoGrowth,
+                SparseBufferGrowth.Linear => &SparseBufferWriter.LinearGrowth,
+                SparseBufferGrowth.Exponential => &SparseBufferWriter.ExponentialGrowth,
+                _ => &SparseBufferWriter.NoGrowth,
             };
         }
     }
@@ -66,7 +65,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         allocator = pool.ToAllocator();
         unsafe
         {
-            growth = &BufferHelpers.NoGrowth;
+            growth = &SparseBufferWriter.NoGrowth;
         }
     }
 
@@ -89,7 +88,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     {
         get
         {
-            ThrowIfDisposed();
+            ObjectDisposedException.ThrowIf(IsDisposed, this);
             return length;
         }
     }
@@ -107,7 +106,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public bool TryGetWrittenContent(out ReadOnlyMemory<T> segment)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (IsSingleSegment)
         {
@@ -144,7 +143,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public unsafe void Write(ReadOnlySpan<T> input)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (last is null)
             first = last = new PooledMemoryChunk(allocator, chunkSize);
 
@@ -168,7 +167,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void Write(ReadOnlyMemory<T> input, bool copyMemory = true)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (input.IsEmpty)
             goto exit;
 
@@ -222,7 +221,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     public void CopyTo<TConsumer>(TConsumer consumer)
         where TConsumer : notnull, IReadOnlySpanConsumer<T>
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         for (MemoryChunk? current = first; current is not null; current = current.Next)
         {
             consumer.Invoke(current.WrittenMemory.Span);
@@ -232,7 +231,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <inheritdoc />
     async ValueTask IGrowableBuffer<T>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         for (MemoryChunk? current = first; current is not null; current = current.Next)
         {
             await consumer.Invoke(current.WrittenMemory, token).ConfigureAwait(false);
@@ -257,7 +256,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public int CopyTo(Span<T> output)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         var total = 0;
         for (MemoryChunk? current = first; current is not null && !output.IsEmpty; current = current.Next)
         {
@@ -276,14 +275,14 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void Clear()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         ReleaseChunks();
         length = 0L;
     }
 
     /// <inheritdoc />
     ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
-        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : BufferHelpers.ToReadOnlySequence(this);
+        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.ToReadOnlySequence(this);
 
     private void ReleaseChunks()
     {
@@ -343,5 +342,18 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
             return result;
         }
+    }
+}
+
+file static class SparseBufferWriter
+{
+    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize * ++chunkIndex, chunkSize);
+
+    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize << ++chunkIndex, chunkSize);
+
+    internal static int NoGrowth(int chunkSize, ref int chunkIndex)
+    {
+        Debug.Assert(chunkIndex == 0);
+        return chunkSize;
     }
 }

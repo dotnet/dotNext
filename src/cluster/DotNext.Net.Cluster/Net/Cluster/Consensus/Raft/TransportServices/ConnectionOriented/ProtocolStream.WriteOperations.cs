@@ -4,7 +4,6 @@ using System.Diagnostics;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Buffers;
-using IO;
 
 internal partial class ProtocolStream
 {
@@ -13,7 +12,7 @@ internal partial class ProtocolStream
         Reset();
 
         var writer = new SpanWriter<byte>(buffer.Span);
-        writer.Write((byte)type);
+        writer.Add() = (byte)type;
         return writer;
     }
 

@@ -25,19 +25,19 @@ public partial class PeerController
 
     private async Task ProcessShuffleAsync()
     {
-        if (activeView.PeekRandom(random).TryGet(out var activePeer))
+        if (random.Peek(activeView).TryGet(out var activePeer))
         {
-            PooledArrayBufferWriter<EndPoint> peersToSend;
+            PoolingArrayBufferWriter<EndPoint> peersToSend;
 
             using (var activeViewCopy = activeView.Remove(activePeer).Copy())
             {
-                activeViewCopy.Span.Shuffle(random);
+                random.Shuffle(activeViewCopy.Span);
 
                 using var passiveViewCopy = passiveView.Copy();
-                passiveViewCopy.Span.Shuffle(random);
+                random.Shuffle(passiveViewCopy.Span);
 
                 // add randomly selected peers from active and passive views
-                peersToSend = new PooledArrayBufferWriter<EndPoint> { Capacity = shuffleActiveViewCount + shufflePassiveViewCount };
+                peersToSend = new PoolingArrayBufferWriter<EndPoint> { Capacity = shuffleActiveViewCount + shufflePassiveViewCount };
                 peersToSend.Write(activeViewCopy.Span.TrimLength(shuffleActiveViewCount));
                 peersToSend.Write(passiveViewCopy.Span.TrimLength(shufflePassiveViewCount));
             }
@@ -117,18 +117,18 @@ public partial class PeerController
         // add announced peers to the local passive view
         if (ttl is 0)
         {
-            using var randomizedPassiveView = new PooledArrayBufferWriter<EndPoint>();
+            using var randomizedPassiveView = new PoolingArrayBufferWriter<EndPoint>();
 
             // send random part of passive view back to origin
             randomizedPassiveView.AddAll(passiveView);
-            randomizedPassiveView.WrittenArray.AsSpan().Shuffle(random);
+            random.Shuffle<EndPoint>(randomizedPassiveView.WrittenArray);
             if (randomizedPassiveView.WrittenCount > announcement.Count)
                 randomizedPassiveView.RemoveLast(randomizedPassiveView.WrittenCount - announcement.Count);
             await ShuffleReplyAsync(origin, randomizedPassiveView, LifecycleToken).ConfigureAwait(false);
 
             await AddPeersToPassiveViewAsync(announcement).ConfigureAwait(false);
         }
-        else if (activeView.Except(new[] { sender, origin }).PeekRandom(random).TryGet(out var activePeer))
+        else if (random.Peek(activeView.Except(new[] { sender, origin })).TryGet(out var activePeer))
         {
             // resend announcement
             await ShuffleAsync(activePeer, origin, announcement, ttl - 1, LifecycleToken).ConfigureAwait(false);

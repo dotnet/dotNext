@@ -9,27 +9,13 @@ using IO.Log;
 /// Represents No-OP entry.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EmptyLogEntry : IRaftLogEntry
+public readonly struct EmptyLogEntry() : IRaftLogEntry
 {
-    /// <summary>
-    /// Initializes a new empty log entry.
-    /// </summary>
-    /// <param name="term">The term value.</param>
-    public EmptyLogEntry(long term)
-    {
-        Term = term;
-        Timestamp = DateTimeOffset.UtcNow;
-    }
-
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
 
     /// <inheritdoc cref="ILogEntry.IsSnapshot"/>
-    public bool IsSnapshot
-    {
-        get;
-        internal init;
-    }
+    public bool IsSnapshot { get; internal init; }
 
     /// <inheritdoc/>
     long? IDataTransferObject.Length => 0L;
@@ -47,12 +33,12 @@ public readonly struct EmptyLogEntry : IRaftLogEntry
     /// <summary>
     /// Gets or sets log entry term.
     /// </summary>
-    public long Term { get; }
+    required public long Term { get; init; }
 
     /// <summary>
     /// Gets timestamp of this log entry.
     /// </summary>
-    public DateTimeOffset Timestamp { get; }
+    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <inheritdoc/>
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)

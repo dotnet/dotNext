@@ -23,13 +23,14 @@ internal readonly struct TaskType
     internal TaskType(Type taskType)
     {
         this.taskType = taskType;
-        if (taskType.IsOneOf(typeof(ValueTask), typeof(Task)))
+        if (taskType.IsOneOf([typeof(ValueTask), typeof(Task)]))
         {
             resultType = null;
         }
         else
         {
-            var enumerator = (typeof(Task<>), typeof(ValueTask<>)).AsReadOnlySpan().GetEnumerator();
+            ReadOnlySpan<Type> types = [typeof(Task<>), typeof(ValueTask<>)];
+            var enumerator = types.GetEnumerator();
 
         move_next:
             if (!enumerator.MoveNext())
@@ -44,7 +45,7 @@ internal readonly struct TaskType
     }
 
     internal MethodCallExpression AdjustTaskType(MethodCallExpression startMachineCall)
-        => IsValueTask ? startMachineCall : Expression.Call(startMachineCall, nameof(ValueTask.AsTask), Type.EmptyTypes);
+        => IsValueTask ? startMachineCall : Expression.Call(startMachineCall, nameof(ValueTask.AsTask), []);
 
     internal Type ResultType => resultType ?? typeof(void);
 

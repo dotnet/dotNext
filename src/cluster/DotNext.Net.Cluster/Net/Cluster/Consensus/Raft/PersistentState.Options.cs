@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.IO.Compression;
+using System.Formats.Tar;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -50,19 +49,6 @@ public partial class PersistentState
         private bool parallelIO;
 
         /// <summary>
-        /// Gets or sets a value indicating usage of intermediate buffers during I/O.
-        /// </summary>
-        /// <value>
-        /// <see langword="true"/> to bypass intermediate buffers for disk writes.
-        /// </value>
-        [Obsolete("Use WriteMode property instead.")]
-        public bool WriteThrough
-        {
-            get => WriteMode is WriteMode.WriteThrough;
-            set => WriteMode = value ? WriteMode.WriteThrough : WriteMode.NoFlush;
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating how the log interacts with underlying storage device.
         /// </summary>
         public WriteMode WriteMode { get; set; } = WriteMode.AutoFlush;
@@ -76,8 +62,8 @@ public partial class PersistentState
             get => bufferSize;
             set
             {
-                if (value < MinBufferSize)
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                ArgumentOutOfRangeException.ThrowIfLessThan(value, MinBufferSize);
+
                 bufferSize = value;
             }
         }
@@ -145,63 +131,13 @@ public partial class PersistentState
         /// Gets or sets compression level used
         /// to create backup archive.
         /// </summary>
-        public CompressionLevel BackupCompression { get; set; } = CompressionLevel.Optimal;
+        public TarEntryFormat BackupFormat { get; set; } = TarEntryFormat.Pax;
 
         /// <summary>
         /// If set then every read operations will be performed
         /// on buffered copy of the log entries.
         /// </summary>
-        public RaftLogEntriesBufferingOptions? CopyOnReadOptions
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets lock contention counter.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public IncrementingEventCounter? LockContentionCounter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets lock duration counter.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public EventCounter? LockDurationCounter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the counter used to measure the number of retrieved log entries.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public IncrementingEventCounter? ReadCounter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the counter used to measure the number of written log entries.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public IncrementingEventCounter? WriteCounter
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the counter used to measure the number of committed log entries.
-        /// </summary>
-        [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-        public IncrementingEventCounter? CommitCounter
+        public LogEntriesBufferingOptions? CopyOnReadOptions
         {
             get;
             set;

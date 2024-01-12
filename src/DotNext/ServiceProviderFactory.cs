@@ -69,7 +69,7 @@ public static partial class ServiceProviderFactory
         static CachedServiceProvider()
         {
             var tupleType = typeof(T);
-            ServiceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : Type.EmptyTypes;
+            ServiceTypes = tupleType.IsConstructedGenericType ? tupleType.GetGenericArguments() : [];
         }
 
         private readonly IServiceProvider? fallback;
@@ -154,7 +154,7 @@ public static partial class ServiceProviderFactory
         var requestedType = Expression.Parameter(typeof(Type));
         var values = Expression.Parameter(typeof(object[]));
         var fallbackResolver = Expression.Parameter(typeof(IServiceProvider));
-        var resolverBody = MakeResolver(types, requestedType, values, Expression.Call(fallbackResolver, nameof(IServiceProvider.GetService), Type.EmptyTypes, requestedType));
+        var resolverBody = MakeResolver(types, requestedType, values, Expression.Call(fallbackResolver, nameof(IServiceProvider.GetService), [], requestedType));
         return Expression.Lambda<Func<Type, object[], IServiceProvider, object?>>(resolverBody, false, requestedType, values, fallbackResolver).Compile();
     }
 

@@ -5,18 +5,8 @@ namespace DotNext.Runtime;
 
 public partial class GCNotification
 {
-    private sealed class Tracker : TaskCompletionSource<GCMemoryInfo>, IGCCallback
+    private sealed class Tracker(GCNotification filter) : TaskCompletionSource<GCMemoryInfo>(TaskCreationOptions.RunContinuationsAsynchronously), IGCCallback
     {
-        private readonly GCNotification filter;
-
-        internal Tracker(GCNotification filter)
-            : base(TaskCreationOptions.RunContinuationsAsynchronously)
-        {
-            Debug.Assert(filter is not null);
-
-            this.filter = filter;
-        }
-
         ~Tracker()
         {
             var memoryInfo = GC.GetGCMemoryInfo();
@@ -31,17 +21,9 @@ public partial class GCNotification
         }
     }
 
-    private abstract class GCCallback<T>
+    private abstract class GCCallback<T>(Action<T, GCMemoryInfo> callback, T state)
     {
-        private readonly Action<T, GCMemoryInfo> callback;
-        private readonly T state;
         internal GCMemoryInfo MemoryInfo;
-
-        private protected GCCallback(Action<T, GCMemoryInfo> callback, T state)
-        {
-            this.callback = callback;
-            this.state = state;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected void Execute() => callback(state, MemoryInfo);
@@ -60,31 +42,16 @@ public partial class GCNotification
         }
     }
 
-    private sealed class UnsafeCallback<T> : GCCallback<T>, IThreadPoolWorkItem
+    private sealed class UnsafeCallback<T>(Action<T, GCMemoryInfo> callback, T state) : GCCallback<T>(callback, state), IThreadPoolWorkItem
     {
-        internal UnsafeCallback(Action<T, GCMemoryInfo> callback, T state)
-            : base(callback, state)
-        {
-        }
-
         void IThreadPoolWorkItem.Execute() => Execute();
 
         internal override void Enqueue()
             => ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
     }
 
-    private sealed class SynchronizationContextBoundCallback<T> : GCCallback<T>
+    private sealed class SynchronizationContextBoundCallback<T>(Action<T, GCMemoryInfo> callback, T state, SynchronizationContext context) : GCCallback<T>(callback, state)
     {
-        private readonly SynchronizationContext context;
-
-        internal SynchronizationContextBoundCallback(Action<T, GCMemoryInfo> callback, T state, SynchronizationContext context)
-            : base(callback, state)
-        {
-            Debug.Assert(context is not null);
-
-            this.context = context;
-        }
-
         internal override void Enqueue()
             => context.Post(UnsafeExecute, this);
     }
@@ -109,31 +76,16 @@ public partial class GCNotification
         internal override void Enqueue() => task.Start(scheduler);
     }
 
-    private abstract class ExecutionContextBoundCallback<T> : GCCallback<T>
+    private abstract class ExecutionContextBoundCallback<T>(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context) : GCCallback<T>(callback, state)
     {
-        private readonly ExecutionContext context;
-
-        private protected ExecutionContextBoundCallback(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context)
-            : base(callback, state)
-        {
-            Debug.Assert(context is not null);
-
-            this.context = context;
-        }
-
         private protected abstract ContextCallback Callback { get; }
 
         internal sealed override void Enqueue()
             => ExecutionContext.Run(context, Callback, this);
     }
 
-    private sealed class SafeCallback<T> : ExecutionContextBoundCallback<T>
+    private sealed class SafeCallback<T>(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context) : ExecutionContextBoundCallback<T>(callback, state, context)
     {
-        internal SafeCallback(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context)
-            : base(callback, state, context)
-        {
-        }
-
         private protected override ContextCallback Callback
         {
             get
@@ -146,18 +98,8 @@ public partial class GCNotification
         }
     }
 
-    private sealed class ExecutionAndSynchronizationContextBoundCallback<T> : ExecutionContextBoundCallback<T>
+    private sealed class ExecutionAndSynchronizationContextBoundCallback<T>(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context, SynchronizationContext syncContext) : ExecutionContextBoundCallback<T>(callback, state, context)
     {
-        private readonly SynchronizationContext context;
-
-        internal ExecutionAndSynchronizationContextBoundCallback(Action<T, GCMemoryInfo> callback, T state, ExecutionContext context, SynchronizationContext syncContext)
-            : base(callback, state, context)
-        {
-            Debug.Assert(syncContext is not null);
-
-            this.context = syncContext;
-        }
-
         private protected override ContextCallback Callback
         {
             get
@@ -173,7 +115,7 @@ public partial class GCNotification
             }
         }
 
-        private void Post() => context.Post(UnsafeExecute, this);
+        private void Post() => syncContext.Post(UnsafeExecute, this);
     }
 
     private sealed class ExecutionContextAndTaskSchedulerBoundCallback<T> : ExecutionContextBoundCallback<T>

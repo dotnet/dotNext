@@ -64,9 +64,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             }
         }
 
-        internal readonly long ReadLocks => readLocks.VolatileRead();
+        internal readonly long ReadLocks => Volatile.Read(in readLocks);
 
-        internal readonly ulong Version => version.VolatileRead();
+        internal readonly ulong Version => Volatile.Read(in version);
 
         internal readonly bool IsWriteLockAllowed => writeLock is false && readLocks is 0L;
 
@@ -85,41 +85,47 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ReadLockManager : ILockManager<WaitNode>
+    private struct ReadLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(this)).IsReadLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsReadLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<ReadLockManager, State>(ref Unsafe.AsRef(this)).AcquireReadLock();
+            => state.AcquireReadLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Read;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct WriteLockManager : ILockManager<WaitNode>
+    private struct WriteLockManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<WriteLockManager, State>(ref Unsafe.AsRef(this)).IsWriteLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsWriteLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<WriteLockManager, State>(ref Unsafe.AsRef(this)).AcquireWriteLock();
+            => state.AcquireWriteLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Exclusive;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct UpgradeManager : ILockManager<WaitNode>
+    private struct UpgradeManager : ILockManager<WaitNode>
     {
-        bool ILockManager.IsLockAllowed
-            => Unsafe.As<UpgradeManager, State>(ref Unsafe.AsRef(this)).IsUpgradeToWriteLockAllowed;
+        private State state;
+
+        readonly bool ILockManager.IsLockAllowed
+            => state.IsUpgradeToWriteLockAllowed;
 
         void ILockManager.AcquireLock()
-            => Unsafe.As<UpgradeManager, State>(ref Unsafe.AsRef(this)).AcquireWriteLock();
+            => state.AcquireWriteLock();
 
-        void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Upgrade;
     }
 
@@ -196,8 +202,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncReaderWriterLock(int concurrencyLevel)
     {
-        if (concurrencyLevel <= 0)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         state = new();
         pool = new(OnCompleted, concurrencyLevel);
@@ -254,7 +259,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public LockStamp TryOptimisticRead()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         // Ordering of version and lock state must be respected:
         // Write lock acquisition changes the state to Acquired and then increments the version.
@@ -324,7 +329,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryEnterWriteLock(in LockStamp stamp)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
         var result = stamp.IsValid(in state) && TryAcquire(ref GetLockManager<WriteLockManager>());
@@ -389,7 +394,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     private bool TryEnter<TLockManager>()
         where TLockManager : struct, ILockManager<WaitNode>
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref GetLockManager<TLockManager>());
@@ -547,7 +552,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void Release()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -576,7 +581,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public void DowngradeFromWriteLock()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)

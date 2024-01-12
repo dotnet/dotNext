@@ -3,7 +3,7 @@ namespace DotNext.Threading;
 /// <summary>
 /// Represents asynchronous event.
 /// </summary>
-public interface IAsyncEvent : IDisposable
+public interface IAsyncEvent : IDisposable, IResettable
 {
     /// <summary>
     /// Determines whether this event in signaled state.
@@ -15,7 +15,10 @@ public interface IAsyncEvent : IDisposable
     /// </summary>
     /// <returns><see langword="true"/>, if state of this object changed from signaled to non-signaled state; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    bool Reset();
+    new bool Reset();
+
+    /// <inheritdoc/>
+    void IResettable.Reset() => Reset();
 
     /// <summary>
     /// Raises asynchronous event if it meets internal conditions.

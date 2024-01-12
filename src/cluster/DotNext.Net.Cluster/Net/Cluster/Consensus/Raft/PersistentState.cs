@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -30,9 +29,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly WriteMode writeMode;
     private readonly bool parallelIO;
 
-    // diagnostic counters
-    private readonly Action<double>? readCounter, writeCounter, commitCounter;
-
     static PersistentState()
     {
         var meter = new Meter("DotNext.IO.WriteAheadLog");
@@ -49,7 +45,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             path.Create();
         bufferingConsumer = configuration.CreateBufferingConsumer();
         writeMode = configuration.WriteMode;
-        backupCompression = configuration.BackupCompression;
+        backupFormat = configuration.BackupFormat;
         bufferSize = configuration.BufferSize;
         Location = path;
         this.recordsPerPartition = recordsPerPartition;
@@ -65,10 +61,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         syncRoot = new(configuration.MaxConcurrentReads)
         {
             MeasurementTags = configuration.MeasurementTags,
-#pragma warning disable CS0618
-            LockContentionCounter = configuration.LockContentionCounter,
-            LockDurationCounter = configuration.LockDurationCounter,
-#pragma warning restore CS0618
         };
 
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
@@ -102,20 +94,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         partitionTable.Clear();
         state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.NoFlush);
-
-        // counters
-#pragma warning disable CS0618
-        readCounter = ToDelegate(configuration.ReadCounter);
-        writeCounter = ToDelegate(configuration.WriteCounter);
-        commitCounter = ToDelegate(configuration.CommitCounter);
-#pragma warning restore CS0618
         measurementTags = configuration.MeasurementTags;
 
         static int ComparePartitions(Partition x, Partition y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
     }
-
-    private protected static Action<double>? ToDelegate(IncrementingEventCounter? counter)
-        => counter is null ? null : counter.Increment;
 
     private protected static Meter MeterRoot => ReadRateMeter.Meter;
 
@@ -191,7 +173,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         if (length > int.MaxValue)
             return ValueTask.FromException<TResult>(new InternalBufferOverflowException(ExceptionMessages.RangeTooBig));
 
-        readCounter?.Invoke(length);
         ReadRateMeter.Add(length, measurementTags);
 
         SingletonList<LogEntry> list;
@@ -245,7 +226,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         else if (endIndex < 0L)
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
         else if (startIndex > endIndex)
-            result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            result = reader.ReadAsync<LogEntry, LogEntry[]>([], null, token);
         else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, endIndex, token);
         else
@@ -278,13 +259,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Debug.Assert(bufferingConsumer is not null);
 
         // create buffered copy of all entries
-        BufferedRaftLogEntryList bufferedEntries;
+        BufferedLogEntryList bufferedEntries;
         long? snapshotIndex;
         await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
         try
         {
-            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedRaftLogEntryList, long?)>(bufferingConsumer, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
+            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedLogEntryList, long?)>(bufferingConsumer, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
         }
         finally
         {
@@ -295,7 +276,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         // pass buffered entries to the reader
         try
         {
-            return await reader.ReadAsync<BufferedRaftLogEntry, BufferedRaftLogEntryList>(bufferedEntries, snapshotIndex, token).ConfigureAwait(false);
+            return await reader.ReadAsync<BufferedLogEntry, BufferedLogEntryList>(bufferedEntries, snapshotIndex, token).ConfigureAwait(false);
         }
         finally
         {
@@ -324,7 +305,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         else if (startIndex < 0L)
             result = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (startIndex > state.LastIndex)
-            result = reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            result = reader.ReadAsync<LogEntry, LogEntry[]>([], null, token);
         else if (bufferingConsumer is null || reader.LogEntryMetadataOnly)
             result = ReadUnbufferedAsync(reader, startIndex, null, token);
         else
@@ -362,9 +343,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             result = new(Task.WhenAll(bufferingSupplier.BufferizeAsync(), AppendUncachedAsync(bufferingSupplier, startIndex, skipCommitted, token)));
         }
 
-        writeCounter?.Invoke(count);
         WriteRateMeter.Add(count, measurementTags);
-
         return result;
     }
 
@@ -395,7 +374,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 await partition.WriteAsync(cachedEntry, startIndex, token).ConfigureAwait(false);
 
                 // flush if last entry is added to the partition or the last entry is consumed from the iterator
-                if (startIndex == partition.LastIndex || supplier.RemainingCount == 0L)
+                if (startIndex == partition.LastIndex || supplier.RemainingCount is 0L)
                     await partition.FlushAsync(token).ConfigureAwait(false);
             }
             else if (!skipCommitted)
@@ -449,8 +428,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         try
         {
             var tailIndex = state.TailIndex;
-            if (startIndex > tailIndex)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, tailIndex);
 
             // wrong assumption, tail of the log can be rewritten so we need exclusive lock
             if (startIndex != tailIndex)
@@ -515,7 +493,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         state.LastIndex = startIndex;
         await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
 
-        writeCounter?.Invoke(1D);
         WriteRateMeter.Add(1L, measurementTags);
     }
 
@@ -555,8 +532,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
 
                 var tailIndex = state.TailIndex;
-                if (startIndex > tailIndex)
-                    throw new ArgumentOutOfRangeException(nameof(startIndex));
+                ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, tailIndex);
 
                 if (startIndex != tailIndex)
                 {
@@ -616,9 +592,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             syncRoot.Release(LockType.WriteLock);
         }
 
-        writeCounter?.Invoke(1D);
         WriteRateMeter.Add(1L, measurementTags);
-
         return startIndex;
     }
 
@@ -644,9 +618,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             syncRoot.Release(LockType.WriteLock);
         }
 
-        writeCounter?.Invoke(1D);
         WriteRateMeter.Add(1L, measurementTags);
-
         return startIndex;
     }
 
@@ -718,9 +690,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
         where TEntry : notnull, IRaftLogEntry
     {
-        ThrowIfDisposed();
-        if (entries.RemainingCount == 0L)
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        if (entries.RemainingCount is 0L)
             throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
+
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
         var startIndex = state.TailIndex;
         try
@@ -751,7 +724,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
     public async ValueTask<long> DropAsync(long startIndex, bool reuseSpace = false, CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         var count = 0L;
         if (startIndex > state.LastIndex)
             goto exit;
@@ -873,27 +846,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         Debug.Assert(count > 0L);
 
         commitEvent.Signal(resumeAll: true);
-        commitCounter?.Invoke(count);
         CommitRateMeter.Add(count, measurementTags);
-    }
-
-    /// <summary>
-    /// Suspends the caller until the log entry with term equal to <see cref="Term"/>
-    /// will be committed.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing state of the asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="TimeoutException">Timeout occurred.</exception>
-    [Obsolete("Use IRaftCluster.ApplyReadBarrierAsync instead.")]
-    public async ValueTask EnsureConsistencyAsync(CancellationToken token)
-    {
-        ThrowIfDisposed();
-
-        for (var condition = new DelegatingSupplier<bool>(IsConsistent); !IsConsistent();)
-            await commitEvent.SpinWaitAsync(condition, token).ConfigureAwait(false);
-
-        bool IsConsistent() => state.Term == LastTerm && state.CommitIndex == state.LastApplied;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

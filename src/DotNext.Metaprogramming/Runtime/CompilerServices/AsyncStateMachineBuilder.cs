@@ -10,7 +10,7 @@ namespace DotNext.Runtime.CompilerServices;
 using Linq.Expressions;
 using Reflection;
 using static Collections.Generic.Dictionary;
-using static Collections.Generic.Sequence;
+using static Collections.Generic.Collection;
 using static Reflection.TypeExtensions;
 
 /// <summary>
@@ -24,7 +24,6 @@ using static Reflection.TypeExtensions;
 /// </remarks>
 internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 {
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<int> ParameterPositionSlot = new();
 
     // small optimization - reuse variable for awaiters of the same type

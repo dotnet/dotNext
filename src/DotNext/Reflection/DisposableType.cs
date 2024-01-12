@@ -14,9 +14,9 @@ public static class DisposableType
     private static MethodInfo? GetDisposeMethod([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type type, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type disposableType, string disposeMethodName, Type returnType)
     {
         if (disposableType.IsAssignableFrom(type))
-            return disposableType.GetMethod(disposeMethodName, Type.EmptyTypes);
+            return disposableType.GetMethod(disposeMethodName, []);
 
-        var candidate = type.GetMethod(disposeMethodName, PublicInstanceMethod, null, Type.EmptyTypes, null);
+        var candidate = type.GetMethod(disposeMethodName, PublicInstanceMethod, binder: null, [], modifiers: null);
         return candidate is null || candidate.IsGenericMethod || candidate.ReturnType != returnType ? null : candidate;
     }
 

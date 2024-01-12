@@ -37,7 +37,6 @@ public struct BufferWriterInterpolatedStringHandler
         // assume that every placeholder will be converted to substring no longer than X chars
         const int charsPerPlaceholder = 10;
         buffer.GetSpan((formattedCount * charsPerPlaceholder) + literalLength);
-        count = 0;
     }
 
     /// <summary>
@@ -59,18 +58,16 @@ public struct BufferWriterInterpolatedStringHandler
         switch (value)
         {
             case ISpanFormattable:
-                for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
-                {
-                    var span = buffer.GetSpan(bufferSize);
+                Span<char> span = buffer.GetSpan();
 
-                    // constrained call avoiding boxing for value types
-                    if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
-                    {
-                        buffer.Advance(charsWritten);
-                        break;
-                    }
+                // constrained call avoiding boxing for value types
+                for (int sizeHint; !((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider); span = buffer.GetSpan(sizeHint))
+                {
+                    sizeHint = span.Length;
+                    sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException();
                 }
 
+                buffer.Advance(charsWritten);
                 break;
             case IFormattable:
                 // constrained call avoiding boxing for value types

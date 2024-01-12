@@ -18,12 +18,10 @@ public static class MemoryMappedFileExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="size"/> is less than zero.</exception>
     public static MemoryMappedDirectAccessor CreateDirectAccessor(this MemoryMappedFile file, long offset = 0, long size = 0, MemoryMappedFileAccess access = MemoryMappedFileAccess.ReadWrite)
     {
-        if (offset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(offset));
-        if (size < 0L)
-            throw new ArgumentOutOfRangeException(nameof(size));
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+        ArgumentOutOfRangeException.ThrowIfNegative(size);
 
-        return new MemoryMappedDirectAccessor(file.CreateViewAccessor(offset, size, access));
+        return new(file.CreateViewAccessor(offset, size, access));
     }
 
     /// <summary>
@@ -38,13 +36,12 @@ public static class MemoryMappedFileExtensions
     /// <param name="access">the type of access allowed to the memory-mapped file.</param>
     /// <returns>The direct accessor.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="size"/> is less than zero.</exception>
-    public static IMappedMemoryOwner CreateMemoryAccessor(this MemoryMappedFile file, long offset = 0, int size = 0, MemoryMappedFileAccess access = MemoryMappedFileAccess.ReadWrite)
+    [CLSCompliant(false)]
+    public static IMappedMemory CreateMemoryAccessor(this MemoryMappedFile file, long offset = 0, int size = 0, MemoryMappedFileAccess access = MemoryMappedFileAccess.ReadWrite)
     {
-        if (offset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(offset));
-        if (size < 0)
-            throw new ArgumentOutOfRangeException(nameof(size));
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+        ArgumentOutOfRangeException.ThrowIfNegative(size);
 
-        return new MappedMemoryOwner(file.CreateViewAccessor(offset, size, access));
+        return new MappedMemory(file.CreateViewAccessor(offset, size, access));
     }
 }

@@ -21,9 +21,7 @@ public abstract class PeerEventArgs : EventArgs
     public static PeerEventArgs Create(EndPoint peer) => new SimplePeerEventArgs(peer);
 }
 
-internal sealed class SimplePeerEventArgs : PeerEventArgs
+file sealed class SimplePeerEventArgs(EndPoint peer) : PeerEventArgs
 {
-    internal SimplePeerEventArgs(EndPoint peer) => PeerAddress = peer ?? throw new ArgumentNullException(nameof(peer));
-
-    public override EndPoint PeerAddress { get; }
+    public override EndPoint PeerAddress => peer;
 }

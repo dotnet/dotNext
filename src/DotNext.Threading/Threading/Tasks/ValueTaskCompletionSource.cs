@@ -6,8 +6,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
 
-using NullExceptionConstant = Generic.DefaultConst<Exception?>;
-
 /// <summary>
 /// Represents the producer side of <see cref="ValueTask"/>.
 /// </summary>
@@ -18,8 +16,6 @@ using NullExceptionConstant = Generic.DefaultConst<Exception?>;
 /// <seealso cref="ValueTaskCompletionSource{T}"/>
 public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTaskSource, ISupplier<TimeSpan, CancellationToken, ValueTask>
 {
-    private static readonly NullExceptionConstant NullSupplier = new();
-
     // null - success, not null - error
     private ExceptionDispatchInfo? result;
 
@@ -153,7 +149,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(object? completionData)
-        => SetResult(completionData, completionToken: null, NullSupplier);
+        => SetResult(completionData, completionToken: null, ISupplier<Exception>.NullOrDefault);
 
     /// <summary>
     /// Attempts to complete the task sucessfully.
@@ -170,7 +166,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(object? completionData, short completionToken)
-        => SetResult<NullExceptionConstant>(completionData, completionToken, NullSupplier);
+        => SetResult(completionData, completionToken, ISupplier<Exception>.NullOrDefault);
 
     /// <summary>
     /// Creates a fresh task linked with this source.

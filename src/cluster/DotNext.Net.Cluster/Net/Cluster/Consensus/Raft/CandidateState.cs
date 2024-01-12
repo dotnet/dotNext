@@ -7,7 +7,7 @@ using IO.Log;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 
-internal sealed class CandidateState<TMember> : RaftState<TMember>
+internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMachine, long term) : RaftState<TMember>(stateMachine)
     where TMember : class, IRaftClusterMember
 {
     private enum VotingResult : byte
@@ -18,16 +18,9 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         NotAvailable,
     }
 
-    private readonly CancellationTokenSource votingCancellation;
-    internal readonly long Term;
+    private readonly CancellationTokenSource votingCancellation = new();
+    internal readonly long Term = term;
     private Task? votingTask;
-
-    internal CandidateState(IRaftStateMachine<TMember> stateMachine, long term)
-        : base(stateMachine)
-    {
-        votingCancellation = new();
-        Term = term;
-    }
 
     private async Task VoteAsync(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
@@ -131,6 +124,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     /// <param name="auditTrail">The local transaction log.</param>
     internal void StartVoting(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
+        CandidateState.TransitionRateMeter.Add(1, in MeasurementTags);
         Logger.VotingStarted(timeout, Term);
         votingTask = VoteAsync(timeout, auditTrail);
     }
@@ -163,7 +157,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
     }
 }
 
-internal static class CandidateState
+file static class CandidateState
 {
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-candidate-count", description: "Number of Transitions to Candidate State");
 }

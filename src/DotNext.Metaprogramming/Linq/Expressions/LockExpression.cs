@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions;
 
-using Seq = Collections.Generic.Sequence;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents synchronized block of code.
@@ -101,6 +101,6 @@ public sealed class LockExpression : CustomExpression
         var body = TryFinally(Body, Call(monitorExit, SyncRoot));
         return assignment is null ?
                 Block(Call(monitorEnter, SyncRoot), body) :
-                Block(Seq.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
+                Block(List.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
     }
 }

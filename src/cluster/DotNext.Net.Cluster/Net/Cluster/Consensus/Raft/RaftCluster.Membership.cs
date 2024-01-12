@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
@@ -78,16 +76,11 @@ public partial class RaftCluster<TMember>
             : base(ExceptionMessages.ConcurrentMembershipUpdate)
         {
         }
-
-        private ConcurrentMembershipModificationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
     }
 
     private IMemberList members;
     private InvocationList<Action<RaftCluster<TMember>, RaftClusterMemberEventArgs<TMember>>> memberAddedHandlers, memberRemovedHandlers;
-    private AtomicBoolean membershipState;
+    private Atomic.Boolean membershipState;
 
     /// <summary>
     /// Gets the member by its identifier.
@@ -256,8 +249,7 @@ public partial class RaftCluster<TMember>
     protected async Task<bool> AddMemberAsync<TAddress>(TMember member, int rounds, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
         where TAddress : notnull
     {
-        if (rounds <= 0)
-            throw new ArgumentOutOfRangeException(nameof(rounds));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rounds);
 
         if (!membershipState.FalseToTrue())
             throw new ConcurrentMembershipModificationException();

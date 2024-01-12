@@ -63,7 +63,7 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <remarks>
     /// Should be called immediately after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
-    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
+    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults(IHostBuilder, Action{IWebHostBuilder})"/>.
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <returns>The modified host builder.</returns>
@@ -89,7 +89,7 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <remarks>
     /// Should be called immediately after <see cref="GenericHostWebHostBuilderExtensions.ConfigureWebHost(IHostBuilder, Action{IWebHostBuilder})"/>
-    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults"/>.
+    /// or <see cref="GenericHostBuilderExtensions.ConfigureWebHostDefaults(IHostBuilder, Action{IWebHostBuilder})"/>.
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <param name="peerConfig">The delegate that can be used to provide local peer configuration.</param>

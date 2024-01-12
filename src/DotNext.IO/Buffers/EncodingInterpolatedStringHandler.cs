@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.ComponentModel;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,7 +20,8 @@ using EncodingContext = DotNext.Text.EncodingContext;
 public ref struct EncodingInterpolatedStringHandler
 {
     private const int MaxBufferSize = int.MaxValue / 2;
-    private const char Whitespace = ' ';
+    private const char WhitespaceUtf16 = ' ';
+    private const byte WhitespaceUtf8 = (byte)' ';
 
     private readonly IBufferWriter<byte> buffer;
     private readonly IFormatProvider? provider;
@@ -87,15 +89,30 @@ public ref struct EncodingInterpolatedStringHandler
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, string? format = null)
     {
+        int bufferSize, charsWritten;
         switch (value)
         {
+            case IUtf8SpanFormattable when ReferenceEquals(encoding, Encoding.UTF8):
+                for (bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+                {
+                    var span = buffer.GetSpan(bufferSize);
+
+                    // constrained call avoiding boxing for value types
+                    if (((IUtf8SpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                    {
+                        buffer.Advance(charsWritten);
+                        break;
+                    }
+                }
+
+                break;
             case ISpanFormattable:
-                for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                for (bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
 
                     // constrained call avoiding boxing for value types
-                    if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out var charsWritten, format, provider))
+                    if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out charsWritten, format, provider))
                     {
                         AppendFormatted(tempBuffer.Span.Slice(0, charsWritten));
                         break;
@@ -129,7 +146,7 @@ public ref struct EncodingInterpolatedStringHandler
             ? span.Slice(value.Length, padding)
             : span.TrimLength(padding, out span);
 
-        filler.Fill(Whitespace);
+        filler.Fill(WhitespaceUtf16);
         value.CopyTo(span);
 
         AppendFormatted(span);
@@ -153,6 +170,29 @@ public ref struct EncodingInterpolatedStringHandler
         AppendFormatted(value, alignment, leftAlign);
     }
 
+    private static void Align<T>(Span<T> buffer, T whitespace, ref int alignment, int charsWritten, bool leftAlign)
+        where T : struct, IBinaryNumber<T>
+    {
+        Span<T> filler;
+        var padding = alignment - charsWritten;
+
+        if (padding <= 0)
+        {
+            alignment = charsWritten;
+        }
+        else if (leftAlign)
+        {
+            filler = buffer.Slice(charsWritten, padding);
+            filler.Fill(whitespace);
+        }
+        else
+        {
+            filler = buffer.TrimLength(padding, out var rest);
+            buffer.Slice(0, charsWritten).CopyTo(rest);
+            filler.Fill(whitespace);
+        }
+    }
+
     /// <summary>
     /// Writes the specified value to the handler.
     /// </summary>
@@ -165,6 +205,7 @@ public ref struct EncodingInterpolatedStringHandler
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, int alignment, string? format = null)
     {
+        int bufferSize, charsWritten;
         bool leftAlign;
 
         if (leftAlign = alignment < 0)
@@ -172,32 +213,29 @@ public ref struct EncodingInterpolatedStringHandler
 
         switch (value)
         {
+            case IUtf8SpanFormattable when ReferenceEquals(encoding, Encoding.UTF8):
+                for (bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+                {
+                    var span = buffer.GetSpan(bufferSize);
+                    if (((IUtf8SpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
+                    {
+                        Align(span, WhitespaceUtf8, ref alignment, charsWritten, leftAlign);
+                        buffer.Advance(alignment);
+                        count += alignment;
+                        break;
+                    }
+                }
+
+                break;
             case ISpanFormattable:
-                for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
+                for (bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
                     using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
-                    Span<char> span = tempBuffer.Span, filler;
+                    var span = tempBuffer.Span;
 
-                    if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
+                    if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))
                     {
-                        var padding = alignment - charsWritten;
-
-                        if (padding <= 0)
-                        {
-                            alignment = charsWritten;
-                        }
-                        else if (leftAlign)
-                        {
-                            filler = span.Slice(charsWritten, padding);
-                            filler.Fill(Whitespace);
-                        }
-                        else
-                        {
-                            filler = span.TrimLength(padding, out var rest);
-                            span.Slice(0, charsWritten).CopyTo(rest);
-                            filler.Fill(Whitespace);
-                        }
-
+                        Align(span, WhitespaceUtf16, ref alignment, charsWritten, leftAlign);
                         AppendFormatted(span.Slice(0, alignment));
                         break;
                     }

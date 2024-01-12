@@ -1,13 +1,10 @@
 using System.Buffers;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
-
-using Sequence = Collections.Generic.Sequence;
 
 public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
 {
@@ -76,7 +73,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> is negative or greater than the number of available elements starting from <paramref name="origin"/>.</exception>
     public SequencePosition GetPosition(long offset, SequencePosition origin = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (offset is 0L)
             return origin;
@@ -93,7 +90,6 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         throw new ArgumentOutOfRangeException(nameof(offset));
     }
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private static ReadOnlyMemory<T> Read(ref SequencePosition position, ref long count)
     {
         Debug.Assert(count >= 0L);
@@ -142,10 +138,8 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
     public ReadOnlySequence<T> Read(ref SequencePosition position, long count)
     {
-        ThrowIfDisposed();
-
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         NormalizePosition(ref position);
         Chunk<T>? head = null, tail = null;
@@ -177,7 +171,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
     public int CopyTo(scoped Span<T> output, scoped ref SequencePosition position)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         NormalizePosition(ref position);
         var result = 0;
@@ -200,7 +194,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     public void CopyTo<TConsumer>(TConsumer consumer, SequencePosition start)
         where TConsumer : notnull, IReadOnlySpanConsumer<T>
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         NormalizePosition(ref start);
         for (long count = length; Read(ref start, ref count) is { IsEmpty: false } block;)
@@ -223,10 +217,8 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     public long CopyTo<TConsumer>(TConsumer consumer, scoped ref SequencePosition position, long count)
         where TConsumer : notnull, IReadOnlySpanConsumer<T>
     {
-        ThrowIfDisposed();
-
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         NormalizePosition(ref position);
 
@@ -246,13 +238,13 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
     public Enumerator GetEnumerator()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         return new Enumerator(first);
     }
 
     /// <inheritdoc />
     IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => first is null ? Sequence.GetEmptyEnumerator<ReadOnlyMemory<T>>() : GetEnumerator();
+        => first is null ? Enumerable.Empty<ReadOnlyMemory<T>>().GetEnumerator() : GetEnumerator();
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

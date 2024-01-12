@@ -1,70 +1,53 @@
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading.Tasks;
-
-using Intrinsics = Runtime.Intrinsics;
-
-public partial class TaskCompletionPipe<T> : IDynamicInterfaceCastable
-{
-    internal static Tuple<RuntimeTypeHandle, RuntimeTypeHandle>? RuntimeEnumerableInfo;
-
-    /// <inheritdoc />
-    bool IDynamicInterfaceCastable.IsInterfaceImplemented(RuntimeTypeHandle interfaceType, bool throwIfNotImplemented)
-    {
-        var info = RuntimeEnumerableInfo;
-        return info is not null && interfaceType.Equals(info.Item1) || (throwIfNotImplemented ? throw new InvalidCastException() : false);
-    }
-
-    /// <inheritdoc />
-    RuntimeTypeHandle IDynamicInterfaceCastable.GetInterfaceImplementation(RuntimeTypeHandle interfaceType)
-    {
-        var info = RuntimeEnumerableInfo;
-        return info is not null && interfaceType.Equals(info.Item1) ? info.Item2 : default;
-    }
-}
 
 /// <summary>
 /// Provides various extension methods for <see cref="TaskCompletionPipe{T}"/> class.
 /// </summary>
 public static class TaskCompletionPipe
 {
-    [DynamicInterfaceCastableImplementation]
-    private interface ITypedTaskCompletionPipe<T> : IAsyncEnumerable<T>
-    {
-        private static async IAsyncEnumerator<T> GetAsyncEnumerator(TaskCompletionPipe<Task<T>> pipe, uint expectedVersion, CancellationToken token)
-        {
-            while (await pipe.TryDequeue(expectedVersion, out var task, token).ConfigureAwait(false))
-            {
-                if (task is not null)
-                {
-                    Debug.Assert(task.IsCompleted);
-
-                    yield return await task.ConfigureAwait(false);
-                }
-            }
-        }
-
-        IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
-        {
-            Debug.Assert(this is TaskCompletionPipe<Task<T>>);
-
-            var pipe = Unsafe.As<TaskCompletionPipe<Task<T>>>(this);
-            return GetAsyncEnumerator(pipe, pipe.Version, token);
-        }
-    }
-
     /// <summary>
     /// Gets asynchronous consumer.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the consuming collection.</typeparam>
     /// <param name="pipe">The task completion pipe with typed tasks.</param>
     /// <returns>The asynchronous consuming collection.</returns>
-    public static IAsyncEnumerable<T> GetConsumer<T>(this TaskCompletionPipe<Task<T>> pipe) // TODO: Change to struct and remove IDynamicInterfaceCastable
+    public static Consumer<T> GetConsumer<T>(this TaskCompletionPipe<Task<T>> pipe)
+        => new(pipe);
+
+    private static async IAsyncEnumerator<T> GetAsyncEnumerator<T>(TaskCompletionPipe<Task<T>> pipe, uint expectedVersion, CancellationToken token)
     {
-        // dynamic interface dispatch must be compatible with AOT. Thus, we cannot use things like Type.MakeGenericType
-        TaskCompletionPipe<Task<T>>.RuntimeEnumerableInfo ??= new(Intrinsics.TypeOf<IAsyncEnumerable<T>>(), Intrinsics.TypeOf<ITypedTaskCompletionPipe<T>>());
-        return (IAsyncEnumerable<T>)pipe;
+        while (await pipe.TryDequeue(expectedVersion, out var task, token).ConfigureAwait(false))
+        {
+            if (task is not null)
+            {
+                Debug.Assert(task.IsCompleted);
+
+                yield return await task.ConfigureAwait(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represents asynchronous consumer for the pipe.
+    /// </summary>
+    /// <typeparam name="T">The type of the result produced by the pipe.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct Consumer<T> : IAsyncEnumerable<T>
+    {
+        private readonly TaskCompletionPipe<Task<T>> pipe;
+
+        internal Consumer(TaskCompletionPipe<Task<T>> pipe)
+            => this.pipe = pipe;
+
+        /// <summary>
+        /// Gets asynchronous enumerator over completed tasks.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The asynchronous enumerator over completed tasks.</returns>
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token = default)
+            => GetAsyncEnumerator<T>(pipe, pipe.Version, token);
     }
 }

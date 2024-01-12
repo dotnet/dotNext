@@ -24,7 +24,6 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type">The type to inspect.</param>
     /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public static bool IsUnmanaged(this Type type)
     {
@@ -119,7 +118,6 @@ public static class TypeExtensions
         return null;
     }
 
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     internal static Type? FindGenericInstance([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type, Type genericDefinition)
     {
         bool IsGenericInstanceOf(Type candidate)
@@ -186,7 +184,7 @@ public static class TypeExtensions
     /// </code>
     /// </example>
     public static Type[] GetGenericArguments([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type, Type genericDefinition)
-        => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Type.EmptyTypes;
+        => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? [];
 
     /// <summary>
     /// Indicates that object of one type can be implicitly converted into another without boxing.
@@ -220,7 +218,7 @@ public static class TypeExtensions
     public static object? Cast(this Type type, object? obj)
     {
         if (obj is null)
-            return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default(object);
+            return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default;
         if (type.IsInstanceOfType(obj))
             return obj;
         throw new InvalidCastException();

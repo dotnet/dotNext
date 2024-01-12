@@ -20,9 +20,6 @@ public sealed class CharComparerTests : Test
         Same(CharComparer.FromComparison(StringComparison.Ordinal), CharComparer.FromComparison(StringComparison.Ordinal));
         True(CharComparer.FromComparison(StringComparison.Ordinal).Equals(CharComparer.FromComparison(StringComparison.Ordinal)));
         Equal(CharComparer.FromComparison(StringComparison.Ordinal).GetHashCode(), CharComparer.FromComparison(StringComparison.Ordinal).GetHashCode());
-
-        Equal(CharComparer.Create(CultureInfo.InvariantCulture, CompareOptions.IgnoreCase), CharComparer.Create(CultureInfo.InvariantCulture, CompareOptions.IgnoreCase));
-        Equal(CharComparer.Create(CultureInfo.InvariantCulture, CompareOptions.IgnoreCase).GetHashCode(), CharComparer.Create(CultureInfo.InvariantCulture, CompareOptions.IgnoreCase).GetHashCode());
     }
 
     [Fact]

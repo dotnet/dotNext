@@ -6,7 +6,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Runtime.CompilerServices;
-using static Threading.AtomicInt64;
 
 /// <summary>
 /// Represents disk-based state machine.
@@ -52,9 +51,10 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// <seealso cref="Commands.CommandInterpreter"/>
     protected abstract ValueTask<long?> ApplyAsync(LogEntry entry);
 
-    private ValueTask<long?> ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new(default(long?)) : ApplyAsync(entry);
+    private ValueTask<long?> ApplyCoreAsync(LogEntry entry)
+        => entry.IsEmpty ? ValueTask.FromResult<long?>(null) : ApplyAsync(entry);
 
-    private protected sealed override long LastTerm => lastTerm.VolatileRead();
+    private protected sealed override long LastTerm => Volatile.Read(in lastTerm);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<long?> ApplyAsync(int sessionId, long startIndex, CancellationToken token)
@@ -68,7 +68,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
             {
                 var entry = partition.Read(sessionId, startIndex, out var persisted);
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
-                lastTerm.VolatileWrite(entry.Term);
+                Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
                 if (!persisted)
@@ -147,8 +147,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
         var session = sessionManager.Take();
         try
         {
-            if (startIndex > LastEntryIndex + 1L)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, LastEntryIndex + 1L);
 
             // start commit task in parallel
             count = GetCommitIndexAndCount(ref commitIndex);
@@ -208,7 +207,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
     public override async Task InitializeAsync(CancellationToken token = default)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
         var session = sessionManager.Take();
         try

@@ -1,16 +1,13 @@
 ﻿using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Buffers;
 using IO;
+using Buffers.Binary;
+using Text.Json;
 
 public partial class PersistentState
 {
@@ -141,7 +138,7 @@ public partial class PersistentState
                 if (!reader.HasBufferedData || metadata.Offset < reader.FilePosition || metadata.Offset > reader.ReadPosition)
                 {
                     // attempt to read past or too far behind, clear the buffer
-                    reader.ClearBuffer();
+                    reader.Reset();
                     reader.FilePosition = metadata.Offset;
                 }
                 else
@@ -150,7 +147,7 @@ public partial class PersistentState
                     reader.Skip(metadata.Offset - reader.FilePosition);
                 }
 
-                reader.SetSegmentLength(metadata.Length);
+                reader.ReaderSegmentLength = metadata.Length;
             }
         }
 
@@ -158,7 +155,7 @@ public partial class PersistentState
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             return GetReader(out var buffer) is { } reader
-                ? new(reader.CopyToAsync(writer, token))
+                ? reader.CopyToAsync(writer, count: null, token)
                 : writer.WriteAsync(buffer, lengthFormat: null, token);
         }
 
@@ -226,110 +223,6 @@ public partial class PersistentState
 
             return reader;
         }
-
-        /// <summary>
-        /// Deserializes JSON content represented by this log entry.
-        /// </summary>
-        /// <param name="typeLoader">
-        /// The type loader responsible for resolving the type to be deserialized.
-        /// If <see langword="null"/> then <see cref="Type.GetType(string, bool)"/> is used
-        /// for type resolution.
-        /// </param>
-        /// <param name="options">Deserialization options.</param>
-        /// <param name="token">The token that can be used to cancel the deserialization.</param>
-        /// <returns>The deserialized object.</returns>
-        /// <exception cref="TypeLoadException"><paramref name="typeLoader"/> unable to resolve the type.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <seealso cref="CreateJsonLogEntry{T}(T, string?, JsonSerializerOptions?)"/>
-        [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
-        public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type>? typeLoader = null, JsonSerializerOptions? options = null, CancellationToken token = default)
-        {
-            ValueTask<object?> result;
-
-            if (GetReader(out var buffer) is not { } reader)
-            {
-                try
-                {
-                    result = new(JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, options));
-                }
-                catch (Exception e)
-                {
-                    result = ValueTask.FromException<object?>(e);
-                }
-            }
-            else if (ReferenceEquals(reader, IAsyncBinaryReader.Empty))
-            {
-                result = new(result: null);
-            }
-            else
-            {
-                result = DeserializeSlowAsync(reader, metadata, typeLoader, options, token);
-            }
-
-            return result;
-
-            [RequiresUnreferencedCode("JSON deserialization may be incompatible with IL trimming")]
-            static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type>? typeLoader, JsonSerializerOptions? options, CancellationToken token)
-            {
-                using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
-                await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-                return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, options);
-            }
-        }
-
-        /// <summary>
-        /// Deserializes JSON content represented by this log entry.
-        /// </summary>
-        /// <param name="typeLoader">
-        /// This overload is compatible with IL trimming and doesn't involve Reflection.
-        /// </param>
-        /// <param name="context">Deserialization context.</param>
-        /// <param name="token">The token that can be used to cancel the deserialization.</param>
-        /// <returns>The deserialized object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="typeLoader"/> or <paramref name="context"/> is <see langword="null"/>.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <seealso cref="CreateJsonLogEntry{T}(T, string?, JsonTypeInfo{T})"/>
-        public ValueTask<object?> DeserializeFromJsonAsync(Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token = default)
-        {
-            ValueTask<object?> result;
-
-            if (typeLoader is null)
-            {
-                result = ValueTask.FromException<object?>(new ArgumentNullException(nameof(typeLoader)));
-            }
-            else if (context is null)
-            {
-                result = ValueTask.FromException<object?>(new ArgumentNullException(nameof(context)));
-            }
-            else if (GetReader(out var buffer) is not { } reader)
-            {
-                try
-                {
-                    result = new(JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer), typeLoader, context));
-                }
-                catch (Exception e)
-                {
-                    result = ValueTask.FromException<object?>(e);
-                }
-            }
-            else if (ReferenceEquals(reader, IAsyncBinaryReader.Empty))
-            {
-                result = new(result: null);
-            }
-            else
-            {
-                result = DeserializeSlowAsync(reader, metadata, typeLoader, context, token);
-            }
-
-            return result;
-
-            static async ValueTask<object?> DeserializeSlowAsync(IAsyncBinaryReader reader, LogEntryMetadata metadata, Func<string, Type> typeLoader, JsonSerializerContext context, CancellationToken token)
-            {
-                using var buffer = MemoryAllocator.Allocate<byte>(metadata.Length.Truncate(), true);
-                await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false);
-                return JsonLogEntry.Deserialize(IAsyncBinaryReader.Create(buffer.Memory), typeLoader, context);
-            }
-        }
     }
 
     /// <summary>
@@ -337,30 +230,27 @@ public partial class PersistentState
     /// </summary>
     /// <typeparam name="T">JSON-serializable type.</typeparam>
     /// <param name="content">JSON-serializable content of the log entry.</param>
-    /// <param name="typeId">
-    /// The type identifier required to recognize the correct type during deserialization.
-    /// If <see langword="null"/> then <see cref="Type.AssemblyQualifiedName"/> of <typeparamref name="T"/> is used as type identifier.
-    /// </param>
-    /// <param name="options">Serialization options.</param>
-    /// <returns>The log entry representing JSON-serializable content.</returns>
-    /// <seealso cref="LogEntry.DeserializeFromJsonAsync(Func{string, Type}?, JsonSerializerOptions?, CancellationToken)"/>
-    public JsonLogEntry<T> CreateJsonLogEntry<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]T>(T content, string? typeId = null, JsonSerializerOptions? options = null)
-        => new(Term, content, typeId, options);
+    /// <returns>The log entry encapsulating JSON-serializable content.</returns>
+    /// <seealso cref="JsonSerializable{T}.TransformAsync{TInput}(TInput, CancellationToken)"/>
+    public JsonLogEntry<T> CreateJsonLogEntry<T>(T? content)
+        where T : notnull, IJsonSerializable<T>
+        => new() { Term = Term, Content = content };
 
     /// <summary>
-    /// Creates a log entry with JSON-serializable payload.
+    /// Creates a log entry with binary payload.
     /// </summary>
-    /// <remarks>
-    /// This overload is compatible with IL trimming and doesn't involve Reflection.
-    /// </remarks>
-    /// <typeparam name="T">JSON-serializable type.</typeparam>
-    /// <param name="content">JSON-serializable content of the log entry.</param>
-    /// <param name="typeId">The type identifier required to recognize the correct type during deserialization.</param>
-    /// <param name="typeInfo">The metadata of the type required for serialization.</param>
-    /// <returns>The log entry representing JSON-serializable content.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="typeId"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
-    /// <seealso cref="LogEntry.DeserializeFromJsonAsync(Func{string, Type}, JsonSerializerContext, CancellationToken)"/>
-    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2091", Justification = "Type information is supplied using JsonTypeInfo without the need of Reflection")]
-    public JsonLogEntry<T> CreateJsonLogEntry<T>(T content, string typeId, JsonTypeInfo<T> typeInfo)
-        => new(Term, content, typeId ?? throw new ArgumentNullException(nameof(typeId)), typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
+    /// <param name="content">Binary payload.</param>
+    /// <returns>The log entry encapsulating binary payload.</returns>
+    public BinaryLogEntry CreateBinaryLogEntry(ReadOnlyMemory<byte> content)
+        => new() { Term = Term, Content = content };
+
+    /// <summary>
+    /// Creates a log entry with binary payload.
+    /// </summary>
+    /// <typeparam name="T">The type representing a payload convertible to binary format.</typeparam>
+    /// <param name="content">Binary payload.</param>
+    /// <returns>The log entry encapsulating binary payload.</returns>
+    public BinaryLogEntry<T> CreateBinaryLogEntry<T>(T content)
+        where T : notnull, IBinaryFormattable<T>
+        => new() { Term = Term, Content = content };
 }

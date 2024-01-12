@@ -37,11 +37,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             // nothing to do here
         }
-
-        readonly void ILockManager<DefaultWaitNode>.InitializeNode(DefaultWaitNode node)
-        {
-            // nothing to do here
-        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -58,10 +53,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// </exception>
     public AsyncCountdownEvent(long initialCount, int concurrencyLevel)
     {
-        if (initialCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(initialCount));
-        if (concurrencyLevel < 1)
-            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         manager = new(initialCount);
         pool = new(OnCompleted, concurrencyLevel);
@@ -95,12 +88,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
     /// </summary>
-    public long InitialCount => manager.Initial.VolatileRead();
+    public long InitialCount => Volatile.Read(in manager.Initial);
 
     /// <summary>
     /// Gets the number of remaining signals required to set the event.
     /// </summary>
-    public long CurrentCount => manager.Current.VolatileRead();
+    public long CurrentCount => Volatile.Read(in manager.Current);
 
     /// <summary>
     /// Indicates whether this event is set.
@@ -141,7 +134,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="signalCount"/> is less than zero.</exception>
     public bool TryAddCount(long signalCount)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         return signalCount switch
         {
@@ -158,7 +151,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool TryAddCount()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         return TryAddCountCore(1L);
     }
@@ -193,7 +186,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     public bool Reset()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -219,10 +212,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     public bool Reset(long count)
     {
-        if (count < 0L)
-            throw new ArgumentOutOfRangeException(nameof(count));
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        ThrowIfDisposed();
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -370,7 +362,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (signalCount < 1L)
             throw new ArgumentOutOfRangeException(nameof(signalCount));
 
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;

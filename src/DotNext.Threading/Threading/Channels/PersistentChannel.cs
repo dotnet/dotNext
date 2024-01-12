@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Tracing;
 using System.Threading.Channels;
 
 namespace DotNext.Threading.Channels;
@@ -20,7 +19,6 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     private readonly IAsyncEvent readTrigger;
     private readonly int bufferSize;
     private readonly DirectoryInfo location;
-    private readonly IncrementingEventCounter? writeRate;
     private readonly TaskCompletionSource completionTask;
     private readonly TagList measurementTags;
 
@@ -36,16 +34,10 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
         if (!location.Exists)
             location.Create();
         var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter, options.InitialPartitionSize);
-#pragma warning disable CS0618
-        var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReliableEnumeration, options.ReadRateCounter);
-#pragma warning restore CS0618
+        var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader, options.ReliableEnumeration);
         Reader = reader;
         Writer = writer;
         readTrigger = new AsyncCounter(writer.Position - reader.Position);
-#pragma warning disable CS0618
-        writeRate = options.WriteRateCounter;
-#pragma warning restore CS0618
-
         completionTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         measurementTags = options.MeasurementTags;
         IChannel.SetTags(ref measurementTags, location.FullName);
@@ -90,7 +82,6 @@ public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutp
     void IChannelWriter<TInput>.MessageReady()
     {
         readTrigger.Signal();
-        writeRate?.Increment();
         IChannel.WriteRateMeter.Add(1, measurementTags);
     }
 

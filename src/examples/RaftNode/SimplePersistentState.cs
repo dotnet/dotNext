@@ -1,53 +1,41 @@
 ﻿using DotNext;
-using DotNext.IO;
 using DotNext.Net.Cluster.Consensus.Raft;
-using static DotNext.Threading.AtomicInt64;
 
 namespace RaftNode;
 
-internal sealed class SimplePersistentState : MemoryBasedStateMachine, ISupplier<long>
+internal sealed class SimplePersistentState(string path) : MemoryBasedStateMachine(path, 50, new Options { InitialPartitionSize = 50 * 8 }), ISupplier<long>
 {
     internal const string LogLocation = "logLocation";
 
-    private sealed class SimpleSnapshotBuilder : IncrementalSnapshotBuilder
+    private sealed class SimpleSnapshotBuilder(in SnapshotBuilderContext context) : IncrementalSnapshotBuilder(context)
     {
         private long value;
 
-        public SimpleSnapshotBuilder(in SnapshotBuilderContext context)
-            : base(context)
-        {
-        }
-
         protected override async ValueTask ApplyAsync(LogEntry entry)
-            => value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
+            => value = await entry.GetReader().ReadLittleEndianAsync<long>().ConfigureAwait(false);
 
         public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(value, token);
+            => writer.WriteLittleEndianAsync(value, token);
     }
 
     private long content;
 
-    public SimplePersistentState(string path)
-        : base(path, 50, new Options { InitialPartitionSize = 50 * 8 })
-    {
-    }
-
     public SimplePersistentState(IConfiguration configuration)
-        : this(configuration[LogLocation])
+        : this(configuration[LogLocation] ?? string.Empty)
     {
     }
 
-    long ISupplier<long>.Invoke() => content.VolatileRead();
+    long ISupplier<long>.Invoke() => Volatile.Read(in content);
 
     private async ValueTask UpdateValue(LogEntry entry)
     {
-        var value = await entry.ToTypeAsync<long, LogEntry>().ConfigureAwait(false);
-        content.VolatileWrite(value);
+        var value = await entry.GetReader().ReadLittleEndianAsync<long>().ConfigureAwait(false);
+        Volatile.Write(ref content, value);
         Console.WriteLine($"Accepting value {value}");
     }
 
     protected override ValueTask ApplyAsync(LogEntry entry)
-        => entry.Length == 0L ? new ValueTask() : UpdateValue(entry);
+        => entry.Length is 0L ? ValueTask.CompletedTask : UpdateValue(entry);
 
     protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
     {

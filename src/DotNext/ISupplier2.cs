@@ -38,19 +38,16 @@ public interface ISupplier<in T1, in T2, out TResult> : IFunctional<Func<T1, T2,
 /// <typeparam name="T1">The type of the first argument.</typeparam>
 /// <typeparam name="T2">The type of the second argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
+/// <remarks>
+/// Wraps the function pointer.
+/// </remarks>
+/// <param name="ptr">The function pointer.</param>
+/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
 [StructLayout(LayoutKind.Auto)]
 [CLSCompliant(false)]
-public readonly unsafe struct Supplier<T1, T2, TResult> : ISupplier<T1, T2, TResult>
+public readonly unsafe struct Supplier<T1, T2, TResult>(delegate*<T1, T2, TResult> ptr) : ISupplier<T1, T2, TResult>
 {
-    private readonly delegate*<T1, T2, TResult> ptr;
-
-    /// <summary>
-    /// Wraps the function pointer.
-    /// </summary>
-    /// <param name="ptr">The function pointer.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-    public Supplier(delegate*<T1, T2, TResult> ptr)
-        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
+    private readonly delegate*<T1, T2, TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
@@ -98,24 +95,18 @@ public readonly unsafe struct Supplier<T1, T2, TResult> : ISupplier<T1, T2, TRes
 /// <typeparam name="T1">The type of the first argument.</typeparam>
 /// <typeparam name="T2">The type of the second argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
+/// <remarks>
+/// Wraps the function pointer.
+/// </remarks>
+/// <param name="ptr">The function pointer.</param>
+/// <param name="context">The context to be passed to the function pointer.</param>
+/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
 [StructLayout(LayoutKind.Auto)]
 [CLSCompliant(false)]
-public readonly unsafe struct SupplierClosure<TContext, T1, T2, TResult> : ISupplier<T1, T2, TResult>
+public readonly unsafe struct SupplierClosure<TContext, T1, T2, TResult>(TContext context, delegate*<in TContext, T1, T2, TResult> ptr) : ISupplier<T1, T2, TResult>
 {
-    private readonly delegate*<in TContext, T1, T2, TResult> ptr;
-    private readonly TContext context;
-
-    /// <summary>
-    /// Wraps the function pointer.
-    /// </summary>
-    /// <param name="ptr">The function pointer.</param>
-    /// <param name="context">The context to be passed to the function pointer.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-    public SupplierClosure(TContext context, delegate*<in TContext, T1, T2, TResult> ptr)
-    {
-        this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
-        this.context = context;
-    }
+    private readonly delegate*<in TContext, T1, T2, TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
+    private readonly TContext context = context;
 
     /// <summary>
     /// Gets a value indicating that this function pointer is zero.
@@ -170,12 +161,9 @@ public readonly record struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingComparer<T> : IComparer<T>, ISupplier<T?, T?, int>, IFunctional<Comparison<T?>>
+internal readonly struct DelegatingComparer<T>(Comparison<T?> comparison) : IComparer<T>, ISupplier<T?, T?, int>, IFunctional<Comparison<T?>>
 {
-    private readonly Comparison<T?> comparison;
-
-    internal DelegatingComparer(Comparison<T?> comparison)
-        => this.comparison = comparison ?? throw new ArgumentNullException(nameof(comparison));
+    private readonly Comparison<T?> comparison = comparison ?? throw new ArgumentNullException(nameof(comparison));
 
     /// <inheritdoc />
     int ISupplier<T?, T?, int>.Invoke(T? x, T? y) => comparison(x, y);
@@ -193,12 +181,9 @@ internal readonly struct DelegatingComparer<T> : IComparer<T>, ISupplier<T?, T?,
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly unsafe struct ComparerWrapper<T> : IComparer<T>, ISupplier<T?, T?, int>
+internal readonly unsafe struct ComparerWrapper<T>(delegate*<T?, T?, int> ptr) : IComparer<T>, ISupplier<T?, T?, int>
 {
-    private readonly delegate*<T?, T?, int> ptr;
-
-    internal ComparerWrapper(delegate*<T?, T?, int> ptr)
-        => this.ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
+    private readonly delegate*<T?, T?, int> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
     int ISupplier<T?, T?, int>.Invoke(T? x, T? y) => ptr(x, y);
 

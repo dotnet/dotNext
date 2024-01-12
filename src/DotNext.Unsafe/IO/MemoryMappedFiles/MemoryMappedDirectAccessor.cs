@@ -52,11 +52,14 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// </summary>
     public readonly long Size => accessor?.Capacity ?? 0L;
 
+    /// <inheritdoc/>
+    readonly nuint IUnmanagedMemory.Size => nuint.CreateSaturating(Size);
+
     /// <summary>
     /// Represents memory-mapped file segment in the form of <see cref="Span{T}"/>.
     /// </summary>
     /// <value><see cref="Span{T}"/> representing virtual memory of the mapped file segment.</value>
-    public readonly Span<byte> Bytes => Pointer.ToSpan(checked((int)accessor.Capacity));
+    public readonly Span<byte> Bytes => Pointer.ToSpan(int.CreateSaturating(accessor.Capacity));
 
     /// <summary>
     /// Sets all bits of allocated memory to zero.
@@ -64,10 +67,9 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
     public readonly void Clear()
     {
-        if (ptr is null)
-            throw new ObjectDisposedException(GetType().Name);
+        ObjectDisposedException.ThrowIf(ptr is null, this);
 
-        Pointer.Clear(new IntPtr(Size));
+        Pointer.Clear(nuint.CreateSaturating(Size));
     }
 
     /// <summary>

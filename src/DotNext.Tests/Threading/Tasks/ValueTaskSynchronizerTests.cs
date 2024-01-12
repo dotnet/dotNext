@@ -6,7 +6,7 @@ public sealed class ValueTaskSynchronizerTests : Test
     {
         private long value = 0;
 
-        internal void Inc() => value.IncrementAndGet();
+        internal void Inc() => Interlocked.Increment(ref value);
 
         internal long Value => value;
     }

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
 
@@ -8,7 +7,6 @@ namespace DotNext.Threading;
 /// </summary>
 public static class LockAcquisition
 {
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = new();
 
     private sealed class ReaderWriterLockSlimWithRecursion : ReaderWriterLockSlim
@@ -23,18 +21,15 @@ public static class LockAcquisition
     private static ReaderWriterLockSlim GetReaderWriterLock<T>(this T obj)
         where T : class
     {
-        switch (obj)
-        {
-            case null:
-                throw new ArgumentNullException(nameof(obj));
-            case ReaderWriterLockSlim rws:
-                return rws;
-            case SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock:
-            case string str when string.IsInterned(str) is not null:
-                throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
-            default:
-                return obj.GetUserData().GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);
-        }
+        ArgumentNullException.ThrowIfNull(obj);
+
+        if (obj is ReaderWriterLockSlim rws)
+            return rws;
+
+        if (GC.GetGeneration(obj) is int.MaxValue || obj is SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock)
+            throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
+
+        return obj.GetUserData().GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);
     }
 
     /// <summary>
@@ -45,8 +40,7 @@ public static class LockAcquisition
     /// <returns>The acquired read lock.</returns>
     public static Lock.Holder AcquireReadLock<T>(this T obj)
         where T : class
-        =>
-        Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire();
+        => Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire();
 
     /// <summary>
     /// Acquires read lock for the specified object.

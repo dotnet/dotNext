@@ -1,26 +1,15 @@
 ﻿using System.Buffers;
 using System.Text;
+using DotNext.Buffers.Binary;
+using DotNext.Runtime.Serialization;
 
 namespace DotNext.IO;
 
 public sealed class DataTransferObjectTests : Test
 {
-    private sealed class CustomDTO : IDataTransferObject
+    private sealed class CustomDTO(ReadOnlyMemory<byte> content, bool withLength) : BinaryTransferObject(content), IDataTransferObject
     {
-        private readonly byte[] content;
-
-        internal CustomDTO(byte[] content, bool withLength)
-        {
-            this.content = content;
-            Length = withLength ? content.LongLength : null;
-        }
-
-        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(new ReadOnlyMemory<byte>(content), null, token);
-
-        public bool IsReusable => true;
-
-        public long? Length { get; }
+        long? IDataTransferObject.Length => withLength ? Content.Length : null;
     }
 
     [Fact]
@@ -61,56 +50,46 @@ public sealed class DataTransferObjectTests : Test
     }
 
     [Fact]
-    public static async Task MemoryDTO3()
-    {
-        IDataTransferObject dto = new BinaryTransferObject<long> { Content = 42L };
-        Equal(sizeof(long), dto.Length);
-        True(dto.IsReusable);
-        var writer = new ArrayBufferWriter<byte>();
-        await dto.WriteToAsync(writer);
-        Equal(sizeof(long), writer.WrittenCount);
-        Equal(42L, BitConverter.ToInt64(writer.WrittenSpan));
-        Equal(42L, await dto.ToTypeAsync<long, IDataTransferObject>());
-    }
-
-    [Fact]
     public static async Task BufferedDTO()
     {
+        var expected = 42L;
         using var dto = new MemoryTransferObject(sizeof(long));
-        Span.AsReadOnlyBytes(42L).CopyTo(dto.Content.Span);
+        Span.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
         Equal(sizeof(long), dto.As<IDataTransferObject>().Length);
         True(dto.As<IDataTransferObject>().IsReusable);
         var writer = new ArrayBufferWriter<byte>();
         await dto.WriteToAsync(writer);
         Equal(sizeof(long), writer.WrittenCount);
-        Equal(42L, BitConverter.ToInt64(writer.WrittenSpan));
+        Equal(expected, BitConverter.ToInt64(writer.WrittenSpan));
         var memory = await dto.ToByteArrayAsync();
-        Equal(42L, BitConverter.ToInt64(memory, 0));
+        Equal(expected, BitConverter.ToInt64(memory, 0));
     }
 
     [Fact]
     public static async Task DecodeAsAllocatedBuffer()
     {
+        var expected = 42L;
         using var dto = new MemoryTransferObject(sizeof(long));
-        Span.AsReadOnlyBytes(42L).CopyTo(dto.Content.Span);
+        Span.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
         using var memory = await dto.ToMemoryAsync();
-        Equal(42L, BitConverter.ToInt64(memory.Span));
+        Equal(expected, BitConverter.ToInt64(memory.Span));
     }
 
     [Fact]
     public static async Task ToBlittableType()
     {
+        var expected = 42M;
         var bytes = new byte[sizeof(decimal)];
-        Span.AsReadOnlyBytes(42M).CopyTo(bytes);
+        Span.AsReadOnlyBytes(in expected).CopyTo(bytes);
         var dto = new BinaryTransferObject(bytes);
-        Equal(42M, await dto.ToTypeAsync<decimal, BinaryTransferObject>());
+        Equal(expected, (await ISerializable<BlittableTransferObject<decimal>>.TransformAsync(dto)).Content);
     }
 
     [Fact]
     public static async Task DecodeUsingDelegate()
     {
-        var dto = new BinaryTransferObject<long> { Content = 42L };
-        Equal(42L, await dto.TransformAsync((reader, token) => reader.ReadAsync<long>(token)));
+        var dto = new BlittableTransferObject<long> { Content = 42L };
+        Equal(42L, (await dto.TransformAsync((reader, token) => reader.ReadAsync<Blittable<long>>(token))).Value);
     }
 
     [Theory]

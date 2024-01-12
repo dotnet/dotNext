@@ -126,9 +126,9 @@ public partial class FileBufferingWriter
         const FileOptions withoutAsyncIO = FileOptions.SequentialScan;
 
         // reuse the same handle when opening file for read
-        return fileBackend is null
+        return fileName is null
             ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
-            : new FileStream(fileBackend.Name, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
+            : new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 
     /// <summary>

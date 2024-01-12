@@ -1,10 +1,68 @@
-﻿using System.Buffers;
+using System.Buffers;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
+
+using Runtime.InteropServices;
+
+/// <summary>
+/// Provides native memory allocation facilities.
+/// </summary>
+/// <see cref="Memory"/>
+public static class UnmanagedMemory
+{
+    /// <summary>
+    /// Allocates a block of unmanaged memory of the specified size, in elements.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the unmanaged memory block.</typeparam>
+    /// <param name="length">The number of elements to be allocated in unmanaged memory.</param>
+    /// <returns>The object representing allocated unmanaged memory.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
+    [CLSCompliant(false)]
+    public static IUnmanagedMemory<T> Allocate<T>(int length)
+        where T : unmanaged
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+
+        return UnmanagedMemoryOwner<T>.Create(length);
+    }
+
+    /// <summary>
+    /// Allocates and zeroes a block of unmanaged memory of the specified size, in elements.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the unmanaged memory block.</typeparam>
+    /// <param name="length">The number of elements to be allocated in unmanaged memory.</param>
+    /// <returns>The object representing allocated unmanaged memory.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
+    [CLSCompliant(false)]
+    public static IUnmanagedMemory<T> AllocateZeroed<T>(int length)
+        where T : unmanaged
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+
+        return UnmanagedMemoryOwner<T>.CreateZeroed(length);
+    }
+
+    /// <summary>
+    /// Gets allocator of unmanaged memory.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the memory block.</typeparam>
+    /// <param name="zeroMem"><see langword="true"/> to set all bits in the memory to zero; otherwise, <see langword="false"/>.</param>
+    /// <returns>The unmanaged memory allocator.</returns>
+    public static MemoryAllocator<T> GetAllocator<T>(bool zeroMem)
+        where T : unmanaged
+    {
+        return zeroMem ? AllocateZeroed : Allocate;
+
+        static MemoryOwner<T> Allocate(int length)
+            => new(UnmanagedMemoryOwner<T>.Create, length);
+
+        static MemoryOwner<T> AllocateZeroed(int length)
+            => new(UnmanagedMemoryOwner<T>.CreateZeroed, length);
+    }
+}
 
 internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     where T : unmanaged
@@ -12,62 +70,59 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     private readonly bool owner;
     private void* address;
 
-    internal UnmanagedMemory(IntPtr address, int length)
+    private UnmanagedMemory()
     {
-        this.address = address.ToPointer();
+    }
+
+    internal UnmanagedMemory(nint address, int length)
+    {
+        Debug.Assert(address is not 0);
+
+        this.address = (void*)address;
         Length = length;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected static long SizeOf(int length) => Math.BigMul(length, sizeof(T));
+    internal static UnmanagedMemory<T> CreateEmpty() => new();
 
-    private protected UnmanagedMemory(int length, bool zeroMem)
+    private protected UnmanagedMemory(int length, delegate*<nuint, nuint, void* > allocator)
     {
         Debug.Assert(length > 0);
+        Debug.Assert(allocator is not null);
 
-        address = zeroMem
-            ? NativeMemory.AllocZeroed((nuint)length, (nuint)sizeof(T))
-            : NativeMemory.Alloc((nuint)length, (nuint)sizeof(T));
-        Length = length;
+        address = allocator((nuint)length, (nuint)sizeof(T));
         owner = true;
+        Length = length;
     }
 
-    private protected IntPtr Address
-    {
-        get
-        {
-            return address is not null ? new(address) : Throw();
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            IntPtr Throw() => throw new ObjectDisposedException(GetType().Name);
-        }
-    }
-
-    public long Size => SizeOf(Length);
+    protected nuint Address => (nuint)address;
 
     public int Length { get; private set; }
 
+    public ref T this[int index]
+    {
+        get
+        {
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)Length, nameof(index));
+
+            return ref Unsafe.Add(ref Unsafe.AsRef<T>(address), index);
+        }
+    }
+
     internal void Reallocate(int length)
     {
-        if (length <= 0)
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
 
-        if (address is null)
-            throw new ObjectDisposedException(GetType().Name);
-
-        Length = length;
-        var size = (nuint)SizeOf(length);
+        var size = (nuint)length * (nuint)sizeof(T);
         address = NativeMemory.Realloc(address, size);
+        Length = length;
     }
 
     public sealed override Span<T> GetSpan()
-        => address is not null ? new(address, Length) : Span<T>.Empty;
+        => address is not null ? new(address, Length) : [];
 
     public sealed override MemoryHandle Pin(int elementIndex = 0)
     {
-        if (address is null)
-            throw new ObjectDisposedException(GetType().Name);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)elementIndex, (uint)Length, nameof(elementIndex));
 
         return new(Unsafe.Add<T>(address, elementIndex));
     }
@@ -78,7 +133,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     protected override void Dispose(bool disposing)
     {
-        if (address != null && owner)
+        if (address is not null && owner)
         {
             NativeMemory.Free(address);
         }
@@ -86,4 +141,27 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         address = null;
         Length = 0;
     }
+}
+
+internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
+    where T : unmanaged
+{
+    private protected unsafe UnmanagedMemoryOwner(int length, delegate*<nuint, nuint, void* > allocator)
+        : base(length, allocator)
+    {
+    }
+
+    internal static unsafe UnmanagedMemoryOwner<T> Create(int length)
+        => new(length, &NativeMemory.Alloc);
+
+    internal static unsafe UnmanagedMemoryOwner<T> CreateZeroed(int length)
+        => new(length, &NativeMemory.AllocZeroed);
+
+    public Pointer<T> Pointer => new(Address);
+
+    Span<T> IUnmanagedMemory<T>.Span => GetSpan();
+
+    void IUnmanagedMemory<T>.Reallocate(int length) => Reallocate(length);
+
+    bool IUnmanagedMemory<T>.SupportsReallocation => true;
 }

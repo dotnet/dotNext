@@ -68,6 +68,13 @@ public sealed class TimestampTests : Test
     }
 
     [Fact]
+    public static void CheckedArithmeticOperators()
+    {
+        Throws<OverflowException>(static () => checked(new Timestamp() - TimeSpan.MaxValue));
+        Throws<OverflowException>(static () => checked(new Timestamp() + TimeSpan.MaxValue));
+    }
+
+    [Fact]
     public static void DefaultTimestamp()
     {
         var ts = new Timestamp();

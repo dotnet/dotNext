@@ -34,7 +34,7 @@ public partial class MessageHandler
 
         private async Task HandleAsync(ISubscriber sender, IMessage signal, object? context, CancellationToken token)
         {
-            var input = await signal.TransformAsync<IMessage, TInput>(token).ConfigureAwait(false);
+            var input = await ISerializable<TInput>.TransformAsync(signal, token).ConfigureAwait(false);
             await HandleAsync(sender, input, context, token).ConfigureAwait(false);
         }
 

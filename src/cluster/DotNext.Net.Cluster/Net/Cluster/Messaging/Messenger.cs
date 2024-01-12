@@ -4,6 +4,7 @@ namespace DotNext.Net.Cluster.Messaging;
 
 using IO;
 using Net.Mime;
+using Text.Json;
 
 /// <summary>
 /// Represents helper methods allow to communicate with remove cluster members
@@ -78,8 +79,9 @@ public static class Messenger
     /// <typeparam name="TRequest">The type of outbound message.</typeparam>
     /// <typeparam name="TResponse">The type of inbound message.</typeparam>
     /// <returns>The deserialized response.</returns>
-    public static Task<TResponse> SendJsonMessageAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]TRequest, TResponse>(this ISubscriber messenger, MessageReader<TResponse> responseReader, string messageName, TRequest request, CancellationToken token)
-        => messenger.SendMessageAsync(new JsonMessage<TRequest>(messageName, request), responseReader, token);
+    public static Task<TResponse> SendJsonMessageAsync<TRequest, TResponse>(this ISubscriber messenger, MessageReader<TResponse> responseReader, string messageName, TRequest request, CancellationToken token)
+        where TRequest : notnull, IJsonSerializable<TRequest>
+        => messenger.SendMessageAsync(new JsonMessage<TRequest> { Content = request, Name = messageName }, responseReader, token);
 
     /// <summary>
     /// Sends one-way message with JSON payload.
@@ -91,6 +93,7 @@ public static class Messenger
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <typeparam name="TSignal">JSON-serializable type of signal payload.</typeparam>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public static Task SendJsonSignalAsync<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicConstructors)]TSignal>(this ISubscriber messenger, string messageName, TSignal signal, bool requiresConfirmation = true, CancellationToken token = default)
-        => messenger.SendSignalAsync(new JsonMessage<TSignal>(messageName, signal), requiresConfirmation, token);
+    public static Task SendJsonSignalAsync<TSignal>(this ISubscriber messenger, string messageName, TSignal signal, bool requiresConfirmation = true, CancellationToken token = default)
+        where TSignal : notnull, IJsonSerializable<TSignal>
+        => messenger.SendSignalAsync(new JsonMessage<TSignal> { Content = signal, Name = messageName }, requiresConfirmation, token);
 }

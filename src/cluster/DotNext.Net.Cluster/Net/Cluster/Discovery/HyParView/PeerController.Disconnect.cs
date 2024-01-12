@@ -57,7 +57,7 @@ public partial class PeerController
         OnPeerGone(sender);
 
         // move random peer from passive view to active view
-        while (passiveView.PeekRandom(random).TryGet(out var candidate))
+        while (random.Peek(passiveView).TryGet(out var candidate))
         {
             try
             {

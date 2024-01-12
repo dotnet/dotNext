@@ -1,9 +1,10 @@
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static System.Diagnostics.Stopwatch;
 
 namespace DotNext.Diagnostics;
 
-using static Threading.AtomicInt64;
+using Threading;
 
 /// <summary>
 /// Represents timestamp.
@@ -11,7 +12,13 @@ using static Threading.AtomicInt64;
 /// <remarks>
 /// This class can be used as allocation-free alternative to <see cref="System.Diagnostics.Stopwatch"/>.
 /// </remarks>
-public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Timestamp>
+public readonly record struct Timestamp :
+    IEquatable<Timestamp>,
+    IComparable<Timestamp>,
+    IComparisonOperators<Timestamp, Timestamp, bool>,
+    IAdditionOperators<Timestamp, TimeSpan, Timestamp>,
+    ISubtractionOperators<Timestamp, TimeSpan, Timestamp>,
+    IInterlockedOperations<Timestamp>
 {
     private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
     private readonly long ticks;
@@ -51,12 +58,6 @@ public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Tim
     /// </summary>
     public bool IsPast => ticks < GetTimestamp();
 
-    /// <summary>
-    /// Gets the current point in time.
-    /// </summary>
-    [Obsolete("Use public parameterless constructor instead")]
-    public static Timestamp Current => new();
-
     private static long ToTicks(double duration)
         => unchecked((long)(TickFrequency * duration));
 
@@ -87,7 +88,7 @@ public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Tim
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in milliseconds.
     /// </summary>
-    public double ElapsedMilliseconds => ((double)ElapsedTicks / Frequency) * 1_000D;
+    public double ElapsedMilliseconds => (double)ElapsedTicks / Frequency * 1_000D;
 
     /// <summary>
     /// Gets a difference between two timestamps, in milliseconds.
@@ -95,7 +96,7 @@ public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Tim
     /// <param name="past">The timestamp in the past.</param>
     /// <returns>The number of milliseconds since <paramref name="past"/>.</returns>
     public double ElapsedSince(Timestamp past)
-        => ((double)(ticks - past.ticks) / Frequency) * 1_000D;
+        => (double)(ticks - past.ticks) / Frequency * 1_000D;
 
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing the given timestamp.
@@ -158,9 +159,34 @@ public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Tim
     /// <param name="y">The delta.</param>
     /// <returns>The modified timestamp.</returns>
     /// <exception cref="OverflowException"><paramref name="y"/> is too large.</exception>
-    public static Timestamp operator +(Timestamp x, TimeSpan y)
+    public static Timestamp operator checked +(Timestamp x, TimeSpan y)
     {
         var ticks = checked(x.ticks + FromTimeSpan(y));
+        return ticks >= 0L ? new(ticks) : throw new OverflowException();
+    }
+
+    /// <summary>
+    /// Adds the specified duration to the timestamp.
+    /// </summary>
+    /// <param name="x">The timestamp value.</param>
+    /// <param name="y">The delta.</param>
+    /// <returns>The modified timestamp.</returns>
+    public static Timestamp operator +(Timestamp x, TimeSpan y)
+    {
+        var ticks = x.ticks + FromTimeSpan(y);
+        return ticks > 0L ? new(ticks) : default;
+    }
+
+    /// <summary>
+    /// Subtracts the specified duration from the timestamp.
+    /// </summary>
+    /// <param name="x">The timestamp value.</param>
+    /// <param name="y">The delta.</param>
+    /// <returns>The modified timestamp.</returns>
+    /// <exception cref="OverflowException"><paramref name="y"/> is too large.</exception>
+    public static Timestamp operator checked -(Timestamp x, TimeSpan y)
+    {
+        var ticks = checked(x.ticks - FromTimeSpan(y));
         return ticks >= 0L ? new(ticks) : throw new OverflowException();
     }
 
@@ -171,10 +197,10 @@ public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Tim
     /// <param name="y">The delta.</param>
     /// <returns>The modified timestamp.</returns>
     /// <exception cref="OverflowException"><paramref name="y"/> is too large.</exception>
-    public static Timestamp operator -(Timestamp x, TimeSpan y) // TODO: Convert to checked operator in C# 11
+    public static Timestamp operator -(Timestamp x, TimeSpan y)
     {
-        var ticks = checked(x.ticks - FromTimeSpan(y));
-        return ticks >= 0L ? new(ticks) : throw new OverflowException();
+        var ticks = x.ticks - FromTimeSpan(y);
+        return ticks > 0L ? new(ticks) : default;
     }
 
     /// <summary>
@@ -182,8 +208,8 @@ public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Tim
     /// </summary>
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <returns>The value at the specified location.</returns>
-    public static Timestamp VolatileRead(ref Timestamp location)
-        => new(location.ticks.VolatileRead());
+    public static Timestamp VolatileRead(ref readonly Timestamp location)
+        => new(Volatile.Read(in location.ticks));
 
     /// <summary>
     /// Writes the timestamp and prevents the proces from reordering memory operations.
@@ -191,12 +217,16 @@ public readonly record struct Timestamp : IEquatable<Timestamp>, IComparable<Tim
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <param name="newValue">The value to write.</param>
     public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
-        => Unsafe.AsRef(in location.ticks).VolatileWrite(newValue.ticks);
+        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
 
     /// <summary>
     /// Updates the timestamp to the current point in time and prevents the proces from reordering memory operations.
     /// </summary>
     /// <param name="location">The location of the timestampt to update.</param>
     public static void Refresh(ref Timestamp location)
-        => Unsafe.AsRef(in location.ticks).VolatileWrite(Math.Max(1L, GetTimestamp()));
+        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, GetTimestamp()));
+
+    /// <inheritdoc cref="IInterlockedOperations{T}.CompareExchange(ref T, T, T)"/>
+    public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)
+        => new(Interlocked.CompareExchange(ref Unsafe.AsRef(in location.ticks), value.ticks, comparand.ticks));
 }

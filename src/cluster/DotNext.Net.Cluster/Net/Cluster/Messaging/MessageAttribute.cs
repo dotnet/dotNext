@@ -1,5 +1,4 @@
 using System.Net.Mime;
-using System.Runtime.Versioning;
 
 namespace DotNext.Net.Cluster.Messaging;
 
@@ -11,7 +10,7 @@ using Runtime.Serialization;
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 public abstract class MessageAttribute : Attribute
 {
-    private string? mimeType;
+    private readonly string? mimeType;
 
     /// <summary>
     /// Initializes a new instance of the attribute.
@@ -19,7 +18,9 @@ public abstract class MessageAttribute : Attribute
     /// <param name="name">The name of the message.</param>
     protected MessageAttribute(string name)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
+        ArgumentException.ThrowIfNullOrEmpty(name);
+
+        Name = name;
     }
 
     /// <summary>
@@ -33,7 +34,7 @@ public abstract class MessageAttribute : Attribute
     public string MimeType
     {
         get => mimeType is { Length: > 0 } ? mimeType : MediaTypeNames.Application.Octet;
-        set => mimeType = value;
+        init => mimeType = value;
     }
 
     internal abstract Type MessageType { get; }
@@ -45,18 +46,12 @@ public abstract class MessageAttribute : Attribute
 /// <typeparam name="TMessage">The type of the message payload.</typeparam>
 /// <seealso cref="MessagingClient"/>
 /// <seealso cref="MessageHandler"/>
-[RequiresPreviewFeatures]
-public sealed class MessageAttribute<TMessage> : MessageAttribute
+/// <remarks>
+/// Initializes a new instance of the attribute.
+/// </remarks>
+/// <param name="name">The name of the message.</param>
+public sealed class MessageAttribute<TMessage>(string name) : MessageAttribute(name)
     where TMessage : notnull, ISerializable<TMessage>
 {
-    /// <summary>
-    /// Initializes a new instance of the attribute.
-    /// </summary>
-    /// <param name="name">The name of the message.</param>
-    public MessageAttribute(string name)
-        : base(name)
-    {
-    }
-
     internal override Type MessageType => typeof(TMessage);
 }

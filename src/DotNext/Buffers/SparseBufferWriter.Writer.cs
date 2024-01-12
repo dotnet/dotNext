@@ -1,11 +1,9 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Buffers;
 
 public partial class SparseBufferWriter<T> : IBufferWriter<T>
 {
-    [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1013", Justification = "False positive")]
     private unsafe Memory<T> GetMemory()
     {
         switch (last)
@@ -23,17 +21,14 @@ public partial class SparseBufferWriter<T> : IBufferWriter<T>
 
     private Memory<T> GetMemory(int sizeHint)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
-        switch (sizeHint)
+        if (sizeHint is 0)
         {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(sizeHint));
-            case 0:
-                return GetMemory();
+            return GetMemory();
         }
-
-        if (last is null)
+        else if (last is null)
         {
             first = last = new PooledMemoryChunk(allocator, sizeHint);
         }
@@ -66,7 +61,7 @@ public partial class SparseBufferWriter<T> : IBufferWriter<T>
     /// <inheritdoc />
     void IBufferWriter<T>.Advance(int count)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (last is not PooledMemoryChunk chunk)
             throw new InvalidOperationException();
         chunk.Advance(count);

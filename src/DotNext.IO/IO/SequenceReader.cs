@@ -1,14 +1,17 @@
 using System.Buffers;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO.Pipelines;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
+using System.Text;
 
 namespace DotNext.IO;
 
 using Buffers;
-using static Buffers.BufferReader;
+using Buffers.Binary;
 using static Pipelines.PipeExtensions;
 using DecodingContext = Text.DecodingContext;
 
@@ -17,21 +20,14 @@ using DecodingContext = Text.DecodingContext;
 /// </summary>
 /// <seealso cref="IAsyncBinaryReader.Create(ReadOnlySequence{byte})"/>
 /// <seealso cref="IAsyncBinaryReader.Create(ReadOnlyMemory{byte})"/>
+/// <remarks>
+/// Initializes a new sequence reader.
+/// </remarks>
+/// <param name="sequence">A sequence of elements.</param>
 [StructLayout(LayoutKind.Auto)]
-public struct SequenceReader : IAsyncBinaryReader, IResettable
+public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryReader, IResettable
 {
-    private readonly ReadOnlySequence<byte> sequence;
-    private SequencePosition position;
-
-    /// <summary>
-    /// Initializes a new sequence reader.
-    /// </summary>
-    /// <param name="sequence">A sequence of elements.</param>
-    public SequenceReader(ReadOnlySequence<byte> sequence)
-    {
-        this.sequence = sequence;
-        position = sequence.Start;
-    }
+    private SequencePosition position = sequence.Start;
 
     internal SequenceReader(ReadOnlyMemory<byte> memory)
         : this(new ReadOnlySequence<byte>(memory))
@@ -53,48 +49,18 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     /// </summary>
     public readonly SequencePosition Position => position;
 
-    private TResult Read<TResult, TParser>(TParser parser)
-        where TParser : struct, IBufferReader<TResult>
+    private void Read<TParser>(ref TParser parser)
+        where TParser : struct, IBufferReader
     {
-        parser.Append<TResult, TParser>(in sequence, ref position);
-        return parser.RemainingBytes == 0 ? parser.Complete() : throw new EndOfStreamException();
+        position = parser.Append(RemainingSequence);
+        parser.EndOfStream();
     }
 
-    private TResult Parse<TResult, TBuffer>(Parser<TResult> parser, in DecodingContext context, TBuffer buffer, IFormatProvider? provider)
-        where TResult : notnull
-        where TBuffer : struct, IBuffer<char>
+    private TResult Read<TResult, TParser>(ref TParser parser)
+        where TParser : struct, IBufferReader, ISupplier<TResult>
     {
-        var reader = new StringReader<TBuffer>(in context, buffer);
-        reader.Append<string, StringReader<TBuffer>>(in sequence, ref position);
-        return reader.RemainingBytes == 0 ? parser(reader.Complete(), provider) : throw new EndOfStreamException();
-    }
-
-    /// <summary>
-    /// Parses the value encoded as a set of characters.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <param name="parser">The parser.</param>
-    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
-    /// <param name="context">The decoding context containing string characters encoding.</param>
-    /// <param name="provider">The format provider.</param>
-    /// <returns>The parsed value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    /// <exception cref="FormatException">The string is in wrong format.</exception>
-    [SkipLocalsInit]
-    public unsafe T Parse<T>(Parser<T> parser, LengthFormat lengthFormat, in DecodingContext context, IFormatProvider? provider = null)
-        where T : notnull
-    {
-        var length = ReadLength(lengthFormat);
-        if ((uint)length > (uint)MemoryRental<char>.StackallocThreshold)
-        {
-            using var buffer = new ArrayBuffer<char>(length);
-            return Parse<T, ArrayBuffer<char>>(parser, in context, buffer, provider);
-        }
-        else
-        {
-            var buffer = stackalloc char[length];
-            return Parse<T, UnsafeBuffer<char>>(parser, in context, new UnsafeBuffer<char>(buffer, length), provider);
-        }
+        position = parser.Append(RemainingSequence);
+        return parser.EndOfStream<TResult, TParser>();
     }
 
     /// <summary>
@@ -102,28 +68,63 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <returns>The parsed value.</returns>
-    [RequiresPreviewFeatures]
-    public T Parse<T>()
+    public T Read<T>()
         where T : notnull, IBinaryFormattable<T>
     {
-        var result = IBinaryFormattable<T>.Parse(RemainingSequence);
-        position = sequence.GetPosition(T.Size, position);
-        return result;
+        if (T.Size <= BinaryFormattable256Reader<T>.MaxSize)
+        {
+            var parser = new BinaryFormattable256Reader<T>();
+            return Read<T, BinaryFormattable256Reader<T>>(ref parser);
+        }
+        else
+        {
+            var parser = new BinaryFormattableReader<T>();
+            return Read<T, BinaryFormattableReader<T>>(ref parser);
+        }
     }
 
     /// <summary>
-    /// Decodes the value of blittable type from the sequence of bytes.
+    /// Reads integer encoded in little-endian format.
     /// </summary>
-    /// <typeparam name="T">The type of the value to decode.</typeparam>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-    [SkipLocalsInit]
-    public T Read<T>()
-        where T : unmanaged
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <returns>The integer value.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public unsafe T ReadLittleEndian<T>()
+        where T : notnull, IBinaryInteger<T>
     {
-        Unsafe.SkipInit(out T result);
-        Read(Span.AsBytes(ref result));
-        return result;
+        var type = typeof(T);
+        if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
+        {
+            var parser = WellKnownIntegerReader<T>.LittleEndian();
+            return Read<T, WellKnownIntegerReader<T>>(ref parser);
+        }
+        else
+        {
+            var parser = IntegerReader<T>.LittleEndian();
+            return Read<T, IntegerReader<T>>(ref parser);
+        }
+    }
+
+    /// <summary>
+    /// Reads integer encoded in big-endian format.
+    /// </summary>
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <returns>The integer value.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    public unsafe T ReadBigEndian<T>()
+        where T : notnull, IBinaryInteger<T>
+    {
+        var type = typeof(T);
+        if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
+        {
+            var parser = WellKnownIntegerReader<T>.BigEndian();
+            return Read<T, WellKnownIntegerReader<T>>(ref parser);
+        }
+        else
+        {
+            var parser = IntegerReader<T>.BigEndian();
+            return Read<T, IntegerReader<T>>(ref parser);
+        }
     }
 
     /// <summary>
@@ -132,12 +133,91 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     /// <param name="output">The block of memory to fill.</param>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
     public void Read(Span<byte> output)
-    {
-        RemainingSequence.CopyTo(output, out var writtenCount);
-        if (writtenCount != output.Length)
-            throw new EndOfStreamException();
+        => Read(output.Length).CopyTo(output);
 
-        position = sequence.GetPosition(writtenCount, position);
+    /// <summary>
+    /// Reads single byte.
+    /// </summary>
+    /// <returns>A byte.</returns>
+    /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+    public byte ReadByte()
+        => MemoryMarshal.GetReference(Read(1).FirstSpan);
+
+    /// <summary>
+    /// Reads the specified number of bytes.
+    /// </summary>
+    /// <param name="count">The number of bytes to read.</param>
+    /// <returns>The buffer of length <paramref name="count"/>.</returns>
+    /// <exception cref="EndOfStreamException"><paramref name="count"/> is larger than the available buffer to read.</exception>
+    public ReadOnlySequence<byte> Read(long count)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        ReadOnlySequence<byte> result;
+        try
+        {
+            result = sequence.Slice(position, count);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            throw new EndOfStreamException(e.Message, e);
+        }
+
+        position = result.End;
+        return result;
+    }
+
+    /// <summary>
+    /// Gets unread part of the buffer and advances the current reader
+    /// to the end of the buffer.
+    /// </summary>
+    /// <returns>Unread part of the buffer.</returns>
+    public ReadOnlySequence<byte> ReadToEnd()
+    {
+        var result = RemainingSequence;
+        position = result.End;
+        return result;
+    }
+
+    /// <summary>
+    /// Indicates that the current reader has no more data to read.
+    /// </summary>
+    public readonly bool IsEmpty => position.Equals(sequence.End);
+
+    /// <summary>
+    /// Tries to read the next chunk.
+    /// </summary>
+    /// <param name="chunk">The chunk of bytes.</param>
+    /// <returns><see langword="true"/> if the next chunk is obtained successfully; <see langword="false"/> if the end of the stream reached.</returns>
+    public bool TryRead(out ReadOnlyMemory<byte> chunk)
+    {
+        var remaining = RemainingSequence;
+        if (remaining.TryGet(ref position, out chunk, advance: false))
+        {
+            position = remaining.GetPosition(chunk.Length, position);
+        }
+
+        return !chunk.IsEmpty;
+    }
+
+    /// <summary>
+    /// Tries to read the next chunk.
+    /// </summary>
+    /// <param name="maxLength">The maximum length of the requested chunk.</param>
+    /// <param name="chunk">The chunk of bytes. Its length is less than or equal to <paramref name="maxLength"/>.</param>
+    /// <returns><see langword="true"/> if next chunk is obtained successfully; <see langword="false"/> if the end of the stream reached.</returns>
+    public bool TryRead(int maxLength, out ReadOnlyMemory<byte> chunk)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxLength);
+
+        if (RemainingSequence is { IsEmpty: false } remaining)
+        {
+            chunk = remaining.First.TrimLength(maxLength);
+            position = remaining.GetPosition(chunk.Length);
+        }
+
+        chunk = default;
+        return false;
     }
 
     /// <summary>
@@ -148,8 +228,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
     public void Skip(long length)
     {
-        if (length < 0L)
-            throw new ArgumentOutOfRangeException(nameof(length));
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
 
         try
         {
@@ -168,13 +247,13 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-    public MemoryOwner<byte> Read(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null)
+    public MemoryOwner<byte> ReadBlock(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null)
     {
         var length = ReadLength(lengthFormat);
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.Invoke(length, exactSize: true);
+            result = allocator.AllocateExactly(length);
             Read(result.Span);
         }
         else
@@ -185,229 +264,194 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
         return result;
     }
 
-    /// <summary>
-    /// Decodes 64-bit signed integer using the specified endianness.
-    /// </summary>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
-    public long ReadInt64(bool littleEndian)
+    private int Read7BitEncodedInt32()
     {
-        var result = Read<long>();
-        result.ReverseIfNeeded(littleEndian);
-        return result;
+        var parser = new SevenBitEncodedInt.Reader();
+        return Read<int, SevenBitEncodedInt.Reader>(ref parser);
     }
 
-    /// <summary>
-    /// Decodes 64-bit unsigned integer using the specified endianness.
-    /// </summary>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
-    [CLSCompliant(false)]
-    public ulong ReadUInt64(bool littleEndian)
+    private int ReadLength(LengthFormat lengthFormat) => lengthFormat switch
     {
-        var result = Read<ulong>();
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
+        LengthFormat.LittleEndian => ReadLittleEndian<int>(),
+        LengthFormat.BigEndian => ReadBigEndian<int>(),
+        LengthFormat.Compressed => Read7BitEncodedInt32(),
+        _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
+    };
 
     /// <summary>
-    /// Decodes 32-bit signed integer using the specified endianness.
+    /// Decodes a block of characters.
     /// </summary>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
-    public int ReadInt32(bool littleEndian)
-    {
-        var result = Read<int>();
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes 32-bit unsigned integer using the specified endianness.
-    /// </summary>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
-    [CLSCompliant(false)]
-    public uint ReadUInt32(bool littleEndian)
-    {
-        var result = Read<uint>();
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes 16-bit signed integer using the specified endianness.
-    /// </summary>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
-    public short ReadInt16(bool littleEndian)
-    {
-        var result = Read<short>();
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes 16-bit unsigned integer using the specified endianness.
-    /// </summary>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying sequence doesn't contain necessary amount of bytes to decode the value.</exception>
-    [CLSCompliant(false)]
-    public ushort ReadUInt16(bool littleEndian)
-    {
-        var result = Read<ushort>();
-        result.ReverseIfNeeded(littleEndian);
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes an arbitrary large integer.
-    /// </summary>
-    /// <param name="length">The length of the value, in bytes.</param>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    [SkipLocalsInit]
-    public unsafe BigInteger ReadBigInteger(int length, bool littleEndian)
-    {
-        BigInteger result;
-
-        if (length is 0)
-        {
-            result = BigInteger.Zero;
-        }
-        else if ((uint)length > (uint)MemoryRental<byte>.StackallocThreshold)
-        {
-            using var buffer = new ArrayBuffer<byte>(length);
-            result = Read<BigInteger, BigIntegerReader<ArrayBuffer<byte>>>(new BigIntegerReader<ArrayBuffer<byte>>(buffer, littleEndian));
-        }
-        else
-        {
-            var buffer = stackalloc byte[length];
-            result = Read<BigInteger, BigIntegerReader<UnsafeBuffer<byte>>>(new BigIntegerReader<UnsafeBuffer<byte>>(new UnsafeBuffer<byte>(buffer, length), littleEndian));
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes an arbitrary large integer.
-    /// </summary>
-    /// <param name="lengthFormat">The format of the value length encoded in the underlying stream.</param>
-    /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
-    /// <returns>The decoded value.</returns>
-    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public BigInteger ReadBigInteger(LengthFormat lengthFormat, bool littleEndian)
-        => ReadBigInteger(ReadLength(lengthFormat), littleEndian);
-
-    /// <summary>
-    /// Decodes the string.
-    /// </summary>
-    /// <param name="length">The length of the encoded string, in bytes.</param>
     /// <param name="context">The decoding context containing string characters encoding.</param>
-    /// <returns>The decoded string.</returns>
-    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    [SkipLocalsInit]
-    public unsafe string ReadString(int length, in DecodingContext context)
-    {
-        string result;
-
-        if (length is 0)
-        {
-            result = string.Empty;
-        }
-        else if ((uint)length > (uint)MemoryRental<char>.StackallocThreshold)
-        {
-            using var buffer = new ArrayBuffer<char>(length);
-            result = Read<string, StringReader<ArrayBuffer<char>>>(new(in context, buffer));
-        }
-        else
-        {
-            var buffer = stackalloc char[length];
-            result = Read<string, StringReader<UnsafeBuffer<char>>>(new(in context, new UnsafeBuffer<char>(buffer, length)));
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Decodes the string.
-    /// </summary>
-    /// <param name="length">The length of the encoded string, in bytes.</param>
-    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
     /// <param name="allocator">The allocator of the buffer of characters.</param>
     /// <returns>The buffer of characters.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public unsafe MemoryOwner<char> ReadString(int length, in DecodingContext context, MemoryAllocator<char>? allocator)
+    public MemoryOwner<char> Decode(in DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null)
     {
         MemoryOwner<char> result;
 
-        if (length == 0)
+        var length = ReadLength(lengthFormat);
+        if (length > 0)
         {
-            result = default;
+            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(length));
+            var parser = new CharBufferDecodingReader(in context, length, result.Memory);
+            result.TryResize(Read<int, CharBufferDecodingReader>(ref parser));
         }
         else
         {
-            result = allocator.Invoke(length, exactSize: true);
-            length = Read<int, StringReader<ArrayBuffer<char>>>(new(in context, new ArrayBuffer<char>(result)));
-            result.TryResize(length);
+            result = default;
         }
 
         return result;
     }
 
-    private int ReadLength(LengthFormat lengthFormat)
+    /// <summary>
+    /// Decodes the sequence of characters.
+    /// </summary>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="buffer">The buffer of characters.</param>
+    /// <returns>The enumerator of characters.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    [UnscopedRef]
+    public SpanDecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Span<char> buffer)
     {
-        int length;
-        var littleEndian = BitConverter.IsLittleEndian;
-        switch (lengthFormat)
+        if (buffer.IsEmpty)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        var length = ReadLength(lengthFormat);
+        var bytes = RemainingSequence;
+        try
         {
-            default:
-                throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-            case LengthFormat.Plain:
-                length = Read<int>();
-                break;
-            case LengthFormat.PlainLittleEndian:
-                littleEndian = true;
-                goto case LengthFormat.Plain;
-            case LengthFormat.PlainBigEndian:
-                littleEndian = false;
-                goto case LengthFormat.Plain;
-            case LengthFormat.Compressed:
-                length = Read<int, SevenBitEncodedIntReader>(new SevenBitEncodedIntReader(5));
-                break;
+            bytes = bytes.Slice(0, length);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            throw new EndOfStreamException(e.Message, e);
         }
 
-        length.ReverseIfNeeded(littleEndian);
-        return length;
+        return new(in bytes, ref position, context, buffer);
     }
 
     /// <summary>
-    /// Decodes the string.
+    /// Decodes the sequence of characters.
     /// </summary>
-    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
     /// <param name="context">The decoding context containing string characters encoding.</param>
-    /// <returns>The decoded string.</returns>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <param name="buffer">The buffer of characters.</param>
+    /// <returns>The enumerator of characters.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public string ReadString(LengthFormat lengthFormat, in DecodingContext context)
-        => ReadString(ReadLength(lengthFormat), in context);
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public DecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer)
+    {
+        if (buffer.IsEmpty)
+            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+
+        var length = ReadLength(lengthFormat);
+        return new(Read(length), in context, in buffer);
+    }
 
     /// <summary>
-    /// Decodes the string.
+    /// Parses a block of characters.
     /// </summary>
-    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+    /// <typeparam name="TArg">The type of the argument to be passed to <paramref name="parser"/>.</typeparam>
+    /// <typeparam name="TResult">The type of the parsing result.</typeparam>
+    /// <param name="arg">The argument to be passed to <paramref name="parser"/>.</param>
+    /// <param name="parser">The parser.</param>
     /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
     /// <param name="allocator">The allocator of the buffer of characters.</param>
-    /// <returns>The buffer of characters.</returns>
+    /// <returns>The parsed block of characters.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="parser"/> is <see langword="null"/>.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public MemoryOwner<char> ReadString(LengthFormat lengthFormat, in DecodingContext context, MemoryAllocator<char>? allocator)
-        => ReadString(ReadLength(lengthFormat), in context, allocator);
+    public TResult Parse<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, in DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null)
+    {
+        ArgumentNullException.ThrowIfNull(parser);
+
+        using var buffer = Decode(context, lengthFormat, allocator);
+        return parser(buffer.Span, arg);
+    }
+
+    private unsafe TResult Parse<TArg, TResult>(TArg arg, delegate*<ReadOnlySpan<byte>, TArg, TResult> parser, LengthFormat lengthFormat)
+    {
+        var length = ReadLength(lengthFormat);
+        if (length is 0)
+            return parser([], arg);
+
+        unsafe
+        {
+            if (length <= Parsing256Reader<IFormatProvider?, TResult>.MaxSize)
+            {
+                var reader = new Parsing256Reader<TArg, TResult>(arg, parser, length);
+                return Read<TResult, Parsing256Reader<TArg, TResult>>(ref reader);
+            }
+            else
+            {
+                var reader = new ParsingReader<TArg, TResult>(arg, parser, length);
+                return Read<TResult, ParsingReader<TArg, TResult>>(ref reader);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Parses the sequence of characters encoded as UTF-8.
+    /// </summary>
+    /// <typeparam name="T">The type that supports parsing from UTF-8.</typeparam>
+    /// <param name="lengthFormat">The format of the string length (in bytes) encoded in the stream.</param>
+    /// <param name="provider">Culture-specific formatting information.</param>
+    /// <returns>The result of parsing.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public T Parse<T>(LengthFormat lengthFormat, IFormatProvider? provider = null)
+        where T : notnull, IUtf8SpanParsable<T>
+    {
+        unsafe
+        {
+            return Parse(provider, &T.Parse, lengthFormat);
+        }
+    }
+
+    /// <summary>
+    /// Parses the numeric value from UTF-8 encoded characters.
+    /// </summary>
+    /// <typeparam name="T">The numeric type.</typeparam>
+    /// <param name="lengthFormat">The format of the string length (in bytes) encoded in the stream.</param>
+    /// <param name="style">A combination of number styles.</param>
+    /// <param name="provider">Culture-specific formatting information.</param>
+    /// <returns>The result of parsing.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public T Parse<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null)
+        where T : notnull, INumberBase<T>
+    {
+        unsafe
+        {
+            return Parse((style, provider), &ParseCore, lengthFormat);
+        }
+
+        static T ParseCore(ReadOnlySpan<byte> source, (NumberStyles, IFormatProvider?) args)
+            => T.Parse(source, args.Item1, args.Item2);
+    }
+
+    /// <summary>
+    /// Parses the numeric value.
+    /// </summary>
+    /// <typeparam name="T">The numeric type.</typeparam>
+    /// <param name="context">The decoding context containing string characters encoding.</param>
+    /// <param name="lengthFormat">The format of the string length (in bytes) encoded in the stream.</param>
+    /// <param name="style">A combination of number styles.</param>
+    /// <param name="provider">Culture-specific formatting information.</param>
+    /// <param name="allocator">The allocator of internal buffer.</param>
+    /// <returns>The result of parsing.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    public T Parse<T>(in DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null)
+        where T : notnull, INumberBase<T>
+    {
+        using var buffer = Decode(context, lengthFormat, allocator);
+        return T.Parse(buffer.Span, style, provider);
+    }
 
     /// <inheritdoc/>
     ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
@@ -427,6 +471,79 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
             catch (Exception e)
             {
                 result = ValueTask.FromException<T>(e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    ValueTask<T> IAsyncBinaryReader.ReadLittleEndianAsync<T>(CancellationToken token)
+    {
+        ValueTask<T> result;
+
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<T>(token);
+        }
+        else
+        {
+            try
+            {
+                result = new(ReadLittleEndian<T>());
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<T>(e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    ValueTask<T> IAsyncBinaryReader.ReadBigEndianAsync<T>(CancellationToken token)
+    {
+        ValueTask<T> result;
+
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<T>(token);
+        }
+        else
+        {
+            try
+            {
+                result = new(ReadBigEndian<T>());
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<T>(e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)
+    {
+        ValueTask<TReader> result;
+
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<TReader>(token);
+        }
+        else
+        {
+            try
+            {
+                Read(ref reader);
+                result = new(reader);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<TReader>(e);
             }
         }
 
@@ -496,7 +613,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
         {
             try
             {
-                result = new(Read(lengthFormat, allocator));
+                result = new(ReadBlock(lengthFormat, allocator));
             }
             catch (Exception e)
             {
@@ -508,22 +625,23 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     }
 
     /// <inheritdoc/>
-    ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
     {
-        ValueTask<long> result;
+        ValueTask<TResult> result;
+
         if (token.IsCancellationRequested)
         {
-            result = ValueTask.FromCanceled<long>(token);
+            result = ValueTask.FromCanceled<TResult>(token);
         }
         else
         {
             try
             {
-                result = new(ReadInt64(littleEndian));
+                result = new(Parse(arg, parser, context, lengthFormat, allocator));
             }
             catch (Exception e)
             {
-                result = ValueTask.FromException<long>(e);
+                result = ValueTask.FromException<TResult>(e);
             }
         }
 
@@ -531,55 +649,10 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     }
 
     /// <inheritdoc/>
-    ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
-    {
-        ValueTask<int> result;
-        if (token.IsCancellationRequested)
-        {
-            result = ValueTask.FromCanceled<int>(token);
-        }
-        else
-        {
-            try
-            {
-                result = new(ReadInt32(littleEndian));
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<int>(e);
-            }
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc/>
-    ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
-    {
-        ValueTask<short> result;
-        if (token.IsCancellationRequested)
-        {
-            result = ValueTask.FromCanceled<short>(token);
-        }
-        else
-        {
-            try
-            {
-                result = new(ReadInt16(littleEndian));
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<short>(e);
-            }
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc/>
-    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
+    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(LengthFormat lengthFormat, IFormatProvider? provider, CancellationToken token)
     {
         ValueTask<T> result;
+
         if (token.IsCancellationRequested)
         {
             result = ValueTask.FromCanceled<T>(token);
@@ -588,31 +661,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
         {
             try
             {
-                result = new(Parse(parser, lengthFormat, in context, provider));
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<T>(e);
-            }
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc />
-    [RequiresPreviewFeatures]
-    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
-    {
-        ValueTask<T> result;
-        if (token.IsCancellationRequested)
-        {
-            result = ValueTask.FromCanceled<T>(token);
-        }
-        else
-        {
-            try
-            {
-                result = new(Parse<T>());
+                result = new(Parse<T>(lengthFormat, provider));
             }
             catch (Exception e)
             {
@@ -624,22 +673,47 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     }
 
     /// <inheritdoc/>
-    ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
+    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, CancellationToken token)
     {
-        ValueTask<string> result;
+        ValueTask<T> result;
+
         if (token.IsCancellationRequested)
         {
-            result = ValueTask.FromCanceled<string>(token);
+            result = ValueTask.FromCanceled<T>(token);
         }
         else
         {
             try
             {
-                result = new(ReadString(length, in context));
+                result = new(Parse<T>(lengthFormat, style, provider));
             }
             catch (Exception e)
             {
-                result = ValueTask.FromException<string>(e);
+                result = ValueTask.FromException<T>(e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
+    {
+        ValueTask<T> result;
+
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled<T>(token);
+        }
+        else
+        {
+            try
+            {
+                result = new(Parse<T>(in context, lengthFormat, style, provider));
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException<T>(e);
             }
         }
 
@@ -647,7 +721,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     }
 
     /// <inheritdoc />
-    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
     {
         ValueTask<MemoryOwner<char>> result;
         if (token.IsCancellationRequested)
@@ -658,7 +732,7 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
         {
             try
             {
-                result = new(ReadString(length, in context, allocator));
+                result = new(Decode(in context, lengthFormat, allocator));
             }
             catch (Exception e)
             {
@@ -670,91 +744,67 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     }
 
     /// <inheritdoc/>
-    ValueTask<string> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
-    {
-        ValueTask<string> result;
-        if (token.IsCancellationRequested)
-        {
-            result = ValueTask.FromCanceled<string>(token);
-        }
-        else
-        {
-            try
-            {
-                result = new(ReadString(lengthFormat, context));
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<string>(e);
-            }
-        }
+    IAsyncEnumerable<ReadOnlyMemory<char>> IAsyncBinaryReader.DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token)
+        => Decode(context, lengthFormat, buffer).AsAsyncEnumerable(token);
 
-        return result;
-    }
-
-    /// <inheritdoc />
-    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
+    /// <inheritdoc/>
+    ValueTask IAsyncBinaryReader.CopyToAsync(Stream destination, long? count, CancellationToken token)
     {
-        ValueTask<MemoryOwner<char>> result;
-        if (token.IsCancellationRequested)
+        ValueTask result;
+        try
         {
-            result = ValueTask.FromCanceled<MemoryOwner<char>>(token);
+            var remaining = count.HasValue
+                ? Read(count.GetValueOrDefault())
+                : ReadToEnd();
+
+            result = destination.WriteAsync(remaining, token);
         }
-        else
+        catch (Exception e)
         {
-            try
-            {
-                result = new(ReadString(lengthFormat, in context, allocator));
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<MemoryOwner<char>>(e);
-            }
+            result = ValueTask.FromException(e);
         }
 
         return result;
     }
 
     /// <inheritdoc/>
-    ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
+    ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter destination, long? count, CancellationToken token)
     {
-        ValueTask<BigInteger> result;
-        if (token.IsCancellationRequested)
+        ValueTask result;
+        try
         {
-            result = ValueTask.FromCanceled<BigInteger>(token);
+            var remaining = count.HasValue
+                ? Read(count.GetValueOrDefault())
+                : ReadToEnd();
+
+            result = destination.WriteAsync(remaining, token);
         }
-        else
+        catch (Exception e)
         {
-            try
-            {
-                result = new(ReadBigInteger(length, littleEndian));
-            }
-            catch (Exception e)
-            {
-                result = ValueTask.FromException<BigInteger>(e);
-            }
+            result = ValueTask.FromException(e);
         }
 
         return result;
     }
 
     /// <inheritdoc/>
-    ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
+    ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, long? count, CancellationToken token)
     {
-        ValueTask<BigInteger> result;
+        ValueTask result;
         if (token.IsCancellationRequested)
         {
-            result = ValueTask.FromCanceled<BigInteger>(token);
+            result = ValueTask.FromCanceled(token);
         }
         else
         {
+            result = ValueTask.CompletedTask;
             try
             {
-                result = new(ReadBigInteger(lengthFormat, littleEndian));
+                writer.Write(count.HasValue ? Read(count.GetValueOrDefault()) : ReadToEnd());
             }
             catch (Exception e)
             {
-                result = ValueTask.FromException<BigInteger>(e);
+                result = ValueTask.FromException(e);
             }
         }
 
@@ -762,76 +812,9 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     }
 
     /// <inheritdoc/>
-    readonly Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-        => output.WriteAsync(RemainingSequence, token).AsTask();
-
-    /// <inheritdoc/>
-    readonly Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-        => output.WriteAsync(RemainingSequence, token).AsTask();
-
-    /// <inheritdoc/>
-    readonly Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
+    async ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
     {
-        Task result;
-        if (token.IsCancellationRequested)
-        {
-            result = Task.FromCanceled(token);
-        }
-        else
-        {
-            result = Task.CompletedTask;
-            try
-            {
-                writer.Write(RemainingSequence);
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException(e);
-            }
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc/>
-    readonly Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, CancellationToken token)
-    {
-        Task result;
-        if (token.IsCancellationRequested)
-        {
-            result = Task.FromCanceled(token);
-        }
-        else
-        {
-            result = Task.CompletedTask;
-            try
-            {
-                foreach (var segment in RemainingSequence)
-                {
-                    reader(segment.Span, arg);
-                    token.ThrowIfCancellationRequested();
-                }
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException(e);
-            }
-        }
-
-        return result;
-    }
-
-    /// <inheritdoc/>
-    readonly async Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> reader, TArg arg, CancellationToken token)
-    {
-        foreach (var segment in RemainingSequence)
-            await reader(arg, segment, token).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    readonly async Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-    {
-        foreach (var segment in RemainingSequence)
+        foreach (var segment in count.HasValue ? Read(count.GetValueOrDefault()) : ReadToEnd())
             await consumer.Invoke(segment, token).ConfigureAwait(false);
     }
 
@@ -845,10 +828,159 @@ public struct SequenceReader : IAsyncBinaryReader, IResettable
     /// <inheritdoc />
     readonly bool IAsyncBinaryReader.TryGetRemainingBytesCount(out long count)
     {
-        count = sequence.Length - sequence.GetOffset(position);
+        count = RemainingSequence.Length;
         return true;
     }
 
     /// <inheritdoc/>
     public readonly override string ToString() => RemainingSequence.ToString();
+
+    /// <summary>
+    /// Represents decoding enumerable.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct DecodingEnumerable
+    {
+        private readonly ReadOnlySequence<byte> bytes;
+        private readonly DecodingContext context;
+        private readonly Memory<char> buffer;
+
+        internal DecodingEnumerable(ReadOnlySequence<byte> bytes, in DecodingContext context, in Memory<char> buffer)
+        {
+            Debug.Assert(!buffer.IsEmpty);
+
+            this.bytes = bytes;
+            this.context = context;
+            this.buffer = buffer;
+        }
+
+        /// <summary>
+        /// Gets enumerator over decoded chunks of characters.
+        /// </summary>
+        /// <returns>The enumerator over decoded chunks of characters.</returns>
+        public Enumerator GetEnumerator() => new(in bytes, in context, buffer);
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        internal async IAsyncEnumerable<ReadOnlyMemory<char>> AsAsyncEnumerable([EnumeratorCancellation] CancellationToken token)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+        {
+            foreach (var chunk in this)
+            {
+                token.ThrowIfCancellationRequested();
+                yield return chunk;
+            }
+        }
+
+        /// <summary>
+        /// Represents enumerator over decoded characters.
+        /// </summary>
+        [StructLayout(LayoutKind.Auto)]
+        public struct Enumerator
+        {
+            private readonly ReadOnlySequence<byte> bytes;
+            private readonly Decoder decoder;
+            private readonly Memory<char> buffer;
+            private SequencePosition position;
+            private int charsWritten;
+
+            internal Enumerator(in ReadOnlySequence<byte> bytes, in DecodingContext context, in Memory<char> buffer)
+            {
+                this.bytes = bytes;
+                decoder = context.GetDecoder();
+                this.buffer = buffer;
+                position = bytes.Start;
+            }
+
+            /// <summary>
+            /// Gets the current chunk of decoded characters.
+            /// </summary>
+            public readonly ReadOnlyMemory<char> Current => buffer.Slice(0, charsWritten);
+
+            /// <summary>
+            /// Decodes the next chunk of bytes.
+            /// </summary>
+            /// <returns><see langword="true"/> if decoding is successfull; <see langword="false"/> if nothing to decode.</returns>
+            public bool MoveNext()
+                => (charsWritten = GetChars(in bytes, ref position, decoder, buffer.Span)) > 0;
+        }
+    }
+
+    /// <summary>
+    /// Represents decoding enumerable.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly ref struct SpanDecodingEnumerable
+    {
+        private readonly ReadOnlySequence<byte> bytes;
+        private readonly DecodingContext context;
+        private readonly Span<char> buffer;
+        private readonly ref SequencePosition position;
+
+        internal SpanDecodingEnumerable(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, scoped in DecodingContext context, Span<char> buffer)
+        {
+            Debug.Assert(!buffer.IsEmpty);
+
+            this.bytes = bytes;
+            this.position = ref position;
+            this.context = context;
+            this.buffer = buffer;
+        }
+
+        /// <summary>
+        /// Gets enumerator over decoded chunks of characters.
+        /// </summary>
+        /// <returns>The enumerator over decoded chunks of characters.</returns>
+        public Enumerator GetEnumerator() => new(in bytes, ref position, context, buffer);
+
+        /// <summary>
+        /// Represents enumerator over decoded characters.
+        /// </summary>
+        [StructLayout(LayoutKind.Auto)]
+        public ref struct Enumerator
+        {
+            private readonly ReadOnlySequence<byte> bytes;
+            private readonly Decoder decoder;
+            private readonly Span<char> buffer;
+            private ref SequencePosition position;
+            private int charsWritten;
+
+            internal Enumerator(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, scoped in DecodingContext context, Span<char> buffer)
+            {
+                this.bytes = bytes;
+                this.position = ref position;
+                decoder = context.GetDecoder();
+                this.buffer = buffer;
+            }
+
+            /// <summary>
+            /// Gets the current chunk of decoded characters.
+            /// </summary>
+            public readonly ReadOnlySpan<char> Current => buffer.Slice(0, charsWritten);
+
+            /// <summary>
+            /// Decodes the next chunk of bytes.
+            /// </summary>
+            /// <returns><see langword="true"/> if decoding is successfull; <see langword="false"/> if nothing to decode.</returns>
+            public bool MoveNext()
+                => (charsWritten = GetChars(in bytes, ref position, decoder, buffer)) > 0;
+        }
+    }
+
+    private static int GetChars(in ReadOnlySequence<byte> bytes, ref SequencePosition position, Decoder decoder, Span<char> buffer)
+    {
+        int charsWritten;
+        if (bytes.TryGet(ref position, out var source, advance: false) && !source.IsEmpty)
+        {
+            var length = Math.Min(source.Length, buffer.Length);
+            position = bytes.GetPosition(length, position);
+
+            charsWritten = decoder.GetChars(source.Span.Slice(0, length), buffer, position.Equals(bytes.End));
+        }
+        else
+        {
+            charsWritten = 0;
+        }
+
+        return charsWritten;
+    }
 }

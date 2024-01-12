@@ -172,13 +172,6 @@ public partial class MemoryBasedStateMachine
     protected abstract class InlineSnapshotBuilder : SnapshotBuilder
     {
         /// <summary>
-        /// Gets the offset from the start of the snapshot file that is reserved
-        /// and should not be used for storing data.
-        /// </summary>
-        [Obsolete("Snapshot payload has no offset within the file")]
-        protected static long SnapshotOffset => 0L;
-
-        /// <summary>
         /// Initializes a new snapshot builder.
         /// </summary>
         /// <param name="context">The context of the snapshot builder.</param>

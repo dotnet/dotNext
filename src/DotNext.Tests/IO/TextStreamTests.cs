@@ -36,7 +36,7 @@ public sealed class TextStreamTests : Test
     [Fact]
     public static void WriteTextToCharBuffer()
     {
-        using var writer = new PooledArrayBufferWriter<char>();
+        using var writer = new PoolingArrayBufferWriter<char>();
         using var actual = writer.AsTextWriter();
 
         using TextWriter expected = new StringWriter(InvariantCulture);
@@ -229,7 +229,7 @@ public sealed class TextStreamTests : Test
         await expected.WriteLineAsync();
 
         await actual.FlushAsync();
-        Equal(expected.ToString(), writer.BuildString());
+        Equal(expected.ToString(), writer.WrittenSpan.ToString());
         Equal(expected.ToString(), actual.ToString());
     }
 

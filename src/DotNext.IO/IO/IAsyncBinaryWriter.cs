@@ -1,14 +1,16 @@
 using System.Buffers;
+using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Numerics;
-using System.Runtime.Versioning;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO;
 
 using Buffers;
-using static Text.EncodingExtensions;
+using Buffers.Binary;
 using EncodingContext = Text.EncodingContext;
+using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
 /// <summary>
 /// Providers a uniform way to encode the data.
@@ -17,88 +19,76 @@ using EncodingContext = Text.EncodingContext;
 public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
 {
     /// <summary>
-    /// Encodes value of blittable type.
+    /// Encodes formattable value as a set of bytes.
     /// </summary>
-    /// <param name="value">The value to encode.</param>
+    /// <typeparam name="T">The type of formattable value.</typeparam>
+    /// <param name="value">The value to be written as a sequence of bytes.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <typeparam name="T">The type of the value to encode.</typeparam>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async ValueTask WriteAsync<T>(T value, CancellationToken token = default)
-        where T : unmanaged
+    ValueTask WriteAsync<T>(T value, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
     {
-        using var buffer = MemoryAllocator.Allocate<byte>(Unsafe.SizeOf<T>(), true);
-        Span.AsReadOnlyBytes(value).CopyTo(buffer.Span);
-        await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
+        return IBinaryFormattable<T>.TryFormat(value, Buffer.Span)
+            ? AdvanceAsync(T.Size, token)
+            : WriteSlowAsync(value, token);
+    }
+
+    private async ValueTask WriteSlowAsync<T>(T value, CancellationToken token = default)
+        where T : notnull, IBinaryFormattable<T>
+    {
+        using var buffer = IBinaryFormattable<T>.Format(value);
+        await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Encodes 64-bit signed integer asynchronously.
+    /// Writes integer value in little-endian format.
     /// </summary>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <param name="value">The value to be written in little-endian format.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask WriteInt64Async(long value, bool littleEndian, CancellationToken token = default)
+    ValueTask WriteLittleEndianAsync<T>(T value, CancellationToken token = default)
+        where T : notnull, IBinaryInteger<T>
     {
-        value.ReverseIfNeeded(littleEndian);
-        return WriteAsync(value, token);
+        return value.TryWriteLittleEndian(Buffer.Span, out var bytesWritten)
+            ? AdvanceAsync(bytesWritten, token)
+            : ValueTask.FromException(new InternalBufferOverflowException());
     }
 
     /// <summary>
-    /// Encodes 32-bit signed integer asynchronously.
+    /// Writes integer value in big-endian format.
     /// </summary>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <param name="value">The value to be written in big-endian format.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask WriteInt32Async(int value, bool littleEndian, CancellationToken token = default)
+    ValueTask WriteBigEndianAsync<T>(T value, CancellationToken token = default)
+        where T : notnull, IBinaryInteger<T>
     {
-        value.ReverseIfNeeded(littleEndian);
-        return WriteAsync(value, token);
+        return value.TryWriteBigEndian(Buffer.Span, out var bytesWritten)
+            ? AdvanceAsync(bytesWritten, token)
+            : ValueTask.FromException(new InternalBufferOverflowException());
     }
 
     /// <summary>
-    /// Encodes 16-bit signed integer asynchronously.
+    /// Gets buffer to modify.
     /// </summary>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing state of asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask WriteInt16Async(short value, bool littleEndian, CancellationToken token = default)
-    {
-        value.ReverseIfNeeded(littleEndian);
-        return WriteAsync(value, token);
-    }
+    /// <seealso cref="AdvanceAsync(int, CancellationToken)"/>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    Memory<byte> Buffer { get; }
 
     /// <summary>
-    /// Encodes an arbitrary large integer as raw bytes.
+    /// Instructs the writer that the specified number of bytes of <see cref="Buffer"/> is modified.
     /// </summary>
-    /// <param name="value">The value to encode.</param>
-    /// <param name="littleEndian"><see langword="true"/> to use little-endian encoding; <see langword="false"/> to use big-endian encoding.</param>
-    /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded; or <see langword="null"/> to prevent length encoding.</param>
+    /// <param name="bytesWritten">The number of written bytes to <see cref="Buffer"/>.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async ValueTask WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null, CancellationToken token = default)
-    {
-        var bytesCount = value.GetByteCount();
-
-        if (bytesCount == 0)
-        {
-            await WriteAsync(ReadOnlyMemory<byte>.Empty, lengthFormat, token).ConfigureAwait(false);
-        }
-        else
-        {
-            using var buffer = MemoryAllocator.Allocate<byte>(bytesCount, true);
-            if (!value.TryWriteBytes(buffer.Span, out bytesCount, isBigEndian: !littleEndian))
-                throw new InternalBufferOverflowException();
-            await WriteAsync(buffer.Memory, lengthFormat, token).ConfigureAwait(false);
-        }
-    }
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytesWritten"/> is negative.</exception>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    ValueTask AdvanceAsync(int bytesWritten, CancellationToken token = default);
 
     /// <summary>
     /// Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
@@ -109,28 +99,32 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat = null, CancellationToken token = default);
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat = null, CancellationToken token = default)
+    {
+        return lengthFormat.HasValue
+            ? WriteAsync(input, lengthFormat.GetValueOrDefault(), token)
+            : WriteAsync(input, token);
+    }
+
+    private async ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat lengthFormat, CancellationToken token)
+    {
+        await AdvanceAsync(WriteLength(input.Length, lengthFormat), token).ConfigureAwait(false);
+        await WriteAsync(input, token).ConfigureAwait(false);
+    }
+
+    private async ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+    {
+        for (int bytesWritten; !input.IsEmpty; input = input.Slice(bytesWritten))
+        {
+            input.Span.CopyTo(Buffer.Span, out bytesWritten);
+            await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
+        }
+    }
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
-        => WriteAsync(input, null, token);
-
-    /// <summary>
-    /// Encodes a block of memory using synchronous encoder.
-    /// </summary>
-    /// <param name="writer">The writer of the in-memory buffer.</param>
-    /// <param name="arg">The argument to be passed to the writer.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <typeparam name="TArg">The type of the argument to be passed to the encoder.</typeparam>
-    /// <returns>The task representing state of asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async ValueTask WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token = default)
-    {
-        using var buffer = new PooledArrayBufferWriter<byte>();
-        writer(arg, buffer);
-        if (buffer.WrittenCount > 0)
-            await WriteAsync(buffer.WrittenMemory, null, token).ConfigureAwait(false);
-    }
+        => WriteAsync(input, lengthFormat: null, token);
 
     /// <summary>
     /// Attempts to get synchronous writer.
@@ -145,13 +139,39 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <param name="context">The context describing encoding of characters.</param>
     /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <returns>The number of written bytes.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    async ValueTask WriteStringAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default)
+    async ValueTask<long> EncodeAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat = null, CancellationToken token = default)
     {
-        using var bytes = context.Encoding.GetBytes(chars.Span);
-        await WriteAsync(bytes.Memory, lengthFormat, token).ConfigureAwait(false);
+        long result;
+        int bytesWritten;
+        if (lengthFormat.HasValue)
+        {
+            result = bytesWritten = WriteLength(context.Encoding.GetByteCount(chars.Span), lengthFormat.GetValueOrDefault());
+            await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
+        }
+        else
+        {
+            result = 0L;
+        }
+
+        var encoder = context.GetEncoder();
+        for (int charsUsed; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesWritten)
+        {
+            var buffer = Buffer;
+            var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
+            encoder.Convert(chars.Span, buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+            await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
+        }
+
+        return result;
+    }
+
+    private int WriteLength(int length, LengthFormat lengthFormat)
+    {
+        var writer = new SpanWriter<byte>(Buffer.Span);
+        return writer.WriteLength(length, lengthFormat);
     }
 
     /// <summary>
@@ -159,88 +179,106 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// </summary>
     /// <typeparam name="T">The type of formattable value.</typeparam>
     /// <param name="value">The value to be written as string.</param>
-    /// <param name="lengthFormat">String length encoding format.</param>
     /// <param name="context">The context describing encoding of characters.</param>
+    /// <param name="lengthFormat">String length encoding format.</param>
+    /// <param name="format">The format of the value.</param>
+    /// <param name="provider">The format provider.</param>
+    /// <param name="allocator">Characters buffer allocator.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The number of written bytes.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+    ValueTask<long> FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat = null, string? format = null, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+        where T : notnull, ISpanFormattable
+        => EncodeAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
+
+    /// <summary>
+    /// Converts the value to UTF-8 encoded characters.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to convert.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="lengthFormat">String length encoding format.</param>
     /// <param name="format">The format of the value.</param>
     /// <param name="provider">The format provider.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing state of asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    ValueTask WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, ISpanFormattable
-        => WriteStringAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
+    /// <returns>The number of written bytes.</returns>
+    /// <exception cref="InternalBufferOverflowException">The internal buffer cannot place all UTF-8 bytes exposed by <paramref name="value"/>.</exception>
+    ValueTask<int> FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
+        where T : notnull, IUtf8SpanFormattable
+        => FormatAsync(this, value, lengthFormat, format, provider, token);
 
-    /// <summary>
-    /// Encodes formattable value as a set of bytes.
-    /// </summary>
-    /// <typeparam name="T">The type of formattable value.</typeparam>
-    /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing state of asynchronous execution.</returns>
-    [RequiresPreviewFeatures]
-    async ValueTask WriteFormattableAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+    internal static async ValueTask<int> FormatAsync<T>(IAsyncBinaryWriter writer, T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+        where T : notnull, IUtf8SpanFormattable
     {
-        using var buffer = IBinaryFormattable<T>.Format(value);
-        await WriteAsync(buffer.Memory, null, token).ConfigureAwait(false);
+        const int maxBufferSize = int.MaxValue / 2;
+        for (var bufferSize = MemoryRental<byte>.StackallocThreshold; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InternalBufferOverflowException())
+        {
+            using var buffer = Memory.AllocateAtLeast<byte>(bufferSize);
+
+            if (value.TryFormat(buffer.Span, out var bytesWritten, format, provider))
+            {
+                await writer.WriteAsync(buffer.Memory.Slice(0, bytesWritten), lengthFormat, token).ConfigureAwait(false);
+                return bytesWritten;
+            }
+        }
     }
 
     /// <summary>
     /// Writes the content from the specified stream.
     /// </summary>
-    /// <param name="input">The stream to read from.</param>
+    /// <param name="source">The stream to read from the source.</param>
+    /// <param name="count">The number of bytes to read from the source.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async Task CopyFromAsync(Stream input, CancellationToken token = default)
+    ValueTask CopyFromAsync(Stream source, long? count = null, CancellationToken token = default)
     {
-        const int defaultBufferSize = 512;
-        using var buffer = MemoryAllocator.Allocate<byte>(defaultBufferSize, false);
-        for (int count; (count = await input.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0;)
-            await WriteAsync(buffer.Memory.Slice(0, count), null, token).ConfigureAwait(false);
+        return source is null
+            ? ValueTask.FromException(new ArgumentNullException(nameof(source)))
+            : count.HasValue
+            ? CopyFromAsync(source, count.GetValueOrDefault(), token)
+            : CopyFromAsync(source, token);
+    }
+
+    private async ValueTask CopyFromAsync(Stream source, CancellationToken token)
+    {
+        for (int bytesWritten; (bytesWritten = await source.ReadAsync(Buffer, token).ConfigureAwait(false)) > 0;)
+        {
+            await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask CopyFromAsync(Stream source, long count, CancellationToken token)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        for (int bytesWritten; count > 0L; count -= bytesWritten)
+        {
+            bytesWritten = await source.ReadAsync(Buffer, token).ConfigureAwait(false);
+
+            if (bytesWritten <= 0)
+                throw new EndOfStreamException();
+
+            await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
     /// Writes the content from the specified pipe.
     /// </summary>
-    /// <param name="input">The pipe to read from.</param>
+    /// <param name="source">The pipe to read from.</param>
+    /// <param name="count">The number of bytes to read from the source.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of asynchronous execution.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    Task CopyFromAsync(PipeReader input, CancellationToken token = default)
-        => Pipelines.PipeExtensions.CopyToAsync(input, this, token);
-
-    /// <summary>
-    /// Writes the content from the specified sequence of bytes.
-    /// </summary>
-    /// <param name="input">The sequence of bytes to read from.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing state of asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async Task WriteAsync(ReadOnlySequence<byte> input, CancellationToken token = default)
-    {
-        foreach (var segment in input)
-            await WriteAsync(segment, null, token).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Writes the content from the delegate supplying memory blocks.
-    /// </summary>
-    /// <remarks>
-    /// Copy process will be stopped when <paramref name="supplier"/> returns empty <see cref="ReadOnlyMemory{T}"/>.
-    /// </remarks>
-    /// <param name="supplier">The delegate supplying memory blocks.</param>
-    /// <param name="arg">The argument to be passed to the supplier.</param>
-    /// <param name="token">The token that can be used to cancel operation.</param>
-    /// <typeparam name="TArg">The type of the argument to be passed to the supplier.</typeparam>
-    /// <returns>The task representing state of asynchronous execution.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async Task CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token = default)
-    {
-        for (ReadOnlyMemory<byte> source; !(source = await supplier(arg, token).ConfigureAwait(false)).IsEmpty;)
-            await WriteAsync(source, null, token).ConfigureAwait(false);
-    }
+    ValueTask CopyFromAsync(PipeReader source, long? count = null, CancellationToken token = default)
+        => count.HasValue
+            ? Pipelines.PipeExtensions.CopyToAsync(source, this, count.GetValueOrDefault(), token)
+            : Pipelines.PipeExtensions.CopyToAsync(source, this, token);
 
     /// <summary>
     /// Creates default implementation of binary writer for the stream.
@@ -256,44 +294,27 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
-        => new AsyncStreamBinaryAccessor(output, buffer);
-
-    /// <summary>
-    /// Creates default implementation of binary writer for the pipe.
-    /// </summary>
-    /// <remarks>
-    /// It is recommended to use extension methods from <see cref="Pipelines.PipeExtensions"/> class
-    /// for encoding data to the pipe. This method is intended for situation
-    /// when you need an object implementing <see cref="IAsyncBinaryWriter"/> interface.
-    /// </remarks>
-    /// <param name="output">The stream instance.</param>
-    /// <returns>The binary writer.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-    public static IAsyncBinaryWriter Create(PipeWriter output)
-        => new Pipelines.PipeBinaryWriter(output);
-
-    /// <summary>
-    /// Creates default implementation of binary writer for the pipe.
-    /// </summary>
-    /// <param name="output">The stream instance.</param>
-    /// <param name="stringLengthThreshold">
-    /// The threshold for the number of characters.
-    /// If the number of characters is less than or equal to this threshold then
-    /// writer encodes the whole sequence of characters in memory and then flushes the pipe;
-    /// otherwise, the pipe flushes multiple times for each portion of the sequence.
-    /// </param>
-    /// <param name="encodingBufferSize">The size of internal buffer used to encode characters.</param>
-    /// <returns>The binary writer.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="encodingBufferSize"/> or <paramref name="stringLengthThreshold"/> is less than zero.</exception>
-    public static IAsyncBinaryWriter Create(PipeWriter output, int stringLengthThreshold, int encodingBufferSize)
     {
-        if (stringLengthThreshold < 0)
-            throw new ArgumentOutOfRangeException(nameof(stringLengthThreshold));
-        if (encodingBufferSize < 0)
-            throw new ArgumentOutOfRangeException(nameof(encodingBufferSize));
+        ArgumentNullException.ThrowIfNull(output);
+        StreamExtensions.ThrowIfEmpty(buffer);
 
-        return new Pipelines.PipeBinaryWriter(output, stringLengthThreshold, encodingBufferSize);
+        return new AsyncStreamBinaryAccessor(output, buffer);
+    }
+
+    /// <summary>
+    /// Creates default implementation of binary writer for the pipe.
+    /// </summary>
+    /// <param name="output">The stream instance.</param>
+    /// <param name="bufferSize">The maximum numbers of bytes that can be buffered in the memory without flushing.</param>
+    /// <returns>The binary writer.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> or is less than or equal to zero.</exception>
+    public static IAsyncBinaryWriter Create(PipeWriter output, long bufferSize = 0L)
+    {
+        ArgumentNullException.ThrowIfNull(output);
+        ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
+
+        return new PipeBinaryWriter(output, bufferSize);
     }
 
     /// <summary>
@@ -303,5 +324,39 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <returns>The binary writer.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
     public static IAsyncBinaryWriter Create(IBufferWriter<byte> writer)
-        => new AsyncBufferWriter(writer);
+    {
+        ArgumentNullException.ThrowIfNull(writer);
+
+        return new AsyncBufferWriter(writer);
+    }
+
+    internal static Stream GetStream<TWriter>(TWriter writer, out bool keepAlive)
+        where TWriter : notnull, IAsyncBinaryWriter
+    {
+        if (keepAlive = typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
+            return Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream;
+
+        if (typeof(TWriter) == typeof(PipeBinaryWriter))
+            return Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).AsStream();
+
+        if (typeof(TWriter) == typeof(AsyncBufferWriter))
+            return Unsafe.As<TWriter, AsyncBufferWriter>(ref writer).AsStream();
+
+        return StreamSource.AsAsynchronousStream(new Wrapper<TWriter>(writer));
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+        where TWriter : notnull, IAsyncBinaryWriter
+    {
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
+            => writer.Invoke(source, token);
+
+        void IFlushable.Flush()
+        {
+        }
+
+        Task IFlushable.FlushAsync(CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+    }
 }

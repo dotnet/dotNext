@@ -4,6 +4,7 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
+using System.Security.Cryptography.X509Certificates;
 using Buffers;
 
 /// <summary>
@@ -19,9 +20,11 @@ public partial class FileWriter : Disposable, IFlushable
     /// Represents the file handle.
     /// </summary>
     protected readonly SafeFileHandle handle;
+    private readonly MemoryAllocator<byte>? allocator;
     private MemoryOwner<byte> buffer;
     private int bufferOffset;
     private long fileOffset;
+    private ReadOnlyMemory<byte>[]? bufferList;
 
     /// <summary>
     /// Creates a new writer backed by the file.
@@ -42,16 +45,27 @@ public partial class FileWriter : Disposable, IFlushable
     public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(handle);
+        ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        if (fileOffset < 0L)
-            throw new ArgumentOutOfRangeException(nameof(fileOffset));
-
-        if (bufferSize <= 16)
-            throw new ArgumentOutOfRangeException(nameof(bufferSize));
-
-        buffer = allocator.Invoke(bufferSize, exactSize: false);
+        buffer = allocator.AllocateAtLeast(bufferSize);
         this.handle = handle;
         this.fileOffset = fileOffset;
+        this.allocator = allocator;
+    }
+
+    /// <summary>
+    /// Creates a new writer backed by the file.
+    /// </summary>
+    /// <param name="destination">Writable file stream.</param>
+    /// <param name="bufferSize">The buffer size.</param>
+    /// <param name="allocator">The buffer allocator.</param>
+    /// <exception cref="ArgumentException"><paramref name="destination"/> is not writable.</exception>
+    public FileWriter(FileStream destination, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
+        : this(destination.SafeFileHandle, destination.Position, bufferSize, allocator)
+    {
+        if (!destination.CanWrite)
+            throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
     }
 
     private ReadOnlyMemory<byte> WrittenMemory => buffer.Memory.Slice(0, bufferOffset);
@@ -81,8 +95,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
     public void Produce(int bytes)
     {
-        if ((uint)bytes > (uint)FreeCapacity)
-            throw new ArgumentOutOfRangeException(nameof(bytes));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)bytes, (uint)FreeCapacity, nameof(bytes));
 
         bufferOffset += bytes;
     }
@@ -107,8 +120,7 @@ public partial class FileWriter : Disposable, IFlushable
         get => fileOffset;
         set
         {
-            if (value < 0L)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             if (HasBufferedData)
                 throw new InvalidOperationException();
@@ -159,6 +171,17 @@ public partial class FileWriter : Disposable, IFlushable
         return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Flushes the operating system buffers for the given file to disk.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
+    public void FlushToDisk()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+
+        RandomAccess.FlushToDisk(handle);
+    }
+
     /// <inheritdoc />
     Task IFlushable.FlushAsync(CancellationToken token) => WriteAsync(token).AsTask();
 
@@ -168,7 +191,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     public void Write()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (HasBufferedData)
             FlushCore();
@@ -177,36 +200,21 @@ public partial class FileWriter : Disposable, IFlushable
     /// <inheritdoc />
     void IFlushable.Flush() => Write();
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask WriteSlowAsync(ReadOnlyMemory<byte> input, CancellationToken token)
-    {
-        if (bufferOffset > 0)
-            await FlushCoreAsync(token).ConfigureAwait(false);
-
-        if (input.Length > buffer.Length)
-        {
-            await RandomAccess.WriteAsync(handle, input, fileOffset, token).ConfigureAwait(false);
-            fileOffset += input.Length;
-        }
-        else
-        {
-            input.CopyTo(buffer.Memory);
-            bufferOffset += input.Length;
-        }
-    }
-
     private void WriteSlow(ReadOnlySpan<byte> input)
     {
-        if (bufferOffset > 0)
-            FlushCore();
-
-        if (input.Length > buffer.Length)
+        if (input.Length >= buffer.Length)
         {
+            RandomAccess.Write(handle, BufferSpan, fileOffset);
+            fileOffset += bufferOffset;
+
             RandomAccess.Write(handle, input, fileOffset);
             fileOffset += input.Length;
+            bufferOffset = 0;
         }
         else
         {
+            RandomAccess.Write(handle, WrittenMemory.Span, fileOffset);
+            fileOffset += bufferOffset;
             input.CopyTo(buffer.Span);
             bufferOffset += input.Length;
         }
@@ -225,14 +233,57 @@ public partial class FileWriter : Disposable, IFlushable
         if (IsDisposed)
             return new(DisposedTask);
 
-        if (input.Length <= FreeCapacity)
+        if (input.IsEmpty)
+            goto completed_synchronously;
+
+        var freeCapacity = FreeCapacity;
+        switch (input.Length.CompareTo(freeCapacity))
         {
-            input.CopyTo(Buffer);
-            bufferOffset += input.Length;
-            return ValueTask.CompletedTask;
+            case < 0:
+                input.CopyTo(Buffer);
+                bufferOffset += input.Length;
+                break;
+            case 0:
+                return WriteDirectAsync(input, token);
+            case > 0 when input.Length < MaxBufferSize:
+                return WriteAndCopyAsync(input, token);
+            default:
+                goto case 0;
         }
 
-        return WriteSlowAsync(input, token);
+    completed_synchronously:
+        return ValueTask.CompletedTask;
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask WriteDirectAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+    {
+        if (bufferOffset is 0)
+        {
+            await RandomAccess.WriteAsync(handle, input, fileOffset, token).ConfigureAwait(false);
+        }
+        else
+        {
+            bufferList ??= new ReadOnlyMemory<byte>[2];
+            bufferList[1] = input;
+            bufferList[0] = WrittenMemory;
+            await RandomAccess.WriteAsync(handle, bufferList, fileOffset, token).ConfigureAwait(false);
+            Array.Clear(bufferList);
+        }
+
+        fileOffset += input.Length + bufferOffset;
+        bufferOffset = 0;
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask WriteAndCopyAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+    {
+        Debug.Assert(bufferOffset > 0);
+
+        await RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token).ConfigureAwait(false);
+        fileOffset += bufferOffset;
+        input.CopyTo(buffer.Memory);
+        bufferOffset = input.Length;
     }
 
     /// <summary>
@@ -242,7 +293,7 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     public void Write(ReadOnlySpan<byte> input)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (input.Length <= FreeCapacity)
         {

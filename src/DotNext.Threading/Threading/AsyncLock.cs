@@ -304,15 +304,6 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
         => await TryAcquireCoreAsync(timeout, token).ConfigureAwait(false) ? CreateHolder() : default;
 
     /// <summary>
-    /// Tries to acquire lock asynchronously.
-    /// </summary>
-    /// <param name="token">The token that can be used to abort acquisition operation.</param>
-    /// <returns>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</returns>
-    [Obsolete("Use AcquireAsync(CancellationToken) instead.")]
-    public readonly ValueTask<Holder> TryAcquireAsync(CancellationToken token)
-        => TryAcquireAsync(InfiniteTimeSpan, token);
-
-    /// <summary>
     /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.
     /// </summary>
     /// <remarks>

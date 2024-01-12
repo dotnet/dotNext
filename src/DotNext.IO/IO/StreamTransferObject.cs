@@ -3,22 +3,10 @@
 /// <summary>
 /// Represents object which content is represented by <see cref="Stream"/>.
 /// </summary>
-public class StreamTransferObject : Disposable, IDataTransferObject, IAsyncDisposable
+/// <param name="content">The message content.</param>
+/// <param name="leaveOpen"><see langword="true"/> to leave the stream open after <see cref="StreamTransferObject"/> object is disposed; otherwise, <see langword="false"/>.</param>
+public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, IDataTransferObject, IAsyncDisposable
 {
-    private readonly bool leaveOpen;
-    private readonly Stream content;
-
-    /// <summary>
-    /// Initializes a new message.
-    /// </summary>
-    /// <param name="content">The message content.</param>
-    /// <param name="leaveOpen"><see langword="true"/> to leave the stream open after <see cref="StreamTransferObject"/> object is disposed; otherwise, <see langword="false"/>.</param>
-    public StreamTransferObject(Stream content, bool leaveOpen)
-    {
-        this.leaveOpen = leaveOpen;
-        this.content = content;
-    }
-
     /// <summary>
     /// Loads the content from another data transfer object.
     /// </summary>
@@ -59,7 +47,7 @@ public class StreamTransferObject : Disposable, IDataTransferObject, IAsyncDispo
     {
         try
         {
-            await writer.CopyFromAsync(content, token).ConfigureAwait(false);
+            await writer.CopyFromAsync(content, count: null, token).ConfigureAwait(false);
         }
         finally
         {

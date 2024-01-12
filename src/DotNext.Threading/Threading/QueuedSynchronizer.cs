@@ -1,10 +1,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Diagnostics.Tracing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -27,7 +25,6 @@ public class QueuedSynchronizer : Disposable
     private static readonly Counter<int> SuspendedCallersMeter;
     private static readonly Histogram<double> LockDurationMeter;
 
-    private readonly Action<double>? contentionCounter, lockDurationCounter;
     private readonly TagList measurementTags;
     private readonly TaskCompletionSource disposeTask;
     private CallerInformationStorage? callerInfo;
@@ -108,7 +105,7 @@ public class QueuedSynchronizer : Disposable
             if (waitQueue.First is null)
                 return Array.Empty<Activity?>();
 
-            list = new List<object?>();
+            list = [];
             for (LinkedValueTaskCompletionSource<bool>? current = waitQueue.First; current is not null; current = current.Next)
             {
                 if (current is WaitNode node)
@@ -132,31 +129,12 @@ public class QueuedSynchronizer : Disposable
     public IReadOnlyList<object?> GetSuspendedCallers()
         => callerInfo is null ? Array.Empty<object?>() : GetSuspendedCallersCore();
 
-    /// <summary>
-    /// Sets counter for lock contention.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public IncrementingEventCounter? LockContentionCounter
-    {
-        init => contentionCounter = value is not null ? value.Increment : null;
-    }
-
-    /// <summary>
-    /// Sets counter of lock duration, in milliseconds.
-    /// </summary>
-    [Obsolete("Use System.Diagnostics.Metrics infrastructure instead.", UrlFormat = "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics")]
-    public EventCounter? LockDurationCounter
-    {
-        init => lockDurationCounter = value is not null ? value.WriteMetric : null;
-    }
-
     private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
         => waitQueue.Remove(node);
 
     private protected void EnqueueNode(WaitNode node)
     {
         waitQueue.Add(node);
-        contentionCounter?.Invoke(1D);
         SuspendedCallersMeter.Add(1, measurementTags);
     }
 
@@ -167,7 +145,7 @@ public class QueuedSynchronizer : Disposable
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
-        manager.InitializeNode(node);
+        TLockManager.InitializeNode(node);
         node.Initialize(this, throwOnTimeout);
         EnqueueNode(node);
         return node;
@@ -211,9 +189,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-#pragma warning disable CA2252
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -240,9 +216,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-#pragma warning disable CA2252
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -286,9 +260,8 @@ public class QueuedSynchronizer : Disposable
                         task = new(GetDisposedTask<bool>());
                         break;
                     }
-#pragma warning disable CA2252
+
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -313,9 +286,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-#pragma warning disable CA2252
                     interruptedCallers = TOptions.InterruptionRequired
-#pragma warning restore CA2252
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
@@ -347,7 +318,7 @@ public class QueuedSynchronizer : Disposable
         if (!token.IsCancellationRequested)
             throw new ArgumentOutOfRangeException(nameof(token));
 
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -530,9 +501,7 @@ public class QueuedSynchronizer : Disposable
             // report lock duration
             if (node.owner.TryGetTarget(out var owner))
             {
-                var duration = node.createdAt.ElapsedMilliseconds;
-                owner.lockDurationCounter?.Invoke(duration);
-                LockDurationMeter.Record(duration, owner.measurementTags);
+                LockDurationMeter.Record(node.createdAt.ElapsedMilliseconds, owner.measurementTags);
             }
 
             node.OnConsumed?.Invoke(node);
@@ -556,7 +525,9 @@ public class QueuedSynchronizer : Disposable
     private protected interface ILockManager<in TNode> : ILockManager
         where TNode : WaitNode
     {
-        void InitializeNode(TNode node);
+        static virtual void InitializeNode(TNode node)
+        {
+        }
     }
 
     /// <summary>
@@ -568,10 +539,9 @@ public class QueuedSynchronizer : Disposable
 
         TimeSpan Timeout { get; }
 
-        object? InterruptionReason { get; }
+        object? InterruptionReason => null;
 
-        [RequiresPreviewFeatures]
-        static abstract bool InterruptionRequired { get; }
+        static virtual bool InterruptionRequired => false;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -580,11 +550,6 @@ public class QueuedSynchronizer : Disposable
         internal CancellationTokenOnly(CancellationToken token) => Token = token;
 
         public CancellationToken Token { get; }
-
-        [RequiresPreviewFeatures]
-        static bool IAcquisitionOptions.InterruptionRequired => false;
-
-        object? IAcquisitionOptions.InterruptionReason => null;
 
         TimeSpan IAcquisitionOptions.Timeout => new(Timeout.InfiniteTicks);
     }
@@ -601,11 +566,6 @@ public class QueuedSynchronizer : Disposable
         public CancellationToken Token { get; }
 
         public TimeSpan Timeout { get; }
-
-        [RequiresPreviewFeatures]
-        static bool IAcquisitionOptions.InterruptionRequired => false;
-
-        object? IAcquisitionOptions.InterruptionReason => null;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -621,7 +581,6 @@ public class QueuedSynchronizer : Disposable
 
         public object? InterruptionReason { get; }
 
-        [RequiresPreviewFeatures]
         static bool IAcquisitionOptions.InterruptionRequired => true;
 
         TimeSpan IAcquisitionOptions.Timeout => new(Timeout.InfiniteTicks);
@@ -641,7 +600,6 @@ public class QueuedSynchronizer : Disposable
 
         public object? InterruptionReason { get; }
 
-        [RequiresPreviewFeatures]
         static bool IAcquisitionOptions.InterruptionRequired => true;
 
         public TimeSpan Timeout { get; }
@@ -776,7 +734,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected void Release()
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -801,7 +759,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected void Release(TContext context)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
@@ -828,7 +786,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected bool TryAcquire(TContext context)
     {
-        ThrowIfDisposed();
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
         lock (SyncRoot)
         {
             return TryAcquireCore(context);

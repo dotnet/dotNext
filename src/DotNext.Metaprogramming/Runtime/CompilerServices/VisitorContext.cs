@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices;
@@ -7,7 +6,6 @@ using AwaitExpression = Linq.Expressions.AwaitExpression;
 
 internal sealed class VisitorContext : Disposable
 {
-    [SuppressMessage("Performance", "CA1805", Justification = "https://github.com/dotnet/roslyn-analyzers/issues/5750")]
     private static readonly UserDataSlot<StatePlaceholderExpression> StateIdPlaceholder = new();
     private readonly Stack<ExpressionAttributes> attributes;
     private readonly Stack<Statement> statements;

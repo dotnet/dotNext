@@ -1,8 +1,8 @@
 using System.Buffers;
+using System.Globalization;
 using System.IO.Pipelines;
-using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.IO.Pipelines;
 
@@ -10,76 +10,70 @@ using Buffers;
 using Text;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct PipeBinaryReader : IAsyncBinaryReader
+internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReader
 {
-    internal readonly PipeReader Reader;
+    internal Stream AsStream() => reader.AsStream(leaveOpen: true);
 
-    internal PipeBinaryReader(PipeReader reader) => Reader = reader ?? throw new ArgumentNullException(nameof(reader));
+    ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
+        => reader.ReadAsync<T>(token);
 
-    public ValueTask<T> ReadAsync<T>(CancellationToken token)
-        where T : unmanaged
-        => Reader.ReadAsync<T>(token);
+    ValueTask<T> IAsyncBinaryReader.ReadLittleEndianAsync<T>(CancellationToken token)
+        => reader.ReadLittleEndianAsync<T>(token);
 
-    public ValueTask ReadAsync(Memory<byte> output, CancellationToken token)
-        => Reader.ReadBlockAsync(output, token);
+    ValueTask<T> IAsyncBinaryReader.ReadBigEndianAsync<T>(CancellationToken token)
+        => reader.ReadBigEndianAsync<T>(token);
+
+    ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
+        => reader.ReadExactlyAsync(output, token);
+
+    ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader parser, CancellationToken token)
+        => PipeExtensions.ReadAsync<TReader, BufferReader<TReader>>(reader, parser, token);
 
     ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token)
-        => Reader.SkipAsync(length, token);
+        => reader.SkipAsync(length, token);
 
     ValueTask<MemoryOwner<byte>> IAsyncBinaryReader.ReadAsync(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator, CancellationToken token)
-        => Reader.ReadBlockAsync(lengthFormat, allocator, token);
+        => reader.ReadAsync(lengthFormat, allocator, token);
 
-    public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token)
-        => Reader.ReadStringAsync(length, context, token);
+    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+        => reader.DecodeAsync(context, lengthFormat, allocator, token);
 
-    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
-        => Reader.ReadStringAsync(length, context, allocator, token);
+    IAsyncEnumerable<ReadOnlyMemory<char>> IAsyncBinaryReader.DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token)
+        => reader.DecodeAsync(context, lengthFormat, buffer, token);
 
-    public ValueTask<string> ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token)
-        => Reader.ReadStringAsync(lengthFormat, context, token);
+    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, CancellationToken token)
+        => reader.ParseAsync<T>(lengthFormat, style, provider, token);
 
-    ValueTask<MemoryOwner<char>> IAsyncBinaryReader.ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, MemoryAllocator<char>? allocator, CancellationToken token)
-        => Reader.ReadStringAsync(lengthFormat, context, allocator, token);
+    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(LengthFormat lengthFormat, IFormatProvider? provider, CancellationToken token)
+        => reader.ParseAsync<T>(lengthFormat, provider, token);
 
-    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(Parser<T> parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider, CancellationToken token)
-        => Reader.ParseAsync(parser, lengthFormat, context, provider, token);
+    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
+        => reader.ParseAsync((style, provider), IAsyncBinaryReader.Parse<T>, context, lengthFormat, allocator, token);
 
-    [RequiresPreviewFeatures]
-    ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(CancellationToken token)
-        => Reader.ParseAsync<T>(token);
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+        => reader.ParseAsync(arg, parser, context, lengthFormat, allocator, token);
 
-    ValueTask<short> IAsyncBinaryReader.ReadInt16Async(bool littleEndian, CancellationToken token)
-        => Reader.ReadInt16Async(littleEndian, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, long? count, CancellationToken token)
+    {
+        var consumer = new StreamConsumer(output);
+        return count.HasValue
+            ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token)
+            : reader.CopyToAsync(consumer, token);
+    }
 
-    ValueTask<int> IAsyncBinaryReader.ReadInt32Async(bool littleEndian, CancellationToken token)
-        => Reader.ReadInt32Async(littleEndian, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(PipeWriter output, long? count, CancellationToken token)
+        => count.HasValue ? reader.CopyToAsync<PipeConsumer>(output, count.GetValueOrDefault(), token) : new(reader.CopyToAsync(output, token));
 
-    ValueTask<long> IAsyncBinaryReader.ReadInt64Async(bool littleEndian, CancellationToken token)
-        => Reader.ReadInt64Async(littleEndian, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, long? count, CancellationToken token)
+    {
+        var consumer = new BufferConsumer<byte>(writer);
+        return count.HasValue
+            ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token)
+            : reader.CopyToAsync(consumer, token);
+    }
 
-    ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(int length, bool littleEndian, CancellationToken token)
-        => Reader.ReadBigIntegerAsync(length, littleEndian, token);
-
-    ValueTask<BigInteger> IAsyncBinaryReader.ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token)
-        => Reader.ReadBigIntegerAsync(lengthFormat, littleEndian, token);
-
-    Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
-        => Reader.CopyToAsync(output, token);
-
-    Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
-        => Reader.CopyToAsync(output, token);
-
-    Task IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, CancellationToken token)
-        => Reader.CopyToAsync(writer, token);
-
-    Task IAsyncBinaryReader.CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> consumer, TArg arg, CancellationToken token)
-        => Reader.CopyToAsync(consumer, arg, token);
-
-    Task IAsyncBinaryReader.CopyToAsync<TArg>(Func<TArg, ReadOnlyMemory<byte>, CancellationToken, ValueTask> consumer, TArg arg, CancellationToken token)
-        => Reader.CopyToAsync(consumer, arg, token);
-
-    Task IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-        => Reader.CopyToAsync(consumer, token);
+    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
+        => count.HasValue ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token) : reader.CopyToAsync(consumer, token);
 
     bool IAsyncBinaryReader.TryGetSequence(out ReadOnlySequence<byte> bytes)
     {
@@ -89,175 +83,108 @@ internal readonly struct PipeBinaryReader : IAsyncBinaryReader
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct PipeBinaryWriter : IAsyncBinaryWriter
+internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : IAsyncBinaryWriter
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly unsafe struct Writer<TArg> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
-        where TArg : notnull
-    {
-        private readonly TArg arg;
-        private readonly delegate*<PipeWriter, TArg, CancellationToken, ValueTask<FlushResult>> writer;
+    internal Stream AsStream() => writer.AsStream(leaveOpen: true);
 
-        internal Writer(TArg arg, delegate*<PipeWriter, TArg, CancellationToken, ValueTask<FlushResult>> writer)
+    private ValueTask FlushIfNeededAsync(CancellationToken token)
+    {
+        return !writer.CanGetUnflushedBytes || writer.UnflushedBytes > bufferSize
+            ? FlushAsync(writer, token)
+            : ValueTask.CompletedTask;
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        static async ValueTask FlushAsync(PipeWriter writer, CancellationToken token)
         {
-            this.arg = arg;
-            this.writer = writer;
-        }
-
-        public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
-            => writer(pipe, arg, token);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly unsafe struct Writer<T1, T2> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
-    {
-        private readonly T1 arg1;
-        private readonly T2 arg2;
-        private readonly delegate*<PipeWriter, T1, T2, CancellationToken, ValueTask<FlushResult>> writer;
-
-        internal Writer(T1 arg1, T2 arg2, delegate*<PipeWriter, T1, T2, CancellationToken, ValueTask<FlushResult>> writer)
-        {
-            this.arg1 = arg1;
-            this.arg2 = arg2;
-            this.writer = writer;
-        }
-
-        public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
-            => writer(pipe, arg1, arg2, token);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly unsafe struct Writer<T1, T2, T3> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
-    {
-        private readonly T1 arg1;
-        private readonly T2 arg2;
-        private readonly T3 arg3;
-        private readonly delegate*<PipeWriter, T1, T2, T3, CancellationToken, ValueTask<FlushResult>> writer;
-
-        internal Writer(T1 arg1, T2 arg2, T3 arg3, delegate*<PipeWriter, T1, T2, T3, CancellationToken, ValueTask<FlushResult>> writer)
-        {
-            this.arg1 = arg1;
-            this.arg2 = arg2;
-            this.arg3 = arg3;
-            this.writer = writer;
-        }
-
-        public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
-            => writer(pipe, arg1, arg2, arg3, token);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly unsafe struct Writer<T1, T2, T3, T4, T5> : ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
-    {
-        private readonly T1 arg1;
-        private readonly T2 arg2;
-        private readonly T3 arg3;
-        private readonly T4 arg4;
-        private readonly T5 arg5;
-        private readonly delegate*<PipeWriter, T1, T2, T3, T4, T5, CancellationToken, ValueTask<FlushResult>> writer;
-
-        internal Writer(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, delegate*<PipeWriter, T1, T2, T3, T4, T5, CancellationToken, ValueTask<FlushResult>> writer)
-        {
-            this.arg1 = arg1;
-            this.arg2 = arg2;
-            this.arg3 = arg3;
-            this.arg4 = arg4;
-            this.arg5 = arg5;
-            this.writer = writer;
-        }
-
-        public ValueTask<FlushResult> Invoke(PipeWriter pipe, CancellationToken token)
-            => writer(pipe, arg1, arg2, arg3, arg4, arg5, token);
-    }
-
-    private readonly PipeWriter output;
-    private readonly int stringLengthThreshold;
-    private readonly int stringEncodingBufferSize;
-
-    internal PipeBinaryWriter(PipeWriter writer, int stringLengthThreshold = -1, int encodingBufferSize = 0)
-    {
-        output = writer ?? throw new ArgumentNullException(nameof(writer));
-        this.stringLengthThreshold = stringLengthThreshold;
-        stringEncodingBufferSize = encodingBufferSize;
-    }
-
-    private static async ValueTask WriteAsync<TWriter>(PipeWriter output, TWriter writer, CancellationToken token)
-        where TWriter : struct, ISupplier<PipeWriter, CancellationToken, ValueTask<FlushResult>>
-    {
-        var result = await writer.Invoke(output, token).ConfigureAwait(false);
-        result.ThrowIfCancellationRequested(token);
-    }
-
-    public unsafe ValueTask WriteAsync<T>(T value, CancellationToken token)
-        where T : unmanaged
-        => WriteAsync(output, new Writer<T>(value, &PipeExtensions.WriteAsync), token);
-
-    public unsafe ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
-        => WriteAsync(output, new Writer<ReadOnlyMemory<byte>, LengthFormat?>(input, lengthFormat, &PipeExtensions.WriteBlockAsync), token);
-
-    unsafe ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
-    {
-        return WriteAsync(output, new Writer<ReadOnlyMemory<byte>>(input, &WriteMemoryAsync), token);
-
-        static ValueTask<FlushResult> WriteMemoryAsync(PipeWriter output, ReadOnlyMemory<byte> input, CancellationToken token)
-            => output.WriteAsync(input, token);
-    }
-
-    unsafe ValueTask IAsyncBinaryWriter.WriteAsync<TArg>(Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
-    {
-        return WriteAsync(output, new Writer<Action<TArg, IBufferWriter<byte>>, TArg>(writer, arg, &WriteBlockAsync), token);
-
-        static ValueTask<FlushResult> WriteBlockAsync(PipeWriter output, Action<TArg, IBufferWriter<byte>> writer, TArg arg, CancellationToken token)
-        {
-            writer(arg, output);
-            return output.FlushAsync(token);
+            var result = await writer.FlushAsync(token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(token);
         }
     }
 
-    public unsafe ValueTask WriteStringAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
+    private ValueTask<T> FlushIfNeededAsync<T>(T value, CancellationToken token)
     {
-        if (chars.Length > stringLengthThreshold)
-            return output.WriteStringAsync(chars, context, lengthFormat: lengthFormat, token: token);
+        return !writer.CanGetUnflushedBytes || writer.UnflushedBytes > bufferSize
+            ? FlushAsync(writer, value, token)
+            : ValueTask.FromResult(value);
 
-        return WriteAsync(output, new Writer<ReadOnlyMemory<char>, EncodingContext, LengthFormat?>(chars, context, lengthFormat, &WriteAndFlushOnceAsync), token);
-
-        static ValueTask<FlushResult> WriteAndFlushOnceAsync(PipeWriter output, ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        static async ValueTask<T> FlushAsync(PipeWriter writer, T value, CancellationToken token)
         {
-            output.WriteString(chars.Span, context, lengthFormat: lengthFormat);
-            return output.FlushAsync(token);
+            var result = await writer.FlushAsync(token).ConfigureAwait(false);
+            result.ThrowIfCancellationRequested(token);
+            return value;
         }
     }
 
-    unsafe ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, LengthFormat lengthFormat, EncodingContext context, string? format, IFormatProvider? provider, CancellationToken token)
-        => WriteAsync(output, new Writer<T, LengthFormat, EncodingContext, string?, IFormatProvider?>(value, lengthFormat, context, format, provider, &PipeExtensions.WriteFormattableAsync<T>), token);
+    Memory<byte> IAsyncBinaryWriter.Buffer => writer.GetMemory();
 
-    [RequiresPreviewFeatures]
-    unsafe ValueTask IAsyncBinaryWriter.WriteFormattableAsync<T>(T value, CancellationToken token)
-        => WriteAsync(output, new Writer<T>(value, &PipeExtensions.WriteFormattableAsync<T>), token);
+    ValueTask IAsyncBinaryWriter.AdvanceAsync(int bytesWritten, CancellationToken token)
+    {
+        ValueTask result;
+        switch (bytesWritten)
+        {
+            case < 0:
+                result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(bytesWritten)));
+                break;
+            case 0:
+                result = ValueTask.CompletedTask;
+                break;
+            case > 0:
+                writer.Advance(bytesWritten);
+                result = FlushIfNeededAsync(token);
+                break;
+        }
 
-    unsafe ValueTask IAsyncBinaryWriter.WriteInt16Async(short value, bool littleEndian, CancellationToken token)
-        => WriteAsync(output, new Writer<short, bool>(value, littleEndian, &PipeExtensions.WriteInt16Async), token);
+        return result;
+    }
 
-    unsafe ValueTask IAsyncBinaryWriter.WriteInt32Async(int value, bool littleEndian, CancellationToken token)
-        => WriteAsync(output, new Writer<int, bool>(value, littleEndian, &PipeExtensions.WriteInt32Async), token);
+    ValueTask IAsyncBinaryWriter.WriteAsync<T>(T value, CancellationToken token)
+    {
+        writer.Write(value);
+        return FlushIfNeededAsync(token);
+    }
 
-    unsafe ValueTask IAsyncBinaryWriter.WriteInt64Async(long value, bool littleEndian, CancellationToken token)
-        => WriteAsync(output, new Writer<long, bool>(value, littleEndian, &PipeExtensions.WriteInt64Async), token);
+    ValueTask IAsyncBinaryWriter.WriteLittleEndianAsync<T>(T value, CancellationToken token)
+    {
+        writer.WriteLittleEndian(value);
+        return FlushIfNeededAsync(token);
+    }
 
-    unsafe ValueTask IAsyncBinaryWriter.WriteBigIntegerAsync(BigInteger value, bool littleEndian, LengthFormat? lengthFormat, CancellationToken token)
-        => WriteAsync(output, new Writer<BigInteger, bool, LengthFormat?>(value, littleEndian, lengthFormat, &PipeExtensions.WriteBigIntegerAsync), token);
+    ValueTask IAsyncBinaryWriter.WriteBigEndianAsync<T>(T value, CancellationToken token)
+    {
+        writer.WriteBigEndian(value);
+        return FlushIfNeededAsync(token);
+    }
 
-    Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
-        => input.CopyToAsync(output, token);
+    ValueTask IAsyncBinaryWriter.WriteAsync(ReadOnlyMemory<byte> input, LengthFormat? lengthFormat, CancellationToken token)
+    {
+        if (lengthFormat.HasValue)
+            writer.WriteLength(input.Length, lengthFormat.GetValueOrDefault());
 
-    Task IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
-        => input.CopyToAsync(output, token);
+        writer.Write(input.Span);
+        return FlushIfNeededAsync(token);
+    }
 
-    Task IAsyncBinaryWriter.WriteAsync(ReadOnlySequence<byte> input, CancellationToken token)
-        => output.WriteAsync(input, token).AsTask();
+    ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
+    {
+        writer.Write(source.Span);
+        return FlushIfNeededAsync(token);
+    }
 
-    Task IAsyncBinaryWriter.CopyFromAsync<TArg>(Func<TArg, CancellationToken, ValueTask<ReadOnlyMemory<byte>>> supplier, TArg arg, CancellationToken token)
-        => output.WriteAsync(supplier, arg, token);
+    ValueTask<long> IAsyncBinaryWriter.EncodeAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
+        => FlushIfNeededAsync(writer.Encode(chars.Span, in context, lengthFormat), token);
 
-    IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => output;
+    ValueTask<long> IAsyncBinaryWriter.FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
+        => FlushIfNeededAsync(writer.Format(value, in context, lengthFormat, format, provider, allocator), token);
+
+    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+        => FlushIfNeededAsync(writer.Format(value, lengthFormat, format, provider), token);
+
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream source, long? count, CancellationToken token)
+        => count.HasValue ? writer.CopyFromAsync(source, count.GetValueOrDefault(), token) : new(source.CopyToAsync(writer, token));
+
+    ValueTask IAsyncBinaryWriter.CopyFromAsync(PipeReader source, long? count, CancellationToken token)
+        => count.HasValue ? source.CopyToAsync<PipeConsumer>(writer, count.GetValueOrDefault(), token) : new(source.CopyToAsync(writer, token));
+
+    IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => writer;
 }

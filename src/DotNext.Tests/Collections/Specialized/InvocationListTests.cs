@@ -26,13 +26,13 @@ public sealed class InvocationListTests : Test
     public static void GetInvocationList()
     {
         InvocationList<Predicate<string>> list = default;
-        True(list.AsSpan().IsEmpty);
+        True(list.Span.IsEmpty);
 
         list += Predicate.Constant<string>(true);
-        Same(Predicate.Constant<string>(true), list.AsSpan()[0]);
+        Same(Predicate.Constant<string>(true), list.Span[0]);
 
         list += Predicate.Constant<object>(false);
-        Equal(2, list.AsSpan().Length);
+        Equal(2, list.Span.Length);
     }
 
     [Fact]

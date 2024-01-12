@@ -12,7 +12,7 @@ public readonly struct Result<T>
     /// <summary>
     /// Gets term of the remote member.
     /// </summary>
-    public long Term { get; init; } // TODO: Change to required init in C# 12
+    required public long Term { get; init; }
 
     /// <summary>
     /// Gets RPC response.

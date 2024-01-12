@@ -41,12 +41,9 @@ public partial class SparseBufferWriter<T>
         }
     }
 
-    private sealed class ImportedMemoryChunk : MemoryChunk
+    private sealed class ImportedMemoryChunk(ReadOnlyMemory<T> memory, MemoryChunk? previous = null) : MemoryChunk(previous)
     {
-        internal ImportedMemoryChunk(ReadOnlyMemory<T> memory, MemoryChunk? previous = null)
-            : base(previous) => WrittenMemory = memory;
-
-        internal override ReadOnlyMemory<T> WrittenMemory { get; }
+        internal override ReadOnlyMemory<T> WrittenMemory => memory;
 
         internal override int FreeCapacity => 0;
 
@@ -55,14 +52,10 @@ public partial class SparseBufferWriter<T>
         internal override int Write(ReadOnlySpan<T> input) => 0;
     }
 
-    private sealed class PooledMemoryChunk : MemoryChunk
+    private sealed class PooledMemoryChunk(MemoryAllocator<T>? allocator, int length, MemoryChunk? previous = null) : MemoryChunk(previous)
     {
-        private MemoryOwner<T> owner;
+        private MemoryOwner<T> owner = allocator.AllocateAtLeast(length);
         private int writtenCount;
-
-        internal PooledMemoryChunk(MemoryAllocator<T>? allocator, int length, MemoryChunk? previous = null)
-            : base(previous)
-            => owner = allocator.Invoke(length, exactSize: false);
 
         /// <summary>
         /// Indicates that the chunk has no occupied elements in the memory.
@@ -88,8 +81,7 @@ public partial class SparseBufferWriter<T>
         internal void Advance(int count)
         {
             var length = writtenCount + count;
-            if ((uint)length > (uint)owner.Length)
-                throw new ArgumentOutOfRangeException(nameof(count));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)length, (uint)owner.Length, nameof(length));
 
             writtenCount = length;
         }
@@ -97,7 +89,7 @@ public partial class SparseBufferWriter<T>
         internal void Realloc(MemoryAllocator<T>? allocator, int length)
         {
             owner.Dispose();
-            owner = allocator.Invoke(length, exactSize: false);
+            owner = allocator.AllocateAtLeast(length);
         }
 
         protected override void Dispose(bool disposing)
