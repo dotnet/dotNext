@@ -13,6 +13,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     private const byte IdentifierFlag = 0x01;
     private const byte SnapshotFlag = IdentifierFlag << 1;
 
+    internal readonly long Term;
     private readonly long length, timestamp;
     private readonly byte flags;
     private readonly int identifier;
@@ -49,8 +50,6 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         => new(input);
 
     static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
-
-    internal long Term { get; }
 
     internal DateTimeOffset Timestamp => new(timestamp, TimeSpan.Zero);
 

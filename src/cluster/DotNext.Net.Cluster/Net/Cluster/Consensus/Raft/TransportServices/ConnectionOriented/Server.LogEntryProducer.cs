@@ -33,6 +33,7 @@ internal partial class Server
             applyConfig = Unsafe.BitCast<byte, bool>(reader.Read());
 
             var (fingerprint, configLength) = reader.Read<ConfigurationMessage>();
+            stream.AdvanceReadCursor(reader.ConsumedCount);
 
             Configuration = configLength > 0L
                 ? new(allocator(int.CreateChecked(configLength)), fingerprint)

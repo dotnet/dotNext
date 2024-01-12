@@ -68,8 +68,6 @@ internal partial class Client : RaftClusterMember
             writer.Write<AppendEntriesMessage>(new(sender, term, prevLogIndex, prevLogTerm, commitIndex, entriesCount));
             writer.Add(Unsafe.BitCast<bool, byte>(applyConfig));
             writer.Write<ConfigurationMessage>(new(config));
-            writer.WriteLittleEndian(config.Fingerprint);
-            writer.WriteLittleEndian(config.Length);
             return writer.WrittenCount;
         }
 
