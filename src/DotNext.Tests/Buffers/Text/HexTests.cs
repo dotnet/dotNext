@@ -28,7 +28,7 @@ public sealed class HexTests : Test
     [Fact]
     public static void ToUtf16ConversionVarLength()
     {
-        ReadOnlySpan<byte> data = new byte[] { 1, 2 };
+        ReadOnlySpan<byte> data = stackalloc byte[] { 1, 2 };
         char[] encoded = new char[1];
         Equal(0, Hex.EncodeToUtf16(data, encoded));
         encoded = new char[2];
@@ -40,7 +40,7 @@ public sealed class HexTests : Test
     [Fact]
     public static void FromUtf16ConversionVarLength()
     {
-        ReadOnlySpan<char> data = new char[] { 'F', 'F', 'A' };
+        ReadOnlySpan<char> data = stackalloc char[] { 'F', 'F', 'A' };
         var decoded = new byte[1];
         Equal(1, Hex.DecodeFromUtf16(data, decoded));
         Equal(byte.MaxValue, decoded[0]);

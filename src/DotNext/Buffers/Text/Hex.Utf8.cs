@@ -104,7 +104,7 @@ public static partial class Hex
             offset = 0;
         }
 
-        ref char hexTable = ref MemoryMarshal.GetArrayDataReference(NibbleToUtf16CharLookupTable);
+        ref char hexTable = ref MemoryMarshal.GetReference(NibbleToUtf16CharLookupTable);
         if (!lowercased)
             hexTable = ref Add(ref hexTable, 16);
 
