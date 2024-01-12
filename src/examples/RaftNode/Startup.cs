@@ -1,5 +1,4 @@
 ﻿using DotNext;
-using DotNext.Net.Cluster;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using Microsoft.AspNetCore.Connections;
@@ -7,12 +6,8 @@ using static System.Globalization.CultureInfo;
 
 namespace RaftNode;
 
-internal sealed class Startup
+internal sealed class Startup(IConfiguration configuration)
 {
-    private readonly IConfiguration configuration;
-
-    public Startup(IConfiguration configuration) => this.configuration = configuration;
-
     private static Task RedirectToLeaderAsync(HttpContext context)
     {
         var cluster = context.RequestServices.GetRequiredService<IRaftCluster>();
