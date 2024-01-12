@@ -65,7 +65,6 @@ public static class BitVector
     private static void Get8Bits(ref byte input, nint length, ref bool output)
     {
         Debug.Assert(Vector128.IsHardwareAccelerated);
-        Debug.Assert(Vector64.IsHardwareAccelerated);
 
         for (nint i = 0; i < length; i += sizeof(byte))
         {
