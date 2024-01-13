@@ -56,7 +56,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
         await host.StopAsync();
     }
 
-    [PlatformSpecificFact("linux")]
+    [Fact]
     public static async Task UdsEndpointAuthentication()
     {
         var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
@@ -71,8 +71,9 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                         command.SetHandler(static session =>
                         {
                             True(session.Identity.IsAuthenticated);
-                            IsType<LinuxUdsPeerIdentity>(session.Identity);
-                            session.ResponseWriter.Write(((LinuxUdsPeerIdentity)session.Identity).ProcessId);
+                            var identity = IsType<LinuxUdsPeerIdentity>(session.Identity);
+                            Equal(Environment.UserName, identity.Name);
+                            session.ResponseWriter.Write(identity.ProcessId);
                         },
                         DefaultBindings.Session);
                     });

@@ -1,5 +1,7 @@
 using System.Runtime.Versioning;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Security.Principal;
 
@@ -12,11 +14,35 @@ namespace DotNext.Security.Principal;
 [CLSCompliant(false)]
 public sealed record class LinuxUdsPeerIdentity : IIdentity
 {
+    private static readonly Getpwuid? GetpwuidFunction;
+
+    static LinuxUdsPeerIdentity()
+    {
+        var getpwuid = NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(), "getpwuid");
+        GetpwuidFunction = getpwuid is not 0
+            ? Marshal.GetDelegateForFunctionPointer<Getpwuid>(getpwuid)
+            : null;
+    }
+
     [SupportedOSPlatform("linux")]
-    internal LinuxUdsPeerIdentity()
+    internal LinuxUdsPeerIdentity(uint pid, uint uid, uint gid)
     {
         if (!OperatingSystem.IsLinux())
             throw new PlatformNotSupportedException();
+
+        ProcessId = pid;
+        UserId = uid;
+        GroupId = gid;
+
+        if (GetpwuidFunction is not null)
+        {
+            ref var passwd = ref GetpwuidFunction(uid);
+            if (!Unsafe.IsNullRef(ref passwd))
+            {
+                Name = Marshal.PtrToStringAnsi(passwd.Name);
+                DisplayName = Marshal.PtrToStringAnsi(passwd.UserInfo);
+            }
+        }
     }
 
     /// <summary>
@@ -27,21 +53,41 @@ public sealed record class LinuxUdsPeerIdentity : IIdentity
     /// <summary>
     /// Gets calling process ID.
     /// </summary>
-    public uint ProcessId { get; internal init; }
+    public uint ProcessId { get; }
 
     /// <summary>
     /// Gets user ID of the process identified by <see cref="ProcessId"/>.
     /// </summary>
-    public uint UserId { get; internal init; }
+    public uint UserId { get; }
 
     /// <summary>
     /// Gets group ID of the process identified by <see cref="ProcessId"/>.
     /// </summary>
-    public uint GroupId { get; internal init; }
+    public uint GroupId { get; }
 
     /// <inheritdoc />
     string? IIdentity.AuthenticationType => "ucred";
 
     /// <inheritdoc />
-    string? IIdentity.Name => null;
+    public string? Name { get; }
+
+    /// <summary>
+    /// Gets user information, if available.
+    /// </summary>
+    public string? DisplayName { get; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct Passwd
+    {
+        internal readonly nint Name;
+        internal readonly nint Password;
+        internal readonly uint UserId;
+        internal readonly uint GroupId;
+        internal readonly nint UserInfo;
+        internal readonly nint HomeDirectory;
+        internal readonly nint Shell;
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate ref Passwd Getpwuid(uint userId);
 }

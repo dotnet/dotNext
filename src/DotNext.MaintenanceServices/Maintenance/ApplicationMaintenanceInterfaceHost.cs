@@ -143,12 +143,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     {
         if (OperatingSystem.IsLinux() && socket.TryGetCredentials(out var processId, out var userId, out var groupId))
         {
-            return new LinuxUdsPeerIdentity()
-            {
-                ProcessId = processId,
-                UserId = userId,
-                GroupId = groupId,
-            };
+            return new LinuxUdsPeerIdentity(processId, userId, groupId);
         }
 
         return AnonymousPrincipal.Instance;
