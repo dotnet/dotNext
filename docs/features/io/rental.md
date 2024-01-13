@@ -10,11 +10,11 @@ The memory can be rented using [ArrayPool](https://docs.microsoft.com/en-us/dotn
 * The returned memory or array can have larger size so you need to control bounds by yourself
 
 .NEXT offers convenient wrappers that simplify the rental process and handle situations when renting is optional:
-* [MemoryRental&lt;T&gt;](xref:DotNext.Buffers.MemoryRental`1) if you need to work with [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1)
+* [SpanOwner&lt;T&gt;](xref:DotNext.Buffers.SpanOwner`1) if you need to work with [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1)
 * [MemoryOwner&lt;T&gt;](xref:DotNext.Buffers.MemoryOwner`1) if you need universal mechanism to represent pooled memory obtained from [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1) or [MemoryPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1)
 
-# MemoryRental
-[MemoryRental&lt;T&gt;](xref:DotNext.Buffers.MemoryRental`1) helps to reduce boilerplate code in `stackalloc` vs memory pooling scenario. The rented memory is only accessible using [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
+# SpanOwner
+[SpanOwner&lt;T&gt;](xref:DotNext.Buffers.SpanOwner`1) helps to reduce boilerplate code in `stackalloc` vs memory pooling scenario. The rented memory is only accessible using [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type.
 
 The following example demonstrates how to reverse a string and choose temporary buffers allocation method depending on the size of the string.
 ```csharp
@@ -24,7 +24,7 @@ public static unsafe string Reverse(this string str)
 {
   if (str.Length == 0) return str;
   const int stackallocThreshold = 128;
-  using MemoryRental<char> result = str.Length <= stackallocThreshold
+  using SpanOwner<char> result = str.Length <= stackallocThreshold
     ? new(stackalloc char[stackallocThreshold], str.Length)
     : new(str.Length);
 
@@ -35,7 +35,7 @@ public static unsafe string Reverse(this string str)
 } 
 ```
 
-`MemoryRental` can rent the memory using the following mechanisms:
+`SpanOwner` can rent the memory using the following mechanisms:
 * Memory pooling using arbitrary [MemoryPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1)
 * Array pooling using [ArrayPool&lt;T&gt;.Shared](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1.shared). Arbitrary array pool is not supported.
 
@@ -77,4 +77,4 @@ using Stream readStream = StreamSource.AsStream(writer.WrittenMemory);
 ```
 
 # Tuning
-Many operations in .NEXT use stack-allocated memory in combination with `MemoryRental<T>` type for better performance. It's possible to configure the size of stack-allocated memory used as initial buffer using `DOTNEXT_STACK_ALLOC_THRESHOLD` environment variable. By default, it is equal to _512_ bytes. It means that if the size of the data inside of I/O operations is less that this value then stack memory will be used. Otherwise, the buffer will be rented from the pool.
+Many operations in .NEXT use stack-allocated memory in combination with `SpanOwner<T>` type for better performance. It's possible to configure the size of stack-allocated memory used as initial buffer using `DOTNEXT_STACK_ALLOC_THRESHOLD` environment variable. By default, it is equal to _512_ bytes. It means that if the size of the data inside of I/O operations is less that this value then stack memory will be used. Otherwise, the buffer will be rented from the pool.
