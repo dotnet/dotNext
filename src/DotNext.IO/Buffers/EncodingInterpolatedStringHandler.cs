@@ -109,7 +109,7 @@ public ref struct EncodingInterpolatedStringHandler
             case ISpanFormattable:
                 for (bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
-                    using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
+                    using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new SpanOwner<char>(bufferSize, false);
 
                     // constrained call avoiding boxing for value types
                     if (((ISpanFormattable)value).TryFormat(tempBuffer.Span, out charsWritten, format, provider))
@@ -140,7 +140,7 @@ public ref struct EncodingInterpolatedStringHandler
             return;
         }
 
-        using var tempBuffer = alignment <= charBuffer.Length ? charBuffer.Slice(0, alignment) : new MemoryRental<char>(alignment);
+        using var tempBuffer = alignment <= charBuffer.Length ? charBuffer.Slice(0, alignment) : new SpanOwner<char>(alignment);
         var span = tempBuffer.Span;
         var filler = leftAlign
             ? span.Slice(value.Length, padding)
@@ -230,7 +230,7 @@ public ref struct EncodingInterpolatedStringHandler
             case ISpanFormattable:
                 for (bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize * 2 : throw new InsufficientMemoryException())
                 {
-                    using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new MemoryRental<char>(bufferSize, false);
+                    using var tempBuffer = bufferSize <= charBuffer.Length ? charBuffer : new SpanOwner<char>(bufferSize, false);
                     var span = tempBuffer.Span;
 
                     if (((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider))

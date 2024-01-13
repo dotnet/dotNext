@@ -211,7 +211,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         where T : notnull, IUtf8SpanFormattable
     {
         const int maxBufferSize = int.MaxValue / 2;
-        for (var bufferSize = MemoryRental<byte>.StackallocThreshold; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InternalBufferOverflowException())
+        for (var bufferSize = SpanOwner<byte>.StackallocThreshold; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InternalBufferOverflowException())
         {
             using var buffer = Memory.AllocateAtLeast<byte>(bufferSize);
 

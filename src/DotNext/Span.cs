@@ -550,7 +550,7 @@ public static partial class Span
     {
         Debug.Assert(x.Length == y.Length);
 
-        var bufferSize = Math.Min(MemoryRental<T>.StackallocThreshold, x.Length);
+        var bufferSize = Math.Min(SpanOwner<T>.StackallocThreshold, x.Length);
         if (bufferSize is 0)
         {
             return;
@@ -664,8 +664,8 @@ public static partial class Span
             Debug.Assert(sourceSmall.Length == destSmall.Length);
 
             // prepare buffer
-            MemoryRental<T> buffer;
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || sourceLarge.Length > MemoryRental<T>.StackallocThreshold)
+            SpanOwner<T> buffer;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || sourceLarge.Length > SpanOwner<T>.StackallocThreshold)
             {
                 buffer = new(sourceLarge.Length);
             }
@@ -754,8 +754,8 @@ public static partial class Span
             }
 
             // prepare buffer
-            MemoryRental<T> buffer;
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || length > MemoryRental<T>.StackallocThreshold)
+            SpanOwner<T> buffer;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || length > SpanOwner<T>.StackallocThreshold)
             {
                 buffer = new(length);
             }

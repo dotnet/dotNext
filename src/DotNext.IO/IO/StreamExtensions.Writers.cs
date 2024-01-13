@@ -160,7 +160,7 @@ public static partial class StreamExtensions
 
         const int maxBufferSize = int.MaxValue / 2;
 
-        for (var charBufferSize = MemoryRental<char>.StackallocThreshold; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
+        for (var charBufferSize = SpanOwner<char>.StackallocThreshold; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
             using var owner = allocator.AllocateAtLeast(charBufferSize);
 

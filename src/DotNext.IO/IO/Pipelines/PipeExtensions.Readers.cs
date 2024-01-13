@@ -264,9 +264,9 @@ public static partial class PipeExtensions
                 if (source.TryGetBlock(length, out var block))
                     return parser(block.Span, arg);
 
-                using var destination = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold
+                using var destination = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
                     ? stackalloc byte[length]
-                    : new MemoryRental<byte>(length);
+                    : new SpanOwner<byte>(length);
 
                 source.CopyTo(destination.Span, out length);
                 return parser(destination.Span.Slice(0, length), arg);

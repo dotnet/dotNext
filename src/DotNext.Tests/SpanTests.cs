@@ -464,7 +464,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void SwapElements()
     {
-        Span<byte> expected = RandomBytes(MemoryRental<byte>.StackallocThreshold * 4 + 2);
+        Span<byte> expected = RandomBytes(SpanOwner<byte>.StackallocThreshold * 4 + 2);
         Span<byte> actual = expected.ToArray();
         var midpoint = actual.Length >> 1;
         actual.Slice(0, midpoint).Swap(actual.Slice(midpoint));

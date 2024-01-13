@@ -92,9 +92,9 @@ public interface IBinaryFormattable<TSelf>
         [MethodImpl(MethodImplOptions.NoInlining)]
         static TSelf ParseSlow(in ReadOnlySequence<byte> input)
         {
-            using var buffer = (uint)TSelf.Size <= (uint)MemoryRental<byte>.StackallocThreshold
+            using var buffer = (uint)TSelf.Size <= (uint)SpanOwner<byte>.StackallocThreshold
                 ? stackalloc byte[TSelf.Size]
-                : new MemoryRental<byte>(TSelf.Size);
+                : new SpanOwner<byte>(TSelf.Size);
 
             input.CopyTo(buffer.Span, out var writtenCount);
             return TSelf.Parse(buffer.Span.Slice(0, writtenCount));

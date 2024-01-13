@@ -89,7 +89,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         var newLineBufferPosition = 0;
         var newLine = Environment.NewLine.AsSpan();
 
-        var result = new BufferWriterSlim<char>(stackalloc char[MemoryRental<char>.StackallocThreshold], allocator);
+        var result = new BufferWriterSlim<char>(stackalloc char[SpanOwner<char>.StackallocThreshold], allocator);
         try
         {
             do
