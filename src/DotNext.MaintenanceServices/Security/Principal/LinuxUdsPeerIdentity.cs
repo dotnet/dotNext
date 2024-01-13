@@ -18,8 +18,7 @@ public sealed record class LinuxUdsPeerIdentity : IIdentity
 
     static LinuxUdsPeerIdentity()
     {
-        var getpwuid = NativeLibrary.GetExport(NativeLibrary.GetMainProgramHandle(), "getpwuid");
-        GetpwuidFunction = getpwuid is not 0
+        GetpwuidFunction = NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "getpwuid", out var getpwuid)
             ? Marshal.GetDelegateForFunctionPointer<Getpwuid>(getpwuid)
             : null;
     }
