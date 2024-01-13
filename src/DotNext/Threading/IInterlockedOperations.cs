@@ -1,5 +1,3 @@
-using System.Numerics;
-
 namespace DotNext.Threading;
 
 /// <summary>
@@ -7,7 +5,6 @@ namespace DotNext.Threading;
 /// </summary>
 /// <typeparam name="T">The type that supports interlocked operations.</typeparam>
 public interface IInterlockedOperations<T>
-    where T : IEqualityOperators<T, T, bool>
 {
     /// <summary>
     /// Reads the value of the specified location. On systems that require it, inserts a
