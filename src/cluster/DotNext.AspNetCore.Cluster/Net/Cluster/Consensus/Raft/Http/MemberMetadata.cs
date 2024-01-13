@@ -9,7 +9,13 @@ internal sealed class MemberMetadata : Dictionary<string, string>
 
     static MemberMetadata()
     {
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = false, WriteIndented = false };
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = false,
+            WriteIndented = false,
+            TypeInfoResolver = new SimpleJsonTypeInfoResolver(),
+        };
+
         var stringTypeInfo = JsonMetadataServices.CreateValueInfo<string>(options, JsonMetadataServices.StringConverter);
 
         var info = new JsonCollectionInfoValues<MemberMetadata>
@@ -34,5 +40,11 @@ internal sealed class MemberMetadata : Dictionary<string, string>
     internal MemberMetadata()
         : base(StringComparer.Ordinal)
     {
+    }
+
+    private sealed class SimpleJsonTypeInfoResolver : IJsonTypeInfoResolver
+    {
+        JsonTypeInfo? IJsonTypeInfoResolver.GetTypeInfo(Type type, JsonSerializerOptions options)
+            => null;
     }
 }

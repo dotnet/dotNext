@@ -218,4 +218,11 @@ public class IntrinsicsTests : Test
         Equal(8, Intrinsics.AlignOf<ValueTuple<byte, long>>());
         Equal(IntPtr.Size, Intrinsics.AlignOf<string>());
     }
+
+    [Fact]
+    public static unsafe void PtrHashCode()
+    {
+        nint expected = 10;
+        Equal(expected.GetHashCode(), Intrinsics.PointerHashCode(expected.ToPointer()));
+    }
 }

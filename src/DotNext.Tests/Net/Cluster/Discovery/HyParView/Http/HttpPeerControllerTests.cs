@@ -60,8 +60,8 @@ public sealed class HttpPeerControllerTests : Test
 
         await Task.WhenAll(listener1.DiscoveryTask, listener1.DiscoveryTask).WaitAsync(DefaultTimeout);
 
-        Equal(new UriEndPoint(new("http://localhost:3362/", UriKind.Absolute)), listener2.DiscoveryTask.Result, EndPointFormatter.UriEndPointComparer);
-        Equal(new UriEndPoint(new("http://localhost:3363/", UriKind.Absolute)), listener1.DiscoveryTask.Result, EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(new("http://localhost:3362/", UriKind.Absolute)), await listener2.DiscoveryTask, EndPointFormatter.UriEndPointComparer);
+        Equal(new UriEndPoint(new("http://localhost:3363/", UriKind.Absolute)), await listener1.DiscoveryTask, EndPointFormatter.UriEndPointComparer);
 
         // shutdown peer gracefully
         await peer2.StopAsync();

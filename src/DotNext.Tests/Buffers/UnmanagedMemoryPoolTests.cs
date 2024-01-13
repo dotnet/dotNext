@@ -113,7 +113,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void Allocation()
     {
-        using var manager = UnmanagedMemory.Allocate<long>(2);
+        using var manager = UnmanagedMemory.AllocateZeroed<long>(2);
         Equal(2, manager.Length);
 
         Equal(sizeof(long) * 2U, manager.Size);
@@ -130,7 +130,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void Pooling()
     {
-        using var pool = new UnmanagedMemoryPool<long>(10) { TrackAllocations = true };
+        using var pool = new UnmanagedMemoryPool<long>(10) { TrackAllocations = true, AllocateZeroedMemory = true };
         using var manager = pool.Rent(2);
         Equal(2, manager.Memory.Length);
 

@@ -11,7 +11,7 @@ namespace DotNext.Text.Json;
 /// For AOT and self-contained app deployment models, use <see cref="OptionalConverter{T}"/>
 /// converter explicitly as an argument for <see cref="JsonConverterAttribute"/>.
 /// </remarks>
-[RequiresUnreferencedCode("This type instantiates OptionalConverter<T> dynamically.")]
+[RequiresUnreferencedCode("This type instantiates OptionalConverter<T> dynamically. Use OptionalConverter<T> instead.")]
 public sealed class OptionalConverterFactory : JsonConverterFactory
 {
     /// <inheritdoc />

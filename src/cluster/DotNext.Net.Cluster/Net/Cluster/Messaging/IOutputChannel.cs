@@ -34,7 +34,7 @@ public interface IOutputChannel
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     Task<TResponse> SendMessageAsync<TResponse>(IMessage message, CancellationToken token = default)
         where TResponse : notnull, ISerializable<TResponse>
-        => SendMessageAsync(message, ISerializable<TResponse>.TransformAsync<IMessage>);
+        => SendMessageAsync(message, ISerializable<TResponse>.TransformAsync<IMessage>, token);
 
     /// <summary>
     /// Sends one-way message.

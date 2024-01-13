@@ -7,7 +7,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Buffers;
-using IO;
 
 internal abstract partial class Server : Disposable, IServer
 {
@@ -132,8 +131,6 @@ internal abstract partial class Server : Disposable, IServer
         await protocol.ReadAsync(AppendEntriesHeadersSize, token).ConfigureAwait(false);
         using (var entries = new ReceivedLogEntries(protocol, BufferAllocator, out var applyConfig, token))
         {
-            protocol.AdvanceReadCursor(AppendEntriesHeadersSize);
-
             // read configuration
             var configuration = entries.Configuration.Content;
             if (!configuration.IsEmpty)

@@ -22,7 +22,8 @@ public class TaskCompletionPipeTests : Test
         var result = 0;
         await foreach (var task in pipe)
         {
-            result += task.Result;
+            True(task.IsCompleted);
+            result += await task;
         }
 
         Equal(4200, result);
@@ -50,7 +51,8 @@ public class TaskCompletionPipeTests : Test
         {
             if (pipe.TryRead(out var task, out var actualUserData))
             {
-                result += task.Result;
+                True(task.IsCompleted);
+                result += await task;
                 Same(expectedUserData, actualUserData);
             }
         }
@@ -80,7 +82,7 @@ public class TaskCompletionPipeTests : Test
         pipe.Add(Task.FromResult(43));
         True(await pipe.WaitToReadAsync());
         True(pipe.TryRead(out var task));
-        Equal(42, task.Result);
+        Equal(42, await task);
 
         pipe.Add(Task.FromResult(44));
         pipe.Add(Task.FromResult(45));
@@ -89,16 +91,16 @@ public class TaskCompletionPipeTests : Test
         await using (var enumerator = pipe.GetAsyncEnumerator(CancellationToken.None))
         {
             True(await enumerator.MoveNextAsync());
-            Equal(43, enumerator.Current.Result);
+            Equal(43, await enumerator.Current);
 
             True(await enumerator.MoveNextAsync());
-            Equal(44, enumerator.Current.Result);
+            Equal(44, await enumerator.Current);
 
             True(await enumerator.MoveNextAsync());
-            Equal(45, enumerator.Current.Result);
+            Equal(45, await enumerator.Current);
 
             True(await enumerator.MoveNextAsync());
-            Equal(46, enumerator.Current.Result);
+            Equal(46, await enumerator.Current);
         }
 
         False(pipe.TryRead(out task));

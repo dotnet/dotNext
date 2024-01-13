@@ -13,7 +13,7 @@ public sealed class BufferWriterSlimTests : Test
         Equal(2, builder.Capacity);
         Equal(2, builder.FreeCapacity);
 
-        builder.Write(new int[] { 10, 20 });
+        builder.Write(stackalloc int[] { 10, 20 });
         Equal(2, builder.WrittenCount);
         Equal(2, builder.Capacity);
         Equal(0, builder.FreeCapacity);
@@ -21,7 +21,7 @@ public sealed class BufferWriterSlimTests : Test
         Equal(10, builder[0]);
         Equal(20, builder[1]);
 
-        builder.Write([30, 40]);
+        builder.Write(stackalloc int[] { 30, 40 });
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(30, builder[2]);
@@ -29,11 +29,11 @@ public sealed class BufferWriterSlimTests : Test
         Span<int> result = stackalloc int[5];
         builder.WrittenSpan.CopyTo(result, out var writtenCount);
         Equal(4, writtenCount);
-        Equal([10, 20, 30, 40, 0], result.ToArray());
+        Equal([10, 20, 30, 40, 0], result);
 
         builder.Clear(true);
         Equal(0, builder.WrittenCount);
-        builder.Write([50, 60, 70, 80]);
+        builder.Write(stackalloc int[] { 50, 60, 70, 80 });
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(50, builder[0]);
@@ -43,7 +43,7 @@ public sealed class BufferWriterSlimTests : Test
 
         builder.Clear(false);
         Equal(0, builder.WrittenCount);
-        builder.Write([10, 20, 30, 40]);
+        builder.Write(stackalloc int[] { 10, 20, 30, 40 });
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(10, builder[0]);

@@ -53,7 +53,7 @@ public sealed class FileReaderTests : Test
         reader.Consume(16);
         False(await reader.ReadAsync());
 
-        reader.ClearBuffer();
+        reader.Reset();
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public sealed class FileReaderTests : Test
         reader.Consume(16);
         False(reader.Read());
 
-        reader.ClearBuffer();
+        reader.Reset();
     }
 
     [Fact]

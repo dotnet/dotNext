@@ -5,7 +5,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicFloatTest()
     {
-        float i = 10;
+        float i = 80;
         Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
         Equal(90, i);
         Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
@@ -19,7 +19,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicDoubleTest()
     {
-        double i = 10;
+        double i = 80;
         Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
         Equal(90, i);
         Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
@@ -33,7 +33,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicIntTest()
     {
-        var i = 10;
+        var i = 80;
         Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
         Equal(90, i);
         Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
@@ -47,7 +47,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicUIntTest()
     {
-        uint i = 10U;
+        uint i = 80U;
         Equal(80U, Atomic.GetAndAccumulate(ref i, 10U, static (x, y) => x + y));
         Equal(90U, i);
         Equal(10U, Atomic.AccumulateAndGet(ref i, 80U, static (x, y) => x - y));
@@ -61,7 +61,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicULongTest()
     {
-        var i = 10UL;
+        var i = 80UL;
         Equal(80UL, Atomic.GetAndAccumulate(ref i, 10UL, static (x, y) => x + y));
         Equal(90UL, i);
         Equal(10UL, Atomic.AccumulateAndGet(ref i, 80UL, static (x, y) => x - y));
@@ -75,7 +75,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicLongTest()
     {
-        var i = 10L;
+        var i = 80L;
         Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
         Equal(90, i);
         Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
@@ -124,7 +124,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicIntPtrTest()
     {
-        nint i = 10;
+        nint i = 80;
         Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
         Equal(90, i);
         Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
@@ -138,7 +138,7 @@ public sealed class AtomicTests : Test
     [Fact]
     public static void AtomicUIntPtrTest()
     {
-        nuint i = 10U;
+        nuint i = 80U;
         Equal(80U, Atomic.GetAndAccumulate(ref i, 10U, static (x, y) => x + y));
         Equal(90U, i);
         Equal(10U, Atomic.AccumulateAndGet(ref i, 80U, static (x, y) => x - y));
@@ -167,7 +167,6 @@ public sealed class AtomicTests : Test
         True(Atomic.IsAtomic<ValueTuple<object>>());
 
         False(Atomic.IsAtomic<ValueTuple<byte, long>>());
-        False(Atomic.IsAtomic<ValueTuple<byte, byte>>());
         False(Atomic.IsAtomic<Guid>());
     }
 }

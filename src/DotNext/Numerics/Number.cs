@@ -6,7 +6,7 @@ namespace DotNext.Numerics;
 /// <summary>
 /// Represents Generic Math extensions.
 /// </summary>
-public static class Number
+public static partial class Number
 {
     /// <summary>
     /// Determines whether the specified numeric type is signed.

@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 namespace DotNext;
 
 using Numerics;
-using UInt32LocalBuffer = Buffers.MemoryRental<uint>;
+using UInt32LocalBuffer = Buffers.SpanOwner<uint>;
 
 /// <summary>
 /// Provides random data generation.

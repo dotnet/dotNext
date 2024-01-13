@@ -185,17 +185,16 @@ internal struct CharBufferDecodingReader(in DecodingContext context, int length,
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal struct DecodingReader(Encoding encoding, Decoder decoder, int length, Memory<char> buffer) : IBufferReader, ISupplier<int>
+internal struct DecodingReader(Decoder decoder, int length, Memory<char> buffer) : IBufferReader, ISupplier<int>
 {
-    private int remainingBytes = Math.Min(length, buffer.Length / encoding.GetMaxByteCount(1));
     private int writtenChars;
 
-    public readonly int RemainingBytes => remainingBytes;
+    public readonly int RemainingBytes => Math.Min(length, buffer.Length);
 
     void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> source)
     {
-        writtenChars = decoder.GetChars(source, buffer.Span, length <= remainingBytes);
-        remainingBytes = 0;
+        writtenChars = decoder.GetChars(source, buffer.Span, length <= source.Length);
+        length = 0;
     }
 
     readonly int ISupplier<int>.Invoke() => writtenChars;

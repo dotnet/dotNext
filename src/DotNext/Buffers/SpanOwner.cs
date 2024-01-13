@@ -20,12 +20,12 @@ namespace DotNext.Buffers;
 /// <example>
 /// <code>
 /// const int stackallocThreshold = 20;
-/// var memory = size &lt;=stackallocThreshold ? new MemoryRental&lt;byte&gt;(stackalloc byte[stackallocThreshold], size) : new MemoryRental&lt;byte&gt;(size);
+/// var memory = size &lt;=stackallocThreshold ? new SpanOwner&lt;byte&gt;(stackalloc byte[stackallocThreshold], size) : new SpanOwner&lt;byte&gt;(size);
 /// </code>
 /// </example>
 /// <typeparam name="T">The type of the elements in the rented memory.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public ref struct MemoryRental<T>
+public ref struct SpanOwner<T>
 {
     /// <summary>
     /// Global recommended number of elements that can be allocated on the stack.
@@ -46,7 +46,7 @@ public ref struct MemoryRental<T>
     /// </summary>
     /// <param name="span">The span that references the memory to rent.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public MemoryRental(Span<T> span)
+    public SpanOwner(Span<T> span)
     {
         memory = span;
         owner = null;
@@ -57,7 +57,7 @@ public ref struct MemoryRental<T>
     /// </summary>
     /// <param name="span">The span that references the memory to rent.</param>
     /// <param name="length">The actual length of the data.</param>
-    public MemoryRental(Span<T> span, int length)
+    public SpanOwner(Span<T> span, int length)
         : this(span.Slice(0, length))
     {
     }
@@ -70,7 +70,7 @@ public ref struct MemoryRental<T>
     /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
     /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
-    public MemoryRental(MemoryPool<T> pool, int minBufferSize, bool exactSize = true)
+    public SpanOwner(MemoryPool<T> pool, int minBufferSize, bool exactSize = true)
     {
         ArgumentNullException.ThrowIfNull(pool);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minBufferSize);
@@ -87,7 +87,7 @@ public ref struct MemoryRental<T>
     /// </summary>
     /// <param name="pool">The memory pool.</param>
     /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
-    public MemoryRental(MemoryPool<T> pool)
+    public SpanOwner(MemoryPool<T> pool)
     {
         ArgumentNullException.ThrowIfNull(pool);
         var owner = pool.Rent();
@@ -101,7 +101,7 @@ public ref struct MemoryRental<T>
     /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
     /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
-    public MemoryRental(int minBufferSize, bool exactSize = true)
+    public SpanOwner(int minBufferSize, bool exactSize = true)
     {
         var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
         memory = exactSize ? new(owner, 0, minBufferSize) : new(owner);
@@ -125,7 +125,7 @@ public ref struct MemoryRental<T>
     /// </summary>
     /// <param name="span">The allocated memory to convert.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator MemoryRental<T>(Span<T> span)
+    public static implicit operator SpanOwner<T>(Span<T> span)
         => new(span);
 
     /// <summary>

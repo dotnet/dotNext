@@ -10,6 +10,7 @@ namespace DotNext.IO.Pipelines;
 using Buffers;
 using Buffers.Binary;
 using Text;
+using AsyncEnumerable = Collections.Generic.AsyncEnumerable;
 
 /// <summary>
 /// Represents extension method for parsing data stored in pipe.
@@ -199,18 +200,17 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
-    {
-        if (buffer.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+    public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
+        => buffer.IsEmpty ? AsyncEnumerable.Throw<ReadOnlyMemory<char>>(new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer))) : DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, token);
 
+    private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
+    {
         var lengthInBytes = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
-        for (var decoder = context.GetDecoder(); lengthInBytes > 0;)
+        for (DecodingReader state; lengthInBytes > 0; lengthInBytes -= state.RemainingBytes)
         {
-            var state = new DecodingReader(context.Encoding, decoder, lengthInBytes, buffer);
+            state = new(decoder, lengthInBytes, buffer);
             var writtenChars = await ReadAsync<int, DecodingReader>(reader, state, token).ConfigureAwait(false);
             yield return buffer.Slice(0, writtenChars);
-            lengthInBytes -= state.RemainingBytes;
         }
     }
 
@@ -264,9 +264,9 @@ public static partial class PipeExtensions
                 if (source.TryGetBlock(length, out var block))
                     return parser(block.Span, arg);
 
-                using var destination = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold
+                using var destination = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
                     ? stackalloc byte[length]
-                    : new MemoryRental<byte>(length);
+                    : new SpanOwner<byte>(length);
 
                 source.CopyTo(destination.Span, out length);
                 return parser(destination.Span.Slice(0, length), arg);

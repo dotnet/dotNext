@@ -161,7 +161,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         {
             var buffer = Buffer;
             var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
-            encoder.Convert(chars.Span.Slice(0, maxChars), buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+            encoder.Convert(chars.Span, buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
             await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
         }
 
@@ -211,7 +211,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         where T : notnull, IUtf8SpanFormattable
     {
         const int maxBufferSize = int.MaxValue / 2;
-        for (var bufferSize = MemoryRental<byte>.StackallocThreshold; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InternalBufferOverflowException())
+        for (var bufferSize = SpanOwner<byte>.StackallocThreshold; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InternalBufferOverflowException())
         {
             using var buffer = Memory.AllocateAtLeast<byte>(bufferSize);
 

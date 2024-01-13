@@ -1047,20 +1047,9 @@ public readonly struct Pointer<T> :
     /// <param name="length">The number of elements in the memory.</param>
     /// <returns>The instance of memory owner.</returns>
     public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-    {
-        nint address;
-        if (IsNull)
-        {
-            length = 0;
-            address = 0;
-        }
-        else
-        {
-            address = (nint)value;
-        }
-
-        return new Buffers.UnmanagedMemory<T>(address, length);
-    }
+        => IsNull
+            ? Buffers.UnmanagedMemory<T>.CreateEmpty()
+            : new Buffers.UnmanagedMemory<T>(Address, length);
 
     /// <summary>
     /// Obtains pointer to the memory represented by given memory handle.

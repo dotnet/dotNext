@@ -7,7 +7,8 @@ public sealed class MtuDiscoveryTests : Test
 {
     private const int PingTimeout = 2000;
 
-    [Fact]
+    // on Linux, .NET doesn't support custom payloads for unprivileged account
+    [PlatformSpecificFact("windows")]
     public static void PingToCloudflare()
     {
         var address = IPAddress.Parse("1.1.1.1");
@@ -19,7 +20,7 @@ public sealed class MtuDiscoveryTests : Test
         }
     }
 
-    [Fact]
+    [PlatformSpecificFact("windows")]
     public static async Task PingToOpenDNS()
     {
         var address = IPAddress.Parse("208.67.222.222");

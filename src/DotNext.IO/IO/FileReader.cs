@@ -4,6 +4,7 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
+using System.ComponentModel;
 using Buffers;
 
 /// <summary>
@@ -13,7 +14,7 @@ using Buffers;
 /// This class is not thread-safe. However, it's possible to share the same file
 /// handle across multiple readers and use dedicated reader in each thread.
 /// </remarks>
-public partial class FileReader : Disposable
+public partial class FileReader : Disposable, IResettable
 {
     /// <summary>
     /// Represents the file handle.
@@ -70,7 +71,7 @@ public partial class FileReader : Disposable
     /// Gets or sets the cursor position within the file.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">The value is less than zero.</exception>
-    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="Consume(int)"/> or <see cref="ClearBuffer"/> before changing the position.</exception>
+    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="Consume(int)"/> or <see cref="Reset"/> before changing the position.</exception>
     public long FilePosition
     {
         get => fileOffset;
@@ -94,6 +95,7 @@ public partial class FileReader : Disposable
     /// </remarks>
     public long ReadPosition => fileOffset + BufferLength;
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private int BufferLength => bufferEnd - bufferStart;
 
     /// <summary>
@@ -126,7 +128,23 @@ public partial class FileReader : Disposable
 
         if (newPosition == bufferEnd)
         {
-            ClearBuffer();
+            Reset();
+        }
+        else
+        {
+            bufferStart = newPosition;
+        }
+
+        fileOffset += bytes;
+    }
+
+    private void ConsumeUnsafe(int bytes)
+    {
+        var newPosition = bytes + bufferStart;
+
+        if (newPosition == bufferEnd)
+        {
+            Reset();
         }
         else
         {
@@ -154,7 +172,7 @@ public partial class FileReader : Disposable
         buffer = this.buffer.Memory.Slice(bufferStart, bytes);
         if (newPosition == bufferEnd)
         {
-            ClearBuffer();
+            Reset();
         }
         else
         {
@@ -168,7 +186,7 @@ public partial class FileReader : Disposable
     /// <summary>
     /// Clears the read buffer.
     /// </summary>
-    public void ClearBuffer() => bufferStart = bufferEnd = 0;
+    public void Reset() => bufferStart = bufferEnd = 0;
 
     /// <summary>
     /// Reads the data from the file to the underlying buffer.
@@ -240,21 +258,31 @@ public partial class FileReader : Disposable
     /// <summary>
     /// Reads the block of the memory.
     /// </summary>
-    /// <param name="output">The output buffer.</param>
+    /// <param name="destination">The output buffer.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The number of bytes copied to <paramref name="output"/>.</returns>
+    /// <returns>The number of bytes copied to <paramref name="destination"/>.</returns>
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask<int> ReadAsync(Memory<byte> output, CancellationToken token = default)
+    public ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken token = default)
     {
         if (IsDisposed)
+        {
             return new(GetDisposedTask<int>());
+        }
 
-        return output.IsEmpty
-            ? ValueTask.FromResult(0)
-            : HasBufferedData || output.Length < buffer.Length
-            ? ReadBufferedAsync(output, token)
-            : ReadDirectAsync(output, token);
+        if (destination.IsEmpty)
+            return ValueTask.FromResult(0);
+
+        if (!HasBufferedData)
+            return ReadDirectAsync(destination, token);
+
+        BufferSpan.CopyTo(destination.Span, out var writtenCount);
+        ConsumeUnsafe(writtenCount);
+        destination = destination.Slice(writtenCount);
+
+        return destination.IsEmpty
+            ? ValueTask.FromResult(writtenCount)
+            : ReadDirectAsync(writtenCount, destination, token);
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -266,57 +294,45 @@ public partial class FileReader : Disposable
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<int> ReadBufferedAsync(Memory<byte> output, CancellationToken token)
+    private async ValueTask<int> ReadDirectAsync(int extraCount, Memory<byte> output, CancellationToken token)
     {
-        var result = 0;
-
-        for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
-        {
-            if (!HasBufferedData && !await ReadAsync(token).ConfigureAwait(false))
-                break;
-
-            BufferSpan.CopyTo(output.Span, out writtenCount);
-            result += writtenCount;
-            Consume(writtenCount);
-        }
-
-        return result;
+        var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
+        fileOffset += count;
+        return count + extraCount;
     }
 
     /// <summary>
     /// Reads the block of the memory.
     /// </summary>
-    /// <param name="output">The output buffer.</param>
-    /// <returns>The number of bytes copied to <paramref name="output"/>.</returns>
+    /// <param name="destination">The output buffer.</param>
+    /// <returns>The number of bytes copied to <paramref name="destination"/>.</returns>
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
-    public int Read(Span<byte> output)
+    public int Read(Span<byte> destination)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         int count;
-
-        if (output.IsEmpty)
+        if (destination.IsEmpty)
         {
             count = 0;
         }
-        else if (HasBufferedData || output.Length < buffer.Length)
+        else if (!HasBufferedData)
         {
-            count = 0;
-
-            for (int writtenCount; !output.IsEmpty; output = output.Slice(writtenCount))
-            {
-                if (!HasBufferedData && !Read())
-                    break;
-
-                BufferSpan.CopyTo(output, out writtenCount);
-                count += writtenCount;
-                Consume(writtenCount);
-            }
+            count = RandomAccess.Read(handle, destination, fileOffset);
+            fileOffset += count;
         }
         else
         {
-            count = RandomAccess.Read(handle, output, fileOffset);
-            fileOffset += count;
+            BufferSpan.CopyTo(destination, out count);
+            ConsumeUnsafe(count);
+            destination = destination.Slice(count);
+
+            if (!destination.IsEmpty)
+            {
+                var directBytes = RandomAccess.Read(handle, destination, fileOffset);
+                fileOffset += directBytes;
+                count += directBytes;
+            }
         }
 
         return count;
@@ -334,11 +350,11 @@ public partial class FileReader : Disposable
 
         if (bytes < BufferLength)
         {
-            Consume((int)bytes);
+            ConsumeUnsafe((int)bytes);
         }
         else
         {
-            ClearBuffer();
+            Reset();
             fileOffset += bytes;
         }
     }

@@ -6,10 +6,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Numerics;
 
-/// <summary>
-/// Allows to convert bit vectors to scalar values.
-/// </summary>
-public static class BitVector
+public static partial class Number
 {
     /// <summary>
     /// Converts bit vector to a value of type <typeparamref name="TResult"/>.
@@ -44,7 +41,7 @@ public static class BitVector
         var sizeInBits = sizeof(T) * 8;
         ArgumentOutOfRangeException.ThrowIfLessThan((uint)bits.Length, (uint)sizeInBits, nameof(bits));
 
-        if (Vector256.IsHardwareAccelerated && int.IsEvenInteger(sizeInBits))
+        if (Vector256.IsHardwareAccelerated && int.IsEvenInteger(sizeof(T)))
         {
             Get16Bits(ref Unsafe.As<T, byte>(ref value), sizeof(T), ref MemoryMarshal.GetReference(bits));
         }
@@ -65,7 +62,6 @@ public static class BitVector
     private static void Get8Bits(ref byte input, nint length, ref bool output)
     {
         Debug.Assert(Vector128.IsHardwareAccelerated);
-        Debug.Assert(Vector64.IsHardwareAccelerated);
 
         for (nint i = 0; i < length; i += sizeof(byte))
         {

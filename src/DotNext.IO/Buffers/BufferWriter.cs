@@ -133,7 +133,7 @@ public static class BufferWriter
         where T : notnull, ISpanFormattable
     {
         // attempt to allocate char buffer on the stack
-        Span<char> charBuffer = stackalloc char[MemoryRental<char>.StackallocThreshold];
+        Span<char> charBuffer = stackalloc char[SpanOwner<char>.StackallocThreshold];
         if (!TryFormat(writer, value, charBuffer, in context, lengthFormat, format, provider, out var bytesWritten))
         {
             for (var charBufferSize = charBuffer.Length << 1; ; charBufferSize = charBufferSize <= MaxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())

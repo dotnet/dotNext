@@ -70,6 +70,10 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     private readonly bool owner;
     private void* address;
 
+    private UnmanagedMemory()
+    {
+    }
+
     internal UnmanagedMemory(nint address, int length)
     {
         Debug.Assert(address is not 0);
@@ -78,6 +82,8 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         Length = length;
     }
 
+    internal static UnmanagedMemory<T> CreateEmpty() => new();
+
     private protected UnmanagedMemory(int length, delegate*<nuint, nuint, void* > allocator)
     {
         Debug.Assert(length > 0);
@@ -85,6 +91,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
         address = allocator((nuint)length, (nuint)sizeof(T));
         owner = true;
+        Length = length;
     }
 
     protected nuint Address => (nuint)address;
@@ -104,7 +111,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     internal void Reallocate(int length)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
-        ObjectDisposedException.ThrowIf(address is null, this);
 
         var size = (nuint)length * (nuint)sizeof(T);
         address = NativeMemory.Realloc(address, size);
@@ -116,8 +122,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     public sealed override MemoryHandle Pin(int elementIndex = 0)
     {
-        ObjectDisposedException.ThrowIf(address is null, this);
-        ArgumentOutOfRangeException.ThrowIfNegative(elementIndex);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)elementIndex, (uint)Length, nameof(elementIndex));
 
         return new(Unsafe.Add<T>(address, elementIndex));
     }

@@ -107,7 +107,7 @@ public sealed class DataTransferObjectTests : Test
     }
 
     [Fact]
-    public static void EmptyObject()
+    public static async Task EmptyObject()
     {
         var empty = IDataTransferObject.Empty;
         Equal(0L, empty.Length);
@@ -115,7 +115,7 @@ public sealed class DataTransferObjectTests : Test
         True(empty.TryGetMemory(out var memory));
         True(memory.IsEmpty);
 
-        Empty(empty.ToByteArrayAsync().Result);
+        Empty(await empty.ToByteArrayAsync());
 
         var writer = new ArrayBufferWriter<byte>();
         True(empty.WriteToAsync(IAsyncBinaryWriter.Create(writer), CancellationToken.None).IsCompletedSuccessfully);

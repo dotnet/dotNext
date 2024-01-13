@@ -112,8 +112,8 @@ public sealed class PipeExtensionsTests : Test
     {
         static async void WriteValueAsync(PipeWriter writer)
         {
-            writer.WriteLittleEndian(0L);
             writer.WriteLittleEndian(20L);
+            writer.WriteLittleEndian(0L);
             await writer.FlushAsync();
             await writer.CompleteAsync();
         }

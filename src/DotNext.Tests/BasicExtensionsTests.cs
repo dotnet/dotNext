@@ -168,8 +168,8 @@ public sealed class BasicExtensionsTests : Test
     [Fact]
     public static void OneOfValues()
     {
-        True(2.IsOneOf([2, 5, 7]));
-        False(2.IsOneOf([3, 5, 7]));
+        True(2.IsOneOf(stackalloc int[] { 2, 5, 7 }));
+        False(2.IsOneOf(stackalloc int[] { 3, 5, 7 }));
     }
 
     [Fact]

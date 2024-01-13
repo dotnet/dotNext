@@ -3,12 +3,12 @@ using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers;
 
-public sealed class MemoryRentalTests : Test
+public sealed class SpanOwnerTests : Test
 {
     [Fact]
     public static unsafe void StackAllocationTest()
     {
-        using MemoryRental<int> vector = stackalloc int[4];
+        using SpanOwner<int> vector = stackalloc int[4];
         False(vector.IsEmpty);
         Equal(4, vector.Length);
         Equal(4, vector.Span.Length);
@@ -22,7 +22,7 @@ public sealed class MemoryRentalTests : Test
         Equal(40, vector.Span[3]);
     }
 
-    private static void MemoryAccess(in MemoryRental<int> vector)
+    private static void MemoryAccess(in SpanOwner<int> vector)
     {
         False(vector.IsEmpty);
         vector[0] = 10;
@@ -38,7 +38,7 @@ public sealed class MemoryRentalTests : Test
     [Fact]
     public static void ArrayAllocation()
     {
-        using var vector = new MemoryRental<int>(4);
+        using var vector = new SpanOwner<int>(4);
         Equal(4, vector.Length);
         Equal(4, vector.Span.Length);
         MemoryAccess(vector);
@@ -47,7 +47,7 @@ public sealed class MemoryRentalTests : Test
     [Fact]
     public static void MemoryAllocation()
     {
-        using var vector = new MemoryRental<int>(MemoryPool<int>.Shared, 4);
+        using var vector = new SpanOwner<int>(MemoryPool<int>.Shared, 4);
         Equal(4, vector.Length);
         Equal(4, vector.Span.Length);
         MemoryAccess(vector);
@@ -56,7 +56,7 @@ public sealed class MemoryRentalTests : Test
     [Fact]
     public static void MemoryAllocationDefaultSize()
     {
-        using var vector = new MemoryRental<int>(MemoryPool<int>.Shared);
+        using var vector = new SpanOwner<int>(MemoryPool<int>.Shared);
         MemoryAccess(vector);
     }
 
@@ -64,7 +64,7 @@ public sealed class MemoryRentalTests : Test
     public static unsafe void WrapArray()
     {
         int[] array = { 10, 20 };
-        using var rental = new MemoryRental<int>(array);
+        using var rental = new SpanOwner<int>(array);
         False(rental.IsEmpty);
         fixed (int* ptr = rental)
         {
@@ -76,7 +76,7 @@ public sealed class MemoryRentalTests : Test
     [Fact]
     public static void Default()
     {
-        var rental = new MemoryRental<int>(Array.Empty<int>());
+        var rental = new SpanOwner<int>(Array.Empty<int>());
         True(rental.IsEmpty);
         Equal(0, rental.Length);
         True(rental.Span.IsEmpty);

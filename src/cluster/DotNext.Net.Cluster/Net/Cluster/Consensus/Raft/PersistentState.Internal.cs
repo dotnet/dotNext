@@ -231,7 +231,7 @@ public partial class PersistentState
         internal void VerifyVersion(long expected)
         {
             if (version != expected)
-                ClearBuffer();
+                Reset();
 
             version = expected;
         }

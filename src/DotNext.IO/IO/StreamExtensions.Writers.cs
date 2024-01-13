@@ -130,7 +130,7 @@ public static partial class StreamExtensions
         var encoder = context.GetEncoder();
         for (int charsUsed; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesWritten)
         {
-            encoder.Convert(chars.Span.Slice(0, maxChars), buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+            encoder.Convert(chars.Span, buffer.Span, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
             await stream.WriteAsync(buffer.Slice(0, bytesWritten), token).ConfigureAwait(false);
         }
 
@@ -160,7 +160,7 @@ public static partial class StreamExtensions
 
         const int maxBufferSize = int.MaxValue / 2;
 
-        for (var charBufferSize = MemoryRental<char>.StackallocThreshold; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
+        for (var charBufferSize = SpanOwner<char>.StackallocThreshold; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
             using var owner = allocator.AllocateAtLeast(charBufferSize);
 

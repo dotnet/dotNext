@@ -27,7 +27,6 @@ public static partial class Span
     public static unsafe bool BitwiseEquals<T>(this ReadOnlySpan<T> x, ReadOnlySpan<T> y)
         where T : unmanaged
     {
-        var result = false;
         if (x.Length == y.Length)
         {
             for (int maxSize = Array.MaxLength / sizeof(T), size; !x.IsEmpty; x = x.Slice(size), y = y.Slice(size))
@@ -37,13 +36,13 @@ public static partial class Span
                 var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
                 var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
                 if (MemoryExtensions.SequenceEqual(partX, partY) is false)
-                    break;
+                    return false;
             }
 
-            result = true;
+            return true;
         }
 
-        return result;
+        return false;
     }
 
     internal static bool BitwiseEquals<T>(T[] x, T[] y)
@@ -551,7 +550,7 @@ public static partial class Span
     {
         Debug.Assert(x.Length == y.Length);
 
-        var bufferSize = Math.Min(MemoryRental<T>.StackallocThreshold, x.Length);
+        var bufferSize = Math.Min(SpanOwner<T>.StackallocThreshold, x.Length);
         if (bufferSize is 0)
         {
             return;
@@ -665,8 +664,8 @@ public static partial class Span
             Debug.Assert(sourceSmall.Length == destSmall.Length);
 
             // prepare buffer
-            MemoryRental<T> buffer;
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || sourceLarge.Length > MemoryRental<T>.StackallocThreshold)
+            SpanOwner<T> buffer;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || sourceLarge.Length > SpanOwner<T>.StackallocThreshold)
             {
                 buffer = new(sourceLarge.Length);
             }
@@ -755,8 +754,8 @@ public static partial class Span
             }
 
             // prepare buffer
-            MemoryRental<T> buffer;
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || length > MemoryRental<T>.StackallocThreshold)
+            SpanOwner<T> buffer;
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>() || length > SpanOwner<T>.StackallocThreshold)
             {
                 buffer = new(length);
             }

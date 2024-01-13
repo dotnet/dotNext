@@ -26,7 +26,7 @@ internal sealed class MetadataMessage : HttpMessage, IHttpMessage<MemberMetadata
             var stream = await content.ReadAsStreamAsync(token).ConfigureAwait(false);
             try
             {
-                return await JsonSerializer.DeserializeAsync<MemberMetadata>(stream, MemberMetadata.TypeInfo, token).ConfigureAwait(false) ?? new MemberMetadata();
+                return await JsonSerializer.DeserializeAsync(stream, MemberMetadata.TypeInfo, token).ConfigureAwait(false) ?? new();
             }
             finally
             {

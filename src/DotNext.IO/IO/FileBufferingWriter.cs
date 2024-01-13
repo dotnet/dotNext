@@ -270,7 +270,9 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         buffer.Dispose();
         fileBackend?.Dispose();
         fileBackend = null;
+        fileName = null;
         position = 0;
+        filePosition = 0L;
     }
 
     /// <inheritdoc/>
@@ -735,7 +737,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         if (fileBackend is not null)
         {
-            totalBytes = await RandomAccess.ReadAsync(fileBackend, output, 0L).ConfigureAwait(false);
+            totalBytes = await RandomAccess.ReadAsync(fileBackend, output, 0L, token).ConfigureAwait(false);
             output = output.Slice(totalBytes);
         }
 

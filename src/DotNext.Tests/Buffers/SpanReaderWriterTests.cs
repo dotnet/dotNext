@@ -163,7 +163,7 @@ public sealed class SpanReaderTests : Test
         {
             writer.Slide(2);
         }
-        catch (InternalBufferOverflowException)
+        catch (ArgumentOutOfRangeException)
         {
             exceptionThrown = true;
         }
@@ -264,9 +264,11 @@ public sealed class SpanReaderTests : Test
     [Fact]
     public static void AdvanceWriter()
     {
-        var writer = new SpanWriter<byte>(stackalloc byte[4]);
+        var writer = new SpanWriter<byte>(stackalloc byte[4])
+        {
+            Current = 10
+        };
 
-        writer.Current = 10;
         writer.Advance(1);
 
         writer.Current = 20;

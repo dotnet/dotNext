@@ -44,7 +44,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void IndexOf()
     {
-        ReadOnlySpan<ulong> span = new ulong[] { 3, 2, 6, 4 };
+        ReadOnlySpan<ulong> span = stackalloc ulong[] { 3, 2, 6, 4 };
         Equal(1, span.IndexOf(2UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3, span.IndexOf(4UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3UL, span[0]);
@@ -54,7 +54,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void ForEach()
     {
-        Span<long> span = new long[] { 3, 2, 6, 4 };
+        Span<long> span = stackalloc long[] { 3, 2, 6, 4 };
         span.ForEach((ref long value, int index) => value += index);
         Equal(3, span[0]);
         Equal(3, span[1]);
@@ -65,7 +65,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void TrimByLength1()
     {
-        Span<int> span = new int[] { 1, 2, 3 };
+        Span<int> span = [1, 2, 3];
         span = span.TrimLength(4);
         Equal(3, span.Length);
         span = span.TrimLength(2);
@@ -77,7 +77,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void TrimByLength2()
     {
-        ReadOnlySpan<int> span = new int[] { 1, 2, 3 };
+        ReadOnlySpan<int> span = stackalloc int[] { 1, 2, 3 };
         span = span.TrimLength(4);
         Equal(3, span.Length);
         span = span.TrimLength(2);
@@ -464,12 +464,12 @@ public sealed class SpanTests : Test
     [Fact]
     public static void SwapElements()
     {
-        Span<byte> expected = RandomBytes(MemoryRental<byte>.StackallocThreshold * 4 + 2);
+        Span<byte> expected = RandomBytes(SpanOwner<byte>.StackallocThreshold * 4 + 2);
         Span<byte> actual = expected.ToArray();
         var midpoint = actual.Length >> 1;
         actual.Slice(0, midpoint).Swap(actual.Slice(midpoint));
-        Equal(expected.Slice(midpoint).ToArray(), actual.Slice(0, midpoint).ToArray());
-        Equal(expected.Slice(0, midpoint).ToArray(), actual.Slice(midpoint).ToArray());
+        Equal(expected.Slice(midpoint), actual.Slice(0, midpoint));
+        Equal(expected.Slice(0, midpoint), actual.Slice(midpoint));
     }
 
     [Fact]
@@ -478,37 +478,37 @@ public sealed class SpanTests : Test
         // left < right
         Span<int> input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..2, 3..6);
-        Equal(new int[] { 4, 5, 6, 3, 1, 2 }, input.ToArray());
+        Equal(stackalloc int[] { 4, 5, 6, 3, 1, 2 }, input);
 
         // left > right
         input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..3, 4..6);
-        Equal([5, 6, 4, 1, 2, 3], input.ToArray());
+        Equal(stackalloc int[] { 5, 6, 4, 1, 2, 3 }, input);
 
         // left is zero length
         input = [1, 2, 3, 4, 5, 6];
         input.Swap(1..1, 3..6);
-        Equal([1, 4, 5, 6, 2, 3], input.ToArray());
+        Equal(stackalloc int[] { 1, 4, 5, 6, 2, 3 }, input);
 
         // right is zero length
         input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..2, 3..3);
-        Equal([3, 1, 2, 4, 5, 6], input.ToArray());
+        Equal(stackalloc int[] { 3, 1, 2, 4, 5, 6 }, input);
 
         // no space between ranges
         input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..2, 2..6);
-        Equal([3, 4, 5, 6, 1, 2], input.ToArray());
+        Equal(stackalloc int[] { 3, 4, 5, 6, 1, 2 }, input);
 
         // left == right
         input = [1, 2, 3, 4, 5, 6];
         input.Swap(0..3, 3..6);
-        Equal([4, 5, 6, 1, 2, 3], input.ToArray());
+        Equal(stackalloc int[] { 4, 5, 6, 1, 2, 3 }, input);
 
         // left and right are empty
         input = [1, 2, 3, 4, 5, 6];
         input.Swap(1..1, 5..5);
-        Equal([1, 2, 3, 4, 5, 6], input.ToArray());
+        Equal(stackalloc int[] { 1, 2, 3, 4, 5, 6 }, input);
 
         // overlapping
         Throws<ArgumentException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Swap(0..2, 1..3));
@@ -520,16 +520,16 @@ public sealed class SpanTests : Test
         // move from left to right
         Span<int> input = [1, 2, 3, 4, 5, 6];
         input.Move(0..2, 3);
-        Equal([3, 1, 2, 4, 5, 6], input.ToArray());
+        Equal(stackalloc int[] { 3, 1, 2, 4, 5, 6 }, input);
 
         // move from left to right
         input = [1, 2, 3, 4, 5, 6];
         input.Move(1..3, 6);
-        Equal([1, 4, 5, 6, 2, 3], input.ToArray());
+        Equal(stackalloc int[] { 1, 4, 5, 6, 2, 3 }, input);
 
         // move from right to left
         input.Move(4..6, 1);
-        Equal([1, 2, 3, 4, 5, 6], input.ToArray());
+        Equal(stackalloc int[] { 1, 2, 3, 4, 5, 6 }, input);
 
         // out of range
         Throws<ArgumentOutOfRangeException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Move(0..2, 1));

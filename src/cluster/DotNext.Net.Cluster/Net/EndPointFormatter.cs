@@ -170,9 +170,9 @@ public static class EndPointFormatter
     {
         var length = reader.ReadLittleEndian<int>();
 
-        using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold
+        using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
             ? stackalloc byte[length]
-            : new MemoryRental<byte>(length, true);
+            : new SpanOwner<byte>(length, true);
 
         reader.Read(pathBuffer.Span);
         return new(HostNameEncoding.GetString(pathBuffer.Span));
@@ -182,9 +182,9 @@ public static class EndPointFormatter
     {
         var length = reader.ReadLittleEndian<int>();
 
-        using var pathBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold
+        using var pathBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
             ? stackalloc byte[length]
-            : new MemoryRental<byte>(length, true);
+            : new SpanOwner<byte>(length, true);
 
         reader.Read(pathBuffer.Span);
         return new(new Uri(HostNameEncoding.GetString(pathBuffer.Span), UriKind.Absolute));
@@ -207,7 +207,7 @@ public static class EndPointFormatter
         family = (AddressFamily)reader.ReadLittleEndian<int>();
         var length = reader.ReadLittleEndian<int>();
 
-        using var hostNameBuffer = (uint)length <= (uint)MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length, true);
+        using var hostNameBuffer = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold ? stackalloc byte[length] : new SpanOwner<byte>(length, true);
         reader.Read(hostNameBuffer.Span);
         hostName = HostNameEncoding.GetString(hostNameBuffer.Span);
     }

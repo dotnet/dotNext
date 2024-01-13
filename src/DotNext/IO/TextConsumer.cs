@@ -31,7 +31,7 @@ public readonly record struct TextConsumer(TextWriter output) : IReadOnlySpanCon
 
     /// <inheritdoc />
     Task IFlushable.FlushAsync(CancellationToken token)
-        => token.IsCancellationRequested ? Task.FromCanceled(token) : output.FlushAsync();
+        => token.IsCancellationRequested ? Task.FromCanceled(token) : output.FlushAsync(token);
 
     /// <summary>
     /// Returns a string that represents the underlying writer.

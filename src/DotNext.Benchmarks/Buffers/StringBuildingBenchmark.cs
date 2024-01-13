@@ -14,7 +14,7 @@ public class StringBuildingBenchmark
     private const string StringValue = "1234567890abcdefghijklmnopqrstuvwxyz";
 
     [Benchmark]
-    public string BuildStringUsingPooledArrayBufferWriter()
+    public string BuildStringUsingPoolingArrayBufferWriter()
     {
         using var writer = new PoolingArrayBufferWriter<char>();
         for (var i = 0; i < 100; i++)
