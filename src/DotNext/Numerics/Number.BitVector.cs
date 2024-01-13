@@ -6,10 +6,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Numerics;
 
-/// <summary>
-/// Allows to convert bit vectors to scalar values.
-/// </summary>
-public static class BitVector
+public static partial class Number
 {
     /// <summary>
     /// Converts bit vector to a value of type <typeparamref name="TResult"/>.

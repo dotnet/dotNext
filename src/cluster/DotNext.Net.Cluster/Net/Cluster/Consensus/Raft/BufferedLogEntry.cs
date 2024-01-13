@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using IO;
-using BitVector = Numerics.BitVector;
+using Number = Numerics.Number;
 
 /// <summary>
 /// Represents buffered log entry.
@@ -37,7 +37,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.FromBits<byte>([false, snapshot, id.HasValue]);
+        flags = Number.FromBits<byte>([false, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.None, bufferSize, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
     }
@@ -46,7 +46,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.FromBits<byte>([false, snapshot, id.HasValue]);
+        flags = Number.FromBits<byte>([false, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = file;
     }
@@ -55,7 +55,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.FromBits<byte>([true, snapshot, id.HasValue]);
+        flags = Number.FromBits<byte>([true, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = buffer;
     }
@@ -64,7 +64,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     {
         Term = term;
         Timestamp = timestamp;
-        flags = BitVector.FromBits<byte>([true, snapshot, id.HasValue]);
+        flags = Number.FromBits<byte>([true, snapshot, id.HasValue]);
         commandId = id.GetValueOrDefault();
         content = null;
     }
