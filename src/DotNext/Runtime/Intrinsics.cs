@@ -110,12 +110,8 @@ public static class Intrinsics
     /// <param name="value">The object whose address is obtained.</param>
     /// <returns>An address of the given object.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nint AddressOf<T>(ref readonly T value)
-    {
-        PushInRef(in value);
-        Conv_I();
-        return Return<IntPtr>();
-    }
+    public static unsafe nint AddressOf<T>(ref readonly T value)
+        => (nint)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
 
     /// <summary>
     /// Converts typed reference into managed pointer.
@@ -338,16 +334,6 @@ public static class Intrinsics
         Push(array);
         Ldlen();
         return Return<nuint>();
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static Span<TOutput> ReinterpretCast<TInput, TOutput>(Span<TInput> input)
-        where TInput : unmanaged
-        where TOutput : unmanaged
-    {
-        Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>());
-
-        return MemoryMarshal.CreateSpan(ref Unsafe.As<TInput, TOutput>(ref MemoryMarshal.GetReference(input)), input.Length);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
