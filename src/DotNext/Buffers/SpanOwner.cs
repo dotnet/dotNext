@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Intrinsics = Runtime.Intrinsics;
+
 /// <summary>
 /// Represents the memory obtained from the pool or allocated
 /// on the stack or heap.
@@ -47,10 +49,7 @@ public ref struct SpanOwner<T>
     /// <param name="span">The span that references the memory to rent.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public SpanOwner(Span<T> span)
-    {
-        memory = span;
-        owner = null;
-    }
+        => memory = span;
 
     /// <summary>
     /// Rents the memory referenced by the span.
@@ -96,17 +95,36 @@ public ref struct SpanOwner<T>
     }
 
     /// <summary>
-    /// Rents the memory from <see cref="ArrayPool{T}.Shared"/>.
+    /// Rents the memory from <see cref="ArrayPool{T}.Shared"/>, if <typeparamref name="T"/>
+    /// contains at least one field of reference type; or use <see cref="NativeMemory"/>.
     /// </summary>
     /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
     /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="minBufferSize"/> is less than or equal to zero.</exception>
     public SpanOwner(int minBufferSize, bool exactSize = true)
     {
-        var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
-        memory = exactSize ? new(owner, 0, minBufferSize) : new(owner);
-        this.owner = owner;
+        if (UseNativeAllocation)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minBufferSize);
+
+            unsafe
+            {
+                var ptr = NativeMemory.Alloc((uint)minBufferSize, (uint)Unsafe.SizeOf<T>());
+                memory = new(ptr, minBufferSize);
+            }
+
+            owner = Sentinel.Instance;
+        }
+        else
+        {
+            var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
+            memory = exactSize ? new(owner, 0, minBufferSize) : new(owner);
+            this.owner = owner;
+        }
     }
+
+    private static bool UseNativeAllocation
+        => !LibrarySettings.DisableNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>() && Intrinsics.AlignOf<T>() <= nuint.Size;
 
     /// <summary>
     /// Gets the rented memory.
@@ -162,6 +180,13 @@ public ref struct SpanOwner<T>
         if (owner is T[] array)
         {
             ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
+        }
+        else if (ReferenceEquals(owner, Sentinel.Instance))
+        {
+            unsafe
+            {
+                NativeMemory.Free(Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory)));
+            }
         }
         else
         {

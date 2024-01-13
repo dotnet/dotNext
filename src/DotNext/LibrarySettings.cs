@@ -35,4 +35,18 @@ internal static class LibrarySettings
             return result;
         }
     }
+
+    internal static bool DisableNativeAllocation
+    {
+        get
+        {
+            const string switchName = "DotNext.Buffers.DisableNativeAllocation";
+            const bool defaultValue = false;
+
+            if (!AppContext.TryGetSwitch(switchName, out var result))
+                result = defaultValue;
+
+            return result;
+        }
+    }
 }
