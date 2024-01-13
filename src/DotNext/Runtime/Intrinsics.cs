@@ -101,11 +101,7 @@ public static class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static unsafe int PointerHashCode([In] void* pointer)
-    {
-        Ldarga(nameof(pointer));
-        Call(Method(Type<UIntPtr>(), nameof(UIntPtr.GetHashCode)));
-        return Return<int>();
-    }
+        => ((nuint*)&pointer)->GetHashCode();
 
     /// <summary>
     /// Returns an address of the given by-ref parameter.
