@@ -56,7 +56,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
         await host.StopAsync();
     }
 
-    [Fact]
+    [PlatformSpecificFact("linux")]
     public static async Task UdsEndpointAuthentication()
     {
         var unixDomainSocketPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
