@@ -2,6 +2,7 @@
 <RunSettings>
 	<RunConfiguration>
 		<TestSessionTimeout>300000</TestSessionTimeout>
+		<TargetFrameworkVersion>net8.0</TargetFrameworkVersion>
 	</RunConfiguration>
 	<DataCollectionRunSettings>
 		<DataCollectors>
@@ -14,12 +15,6 @@
 							</Exclude>
 						</ModulePaths>
 					</CodeCoverage>
-				</Configuration>
-			</DataCollector>
-			<DataCollector friendlyName="XPlat Code Coverage">
-				<Configuration>
-				<Format>lcov</Format>          
-				<ExcludeByAttribute>GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
 				</Configuration>
 			</DataCollector>
 		</DataCollectors>
