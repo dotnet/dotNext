@@ -2,6 +2,8 @@ using System.Security.Principal;
 
 namespace DotNext.Maintenance;
 
+using Collections.Specialized;
+
 /// <summary>
 /// Represents AMI interaction session.
 /// </summary>
@@ -15,7 +17,7 @@ public interface IMaintenanceSession
     /// <summary>
     /// Gets a context that can be used to exchange information between command executions.
     /// </summary>
-    IDictionary<string, object> Context { get; }
+    ITypeMap Context { get; }
 
     /// <summary>
     /// Gets command response writer.

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace DotNext.Maintenance;
 
 using Buffers;
+using Collections.Specialized;
 using Security.Principal;
 using static IO.TextStreamExtensions;
 using static Runtime.InteropServices.UnixDomainSocketInterop;
@@ -143,12 +144,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     {
         if (OperatingSystem.IsLinux() && socket.TryGetCredentials(out var processId, out var userId, out var groupId))
         {
-            return new LinuxUdsPeerIdentity()
-            {
-                ProcessId = processId,
-                UserId = userId,
-                GroupId = groupId,
-            };
+            return new LinuxUdsPeerIdentity(processId, userId, groupId);
         }
 
         return AnonymousPrincipal.Instance;
@@ -241,7 +237,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         }
     }
 
-    private sealed class MaintenanceSession : Dictionary<string, object>, IMaintenanceSession
+    private sealed class MaintenanceSession : TypeMap, IMaintenanceSession
     {
         private object? identityOrPrincipal;
 
@@ -268,7 +264,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
 
         public TextWriter ResponseWriter { get; }
 
-        IDictionary<string, object> IMaintenanceSession.Context => this;
+        ITypeMap IMaintenanceSession.Context => this;
 
         private void Dispose(bool disposing)
         {
