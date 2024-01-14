@@ -6,10 +6,10 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Runtime | .NET 6.0.15 (6.0.1523.11507), X64 RyuJIT AVX2 |
+| Runtime | .NET 8.0.1 (8.0.123.58001), X64 RyuJIT AVX2 |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
-| OS | Ubuntu 22.04.1 |
+| OS | Ubuntu 22.04.3 |
 | CPU | Intel Core i7-6700HQ CPU 2.60GHz (Skylake) |
 | Number of CPUs | 1 |
 | Physical Cores | 4 |
@@ -38,52 +38,52 @@ Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 
 # Bytes to Hex
 [This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Buffers/Text/HexConversionBenchmark.cs) demonstrates performance of extension methods declared in `DotNext.Buffers.Text.Hex` class that allows to convert arbitrary set of bytes to hexadecimal form.
 
-|              Method |      Bytes |      Mean |     Error |    StdDev |    Median | Ratio | RatioSD |
+| Method              | Bytes      | Mean      | Error     | StdDev    | Median    | Ratio | RatioSD |
 |-------------------- |----------- |----------:|----------:|----------:|----------:|------:|--------:|
-| Convert.ToHexString | 1024 bytes | 538.97 ns | 10.842 ns | 24.025 ns | 525.74 ns |  1.00 |    0.00 |
-|   Hex.EncodeToUtf16 | 1024 bytes | 440.52 ns |  8.712 ns | 16.575 ns | 436.12 ns |  0.81 |    0.05 |
-|    Hex.EncodeToUtf8 | 1024 bytes | 417.81 ns |  7.737 ns |  8.599 ns | 417.23 ns |  0.75 |    0.03 |
+| Convert.ToHexString | 1024 bytes | 674.47 ns | 13.196 ns | 12.343 ns | 674.80 ns |  1.00 |    0.00 |
+| Hex.EncodeToUtf16   | 1024 bytes | 656.28 ns |  6.336 ns |  5.617 ns | 655.19 ns |  0.97 |    0.02 |
+| Hex.EncodeToUtf8    | 1024 bytes | 363.58 ns |  5.733 ns |  4.788 ns | 365.53 ns |  0.54 |    0.01 |
 |                     |            |           |           |           |           |       |         |
-| Convert.ToHexString |  128 bytes |  81.04 ns |  1.485 ns |  3.442 ns |  79.49 ns |  1.00 |    0.00 |
-|   Hex.EncodeToUtf16 |  128 bytes |  62.32 ns |  0.390 ns |  0.365 ns |  62.42 ns |  0.74 |    0.05 |
-|    Hex.EncodeToUtf8 |  128 bytes |  33.85 ns |  0.127 ns |  0.118 ns |  33.83 ns |  0.40 |    0.02 |
+| Convert.ToHexString | 128 bytes  |  95.06 ns |  4.340 ns | 12.798 ns | 100.99 ns |  1.00 |    0.00 |
+| Hex.EncodeToUtf16   | 128 bytes  |  93.22 ns |  1.932 ns |  2.645 ns |  93.51 ns |  1.15 |    0.18 |
+| Hex.EncodeToUtf8    | 128 bytes  |  49.02 ns |  1.045 ns |  0.926 ns |  48.77 ns |  0.62 |    0.08 |
 |                     |            |           |           |           |           |       |         |
-| Convert.ToHexString |   16 bytes |  27.71 ns |  0.121 ns |  0.107 ns |  27.71 ns |  1.00 |    0.00 |
-|   Hex.EncodeToUtf16 |   16 bytes |  21.71 ns |  0.091 ns |  0.076 ns |  21.70 ns |  0.78 |    0.00 |
-|    Hex.EncodeToUtf8 |   16 bytes |  15.44 ns |  0.056 ns |  0.050 ns |  15.47 ns |  0.56 |    0.00 |
+| Convert.ToHexString | 16 bytes   |  24.21 ns |  0.971 ns |  2.800 ns |  23.64 ns |  1.00 |    0.00 |
+| Hex.EncodeToUtf16   | 16 bytes   |  26.29 ns |  1.050 ns |  3.096 ns |  25.79 ns |  1.10 |    0.19 |
+| Hex.EncodeToUtf8    | 16 bytes   |  20.44 ns |  0.264 ns |  0.234 ns |  20.39 ns |  0.71 |    0.04 |
 |                     |            |           |           |           |           |       |         |
-| Convert.ToHexString |  256 bytes | 141.18 ns |  0.486 ns |  0.431 ns | 141.32 ns |  1.00 |    0.00 |
-|   Hex.EncodeToUtf16 |  256 bytes | 108.32 ns |  0.884 ns |  0.784 ns | 108.25 ns |  0.77 |    0.01 |
-|    Hex.EncodeToUtf8 |  256 bytes |  56.18 ns |  0.402 ns |  0.376 ns |  56.27 ns |  0.40 |    0.00 |
+| Convert.ToHexString | 256 bytes  | 169.86 ns |  2.322 ns |  2.172 ns | 169.59 ns |  1.00 |    0.00 |
+| Hex.EncodeToUtf16   | 256 bytes  | 147.84 ns |  1.522 ns |  1.350 ns | 147.84 ns |  0.87 |    0.01 |
+| Hex.EncodeToUtf8    | 256 bytes  |  73.90 ns |  0.732 ns |  0.649 ns |  73.99 ns |  0.44 |    0.01 |
 |                     |            |           |           |           |           |       |         |
-| Convert.ToHexString |  512 bytes | 283.63 ns |  3.316 ns |  3.102 ns | 284.13 ns |  1.00 |    0.00 |
-|   Hex.EncodeToUtf16 |  512 bytes | 218.35 ns |  2.575 ns |  2.409 ns | 218.68 ns |  0.77 |    0.01 |
-|    Hex.EncodeToUtf8 |  512 bytes | 107.17 ns |  1.674 ns |  1.566 ns | 107.55 ns |  0.38 |    0.00 |
+| Convert.ToHexString | 512 bytes  | 316.92 ns |  6.290 ns |  6.177 ns | 316.16 ns |  1.00 |    0.00 |
+| Hex.EncodeToUtf16   | 512 bytes  | 297.29 ns |  5.743 ns |  5.372 ns | 297.34 ns |  0.94 |    0.02 |
+| Hex.EncodeToUtf8    | 512 bytes  | 137.94 ns |  2.712 ns |  2.537 ns | 137.76 ns |  0.44 |    0.01 |
 |                     |            |           |           |           |           |       |         |
-| Convert.ToHexString |   64 bytes |  48.84 ns |  0.198 ns |  0.175 ns |  48.85 ns |  1.00 |    0.00 |
-|   Hex.EncodeToUtf16 |   64 bytes |  38.68 ns |  0.227 ns |  0.212 ns |  38.59 ns |  0.79 |    0.01 |
-|    Hex.EncodeToUtf8 |   64 bytes |  22.88 ns |  0.109 ns |  0.096 ns |  22.87 ns |  0.47 |    0.00 |
+| Convert.ToHexString | 64 bytes   |  43.90 ns |  0.947 ns |  1.955 ns |  43.11 ns |  1.00 |    0.00 |
+| Hex.EncodeToUtf16   | 64 bytes   |  39.29 ns |  0.125 ns |  0.111 ns |  39.23 ns |  0.88 |    0.03 |
+| Hex.EncodeToUtf8    | 64 bytes   |  25.28 ns |  0.271 ns |  0.240 ns |  25.23 ns |  0.56 |    0.02 |
 
 # Atomic Access to Arbitrary Value Type
 [This benchmark](https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](xref:DotNext.Threading.Atomic`1) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
-|       Method |       Mean |    Error |    StdDev |     Median |
-|------------- |-----------:|---------:|----------:|-----------:|
-|       Atomic |   431.0 us |  8.38 us |  78.53 us |   424.8 us |
-| Synchronized |   921.7 us | 10.16 us |  95.34 us |   904.9 us |
-|     SpinLock | 2,084.9 us | 58.95 us | 561.14 us | 2,074.8 us |
+| Method       | Mean       | Error    | StdDev   | Median     |
+|------------- |-----------:|---------:|---------:|-----------:|
+| Atomic       |   589.5 us | 11.30 us | 105.0 us |   576.9 us |
+| Synchronized | 1,005.4 us | 12.59 us | 117.3 us |   981.7 us |
+| SpinLock     | 1,359.3 us | 65.59 us | 628.4 us | 1,573.7 us |
 
 # File-buffering Writer
 [This benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/IO/FileBufferingWriterBenchmark.cs) compares performance of [FileBufferingWriteStream](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webutilities.filebufferingwritestream) from ASP.NET Core and [FileBufferingWriter](xref:DotNext.IO.FileBufferingWriter) from .NEXT library.
 
 Both classes switching from in-memory buffer to file-based buffer during benchmark execution. Note that benchmark result highly depends on disk I/O performance. The following results were obtained using NVMe SSD.
 
-|                                        Method |       Mean |    Error |    StdDev |     Gen0 |     Gen1 |     Gen2 | Allocated |
-|---------------------------------------------- |-----------:|---------:|----------:|---------:|---------:|---------:|----------:|
-|       'FileBufferingWriter, synchronous mode' |   975.4 us |  9.21 us |   8.61 us | 250.0000 | 249.0234 | 249.0234 |      1 MB |
-|      'FileBufferingWriter, asynchronous mode' | 1,472.5 us | 29.41 us |  55.95 us | 148.4375 | 148.4375 | 148.4375 |      1 MB |
-| 'FileBufferingWriteStream, synchronouse mode' | 3,993.1 us | 62.67 us |  55.55 us | 484.3750 | 343.7500 | 273.4375 |   1.88 MB |
-| 'FileBufferingWriteStream, asynchronous mode' | 5,053.0 us | 97.63 us | 130.34 us | 468.7500 | 367.1875 | 265.6250 |   1.88 MB |
+| Method                                        | Mean       | Error    | StdDev   | Gen0     | Gen1     | Gen2     | Allocated |
+|---------------------------------------------- |-----------:|---------:|---------:|---------:|---------:|---------:|----------:|
+| 'FileBufferingWriter, synchronous mode'       |   934.7 us |  8.52 us |  7.97 us | 250.0000 | 249.0234 | 249.0234 |      1 MB |
+| 'FileBufferingWriter, asynchronous mode'      | 1,306.9 us | 25.69 us | 44.31 us | 195.3125 | 195.3125 | 195.3125 |      1 MB |
+| 'FileBufferingWriteStream, synchronouse mode' | 3,548.1 us | 30.80 us | 25.72 us | 402.3438 | 289.0625 | 250.0000 |    1.5 MB |
+| 'FileBufferingWriteStream, asynchronous mode' | 4,054.6 us | 42.32 us | 39.59 us | 375.0000 | 289.0625 | 242.1875 |    1.5 MB |
 
 `FileBufferingWriter` is a winner in synchronous scenario because it has native support for synchronous mode in contrast to `FileBufferingWriteStream`.
 
@@ -142,13 +142,13 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 # TaskCompletionPipe
 [This benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Threading/Tasks/ChannelVersusPipeBenchmark.cs) demonstrates efficiency of [Task Completion Pipe](./features/threading/taskpipe.md) versus [async channels](https://learn.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1) from .NET. Pipe sorts the submitted tasks in order of their completion in time. The fastest result is available immediately for the consumer, while the channel needs to wait for completion of the task and only then add it to the queue.
 
-|                         Method | Number of input tasks |        Mean |     Error |    StdDev | Ratio | RatioSD |
-|------------------------------- |---------------------- |------------:|----------:|----------:|------:|--------:|
-|   ProduceConsumeCompletionPipe |                    10 |    11.86 us |  0.234 us |  0.313 us |  0.64 |    0.06 |
-| ProduceConsumeUnboundedChannel |                    10 |    17.97 us |  0.418 us |  1.201 us |  1.00 |    0.00 |
-|                                |                       |             |           |           |       |         |
-|   ProduceConsumeCompletionPipe |                   100 |    83.09 us |  1.502 us |  1.254 us |  0.57 |    0.01 |
-| ProduceConsumeUnboundedChannel |                   100 |   145.54 us |  2.836 us |  2.785 us |  1.00 |    0.00 |
-|                                |                       |             |           |           |       |         |
-|   ProduceConsumeCompletionPipe |                  1000 |   798.83 us | 13.276 us | 12.418 us |  0.64 |    0.01 |
-| ProduceConsumeUnboundedChannel |                  1000 | 1,255.55 us | 17.538 us | 15.547 us |  1.00 |    0.00 |
+| Method                         | Number of input tasks | Mean         | Error     | StdDev    | Ratio | RatioSD |
+|------------------------------- |----------- |-------------:|----------:|----------:|------:|--------:|
+| ProduceConsumeCompletionPipe   | 10         |     9.420 us | 0.0787 us | 0.0736 us |  0.65 |    0.02 |
+| ProduceConsumeUnboundedChannel | 10         |    14.449 us | 0.2887 us | 0.3651 us |  1.00 |    0.00 |
+|                                |            |              |           |           |       |         |
+| ProduceConsumeCompletionPipe   | 100        |    75.802 us | 1.4586 us | 1.4326 us |  0.62 |    0.01 |
+| ProduceConsumeUnboundedChannel | 100        |   123.375 us | 0.7581 us | 0.6720 us |  1.00 |    0.00 |
+|                                |            |              |           |           |       |         |
+| ProduceConsumeCompletionPipe   | 1000       |   707.746 us | 9.2224 us | 8.6266 us |  0.66 |    0.01 |
+| ProduceConsumeUnboundedChannel | 1000       | 1,073.418 us | 5.2448 us | 4.9060 us |  1.00 |    0.00 |
