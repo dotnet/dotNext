@@ -21,3 +21,5 @@
       href: migration/2.md
     - name: 3.x
       href: migration/3.md
+    - name: 4.x
+      href: migration/4.md
