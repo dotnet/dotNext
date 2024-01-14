@@ -1,4 +1,4 @@
-.NEXT 4.x
+.NEXT 5.x
 ====
 
 .NEXT (dotNext) is the family of powerful libraries aimed to improve development productivity and extend the .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
