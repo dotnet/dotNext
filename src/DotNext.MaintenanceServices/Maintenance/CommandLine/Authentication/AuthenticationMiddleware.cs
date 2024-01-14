@@ -13,7 +13,7 @@ internal static class AuthenticationMiddleware
     {
         var session = (context.Console as IMaintenanceConsole)?.Session;
 
-        if (session?.Principal is { Identity: { IsAuthenticated: true } })
+        if (session?.Principal is { Identity.IsAuthenticated: true })
         {
             // already authenticated
             await next(context).ConfigureAwait(false);
@@ -33,7 +33,7 @@ internal static class AuthenticationMiddleware
 
     internal static Task SetDefaultPrincipal(InvocationContext context, Func<InvocationContext, Task> next)
     {
-        if ((context.Console as IMaintenanceConsole)?.Session is { Principal: null } session)
+        if (context.Console is IMaintenanceConsole { Session: { Principal: null } session })
         {
             session.Principal = new GenericPrincipal(session.Identity, roles: null);
         }
