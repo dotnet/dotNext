@@ -131,6 +131,9 @@ public readonly struct SupplierClosure&lt;TContext, TResult&gt; : ISupplier&lt;T
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_SupplierClosure_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Wraps the function pointer.</p>
+</div>
   <h3 id="constructors">Constructors
 </h3>
   <span class="small pull-right mobile-hide">
@@ -138,11 +141,12 @@ public readonly struct SupplierClosure&lt;TContext, TResult&gt; : ISupplier&lt;T
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_SupplierClosure_2__ctor___0_.md&amp;value=---%0Auid%3A%20DotNext.SupplierClosure%602.%23ctor(%2C%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L150">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L141">View Source</a>
   </span>
   <a id="DotNext_SupplierClosure_2__ctor_" data-uid="DotNext.SupplierClosure`2.#ctor*"></a>
   <h4 id="DotNext_SupplierClosure_2__ctor___0_" data-uid="DotNext.SupplierClosure`2.#ctor(,`0)">SupplierClosure(delegate*&lt;in TContext, TResult&gt;, TContext)</h4>
-  <div class="markdown level1 summary"><p>Wraps the function pointer.</p>
+  <div class="markdown level1 summary"><p>Represents implementation of <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a> interface
+with the support of closure that is not allocated on the heap.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -173,6 +177,9 @@ public readonly struct SupplierClosure&lt;TContext, TResult&gt; : ISupplier&lt;T
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_SupplierClosure_2__ctor___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Wraps the function pointer.</p>
+</div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -196,7 +203,7 @@ public readonly struct SupplierClosure&lt;TContext, TResult&gt; : ISupplier&lt;T
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_SupplierClosure_2_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.SupplierClosure%602.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L159">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_SupplierClosure_2_IsEmpty_" data-uid="DotNext.SupplierClosure`2.IsEmpty*"></a>
   <h4 id="DotNext_SupplierClosure_2_IsEmpty" data-uid="DotNext.SupplierClosure`2.IsEmpty">IsEmpty</h4>
@@ -222,6 +229,22 @@ public readonly struct SupplierClosure&lt;TContext, TResult&gt; : ISupplier&lt;T
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">ptr</code> is zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
@@ -231,7 +254,13 @@ public readonly struct SupplierClosure&lt;TContext, TResult&gt; : ISupplier&lt;T
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
@@ -248,7 +277,7 @@ public readonly struct SupplierClosure&lt;TContext, TResult&gt; : ISupplier&lt;T
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_SupplierClosure_2.md&amp;value=---%0Auid%3A%20DotNext.SupplierClosure%602%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L137" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L141" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

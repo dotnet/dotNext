@@ -400,376 +400,6 @@ dotnet run -c Bench
 </tr>
 </tbody>
 </table>
-<h1 id="fast-reflection">Fast Reflection</h1>
-<p>The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.</p>
-<h2 id="property-getter">Property Getter</h2>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/PropertyGetterReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of getting instance property value caused by different mechanisms:</p>
-<ol>
-<li>Using <a href="https://github.com/mgravell/fast-member">FastMember</a> library</li>
-<li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;IndexOfCalculator&gt;.Property&lt;int&gt;.RequireGetter</code></li>
-<li>Using strongly typed reflection from DotNext Reflection library using special delegate type <code>Function&lt;object, ValueTuple, object&gt;</code>. It is assumed that instance type and property type is not known at compile type (th) so the delegate performs type check on every call.</li>
-<li>Classic .NET reflection</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th style="text-align: right;">Mean</th>
-<th style="text-align: right;">Error</th>
-<th style="text-align: right;">StdDev</th>
-<th style="text-align: right;">Ratio</th>
-<th style="text-align: right;">RatioSD</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>'Direct call'</td>
-<td style="text-align: right;">9.390 ns</td>
-<td style="text-align: right;">0.0265 ns</td>
-<td style="text-align: right;">0.0248 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type MemberGetter&lt;IndexOfCalculator, int&gt;'</td>
-<td style="text-align: right;">10.600 ns</td>
-<td style="text-align: right;">0.0325 ns</td>
-<td style="text-align: right;">0.0304 ns</td>
-<td style="text-align: right;">1.13</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using DynamicInvoker'</td>
-<td style="text-align: right;">19.541 ns</td>
-<td style="text-align: right;">0.0716 ns</td>
-<td style="text-align: right;">0.0670 ns</td>
-<td style="text-align: right;">2.08</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Function&lt;object, ValueTuple, object&gt;'</td>
-<td style="text-align: right;">20.439 ns</td>
-<td style="text-align: right;">0.0656 ns</td>
-<td style="text-align: right;">0.0614 ns</td>
-<td style="text-align: right;">2.18</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'ObjectAccess class from FastMember library'</td>
-<td style="text-align: right;">40.496 ns</td>
-<td style="text-align: right;">0.1832 ns</td>
-<td style="text-align: right;">0.1714 ns</td>
-<td style="text-align: right;">4.31</td>
-<td style="text-align: right;">0.02</td>
-</tr>
-<tr>
-<td>'.NET reflection'</td>
-<td style="text-align: right;">137.905 ns</td>
-<td style="text-align: right;">0.5757 ns</td>
-<td style="text-align: right;">0.5385 ns</td>
-<td style="text-align: right;">14.69</td>
-<td style="text-align: right;">0.07</td>
-</tr>
-</tbody>
-</table>
-<p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
-<h2 id="instance-method-call">Instance Method Call</h2>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/StringMethodReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of calling instance method <code>IndexOf</code> of type <strong>string</strong> caused by different mechanisms:</p>
-<ol>
-<li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;string&gt;.Method&lt;char, int&gt;.Require&lt;int&gt;(nameof(string.IndexOf))</code></li>
-<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Type&lt;string&gt;.RequireMethod&lt;(char, int), int&gt;(nameof(string.IndexOf));</code></li>
-<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;object, (object, object), object&gt;</code>. It is assumed that types of all parameters are not known at compile time.</li>
-<li>Classic .NET reflection</li>
-</ol>
-<p>The benchmark uses series of different strings to run the same set of tests. Worst case means that character lookup is performed for a string that doesn't contain the given character. Best case means that character lookup is performed for a string that has the given character.</p>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>StringValue</th>
-<th style="text-align: right;">Mean</th>
-<th style="text-align: right;">Error</th>
-<th style="text-align: right;">StdDev</th>
-<th style="text-align: right;">Median</th>
-<th style="text-align: right;">Ratio</th>
-<th style="text-align: right;">RatioSD</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>'.NET reflection'</td>
-<td></td>
-<td style="text-align: right;">267.785 ns</td>
-<td style="text-align: right;">1.1146 ns</td>
-<td style="text-align: right;">0.9881 ns</td>
-<td style="text-align: right;">267.686 ns</td>
-<td style="text-align: right;">64.82</td>
-<td style="text-align: right;">0.39</td>
-</tr>
-<tr>
-<td>'Direct call'</td>
-<td></td>
-<td style="text-align: right;">4.129 ns</td>
-<td style="text-align: right;">0.0197 ns</td>
-<td style="text-align: right;">0.0153 ns</td>
-<td style="text-align: right;">4.125 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Func&lt;string, char, int, int&gt;'</td>
-<td></td>
-<td style="text-align: right;">7.290 ns</td>
-<td style="text-align: right;">0.0220 ns</td>
-<td style="text-align: right;">0.0206 ns</td>
-<td style="text-align: right;">7.295 ns</td>
-<td style="text-align: right;">1.77</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Function&lt;object, (object, object), object&gt;'</td>
-<td></td>
-<td style="text-align: right;">29.997 ns</td>
-<td style="text-align: right;">0.2193 ns</td>
-<td style="text-align: right;">0.2051 ns</td>
-<td style="text-align: right;">29.995 ns</td>
-<td style="text-align: right;">7.26</td>
-<td style="text-align: right;">0.07</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Function&lt;string, (char, int), int&gt;'</td>
-<td></td>
-<td style="text-align: right;">12.705 ns</td>
-<td style="text-align: right;">0.0410 ns</td>
-<td style="text-align: right;">0.0363 ns</td>
-<td style="text-align: right;">12.721 ns</td>
-<td style="text-align: right;">3.08</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using DynamicInvoker'</td>
-<td></td>
-<td style="text-align: right;">28.729 ns</td>
-<td style="text-align: right;">0.5514 ns</td>
-<td style="text-align: right;">0.5900 ns</td>
-<td style="text-align: right;">28.433 ns</td>
-<td style="text-align: right;">6.99</td>
-<td style="text-align: right;">0.15</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr>
-<td>'.NET reflection'</td>
-<td>abccdahehkgbe387jwgr</td>
-<td style="text-align: right;">275.576 ns</td>
-<td style="text-align: right;">1.6060 ns</td>
-<td style="text-align: right;">1.5023 ns</td>
-<td style="text-align: right;">275.883 ns</td>
-<td style="text-align: right;">32.08</td>
-<td style="text-align: right;">0.19</td>
-</tr>
-<tr>
-<td>'Direct call'</td>
-<td>abccdahehkgbe387jwgr</td>
-<td style="text-align: right;">8.589 ns</td>
-<td style="text-align: right;">0.0162 ns</td>
-<td style="text-align: right;">0.0144 ns</td>
-<td style="text-align: right;">8.589 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Func&lt;string, char, int, int&gt;'</td>
-<td>abccdahehkgbe387jwgr</td>
-<td style="text-align: right;">14.085 ns</td>
-<td style="text-align: right;">0.0720 ns</td>
-<td style="text-align: right;">0.0639 ns</td>
-<td style="text-align: right;">14.079 ns</td>
-<td style="text-align: right;">1.64</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Function&lt;object, (object, object), object&gt;'</td>
-<td>abccdahehkgbe387jwgr</td>
-<td style="text-align: right;">33.526 ns</td>
-<td style="text-align: right;">0.1700 ns</td>
-<td style="text-align: right;">0.1590 ns</td>
-<td style="text-align: right;">33.556 ns</td>
-<td style="text-align: right;">3.90</td>
-<td style="text-align: right;">0.02</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Function&lt;string, (char, int), int&gt;'</td>
-<td>abccdahehkgbe387jwgr</td>
-<td style="text-align: right;">16.886 ns</td>
-<td style="text-align: right;">0.2396 ns</td>
-<td style="text-align: right;">0.2242 ns</td>
-<td style="text-align: right;">16.951 ns</td>
-<td style="text-align: right;">1.97</td>
-<td style="text-align: right;">0.03</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using DynamicInvoker'</td>
-<td>abccdahehkgbe387jwgr</td>
-<td style="text-align: right;">30.060 ns</td>
-<td style="text-align: right;">0.0953 ns</td>
-<td style="text-align: right;">0.1767 ns</td>
-<td style="text-align: right;">30.102 ns</td>
-<td style="text-align: right;">3.51</td>
-<td style="text-align: right;">0.02</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr>
-<td>'.NET reflection'</td>
-<td>wfjwk(...)wjbvw [52]</td>
-<td style="text-align: right;">276.583 ns</td>
-<td style="text-align: right;">1.3709 ns</td>
-<td style="text-align: right;">1.1447 ns</td>
-<td style="text-align: right;">276.860 ns</td>
-<td style="text-align: right;">19.75</td>
-<td style="text-align: right;">0.12</td>
-</tr>
-<tr>
-<td>'Direct call'</td>
-<td>wfjwk(...)wjbvw [52]</td>
-<td style="text-align: right;">14.006 ns</td>
-<td style="text-align: right;">0.0904 ns</td>
-<td style="text-align: right;">0.0706 ns</td>
-<td style="text-align: right;">13.996 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Func&lt;string, char, int, int&gt;'</td>
-<td>wfjwk(...)wjbvw [52]</td>
-<td style="text-align: right;">17.665 ns</td>
-<td style="text-align: right;">0.1914 ns</td>
-<td style="text-align: right;">0.1790 ns</td>
-<td style="text-align: right;">17.607 ns</td>
-<td style="text-align: right;">1.26</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Function&lt;object, (object, object), object&gt;'</td>
-<td>wfjwk(...)wjbvw [52]</td>
-<td style="text-align: right;">37.263 ns</td>
-<td style="text-align: right;">0.0681 ns</td>
-<td style="text-align: right;">0.0604 ns</td>
-<td style="text-align: right;">37.264 ns</td>
-<td style="text-align: right;">2.66</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type Function&lt;string, (char, int), int&gt;'</td>
-<td>wfjwk(...)wjbvw [52]</td>
-<td style="text-align: right;">20.071 ns</td>
-<td style="text-align: right;">0.2297 ns</td>
-<td style="text-align: right;">0.2149 ns</td>
-<td style="text-align: right;">20.147 ns</td>
-<td style="text-align: right;">1.44</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using DynamicInvoker'</td>
-<td>wfjwk(...)wjbvw [52]</td>
-<td style="text-align: right;">36.154 ns</td>
-<td style="text-align: right;">0.7031 ns</td>
-<td style="text-align: right;">1.2128 ns</td>
-<td style="text-align: right;">35.446 ns</td>
-<td style="text-align: right;">2.69</td>
-<td style="text-align: right;">0.04</td>
-</tr>
-</tbody>
-</table>
-<p>DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.</p>
-<h2 id="static-method-call">Static Method Call</h2>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/TryParseReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of calling static method <code>TryParse</code> of type <strong>decimal</strong> caused by different mechanisms:</p>
-<ol>
-<li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;decimal&gt;.Method.Get&lt;TryParseDelegate&gt;(nameof(decimal.TryParse), MethodLookup.Static)</code>. The delegate type exactly matches to the reflected method signature: <code>delegate bool TryParseDelegate(string text, out decimal result)</code></li>
-<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;(string text, decimal result), bool&gt;</code></li>
-<li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;(object text, object result), object&gt;</code>. It is assumed that types of all parameters are not known at compile time.</li>
-<li>Classic .NET reflection</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th style="text-align: right;">Mean</th>
-<th style="text-align: right;">Error</th>
-<th style="text-align: right;">StdDev</th>
-<th style="text-align: right;">Ratio</th>
-<th style="text-align: right;">RatioSD</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Reflection with DotNext using delegate type <code>TryParseDelegate</code></td>
-<td style="text-align: right;">124.1 ns</td>
-<td style="text-align: right;">0.44 ns</td>
-<td style="text-align: right;">0.39 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>Direct call</td>
-<td style="text-align: right;">124.3 ns</td>
-<td style="text-align: right;">0.85 ns</td>
-<td style="text-align: right;">0.80 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>Reflection with DotNext using delegate type <code>Function&lt;(string text, decimal result), bool&gt;</code></td>
-<td style="text-align: right;">132.0 ns</td>
-<td style="text-align: right;">0.35 ns</td>
-<td style="text-align: right;">0.33 ns</td>
-<td style="text-align: right;">1.06</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>'Reflection with DotNext using delegate type <code>Function&lt;(object text, object result), object&gt;</code>'</td>
-<td style="text-align: right;">144.2 ns</td>
-<td style="text-align: right;">0.67 ns</td>
-<td style="text-align: right;">0.63 ns</td>
-<td style="text-align: right;">1.16</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>Reflection with DotNext using <code>DynamicInvoker</code></td>
-<td style="text-align: right;">148.7 ns</td>
-<td style="text-align: right;">0.57 ns</td>
-<td style="text-align: right;">0.53 ns</td>
-<td style="text-align: right;">1.20</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>.NET reflection</td>
-<td style="text-align: right;">462.6 ns</td>
-<td style="text-align: right;">1.25 ns</td>
-<td style="text-align: right;">1.11 ns</td>
-<td style="text-align: right;">3.72</td>
-<td style="text-align: right;">0.03</td>
-</tr>
-</tbody>
-</table>
-<p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
 <h1 id="atomic-access-to-arbitrary-value-type">Atomic Access to Arbitrary Value Type</h1>
 <p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="api/DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
 <table>
@@ -872,7 +502,7 @@ dotnet run -c Bench
 <li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream">MemoryStream</a></li>
 <li><a href="https://github.com/microsoft/Microsoft.IO.RecyclableMemoryStream">RecyclableMemoryStream</a></li>
 <li><a class="xref" href="api/DotNext.Buffers.SparseBufferWriter-1.html">SparseBufferWriter&lt;byte&gt;</a></li>
-<li><a class="xref" href="api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;byte&gt;</a></li>
+<li><a class="xref" href="api/DotNext.Buffers.PoolingArrayBufferWriter-1.html">PoolingArrayBufferWriter&lt;byte&gt;</a></li>
 <li><a class="xref" href="api/DotNext.IO.FileBufferingWriter.html">FileBufferingWriter</a></li>
 </ul>
 <table>
@@ -922,7 +552,7 @@ dotnet run -c Bench
 <td style="text-align: right;">0.56</td>
 </tr>
 <tr>
-<td>PooledArrayBufferWriter<byte></byte></td>
+<td>PoolingArrayBufferWriter<byte></byte></td>
 <td>100</td>
 <td style="text-align: right;">290.32 ns</td>
 <td style="text-align: right;">2.758 ns</td>
@@ -1006,7 +636,7 @@ dotnet run -c Bench
 <td style="text-align: right;">0.18</td>
 </tr>
 <tr>
-<td>PooledArrayBufferWriter<byte></byte></td>
+<td>PoolingArrayBufferWriter<byte></byte></td>
 <td>1000</td>
 <td style="text-align: right;">523.82 ns</td>
 <td style="text-align: right;">2.064 ns</td>
@@ -1076,7 +706,7 @@ dotnet run -c Bench
 <td style="text-align: right;">0.008</td>
 </tr>
 <tr>
-<td>PooledArrayBufferWriter<byte></byte></td>
+<td>PoolingArrayBufferWriter<byte></byte></td>
 <td>10000</td>
 <td style="text-align: right;">1,553.56 ns</td>
 <td style="text-align: right;">18.831 ns</td>
@@ -1174,7 +804,7 @@ dotnet run -c Bench
 <td style="text-align: right;">0.001</td>
 </tr>
 <tr>
-<td>PooledArrayBufferWriter<byte></byte></td>
+<td>PoolingArrayBufferWriter<byte></byte></td>
 <td>100000</td>
 <td style="text-align: right;">9,591.01 ns</td>
 <td style="text-align: right;">190.970 ns</td>
@@ -1258,7 +888,7 @@ dotnet run -c Bench
 <td style="text-align: right;">0.000</td>
 </tr>
 <tr>
-<td>PooledArrayBufferWriter<byte></byte></td>
+<td>PoolingArrayBufferWriter<byte></byte></td>
 <td>1000000</td>
 <td style="text-align: right;">82,694.54 ns</td>
 <td style="text-align: right;">624.704 ns</td>

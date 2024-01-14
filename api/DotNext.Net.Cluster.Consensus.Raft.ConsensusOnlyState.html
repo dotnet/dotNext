@@ -101,7 +101,7 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(params IDisposable[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_ReadOnlySpan_System_IDisposable__">Disposable.Dispose(ReadOnlySpan&lt;IDisposable&gt;)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
@@ -142,7 +142,7 @@ cannot append non-empty log entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_LastCommittedEntryIndex.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.LastCommittedEntryIndex%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L262">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L274">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_LastCommittedEntryIndex_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.LastCommittedEntryIndex*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_LastCommittedEntryIndex" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.LastCommittedEntryIndex">LastCommittedEntryIndex</h4>
@@ -173,7 +173,7 @@ cannot append non-empty log entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_LastEntryIndex.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.LastEntryIndex%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L267">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L283">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_LastEntryIndex_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.LastEntryIndex*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_LastEntryIndex" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.LastEntryIndex">LastEntryIndex</h4>
@@ -199,6 +199,39 @@ cannot append non-empty log entries.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_Term.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.Term%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L103">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.Term*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.Term">Term</h4>
+  <div class="markdown level1 summary"><p>Reads Term value associated with the local member
+from the persistent storage.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Term { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><p>The term restored from persistent storage.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
   <span class="small pull-right mobile-hide">
@@ -206,7 +239,7 @@ cannot append non-empty log entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L367">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L379">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -242,7 +275,7 @@ cannot append non-empty log entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.ReadAsync%60%601(DotNext.IO.Log.ILogEntryConsumer%7BDotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry%2C%60%600%7D%2CSystem.Int64%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L302">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L322">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_ReadAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.ReadAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.ReadAsync``1(DotNext.IO.Log.ILogEntryConsumer{DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry,``0},System.Int64,System.Int64,System.Threading.CancellationToken)">ReadAsync&lt;TResult&gt;(ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, long, long, CancellationToken)</h4>
@@ -326,7 +359,7 @@ cannot append non-empty log entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.ReadAsync%60%601(DotNext.IO.Log.ILogEntryConsumer%7BDotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry%2C%60%600%7D%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L322">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/ConsensusOnlyState.cs/#L342">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_ReadAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.ReadAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ConsensusOnlyState_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry___0__System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.ReadAsync``1(DotNext.IO.Log.ILogEntryConsumer{DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry,``0},System.Int64,System.Threading.CancellationToken)">ReadAsync&lt;TResult&gt;(ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;, long, CancellationToken)</h4>
@@ -414,19 +447,19 @@ cannot append non-empty log entries.</p>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>

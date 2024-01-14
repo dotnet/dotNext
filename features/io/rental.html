@@ -81,11 +81,11 @@
 </ul>
 <p>.NEXT offers convenient wrappers that simplify the rental process and handle situations when renting is optional:</p>
 <ul>
-<li><a class="xref" href="../../api/DotNext.Buffers.MemoryRental-1.html">MemoryRental&lt;T&gt;</a> if you need to work with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a></li>
+<li><a class="xref" href="../../api/DotNext.Buffers.SpanOwner-1.html">SpanOwner&lt;T&gt;</a> if you need to work with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a></li>
 <li><a class="xref" href="../../api/DotNext.Buffers.MemoryOwner-1.html">MemoryOwner&lt;T&gt;</a> if you need universal mechanism to represent pooled memory obtained from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a></li>
 </ul>
-<h1 id="memoryrental">MemoryRental</h1>
-<p><a class="xref" href="../../api/DotNext.Buffers.MemoryRental-1.html">MemoryRental&lt;T&gt;</a> helps to reduce boilerplate code in <code>stackalloc</code> vs memory pooling scenario. The rented memory is only accessible using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type.</p>
+<h1 id="spanowner">SpanOwner</h1>
+<p><a class="xref" href="../../api/DotNext.Buffers.SpanOwner-1.html">SpanOwner&lt;T&gt;</a> helps to reduce boilerplate code in <code>stackalloc</code> vs memory pooling scenario. The rented memory is only accessible using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type.</p>
 <p>The following example demonstrates how to reverse a string and choose temporary buffers allocation method depending on the size of the string.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
@@ -93,14 +93,17 @@ public static unsafe string Reverse(this string str)
 {
   if (str.Length == 0) return str;
   const int stackallocThreshold = 128;
-  using MemoryRental&lt;char&gt; result = str.Length &lt;= stackallocThreshold ? new MemoryRental&lt;char&gt;(stackalloc char[stackallocThreshold], str.Length) : new MemoryRental&lt;char&gt;(str.Length);
+  using SpanOwner&lt;char&gt; result = str.Length &lt;= stackallocThreshold
+    ? new(stackalloc char[stackallocThreshold], str.Length)
+    : new(str.Length);
+
   str.AsSpan().CopyTo(result.Span);
   result.Span.Reverse();
   fixed (char* ptr = result.Span)
     return new string(ptr, 0, result.Length);
 } 
 </code></pre>
-<p><code>MemoryRental</code> can rent the memory using the following mechanisms:</p>
+<p><code>SpanOwner</code> can rent the memory using the following mechanisms:</p>
 <ul>
 <li>Memory pooling using arbitrary <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a></li>
 <li>Array pooling using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1.shared">ArrayPool&lt;T&gt;.Shared</a>. Arbitrary array pool is not supported.</li>
@@ -118,14 +121,14 @@ rentedArray.Memory.Slice(0, 5);
 rentedMemory.Memory.Slice(0, 5);
 </code></pre>
 <p>The value type implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> interface so you can easly access pooled memory in a uniform way.</p>
-<p>Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. <a class="xref" href="../../api/DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a> delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. <a class="xref" href="../../api/DotNext.Buffers.MemoryAllocator.html">MemoryAllocator</a> static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.</p>
+<p>Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. <a class="xref" href="../../api/DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a> delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. <a class="xref" href="../../api/DotNext.Buffers.Memory.html">Memory</a> static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.</p>
 <h1 id="growable-buffers">Growable Buffers</h1>
 <p>If size of the required buffer is not known and can grow dynamically then you need to use <a href="buffers.html">Dynamic Buffers</a> that are based on memory pooling mechanism as well.</p>
-<p>Dynamic buffers can be combined with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> easily using extension methods from <a class="xref" href="../../api/DotNext.IO.StreamSource.html">StreamSource</a> class. With <a class="xref" href="../../api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> class, it's possible to read/write bytes using stream and utilize memory pooling:</p>
+<p>Dynamic buffers can be combined with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">streams</a> easily using extension methods from <a class="xref" href="../../api/DotNext.IO.StreamSource.html">StreamSource</a> class. With <a class="xref" href="../../api/DotNext.Buffers.PoolingArrayBufferWriter-1.html">PoolingArrayBufferWriter&lt;T&gt;</a> class, it's possible to read/write bytes using stream and utilize memory pooling:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 
-using var writer = new PooledArrayBufferWriter&lt;byte&gt; { BufferPool = ArrayPool&lt;byte&gt;.Shared };
+using var writer = new PoolingArrayBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared);
 
 // write bytes using stream
 using Stream writeStream = StreamSource.AsStream(writer);
@@ -135,7 +138,7 @@ writeStream.Write(new byte[1024]);
 using Stream readStream = StreamSource.AsStream(writer.WrittenMemory);
 </code></pre>
 <h1 id="tuning">Tuning</h1>
-<p>Many operations in .NEXT use stack-allocated memory in combination with <code>MemoryRental&lt;T&gt;</code> type for better performance. It's possible to configure the size of stack-allocated memory used as initial buffer using <code>DOTNEXT_STACK_ALLOC_THRESHOLD</code> environment variable. By default, it is equal to <em>512</em> bytes. It means that if the size of the data inside of I/O operations is less that this value then stack memory will be used. Otherwise, the buffer will be rented from the pool.</p>
+<p>Many operations in .NEXT use stack-allocated memory in combination with <code>SpanOwner&lt;T&gt;</code> type for better performance. It's possible to configure the size of stack-allocated memory used as initial buffer using <code>DOTNEXT_STACK_ALLOC_THRESHOLD</code> environment variable. By default, it is equal to <em>512</em> bytes. It means that if the size of the data inside of I/O operations is less that this value then stack memory will be used. Otherwise, the buffer will be rented from the pool.</p>
 
 </article>
           </div>

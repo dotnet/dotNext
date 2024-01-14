@@ -233,21 +233,32 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 <p>The first approach is very simple but may be not optimal for real application because each log entry must be represented as JSON in the form of UTF-8 encoded characters. Moreover, decoding procedure causes heap allocation of each decoded log entry.</p>
 <h2 id="json-log-entries">JSON log entries</h2>
 <p>At the time of appending of a new log entry, it can be created as follows:</p>
-<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+<pre><code class="lang-csharp">using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using DotNext.Net.Cluster.Consensus.Raft;
+using DotNext.Text.Json;
 
-struct SubtractCommand
+[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Metadata)]
+[JsonSerializable(typeof(SubtractCommand))]
+public partial class SerializationContext : JsonSerializerContext
+{
+}
+
+struct SubtractCommand : IJsonSerializable&lt;SubtractCommand&gt;
 {
 	public int X { get; set; }
 	public int Y { get; set; }
+
+	static JsonTypeInfo&lt;TestJsonObject&gt; IJsonSerializable&lt;TestJsonObject&gt;.TypeInfo =&gt; SerializationContext.Default.SubtractCommand;
 }
 
 MemoryBasedStateMachine state = ...;
 var entry = state.CreateJsonLogEntry(new SubtractCommand { X = 10, Y = 20 });
 await state.AppendAsync(entry);
 </code></pre>
-<p><code>SubtractCommand</code> must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to explicitly specify the optional parameters of <code>CreateJsonLogEntry</code> method to provide type identification independent from .NET type system.</p>
+<p><code>SubtractCommand</code> must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to use <a href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism">JSON polymorphic serialization</a>.</p>
 <p>Now the written log entry can be deserialized and interpreted easily inside of <code>AppendAsync</code> method:</p>
-<pre><code class="lang-csharp">using DotNext.IO;
+<pre><code class="lang-csharp">using DotNext.Text.Json;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
 
@@ -257,16 +268,11 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 	
     protected override async ValueTask ApplyAsync(LogEntry entry)
 	{
-		switch (await entry.DeserializeFromJsonAsync())
-		{
-			case SubtractCommand command:
-				Value = command.X - command.Y; // interpreting the command
-				break;
-		}
+		var command = await JsonSerializable&lt;TestJsonObject&gt;.TransformAsync(entry);
+		Value = command.X - command.Y; // interpreting the command
 	}
 }
 </code></pre>
-<p><code>DeserializeFromJsonAsync</code> accepts type resolver as an optional argument. If default type resolution mechanism is used then persistent state stores type information in the form of fullt-qualified type name including assembly name.</p>
 <h2 id="command-interpreter">Command Interpreter</h2>
 <p>Interpreting of the custom log entries can be implemented with help of <a href="https://en.wikipedia.org/wiki/Command_pattern">Command Pattern</a>. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a> is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.</p>
 <p>First of all, we need to declare command types and write serialization/deserialization logic:</p>

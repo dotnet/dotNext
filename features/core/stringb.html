@@ -74,10 +74,10 @@
 using var writer = new BufferWriterSlim&lt;char&gt;(stackalloc char[128]); // preallocate initial buffer on the stack
 
 int x = 10, y = 20;
-writer.WriteString($&quot;{x} + {y} = {x + y}&quot;);
+writer.Interpolate($&quot;{x} + {y} = {x + y}&quot;);
 writer.WriteLine();
 writer.Write(&quot;Hello, world!&quot;);
-writer.WriteFormattable(42, &quot;X&quot;);
+writer.Format(42, &quot;X&quot;);
 
 Span&lt;char&gt; writtenSpan = writer.WrittenSpan;
 string result = writer.ToString();

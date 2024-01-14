@@ -80,6 +80,11 @@
     <h5>Implements</h5>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable-1">IComparable</a>&lt;<a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.icomparisonoperators-3">IComparisonOperators</a>&lt;<a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>, <a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iequalityoperators-3">IEqualityOperators</a>&lt;<a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>, <a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iadditionoperators-3">IAdditionOperators</a>&lt;<a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>, <a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.isubtractionoperators-3">ISubtractionOperators</a>&lt;<a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>, <a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Threading.IInterlockedOperations-1.html">IInterlockedOperations</a>&lt;<a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -103,7 +108,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Diagnostics_Timestamp_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly record struct Timestamp : IEquatable&lt;Timestamp&gt;, IComparable&lt;Timestamp&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly record struct Timestamp : IEquatable&lt;Timestamp&gt;, IComparable&lt;Timestamp&gt;, IComparisonOperators&lt;Timestamp, Timestamp, bool&gt;, IEqualityOperators&lt;Timestamp, Timestamp, bool&gt;, IAdditionOperators&lt;Timestamp, TimeSpan, Timestamp&gt;, ISubtractionOperators&lt;Timestamp, TimeSpan, Timestamp&gt;, IInterlockedOperations&lt;Timestamp&gt;</code></pre>
   </div>
   <h5 id="DotNext_Diagnostics_Timestamp_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class can be used as allocation-free alternative to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.stopwatch">Stopwatch</a>.</p>
@@ -115,7 +120,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp__ctor.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L24">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L31">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp__ctor_" data-uid="DotNext.Diagnostics.Timestamp.#ctor*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp__ctor" data-uid="DotNext.Diagnostics.Timestamp.#ctor">Timestamp()</h4>
@@ -131,7 +136,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp__ctor_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.%23ctor(System.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L41">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp__ctor_" data-uid="DotNext.Diagnostics.Timestamp.#ctor*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp__ctor_System_TimeSpan_" data-uid="DotNext.Diagnostics.Timestamp.#ctor(System.TimeSpan)">Timestamp(TimeSpan)</h4>
@@ -180,42 +185,10 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_Current.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.Current%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L57">View Source</a>
-  </span>
-  <a id="DotNext_Diagnostics_Timestamp_Current_" data-uid="DotNext.Diagnostics.Timestamp.Current*"></a>
-  <h4 id="DotNext_Diagnostics_Timestamp_Current" data-uid="DotNext.Diagnostics.Timestamp.Current">Current</h4>
-  <div class="markdown level1 summary"><p>Gets the current point in time.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use public parameterless constructor instead&quot;)]
-public static Timestamp Current { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_Elapsed.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.Elapsed%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_Elapsed_" data-uid="DotNext.Diagnostics.Timestamp.Elapsed*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_Elapsed" data-uid="DotNext.Diagnostics.Timestamp.Elapsed">Elapsed</h4>
@@ -249,7 +222,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_ElapsedMilliseconds.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.ElapsedMilliseconds%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L90">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_ElapsedMilliseconds_" data-uid="DotNext.Diagnostics.Timestamp.ElapsedMilliseconds*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_ElapsedMilliseconds" data-uid="DotNext.Diagnostics.Timestamp.ElapsedMilliseconds">ElapsedMilliseconds</h4>
@@ -280,7 +253,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_ElapsedTicks.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.ElapsedTicks%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L85">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_ElapsedTicks_" data-uid="DotNext.Diagnostics.Timestamp.ElapsedTicks*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_ElapsedTicks" data-uid="DotNext.Diagnostics.Timestamp.ElapsedTicks">ElapsedTicks</h4>
@@ -311,7 +284,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_IsEmpty_" data-uid="DotNext.Diagnostics.Timestamp.IsEmpty*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_IsEmpty" data-uid="DotNext.Diagnostics.Timestamp.IsEmpty">IsEmpty</h4>
@@ -342,7 +315,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_IsFuture.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.IsFuture%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L47">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_IsFuture_" data-uid="DotNext.Diagnostics.Timestamp.IsFuture*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_IsFuture" data-uid="DotNext.Diagnostics.Timestamp.IsFuture">IsFuture</h4>
@@ -373,7 +346,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_IsPast.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.IsPast%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L52">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L59">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_IsPast_" data-uid="DotNext.Diagnostics.Timestamp.IsPast*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_IsPast" data-uid="DotNext.Diagnostics.Timestamp.IsPast">IsPast</h4>
@@ -404,7 +377,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_Value.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L72">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_Value_" data-uid="DotNext.Diagnostics.Timestamp.Value*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_Value" data-uid="DotNext.Diagnostics.Timestamp.Value">Value</h4>
@@ -437,10 +410,73 @@ public static Timestamp Current { get; }</code></pre>
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_CompareExchange_DotNext_Diagnostics_Timestamp__DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.CompareExchange(DotNext.Diagnostics.Timestamp%40%2CDotNext.Diagnostics.Timestamp%2CDotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L230">View Source</a>
+  </span>
+  <a id="DotNext_Diagnostics_Timestamp_CompareExchange_" data-uid="DotNext.Diagnostics.Timestamp.CompareExchange*"></a>
+  <h4 id="DotNext_Diagnostics_Timestamp_CompareExchange_DotNext_Diagnostics_Timestamp__DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.CompareExchange(DotNext.Diagnostics.Timestamp@,DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)">CompareExchange(ref Timestamp, Timestamp, Timestamp)</h4>
+  <div class="markdown level1 summary"><p>Compares two values for equality and, if they
+are equal, replaces the first value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><span class="parametername">location</span></td>
+        <td><p>The destination, whose value is compared with comparand and possibly replaced.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value that replaces the destination value if the comparison results in equality.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>The value that is compared to the value at <code class="paramref">location</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><p>The original value in <code class="paramref">location</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_CompareTo_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.CompareTo(DotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L114">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_CompareTo_" data-uid="DotNext.Diagnostics.Timestamp.CompareTo*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_CompareTo_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.CompareTo(DotNext.Diagnostics.Timestamp)">CompareTo(Timestamp)</h4>
@@ -490,7 +526,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_ElapsedSince_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.ElapsedSince(DotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L97">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L98">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_ElapsedSince_" data-uid="DotNext.Diagnostics.Timestamp.ElapsedSince*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_ElapsedSince_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.ElapsedSince(DotNext.Diagnostics.Timestamp)">ElapsedSince(Timestamp)</h4>
@@ -540,7 +576,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_Refresh_DotNext_Diagnostics_Timestamp__.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.Refresh(DotNext.Diagnostics.Timestamp%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L200">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L226">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_Refresh_" data-uid="DotNext.Diagnostics.Timestamp.Refresh*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_Refresh_DotNext_Diagnostics_Timestamp__" data-uid="DotNext.Diagnostics.Timestamp.Refresh(DotNext.Diagnostics.Timestamp@)">Refresh(ref Timestamp)</h4>
@@ -574,7 +610,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_ToString.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L120">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L121">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_ToString_" data-uid="DotNext.Diagnostics.Timestamp.ToString*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_ToString" data-uid="DotNext.Diagnostics.Timestamp.ToString">ToString()</h4>
@@ -608,16 +644,16 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_VolatileRead_DotNext_Diagnostics_Timestamp__.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.VolatileRead(DotNext.Diagnostics.Timestamp%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L185">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L211">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_VolatileRead_" data-uid="DotNext.Diagnostics.Timestamp.VolatileRead*"></a>
-  <h4 id="DotNext_Diagnostics_Timestamp_VolatileRead_DotNext_Diagnostics_Timestamp__" data-uid="DotNext.Diagnostics.Timestamp.VolatileRead(DotNext.Diagnostics.Timestamp@)">VolatileRead(ref Timestamp)</h4>
+  <h4 id="DotNext_Diagnostics_Timestamp_VolatileRead_DotNext_Diagnostics_Timestamp__" data-uid="DotNext.Diagnostics.Timestamp.VolatileRead(DotNext.Diagnostics.Timestamp@)">VolatileRead(ref readonly Timestamp)</h4>
   <div class="markdown level1 summary"><p>Reads the timestamp and prevents the processor from reordering memory operations.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Timestamp VolatileRead(ref Timestamp location)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Timestamp VolatileRead(ref readonly Timestamp location)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -658,7 +694,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_VolatileWrite_DotNext_Diagnostics_Timestamp__DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.VolatileWrite(DotNext.Diagnostics.Timestamp%40%2CDotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L193">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_VolatileWrite_" data-uid="DotNext.Diagnostics.Timestamp.VolatileWrite*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_VolatileWrite_DotNext_Diagnostics_Timestamp__DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.VolatileWrite(DotNext.Diagnostics.Timestamp@,DotNext.Diagnostics.Timestamp)">VolatileWrite(ref Timestamp, Timestamp)</h4>
@@ -700,7 +736,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_Addition_DotNext_Diagnostics_Timestamp_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_Addition(DotNext.Diagnostics.Timestamp%2CSystem.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L161">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L174">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_op_Addition_" data-uid="DotNext.Diagnostics.Timestamp.op_Addition*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_op_Addition_DotNext_Diagnostics_Timestamp_System_TimeSpan_" data-uid="DotNext.Diagnostics.Timestamp.op_Addition(DotNext.Diagnostics.Timestamp,System.TimeSpan)">operator +(Timestamp, TimeSpan)</h4>
@@ -710,6 +746,134 @@ public static Timestamp Current { get; }</code></pre>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Timestamp operator +(Timestamp x, TimeSpan y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The timestamp value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The delta.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><p>The modified timestamp.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_CheckedAddition_DotNext_Diagnostics_Timestamp_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_CheckedAddition(DotNext.Diagnostics.Timestamp%2CSystem.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L162">View Source</a>
+  </span>
+  <a id="DotNext_Diagnostics_Timestamp_op_CheckedAddition_" data-uid="DotNext.Diagnostics.Timestamp.op_CheckedAddition*"></a>
+  <h4 id="DotNext_Diagnostics_Timestamp_op_CheckedAddition_DotNext_Diagnostics_Timestamp_System_TimeSpan_" data-uid="DotNext.Diagnostics.Timestamp.op_CheckedAddition(DotNext.Diagnostics.Timestamp,System.TimeSpan)">operator checked +(Timestamp, TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Adds the specified duration to the timestamp.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Timestamp operator checked +(Timestamp x, TimeSpan y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The timestamp value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The delta.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><p>The modified timestamp.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.overflowexception">OverflowException</a></td>
+        <td><p><code class="paramref">y</code> is too large.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_CheckedSubtraction_DotNext_Diagnostics_Timestamp_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_CheckedSubtraction(DotNext.Diagnostics.Timestamp%2CSystem.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L187">View Source</a>
+  </span>
+  <a id="DotNext_Diagnostics_Timestamp_op_CheckedSubtraction_" data-uid="DotNext.Diagnostics.Timestamp.op_CheckedSubtraction*"></a>
+  <h4 id="DotNext_Diagnostics_Timestamp_op_CheckedSubtraction_DotNext_Diagnostics_Timestamp_System_TimeSpan_" data-uid="DotNext.Diagnostics.Timestamp.op_CheckedSubtraction(DotNext.Diagnostics.Timestamp,System.TimeSpan)">operator checked -(Timestamp, TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Subtracts the specified duration from the timestamp.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Timestamp operator checked -(Timestamp x, TimeSpan y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -772,7 +936,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_Explicit_DotNext_Diagnostics_Timestamp__System_TimeSpan.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_Explicit(DotNext.Diagnostics.Timestamp)~System.TimeSpan%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L107">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L108">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_op_Explicit_" data-uid="DotNext.Diagnostics.Timestamp.op_Explicit*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_op_Explicit_DotNext_Diagnostics_Timestamp__System_TimeSpan" data-uid="DotNext.Diagnostics.Timestamp.op_Explicit(DotNext.Diagnostics.Timestamp)~System.TimeSpan">explicit operator TimeSpan(Timestamp)</h4>
@@ -824,7 +988,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_GreaterThan_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_GreaterThan(DotNext.Diagnostics.Timestamp%2CDotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L128">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L129">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_op_GreaterThan_" data-uid="DotNext.Diagnostics.Timestamp.op_GreaterThan*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_op_GreaterThan_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.op_GreaterThan(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)">operator &gt;(Timestamp, Timestamp)</h4>
@@ -880,7 +1044,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_GreaterThanOrEqual_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_GreaterThanOrEqual(DotNext.Diagnostics.Timestamp%2CDotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L144">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L145">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_op_GreaterThanOrEqual_" data-uid="DotNext.Diagnostics.Timestamp.op_GreaterThanOrEqual*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_op_GreaterThanOrEqual_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.op_GreaterThanOrEqual(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)">operator &gt;=(Timestamp, Timestamp)</h4>
@@ -936,7 +1100,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_LessThan_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_LessThan(DotNext.Diagnostics.Timestamp%2CDotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L136">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L137">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_op_LessThan_" data-uid="DotNext.Diagnostics.Timestamp.op_LessThan*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_op_LessThan_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.op_LessThan(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)">operator &lt;(Timestamp, Timestamp)</h4>
@@ -992,7 +1156,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_LessThanOrEqual_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_LessThanOrEqual(DotNext.Diagnostics.Timestamp%2CDotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L152">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L153">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_op_LessThanOrEqual_" data-uid="DotNext.Diagnostics.Timestamp.op_LessThanOrEqual*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_op_LessThanOrEqual_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Diagnostics.Timestamp.op_LessThanOrEqual(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)">operator &lt;=(Timestamp, Timestamp)</h4>
@@ -1048,7 +1212,7 @@ public static Timestamp Current { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp_op_Subtraction_DotNext_Diagnostics_Timestamp_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp.op_Subtraction(DotNext.Diagnostics.Timestamp%2CSystem.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L174">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L200">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Timestamp_op_Subtraction_" data-uid="DotNext.Diagnostics.Timestamp.op_Subtraction*"></a>
   <h4 id="DotNext_Diagnostics_Timestamp_op_Subtraction_DotNext_Diagnostics_Timestamp_System_TimeSpan_" data-uid="DotNext.Diagnostics.Timestamp.op_Subtraction(DotNext.Diagnostics.Timestamp,System.TimeSpan)">operator -(Timestamp, TimeSpan)</h4>
@@ -1122,24 +1286,39 @@ public static Timestamp Current { get; }</code></pre>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.icomparable-1">IComparable&lt;T&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.icomparisonoperators-3">IComparisonOperators&lt;TSelf, TOther, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iequalityoperators-3">IEqualityOperators&lt;TSelf, TOther, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iadditionoperators-3">IAdditionOperators&lt;TSelf, TOther, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.isubtractionoperators-3">ISubtractionOperators&lt;TSelf, TOther, TResult&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.IInterlockedOperations-1.html">IInterlockedOperations&lt;T&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_Disclosed__1___0_">BasicExtensions.Disclosed&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Comparison.html#DotNext_Comparison_Clamp__1___0___0___0_">Comparison.Clamp&lt;T&gt;(T, T, T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_Enclosed__1___0_">BasicExtensions.Enclosed&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Comparison.html#DotNext_Comparison_IsBetween__1___0___0___0_DotNext_BoundType_">Comparison.IsBetween&lt;T&gt;(T, T, T, BoundType)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, params T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -1153,7 +1332,7 @@ public static Timestamp Current { get; }</code></pre>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Timestamp.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Timestamp%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Timestamp.cs/#L15" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -93,14 +93,15 @@ using DotNext.Collections.Generic;
 ICollection&lt;string&gt; collection = new string[] { &quot;a&quot;, &quot;b&quot;, &quot;c&quot; };
 var array = collection.ToArray();   //array = new [] {&quot;a&quot;, &quot;b&quot;, &quot;c&quot; }
 </code></pre>
-<h1 id="singleton-list">Singleton list</h1>
+<h1 id="singleton-list-and-set">Singleton list and set</h1>
 <p>The library provides optimized version of the list with the single element in it.</p>
 <pre><code class="lang-csharp">using DotNext.Collections.Generic;
 
 IReadOnlyList&lt;string&gt; list = List.Singleton(&quot;a&quot;);
+IReadOnlySet&lt;string&gt; set = Set.Singleton(&quot;a&quot;);
 </code></pre>
 <h1 id="collection-items-concatenation">Collection items concatenation</h1>
-<p>Extension method <em>ToString</em> from class <a class="xref" href="../../api/DotNext.Collections.Generic.Sequence.html">Sequence</a> allows to convert collection items into single plain string. Each item is separated by the specified delimiter.</p>
+<p>Extension method <em>ToString</em> from class <a class="xref" href="../../api/DotNext.Collections.Generic.Collection.html">Collection</a> allows to convert collection items into single plain string. Each item is separated by the specified delimiter.</p>
 <pre><code class="lang-csharp">using DotNext.Collections.Generic;
 
 var array = new int[] {1, 2, 3};
@@ -138,12 +139,12 @@ static IEnumerable&lt;int&gt; GetItems()
 using MemoryOwner&lt;int&gt; copy = GetItems().Copy();
 </code></pre>
 <p>Now the elements can be accessed using the indexer of <a class="xref" href="../../api/DotNext.Buffers.MemoryOwner-1.html">MemoryOwner&lt;T&gt;</a> data type. The memory of the copied elements is rented from the pool. You can override memory allocation logic and pass custom <a class="xref" href="../../api/DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a> to <code>Copy</code> method.</p>
-<h1 id="randomize-elements">Randomize elements</h1>
-<p><code>Shuffle</code> extension method of <a class="xref" href="../../api/DotNext.Collections.Generic.List.html">List</a> class can be used to randomize the order of the elements within the list:</p>
-<pre><code class="lang-csharp">using static DotNext.Collections.Generic.List;
+<h1 id="generic-range">Generic range</h1>
+<p><a href="https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.range">Enumerable.Range</a> from .NET library supports only arguments of type <strong>int</strong>. <a class="xref" href="../../api/DotNext.Collections.Generic.Set.html">Set.Range</a> method from .NEXT allows to construct ordered set from a range of numbers:</p>
+<pre><code class="lang-csharp">using DotNext.Collections.Generic;
 
-IList&lt;int&gt; items = new int[] { 10, 20, 30, 40 };
-items.Shuffle(Random.Shared);
+IReadOnlySet&lt;long&gt; set = Set.Range&lt;long, DisclosedEndpoint&lt;long&gt;, DisclosedEndpoint&lt;long&gt;&gt;(0L, 3L); // [1, 2]
+set = Set.Range&lt;long, EnclosedEndpoint&lt;long&gt;, DisclosedEndpoint&lt;long&gt;&gt;(0L, 3L); // [0, 1, 2]
 </code></pre>
 
 </article>

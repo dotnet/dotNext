@@ -76,8 +76,13 @@
 </ul>
 <h1 id="common-intrinsics">Common Intrinsics</h1>
 <p>Common intrinsics are various methods aimed to increase performance in some situations.</p>
-<p><code>Bitcast</code> method provides fast converison between two value types. This method is described in details in <a href="valuetype.html">this</a> article.</p>
-<p><code>IsNullable</code> method is a macros that allows to check whether the type <code>T</code> is nullable type or not. Typically, the method call can be replaced by constant value of type <strong>bool</strong> by JIT compiler so you get zero runtime overhead.</p>
+<p><code>AlignOf&lt;T&gt;</code> method is a macros that determines the alignment of the specified type.</p>
+<p><code>AreCompatible</code> methid is a macros that determines binary compatibility of two types passed as generic arguments. The two types are compatible if</p>
+<ul>
+<li>They have the same alignment</li>
+<li>They have the same size</li>
+</ul>
+<p>For instance, <strong>byte</strong> and <strong>sbyte</strong> are compatible.</p>
 <p><code>IsDefault</code> method is the most useful method that allows to check whether the value of type <code>T</code> is <code>default(T)</code>. It works for both value type and reference type.</p>
 <pre><code class="lang-csharp">using DotNext.Runtime;
 
@@ -85,39 +90,6 @@ Intrinsics.IsDefault(&quot;&quot;);   //false
 Intrinsics.IsDefault(default(string));  //true
 Intrinsics.IsDefault(0);    //true
 Intrinsics.IsDefault(1);    //false
-</code></pre>
-<h1 id="low-level-memory-manipulations">Low-Level Memory Manipulations</h1>
-<p>Intrinsic methods for low-level manipulations extend capabilities of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> class from .NET standard library.</p>
-<div class="IMPORTANT">
-<h5>Important</h5>
-<p>Most of the provided methods are not verifiable in terms of CLR Validation and Verification and can destabilize runtime. Correctness of their usage must be guaranteed by developer. For more information, read <a href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">II.3 Validation and Verification</a> section of ECMA-335 standard.</p>
-</div>
-<p>Memory manipulation methods of <a class="xref" href="../../api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class is grouped into the following blocks:</p>
-<ol>
-<li>Hash computation</li>
-<li>Memory equality and comparison</li>
-<li>Utility methods to work with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.typedreference">typedref</a> special type</li>
-<li>Direct memory manipulations: copying, reversing, clearing bits etc.</li>
-<li>Utilities to work with managed pointers (type <code>T&amp;</code>)</li>
-</ol>
-<p>All these features allow to manipulate managed and unmanaged memory to achieve the best perfomance. Regular business applications usually don't need such functionality.</p>
-<p>The following example demonstrates how to compare two unmanaged blocks of memory:</p>
-<pre><code class="lang-csharp">using DotNext.Runtime;
-using System.Runtime.InteropServices;
-
-const int memorySize = 1024;
-var ptr1 = Marshal.AllocHGlobal(memorySize);
-var ptr2 = Marshal.AllocHGlobal(memorySize);
-
-Intrinsics.Equals(ptr1.ToPointer(), ptr2.ToPointer(), memorySize);
-</code></pre>
-<p>Most of these methods don't distinguish managed and unmanaged memory regions. It is responsibility of the caller code to pin the block of managed memory to avoid memory reallocations caused by Garbage Collector.</p>
-<p>The following example demonstrates how to check whether the managed pointer is <strong>null</strong>:</p>
-<pre><code class="lang-csharp">using DotNext.Runtime;
-using System.Runtime.CompilerServices;
-
-var nullref = Unsafe.AsRef&lt;byte&gt;(default(void*));
-Intrinsics.IsNull(in nullref);
 </code></pre>
 <h1 id="exact-type-testing">Exact Type-Testing</h1>
 <p>The <strong>is</strong> operator in C# checks if the result of an expression is compatible with a given type. However, in some rare cases you need to check whether the object is of exact type. <code>IsExactTypeOf</code> method provides optimized implementation of this case:</p>
@@ -127,11 +99,11 @@ Intrinsics.IsExactTypeOf&lt;object&gt;(&quot;a&quot;);  //false
 Intrinsics.IsExactTypeOf&lt;string&gt;(&quot;a&quot;);  //true
 </code></pre>
 <h1 id="array-length">Array Length</h1>
-<p>C# 9 introduces primitive type <code>nint</code> that can be used for accessing array elements without hidden conversion of the index. However, there is no way to obtain array length as native integer. <code>Intrinsics.GetLength</code> provides this ability so the loop over array elements can be rewritten as follows:</p>
+<p>C# 9 introduces primitive type <code>nuint</code> that can be used for accessing array elements without hidden conversion of the index. However, there is no way to obtain array length as native integer. <code>Intrinsics.GetLength</code> provides this ability so the loop over array elements can be rewritten as follows:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime;
 
 var array = new int[] { ... };
-for (nint i = 0; i &lt; Intrinsics.GetLength(array); i++)
+for (nuint i = 0; i &lt; Intrinsics.GetLength(array); i++)
 {
     
 }

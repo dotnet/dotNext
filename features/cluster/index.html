@@ -104,7 +104,6 @@
 <p>The message can be transferred to the particular member using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a> interface which is the extension of <code>IClusterMember</code> interface.</p>
 <p>Usually, you don't to implement <code>IMessage</code> interface directly due to existence of ready-to-use realizations:</p>
 <ol>
-<li><a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.BinaryMessage.html">BinaryMessage</a> for raw binary content</li>
 <li><a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.StreamMessage.html">StreamMessage</a> for message which payload is represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>. It it suitable for large payload when it is stored on the disk</li>
 <li><a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.TextMessage.html">TextMessage</a> for textual content</li>
 <li><a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.JsonMessage-1.html">JsonMessage&lt;T&gt;</a> for JSON-serializable types</li>

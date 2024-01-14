@@ -129,6 +129,24 @@ switch to file as its backing store.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-byte()-system-int32-system-int32)">Stream.ReadAsync(byte[], int, int)</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readatleast">Stream.ReadAtLeast(Span&lt;byte&gt;, int, bool)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readatleastasync">Stream.ReadAtLeastAsync(Memory&lt;byte&gt;, int, bool, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactly#system-io-stream-readexactly(system-byte()-system-int32-system-int32)">Stream.ReadExactly(byte[], int, int)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactly#system-io-stream-readexactly(system-span((system-byte)))">Stream.ReadExactly(Span&lt;byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactlyasync#system-io-stream-readexactlyasync(system-byte()-system-int32-system-int32-system-threading-cancellationtoken)">Stream.ReadExactlyAsync(byte[], int, int, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactlyasync#system-io-stream-readexactlyasync(system-memory((system-byte))-system-threading-cancellationtoken)">Stream.ReadExactlyAsync(Memory&lt;byte&gt;, CancellationToken)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.synchronized">Stream.Synchronized(Stream)</a>
     </div>
     <div>
@@ -188,7 +206,7 @@ it references memory-mapped file.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter__ctor_DotNext_Buffers_MemoryAllocator_System_Byte__System_Int32_System_Int32_System_String_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.%23ctor(DotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Int32%2CSystem.String%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L192">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L182">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter__ctor_" data-uid="DotNext.IO.FileBufferingWriter.#ctor*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter__ctor_DotNext_Buffers_MemoryAllocator_System_Byte__System_Int32_System_Int32_System_String_System_Boolean_" data-uid="DotNext.IO.FileBufferingWriter.#ctor(DotNext.Buffers.MemoryAllocator{System.Byte},System.Int32,System.Int32,System.String,System.Boolean)">FileBufferingWriter(MemoryAllocator&lt;byte&gt;?, int, int, string?, bool)</h4>
@@ -269,7 +287,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter__ctor_DotNext_IO_FileBufferingWriter_Options__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.%23ctor(DotNext.IO.FileBufferingWriter.Options%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L202">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L192">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter__ctor_" data-uid="DotNext.IO.FileBufferingWriter.#ctor*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter__ctor_DotNext_IO_FileBufferingWriter_Options__" data-uid="DotNext.IO.FileBufferingWriter.#ctor(DotNext.IO.FileBufferingWriter.Options@)">FileBufferingWriter(in Options)</h4>
@@ -321,7 +339,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CanRead.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CanRead%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L225">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L212">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CanRead_" data-uid="DotNext.IO.FileBufferingWriter.CanRead*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CanRead" data-uid="DotNext.IO.FileBufferingWriter.CanRead">CanRead</h4>
@@ -355,7 +373,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CanSeek.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CanSeek%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L228">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L215">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CanSeek_" data-uid="DotNext.IO.FileBufferingWriter.CanSeek*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CanSeek" data-uid="DotNext.IO.FileBufferingWriter.CanSeek">CanSeek</h4>
@@ -389,7 +407,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CanWrite.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CanWrite%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L231">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L218">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CanWrite_" data-uid="DotNext.IO.FileBufferingWriter.CanWrite*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CanWrite" data-uid="DotNext.IO.FileBufferingWriter.CanWrite">CanWrite</h4>
@@ -423,7 +441,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Length.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L241">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L228">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Length_" data-uid="DotNext.IO.FileBufferingWriter.Length*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Length" data-uid="DotNext.IO.FileBufferingWriter.Length">Length</h4>
@@ -463,7 +481,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>A class derived from <code>Stream</code> does not support seeking.</p>
+        <td><p>A class derived from <code>Stream</code> does not support seeking and the length is unknown.</p>
 </td>
       </tr>
       <tr>
@@ -478,7 +496,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Position%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L234">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L221">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Position_" data-uid="DotNext.IO.FileBufferingWriter.Position*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Position" data-uid="DotNext.IO.FileBufferingWriter.Position">Position</h4>
@@ -540,7 +558,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Advance_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Advance(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L322">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L311">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Advance_" data-uid="DotNext.IO.FileBufferingWriter.Advance*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Advance_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.Advance(System.Int32)">Advance(int)</h4>
@@ -574,7 +592,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.BeginRead(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L606">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L565">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_BeginRead_" data-uid="DotNext.IO.FileBufferingWriter.BeginRead*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.FileBufferingWriter.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginRead(byte[], int, int, AsyncCallback?, object?)</h4>
@@ -681,7 +699,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L481">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L475">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_BeginWrite_" data-uid="DotNext.IO.FileBufferingWriter.BeginWrite*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginWrite(byte[], int, int, AsyncCallback?, object?)</h4>
@@ -788,7 +806,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Clear.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L273">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L260">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Clear_" data-uid="DotNext.IO.FileBufferingWriter.Clear*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Clear" data-uid="DotNext.IO.FileBufferingWriter.Clear">Clear()</h4>
@@ -820,7 +838,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L711">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L669">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Threading.CancellationToken)">CopyTo(IBufferWriter&lt;byte&gt;, int, CancellationToken)</h4>
@@ -882,7 +900,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_System_IO_Stream_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(System.IO.Stream%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L687">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L645">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_System_IO_Stream_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(System.IO.Stream,System.Int32)">CopyTo(Stream, int)</h4>
@@ -924,7 +942,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyTo_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L744">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L702">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyTo_System_Span_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.CopyTo(System.Span{System.Byte})">CopyTo(Span&lt;byte&gt;)</h4>
@@ -974,7 +992,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L701">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L659">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Threading.CancellationToken)">CopyToAsync(IBufferWriter&lt;byte&gt;, int, CancellationToken)</h4>
@@ -1052,7 +1070,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync(System.IO.Stream%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L679">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L637">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync(System.IO.Stream,System.Int32,System.Threading.CancellationToken)">CopyToAsync(Stream, int, CancellationToken)</h4>
@@ -1132,7 +1150,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L773">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L731">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">CopyToAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -1188,7 +1206,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync%60%601(System.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L736">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L694">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Int32,System.Threading.CancellationToken)">CopyToAsync&lt;TArg&gt;(ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, int, CancellationToken)</h4>
@@ -1288,7 +1306,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyToAsync__1___0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyToAsync%60%601(%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L626">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L585">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyToAsync_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyToAsync__1___0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyToAsync``1(``0,System.Int32,System.Threading.CancellationToken)">CopyToAsync&lt;TConsumer&gt;(TConsumer, int, CancellationToken)</h4>
@@ -1382,7 +1400,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyTo__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo%60%601(System.Buffers.ReadOnlySpanAction%7BSystem.Byte%2C%60%600%7D%2C%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L723">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L681">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyTo__1_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo``1(System.Buffers.ReadOnlySpanAction{System.Byte,``0},``0,System.Int32,System.Threading.CancellationToken)">CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, int, CancellationToken)</h4>
@@ -1466,7 +1484,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_CopyTo__1___0_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.CopyTo%60%601(%60%600%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L656">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L614">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_CopyTo_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_CopyTo__1___0_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.CopyTo``1(``0,System.Int32,System.Threading.CancellationToken)">CopyTo&lt;TConsumer&gt;(TConsumer, int, CancellationToken)</h4>
@@ -1544,7 +1562,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L978">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L936">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Dispose_" data-uid="DotNext.IO.FileBufferingWriter.Dispose*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Dispose_System_Boolean_" data-uid="DotNext.IO.FileBufferingWriter.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -1580,7 +1598,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_EndRead_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.EndRead(System.IAsyncResult)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L610">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L569">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_EndRead_" data-uid="DotNext.IO.FileBufferingWriter.EndRead*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_EndRead_System_IAsyncResult_" data-uid="DotNext.IO.FileBufferingWriter.EndRead(System.IAsyncResult)">EndRead(IAsyncResult)</h4>
@@ -1620,7 +1638,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The number of bytes read from the stream, between zero (0) and the number of bytes you requested. Streams return zero (0) only at the end of the stream, otherwise, they should block until at least one byte is available.</p>
+        <td><p>The number of bytes read from the stream, between zero (0) and the number of bytes requested. ReadAsync returns zero (0) only if zero bytes were requested or if no more bytes will be available because it's at the end of the stream; otherwise, read operations do not complete until at least one byte is available. If zero bytes are requested, read operations may complete immediately or may not complete until at least one byte is available (but without consuming any data).</p>
 </td>
       </tr>
     </tbody>
@@ -1665,7 +1683,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_EndWrite_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L519">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L479">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_EndWrite_" data-uid="DotNext.IO.FileBufferingWriter.EndWrite*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_EndWrite_System_IAsyncResult_" data-uid="DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)">EndWrite(IAsyncResult)</h4>
@@ -1733,7 +1751,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Flush%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L523">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L482">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Flush_" data-uid="DotNext.IO.FileBufferingWriter.Flush*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Flush" data-uid="DotNext.IO.FileBufferingWriter.Flush">Flush()</h4>
@@ -1767,7 +1785,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Flush_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Flush(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L530">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L489">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Flush_" data-uid="DotNext.IO.FileBufferingWriter.Flush*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Flush_System_Boolean_" data-uid="DotNext.IO.FileBufferingWriter.Flush(System.Boolean)">Flush(bool)</h4>
@@ -1802,7 +1820,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_FlushAsync_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.FlushAsync(System.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L554">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L513">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_FlushAsync_" data-uid="DotNext.IO.FileBufferingWriter.FlushAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_FlushAsync_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.FlushAsync(System.Boolean,System.Threading.CancellationToken)">FlushAsync(bool, CancellationToken)</h4>
@@ -1875,7 +1893,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_FlushAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.FlushAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L582">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L541">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_FlushAsync_" data-uid="DotNext.IO.FileBufferingWriter.FlushAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_FlushAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.FlushAsync(System.Threading.CancellationToken)">FlushAsync(CancellationToken)</h4>
@@ -1942,7 +1960,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetMemory(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L290">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L279">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetMemory_" data-uid="DotNext.IO.FileBufferingWriter.GetMemory*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetMemory_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.GetMemory(System.Int32)">GetMemory(int)</h4>
@@ -2008,7 +2026,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_GetSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetSpan(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L318">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L307">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetSpan_" data-uid="DotNext.IO.FileBufferingWriter.GetSpan*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetSpan_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.GetSpan(System.Int32)">GetSpan(int)</h4>
@@ -2058,7 +2076,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContent.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContent%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L863">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L821">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContent" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent">GetWrittenContent()</h4>
@@ -2114,7 +2132,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Sequence.cs/#L248">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Sequence.cs/#L234">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Int32)">GetWrittenContent(int)</h4>
@@ -2185,7 +2203,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Range_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Range)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L817">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L775">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContent_System_Range_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContent(System.Range)">GetWrittenContent(Range)</h4>
@@ -2380,7 +2398,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Range_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Range%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L876">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L834">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Range_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Range,System.Threading.CancellationToken)">GetWrittenContentAsync(Range, CancellationToken)</h4>
@@ -2467,7 +2485,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L924">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L882">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_GetWrittenContentAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.GetWrittenContentAsync(System.Threading.CancellationToken)">GetWrittenContentAsync(CancellationToken)</h4>
@@ -2546,7 +2564,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Read_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Read(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L590">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L549">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Read_" data-uid="DotNext.IO.FileBufferingWriter.Read*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Read_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.Read(System.Byte[],System.Int32,System.Int32)">Read(byte[], int, int)</h4>
@@ -2598,7 +2616,7 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</p>
+        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if <code class="paramref">count</code> is 0 or the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -2651,7 +2669,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L594">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L553">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Read_" data-uid="DotNext.IO.FileBufferingWriter.Read*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Read_System_Span_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.Read(System.Span{System.Byte})">Read(Span&lt;byte&gt;)</h4>
@@ -2691,7 +2709,7 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes allocated in the buffer if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</p>
+        <td><p>The total number of bytes read into the buffer. This can be less than the size of the buffer if that many bytes are not currently available, or zero (0) if the buffer's length is zero or the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -2703,7 +2721,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.ReadAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L598">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L557">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_ReadAsync_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">ReadAsync(byte[], int, int, CancellationToken)</h4>
@@ -2760,7 +2778,7 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>A task that represents the asynchronous read operation. The value of the <code class="paramref">TResult</code> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if the end of the stream has been reached.</p>
+        <td><p>A task that represents the asynchronous read operation. The value of the <code class="paramref">TResult</code> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if <code class="paramref">count</code> is 0 or if the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -2813,7 +2831,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L602">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L561">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_ReadAsync_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -2858,7 +2876,7 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>A task that represents the asynchronous read operation. The value of its <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result">Result</a> property contains the total number of bytes read into the buffer. The result value can be less than the number of bytes allocated in the buffer if that many bytes are not currently available, or it can be 0 (zero) if the end of the stream has been reached.</p>
+        <td><p>A task that represents the asynchronous read operation. The value of its <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result">Result</a> property contains the total number of bytes read into the buffer. The result value can be less than the length of the buffer if that many bytes are not currently available, or it can be 0 (zero) if the length of the buffer is 0 or if the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -2870,7 +2888,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_ReadByte.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.ReadByte%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L586">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L545">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_ReadByte_" data-uid="DotNext.IO.FileBufferingWriter.ReadByte*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_ReadByte" data-uid="DotNext.IO.FileBufferingWriter.ReadByte">ReadByte()</h4>
@@ -2925,7 +2943,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Seek_System_Int64_System_IO_SeekOrigin_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Seek(System.Int64%2CSystem.IO.SeekOrigin)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L974">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L932">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Seek_" data-uid="DotNext.IO.FileBufferingWriter.Seek*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Seek_System_Int64_System_IO_SeekOrigin_" data-uid="DotNext.IO.FileBufferingWriter.Seek(System.Int64,System.IO.SeekOrigin)">Seek(long, SeekOrigin)</h4>
@@ -3009,7 +3027,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_SetLength_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.SetLength(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L614">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L573">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_SetLength_" data-uid="DotNext.IO.FileBufferingWriter.SetLength*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_SetLength_System_Int64_" data-uid="DotNext.IO.FileBufferingWriter.SetLength(System.Int64)">SetLength(long)</h4>
@@ -3071,7 +3089,7 @@ synchronize a file's in-core state with storage device.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_TryGetWrittenContent_System_ReadOnlyMemory_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.TryGetWrittenContent(System.ReadOnlyMemory%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L938">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L896">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_TryGetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.TryGetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_TryGetWrittenContent_System_ReadOnlyMemory_System_Byte___" data-uid="DotNext.IO.FileBufferingWriter.TryGetWrittenContent(System.ReadOnlyMemory{System.Byte}@)">TryGetWrittenContent(out ReadOnlyMemory&lt;byte&gt;)</h4>
@@ -3127,7 +3145,7 @@ to obtain the content.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_TryGetWrittenContent_System_ReadOnlyMemory_System_Byte___System_String__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.TryGetWrittenContent(System.ReadOnlyMemory%7BSystem.Byte%7D%40%2CSystem.String%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L961">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L919">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_TryGetWrittenContent_" data-uid="DotNext.IO.FileBufferingWriter.TryGetWrittenContent*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_TryGetWrittenContent_System_ReadOnlyMemory_System_Byte___System_String__" data-uid="DotNext.IO.FileBufferingWriter.TryGetWrittenContent(System.ReadOnlyMemory{System.Byte}@,System.String@)">TryGetWrittenContent(out ReadOnlyMemory&lt;byte&gt;, out string?)</h4>
@@ -3188,7 +3206,7 @@ This method is useful only if the file was not created as temporary file.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Write_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Write(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L466">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L460">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Write_" data-uid="DotNext.IO.FileBufferingWriter.Write*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Write_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.FileBufferingWriter.Write(System.Byte[],System.Int32,System.Int32)">Write(byte[], int, int)</h4>
@@ -3277,7 +3295,7 @@ This method is useful only if the file was not created as temporary file.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_Write_System_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.Write(System.ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L433">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L427">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_Write_" data-uid="DotNext.IO.FileBufferingWriter.Write*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_Write_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.IO.FileBufferingWriter.Write(System.ReadOnlySpan{System.Byte})">Write(ReadOnlySpan&lt;byte&gt;)</h4>
@@ -3313,7 +3331,7 @@ This method is useful only if the file was not created as temporary file.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.WriteAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L473">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L467">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_WriteAsync_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">WriteAsync(byte[], int, int, CancellationToken)</h4>
@@ -3423,7 +3441,7 @@ This method is useful only if the file was not created as temporary file.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.WriteAsync(System.ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L391">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L385">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_WriteAsync_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileBufferingWriter.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</h4>
@@ -3480,7 +3498,7 @@ This method is useful only if the file was not created as temporary file.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter_WriteByte_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter.WriteByte(System.Byte)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L477">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.cs/#L471">View Source</a>
   </span>
   <a id="DotNext_IO_FileBufferingWriter_WriteByte_" data-uid="DotNext.IO.FileBufferingWriter.WriteByte*"></a>
   <h4 id="DotNext_IO_FileBufferingWriter_WriteByte_System_Byte_" data-uid="DotNext.IO.FileBufferingWriter.WriteByte(System.Byte)">WriteByte(byte)</h4>
@@ -3567,6 +3585,18 @@ This method is useful only if the file was not created as temporary file.</p>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.IO.StreamSource.html#DotNext_IO_StreamSource_AsStream__1___0_System_Action___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_Task__">StreamSource.AsStream&lt;TWriter&gt;(TWriter, Action&lt;TWriter&gt;?, Func&lt;TWriter, CancellationToken, Task&gt;?)</a>
   </div>
   <div>
@@ -3574,18 +3604,6 @@ This method is useful only if the file was not created as temporary file.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
@@ -3624,112 +3642,82 @@ This method is useful only if the file was not created as temporary file.</p>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan___0__">BufferHelpers.WriteFormattable&lt;T&gt;(IBufferWriter&lt;byte&gt;, scoped ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Encode_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__">BufferWriter.Encode(IBufferWriter&lt;byte&gt;, ReadOnlySpan&lt;char&gt;, in EncodingContext, LengthFormat?)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_">BufferHelpers.WriteFormattable&lt;T&gt;(IBufferWriter&lt;byte&gt;, T)</a>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Format__1_System_Buffers_IBufferWriter_System_Byte____0_DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__System_ReadOnlySpan_System_Char__System_IFormatProvider_DotNext_Buffers_MemoryAllocator_System_Char__">BufferWriter.Format&lt;T&gt;(IBufferWriter&lt;byte&gt;, T, in EncodingContext, LengthFormat?, ReadOnlySpan&lt;char&gt;, IFormatProvider?, MemoryAllocator&lt;char&gt;?)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___">BufferHelpers.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, in ReadOnlySequence&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Format__1_System_Buffers_IBufferWriter_System_Byte____0_System_Nullable_DotNext_IO_LengthFormat__System_ReadOnlySpan_System_Char__System_IFormatProvider_">BufferWriter.Format&lt;T&gt;(IBufferWriter&lt;byte&gt;, T, LengthFormat?, ReadOnlySpan&lt;char&gt;, IFormatProvider?)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferHelpers.html#DotNext_Buffers_BufferHelpers_Write__1_System_Buffers_IBufferWriter___0____0_">BufferHelpers.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, T)</a>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Interpolate_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__DotNext_Buffers_EncodingInterpolatedStringHandler__">BufferWriter.Interpolate(IBufferWriter&lt;byte&gt;, in EncodingContext, Span&lt;char&gt;, in EncodingInterpolatedStringHandler)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteBigInteger_System_Buffers_IBufferWriter_System_Byte__System_Numerics_BigInteger__System_Boolean_System_Nullable_DotNext_IO_LengthFormat__">BufferWriter.WriteBigInteger(IBufferWriter&lt;byte&gt;, in BigInteger, bool, LengthFormat?)</a>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Interpolate_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__System_IFormatProvider_DotNext_Buffers_EncodingInterpolatedStringHandler__">BufferWriter.Interpolate(IBufferWriter&lt;byte&gt;, in EncodingContext, Span&lt;char&gt;, IFormatProvider?, in EncodingInterpolatedStringHandler)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_System_Nullable_DotNext_IO_LengthFormat__DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_">BufferWriter.WriteFormattable&lt;T&gt;(IBufferWriter&lt;byte&gt;, T, LengthFormat?, in EncodingContext, ReadOnlySpan&lt;char&gt;, IFormatProvider?)</a>
+      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, in ReadOnlySequence&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_System_Boolean_">BufferWriter.WriteInt16(IBufferWriter&lt;byte&gt;, short, bool)</a>
+      <a class="xref" href="DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_Format__1_System_Buffers_IBufferWriter_System_Byte____0_System_ReadOnlySpan_System_Char__System_IFormatProvider_">ByteBuffer.Format&lt;T&gt;(IBufferWriter&lt;byte&gt;, T, ReadOnlySpan&lt;char&gt;, IFormatProvider?)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Boolean_">BufferWriter.WriteInt32(IBufferWriter&lt;byte&gt;, int, bool)</a>
+      <a class="xref" href="DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_Write_System_Buffers_IBufferWriter_System_Byte__System_Numerics_BigInteger__System_Boolean_System_Boolean_">ByteBuffer.Write(IBufferWriter&lt;byte&gt;, in BigInteger, bool, bool)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_">BufferWriter.WriteInt64(IBufferWriter&lt;byte&gt;, long, bool)</a>
+      <a class="xref" href="DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_WriteBigEndian__1_System_Buffers_IBufferWriter_System_Byte____0_">ByteBuffer.WriteBigEndian&lt;T&gt;(IBufferWriter&lt;byte&gt;, T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__DotNext_Buffers_EncodingInterpolatedStringHandler__">BufferWriter.WriteString(IBufferWriter&lt;byte&gt;, in EncodingContext, ref EncodingInterpolatedStringHandler)</a>
+      <a class="xref" href="DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_WriteLittleEndian__1_System_Buffers_IBufferWriter_System_Byte____0_">ByteBuffer.WriteLittleEndian&lt;T&gt;(IBufferWriter&lt;byte&gt;, T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__System_IFormatProvider_DotNext_Buffers_EncodingInterpolatedStringHandler__">BufferWriter.WriteString(IBufferWriter&lt;byte&gt;, in EncodingContext, Span&lt;char&gt;, IFormatProvider?, ref EncodingInterpolatedStringHandler)</a>
+      <a class="xref" href="DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_Write__1_System_Buffers_IBufferWriter_System_Byte____0_">ByteBuffer.Write&lt;T&gt;(IBufferWriter&lt;byte&gt;, T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__">BufferWriter.WriteString(IBufferWriter&lt;byte&gt;, ReadOnlySpan&lt;char&gt;, in EncodingContext, LengthFormat?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_System_Boolean_">BufferWriter.WriteUInt16(IBufferWriter&lt;byte&gt;, ushort, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_System_Boolean_">BufferWriter.WriteUInt32(IBufferWriter&lt;byte&gt;, uint, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_System_Boolean_">BufferWriter.WriteUInt64(IBufferWriter&lt;byte&gt;, ulong, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter_System_Byte____0__">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;byte&gt;, in T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Combine_System_IO_Stream_System_IO_Stream___">StreamExtensions.Combine(Stream, params Stream[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyTo(Stream, IBufferWriter&lt;byte&gt;, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_IO_Stream_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo(Stream, Stream, Span&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Combine_System_IO_Stream_System_ReadOnlySpan_System_IO_Stream__">StreamExtensions.Combine(Stream, ReadOnlySpan&lt;Stream&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, IBufferWriter&lt;byte&gt;, int, CancellationToken)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, IBufferWriter&lt;byte&gt;, long, int, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Int64_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, Stream, long, Memory&lt;byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Func___0_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, Func&lt;TArg, ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, TArg, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Func___0_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, Func&lt;TArg, ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, TArg, Memory&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream___0_System_Int64_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TConsumer&gt;(Stream, TConsumer, long, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TConsumer&gt;(Stream, TConsumer, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyTo&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, int, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_DecodeAsync_System_IO_Stream_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.DecodeAsync(Stream, DecodingContext, LengthFormat, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, Span&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_DecodeAsync_System_IO_Stream_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Char__System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.DecodeAsync(Stream, DecodingContext, LengthFormat, Memory&lt;char&gt;, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo__1_System_IO_Stream___0_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo&lt;TConsumer&gt;(Stream, TConsumer, Span&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_EncodeAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.EncodeAsync(Stream, ReadOnlyMemory&lt;char&gt;, EncodingContext, LengthFormat?, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, Parser&lt;T&gt;, LengthFormat, DecodingContext, IFormatProvider?, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_FormatAsync__1_System_IO_Stream___0_DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_Memory_System_Byte__System_String_System_IFormatProvider_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.FormatAsync&lt;T&gt;(Stream, T, EncodingContext, LengthFormat?, Memory&lt;byte&gt;, string?, IFormatProvider?, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, Parser&lt;T&gt;, LengthFormat, DecodingContext, Memory&lt;byte&gt;, IFormatProvider?, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_FormatAsync__1_System_IO_Stream___0_System_Nullable_DotNext_IO_LengthFormat__System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.FormatAsync&lt;T&gt;(Stream, T, LengthFormat?, Memory&lt;byte&gt;, string?, IFormatProvider?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_IO_LengthFormat_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, LengthFormat, Memory&lt;byte&gt;, NumberStyles, IFormatProvider?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_IO_LengthFormat_System_Memory_System_Byte__System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, LengthFormat, Memory&lt;byte&gt;, IFormatProvider?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Parse__1_System_IO_Stream_">StreamExtensions.Parse&lt;T&gt;(Stream)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Parse__1_System_IO_Stream_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Span_System_Byte__System_IFormatProvider_">StreamExtensions.Parse&lt;T&gt;(Stream, Parser&lt;T&gt;, LengthFormat, in DecodingContext, Span&lt;byte&gt;, IFormatProvider?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Parse__1_System_IO_Stream_System_Span_System_Byte__">StreamExtensions.Parse&lt;T&gt;(Stream, Span&lt;byte&gt;)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__2_System_IO_Stream___0_DotNext_Buffers_ReadOnlySpanFunc_System_Char___0___1__DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;TArg, TResult&gt;(Stream, TArg, ReadOnlySpanFunc&lt;char, TArg, TResult&gt;, DecodingContext, LengthFormat, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAllAsync_System_IO_Stream_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAllAsync(Stream, int, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
@@ -3738,97 +3726,13 @@ This method is useful only if the file was not created as temporary file.</p>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigEndianAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBigEndianAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAtLeast_System_IO_Stream_System_Int32_System_Span_System_Byte__">StreamExtensions.ReadAtLeast(Stream, int, Span&lt;byte&gt;)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBlockAsync(Stream, LengthFormat, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAtLeastAsync_System_IO_Stream_System_Int32_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAtLeastAsync(Stream, int, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_">StreamExtensions.ReadBigInteger(Stream, LengthFormat, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_System_Span_System_Byte__">StreamExtensions.ReadBigInteger(Stream, LengthFormat, bool, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_System_Int32_System_Boolean_">StreamExtensions.ReadBigInteger(Stream, int, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_System_Int32_System_Boolean_System_Span_System_Byte__">StreamExtensions.ReadBigInteger(Stream, int, bool, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, LengthFormat, bool, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, LengthFormat, bool, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_System_Int32_System_Boolean_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, int, bool, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_System_Int32_System_Boolean_System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, int, bool, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlock_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__">StreamExtensions.ReadBlock(Stream, LengthFormat, MemoryAllocator&lt;byte&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlock_System_IO_Stream_System_Span_System_Byte__">StreamExtensions.ReadBlock(Stream, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBlockAsync(Stream, LengthFormat, Memory&lt;byte&gt;, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBlockAsync(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, LengthFormat, in DecodingContext, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Span_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, LengthFormat, in DecodingContext, Span&lt;byte&gt;, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_">StreamExtensions.ReadString(Stream, LengthFormat, Encoding)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, LengthFormat, Encoding, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, int, in DecodingContext, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, int, in DecodingContext, Span&lt;byte&gt;, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_">StreamExtensions.ReadString(Stream, int, Encoding)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, int, Encoding, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, DecodingContext, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, DecodingContext, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, Encoding, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, Encoding, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, DecodingContext, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, DecodingContext, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, Encoding, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, Encoding, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadLittleEndianAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadLittleEndianAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUtf8_System_IO_Stream_System_Span_System_Byte__System_Buffers_IBufferWriter_System_Char__">StreamExtensions.ReadUtf8(Stream, Span&lt;byte&gt;, IBufferWriter&lt;char&gt;)</a>
@@ -3843,76 +3747,19 @@ This method is useful only if the file was not created as temporary file.</p>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUtf8__1_System_IO_Stream_System_Span_System_Byte__System_Span_System_Char__System_Buffers_ReadOnlySpanAction_System_Char___0____0_">StreamExtensions.ReadUtf8&lt;TArg&gt;(Stream, Span&lt;byte&gt;, Span&lt;char&gt;, ReadOnlySpanAction&lt;char, TArg&gt;, TArg)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_">StreamExtensions.Read&lt;T&gt;(Stream)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte___System_Threading_CancellationToken_">StreamExtensions.Write(Stream, in ReadOnlySequence&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync(Stream, ReadOnlySequence&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream_System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask_System_ReadOnlyMemory_System_Byte______0_System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;TArg&gt;(Stream, Func&lt;TArg, CancellationToken, ValueTask&lt;ReadOnlyMemory&lt;byte&gt;&gt;&gt;, TArg, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync_System_IO_Stream_System_ReadOnlyMemory_System_Byte__DotNext_IO_LengthFormat_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync(Stream, ReadOnlyMemory&lt;byte&gt;, LengthFormat, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigEndianAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteBigEndianAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigInteger_System_IO_Stream_System_Numerics_BigInteger__System_Boolean_System_Nullable_DotNext_IO_LengthFormat__">StreamExtensions.WriteBigInteger(Stream, in BigInteger, bool, LengthFormat?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigIntegerAsync_System_IO_Stream_System_Numerics_BigInteger_System_Boolean_DotNext_Buffers_MemoryAllocator_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteBigIntegerAsync(Stream, BigInteger, bool, MemoryAllocator&lt;byte&gt;?, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigIntegerAsync_System_IO_Stream_System_Numerics_BigInteger_System_Boolean_System_Memory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteBigIntegerAsync(Stream, BigInteger, bool, Memory&lt;byte&gt;, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBlock_System_IO_Stream_System_ReadOnlySpan_System_Byte__DotNext_IO_LengthFormat_">StreamExtensions.WriteBlock(Stream, ReadOnlySpan&lt;byte&gt;, LengthFormat)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBlockAsync_System_IO_Stream_System_ReadOnlyMemory_System_Byte__DotNext_IO_LengthFormat_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteBlockAsync(Stream, ReadOnlyMemory&lt;byte&gt;, LengthFormat, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_DotNext_IO_LengthFormat_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, LengthFormat, EncodingContext, Memory&lt;byte&gt;, string?, IFormatProvider?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_DotNext_IO_LengthFormat_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, LengthFormat, EncodingContext, string?, IFormatProvider?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattable__1_System_IO_Stream___0_">StreamExtensions.WriteFormattable&lt;T&gt;(Stream, T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattable__1_System_IO_Stream___0_DotNext_IO_LengthFormat_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteFormattable&lt;T&gt;(Stream, T, LengthFormat, Encoding, ReadOnlySpan&lt;char&gt;, IFormatProvider?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Span_System_Byte__System_Nullable_DotNext_IO_LengthFormat__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;char&gt;, in EncodingContext, Span&lt;byte&gt;, LengthFormat?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_LengthFormat__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;char&gt;, Encoding, LengthFormat?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Memory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;char&gt;, EncodingContext, Memory&lt;byte&gt;, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;char&gt;, Encoding, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write__1_System_IO_Stream___0__">StreamExtensions.Write&lt;T&gt;(Stream, in T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.Serialization.Serializable.html#DotNext_Runtime_Serialization_Serializable_ReadFromAsync__1_System_IO_Stream_System_Int32_System_Threading_CancellationToken_">Serializable.ReadFromAsync&lt;TObject&gt;(Stream, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.Serialization.Serializable.html#DotNext_Runtime_Serialization_Serializable_ReadFromAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">Serializable.ReadFromAsync&lt;TObject&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteLittleEndianAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteLittleEndianAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
 
 </article>
@@ -3926,7 +3773,7 @@ This method is useful only if the file was not created as temporary file.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileBufferingWriter.md&amp;value=---%0Auid%3A%20DotNext.IO.FileBufferingWriter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Sequence.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileBufferingWriter.Sequence.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

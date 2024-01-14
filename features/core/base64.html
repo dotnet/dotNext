@@ -71,34 +71,27 @@
 <p>Converting base64-encoded binary content in streaming scenarios may be difficult because .NET standard library provides only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.text.base64">low-level operations</a> for encoding/decoding. When the input stream has unpredictable size it's very hard to use such API and reduce memory allocations during decoding in the same time. Moreover, base64-encoded binary content can be represented in two forms:</p>
 <ul>
 <li>As UTF-8 encoded characters in the form of the sequence of bytes</li>
-<li>As Unicode encoded characters in the form of the sequence of chars</li>
+<li>As UTF-16 encoded characters in the form of the sequence of chars</li>
 </ul>
-<p><a class="xref" href="../../api/DotNext.Text.Base64Decoder.html">Base64Decoder</a> type is a specially designed for decoding base64-encoded content for streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.</p>
+<p><a class="xref" href="../../api/DotNext.Buffers.Text.Base64Decoder.html">Base64Decoder</a> type is a specially designed for decoding base64-encoded content for streaming scenarios because it maintains the state in the form of the buffer when input fragment cannot be fully decoded.</p>
 <p>The following example demonstrates how to decode base64-encoded content represented by UTF-8 encoded characters from the stream:</p>
-<pre><code class="lang-csharp">using DotNext;
-using DotNext.Text;
-using System;
+<pre><code class="lang-csharp">using System;
 using System.IO;
+using DotNext.Buffers;
+using DotNext.Buffers.Text;
 
-static void WriteToStream(ReadOnlySpan&lt;byte&gt; decodedBytes, MemoryStream output)
-    =&gt; output.Write(decodedBytes);
-
-using Stream input = ...; // stream containing UTF-8 characters of base-64 encoded content
-using var output = new MemoryStream();
-var decoder = new Base64Decoder();
-Span&lt;byte&gt; buffer = stackalloc byte[128];
-for (int count; (count = input.Read(buffer)) &gt; 0; )
-{
-    decoder.Decode(buffer.Slice(0, count), &amp;WriteToStream, output);
-}
+Base64Decoder decoder = new();
+Span&lt;byte&gt; base64 = &quot;AA==&quot;u8;
+var bytes = new ArrayBufferWriter&lt;byte&gt;();
+decoder.DecodeFromUtf8(base64, bytes);
 </code></pre>
-<p><a class="xref" href="../../api/DotNext.Text.Base64Encoder.html">Base64Encoder</a> type provides encoding for streamin scenarios.</p>
+<p><a class="xref" href="../../api/DotNext.Buffers.Text.Base64Encoder.html">Base64Encoder</a> type provides encoding for streaming scenarios.</p>
 <pre><code class="lang-csharp">using System.Buffers;
-using DotNext.Text;
+using DotNext.Buffers.Text;
 
 var encoder = new Base64Encoder();
 var writer = new ArrayBufferWriter&lt;char&gt;();
-encoder.EncodeToChars(new byte[] { 10, 20, 30 }, writer);
+encoder.EncodeToUtf16(new byte[] { 10, 20, 30 }, writer);
 
 if (writer.HasBufferedData)
 {

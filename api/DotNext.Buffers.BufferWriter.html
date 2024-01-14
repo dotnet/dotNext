@@ -115,19 +115,19 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteBigInteger_System_Buffers_IBufferWriter_System_Byte__System_Numerics_BigInteger__System_Boolean_System_Nullable_DotNext_IO_LengthFormat__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteBigInteger(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Numerics.BigInteger%40%2CSystem.Boolean%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_Encode_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Encode(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%40%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L36">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L88">View Source</a>
   </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteBigInteger_" data-uid="DotNext.Buffers.BufferWriter.WriteBigInteger*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteBigInteger_System_Buffers_IBufferWriter_System_Byte__System_Numerics_BigInteger__System_Boolean_System_Nullable_DotNext_IO_LengthFormat__" data-uid="DotNext.Buffers.BufferWriter.WriteBigInteger(System.Buffers.IBufferWriter{System.Byte},System.Numerics.BigInteger@,System.Boolean,System.Nullable{DotNext.IO.LengthFormat})">WriteBigInteger(IBufferWriter&lt;byte&gt;, in BigInteger, bool, LengthFormat?)</h4>
-  <div class="markdown level1 summary"><p>Encodes an arbitrary large integer as raw bytes.</p>
+  <a id="DotNext_Buffers_BufferWriter_Encode_" data-uid="DotNext.Buffers.BufferWriter.Encode*"></a>
+  <h4 id="DotNext_Buffers_BufferWriter_Encode_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__" data-uid="DotNext.Buffers.BufferWriter.Encode(System.Buffers.IBufferWriter{System.Byte},System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat})">Encode(IBufferWriter&lt;byte&gt;, ReadOnlySpan&lt;char&gt;, in EncodingContext, LengthFormat?)</h4>
+  <div class="markdown level1 summary"><p>Encodes string using the specified encoding.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void WriteBigInteger(this IBufferWriter&lt;byte&gt; writer, in BigInteger value, bool littleEndian, LengthFormat? lengthFormat = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long Encode(this IBufferWriter&lt;byte&gt; writer, ReadOnlySpan&lt;char&gt; value, in EncodingContext context, LengthFormat? lengthFormat = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -146,40 +146,56 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
         <td><span class="parametername">value</span></td>
-        <td><p>The value to encode.</p>
+        <td><p>The sequence of characters.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to use little-endian encoding; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use big-endian encoding.</p>
+        <td><a class="xref" href="DotNext.Text.EncodingContext.html">EncodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The encoding context.</p>
 </td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a>?</td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>Indicates how the length of the BLOB must be encoded; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> to prevent length encoding.</p>
+        <td><p>String length encoding format; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> to prevent encoding of string length.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><p>The number of written bytes.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_System_Nullable_DotNext_IO_LengthFormat__DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteFormattable%60%601(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2C%60%600%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CDotNext.Text.EncodingContext%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_Format__1_System_Buffers_IBufferWriter_System_Byte____0_DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__System_ReadOnlySpan_System_Char__System_IFormatProvider_DotNext_Buffers_MemoryAllocator_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Format%60%601(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2C%60%600%2CDotNext.Text.EncodingContext%40%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L203">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L131">View Source</a>
   </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteFormattable_" data-uid="DotNext.Buffers.BufferWriter.WriteFormattable*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteFormattable__1_System_Buffers_IBufferWriter_System_Byte____0_System_Nullable_DotNext_IO_LengthFormat__DotNext_Text_EncodingContext__System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.WriteFormattable``1(System.Buffers.IBufferWriter{System.Byte},``0,System.Nullable{DotNext.IO.LengthFormat},DotNext.Text.EncodingContext@,System.ReadOnlySpan{System.Char},System.IFormatProvider)">WriteFormattable&lt;T&gt;(IBufferWriter&lt;byte&gt;, T, LengthFormat?, in EncodingContext, ReadOnlySpan&lt;char&gt;, IFormatProvider?)</h4>
+  <a id="DotNext_Buffers_BufferWriter_Format_" data-uid="DotNext.Buffers.BufferWriter.Format*"></a>
+  <h4 id="DotNext_Buffers_BufferWriter_Format__1_System_Buffers_IBufferWriter_System_Byte____0_DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__System_ReadOnlySpan_System_Char__System_IFormatProvider_DotNext_Buffers_MemoryAllocator_System_Char__" data-uid="DotNext.Buffers.BufferWriter.Format``1(System.Buffers.IBufferWriter{System.Byte},``0,DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat},System.ReadOnlySpan{System.Char},System.IFormatProvider,DotNext.Buffers.MemoryAllocator{System.Char})">Format&lt;T&gt;(IBufferWriter&lt;byte&gt;, T, in EncodingContext, LengthFormat?, ReadOnlySpan&lt;char&gt;, IFormatProvider?, MemoryAllocator&lt;char&gt;?)</h4>
   <div class="markdown level1 summary"><p>Encodes formatted value as a set of characters using the specified encoding.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long WriteFormattable&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, LengthFormat? lengthFormat, in EncodingContext context, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : notnull, ISpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public static long Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null, MemoryAllocator&lt;char&gt;? allocator = null) where T : notnull, ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -204,15 +220,15 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a>?</td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>String length encoding format.</p>
-</td>
-      </tr>
-      <tr>
         <td><a class="xref" href="DotNext.Text.EncodingContext.html">EncodingContext</a></td>
         <td><span class="parametername">context</span></td>
         <td><p>The context describing encoding of characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a>?</td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>String length encoding format.</p>
 </td>
       </tr>
       <tr>
@@ -225,6 +241,12 @@
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
         <td><p>The format provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of internal buffer of characters.</p>
 </td>
       </tr>
     </tbody>
@@ -263,19 +285,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int16%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_Format__1_System_Buffers_IBufferWriter_System_Byte____0_System_Nullable_DotNext_IO_LengthFormat__System_ReadOnlySpan_System_Char__System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Format%60%601(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2C%60%600%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.IFormatProvider)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L163">View Source</a>
   </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteInt16_System_Buffers_IBufferWriter_System_Byte__System_Int16_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteInt16(System.Buffers.IBufferWriter{System.Byte},System.Int16,System.Boolean)">WriteInt16(IBufferWriter&lt;byte&gt;, short, bool)</h4>
-  <div class="markdown level1 summary"><p>Encodes 16-bit signed integer.</p>
+  <a id="DotNext_Buffers_BufferWriter_Format_" data-uid="DotNext.Buffers.BufferWriter.Format*"></a>
+  <h4 id="DotNext_Buffers_BufferWriter_Format__1_System_Buffers_IBufferWriter_System_Byte____0_System_Nullable_DotNext_IO_LengthFormat__System_ReadOnlySpan_System_Char__System_IFormatProvider_" data-uid="DotNext.Buffers.BufferWriter.Format``1(System.Buffers.IBufferWriter{System.Byte},``0,System.Nullable{DotNext.IO.LengthFormat},System.ReadOnlySpan{System.Char},System.IFormatProvider)">Format&lt;T&gt;(IBufferWriter&lt;byte&gt;, T, LengthFormat?, ReadOnlySpan&lt;char&gt;, IFormatProvider?)</h4>
+  <div class="markdown level1 summary"><p>Encodes formatted value as a set of UTF-8 bytes using the specified encoding.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void WriteInt16(this IBufferWriter&lt;byte&gt; writer, short value, bool littleEndian)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, LengthFormat? lengthFormat, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : notnull, IUtf8SpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -294,126 +316,94 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int16">short</a></td>
+        <td><span class="xref">T</span></td>
         <td><span class="parametername">value</span></td>
-        <td><p>The value to encode.</p>
+        <td><p>The type value to be written as string.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to use little-endian encoding; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use big-endian encoding.</p>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a>?</td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>String length encoding format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format of the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The format provider.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L79">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteInt32_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteInt32(System.Buffers.IBufferWriter{System.Byte},System.Int32,System.Boolean)">WriteInt32(IBufferWriter&lt;byte&gt;, int, bool)</h4>
-  <div class="markdown level1 summary"><p>Encodes 32-bit signed integer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void WriteInt32(this IBufferWriter&lt;byte&gt; writer, int value, bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
-</td>
-      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to encode.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to use little-endian encoding; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use big-endian encoding.</p>
+        <td><p>The number of written bytes.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L54">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteInt64_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteInt64(System.Buffers.IBufferWriter{System.Byte},System.Int64,System.Boolean)">WriteInt64(IBufferWriter&lt;byte&gt;, long, bool)</h4>
-  <div class="markdown level1 summary"><p>Encodes 64-bit signed integer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void WriteInt64(this IBufferWriter&lt;byte&gt; writer, long value, bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
-        <th>Type</th>
         <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of formattable value.</p>
 </td>
       </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to encode.</p>
-</td>
+        <th>Type</th>
+        <th>Condition</th>
       </tr>
+    </thead>
+    <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to use little-endian encoding; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use big-endian encoding.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.insufficientmemoryexception">InsufficientMemoryException</a></td>
+        <td><p><code class="paramref">writer</code> has not enough free space to place UTF-8 bytes.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__DotNext_Buffers_EncodingInterpolatedStringHandler__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CDotNext.Text.EncodingContext%40%2CDotNext.Buffers.EncodingInterpolatedStringHandler%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_Interpolate_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__DotNext_Buffers_EncodingInterpolatedStringHandler__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Interpolate(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CDotNext.Text.EncodingContext%40%2CSystem.Span%7BSystem.Char%7D%2CDotNext.Buffers.EncodingInterpolatedStringHandler%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L242">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L224">View Source</a>
   </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteString_" data-uid="DotNext.Buffers.BufferWriter.WriteString*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__DotNext_Buffers_EncodingInterpolatedStringHandler__" data-uid="DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter{System.Byte},DotNext.Text.EncodingContext@,DotNext.Buffers.EncodingInterpolatedStringHandler@)">WriteString(IBufferWriter&lt;byte&gt;, in EncodingContext, ref EncodingInterpolatedStringHandler)</h4>
+  <a id="DotNext_Buffers_BufferWriter_Interpolate_" data-uid="DotNext.Buffers.BufferWriter.Interpolate*"></a>
+  <h4 id="DotNext_Buffers_BufferWriter_Interpolate_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__DotNext_Buffers_EncodingInterpolatedStringHandler__" data-uid="DotNext.Buffers.BufferWriter.Interpolate(System.Buffers.IBufferWriter{System.Byte},DotNext.Text.EncodingContext@,System.Span{System.Char},DotNext.Buffers.EncodingInterpolatedStringHandler@)">Interpolate(IBufferWriter&lt;byte&gt;, in EncodingContext, Span&lt;char&gt;, in EncodingInterpolatedStringHandler)</h4>
   <div class="markdown level1 summary"><p>Encodes formattable string as a sequence of bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteString(this IBufferWriter&lt;byte&gt; writer, in EncodingContext context, ref EncodingInterpolatedStringHandler handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this IBufferWriter&lt;byte&gt; writer, in EncodingContext context, Span&lt;char&gt; buffer, in EncodingInterpolatedStringHandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -435,6 +425,12 @@
         <td><a class="xref" href="DotNext.Text.EncodingContext.html">EncodingContext</a></td>
         <td><span class="parametername">context</span></td>
         <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The preallocated buffer to be used for placing characters during encoding.</p>
 </td>
       </tr>
       <tr>
@@ -463,19 +459,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__System_IFormatProvider_DotNext_Buffers_EncodingInterpolatedStringHandler__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CDotNext.Text.EncodingContext%40%2CSystem.Span%7BSystem.Char%7D%2CSystem.IFormatProvider%2CDotNext.Buffers.EncodingInterpolatedStringHandler%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_Interpolate_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__System_IFormatProvider_DotNext_Buffers_EncodingInterpolatedStringHandler__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Interpolate(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CDotNext.Text.EncodingContext%40%2CSystem.Span%7BSystem.Char%7D%2CSystem.IFormatProvider%2CDotNext.Buffers.EncodingInterpolatedStringHandler%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L232">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L213">View Source</a>
   </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteString_" data-uid="DotNext.Buffers.BufferWriter.WriteString*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__System_IFormatProvider_DotNext_Buffers_EncodingInterpolatedStringHandler__" data-uid="DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter{System.Byte},DotNext.Text.EncodingContext@,System.Span{System.Char},System.IFormatProvider,DotNext.Buffers.EncodingInterpolatedStringHandler@)">WriteString(IBufferWriter&lt;byte&gt;, in EncodingContext, Span&lt;char&gt;, IFormatProvider?, ref EncodingInterpolatedStringHandler)</h4>
+  <a id="DotNext_Buffers_BufferWriter_Interpolate_" data-uid="DotNext.Buffers.BufferWriter.Interpolate*"></a>
+  <h4 id="DotNext_Buffers_BufferWriter_Interpolate_System_Buffers_IBufferWriter_System_Byte__DotNext_Text_EncodingContext__System_Span_System_Char__System_IFormatProvider_DotNext_Buffers_EncodingInterpolatedStringHandler__" data-uid="DotNext.Buffers.BufferWriter.Interpolate(System.Buffers.IBufferWriter{System.Byte},DotNext.Text.EncodingContext@,System.Span{System.Char},System.IFormatProvider,DotNext.Buffers.EncodingInterpolatedStringHandler@)">Interpolate(IBufferWriter&lt;byte&gt;, in EncodingContext, Span&lt;char&gt;, IFormatProvider?, in EncodingInterpolatedStringHandler)</h4>
   <div class="markdown level1 summary"><p>Encodes formattable string as a sequence of bytes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteString(this IBufferWriter&lt;byte&gt; writer, in EncodingContext context, Span&lt;char&gt; buffer, IFormatProvider? provider, ref EncodingInterpolatedStringHandler handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this IBufferWriter&lt;byte&gt; writer, in EncodingContext context, Span&lt;char&gt; buffer, IFormatProvider? provider, in EncodingInterpolatedStringHandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -537,228 +533,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%40%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Write%60%601(System.Buffers.IBufferWriter%7B%60%600%7D%2CSystem.Buffers.ReadOnlySequence%7B%60%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L162">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteString_" data-uid="DotNext.Buffers.BufferWriter.WriteString*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteString_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__" data-uid="DotNext.Buffers.BufferWriter.WriteString(System.Buffers.IBufferWriter{System.Byte},System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat})">WriteString(IBufferWriter&lt;byte&gt;, ReadOnlySpan&lt;char&gt;, in EncodingContext, LengthFormat?)</h4>
-  <div class="markdown level1 summary"><p>Encodes string using the specified encoding.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long WriteString(this IBufferWriter&lt;byte&gt; writer, ReadOnlySpan&lt;char&gt; value, in EncodingContext context, LengthFormat? lengthFormat = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The sequence of characters.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.EncodingContext.html">EncodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The encoding context.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a>?</td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>String length encoding format; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> to prevent encoding of string length.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><p>The number of written bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt16%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L116">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteUInt16_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteUInt16_System_Buffers_IBufferWriter_System_Byte__System_UInt16_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt16(System.Buffers.IBufferWriter{System.Byte},System.UInt16,System.Boolean)">WriteUInt16(IBufferWriter&lt;byte&gt;, ushort, bool)</h4>
-  <div class="markdown level1 summary"><p>Encodes 16-bit unsigned integer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void WriteUInt16(this IBufferWriter&lt;byte&gt; writer, ushort value, bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint16">ushort</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to encode.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to use little-endian encoding; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use big-endian encoding.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L91">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteUInt32_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteUInt32_System_Buffers_IBufferWriter_System_Byte__System_UInt32_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt32(System.Buffers.IBufferWriter{System.Byte},System.UInt32,System.Boolean)">WriteUInt32(IBufferWriter&lt;byte&gt;, uint, bool)</h4>
-  <div class="markdown level1 summary"><p>Encodes 32-bit unsigned integer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void WriteUInt32(this IBufferWriter&lt;byte&gt; writer, uint value, bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint32">uint</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to encode.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to use little-endian encoding; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use big-endian encoding.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.UInt64%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L66">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_BufferWriter_WriteUInt64_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_WriteUInt64_System_Buffers_IBufferWriter_System_Byte__System_UInt64_System_Boolean_" data-uid="DotNext.Buffers.BufferWriter.WriteUInt64(System.Buffers.IBufferWriter{System.Byte},System.UInt64,System.Boolean)">WriteUInt64(IBufferWriter&lt;byte&gt;, ulong, bool)</h4>
-  <div class="markdown level1 summary"><p>Encodes 64-bit unsigned integer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void WriteUInt64(this IBufferWriter&lt;byte&gt; writer, ulong value, bool littleEndian)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uint64">ulong</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to encode.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to use little-endian encoding; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use big-endian encoding.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter_System_Byte____0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.BufferWriter.Write%60%601(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L25">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Buffers/BufferWriter.cs/#L24">View Source</a>
   </span>
   <a id="DotNext_Buffers_BufferWriter_Write_" data-uid="DotNext.Buffers.BufferWriter.Write*"></a>
-  <h4 id="DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter_System_Byte____0__" data-uid="DotNext.Buffers.BufferWriter.Write``1(System.Buffers.IBufferWriter{System.Byte},``0@)">Write&lt;T&gt;(IBufferWriter&lt;byte&gt;, in T)</h4>
-  <div class="markdown level1 summary"><p>Encodes value of blittable type.</p>
+  <h4 id="DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___" data-uid="DotNext.Buffers.BufferWriter.Write``1(System.Buffers.IBufferWriter{``0},System.Buffers.ReadOnlySequence{``0}@)">Write&lt;T&gt;(IBufferWriter&lt;T&gt;, in ReadOnlySequence&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Writes the sequence of elements to the buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, in T value) where T : unmanaged</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this IBufferWriter&lt;T&gt; writer, in ReadOnlySequence&lt;T&gt; value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -771,15 +558,15 @@ public static void WriteUInt64(this IBufferWriter&lt;byte&gt; writer, ulong valu
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</td>
         <td><span class="parametername">writer</span></td>
         <td><p>The buffer writer.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">T</span></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
         <td><span class="parametername">value</span></td>
-        <td><p>The value to write.</p>
+        <td><p>The sequence of elements to be written.</p>
 </td>
       </tr>
     </tbody>
@@ -795,7 +582,7 @@ public static void WriteUInt64(this IBufferWriter&lt;byte&gt; writer, ulong valu
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The blittable type to encode.</p>
+        <td><p>The type of the elements in the sequence.</p>
 </td>
       </tr>
     </tbody>

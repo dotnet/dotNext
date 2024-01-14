@@ -86,6 +86,7 @@
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Threading.IAsyncEvent.html">IAsyncEvent</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -97,9 +98,6 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
@@ -129,7 +127,7 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(params IDisposable[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_ReadOnlySpan_System_IDisposable__">Disposable.Dispose(ReadOnlySpan&lt;IDisposable&gt;)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
@@ -160,7 +158,7 @@
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_AsyncBarrier_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AsyncBarrier : Disposable, IAsyncEvent, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class AsyncBarrier : Disposable, IAsyncEvent, IDisposable, IResettable</code></pre>
   </div>
   <h5 id="DotNext_Threading_AsyncBarrier_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This is asynchronous version of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.barrier">Barrier</a> with small differences:</p>
@@ -225,7 +223,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_CurrentPhaseNumber.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.CurrentPhaseNumber%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L45">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_CurrentPhaseNumber_" data-uid="DotNext.Threading.AsyncBarrier.CurrentPhaseNumber*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_CurrentPhaseNumber" data-uid="DotNext.Threading.AsyncBarrier.CurrentPhaseNumber">CurrentPhaseNumber</h4>
@@ -256,7 +254,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_ParticipantCount.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.ParticipantCount%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L50">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_ParticipantCount_" data-uid="DotNext.Threading.AsyncBarrier.ParticipantCount*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_ParticipantCount" data-uid="DotNext.Threading.AsyncBarrier.ParticipantCount">ParticipantCount</h4>
@@ -287,7 +285,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_ParticipantsRemaining.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.ParticipantsRemaining%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_ParticipantsRemaining_" data-uid="DotNext.Threading.AsyncBarrier.ParticipantsRemaining*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_ParticipantsRemaining" data-uid="DotNext.Threading.AsyncBarrier.ParticipantsRemaining">ParticipantsRemaining</h4>
@@ -320,7 +318,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_AddParticipant.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.AddParticipant%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L93">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L92">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_AddParticipant_" data-uid="DotNext.Threading.AsyncBarrier.AddParticipant*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_AddParticipant" data-uid="DotNext.Threading.AsyncBarrier.AddParticipant">AddParticipant()</h4>
@@ -368,7 +366,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_AddParticipants_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.AddParticipants(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L71">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_AddParticipants_" data-uid="DotNext.Threading.AsyncBarrier.AddParticipants*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_AddParticipants_System_Int64_" data-uid="DotNext.Threading.AsyncBarrier.AddParticipants(System.Int64)">AddParticipants(long)</h4>
@@ -439,7 +437,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L213">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L211">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_Dispose_" data-uid="DotNext.Threading.AsyncBarrier.Dispose*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_Dispose_System_Boolean_" data-uid="DotNext.Threading.AsyncBarrier.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -475,7 +473,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L223">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L221">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_DisposeAsyncCore_" data-uid="DotNext.Threading.AsyncBarrier.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_DisposeAsyncCore" data-uid="DotNext.Threading.AsyncBarrier.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -512,7 +510,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_PostPhase_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.PostPhase(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L62">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_PostPhase_" data-uid="DotNext.Threading.AsyncBarrier.PostPhase*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_PostPhase_System_Int64_" data-uid="DotNext.Threading.AsyncBarrier.PostPhase(System.Int64)">PostPhase(long)</h4>
@@ -562,7 +560,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_RemoveParticipant.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.RemoveParticipant%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L120">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_RemoveParticipant_" data-uid="DotNext.Threading.AsyncBarrier.RemoveParticipant*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_RemoveParticipant" data-uid="DotNext.Threading.AsyncBarrier.RemoveParticipant">RemoveParticipant()</h4>
@@ -598,7 +596,7 @@ and <a class="xref" href="DotNext.Threading.AsyncBarrier.html#DotNext_Threading_
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_RemoveParticipants_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.RemoveParticipants(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L105">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L104">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_RemoveParticipants_" data-uid="DotNext.Threading.AsyncBarrier.RemoveParticipants*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_RemoveParticipants_System_Int64_" data-uid="DotNext.Threading.AsyncBarrier.RemoveParticipants(System.Int64)">RemoveParticipants(long)</h4>
@@ -657,7 +655,7 @@ and <a class="xref" href="DotNext.Threading.AsyncBarrier.html#DotNext_Threading_
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_SignalAndWaitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.SignalAndWaitAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L164">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L162">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncBarrier.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_SignalAndWaitAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncBarrier.SignalAndWaitAsync(System.Threading.CancellationToken)">SignalAndWaitAsync(CancellationToken)</h4>
@@ -729,7 +727,7 @@ for all other participants to reach the barrier as well.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_SignalAndWaitAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.SignalAndWaitAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L133">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L131">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncBarrier.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_SignalAndWaitAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncBarrier.SignalAndWaitAsync(System.TimeSpan,System.Threading.CancellationToken)">SignalAndWaitAsync(TimeSpan, CancellationToken)</h4>
@@ -807,7 +805,7 @@ for all other participants to reach the barrier as well.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_WaitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.WaitAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L209">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L207">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_WaitAsync_" data-uid="DotNext.Threading.AsyncBarrier.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_WaitAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncBarrier.WaitAsync(System.Threading.CancellationToken)">WaitAsync(CancellationToken)</h4>
@@ -878,7 +876,7 @@ for all other participants to reach the barrier as well.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncBarrier_WaitAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBarrier.WaitAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L199">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBarrier.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBarrier_WaitAsync_" data-uid="DotNext.Threading.AsyncBarrier.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncBarrier_WaitAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncBarrier.WaitAsync(System.TimeSpan,System.Threading.CancellationToken)">WaitAsync(TimeSpan, CancellationToken)</h4>
@@ -957,21 +955,24 @@ for all other participants to reach the barrier as well.</p>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>

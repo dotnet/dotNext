@@ -77,26 +77,25 @@
     <h3 id="classes">
 Classes
 </h3>
-      <h4><a class="xref" href="DotNext.Buffers.BufferHelpers.html">BufferHelpers</a></h4>
-      <section><p>Represents helper methods to work with various buffer representations.</p>
-</section>
       <h4><a class="xref" href="DotNext.Buffers.BufferWriter.html">BufferWriter</a></h4>
       <section><p>Represents extension methods for writing typed data into buffer.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.BufferWriter-1.html">BufferWriter&lt;T&gt;</a></h4>
       <section><p>Represents memory-backed output sink which <code class="typeparamref">T</code> data can be written.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.MemoryAllocator.html">MemoryAllocator</a></h4>
-      <section><p>Represents interop layer between .NET memory pools
-and <a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a>.</p>
+      <h4><a class="xref" href="DotNext.Buffers.ByteBuffer.html">ByteBuffer</a></h4>
+      <section><p>Providers extension methods to work with byte buffers.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.MemoryTemplate.html">MemoryTemplate</a></h4>
-      <section><p>Represents various extensions for <a class="xref" href="DotNext.Buffers.MemoryTemplate-1.html">MemoryTemplate&lt;T&gt;</a> type.</p>
+      <h4><a class="xref" href="DotNext.Buffers.CharBuffer.html">CharBuffer</a></h4>
+      <section><p>Providers extension methods to work with char buffers.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a></h4>
+      <h4><a class="xref" href="DotNext.Buffers.Memory.html">Memory</a></h4>
+      <section><p>Represents methods to work with memory pools and buffers.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.PoolingArrayBufferWriter-1.html">PoolingArrayBufferWriter&lt;T&gt;</a></h4>
       <section><p>Represents memory writer that is backed by the array obtained from the pool.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a></h4>
+      <h4><a class="xref" href="DotNext.Buffers.PoolingBufferWriter-1.html">PoolingBufferWriter&lt;T&gt;</a></h4>
       <section><p>Represents memory writer that uses pooled memory.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.ReadOnlySequencePartitioner.html">ReadOnlySequencePartitioner</a></h4>
@@ -108,7 +107,7 @@ and <a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocato
       <h4><a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html">SparseBufferWriter&lt;T&gt;</a></h4>
       <section><p>Represents builder of the sparse memory buffer.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.UnmanagedMemoryAllocator.html">UnmanagedMemoryAllocator</a></h4>
+      <h4><a class="xref" href="DotNext.Buffers.UnmanagedMemory.html">UnmanagedMemory</a></h4>
       <section><p>Provides native memory allocation facilities.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.UnmanagedMemoryPool-1.html">UnmanagedMemoryPool&lt;T&gt;</a></h4>
@@ -132,15 +131,12 @@ invocation to the delegate of type <a class="xref" href="https://learn.microsoft
       <section><p>Represents unified representation of the memory rented using various
 types of memory pools.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.MemoryRental-1.html">MemoryRental&lt;T&gt;</a></h4>
-      <section><p>Represents the memory obtained from the pool or allocated
-on the stack or heap.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Buffers.MemoryTemplate-1.html">MemoryTemplate&lt;T&gt;</a></h4>
-      <section><p>Represents generic template for buffer rendering.</p>
-</section>
       <h4><a class="xref" href="DotNext.Buffers.ReadOnlySpanConsumer-2.html">ReadOnlySpanConsumer&lt;T, TArg&gt;</a></h4>
       <section><p>Represents typed function pointer implementing <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.SpanOwner-1.html">SpanOwner&lt;T&gt;</a></h4>
+      <section><p>Represents the memory obtained from the pool or allocated
+on the stack or heap.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.SpanReader-1.html">SpanReader&lt;T&gt;</a></h4>
       <section><p>Represents simple memory reader backed by <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a>.</p>
@@ -154,8 +150,8 @@ on the stack or heap.</p>
     <h3 id="interfaces">
 Interfaces
 </h3>
-      <h4><a class="xref" href="DotNext.Buffers.IBinaryFormattable-1.html">IBinaryFormattable&lt;TSelf&gt;</a></h4>
-      <section><p>Represents an object that can be converted to and restored from the binary representation.</p>
+      <h4><a class="xref" href="DotNext.Buffers.IBufferReader.html">IBufferReader</a></h4>
+      <section><p>Represents buffer reader.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a></h4>
       <section><p>Represents common interface for growable buffer writers.</p>
@@ -166,11 +162,6 @@ Interfaces
       <h4><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a></h4>
       <section><p>Represents functional interface returning no value
 and accepting the single argument of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Buffers.IUnmanagedMemoryOwner-1.html">IUnmanagedMemoryOwner&lt;T&gt;</a></h4>
-      <section><p>Represents unmanaged memory access that allows
-to obtain <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> pointing to the
-unmanaged memory.</p>
 </section>
     <h3 id="enums">
 Enums
@@ -183,6 +174,10 @@ Delegates
 </h3>
       <h4><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a></h4>
       <section><p>Represents memory allocator.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.ReadOnlySpanFunc-3.html">ReadOnlySpanFunc&lt;T, TArg, TResult&gt;</a></h4>
+      <section><p>Represents <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction&lt;T, TArg&gt;</a> counterpart
+with return value.</p>
 </section>
 
 

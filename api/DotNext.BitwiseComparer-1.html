@@ -111,7 +111,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_BitwiseComparer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class BitwiseComparer&lt;T&gt; : IEqualityComparer&lt;T&gt;, IComparer&lt;T&gt; where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class BitwiseComparer&lt;T&gt; : IEqualityComparer&lt;T&gt;, IComparer&lt;T&gt; where T : unmanaged</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -136,7 +136,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_BitwiseComparer_1_Instance.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.Instance%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L26">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L27">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Instance_" data-uid="DotNext.BitwiseComparer`1.Instance*"></a>
   <h4 id="DotNext_BitwiseComparer_1_Instance" data-uid="DotNext.BitwiseComparer`1.Instance">Instance</h4>
@@ -174,7 +174,7 @@ or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collectio
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_BitwiseComparer_1_Compare__1__0____0__.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.Compare%60%601(%600%40%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L58">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L59">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Compare_" data-uid="DotNext.BitwiseComparer`1.Compare*"></a>
   <h4 id="DotNext_BitwiseComparer_1_Compare__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Compare``1(`0@,``0@)">Compare&lt;TOther&gt;(in T, in TOther)</h4>
@@ -183,7 +183,7 @@ or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collectio
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int Compare&lt;TOther&gt;(in T first, in TOther second) where TOther : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Compare&lt;TOther&gt;(in T first, in TOther second) where TOther : unmanaged</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -246,7 +246,7 @@ or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collectio
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_BitwiseComparer_1_Equals__1__0____0__.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.Equals%60%601(%600%40%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_Equals_" data-uid="DotNext.BitwiseComparer`1.Equals*"></a>
   <h4 id="DotNext_BitwiseComparer_1_Equals__1__0____0__" data-uid="DotNext.BitwiseComparer`1.Equals``1(`0@,``0@)">Equals&lt;TOther&gt;(in T, in TOther)</h4>
@@ -255,7 +255,7 @@ or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collectio
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool Equals&lt;TOther&gt;(in T first, in TOther second) where TOther : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool Equals&lt;TOther&gt;(in T first, in TOther second) where TOther : unmanaged</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -322,7 +322,7 @@ even if it is overridden by value type.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_BitwiseComparer_1_GetHashCode__0__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode(%600%40%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L76">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L87">View Source</a>
   </span>
   <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
   <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0__System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0@,System.Boolean)">GetHashCode(in T, bool)</h4>
@@ -373,155 +373,6 @@ even if it is overridden by value type.</p>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_BitwiseComparer_1_GetHashCode__0__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode(%600%40%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L143">View Source</a>
-  </span>
-  <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
-  <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0@,System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode(in T, int, Func&lt;int, int, int&gt;, bool)</h4>
-  <div class="markdown level1 summary"><p>Computes bitwise hash code for the specified value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetHashCode(in T value, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>A value to be hashed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">hash</span></td>
-        <td><p>Initial value of the hash.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><span class="parametername">hashFunction</span></td>
-        <td><p>Hashing function.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">salted</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to include randomized salt data into hashing; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use data from memory only.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>Bitwise hash code.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_BitwiseComparer_1_GetHashCode__0__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method doesn't use <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">GetHashCode()</a>
-even if it is overridden by value type.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_BitwiseComparer_1_GetHashCode__1__0__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode%60%601(%600%40%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L161">View Source</a>
-  </span>
-  <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
-  <h4 id="DotNext_BitwiseComparer_1_GetHashCode__1__0__System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode``1(`0@,System.Boolean)">GetHashCode&lt;THashFunction&gt;(in T, bool)</h4>
-  <div class="markdown level1 summary"><p>Computes bitwise hash code for the specified value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static int GetHashCode&lt;THashFunction&gt;(in T value, bool salted = true) where THashFunction : struct, IConsumer&lt;int&gt;, ISupplier&lt;int&gt;</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>A value to be hashed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">salted</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to include randomized salt data into hashing; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to use data from memory only.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>Bitwise hash code.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">THashFunction</span></td>
-        <td><p>The type of the hash algorithm.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_BitwiseComparer_1_GetHashCode__1__0__System_Boolean__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method doesn't use <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">GetHashCode()</a>
-even if it is overridden by value type.</p>
-</div>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer&lt;T&gt;</a>
@@ -531,19 +382,19 @@ even if it is overridden by value type.</p>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
@@ -593,7 +444,7 @@ even if it is overridden by value type.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_BitwiseComparer_1.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

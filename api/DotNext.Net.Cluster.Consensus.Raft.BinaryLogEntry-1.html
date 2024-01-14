@@ -107,7 +107,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct BinaryLogEntry&lt;T&gt; : IRaftLogEntry, ILogEntry, IDataTransferObject where T : struct, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct BinaryLogEntry&lt;T&gt; : IRaftLogEntry, ILogEntry, IDataTransferObject where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -132,49 +132,17 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry%601.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L22">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L14">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1__ctor" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.#ctor">BinaryLogEntry()</h4>
-  <div class="markdown level1 summary"><p>Initializes a new binary log entry.</p>
+  <div class="markdown level1 summary"><p>Represents a log entry with binary payload.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public BinaryLogEntry()</code></pre>
   </div>
-  <h3 id="fields">Fields
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Content.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry%601.Content%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L29">View Source</a>
-  </span>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Content" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Content">Content</h4>
-  <div class="markdown level1 summary"><p>Gets or sets the log entry payload.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T Content</code></pre>
-  </div>
-  <h5 class="fieldValue">Field Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
@@ -182,7 +150,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_CommandId.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry%601.CommandId%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L36">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_CommandId_" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.CommandId*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_CommandId" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.CommandId">CommandId</h4>
@@ -191,7 +159,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int? CommandId { readonly get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int? CommandId { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -210,10 +178,41 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Content.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry%601.Content%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L21">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Content_" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Content*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Content" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Content">Content</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the log entry payload.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public required T Content { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Term.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry%601.Term%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L31">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Term*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Term">Term</h4>
@@ -222,7 +221,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long Term { readonly get; init; }</code></pre>
+    <pre><code class="lang-csharp hljs">public required long Term { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -244,7 +243,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Timestamp.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry%601.Timestamp%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/BinaryLogEntry.cs/#L26">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Timestamp_" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Timestamp*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Timestamp" data-uid="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Timestamp">Timestamp</h4>
@@ -253,7 +252,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly DateTimeOffset Timestamp { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public DateTimeOffset Timestamp { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -282,7 +281,37 @@
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_ToByteArrayAsync__1___0_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">DataTransferObject.ToByteArrayAsync&lt;TObject&gt;(TObject, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_ToMemoryAsync__1___0_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">DataTransferObject.ToMemoryAsync&lt;TObject&gt;(TObject, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_ToStringAsync__1___0_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">DataTransferObject.ToStringAsync&lt;TObject&gt;(TObject, Encoding, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_TransformAsync__2___1_System_Func_DotNext_IO_IAsyncBinaryReader_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask___0___System_Threading_CancellationToken_">DataTransferObject.TransformAsync&lt;TResult, TObject&gt;(TObject, Func&lt;IAsyncBinaryReader, CancellationToken, ValueTask&lt;TResult&gt;&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, IBufferWriter&lt;byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Pipelines_PipeWriter_System_Int64_System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, PipeWriter, long, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Int32_System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, Stream, int, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>

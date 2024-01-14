@@ -127,7 +127,7 @@ using DotNext.IO;
 using var ms1 = new MemoryStream();
 using var ms2 = new MemoryStream();
 
-using var stream = ms1.Combine(ms2);
+using var stream = ms1.Combine([ms2]);
 </code></pre>
 <p>Note that the result stream is read-only and not seekable.</p>
 <h1 id="pipelines">Pipelines</h1>
@@ -139,27 +139,9 @@ using System.IO.Pipelines;
 
 const string value = &quot;Hello, world!&quot;;
 var pipe = new Pipe();
-await pipe.Writer.WriteStringAsync(value.AsMemory(), Encoding.UTF8, 0, LengthFormat.Plain);
-string result = await pipe.Reader.ReadStringAsync(LengthFormat.Plain, Encoding.UTF8);
-</code></pre>
-<p>In advance to strings, the library supports decoding and encoding values of arbitrary blittable value types.</p>
-<pre><code class="lang-csharp">using DotNext.IO.Pipelines;
-using System.IO.Pipelines;
-
-var pipe = new Pipe();
-await pipe.Writer.WriteAsync(Guid.NewGuid());
-Guid result = await pipe.Reader.ReadAsync&lt;Guid&gt;();
-</code></pre>
-<p>Starting with version <em>2.6.0</em>, there is <a class="xref" href="../../api/DotNext.Buffers.BufferWriter.html">BufferWriter</a> class with extension methods for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;byte&gt;</a> interface allowing to encode strings and primitives synchronously. Now it's possible to control flushing more granular:</p>
-<pre><code class="lang-csharp">using DotNext.IO;
-using DotNext.IO.Pipelines;
-using System.IO.Pipelines;
-using System.Text;
-
-var pipe = new Pipe();
-pipe.Writer.Write(Guid.NewGuid());
-pipe.Writer.WriteString(&quot;Hello, world!&quot;.AsSpan(), Encoding.UTF8, LengthFormat.Plain);
+pipe.Writer.Encode(value, Encoding.UTF8, LengthFormat.LittleEndian);
 await pipe.Writer.FlushAsync();
+MemoryOwner&lt;char&gt; result = await pipe.Reader.DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian);
 </code></pre>
 <p><code>ReadAllAsync</code> extension method allows to enumerate over the contents of a pipe in a convenient way:</p>
 <pre><code class="lang-csharp">using DotNext.IO;
@@ -178,8 +160,8 @@ using System.Text;
 
 ReadOnlySequence&lt;byte&gt; sequence = ...;
 SequenceReader reader = new(sequence);
-int i = reader.ReadInt32(BitConverter.IsLittleEndian);
-string str = reader.ReadString(LengthFormat.Plain, Encoding.UTF8);
+int i = reader.ReadLittleEndian&lt;int&gt;(BitConverter.IsLittleEndian);
+MemoryOwner&lt;char&gt; str = reader.Decode(Encoding.UTF8, LengthFormat.LittleEndian);
 </code></pre>
 <h1 id="file-buffering-writer">File-Buffering Writer</h1>
 <p><a class="xref" href="../../api/DotNext.IO.FileBufferingWriter.html">FileBufferingWriter</a> class can be used as a temporary buffer of bytes when length of the content is not known or dynamic. It's useful in the following situations:</p>

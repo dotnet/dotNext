@@ -118,7 +118,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSource_AsAsynchronousStream__1___0_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSource.AsAsynchronousStream%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.cs/#L110">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.cs/#L112">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSource_AsAsynchronousStream_" data-uid="DotNext.IO.StreamSource.AsAsynchronousStream*"></a>
   <h4 id="DotNext_IO_StreamSource_AsAsynchronousStream__1___0_" data-uid="DotNext.IO.StreamSource.AsAsynchronousStream``1(``0)">AsAsynchronousStream&lt;TOutput&gt;(TOutput)</h4>
@@ -184,7 +184,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSource_AsStream_DotNext_Buffers_SparseBufferWriter_System_Byte__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSource.AsStream(DotNext.Buffers.SparseBufferWriter%7BSystem.Byte%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSource_AsStream_" data-uid="DotNext.IO.StreamSource.AsStream*"></a>
   <h4 id="DotNext_IO_StreamSource_AsStream_DotNext_Buffers_SparseBufferWriter_System_Byte__System_Boolean_" data-uid="DotNext.IO.StreamSource.AsStream(DotNext.Buffers.SparseBufferWriter{System.Byte},System.Boolean)">AsStream(SparseBufferWriter&lt;byte&gt;, bool)</h4>
@@ -477,10 +477,98 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSource_AsStream__1_System_Func_System_Memory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask_System_Int32_____0_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSource.AsStream%60%601(System.Func%7BSystem.Memory%7BSystem.Byte%7D%2C%60%600%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7BSystem.Int32%7D%7D%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.cs/#L141">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSource_AsStream_" data-uid="DotNext.IO.StreamSource.AsStream*"></a>
+  <h4 id="DotNext_IO_StreamSource_AsStream__1_System_Func_System_Memory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask_System_Int32_____0_" data-uid="DotNext.IO.StreamSource.AsStream``1(System.Func{System.Memory{System.Byte},``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{System.Int32}},``0)">AsStream&lt;TArg&gt;(Func&lt;Memory&lt;byte&gt;, TArg, CancellationToken, ValueTask&lt;int&gt;&gt;, TArg)</h4>
+  <div class="markdown level1 summary"><p>Returns read-only asynchronous stream that wraps the provided delegate for reading data.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Stream AsStream&lt;TArg&gt;(this Func&lt;Memory&lt;byte&gt;, TArg, CancellationToken, ValueTask&lt;int&gt;&gt; reader, TArg arg)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;, TArg, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;&gt;</td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The callback to be called for each read.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TArg</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The arg to be passed to the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><p>A readable stream wrapping the callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">reader</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSource_AsStream__1_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Action___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_Task__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSource.AsStream%60%601(System.Func%7BSystem.ReadOnlyMemory%7BSystem.Byte%7D%2C%60%600%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7D%2C%60%600%2CSystem.Action%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.Task%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.cs/#L123">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.cs/#L126">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSource_AsStream_" data-uid="DotNext.IO.StreamSource.AsStream*"></a>
   <h4 id="DotNext_IO_StreamSource_AsStream__1_System_Func_System_ReadOnlyMemory_System_Byte____0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Action___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_Task__" data-uid="DotNext.IO.StreamSource.AsStream``1(System.Func{System.ReadOnlyMemory{System.Byte},``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},``0,System.Action{``0},System.Func{``0,System.Threading.CancellationToken,System.Threading.Tasks.Task})">AsStream&lt;TArg&gt;(Func&lt;ReadOnlyMemory&lt;byte&gt;, TArg, CancellationToken, ValueTask&gt;, TArg, Action&lt;TArg&gt;?, Func&lt;TArg, CancellationToken, Task&gt;?)</h4>
@@ -504,7 +592,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;, TArg, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</td>
         <td><span class="parametername">writer</span></td>
-        <td><p>The callback that is called automatically.</p>
+        <td><p>The callback to be called for each write.</p>
 </td>
       </tr>
       <tr>
@@ -538,7 +626,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><p>The writable stream wrapping the callback.</p>
+        <td><p>A writable stream wrapping the callback.</p>
 </td>
       </tr>
     </tbody>
@@ -555,6 +643,22 @@
       <tr>
         <td><span class="parametername">TArg</span></td>
         <td><p>The type of the object that represents the state.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">writer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -715,7 +819,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSource.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSource%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.Utils.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IO/StreamSource.Utils.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

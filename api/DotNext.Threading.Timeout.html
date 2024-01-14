@@ -315,38 +315,6 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_RemainingTime.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.RemainingTime%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L96">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Timeout_RemainingTime_" data-uid="DotNext.Threading.Timeout.RemainingTime*"></a>
-  <h4 id="DotNext_Threading_Timeout_RemainingTime" data-uid="DotNext.Threading.Timeout.RemainingTime">RemainingTime</h4>
-  <div class="markdown level1 summary"><p>Gets the remaining time.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TimeSpan? RemainingTime { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>?</td>
-        <td><p>The remaining time; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if timeout occurred.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_Value.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -408,7 +376,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void ThrowIfExpired(out TimeSpan remaining)</code></pre>
+    <pre><code class="lang-csharp hljs">public void ThrowIfExpired(out TimeSpan remainingTime)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -422,8 +390,58 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">remaining</span></td>
+        <td><span class="parametername">remainingTime</span></td>
         <td><p>The remaining time before timeout.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeSpan__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeSpan%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L91">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Timeout_TryGetRemainingTime_" data-uid="DotNext.Threading.Timeout.TryGetRemainingTime*"></a>
+  <h4 id="DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeSpan__" data-uid="DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeSpan@)">TryGetRemainingTime(out TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Gets the remaining time.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGetRemainingTime(out TimeSpan remainingTime)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">remainingTime</span></td>
+        <td><p>The remaining time before timeout.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if timeout hasn't happened yet; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -435,7 +453,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_op_False_DotNext_Threading_Timeout__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.op_False(DotNext.Threading.Timeout%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L114">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_op_False_" data-uid="DotNext.Threading.Timeout.op_False*"></a>
   <h4 id="DotNext_Threading_Timeout_op_False_DotNext_Threading_Timeout__" data-uid="DotNext.Threading.Timeout.op_False(DotNext.Threading.Timeout@)">operator false(in Timeout)</h4>
@@ -485,7 +503,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_op_Implicit_DotNext_Threading_Timeout___System_TimeSpan.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.op_Implicit(DotNext.Threading.Timeout%40)~System.TimeSpan%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L129">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L121">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_op_Implicit_" data-uid="DotNext.Threading.Timeout.op_Implicit*"></a>
   <h4 id="DotNext_Threading_Timeout_op_Implicit_DotNext_Threading_Timeout___System_TimeSpan" data-uid="DotNext.Threading.Timeout.op_Implicit(DotNext.Threading.Timeout@)~System.TimeSpan">implicit operator TimeSpan(in Timeout)</h4>
@@ -535,7 +553,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_op_True_DotNext_Threading_Timeout__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.op_True(DotNext.Threading.Timeout%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L115">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L107">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_op_True_" data-uid="DotNext.Threading.Timeout.op_True*"></a>
   <h4 id="DotNext_Threading_Timeout_op_True_DotNext_Threading_Timeout__" data-uid="DotNext.Threading.Timeout.op_True(DotNext.Threading.Timeout@)">operator true(in Timeout)</h4>
@@ -582,7 +600,13 @@
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>

@@ -88,6 +88,7 @@
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uribuilder">UriBuilder</a>&gt;</div>
     <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uribuilder">UriBuilder</a>&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Net.Http.HttpEndPoint.html">HttpEndPoint</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iequalityoperators-3">IEqualityOperators</a>&lt;<a class="xref" href="DotNext.Net.Http.HttpEndPoint.html">HttpEndPoint</a>, <a class="xref" href="DotNext.Net.Http.HttpEndPoint.html">HttpEndPoint</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -120,7 +121,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Net_Http_HttpEndPoint_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class HttpEndPoint : DnsEndPoint, ISupplier&lt;UriBuilder&gt;, IFunctional&lt;Func&lt;UriBuilder&gt;&gt;, IEquatable&lt;HttpEndPoint&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class HttpEndPoint : DnsEndPoint, ISupplier&lt;UriBuilder&gt;, IFunctional&lt;Func&lt;UriBuilder&gt;&gt;, IEquatable&lt;HttpEndPoint&gt;, IEqualityOperators&lt;HttpEndPoint?, HttpEndPoint?, bool&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
@@ -129,7 +130,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint__ctor_System_Net_IPAddress_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.%23ctor(System.Net.IPAddress%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint__ctor_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint__ctor_System_Net_IPAddress_System_Int32_System_Boolean_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor(System.Net.IPAddress,System.Int32,System.Boolean)">HttpEndPoint(IPAddress, int, bool)</h4>
@@ -175,7 +176,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint__ctor_System_Net_IPEndPoint_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.%23ctor(System.Net.IPEndPoint%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint__ctor_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint__ctor_System_Net_IPEndPoint_System_Boolean_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor(System.Net.IPEndPoint,System.Boolean)">HttpEndPoint(IPEndPoint, bool)</h4>
@@ -215,7 +216,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint__ctor_System_String_System_Int32_System_Boolean_System_Net_Sockets_AddressFamily_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.%23ctor(System.String%2CSystem.Int32%2CSystem.Boolean%2CSystem.Net.Sockets.AddressFamily)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L29">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L30">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint__ctor_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint__ctor_System_String_System_Int32_System_Boolean_System_Net_Sockets_AddressFamily_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor(System.String,System.Int32,System.Boolean,System.Net.Sockets.AddressFamily)">HttpEndPoint(string, int, bool, AddressFamily)</h4>
@@ -267,7 +268,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint__ctor_System_Uri_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.%23ctor(System.Uri)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L19">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint__ctor_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint__ctor_System_Uri_" data-uid="DotNext.Net.Http.HttpEndPoint.#ctor(System.Uri)">HttpEndPoint(Uri)</h4>
@@ -303,7 +304,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_IsSecure.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.IsSecure%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L72">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_IsSecure_" data-uid="DotNext.Net.Http.HttpEndPoint.IsSecure*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_IsSecure" data-uid="DotNext.Net.Http.HttpEndPoint.IsSecure">IsSecure</h4>
@@ -334,7 +335,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_Scheme.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.Scheme%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L77">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_Scheme_" data-uid="DotNext.Net.Http.HttpEndPoint.Scheme*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_Scheme" data-uid="DotNext.Net.Http.HttpEndPoint.Scheme">Scheme</h4>
@@ -367,7 +368,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_CreateUriBuilder.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.CreateUriBuilder%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L83">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L84">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_CreateUriBuilder_" data-uid="DotNext.Net.Http.HttpEndPoint.CreateUriBuilder*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_CreateUriBuilder" data-uid="DotNext.Net.Http.HttpEndPoint.CreateUriBuilder">CreateUriBuilder()</h4>
@@ -399,7 +400,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_Equals_DotNext_Net_Http_HttpEndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.Equals(DotNext.Net.Http.HttpEndPoint)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L102">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_Equals_" data-uid="DotNext.Net.Http.HttpEndPoint.Equals*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_Equals_DotNext_Net_Http_HttpEndPoint_" data-uid="DotNext.Net.Http.HttpEndPoint.Equals(DotNext.Net.Http.HttpEndPoint)">Equals(HttpEndPoint?)</h4>
@@ -449,7 +450,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L109">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L110">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_Equals_" data-uid="DotNext.Net.Http.HttpEndPoint.Equals*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_Equals_System_Object_" data-uid="DotNext.Net.Http.HttpEndPoint.Equals(System.Object)">Equals(object?)</h4>
@@ -501,7 +502,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L133">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L134">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_GetHashCode_" data-uid="DotNext.Net.Http.HttpEndPoint.GetHashCode*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_GetHashCode" data-uid="DotNext.Net.Http.HttpEndPoint.GetHashCode">GetHashCode()</h4>
@@ -535,7 +536,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_ToString.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L147">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_ToString_" data-uid="DotNext.Net.Http.HttpEndPoint.ToString*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_ToString" data-uid="DotNext.Net.Http.HttpEndPoint.ToString">ToString()</h4>
@@ -569,7 +570,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_TryParse_System_String_DotNext_Net_Http_HttpEndPoint__.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.TryParse(System.String%2CDotNext.Net.Http.HttpEndPoint%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L155">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_TryParse_" data-uid="DotNext.Net.Http.HttpEndPoint.TryParse*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_TryParse_System_String_DotNext_Net_Http_HttpEndPoint__" data-uid="DotNext.Net.Http.HttpEndPoint.TryParse(System.String,DotNext.Net.Http.HttpEndPoint@)">TryParse(string?, out HttpEndPoint?)</h4>
@@ -627,7 +628,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_op_Equality_DotNext_Net_Http_HttpEndPoint_DotNext_Net_Http_HttpEndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.op_Equality(DotNext.Net.Http.HttpEndPoint%2CDotNext.Net.Http.HttpEndPoint)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L117">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_op_Equality_" data-uid="DotNext.Net.Http.HttpEndPoint.op_Equality*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_op_Equality_DotNext_Net_Http_HttpEndPoint_DotNext_Net_Http_HttpEndPoint_" data-uid="DotNext.Net.Http.HttpEndPoint.op_Equality(DotNext.Net.Http.HttpEndPoint,DotNext.Net.Http.HttpEndPoint)">operator ==(HttpEndPoint?, HttpEndPoint?)</h4>
@@ -683,7 +684,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_op_Explicit_DotNext_Net_Http_HttpEndPoint__System_UriBuilder.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.op_Explicit(DotNext.Net.Http.HttpEndPoint)~System.UriBuilder%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L93">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_op_Explicit_" data-uid="DotNext.Net.Http.HttpEndPoint.op_Explicit*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_op_Explicit_DotNext_Net_Http_HttpEndPoint__System_UriBuilder" data-uid="DotNext.Net.Http.HttpEndPoint.op_Explicit(DotNext.Net.Http.HttpEndPoint)~System.UriBuilder">explicit operator UriBuilder?(HttpEndPoint?)</h4>
@@ -733,7 +734,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint_op_Inequality_DotNext_Net_Http_HttpEndPoint_DotNext_Net_Http_HttpEndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint.op_Inequality(DotNext.Net.Http.HttpEndPoint%2CDotNext.Net.Http.HttpEndPoint)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L126">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L127">View Source</a>
   </span>
   <a id="DotNext_Net_Http_HttpEndPoint_op_Inequality_" data-uid="DotNext.Net.Http.HttpEndPoint.op_Inequality*"></a>
   <h4 id="DotNext_Net_Http_HttpEndPoint_op_Inequality_DotNext_Net_Http_HttpEndPoint_DotNext_Net_Http_HttpEndPoint_" data-uid="DotNext.Net.Http.HttpEndPoint.op_Inequality(DotNext.Net.Http.HttpEndPoint,DotNext.Net.Http.HttpEndPoint)">operator !=(HttpEndPoint?, HttpEndPoint?)</h4>
@@ -794,21 +795,24 @@
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iequalityoperators-3">IEqualityOperators&lt;TSelf, TOther, TResult&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
@@ -861,7 +865,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Http_HttpEndPoint.md&amp;value=---%0Auid%3A%20DotNext.Net.Http.HttpEndPoint%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Net/Http/HttpEndPoint.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -86,6 +86,7 @@
     <h5>Implements</h5>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
@@ -98,9 +99,6 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
@@ -133,7 +131,7 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(params IDisposable[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_ReadOnlySpan_System_IDisposable__">Disposable.Dispose(ReadOnlySpan&lt;IDisposable&gt;)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
@@ -164,7 +162,7 @@
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_FileReader_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class FileReader : Disposable, IDisposable, IAsyncBinaryReader, IAsyncEnumerable&lt;ReadOnlyMemory&lt;byte&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class FileReader : Disposable, IDisposable, IAsyncBinaryReader, IResettable, IAsyncEnumerable&lt;ReadOnlyMemory&lt;byte&gt;&gt;</code></pre>
   </div>
   <h5 id="DotNext_IO_FileReader_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class is not thread-safe. However, it's possible to share the same file
@@ -177,7 +175,7 @@ handle across multiple readers and use dedicated reader in each thread.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader__ctor_Microsoft_Win32_SafeHandles_SafeFileHandle_System_Int64_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.%23ctor(Microsoft.Win32.SafeHandles.SafeFileHandle%2CSystem.Int64%2CSystem.Int32%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader__ctor_" data-uid="DotNext.IO.FileReader.#ctor*"></a>
   <h4 id="DotNext_IO_FileReader__ctor_Microsoft_Win32_SafeHandles_SafeFileHandle_System_Int64_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.FileReader.#ctor(Microsoft.Win32.SafeHandles.SafeFileHandle,System.Int64,System.Int32,DotNext.Buffers.MemoryAllocator{System.Byte})">FileReader(SafeFileHandle, long, int, MemoryAllocator&lt;byte&gt;?)</h4>
@@ -252,6 +250,68 @@ or <code class="paramref">bufferSize</code> too small.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader__ctor_System_IO_FileStream_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.%23ctor(System.IO.FileStream%2CSystem.Int32%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L63">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileReader__ctor_" data-uid="DotNext.IO.FileReader.#ctor*"></a>
+  <h4 id="DotNext_IO_FileReader__ctor_System_IO_FileStream_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.FileReader.#ctor(System.IO.FileStream,System.Int32,DotNext.Buffers.MemoryAllocator{System.Byte})">FileReader(FileStream, int, MemoryAllocator&lt;byte&gt;?)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new buffered file reader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public FileReader(FileStream source, int bufferSize = 4096, MemoryAllocator&lt;byte&gt;? allocator = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.filestream">FileStream</a></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>Readable file stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">bufferSize</span></td>
+        <td><p>The buffer size.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The buffer allocator.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code class="paramref">source</code> is not readable.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="fields">Fields
 </h3>
   <span class="small pull-right mobile-hide">
@@ -259,7 +319,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_handle.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.handle%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L21">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L22">View Source</a>
   </span>
   <h4 id="DotNext_IO_FileReader_handle" data-uid="DotNext.IO.FileReader.handle">handle</h4>
   <div class="markdown level1 summary"><p>Represents the file handle.</p>
@@ -291,7 +351,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Buffer.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Buffer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L104">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Buffer_" data-uid="DotNext.IO.FileReader.Buffer*"></a>
   <h4 id="DotNext_IO_FileReader_Buffer" data-uid="DotNext.IO.FileReader.Buffer">Buffer</h4>
@@ -322,7 +382,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_FilePosition.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.FilePosition%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L62">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L75">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_FilePosition_" data-uid="DotNext.IO.FileReader.FilePosition*"></a>
   <h4 id="DotNext_IO_FileReader_FilePosition" data-uid="DotNext.IO.FileReader.FilePosition">FilePosition</h4>
@@ -364,7 +424,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>There is buffered data present. Call <a class="xref" href="DotNext.IO.FileReader.html#DotNext_IO_FileReader_Consume_System_Int32_">Consume(int)</a> or <a class="xref" href="DotNext.IO.FileReader.html#DotNext_IO_FileReader_ClearBuffer">ClearBuffer()</a> before changing the position.</p>
+        <td><p>There is buffered data present. Call <a class="xref" href="DotNext.IO.FileReader.html#DotNext_IO_FileReader_Consume_System_Int32_">Consume(int)</a> or <a class="xref" href="DotNext.IO.FileReader.html#DotNext_IO_FileReader_Reset">Reset()</a> before changing the position.</p>
 </td>
       </tr>
     </tbody>
@@ -374,7 +434,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_HasBufferedData.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.HasBufferedData%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L112">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_HasBufferedData_" data-uid="DotNext.IO.FileReader.HasBufferedData*"></a>
   <h4 id="DotNext_IO_FileReader_HasBufferedData" data-uid="DotNext.IO.FileReader.HasBufferedData">HasBufferedData</h4>
@@ -405,7 +465,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_MaxBufferSize.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.MaxBufferSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L117">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_MaxBufferSize_" data-uid="DotNext.IO.FileReader.MaxBufferSize*"></a>
   <h4 id="DotNext_IO_FileReader_MaxBufferSize" data-uid="DotNext.IO.FileReader.MaxBufferSize">MaxBufferSize</h4>
@@ -436,7 +496,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadPosition.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadPosition%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L84">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadPosition_" data-uid="DotNext.IO.FileReader.ReadPosition*"></a>
   <h4 id="DotNext_IO_FileReader_ReadPosition" data-uid="DotNext.IO.FileReader.ReadPosition">ReadPosition</h4>
@@ -466,30 +526,66 @@ or <code class="paramref">bufferSize</code> too small.</p>
   <div class="markdown level1 remarks"><p>The returned value may be larger than <a class="xref" href="DotNext.IO.FileReader.html#DotNext_IO_FileReader_FilePosition">FilePosition</a> because the reader
 performs buffered read.</p>
 </div>
-  <h3 id="methods">Methods
-</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ClearBuffer.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ClearBuffer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReaderSegmentLength.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReaderSegmentLength%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L133">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Segment.cs/#L89">View Source</a>
   </span>
-  <a id="DotNext_IO_FileReader_ClearBuffer_" data-uid="DotNext.IO.FileReader.ClearBuffer*"></a>
-  <h4 id="DotNext_IO_FileReader_ClearBuffer" data-uid="DotNext.IO.FileReader.ClearBuffer">ClearBuffer()</h4>
-  <div class="markdown level1 summary"><p>Clears the read buffer.</p>
+  <a id="DotNext_IO_FileReader_ReaderSegmentLength_" data-uid="DotNext.IO.FileReader.ReaderSegmentLength*"></a>
+  <h4 id="DotNext_IO_FileReader_ReaderSegmentLength" data-uid="DotNext.IO.FileReader.ReaderSegmentLength">ReaderSegmentLength</h4>
+  <div class="markdown level1 summary"><p>Limits the number of available bytes to read.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void ClearBuffer()</code></pre>
+    <pre><code class="lang-csharp hljs">public long? ReaderSegmentLength { set; }</code></pre>
   </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?</td>
+        <td><p>The number of available bytes to read; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> to allow read to the end of the file.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_FileReader_ReaderSegmentLength_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This limit is applicable only to the methods of <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a> interface
+implemented by this class.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">value</code> is negative.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Consume_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Consume(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L111">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L124">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Consume_" data-uid="DotNext.IO.FileReader.Consume*"></a>
   <h4 id="DotNext_IO_FileReader_Consume_System_Int32_" data-uid="DotNext.IO.FileReader.Consume(System.Int32)">Consume(int)</h4>
@@ -536,19 +632,19 @@ performs buffered read.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.CopyToAsync(System.Buffers.IBufferWriter%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_CopyToAsync__1___0_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.CopyToAsync%60%601(%60%600%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L392">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L317">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_CopyToAsync_" data-uid="DotNext.IO.FileReader.CopyToAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_CopyToAsync_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.CopyToAsync(System.Buffers.IBufferWriter{System.Byte},System.Threading.CancellationToken)">CopyToAsync(IBufferWriter&lt;byte&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified buffer.</p>
+  <h4 id="DotNext_IO_FileReader_CopyToAsync__1___0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.CopyToAsync``1(``0,System.Int64,System.Threading.CancellationToken)">CopyToAsync&lt;TConsumer&gt;(TConsumer, long, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the entire content using the specified delegate.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task CopyToAsync(IBufferWriter&lt;byte&gt; writer, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, long count, CancellationToken token = default) where TConsumer : notnull, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -561,15 +657,21 @@ performs buffered read.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
+        <td><span class="xref">TConsumer</span></td>
+        <td><span class="parametername">consumer</span></td>
+        <td><p>The content reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of bytes to copy.</p>
 </td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
+        <td><p>The token that can be used to cancel the operation.</p>
 </td>
       </tr>
     </tbody>
@@ -584,80 +686,24 @@ performs buffered read.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing asynchronous result.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L382">View Source</a>
-  </span>
-  <a id="DotNext_IO_FileReader_CopyToAsync_" data-uid="DotNext.IO.FileReader.CopyToAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">CopyToAsync(PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified pipe writer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task CopyToAsync(PipeWriter output, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
         <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The writer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous result.</p>
+        <td><span class="parametername">TConsumer</span></td>
+        <td><p>The type of the consumer.</p>
 </td>
       </tr>
     </tbody>
@@ -672,80 +718,18 @@ performs buffered read.</p>
     </thead>
     <tbody>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">count</code> is negative.</p>
+</td>
+      </tr>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
         <td><p>The operation has been canceled.</p>
 </td>
       </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L372">View Source</a>
-  </span>
-  <a id="DotNext_IO_FileReader_CopyToAsync_" data-uid="DotNext.IO.FileReader.CopyToAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">CopyToAsync(Stream, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Copies the content to the specified stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task CopyToAsync(Stream output, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
       <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output stream receiving object content.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing asynchronous result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying file doesn't have enough bytes to read.</p>
 </td>
       </tr>
     </tbody>
@@ -755,7 +739,7 @@ performs buffered read.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_CopyToAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.CopyToAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L354">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L295">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_CopyToAsync_" data-uid="DotNext.IO.FileReader.CopyToAsync*"></a>
   <h4 id="DotNext_IO_FileReader_CopyToAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.CopyToAsync``1(``0,System.Threading.CancellationToken)">CopyToAsync&lt;TConsumer&gt;(TConsumer, CancellationToken)</h4>
@@ -764,7 +748,7 @@ performs buffered read.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, CancellationToken token = default) where TConsumer : notnull, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, CancellationToken token = default) where TConsumer : notnull, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -800,7 +784,7 @@ performs buffered read.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing asynchronous result.</p>
 </td>
       </tr>
@@ -840,10 +824,198 @@ performs buffered read.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_DecodeAsync_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.DecodeAsync(DotNext.Text.DecodingContext%2CDotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L172">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileReader_DecodeAsync_" data-uid="DotNext.IO.FileReader.DecodeAsync*"></a>
+  <h4 id="DotNext_IO_FileReader_DecodeAsync_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.DecodeAsync(DotNext.Text.DecodingContext,DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Char},System.Threading.CancellationToken)">DecodeAsync(DecodingContext, LengthFormat, MemoryAllocator&lt;char&gt;?, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes the sequence of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;MemoryOwner&lt;char&gt;&gt; DecodeAsync(DecodingContext context, LengthFormat lengthFormat, MemoryAllocator&lt;char&gt;? allocator = null, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the buffer of characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;&gt;</td>
+        <td><p>The buffer of characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_DecodeAsync_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Char__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.DecodeAsync(DotNext.Text.DecodingContext%2CDotNext.IO.LengthFormat%2CSystem.Memory%7BSystem.Char%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L202">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileReader_DecodeAsync_" data-uid="DotNext.IO.FileReader.DecodeAsync*"></a>
+  <h4 id="DotNext_IO_FileReader_DecodeAsync_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.DecodeAsync(DotNext.Text.DecodingContext,DotNext.IO.LengthFormat,System.Memory{System.Char},System.Threading.CancellationToken)">DecodeAsync(DecodingContext, LengthFormat, Memory&lt;char&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes the sequence of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IAsyncEnumerable&lt;ReadOnlyMemory&lt;char&gt;&gt; DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory&lt;char&gt; buffer, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The decoding context containing string characters encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The buffer of characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;&gt;</td>
+        <td><p>The enumerator of characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L312">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L363">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Dispose_" data-uid="DotNext.IO.FileReader.Dispose*"></a>
   <h4 id="DotNext_IO_FileReader_Dispose_System_Boolean_" data-uid="DotNext.IO.FileReader.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -876,19 +1048,19 @@ performs buffered read.</p>
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ParseAsync__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ParseAsync%60%601(DotNext.Parser%7B%60%600%7D%2CDotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ParseAsync__1_DotNext_IO_LengthFormat_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ParseAsync%60%601(DotNext.IO.LengthFormat%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L238">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L264">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ParseAsync_" data-uid="DotNext.IO.FileReader.ParseAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_ParseAsync__1_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ParseAsync``1(DotNext.Parser{``0},DotNext.IO.LengthFormat,DotNext.Text.DecodingContext,System.IFormatProvider,System.Threading.CancellationToken)">ParseAsync&lt;T&gt;(Parser&lt;T&gt;, LengthFormat, DecodingContext, IFormatProvider?, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses the value encoded as a set of characters.</p>
+  <h4 id="DotNext_IO_FileReader_ParseAsync__1_DotNext_IO_LengthFormat_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ParseAsync``1(DotNext.IO.LengthFormat,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ParseAsync&lt;T&gt;(LengthFormat, NumberStyles, IFormatProvider?, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses the numeric value from UTF-8 encoded characters.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(Parser&lt;T&gt; parser, LengthFormat lengthFormat, DecodingContext context, IFormatProvider? provider = null, CancellationToken token = default) where T : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default) where T : notnull, INumberBase&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -901,27 +1073,21 @@ performs buffered read.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Parser-1.html">Parser</a>&lt;T&gt;</td>
-        <td><span class="parametername">parser</span></td>
-        <td><p>The parser.</p>
-</td>
-      </tr>
-      <tr>
         <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
+        <td><p>The format of the string length (in bytes) encoded in the stream.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.globalization.numberstyles">NumberStyles</a></td>
+        <td><span class="parametername">style</span></td>
+        <td><p>A combination of number styles.</p>
 </td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
         <td><span class="parametername">provider</span></td>
-        <td><p>The format provider.</p>
+        <td><p>Culture-specific formatting information.</p>
 </td>
       </tr>
       <tr>
@@ -943,7 +1109,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
-        <td><p>The parsed value.</p>
+        <td><p>The result of parsing.</p>
 </td>
       </tr>
     </tbody>
@@ -959,7 +1125,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the result.</p>
+        <td><p>The numeric type.</p>
 </td>
       </tr>
     </tbody>
@@ -984,27 +1150,27 @@ performs buffered read.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.formatexception">FormatException</a></td>
-        <td><p>The string is in wrong format.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">lengthFormat</code> is invalid.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ParseAsync__1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ParseAsync%60%601(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ParseAsync__1_DotNext_IO_LengthFormat_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ParseAsync%60%601(DotNext.IO.LengthFormat%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L265">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L228">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ParseAsync_" data-uid="DotNext.IO.FileReader.ParseAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_ParseAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ParseAsync``1(System.Threading.CancellationToken)">ParseAsync&lt;T&gt;(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Parses the value encoded as a sequence of bytes.</p>
+  <h4 id="DotNext_IO_FileReader_ParseAsync__1_DotNext_IO_LengthFormat_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ParseAsync``1(DotNext.IO.LengthFormat,System.IFormatProvider,System.Threading.CancellationToken)">ParseAsync&lt;T&gt;(LengthFormat, IFormatProvider?, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Parses the sequence of characters encoded as UTF-8.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(CancellationToken token = default) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default) where T : notnull, IUtf8SpanParsable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1016,6 +1182,18 @@ performs buffered read.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length (in bytes) encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>Culture-specific formatting information.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
@@ -1035,7 +1213,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
-        <td><p>The parsed value.</p>
+        <td><p>The result of parsing.</p>
 </td>
       </tr>
     </tbody>
@@ -1051,7 +1229,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the result.</p>
+        <td><p>The type that supports parsing from UTF-8.</p>
 </td>
       </tr>
     </tbody>
@@ -1073,6 +1251,11 @@ performs buffered read.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
         <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">lengthFormat</code> is invalid.</p>
 </td>
       </tr>
     </tbody>
@@ -1082,7 +1265,7 @@ performs buffered read.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Read.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Read%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L179">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L235">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Read_" data-uid="DotNext.IO.FileReader.Read*"></a>
   <h4 id="DotNext_IO_FileReader_Read" data-uid="DotNext.IO.FileReader.Read">Read()</h4>
@@ -1136,7 +1319,7 @@ performs buffered read.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L255">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L310">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Read_" data-uid="DotNext.IO.FileReader.Read*"></a>
   <h4 id="DotNext_IO_FileReader_Read_System_Span_System_Byte__" data-uid="DotNext.IO.FileReader.Read(System.Span{System.Byte})">Read(Span&lt;byte&gt;)</h4>
@@ -1145,7 +1328,7 @@ performs buffered read.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Read(Span&lt;byte&gt; output)</code></pre>
+    <pre><code class="lang-csharp hljs">public int Read(Span&lt;byte&gt; destination)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1159,7 +1342,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
+        <td><span class="parametername">destination</span></td>
         <td><p>The output buffer.</p>
 </td>
       </tr>
@@ -1176,7 +1359,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The number of bytes copied to <code class="paramref">output</code>.</p>
+        <td><p>The number of bytes copied to <code class="paramref">destination</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -1202,11 +1385,11 @@ performs buffered read.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadAsync_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadAsync(DotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L135">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L144">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadAsync_" data-uid="DotNext.IO.FileReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileReader_ReadAsync_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadAsync(DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Byte},System.Threading.CancellationToken)">ReadAsync(LengthFormat, MemoryAllocator&lt;byte&gt;?, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads length-prefixed block of bytes.</p>
+  <div class="markdown level1 summary"><p>Reads the memory block.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -1226,13 +1409,13 @@ performs buffered read.</p>
       <tr>
         <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
         <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the block length encoded in the underlying stream.</p>
+        <td><p>The format of the string length encoded in the stream.</p>
 </td>
       </tr>
       <tr>
         <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
         <td><span class="parametername">allocator</span></td>
-        <td><p>The memory allocator used to place the decoded block of bytes.</p>
+        <td><p>An allocator of the resulting buffer.</p>
 </td>
       </tr>
       <tr>
@@ -1254,7 +1437,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</td>
-        <td><p>The decoded block of bytes.</p>
+        <td><p>The rented buffer containing the memory block.</p>
 </td>
       </tr>
     </tbody>
@@ -1278,6 +1461,11 @@ performs buffered read.</p>
         <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
 </td>
       </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
@@ -1285,7 +1473,7 @@ performs buffered read.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L210">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L266">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadAsync_" data-uid="DotNext.IO.FileReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -1294,7 +1482,7 @@ performs buffered read.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;int&gt; ReadAsync(Memory&lt;byte&gt; output, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;int&gt; ReadAsync(Memory&lt;byte&gt; destination, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1308,7 +1496,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
+        <td><span class="parametername">destination</span></td>
         <td><p>The output buffer.</p>
 </td>
       </tr>
@@ -1331,7 +1519,7 @@ performs buffered read.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>The number of bytes copied to <code class="paramref">output</code>.</p>
+        <td><p>The number of bytes copied to <code class="paramref">destination</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -1362,7 +1550,7 @@ performs buffered read.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L146">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L202">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadAsync_" data-uid="DotNext.IO.FileReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileReader_ReadAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadAsync(System.Threading.CancellationToken)">ReadAsync(CancellationToken)</h4>
@@ -1439,16 +1627,16 @@ performs buffered read.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadAsync__1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadAsync%60%601(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadAsync_" data-uid="DotNext.IO.FileReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileReader_ReadAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadAsync``1(System.Threading.CancellationToken)">ReadAsync&lt;T&gt;(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the value of blittable type.</p>
+  <div class="markdown level1 summary"><p>Decodes the value of binary formattable type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = default) where T : unmanaged</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = default) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1523,19 +1711,19 @@ performs buffered read.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadBigIntegerAsync_DotNext_IO_LengthFormat_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadBigIntegerAsync(DotNext.IO.LengthFormat%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadBigEndianAsync__1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadBigEndianAsync%60%601(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L329">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L113">View Source</a>
   </span>
-  <a id="DotNext_IO_FileReader_ReadBigIntegerAsync_" data-uid="DotNext.IO.FileReader.ReadBigIntegerAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_ReadBigIntegerAsync_DotNext_IO_LengthFormat_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadBigIntegerAsync(DotNext.IO.LengthFormat,System.Boolean,System.Threading.CancellationToken)">ReadBigIntegerAsync(LengthFormat, bool, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes an arbitrary integer value.</p>
+  <a id="DotNext_IO_FileReader_ReadBigEndianAsync_" data-uid="DotNext.IO.FileReader.ReadBigEndianAsync*"></a>
+  <h4 id="DotNext_IO_FileReader_ReadBigEndianAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadBigEndianAsync``1(System.Threading.CancellationToken)">ReadBigEndianAsync&lt;T&gt;(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads integer encoded in big-endian format.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;BigInteger&gt; ReadBigIntegerAsync(LengthFormat lengthFormat, bool littleEndian, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadBigEndianAsync&lt;T&gt;(CancellationToken token = default) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1547,18 +1735,6 @@ performs buffered read.</p>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the value length encoded in the underlying stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">littleEndian</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</p>
-</td>
-      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
@@ -1577,8 +1753,24 @@ performs buffered read.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.biginteger">BigInteger</a>&gt;</td>
-        <td><p>The decoded value.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
+        <td><p>The integer value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The integer type.</p>
 </td>
       </tr>
     </tbody>
@@ -1606,19 +1798,19 @@ performs buffered read.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadBlockAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadBlockAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadLittleEndianAsync__1_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadLittleEndianAsync%60%601(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L403">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L96">View Source</a>
   </span>
-  <a id="DotNext_IO_FileReader_ReadBlockAsync_" data-uid="DotNext.IO.FileReader.ReadBlockAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_ReadBlockAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadBlockAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadBlockAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads the block of bytes.</p>
+  <a id="DotNext_IO_FileReader_ReadLittleEndianAsync_" data-uid="DotNext.IO.FileReader.ReadLittleEndianAsync*"></a>
+  <h4 id="DotNext_IO_FileReader_ReadLittleEndianAsync__1_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadLittleEndianAsync``1(System.Threading.CancellationToken)">ReadLittleEndianAsync&lt;T&gt;(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads integer encoded in little-endian format.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask ReadBlockAsync(Memory&lt;byte&gt; output, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadLittleEndianAsync&lt;T&gt;(CancellationToken token = default) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1630,12 +1822,6 @@ performs buffered read.</p>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The output buffer.</p>
-</td>
-      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
@@ -1654,179 +1840,24 @@ performs buffered read.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous result.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
+        <td><p>The integer value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The expected block cannot be obtained.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadStringAsync(DotNext.IO.LengthFormat%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L185">View Source</a>
-  </span>
-  <a id="DotNext_IO_FileReader_ReadStringAsync_" data-uid="DotNext.IO.FileReader.ReadStringAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_ReadStringAsync_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadStringAsync(DotNext.IO.LengthFormat,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">ReadStringAsync(LengthFormat, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;string&gt; ReadStringAsync(LengthFormat lengthFormat, DecodingContext context, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
         <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>The format of the string length encoded in the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
-        <td><p>The decoded string.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
-        <td><p>The underlying source doesn't contain necessary amount of bytes to decode the value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">lengthFormat</code> is invalid.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadStringAsync(System.Int32%2CDotNext.Text.DecodingContext%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Binary.cs/#L212">View Source</a>
-  </span>
-  <a id="DotNext_IO_FileReader_ReadStringAsync_" data-uid="DotNext.IO.FileReader.ReadStringAsync*"></a>
-  <h4 id="DotNext_IO_FileReader_ReadStringAsync_System_Int32_DotNext_Text_DecodingContext_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadStringAsync(System.Int32,DotNext.Text.DecodingContext,System.Threading.CancellationToken)">ReadStringAsync(int, DecodingContext, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the string.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;string&gt; ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The length of the encoded string, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The decoding context containing string characters encoding.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
-        <td><p>The decoded string.</p>
+        <td><span class="parametername">T</span></td>
+        <td><p>The integer type.</p>
 </td>
       </tr>
     </tbody>
@@ -1854,64 +1885,26 @@ performs buffered read.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_SetSegmentLength_System_Nullable_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.SetSegmentLength(System.Nullable%7BSystem.Int64%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Reset.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Segment.cs/#L97">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L189">View Source</a>
   </span>
-  <a id="DotNext_IO_FileReader_SetSegmentLength_" data-uid="DotNext.IO.FileReader.SetSegmentLength*"></a>
-  <h4 id="DotNext_IO_FileReader_SetSegmentLength_System_Nullable_System_Int64__" data-uid="DotNext.IO.FileReader.SetSegmentLength(System.Nullable{System.Int64})">SetSegmentLength(long?)</h4>
-  <div class="markdown level1 summary"><p>Limits the number of available bytes to read.</p>
+  <a id="DotNext_IO_FileReader_Reset_" data-uid="DotNext.IO.FileReader.Reset*"></a>
+  <h4 id="DotNext_IO_FileReader_Reset" data-uid="DotNext.IO.FileReader.Reset">Reset()</h4>
+  <div class="markdown level1 summary"><p>Clears the read buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void SetSegmentLength(long? value)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?</td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The number of available bytes to read; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> to allow read to the end of the file.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_FileReader_SetSegmentLength_System_Nullable_System_Int64___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This limit is applicable only to the methods of <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a> interface
-implemented by this class.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">value</code> is negative.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Skip_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Skip(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L293">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L346">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Skip_" data-uid="DotNext.IO.FileReader.Skip*"></a>
   <h4 id="DotNext_IO_FileReader_Skip_System_Int64_" data-uid="DotNext.IO.FileReader.Skip(System.Int64)">Skip(long)</h4>
@@ -1956,6 +1949,62 @@ implemented by this class.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_TryConsume_System_Int32_System_ReadOnlyMemory_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.TryConsume(System.Int32%2CSystem.ReadOnlyMemory%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L163">View Source</a>
+  </span>
+  <a id="DotNext_IO_FileReader_TryConsume_" data-uid="DotNext.IO.FileReader.TryConsume*"></a>
+  <h4 id="DotNext_IO_FileReader_TryConsume_System_Int32_System_ReadOnlyMemory_System_Byte___" data-uid="DotNext.IO.FileReader.TryConsume(System.Int32,System.ReadOnlyMemory{System.Byte}@)">TryConsume(int, out ReadOnlyMemory&lt;byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Attempts to consume buffered data.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryConsume(int bytes, out ReadOnlyMemory&lt;byte&gt; buffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">bytes</span></td>
+        <td><p>The number of bytes to consume.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The slice of internal buffer containing consumed bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the specified number of bytes is consumed successfully; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
@@ -1964,23 +2013,26 @@ implemented by this class.</p>
       <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
+  </div>
+  <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
@@ -2019,40 +2071,34 @@ implemented by this class.</p>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_CopyAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__System_Threading_CancellationToken_">Sequence.CopyAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_CopyAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__System_Threading_CancellationToken_">AsyncEnumerable.CopyAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ElementAtAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_System_Threading_CancellationToken_">Sequence.ElementAtAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ElementAtAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_System_Threading_CancellationToken_">AsyncEnumerable.ElementAtAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmptyAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Predicate___0__System_Threading_CancellationToken_">Sequence.FirstOrEmptyAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Predicate&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_FirstOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Predicate___0__System_Threading_CancellationToken_">AsyncEnumerable.FirstOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Predicate&lt;T&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrEmptyAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">Sequence.FirstOrEmptyAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_FirstOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">AsyncEnumerable.FirstOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Predicate___0__System_Threading_CancellationToken_">Sequence.FirstOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Predicate&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_FirstOrNullAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">AsyncEnumerable.FirstOrNullAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">Sequence.FirstOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEachAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Action___0__System_Threading_CancellationToken_">AsyncEnumerable.ForEachAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Action&lt;T&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_FirstOrNullAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">Sequence.FirstOrNullAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEachAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">AsyncEnumerable.ForEachAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Action___0__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Action&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_LastOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">AsyncEnumerable.LastOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ForEachAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Sequence.ForEachAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_LastOrNullAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">AsyncEnumerable.LastOrNullAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_LastOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">Sequence.LastOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_LastOrNullAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">Sequence.LastOrNullAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Sequence.html#DotNext_Collections_Generic_Sequence_ToArrayAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__System_Threading_CancellationToken_">Sequence.ToArrayAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ToArrayAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__System_Threading_CancellationToken_">AsyncEnumerable.ToArrayAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?, CancellationToken)</a>
   </div>
 
 </article>
@@ -2066,7 +2112,7 @@ implemented by this class.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Segment.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Segment.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

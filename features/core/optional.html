@@ -73,8 +73,6 @@
 <pre><code class="lang-csharp">using DotNext;
 using DotNext.Collections.Generic;
 
-IEnumerable&lt;int&gt; array = new int[] { 1, 2, 3 };
-Optional&lt;int&gt; i = array.FirstOrNone(); //extension method from Sequence class
 var value = (int)i; //cast is supported
 if(i.TryGet(out value))
 {
@@ -85,8 +83,8 @@ if(i)   //if i has value
     value = i.Value;
 }
 value = i.OrThrow&lt;ArgumentException&gt;();
-value = i.Or(-1);   //returns -1 if i has no value
-value = i.OrDefault(); //returns default(int) if i has no value
+value = i | -1;   //returns -1 if i has no value
+value = i.ValueOrDefault; //returns default(int) if i has no value
 value = i.OrInvoke(() =&gt; 10); //calls lambda if i has no value
 </code></pre>
 <p><code>Nullable&lt;T&gt;</code> and <code>Optional&lt;T&gt;</code> are mutually convertible types with help of <a class="xref" href="../../api/DotNext.Optional.html">extension methods</a>.</p>
@@ -95,20 +93,20 @@ value = i.OrInvoke(() =&gt; 10); //calls lambda if i has no value
 <pre><code class="lang-csharp">using DotNext;
 using System;
 
-static Optional&lt;string&gt; FirstOrNull(string[] array)
+static Optional&lt;string&gt; FirstOrNone(string[] array)
     =&gt; array.Length &gt; 0 ? array[0] : Optional&lt;string&gt;.None;
 
 string[] array1 = { null };
-Optional&lt;string&gt; first1 = FirstOrNull(array1);
+Optional&lt;string&gt; first1 = FirstOrNone(array1);
 
 string[] array2 = Array.Empty&lt;string&gt;();
-Optional&lt;string&gt; first2 = FirstOrNull(array2);
+Optional&lt;string&gt; first2 = FirstOrNone(array2);
 </code></pre>
 <p><code>HasValue</code> property of both values <code>first1</code> and <code>first2</code> is <strong>false</strong>. However, <code>first1</code> actually represents the first element from the array. But the element is <strong>null</strong>. <code>first2</code> is empty because the array is empty. This situation is equivalent to the following code:</p>
 <pre><code class="lang-csharp">using DotNext;
 
 var first1 = new Optional&lt;string&gt;(null);
-var first2 = Optional&lt;string&gt;.None;    //or default(Optional&lt;string&gt;)
+var first2 = Optional.None&lt;string&gt;();    //or default(Optional&lt;string&gt;)
 </code></pre>
 <p>Is it possible to distinguish the absence of value from <strong>null</strong> value? The answer is yes. There are two additional properties:</p>
 <ul>
@@ -116,7 +114,7 @@ var first2 = Optional&lt;string&gt;.None;    //or default(Optional&lt;string&gt;
 <li><code>IsUndefined</code> returns <strong>true</strong> if underlying value is not defined</li>
 </ul>
 <p>Now it's possible to apply additional logic to the optional result:</p>
-<pre><code class="lang-csharp">Optional&lt;string&gt; first = FirstOrNull(array);
+<pre><code class="lang-csharp">Optional&lt;string&gt; first = FirstOrNone(array);
 
 switch (first)
 {

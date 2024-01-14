@@ -80,10 +80,10 @@
 <p>The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:</p>
 <ol>
 <li><a class="xref" href="../../api/DotNext.Buffers.UnmanagedMemoryPool-1.html">UnmanagedMemoryPool&lt;T&gt;</a> provides allocation of unmanaged memory</li>
-<li><a class="xref" href="../../api/DotNext.Buffers.IUnmanagedMemoryOwner-1.html">IUnmanagedMemoryOwner&lt;T&gt;</a> provides structured access to the allocated unmanaged memory.</li>
+<li><a class="xref" href="../../api/DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html">IUnmanagedMemory&lt;T&gt;</a> provides structured access to the allocated unmanaged memory.</li>
 </ol>
-<p>All unmanaged data types are not thread-safe. However, there are various extension methods in <a class="xref" href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
-<p><code>IUnmanagedMemoryOwner&lt;T&gt;</code>implements <a class="xref" href="../../api/DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a> and supports direct memory manipulations:</p>
+<p>All unmanaged data types are not thread-safe.</p>
+<p><code>IUnmanagedMemory&lt;T&gt;</code>derives from <a class="xref" href="../../api/DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a> and supports direct memory manipulations:</p>
 <ul>
 <li><code>Pointer</code> property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks</li>
 <li><code>Bytes</code> property provides memory access using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. It is less flexible in comparison with pointer but safe because it implements bound checks</li>
@@ -126,16 +126,16 @@ private static void UnsafeMethod()
 <h5>Important</h5>
 <p>Typed pointer doesn't provide range checks.</p>
 </div>
-<p>Volatile operations are fully supported by pointer of one of the following types: <code>long</code>, <code>int</code>, <code>byte</code>, <code>bool</code>, <code>float</code>, <code>double</code>, <code>ulong</code>, <code>uint</code>, <code>sbyte</code>, <code>IntPtr</code>:</p>
-<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+<p>Volatile operations are fully supported by pointer:</p>
+<pre><code class="lang-csharp">using System.Threading;
+using DotNext.Runtime.InteropServices;
 using DotNext.Threading;
 
 Pointer&lt;long&gt; ptr;
-ptr.VolatileWrite(42L);
-var i = ptr.VolatileRead();
-i = ptr.IncrementAndGetValue(); //i == 43
+Volatile.Write(ref ptr.Value, 42L);
+var i = Volatile.Read(in ptr.Value);
+i = Interlocked.Increment(ref ptr.Value); //i == 43
 </code></pre>
-<p>See <a class="xref" href="../../api/DotNext.Threading.AtomicPointer.html">here</a> for complete list of volatile operations.</p>
 
 </article>
           </div>

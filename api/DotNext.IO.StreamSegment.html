@@ -125,6 +125,24 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-byte()-system-int32-system-int32)">Stream.ReadAsync(byte[], int, int)</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readatleast">Stream.ReadAtLeast(Span&lt;byte&gt;, int, bool)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readatleastasync">Stream.ReadAtLeastAsync(Memory&lt;byte&gt;, int, bool, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactly#system-io-stream-readexactly(system-byte()-system-int32-system-int32)">Stream.ReadExactly(byte[], int, int)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactly#system-io-stream-readexactly(system-span((system-byte)))">Stream.ReadExactly(Span&lt;byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactlyasync#system-io-stream-readexactlyasync(system-byte()-system-int32-system-int32-system-threading-cancellationtoken)">Stream.ReadExactlyAsync(byte[], int, int, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readexactlyasync#system-io-stream-readexactlyasync(system-memory((system-byte))-system-threading-cancellationtoken)">Stream.ReadExactlyAsync(Memory&lt;byte&gt;, CancellationToken)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.synchronized">Stream.Synchronized(Stream)</a>
     </div>
     <div>
@@ -260,7 +278,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_CanRead.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanRead%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L59">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_CanRead_" data-uid="DotNext.IO.StreamSegment.CanRead*"></a>
   <h4 id="DotNext_IO_StreamSegment_CanRead" data-uid="DotNext.IO.StreamSegment.CanRead">CanRead</h4>
@@ -294,7 +312,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_CanSeek.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanSeek%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L65">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_CanSeek_" data-uid="DotNext.IO.StreamSegment.CanSeek*"></a>
   <h4 id="DotNext_IO_StreamSegment_CanSeek" data-uid="DotNext.IO.StreamSegment.CanSeek">CanSeek</h4>
@@ -328,7 +346,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_CanTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanTimeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L98">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_CanTimeout_" data-uid="DotNext.IO.StreamSegment.CanTimeout*"></a>
   <h4 id="DotNext_IO_StreamSegment_CanTimeout" data-uid="DotNext.IO.StreamSegment.CanTimeout">CanTimeout</h4>
@@ -362,7 +380,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_CanWrite.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanWrite%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L71">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_CanWrite_" data-uid="DotNext.IO.StreamSegment.CanWrite*"></a>
   <h4 id="DotNext_IO_StreamSegment_CanWrite" data-uid="DotNext.IO.StreamSegment.CanWrite">CanWrite</h4>
@@ -396,7 +414,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Length.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L74">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Length_" data-uid="DotNext.IO.StreamSegment.Length*"></a>
   <h4 id="DotNext_IO_StreamSegment_Length" data-uid="DotNext.IO.StreamSegment.Length">Length</h4>
@@ -436,7 +454,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>A class derived from <code>Stream</code> does not support seeking.</p>
+        <td><p>A class derived from <code>Stream</code> does not support seeking and the length is unknown.</p>
 </td>
       </tr>
       <tr>
@@ -451,7 +469,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Position%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L77">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L76">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Position_" data-uid="DotNext.IO.StreamSegment.Position*"></a>
   <h4 id="DotNext_IO_StreamSegment_Position" data-uid="DotNext.IO.StreamSegment.Position">Position</h4>
@@ -511,7 +529,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_ReadTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.ReadTimeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L188">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L184">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_ReadTimeout_" data-uid="DotNext.IO.StreamSegment.ReadTimeout*"></a>
   <h4 id="DotNext_IO_StreamSegment_ReadTimeout" data-uid="DotNext.IO.StreamSegment.ReadTimeout">ReadTimeout</h4>
@@ -561,7 +579,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_WriteTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.WriteTimeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L195">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L191">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_WriteTimeout_" data-uid="DotNext.IO.StreamSegment.WriteTimeout*"></a>
   <h4 id="DotNext_IO_StreamSegment_WriteTimeout" data-uid="DotNext.IO.StreamSegment.WriteTimeout">WriteTimeout</h4>
@@ -672,7 +690,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.BeginRead(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L120">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_BeginRead_" data-uid="DotNext.IO.StreamSegment.BeginRead*"></a>
   <h4 id="DotNext_IO_StreamSegment_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.StreamSegment.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginRead(byte[], int, int, AsyncCallback?, object?)</h4>
@@ -779,7 +797,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.BeginWrite(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L181">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L177">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_BeginWrite_" data-uid="DotNext.IO.StreamSegment.BeginWrite*"></a>
   <h4 id="DotNext_IO_StreamSegment_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.StreamSegment.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginWrite(byte[], int, int, AsyncCallback?, object?)</h4>
@@ -886,7 +904,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L202">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L198">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Dispose_" data-uid="DotNext.IO.StreamSegment.Dispose*"></a>
   <h4 id="DotNext_IO_StreamSegment_Dispose_System_Boolean_" data-uid="DotNext.IO.StreamSegment.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -922,7 +940,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L210">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L206">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_DisposeAsync_" data-uid="DotNext.IO.StreamSegment.DisposeAsync*"></a>
   <h4 id="DotNext_IO_StreamSegment_DisposeAsync" data-uid="DotNext.IO.StreamSegment.DisposeAsync">DisposeAsync()</h4>
@@ -956,7 +974,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_EndRead_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.EndRead(System.IAsyncResult)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L127">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L125">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_EndRead_" data-uid="DotNext.IO.StreamSegment.EndRead*"></a>
   <h4 id="DotNext_IO_StreamSegment_EndRead_System_IAsyncResult_" data-uid="DotNext.IO.StreamSegment.EndRead(System.IAsyncResult)">EndRead(IAsyncResult)</h4>
@@ -996,7 +1014,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The number of bytes read from the stream, between zero (0) and the number of bytes you requested. Streams return zero (0) only at the end of the stream, otherwise, they should block until at least one byte is available.</p>
+        <td><p>The number of bytes read from the stream, between zero (0) and the number of bytes requested. ReadAsync returns zero (0) only if zero bytes were requested or if no more bytes will be available because it's at the end of the stream; otherwise, read operations do not complete until at least one byte is available. If zero bytes are requested, read operations may complete immediately or may not complete until at least one byte is available (but without consuming any data).</p>
 </td>
       </tr>
     </tbody>
@@ -1041,7 +1059,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_EndWrite_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.EndWrite(System.IAsyncResult)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L185">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L181">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_EndWrite_" data-uid="DotNext.IO.StreamSegment.EndWrite*"></a>
   <h4 id="DotNext_IO_StreamSegment_EndWrite_System_IAsyncResult_" data-uid="DotNext.IO.StreamSegment.EndWrite(System.IAsyncResult)">EndWrite(IAsyncResult)</h4>
@@ -1110,7 +1128,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Flush%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L92">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L90">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Flush_" data-uid="DotNext.IO.StreamSegment.Flush*"></a>
   <h4 id="DotNext_IO_StreamSegment_Flush" data-uid="DotNext.IO.StreamSegment.Flush">Flush()</h4>
@@ -1144,7 +1162,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_FlushAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.FlushAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L95">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L93">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_FlushAsync_" data-uid="DotNext.IO.StreamSegment.FlushAsync*"></a>
   <h4 id="DotNext_IO_StreamSegment_FlushAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamSegment.FlushAsync(System.Threading.CancellationToken)">FlushAsync(CancellationToken)</h4>
@@ -1211,7 +1229,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Read_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Read(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L108">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L106">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Read_" data-uid="DotNext.IO.StreamSegment.Read*"></a>
   <h4 id="DotNext_IO_StreamSegment_Read_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.StreamSegment.Read(System.Byte[],System.Int32,System.Int32)">Read(byte[], int, int)</h4>
@@ -1263,7 +1281,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</p>
+        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if <code class="paramref">count</code> is 0 or the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -1316,7 +1334,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L116">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L114">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Read_" data-uid="DotNext.IO.StreamSegment.Read*"></a>
   <h4 id="DotNext_IO_StreamSegment_Read_System_Span_System_Byte__" data-uid="DotNext.IO.StreamSegment.Read(System.Span{System.Byte})">Read(Span&lt;byte&gt;)</h4>
@@ -1356,7 +1374,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes allocated in the buffer if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</p>
+        <td><p>The total number of bytes read into the buffer. This can be less than the size of the buffer if that many bytes are not currently available, or zero (0) if the buffer's length is zero or the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -1368,7 +1386,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.ReadAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L130">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L128">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_ReadAsync_" data-uid="DotNext.IO.StreamSegment.ReadAsync*"></a>
   <h4 id="DotNext_IO_StreamSegment_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamSegment.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">ReadAsync(byte[], int, int, CancellationToken)</h4>
@@ -1425,7 +1443,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>A task that represents the asynchronous read operation. The value of the <code class="paramref">TResult</code> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if the end of the stream has been reached.</p>
+        <td><p>A task that represents the asynchronous read operation. The value of the <code class="paramref">TResult</code> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if <code class="paramref">count</code> is 0 or if the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -1478,7 +1496,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L134">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L132">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_ReadAsync_" data-uid="DotNext.IO.StreamSegment.ReadAsync*"></a>
   <h4 id="DotNext_IO_StreamSegment_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamSegment.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -1523,7 +1541,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>A task that represents the asynchronous read operation. The value of its <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result">Result</a> property contains the total number of bytes read into the buffer. The result value can be less than the number of bytes allocated in the buffer if that many bytes are not currently available, or it can be 0 (zero) if the end of the stream has been reached.</p>
+        <td><p>A task that represents the asynchronous read operation. The value of its <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1.result">Result</a> property contains the total number of bytes read into the buffer. The result value can be less than the length of the buffer if that many bytes are not currently available, or it can be 0 (zero) if the length of the buffer is 0 or if the end of the stream has been reached.</p>
 </td>
       </tr>
     </tbody>
@@ -1535,7 +1553,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_ReadByte.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.ReadByte%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L99">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_ReadByte_" data-uid="DotNext.IO.StreamSegment.ReadByte*"></a>
   <h4 id="DotNext_IO_StreamSegment_ReadByte" data-uid="DotNext.IO.StreamSegment.ReadByte">ReadByte()</h4>
@@ -1590,7 +1608,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Seek_System_Int64_System_IO_SeekOrigin_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Seek(System.Int64%2CSystem.IO.SeekOrigin)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L138">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L136">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Seek_" data-uid="DotNext.IO.StreamSegment.Seek*"></a>
   <h4 id="DotNext_IO_StreamSegment_Seek_System_Int64_System_IO_SeekOrigin_" data-uid="DotNext.IO.StreamSegment.Seek(System.Int64,System.IO.SeekOrigin)">Seek(long, SeekOrigin)</h4>
@@ -1674,7 +1692,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_SetLength_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.SetLength(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L159">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_SetLength_" data-uid="DotNext.IO.StreamSegment.SetLength*"></a>
   <h4 id="DotNext_IO_StreamSegment_SetLength_System_Int64_" data-uid="DotNext.IO.StreamSegment.SetLength(System.Int64)">SetLength(long)</h4>
@@ -1736,7 +1754,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Write_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Write(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L168">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Write_" data-uid="DotNext.IO.StreamSegment.Write*"></a>
   <h4 id="DotNext_IO_StreamSegment_Write_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.StreamSegment.Write(System.Byte[],System.Int32,System.Int32)">Write(byte[], int, int)</h4>
@@ -1825,7 +1843,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_Write_System_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Write(System.ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L171">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L167">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_Write_" data-uid="DotNext.IO.StreamSegment.Write*"></a>
   <h4 id="DotNext_IO_StreamSegment_Write_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.IO.StreamSegment.Write(System.ReadOnlySpan{System.Byte})">Write(ReadOnlySpan&lt;byte&gt;)</h4>
@@ -1861,7 +1879,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.WriteAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L174">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L170">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_WriteAsync_" data-uid="DotNext.IO.StreamSegment.WriteAsync*"></a>
   <h4 id="DotNext_IO_StreamSegment_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamSegment.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">WriteAsync(byte[], int, int, CancellationToken)</h4>
@@ -1971,7 +1989,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.WriteAsync(System.ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L177">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_WriteAsync_" data-uid="DotNext.IO.StreamSegment.WriteAsync*"></a>
   <h4 id="DotNext_IO_StreamSegment_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamSegment.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</h4>
@@ -2029,7 +2047,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_StreamSegment_WriteByte_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.WriteByte(System.Byte)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L105">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/StreamSegment.cs/#L103">View Source</a>
   </span>
   <a id="DotNext_IO_StreamSegment_WriteByte_" data-uid="DotNext.IO.StreamSegment.WriteByte*"></a>
   <h4 id="DotNext_IO_StreamSegment_WriteByte_System_Byte_" data-uid="DotNext.IO.StreamSegment.WriteByte(System.Byte)">WriteByte(byte)</h4>
@@ -2098,19 +2116,19 @@
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
@@ -2149,64 +2167,49 @@
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Combine_System_IO_Stream_System_IO_Stream___">StreamExtensions.Combine(Stream, params Stream[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyTo(Stream, IBufferWriter&lt;byte&gt;, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_IO_Stream_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo(Stream, Stream, Span&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Combine_System_IO_Stream_System_ReadOnlySpan_System_IO_Stream__">StreamExtensions.Combine(Stream, ReadOnlySpan&lt;Stream&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, IBufferWriter&lt;byte&gt;, int, CancellationToken)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_Buffers_IBufferWriter_System_Byte__System_Int64_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, IBufferWriter&lt;byte&gt;, long, int, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Int64_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, Stream, long, Memory&lt;byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Func___0_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, Func&lt;TArg, ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, TArg, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream_System_Func___0_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_System_Threading_Tasks_ValueTask____0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TArg&gt;(Stream, Func&lt;TArg, ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, TArg, Memory&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream___0_System_Int64_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TConsumer&gt;(Stream, TConsumer, long, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync&lt;TConsumer&gt;(Stream, TConsumer, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Int32_System_Threading_CancellationToken_">StreamExtensions.CopyTo&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, int, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_DecodeAsync_System_IO_Stream_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.DecodeAsync(Stream, DecodingContext, LengthFormat, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo__1_System_IO_Stream_System_Buffers_ReadOnlySpanAction_System_Byte___0____0_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo&lt;TArg&gt;(Stream, ReadOnlySpanAction&lt;byte, TArg&gt;, TArg, Span&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_DecodeAsync_System_IO_Stream_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Char__System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.DecodeAsync(Stream, DecodingContext, LengthFormat, Memory&lt;char&gt;, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo__1_System_IO_Stream___0_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo&lt;TConsumer&gt;(Stream, TConsumer, Span&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_EncodeAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.EncodeAsync(Stream, ReadOnlyMemory&lt;char&gt;, EncodingContext, LengthFormat?, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, Parser&lt;T&gt;, LengthFormat, DecodingContext, IFormatProvider?, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_FormatAsync__1_System_IO_Stream___0_DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_Memory_System_Byte__System_String_System_IFormatProvider_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.FormatAsync&lt;T&gt;(Stream, T, EncodingContext, LengthFormat?, Memory&lt;byte&gt;, string?, IFormatProvider?, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, Parser&lt;T&gt;, LengthFormat, DecodingContext, Memory&lt;byte&gt;, IFormatProvider?, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_FormatAsync__1_System_IO_Stream___0_System_Nullable_DotNext_IO_LengthFormat__System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.FormatAsync&lt;T&gt;(Stream, T, LengthFormat?, Memory&lt;byte&gt;, string?, IFormatProvider?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_IO_LengthFormat_System_Memory_System_Byte__System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, LengthFormat, Memory&lt;byte&gt;, NumberStyles, IFormatProvider?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__1_System_IO_Stream_DotNext_IO_LengthFormat_System_Memory_System_Byte__System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;T&gt;(Stream, LengthFormat, Memory&lt;byte&gt;, IFormatProvider?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Parse__1_System_IO_Stream_">StreamExtensions.Parse&lt;T&gt;(Stream)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Parse__1_System_IO_Stream_DotNext_Parser___0__DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Span_System_Byte__System_IFormatProvider_">StreamExtensions.Parse&lt;T&gt;(Stream, Parser&lt;T&gt;, LengthFormat, in DecodingContext, Span&lt;byte&gt;, IFormatProvider?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Parse__1_System_IO_Stream_System_Span_System_Byte__">StreamExtensions.Parse&lt;T&gt;(Stream, Span&lt;byte&gt;)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ParseAsync__2_System_IO_Stream___0_DotNext_Buffers_ReadOnlySpanFunc_System_Char___0___1__DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ParseAsync&lt;TArg, TResult&gt;(Stream, TArg, ReadOnlySpanFunc&lt;char, TArg, TResult&gt;, DecodingContext, LengthFormat, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAllAsync_System_IO_Stream_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAllAsync(Stream, int, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
@@ -2215,97 +2218,13 @@
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigEndianAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBigEndianAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAtLeast_System_IO_Stream_System_Int32_System_Span_System_Byte__">StreamExtensions.ReadAtLeast(Stream, int, Span&lt;byte&gt;)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBlockAsync(Stream, LengthFormat, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAtLeastAsync_System_IO_Stream_System_Int32_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAtLeastAsync(Stream, int, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_">StreamExtensions.ReadBigInteger(Stream, LengthFormat, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_System_Span_System_Byte__">StreamExtensions.ReadBigInteger(Stream, LengthFormat, bool, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_System_Int32_System_Boolean_">StreamExtensions.ReadBigInteger(Stream, int, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigInteger_System_IO_Stream_System_Int32_System_Boolean_System_Span_System_Byte__">StreamExtensions.ReadBigInteger(Stream, int, bool, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, LengthFormat, bool, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Boolean_System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, LengthFormat, bool, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_System_Int32_System_Boolean_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, int, bool, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBigIntegerAsync_System_IO_Stream_System_Int32_System_Boolean_System_Threading_CancellationToken_">StreamExtensions.ReadBigIntegerAsync(Stream, int, bool, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlock_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__">StreamExtensions.ReadBlock(Stream, LengthFormat, MemoryAllocator&lt;byte&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlock_System_IO_Stream_System_Span_System_Byte__">StreamExtensions.ReadBlock(Stream, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBlockAsync(Stream, LengthFormat, Memory&lt;byte&gt;, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadBlockAsync_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadBlockAsync(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, LengthFormat, in DecodingContext, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext__System_Span_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, LengthFormat, in DecodingContext, Span&lt;byte&gt;, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_">StreamExtensions.ReadString(Stream, LengthFormat, Encoding)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, LengthFormat, Encoding, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, int, in DecodingContext, Span&lt;byte&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, int, in DecodingContext, Span&lt;byte&gt;, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_">StreamExtensions.ReadString(Stream, int, Encoding)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__">StreamExtensions.ReadString(Stream, int, Encoding, MemoryAllocator&lt;char&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, DecodingContext, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, DecodingContext, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, Encoding, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_LengthFormat_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, LengthFormat, Encoding, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, DecodingContext, Memory&lt;byte&gt;, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, DecodingContext, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, Encoding, MemoryAllocator&lt;char&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, int, Encoding, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadLittleEndianAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadLittleEndianAsync&lt;T&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUtf8_System_IO_Stream_System_Span_System_Byte__System_Buffers_IBufferWriter_System_Char__">StreamExtensions.ReadUtf8(Stream, Span&lt;byte&gt;, IBufferWriter&lt;char&gt;)</a>
@@ -2320,76 +2239,19 @@
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadUtf8__1_System_IO_Stream_System_Span_System_Byte__System_Span_System_Char__System_Buffers_ReadOnlySpanAction_System_Char___0____0_">StreamExtensions.ReadUtf8&lt;TArg&gt;(Stream, Span&lt;byte&gt;, Span&lt;char&gt;, ReadOnlySpanAction&lt;char, TArg&gt;, TArg)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_">StreamExtensions.Read&lt;T&gt;(Stream)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte___System_Threading_CancellationToken_">StreamExtensions.Write(Stream, in ReadOnlySequence&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync_System_IO_Stream_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync(Stream, ReadOnlySequence&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream_System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask_System_ReadOnlyMemory_System_Byte______0_System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;TArg&gt;(Stream, Func&lt;TArg, CancellationToken, ValueTask&lt;ReadOnlyMemory&lt;byte&gt;&gt;&gt;, TArg, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync_System_IO_Stream_System_ReadOnlyMemory_System_Byte__DotNext_IO_LengthFormat_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync(Stream, ReadOnlyMemory&lt;byte&gt;, LengthFormat, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigEndianAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteBigEndianAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigInteger_System_IO_Stream_System_Numerics_BigInteger__System_Boolean_System_Nullable_DotNext_IO_LengthFormat__">StreamExtensions.WriteBigInteger(Stream, in BigInteger, bool, LengthFormat?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigIntegerAsync_System_IO_Stream_System_Numerics_BigInteger_System_Boolean_DotNext_Buffers_MemoryAllocator_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteBigIntegerAsync(Stream, BigInteger, bool, MemoryAllocator&lt;byte&gt;?, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBigIntegerAsync_System_IO_Stream_System_Numerics_BigInteger_System_Boolean_System_Memory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteBigIntegerAsync(Stream, BigInteger, bool, Memory&lt;byte&gt;, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBlock_System_IO_Stream_System_ReadOnlySpan_System_Byte__DotNext_IO_LengthFormat_">StreamExtensions.WriteBlock(Stream, ReadOnlySpan&lt;byte&gt;, LengthFormat)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteBlockAsync_System_IO_Stream_System_ReadOnlyMemory_System_Byte__DotNext_IO_LengthFormat_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteBlockAsync(Stream, ReadOnlyMemory&lt;byte&gt;, LengthFormat, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_DotNext_IO_LengthFormat_DotNext_Text_EncodingContext_System_Memory_System_Byte__System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, LengthFormat, EncodingContext, Memory&lt;byte&gt;, string?, IFormatProvider?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_DotNext_IO_LengthFormat_DotNext_Text_EncodingContext_System_String_System_IFormatProvider_System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, LengthFormat, EncodingContext, string?, IFormatProvider?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattableAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_">StreamExtensions.WriteFormattableAsync&lt;T&gt;(Stream, T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattable__1_System_IO_Stream___0_">StreamExtensions.WriteFormattable&lt;T&gt;(Stream, T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteFormattable__1_System_IO_Stream___0_DotNext_IO_LengthFormat_System_Text_Encoding_System_ReadOnlySpan_System_Char__System_IFormatProvider_">StreamExtensions.WriteFormattable&lt;T&gt;(Stream, T, LengthFormat, Encoding, ReadOnlySpan&lt;char&gt;, IFormatProvider?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Span_System_Byte__System_Nullable_DotNext_IO_LengthFormat__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;char&gt;, in EncodingContext, Span&lt;byte&gt;, LengthFormat?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_LengthFormat__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;char&gt;, Encoding, LengthFormat?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Memory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;char&gt;, EncodingContext, Memory&lt;byte&gt;, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;char&gt;, Encoding, LengthFormat?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write__1_System_IO_Stream___0__">StreamExtensions.Write&lt;T&gt;(Stream, in T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.Serialization.Serializable.html#DotNext_Runtime_Serialization_Serializable_ReadFromAsync__1_System_IO_Stream_System_Int32_System_Threading_CancellationToken_">Serializable.ReadFromAsync&lt;TObject&gt;(Stream, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.Serialization.Serializable.html#DotNext_Runtime_Serialization_Serializable_ReadFromAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">Serializable.ReadFromAsync&lt;TObject&gt;(Stream, Memory&lt;byte&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteLittleEndianAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteLittleEndianAsync&lt;T&gt;(Stream, T, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
 
 </article>

@@ -139,19 +139,19 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1__ctor_System_Int32_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.%23ctor(System.Int32%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L26">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemoryPool_1__ctor_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1__ctor_System_Int32_System_Int32_System_Boolean_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.#ctor(System.Int32,System.Int32,System.Boolean)">UnmanagedMemoryPool(int, int, bool)</h4>
+  <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1__ctor_System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.#ctor(System.Int32)">UnmanagedMemoryPool(int)</h4>
   <div class="markdown level1 summary"><p>Initializes a new pool of unmanaged memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public UnmanagedMemoryPool(int maxBufferSize, int defaultBufferSize = 32, bool trackAllocations = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public UnmanagedMemoryPool(int maxBufferSize)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -169,16 +169,20 @@
         <td><p>The maximum allowed number of elements that can be allocated by the pool.</p>
 </td>
       </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">defaultBufferSize</span></td>
-        <td><p>The default number of elements that can be allocated by the pool.</p>
-</td>
+        <th>Type</th>
+        <th>Condition</th>
       </tr>
+    </thead>
+    <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">trackAllocations</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to release allocated unmanaged memory when <a class="xref" href="DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Dispose_System_Boolean_">Dispose(bool)</a> is called; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">maxBufferSize</code> is negative or zero.</p>
 </td>
       </tr>
     </tbody>
@@ -187,10 +191,72 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1_MaxBufferSize.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.MaxBufferSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1_AllocateZeroedMemory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.AllocateZeroedMemory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L67">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_UnmanagedMemoryPool_1_AllocateZeroedMemory_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.AllocateZeroedMemory*"></a>
+  <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1_AllocateZeroedMemory" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.AllocateZeroedMemory">AllocateZeroedMemory</h4>
+  <div class="markdown level1 summary"><p>Sets a value indicating that the allocated unmanaged memory must be filled with zeroes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AllocateZeroedMemory { init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1_DefaultBufferSize.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.DefaultBufferSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L43">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_UnmanagedMemoryPool_1_DefaultBufferSize_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.DefaultBufferSize*"></a>
+  <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1_DefaultBufferSize" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.DefaultBufferSize">DefaultBufferSize</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the size of memory block allocated by default.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int DefaultBufferSize { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1_MaxBufferSize.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.MaxBufferSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemoryPool_1_MaxBufferSize_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.MaxBufferSize*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1_MaxBufferSize" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.MaxBufferSize">MaxBufferSize</h4>
@@ -218,6 +284,38 @@
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.memorypool-1.maxbuffersize">MemoryPool&lt;T&gt;.MaxBufferSize</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1_TrackAllocations.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.TrackAllocations%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L58">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_UnmanagedMemoryPool_1_TrackAllocations_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.TrackAllocations*"></a>
+  <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1_TrackAllocations" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.TrackAllocations">TrackAllocations</h4>
+  <div class="markdown level1 summary"><p>Indicates that destruction of this pool releases the memory rented by this pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TrackAllocations { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to release allocated unmanaged memory when <a class="xref" href="DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Dispose_System_Boolean_">Dispose(bool)</a> is called; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
   <span class="small pull-right mobile-hide">
@@ -225,7 +323,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L119">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemoryPool_1_Dispose_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -261,7 +359,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1_Rent_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601.Rent(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L51">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Buffers_UnmanagedMemoryPool_1_Rent_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.Rent*"></a>
   <h4 id="DotNext_Buffers_UnmanagedMemoryPool_1_Rent_System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemoryPool`1.Rent(System.Int32)">Rent(int)</h4>
@@ -330,19 +428,19 @@
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
@@ -381,7 +479,7 @@
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.MemoryAllocator.html#DotNext_Buffers_MemoryAllocator_ToAllocator__1_System_Buffers_MemoryPool___0__">MemoryAllocator.ToAllocator&lt;T&gt;(MemoryPool&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_ToAllocator__1_System_Buffers_MemoryPool___0__">Memory.ToAllocator&lt;T&gt;(MemoryPool&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -395,7 +493,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemoryPool_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemoryPool%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemoryPool.cs/#L13" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

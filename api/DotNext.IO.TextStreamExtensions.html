@@ -294,7 +294,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TWriter, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>&gt;</td>
         <td><span class="parametername">flushAsync</span></td>
-        <td><p>The optional implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.flushasync">FlushAsync()</a> method.</p>
+        <td><p>The optional implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.flushasync#system-io-textwriter-flushasync(system-threading-cancellationtoken)">FlushAsync(CancellationToken)</a> method.</p>
 </td>
       </tr>
     </tbody>
@@ -384,7 +384,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;TWriter, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>&gt;</td>
         <td><span class="parametername">flushAsync</span></td>
-        <td><p>The optional implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.flushasync">FlushAsync()</a> method.</p>
+        <td><p>The optional implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.textwriter.flushasync#system-io-textwriter-flushasync(system-threading-cancellationtoken)">FlushAsync(CancellationToken)</a> method.</p>
 </td>
       </tr>
     </tbody>
@@ -532,13 +532,13 @@
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/TextStreamExtensions.cs/#L166">View Source</a>
   </span>
   <a id="DotNext_IO_TextStreamExtensions_Write_" data-uid="DotNext.IO.TextStreamExtensions.Write*"></a>
-  <h4 id="DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)">Write(TextWriter, MemoryAllocator&lt;char&gt;?, ref PoolingInterpolatedStringHandler)</h4>
+  <h4 id="DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)">Write(TextWriter, MemoryAllocator&lt;char&gt;?, in PoolingInterpolatedStringHandler)</h4>
   <div class="markdown level1 summary"><p>Writes interpolated string and appends a new line after it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write(this TextWriter writer, MemoryAllocator&lt;char&gt;? allocator, ref PoolingInterpolatedStringHandler handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Write(this TextWriter writer, MemoryAllocator&lt;char&gt;? allocator, in PoolingInterpolatedStringHandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -578,13 +578,13 @@
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/TextStreamExtensions.cs/#L154">View Source</a>
   </span>
   <a id="DotNext_IO_TextStreamExtensions_Write_" data-uid="DotNext.IO.TextStreamExtensions.Write*"></a>
-  <h4 id="DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)">Write(TextWriter, MemoryAllocator&lt;char&gt;?, IFormatProvider?, ref PoolingInterpolatedStringHandler)</h4>
+  <h4 id="DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)">Write(TextWriter, MemoryAllocator&lt;char&gt;?, IFormatProvider?, in PoolingInterpolatedStringHandler)</h4>
   <div class="markdown level1 summary"><p>Writes interpolated string and appends a new line after it.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write(this TextWriter writer, MemoryAllocator&lt;char&gt;? allocator, IFormatProvider? provider, ref PoolingInterpolatedStringHandler handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Write(this TextWriter writer, MemoryAllocator&lt;char&gt;? allocator, IFormatProvider? provider, in PoolingInterpolatedStringHandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

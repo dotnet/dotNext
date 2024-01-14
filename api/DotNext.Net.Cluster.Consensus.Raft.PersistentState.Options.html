@@ -116,20 +116,20 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BackupCompression.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BackupCompression%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BackupFormat.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BackupFormat%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L148">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L134">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BackupCompression_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BackupCompression*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BackupCompression" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BackupCompression">BackupCompression</h4>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BackupFormat_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BackupFormat*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BackupFormat" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BackupFormat">BackupFormat</h4>
   <div class="markdown level1 summary"><p>Gets or sets compression level used
 to create backup archive.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CompressionLevel BackupCompression { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TarEntryFormat BackupFormat { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -141,7 +141,7 @@ to create backup archive.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.compression.compressionlevel">CompressionLevel</a></td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.formats.tar.tarentryformat">TarEntryFormat</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -151,7 +151,7 @@ to create backup archive.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BufferSize.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BufferSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L74">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L60">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BufferSize_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BufferSize*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BufferSize" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BufferSize">BufferSize</h4>
@@ -195,42 +195,10 @@ to create backup archive.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_CommitCounter.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.CommitCounter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L203">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_CommitCounter_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.CommitCounter*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_CommitCounter" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.CommitCounter">CommitCounter</h4>
-  <div class="markdown level1 summary"><p>Gets or sets the counter used to measure the number of committed log entries.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
-public IncrementingEventCounter? CommitCounter { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.incrementingeventcounter">IncrementingEventCounter</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_CopyOnReadOptions.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.CopyOnReadOptions%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L154">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L140">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_CopyOnReadOptions_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.CopyOnReadOptions*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_CopyOnReadOptions" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.CopyOnReadOptions">CopyOnReadOptions</h4>
@@ -240,7 +208,7 @@ on buffered copy of the log entries.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RaftLogEntriesBufferingOptions? CopyOnReadOptions { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public LogEntriesBufferingOptions? CopyOnReadOptions { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -252,7 +220,7 @@ on buffered copy of the log entries.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftLogEntriesBufferingOptions.html">RaftLogEntriesBufferingOptions</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.LogEntriesBufferingOptions.html">LogEntriesBufferingOptions</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -262,7 +230,7 @@ on buffered copy of the log entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_InitialPartitionSize.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.InitialPartitionSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L75">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_InitialPartitionSize_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.InitialPartitionSize*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_InitialPartitionSize" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.InitialPartitionSize">InitialPartitionSize</h4>
@@ -309,7 +277,7 @@ on buffered copy of the log entries.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_IntegrityCheck.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.IntegrityCheck%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L107">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L93">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_IntegrityCheck_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.IntegrityCheck*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_IntegrityCheck" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.IntegrityCheck">IntegrityCheck</h4>
@@ -340,74 +308,10 @@ on buffered copy of the log entries.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_LockContentionCounter.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.LockContentionCounter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L163">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_LockContentionCounter_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.LockContentionCounter*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_LockContentionCounter" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.LockContentionCounter">LockContentionCounter</h4>
-  <div class="markdown level1 summary"><p>Gets or sets lock contention counter.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
-public IncrementingEventCounter? LockContentionCounter { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.incrementingeventcounter">IncrementingEventCounter</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_LockDurationCounter.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.LockDurationCounter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L173">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_LockDurationCounter_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.LockDurationCounter*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_LockDurationCounter" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.LockDurationCounter">LockDurationCounter</h4>
-  <div class="markdown level1 summary"><p>Gets or sets lock duration counter.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
-public EventCounter? LockDurationCounter { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.eventcounter">EventCounter</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxConcurrentReads.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxConcurrentReads%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L136">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L122">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxConcurrentReads_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxConcurrentReads*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxConcurrentReads" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxConcurrentReads">MaxConcurrentReads</h4>
@@ -454,7 +358,7 @@ public EventCounter? LockDurationCounter { get; set; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MeasurementTags.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MeasurementTags%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L213">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L149">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MeasurementTags_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MeasurementTags*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MeasurementTags" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MeasurementTags">MeasurementTags</h4>
@@ -486,7 +390,7 @@ public TagList MeasurementTags { get; set; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_ParallelIO.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.ParallelIO%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L119">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_ParallelIO_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.ParallelIO*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_ParallelIO" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.ParallelIO">ParallelIO</h4>
@@ -521,42 +425,10 @@ The default value is <a href="https://learn.microsoft.com/dotnet/csharp/language
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_ReadCounter.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.ReadCounter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L183">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_ReadCounter_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.ReadCounter*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_ReadCounter" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.ReadCounter">ReadCounter</h4>
-  <div class="markdown level1 summary"><p>Gets or sets the counter used to measure the number of retrieved log entries.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
-public IncrementingEventCounter? ReadCounter { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.incrementingeventcounter">IncrementingEventCounter</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseCaching.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseCaching%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseCaching_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseCaching*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseCaching" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseCaching">UseCaching</h4>
@@ -585,42 +457,10 @@ public IncrementingEventCounter? ReadCounter { get; set; }</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteCounter.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteCounter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L193">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteCounter_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteCounter*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteCounter" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteCounter">WriteCounter</h4>
-  <div class="markdown level1 summary"><p>Gets or sets the counter used to measure the number of written log entries.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use System.Diagnostics.Metrics infrastructure instead.&quot;, UrlFormat = &quot;https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics&quot;)]
-public IncrementingEventCounter? WriteCounter { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.tracing.incrementingeventcounter">IncrementingEventCounter</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteMode.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteMode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L68">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteMode_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteMode*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteMode" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteMode">WriteMode</h4>
@@ -646,39 +486,6 @@ public IncrementingEventCounter? WriteCounter { get; set; }</code></pre>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteThrough.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteThrough%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L58">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteThrough_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteThrough*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteThrough" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteThrough">WriteThrough</h4>
-  <div class="markdown level1 summary"><p>Gets or sets a value indicating usage of intermediate buffers during I/O.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use WriteMode property instead.&quot;)]
-public bool WriteThrough { get; set; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to bypass intermediate buffers for disk writes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
 </h3>
   <span class="small pull-right mobile-hide">
@@ -686,7 +493,7 @@ public bool WriteThrough { get; set; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_GetMemoryAllocator__1.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.GetMemoryAllocator%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L130">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L116">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_GetMemoryAllocator_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.GetMemoryAllocator*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_GetMemoryAllocator__1" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.GetMemoryAllocator``1">GetMemoryAllocator&lt;T&gt;()</h4>
@@ -731,19 +538,19 @@ public bool WriteThrough { get; set; }</code></pre>
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_As__1___0_">ObjectExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, params T?[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T?&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
@@ -793,7 +600,7 @@ public bool WriteThrough { get; set; }</code></pre>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L44" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.Options.cs/#L43" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

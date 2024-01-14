@@ -130,8 +130,8 @@ Converter&lt;string, bool&gt; isEmptyConv = isEmpty.AsConverter();
 <pre><code class="lang-csharp">using DotNext;
 
 Func&lt;int, int&gt; identity = Func.Identity&lt;int&gt;(); //identity delegate which returns input argument without any changes
-Predicate&lt;string&gt; truePredicate = Predicate.Constant&lt;string&gt;(true); // predicate which always returns true
-Predicate&lt;object&gt; falsePredicate = Predicate.Constant&lt;string&gt;(false); //predicate which always returns false
+Predicate&lt;bool&gt; truePredicate = Predicate.Constant&lt;bool&gt;(true); // predicate which always returns true
+Predicate&lt;bool&gt; falsePredicate = Predicate.Constant&lt;bool&gt;(false); //predicate which always returns false
 Predicate&lt;string&gt; nullCheck = Predicate.IsNull&lt;string&gt;(); //predicate checking whether the input argument is null
 Predicate&lt;string&gt; notNullCheck = Predicate.IsNotNull&lt;string&gt;(); //predicate checking whether the input argument is not null
 </code></pre>
@@ -157,57 +157,27 @@ delegate*&lt;string, int&gt; hashCode = &amp;GetHashCode;
 Func&lt;string, int&gt; openDelegate = DelegateHelpers.CreateDelegate&lt;string, int&gt;(hashCode);
 Func&lt;int&gt; closedDelegate = DelegateHelpers.CreateDelegate&lt;string, int&gt;(hashCode, &quot;Hello, world!&quot;);
 </code></pre>
-<h1 id="comparable-data-types">Comparable data types</h1>
-<p>Related class: <a class="xref" href="../../api/DotNext.Comparison.html">Comparison</a></p>
 <h2 id="range-check">Range check</h2>
 <p>Checks whether the given value is in specific range.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-var b = 10.IsBetween(5, 11, BoundType.Closed); //b == true
-b = 10.IsBetween(0, 4); //b == false
-var i = 5.Clamp(4, 10); //i == 5
-i = 5.Clamp(6, 10); //i == 6
-i = 5.Clamp(0, 4); //i == 4
+var b = 10.IsBetween(5.Enclosed(), 11.Enclosed()); //b == true
+b = 10.IsBetween(0.Disclosed(), 4.Disclosed()); //b == false
 </code></pre>
 <h1 id="equality-check">Equality check</h1>
-<p>Related classes: <a class="xref" href="../../api/DotNext.ObjectExtensions.html">ObjectExtensions</a>, <a class="xref" href="../../api/DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a>.</p>
+<p>Related classes: <a class="xref" href="../../api/DotNext.BasicExtensions.html">BasicExtensions</a>.</p>
 <p>Extension method <em>IsOneOf</em> allows to check whether the value is equal to one of the given values.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-var b = 42.IsOneOf(0, 5, 42, 3); //b == true
+var b = 42.IsOneOf([0, 5, 42, 3]); //b == true
 
-b = &quot;a&quot;.IsOneOf(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;); //b == false
+b = &quot;a&quot;.IsOneOf([&quot;b&quot;, &quot;c&quot;, &quot;d&quot;]); //b == false
 </code></pre>
-<h1 id="array-extensions">Array extensions</h1>
-<p>Related classes: <a class="xref" href="../../api/DotNext.OneDimensionalArray.html">OneDimensionalArray</a>.</p>
-<p>Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.</p>
 <h2 id="equality-check-1">Equality check</h2>
 <p><em>BitwiseEquals</em> extension method performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. <code>int</code>, <code>long</code>, <code>System.Guid</code>.</p>
 <pre><code class="lang-csharp">var array2 = new int[] { 1, 2, 3 };
-array2.BitwiseEquals(new [] {1, 2, 4});    //false
+Span.BitwiseEquals(new [] {1, 2, 4}, array2);    //false
 </code></pre>
-<h2 id="functional-iterator">Functional iterator</h2>
-<p>Extension method <code>ForEach</code> allows to iterate over array elements and, optionally, modify array element.</p>
-<pre><code class="lang-csharp">var array = new string[] {&quot;ab&quot;, &quot;bc&quot; };
-array.ForEach((long index, ref string element) =&gt; {
-    if(element == &quot;ab&quot;)
-        element = &quot;&quot;;
-});
-</code></pre>
-<h2 id="insertion-and-removal">Insertion and Removal</h2>
-<p>Extension methods <em>Insert</em>, <em>Slice</em>, <em>RemoveLast</em> and <em>RemoveFirst</em> allow to return modified array according with semantics of chosen method:</p>
-<pre><code class="lang-csharp">var array = new string[] {&quot;a&quot;, &quot;b&quot;};
-array = array.Insert(&quot;c&quot;, 2);   //array == new []{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;}
-
-array = array.RemoveLast(2);    //array == new []{&quot;a&quot;}
-
-array = new string[] {&quot;a&quot;, &quot;b&quot;, &quot;c&quot;};
-array = array.RemoveFirst(2);   //array == new []{&quot;c&quot;}
-
-array = new string[]{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;}; 
-array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
-</code></pre>
-<p>The same behavior can be achieved using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. However, these methods support large arrays where index and length cannot be represented by <strong>int</strong> data type.</p>
 <h1 id="timestamp">Timestamp</h1>
 <p><a class="xref" href="../../api/DotNext.Diagnostics.Timestamp.html">Timestamp</a> value type can be used as allocation-free alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch">Stopwatch</a> when you need to measure time intervals.</p>
 <pre><code class="lang-csharp">using DotNext.Diagnostics;
@@ -256,7 +226,7 @@ Span&lt;char&gt; hex = stackalloc char[bytes.Length * 2];
 Hex.EncodeToUtf16(bytes, hex); //now hex == 081018
 </code></pre>
 <h1 id="polling-of-concurrent-collections">Polling of Concurrent Collections</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection&lt;T&gt;</a> is a common interface for concurrent collections in .NET library. Consumer of such collection uses <code>TryTake</code> or more specialized method provided by subclasses to obtain elements from the collection. For convenience, <a class="xref" href="../../api/DotNext.Collections.Generic.Sequence.html">Sequence</a> static class offers <code>GetConsumer</code> extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic <strong>foreach</strong> loop:</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection&lt;T&gt;</a> is a common interface for concurrent collections in .NET library. Consumer of such collection uses <code>TryTake</code> or more specialized method provided by subclasses to obtain elements from the collection. For convenience, <a class="xref" href="../../api/DotNext.Collections.Generic.Collection.html">Collection</a> static class offers <code>GetConsumer</code> extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic <strong>foreach</strong> loop:</p>
 <pre><code class="lang-csharp">using DotNext.Collections.Concurrent;
 using System.Collections.Concurrent;
 
