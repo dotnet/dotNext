@@ -3,6 +3,8 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks;
 
+using SuspendedExceptionTaskAwaitable = Runtime.CompilerServices.SuspendedExceptionTaskAwaitable;
+
 /// <summary>
 /// Provides task result conversion methods.
 /// </summary>
@@ -64,4 +66,22 @@ public static class Conversion
     /// <returns>The dynamically typed task.</returns>
     [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
     public static DynamicTaskAwaitable AsDynamic(this Task task) => new(task);
+
+    /// <summary>
+    /// Suspends the exception that can be raised by the task.
+    /// </summary>
+    /// <param name="task">The task.</param>
+    /// <param name="filter">The filter of the exception to be suspended.</param>
+    /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
+    public static SuspendedExceptionTaskAwaitable SuspendException(this Task task, Predicate<Exception>? filter = null)
+        => new(task) { Filter = filter };
+
+    /// <summary>
+    /// Suspends the exception that can be raised by the task.
+    /// </summary>
+    /// <param name="task">The task.</param>
+    /// <param name="filter">The filter of the exception to be suspended.</param>
+    /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
+    public static SuspendedExceptionTaskAwaitable SuspendException(this ValueTask task, Predicate<Exception>? filter = null)
+        => new(task) { Filter = filter };
 }
