@@ -40,4 +40,11 @@ public sealed class ConversionTests : Test
         int result = await Task.FromResult(42).AsDynamic();
         Equal(42, result);
     }
+
+    [Fact]
+    public static async Task SuspendException()
+    {
+        await Task.FromException(new Exception()).SuspendException();
+        await ValueTask.FromException(new Exception()).SuspendException();
+    }
 }
