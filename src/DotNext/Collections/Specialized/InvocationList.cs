@@ -216,8 +216,8 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     [UnscopedRef]
     public ReadOnlySpan<TDelegate> Span => list switch
     {
-        null => [],
-        TDelegate => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<object, TDelegate>(ref Unsafe.AsRef(in list)), 1),
+        null => ReadOnlySpan<TDelegate>.Empty,
+        TDelegate => new(ref Unsafe.As<object, TDelegate>(ref Unsafe.AsRef(in list))),
         _ => Unsafe.As<TDelegate[]>(list),
     };
 }
