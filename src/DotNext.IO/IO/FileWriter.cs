@@ -4,7 +4,6 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
-using System.Security.Cryptography.X509Certificates;
 using Buffers;
 
 /// <summary>
@@ -24,7 +23,7 @@ public partial class FileWriter : Disposable, IFlushable
     private MemoryOwner<byte> buffer;
     private int bufferOffset;
     private long fileOffset;
-    private ReadOnlyMemory<byte>[]? bufferList;
+    private BufferTuple? bufferList;
 
     /// <summary>
     /// Creates a new writer backed by the file.
@@ -264,11 +263,10 @@ public partial class FileWriter : Disposable, IFlushable
         }
         else
         {
-            bufferList ??= new ReadOnlyMemory<byte>[2];
-            bufferList[1] = input;
-            bufferList[0] = WrittenMemory;
+            bufferList ??= new();
+            bufferList.First = WrittenMemory;
+            bufferList.Second = input;
             await RandomAccess.WriteAsync(handle, bufferList, fileOffset, token).ConfigureAwait(false);
-            Array.Clear(bufferList);
         }
 
         fileOffset += input.Length + bufferOffset;
@@ -312,6 +310,7 @@ public partial class FileWriter : Disposable, IFlushable
         if (disposing)
         {
             buffer.Dispose();
+            bufferList.As<IDisposable?>()?.Dispose();
         }
 
         fileOffset = 0L;

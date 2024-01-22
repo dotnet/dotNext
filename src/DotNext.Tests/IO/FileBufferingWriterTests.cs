@@ -73,6 +73,7 @@ public sealed class FileBufferingWriterTests : Test
     [Theory]
     [InlineData(10)]
     [InlineData(100)]
+    [InlineData(255)]
     [InlineData(1000)]
     public static async Task ReadWriteAsync(int threshold)
     {
@@ -81,8 +82,8 @@ public sealed class FileBufferingWriterTests : Test
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
 
-        await writer.WriteAsync(bytes, 0, byte.MaxValue);
-        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
+        await writer.WriteAsync(bytes, 0, 200);
+        await writer.WriteAsync(bytes.AsMemory(200));
         Equal(bytes.Length, writer.Length);
         using var manager = await writer.GetWrittenContentAsync();
         Equal(bytes, manager.Memory.ToArray());

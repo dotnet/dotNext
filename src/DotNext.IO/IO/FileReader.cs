@@ -4,7 +4,6 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
 
-using System.ComponentModel;
 using Buffers;
 
 /// <summary>
