@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 01-23-2024
+<a href="https://www.nuget.org/packages/dotnext/5.0.1">DotNext 5.0.1</a>
+* Smallish performance improvements of dynamic buffers
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.0.1">DotNext.Metaprogramming 5.0.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.0.1">DotNext.Unsafe 5.0.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.0.1">DotNext.Threading 5.0.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.0.1">DotNext.IO 5.0.1</a>
+* Improved performance of `FileWriter` and `FileBufferingWriter` classes by utilizing Scatter/Gather IO
+* Reduced memory allocations required by async methods of `FileWriter` and `FileBufferingWriter` classes
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.0.1">DotNext.Net.Cluster 5.0.1</a>
+* Improved IO performance of Persistent WAL due to related improvements in DotNext.IO library
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.0.1">DotNext.AspNetCore.Cluster 5.0.1</a>
+* Updated dependencies
+
 # 01-14-2024
 .NEXT 5.0.0 has been released! The primary goal of the new release is migration to .NET 8 to fully utilize its features such as [Generic Math](https://learn.microsoft.com/en-us/dotnet/standard/generics/math) and static abstract interface members. 5.x is not fully backward compatible with 4.x because of breaking changes in the API. Most of changes done in DotNext, DotNext.IO, and DotNext.Unsafe libraries. UDP transport for Raft is completely removed in favor of existing TCP implementation. There is a plan to implement multiplexed TCP connection and Raft sharding. New features:
 * Numeric ranges for LINQ. Thanks to Generic Math
