@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
@@ -23,7 +22,6 @@ public partial class FileWriter : Disposable, IFlushable
     private MemoryOwner<byte> buffer;
     private int bufferOffset;
     private long fileOffset;
-    private BufferTuple? bufferList;
 
     /// <summary>
     /// Creates a new writer backed by the file.
@@ -51,6 +49,8 @@ public partial class FileWriter : Disposable, IFlushable
         this.handle = handle;
         this.fileOffset = fileOffset;
         this.allocator = allocator;
+        writeCallback = OnWrite;
+        writeAndCopyCallback = OnWriteAndCopy;
     }
 
     /// <summary>
@@ -137,13 +137,8 @@ public partial class FileWriter : Disposable, IFlushable
     /// </remarks>
     public long WritePosition => fileOffset + bufferOffset;
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask FlushCoreAsync(CancellationToken token)
-    {
-        await RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token).ConfigureAwait(false);
-        fileOffset += bufferOffset;
-        bufferOffset = 0;
-    }
+    private ValueTask FlushCoreAsync(CancellationToken token)
+        => Submit(RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token), writeCallback);
 
     private void FlushCore()
     {
@@ -203,7 +198,7 @@ public partial class FileWriter : Disposable, IFlushable
     {
         if (input.Length >= buffer.Length)
         {
-            RandomAccess.Write(handle, BufferSpan, fileOffset);
+            RandomAccess.Write(handle, WrittenMemory.Span, fileOffset);
             fileOffset += bufferOffset;
 
             RandomAccess.Write(handle, input, fileOffset);
@@ -254,34 +249,29 @@ public partial class FileWriter : Disposable, IFlushable
         return ValueTask.CompletedTask;
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask WriteDirectAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+    private ValueTask WriteDirectAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
-        if (bufferOffset is 0)
+        ValueTask task;
+        if (HasBufferedData)
         {
-            await RandomAccess.WriteAsync(handle, input, fileOffset, token).ConfigureAwait(false);
+            secondBuffer = input;
+            task = RandomAccess.WriteAsync(handle, (IReadOnlyList<ReadOnlyMemory<byte>>)this, fileOffset, token);
         }
         else
         {
-            bufferList ??= new();
-            bufferList.First = WrittenMemory;
-            bufferList.Second = input;
-            await RandomAccess.WriteAsync(handle, bufferList, fileOffset, token).ConfigureAwait(false);
+            bufferOffset = input.Length;
+            task = RandomAccess.WriteAsync(handle, input, fileOffset, token);
         }
 
-        fileOffset += input.Length + bufferOffset;
-        bufferOffset = 0;
+        return Submit(task, writeCallback);
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask WriteAndCopyAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+    private ValueTask WriteAndCopyAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
-        Debug.Assert(bufferOffset > 0);
+        Debug.Assert(HasBufferedData);
 
-        await RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token).ConfigureAwait(false);
-        fileOffset += bufferOffset;
-        input.CopyTo(buffer.Memory);
-        bufferOffset = input.Length;
+        secondBuffer = input;
+        return Submit(RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token), writeAndCopyCallback);
     }
 
     /// <summary>
@@ -310,7 +300,6 @@ public partial class FileWriter : Disposable, IFlushable
         if (disposing)
         {
             buffer.Dispose();
-            bufferList.As<IDisposable?>()?.Dispose();
         }
 
         fileOffset = 0L;
