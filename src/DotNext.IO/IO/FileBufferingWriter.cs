@@ -257,23 +257,34 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <summary>
     /// Removes all written data.
     /// </summary>
+    /// <param name="reuseBuffer"><see langword="true"/> to keep internal buffer alive; otherwise, <see langword="false"/>.</param>
     /// <exception cref="InvalidOperationException">Attempt to cleanup this writer while reading.</exception>
-    public void Clear()
+    public void Clear(bool reuseBuffer = true)
     {
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-        ClearCore();
+        ClearCore(reuseBuffer);
     }
 
-    private void ClearCore()
+    /// <inheritdoc/>
+    void IGrowableBuffer<byte>.Clear() => Clear(reuseBuffer: false);
+
+    private void ClearCore(bool reuseBuffer)
     {
-        buffer.Dispose();
-        fileBackend?.Dispose();
-        fileBackend = null;
+        if (!reuseBuffer)
+        {
+            buffer.Dispose();
+        }
+
+        if (fileBackend is not null)
+        {
+            fileBackend.Dispose();
+            fileBackend = null;
+        }
+
         fileName = null;
-        position = 0;
-        filePosition = 0L;
+        filePosition = position = 0;
     }
 
     /// <inheritdoc/>
@@ -942,7 +953,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     {
         if (disposing)
         {
-            ClearCore();
+            ClearCore(reuseBuffer: false);
             reader = null;
         }
 
