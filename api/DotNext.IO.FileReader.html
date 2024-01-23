@@ -88,6 +88,7 @@
     <div><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></div>
     <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.idynamicinterfacecastable">IDynamicInterfaceCastable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -162,7 +163,7 @@
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_FileReader_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class FileReader : Disposable, IDisposable, IAsyncBinaryReader, IResettable, IAsyncEnumerable&lt;ReadOnlyMemory&lt;byte&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class FileReader : Disposable, IDisposable, IAsyncBinaryReader, IResettable, IAsyncEnumerable&lt;ReadOnlyMemory&lt;byte&gt;&gt;, IDynamicInterfaceCastable</code></pre>
   </div>
   <h5 id="DotNext_IO_FileReader_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class is not thread-safe. However, it's possible to share the same file
@@ -175,7 +176,7 @@ handle across multiple readers and use dedicated reader in each thread.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader__ctor_Microsoft_Win32_SafeHandles_SafeFileHandle_System_Int64_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.%23ctor(Microsoft.Win32.SafeHandles.SafeFileHandle%2CSystem.Int64%2CSystem.Int32%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L44">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L42">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader__ctor_" data-uid="DotNext.IO.FileReader.#ctor*"></a>
   <h4 id="DotNext_IO_FileReader__ctor_Microsoft_Win32_SafeHandles_SafeFileHandle_System_Int64_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.FileReader.#ctor(Microsoft.Win32.SafeHandles.SafeFileHandle,System.Int64,System.Int32,DotNext.Buffers.MemoryAllocator{System.Byte})">FileReader(SafeFileHandle, long, int, MemoryAllocator&lt;byte&gt;?)</h4>
@@ -255,7 +256,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader__ctor_System_IO_FileStream_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.%23ctor(System.IO.FileStream%2CSystem.Int32%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L63">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader__ctor_" data-uid="DotNext.IO.FileReader.#ctor*"></a>
   <h4 id="DotNext_IO_FileReader__ctor_System_IO_FileStream_System_Int32_DotNext_Buffers_MemoryAllocator_System_Byte__" data-uid="DotNext.IO.FileReader.#ctor(System.IO.FileStream,System.Int32,DotNext.Buffers.MemoryAllocator{System.Byte})">FileReader(FileStream, int, MemoryAllocator&lt;byte&gt;?)</h4>
@@ -319,7 +320,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_handle.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.handle%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L22">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L20">View Source</a>
   </span>
   <h4 id="DotNext_IO_FileReader_handle" data-uid="DotNext.IO.FileReader.handle">handle</h4>
   <div class="markdown level1 summary"><p>Represents the file handle.</p>
@@ -351,7 +352,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Buffer.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Buffer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Buffer_" data-uid="DotNext.IO.FileReader.Buffer*"></a>
   <h4 id="DotNext_IO_FileReader_Buffer" data-uid="DotNext.IO.FileReader.Buffer">Buffer</h4>
@@ -382,7 +383,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_FilePosition.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.FilePosition%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L75">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L76">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_FilePosition_" data-uid="DotNext.IO.FileReader.FilePosition*"></a>
   <h4 id="DotNext_IO_FileReader_FilePosition" data-uid="DotNext.IO.FileReader.FilePosition">FilePosition</h4>
@@ -434,7 +435,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_HasBufferedData.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.HasBufferedData%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L112">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L113">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_HasBufferedData_" data-uid="DotNext.IO.FileReader.HasBufferedData*"></a>
   <h4 id="DotNext_IO_FileReader_HasBufferedData" data-uid="DotNext.IO.FileReader.HasBufferedData">HasBufferedData</h4>
@@ -465,7 +466,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_MaxBufferSize.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.MaxBufferSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L117">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_MaxBufferSize_" data-uid="DotNext.IO.FileReader.MaxBufferSize*"></a>
   <h4 id="DotNext_IO_FileReader_MaxBufferSize" data-uid="DotNext.IO.FileReader.MaxBufferSize">MaxBufferSize</h4>
@@ -496,7 +497,7 @@ or <code class="paramref">bufferSize</code> too small.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadPosition.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadPosition%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L96">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadPosition_" data-uid="DotNext.IO.FileReader.ReadPosition*"></a>
   <h4 id="DotNext_IO_FileReader_ReadPosition" data-uid="DotNext.IO.FileReader.ReadPosition">ReadPosition</h4>
@@ -585,7 +586,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Consume_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Consume(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L124">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L125">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Consume_" data-uid="DotNext.IO.FileReader.Consume*"></a>
   <h4 id="DotNext_IO_FileReader_Consume_System_Int32_" data-uid="DotNext.IO.FileReader.Consume(System.Int32)">Consume(int)</h4>
@@ -1015,7 +1016,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L363">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L353">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Dispose_" data-uid="DotNext.IO.FileReader.Dispose*"></a>
   <h4 id="DotNext_IO_FileReader_Dispose_System_Boolean_" data-uid="DotNext.IO.FileReader.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -1265,7 +1266,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Read.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Read%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L235">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L234">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Read_" data-uid="DotNext.IO.FileReader.Read*"></a>
   <h4 id="DotNext_IO_FileReader_Read" data-uid="DotNext.IO.FileReader.Read">Read()</h4>
@@ -1319,7 +1320,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L310">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L300">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Read_" data-uid="DotNext.IO.FileReader.Read*"></a>
   <h4 id="DotNext_IO_FileReader_Read_System_Span_System_Byte__" data-uid="DotNext.IO.FileReader.Read(System.Span{System.Byte})">Read(Span&lt;byte&gt;)</h4>
@@ -1473,7 +1474,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L266">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L265">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadAsync_" data-uid="DotNext.IO.FileReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileReader_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -1550,7 +1551,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_ReadAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.ReadAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L202">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L203">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_ReadAsync_" data-uid="DotNext.IO.FileReader.ReadAsync*"></a>
   <h4 id="DotNext_IO_FileReader_ReadAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.FileReader.ReadAsync(System.Threading.CancellationToken)">ReadAsync(CancellationToken)</h4>
@@ -1888,7 +1889,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Reset.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L189">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L190">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Reset_" data-uid="DotNext.IO.FileReader.Reset*"></a>
   <h4 id="DotNext_IO_FileReader_Reset" data-uid="DotNext.IO.FileReader.Reset">Reset()</h4>
@@ -1904,7 +1905,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_Skip_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.Skip(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L346">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L336">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_Skip_" data-uid="DotNext.IO.FileReader.Skip*"></a>
   <h4 id="DotNext_IO_FileReader_Skip_System_Int64_" data-uid="DotNext.IO.FileReader.Skip(System.Int64)">Skip(long)</h4>
@@ -1954,7 +1955,7 @@ implemented by this class.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader_TryConsume_System_Int32_System_ReadOnlyMemory_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader.TryConsume(System.Int32%2CSystem.ReadOnlyMemory%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L163">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_IO_FileReader_TryConsume_" data-uid="DotNext.IO.FileReader.TryConsume*"></a>
   <h4 id="DotNext_IO_FileReader_TryConsume_System_Int32_System_ReadOnlyMemory_System_Byte___" data-uid="DotNext.IO.FileReader.TryConsume(System.Int32,System.ReadOnlyMemory{System.Byte}@)">TryConsume(int, out ReadOnlyMemory&lt;byte&gt;)</h4>
@@ -2017,6 +2018,9 @@ implemented by this class.</p>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.idynamicinterfacecastable">IDynamicInterfaceCastable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -2112,7 +2116,7 @@ implemented by this class.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_FileReader.md&amp;value=---%0Auid%3A%20DotNext.IO.FileReader%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Segment.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/FileReader.Utils.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

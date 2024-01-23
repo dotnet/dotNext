@@ -11580,12 +11580,15 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.CanWrite
   nameWithType: FileBufferingWriter.CanWrite
-- uid: DotNext.IO.FileBufferingWriter.Clear
-  name: Clear()
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Clear
-  commentId: M:DotNext.IO.FileBufferingWriter.Clear
-  fullName: DotNext.IO.FileBufferingWriter.Clear()
-  nameWithType: FileBufferingWriter.Clear()
+- uid: DotNext.IO.FileBufferingWriter.Clear(System.Boolean)
+  name: Clear(bool)
+  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Clear_System_Boolean_
+  commentId: M:DotNext.IO.FileBufferingWriter.Clear(System.Boolean)
+  name.vb: Clear(Boolean)
+  fullName: DotNext.IO.FileBufferingWriter.Clear(bool)
+  fullName.vb: DotNext.IO.FileBufferingWriter.Clear(Boolean)
+  nameWithType: FileBufferingWriter.Clear(bool)
+  nameWithType.vb: FileBufferingWriter.Clear(Boolean)
 - uid: DotNext.IO.FileBufferingWriter.Clear*
   name: Clear
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Clear_
@@ -37163,6 +37166,99 @@ references:
   fullName.vb: DotNext.Runtime.CompilerServices.SpawningAsyncTaskMethodBuilder(Of TResult).Task
   nameWithType: SpawningAsyncTaskMethodBuilder<TResult>.Task
   nameWithType.vb: SpawningAsyncTaskMethodBuilder(Of TResult).Task
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable
+  name: SuspendedExceptionTaskAwaitable
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.html
+  commentId: T:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable
+  nameWithType: SuspendedExceptionTaskAwaitable
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter
+  name: SuspendedExceptionTaskAwaitable.Awaiter
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html
+  commentId: T:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.GetResult
+  name: GetResult()
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_GetResult
+  commentId: M:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.GetResult()
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.GetResult()
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.GetResult*
+  name: GetResult
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_GetResult_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.GetResult
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.GetResult
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.GetResult
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_IsCompleted
+  commentId: P:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted*
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_IsCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted(System.Action)
+  name: OnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_OnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted(System.Action)
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted*
+  name: OnCompleted
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_OnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.OnCompleted
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  name: UnsafeOnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_UnsafeOnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted*
+  name: UnsafeOnCompleted
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_Awaiter_UnsafeOnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted
+  nameWithType: SuspendedExceptionTaskAwaitable.Awaiter.UnsafeOnCompleted
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.ConfigureAwait(System.Boolean)
+  name: ConfigureAwait(bool)
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_ConfigureAwait_System_Boolean_
+  commentId: M:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.ConfigureAwait(System.Boolean)
+  name.vb: ConfigureAwait(Boolean)
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.ConfigureAwait(bool)
+  fullName.vb: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.ConfigureAwait(Boolean)
+  nameWithType: SuspendedExceptionTaskAwaitable.ConfigureAwait(bool)
+  nameWithType.vb: SuspendedExceptionTaskAwaitable.ConfigureAwait(Boolean)
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.ConfigureAwait*
+  name: ConfigureAwait
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_ConfigureAwait_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.ConfigureAwait
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.ConfigureAwait
+  nameWithType: SuspendedExceptionTaskAwaitable.ConfigureAwait
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.GetAwaiter
+  name: GetAwaiter()
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_GetAwaiter
+  commentId: M:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.GetAwaiter()
+  nameWithType: SuspendedExceptionTaskAwaitable.GetAwaiter()
+- uid: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.GetAwaiter*
+  name: GetAwaiter
+  href: api/DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.html#DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_GetAwaiter_
+  commentId: Overload:DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.GetAwaiter
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable.GetAwaiter
+  nameWithType: SuspendedExceptionTaskAwaitable.GetAwaiter
 - uid: DotNext.Runtime.CompilerServices.ValueTupleBuilder
   name: ValueTupleBuilder
   href: api/DotNext.Runtime.CompilerServices.ValueTupleBuilder.html
@@ -46939,6 +47035,31 @@ references:
   fullName.vb: DotNext.Threading.Tasks.Conversion.Convert(Of TInput, TOutput)(System.Threading.Tasks.Task(Of TInput), System.Converter(Of TInput, TOutput))
   nameWithType: Conversion.Convert<TInput, TOutput>(Task<TInput>, Converter<TInput, TOutput>)
   nameWithType.vb: Conversion.Convert(Of TInput, TOutput)(Task(Of TInput), Converter(Of TInput, TOutput))
+- uid: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task,System.Predicate{System.Exception})
+  name: SuspendException(Task, Predicate<Exception>?)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_Task_System_Predicate_System_Exception__
+  commentId: M:DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task,System.Predicate{System.Exception})
+  name.vb: SuspendException(Task, Predicate(Of Exception))
+  fullName: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task, System.Predicate<System.Exception>?)
+  fullName.vb: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task, System.Predicate(Of System.Exception))
+  nameWithType: Conversion.SuspendException(Task, Predicate<Exception>?)
+  nameWithType.vb: Conversion.SuspendException(Task, Predicate(Of Exception))
+- uid: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask,System.Predicate{System.Exception})
+  name: SuspendException(ValueTask, Predicate<Exception>?)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_ValueTask_System_Predicate_System_Exception__
+  commentId: M:DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask,System.Predicate{System.Exception})
+  name.vb: SuspendException(ValueTask, Predicate(Of Exception))
+  fullName: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask, System.Predicate<System.Exception>?)
+  fullName.vb: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask, System.Predicate(Of System.Exception))
+  nameWithType: Conversion.SuspendException(ValueTask, Predicate<Exception>?)
+  nameWithType.vb: Conversion.SuspendException(ValueTask, Predicate(Of Exception))
+- uid: DotNext.Threading.Tasks.Conversion.SuspendException*
+  name: SuspendException
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_SuspendException_
+  commentId: Overload:DotNext.Threading.Tasks.Conversion.SuspendException
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.Conversion.SuspendException
+  nameWithType: Conversion.SuspendException
 - uid: DotNext.Threading.Tasks.Conversion.ToNullable*
   name: ToNullable
   href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_ToNullable_
