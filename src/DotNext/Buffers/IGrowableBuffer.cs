@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
@@ -51,7 +50,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// </summary>
     /// <param name="value">The value to be written.</param>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
-    void Write(T value) => Write(MemoryMarshal.CreateReadOnlySpan(ref value, 1));
+    void Write(T value) => Write(new ReadOnlySpan<T>(ref value));
 
     /// <summary>
     /// Passes the contents of this writer to the callback.

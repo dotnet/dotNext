@@ -105,7 +105,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
 
     /// <inheritdoc/>
     void IList<T>.Insert(int index, T item)
-        => Insert(index, MemoryMarshal.CreateReadOnlySpan(ref item, 1));
+        => Insert(index, new(ref item));
 
     /// <summary>
     /// Inserts the elements into this buffer at the specified index.
