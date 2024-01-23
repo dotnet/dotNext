@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 01-24-2024
+Release Date: 01-23-2024
 
 <a href="https://www.nuget.org/packages/dotnext/5.0.1">DotNext 5.0.1</a>
 * Smallish performance improvements of dynamic buffers
