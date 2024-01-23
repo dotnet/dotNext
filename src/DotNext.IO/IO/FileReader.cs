@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
@@ -50,6 +49,9 @@ public partial class FileReader : Disposable, IResettable
         this.handle = handle;
         this.fileOffset = fileOffset;
         this.allocator = allocator;
+
+        readCallback = OnRead;
+        readDirectCallback = OnReadDirect;
     }
 
     /// <summary>
@@ -198,17 +200,17 @@ public partial class FileReader : Disposable, IResettable
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public async ValueTask<bool> ReadAsync(CancellationToken token = default)
+    public ValueTask<bool> ReadAsync(CancellationToken token = default)
     {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        if (IsDisposed)
+            return new(GetDisposedTask<bool>());
 
         var buffer = this.buffer.Memory;
 
         switch (bufferStart)
         {
             case 0 when bufferEnd == buffer.Length:
-                throw new InternalBufferOverflowException();
+                return ValueTask.FromException<bool>(new InternalBufferOverflowException());
             case > 0:
                 // compact buffer
                 buffer.Slice(bufferStart, BufferLength).CopyTo(buffer);
@@ -217,9 +219,7 @@ public partial class FileReader : Disposable, IResettable
                 break;
         }
 
-        var count = await RandomAccess.ReadAsync(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd, token).ConfigureAwait(false);
-        bufferEnd += count;
-        return count > 0;
+        return SubmitAsBoolean(RandomAccess.ReadAsync(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd, token), readCallback);
     }
 
     /// <summary>
@@ -270,35 +270,26 @@ public partial class FileReader : Disposable, IResettable
         }
 
         if (destination.IsEmpty)
+        {
             return ValueTask.FromResult(0);
+        }
 
         if (!HasBufferedData)
+        {
             return ReadDirectAsync(destination, token);
+        }
 
-        BufferSpan.CopyTo(destination.Span, out var writtenCount);
-        ConsumeUnsafe(writtenCount);
-        destination = destination.Slice(writtenCount);
+        BufferSpan.CopyTo(destination.Span, out extraCount);
+        ConsumeUnsafe(extraCount);
+        destination = destination.Slice(extraCount);
 
         return destination.IsEmpty
-            ? ValueTask.FromResult(writtenCount)
-            : ReadDirectAsync(writtenCount, destination, token);
+            ? ValueTask.FromResult(extraCount)
+            : ReadDirectAsync(destination, token);
     }
 
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
-    {
-        var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
-        fileOffset += count;
-        return count;
-    }
-
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<int> ReadDirectAsync(int extraCount, Memory<byte> output, CancellationToken token)
-    {
-        var count = await RandomAccess.ReadAsync(handle, output, fileOffset, token).ConfigureAwait(false);
-        fileOffset += count;
-        return count + extraCount;
-    }
+    private ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
+        => SubmitAsInt32(RandomAccess.ReadAsync(handle, output, fileOffset, token), readDirectCallback);
 
     /// <summary>
     /// Reads the block of the memory.
