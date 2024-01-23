@@ -57,28 +57,36 @@ public partial class FileWriter : IDynamicInterfaceCastable
 
     private void OnWrite()
     {
+        var awaiter = this.awaiter;
+        this.awaiter = default;
+
+        var secondBuffer = this.secondBuffer;
+        this.secondBuffer = default;
+
         try
         {
             awaiter.GetResult();
 
             fileOffset += secondBuffer.Length + bufferOffset;
             bufferOffset = 0;
-
-            source.SetResult(0);
         }
         catch (Exception e)
         {
             source.SetException(e);
+            return;
         }
-        finally
-        {
-            awaiter = default;
-            secondBuffer = default;
-        }
+
+        source.SetResult(0);
     }
 
     private void OnWriteAndCopy()
     {
+        var awaiter = this.awaiter;
+        this.awaiter = default;
+
+        var secondBuffer = this.secondBuffer;
+        this.secondBuffer = default;
+
         try
         {
             awaiter.GetResult();
@@ -86,24 +94,20 @@ public partial class FileWriter : IDynamicInterfaceCastable
             fileOffset += bufferOffset;
             secondBuffer.CopyTo(buffer.Memory);
             bufferOffset = secondBuffer.Length;
-
-            source.SetResult(0);
         }
         catch (Exception e)
         {
             source.SetException(e);
+            return;
         }
-        finally
-        {
-            awaiter = default;
-            secondBuffer = default;
-        }
+
+        source.SetResult(0);
     }
 
     private ValueTask Submit(ValueTask task, Action callback)
     {
         awaiter = task.ConfigureAwait(false).GetAwaiter();
-        if (task.IsCompleted)
+        if (awaiter.IsCompleted)
         {
             callback();
         }

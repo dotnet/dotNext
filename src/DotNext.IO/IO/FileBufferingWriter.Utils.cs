@@ -58,29 +58,37 @@ public partial class FileBufferingWriter : IDynamicInterfaceCastable
 
     private void OnWrite()
     {
+        var awaiter = this.awaiter;
+        this.awaiter = default;
+
+        var secondBuffer = this.secondBuffer;
+        this.secondBuffer = default;
+
         try
         {
             awaiter.GetResult();
 
             filePosition += secondBuffer.Length + position;
             position = 0;
-
-            source.SetResult(0);
         }
         catch (Exception e)
         {
             source.SetException(e);
+            return;
         }
-        finally
-        {
-            awaiter = default;
-            secondBuffer = default;
-        }
+
+        source.SetResult(0);
     }
 
     private void OnWriteAndFlush()
     {
         Debug.Assert(fileBackend is not null);
+
+        var awaiter = this.awaiter;
+        this.awaiter = default;
+
+        var secondBuffer = this.secondBuffer;
+        this.secondBuffer = default;
 
         try
         {
@@ -89,22 +97,24 @@ public partial class FileBufferingWriter : IDynamicInterfaceCastable
             filePosition += secondBuffer.Length + position;
             position = 0;
             RandomAccess.FlushToDisk(fileBackend);
-
-            source.SetResult(0);
         }
         catch (Exception e)
         {
             source.SetException(e);
+            return;
         }
-        finally
-        {
-            awaiter = default;
-            secondBuffer = default;
-        }
+
+        source.SetResult(0);
     }
 
     private void OnWriteAndCopy()
     {
+        var awaiter = this.awaiter;
+        this.awaiter = default;
+
+        var secondBuffer = this.secondBuffer;
+        this.secondBuffer = default;
+
         try
         {
             awaiter.GetResult();
@@ -112,24 +122,20 @@ public partial class FileBufferingWriter : IDynamicInterfaceCastable
             filePosition += position;
             secondBuffer.CopyTo(buffer.Memory);
             position = secondBuffer.Length;
-
-            source.SetResult(0);
         }
         catch (Exception e)
         {
             source.SetException(e);
+            return;
         }
-        finally
-        {
-            awaiter = default;
-            secondBuffer = default;
-        }
+
+        source.SetResult(0);
     }
 
     private ValueTask Submit(ValueTask task, Action callback)
     {
         awaiter = task.ConfigureAwait(false).GetAwaiter();
-        if (task.IsCompleted)
+        if (awaiter.IsCompleted)
         {
             callback();
         }
