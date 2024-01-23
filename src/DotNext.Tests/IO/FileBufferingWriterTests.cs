@@ -3,6 +3,8 @@ using System.Text.Json;
 
 namespace DotNext.IO;
 
+using Buffers;
+
 public sealed class FileBufferingWriterTests : Test
 {
     [Theory]
@@ -323,12 +325,12 @@ public sealed class FileBufferingWriterTests : Test
     public static async Task WriteDuringReadAsync()
     {
         using var writer = new FileBufferingWriter();
-        writer.Write(new byte[] { 1, 2, 3 });
+        writer.Write(stackalloc byte[] { 1, 2, 3 });
         using var manager = writer.GetWrittenContent();
         Equal(new byte[] { 1, 2, 3 }, manager.Memory.ToArray());
-        Throws<InvalidOperationException>(writer.Clear);
+        Throws<InvalidOperationException>(writer.As<IGrowableBuffer<byte>>().Clear);
         Throws<InvalidOperationException>(() => writer.WriteByte(2));
-        Throws<InvalidOperationException>(() => writer.GetWrittenContent());
+        Throws<InvalidOperationException>(writer.GetWrittenContent);
         await ThrowsAsync<InvalidOperationException>(() => writer.WriteAsync(new byte[2], 0, 2));
         await ThrowsAsync<InvalidOperationException>(writer.GetWrittenContentAsync().AsTask);
     }
