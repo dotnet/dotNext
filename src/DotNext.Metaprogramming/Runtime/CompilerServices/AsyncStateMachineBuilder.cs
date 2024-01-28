@@ -21,6 +21,7 @@ using static Reflection.TypeExtensions;
 /// 2. Construct state holder type
 /// 3. Replace all local variables with fields from state holder type.
 /// </remarks>
+[RequiresUnreferencedCode("Dynamic access to DotNext.Metaprogramming internal types, Task<T> and ValueTask<T>.")]
 internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 {
     private static readonly UserDataSlot<int> ParameterPositionSlot = new();
@@ -57,7 +58,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         }
 
         context = new VisitorContext(out AsyncMethodEnd);
-        stateSwitchTable = new StateTransitionTable();
+        stateSwitchTable = new();
     }
 
     private static void MarkAsParameter(ParameterExpression parameter, int position)
@@ -432,7 +433,8 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     }
 }
 
-internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, IDisposable
+[RequiresUnreferencedCode("Dynamic access to Transition and IAsyncStateMachine internal types.")]
+internal sealed class AsyncStateMachineBuilder<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate> : ExpressionVisitor, IDisposable
     where TDelegate : Delegate
 {
     private readonly AsyncStateMachineBuilder methodBuilder;
@@ -509,10 +511,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
             this.usePooling = usePooling;
         }
 
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AsyncStateMachine<>))]
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(AsyncStateMachine<,>))]
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(PoolingAsyncStateMachine<>))]
-        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(PoolingAsyncStateMachine<,>))]
+        [RequiresUnreferencedCode("Dynamic access to AsyncStateMachine and PoolingAsyncStateMachine internal types.")]
         internal MemberExpression Build(Type stateType)
         {
             Type stateMachineType;

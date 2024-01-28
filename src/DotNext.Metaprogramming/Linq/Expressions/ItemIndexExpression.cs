@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using Debug = System.Diagnostics.Debug;
@@ -64,6 +65,8 @@ public sealed class ItemIndexExpression : CustomExpression
     /// </summary>
     public override Type Type => typeof(Index);
 
+    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Index))]
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Dependency of Index is declared explicitly")]
     internal static Expression GetOffset(Expression index, Expression count)
         => index is ItemIndexExpression { IsFromEnd: false } itemIndex ? itemIndex.Value : Call(index, nameof(Index.GetOffset), null, count);
 

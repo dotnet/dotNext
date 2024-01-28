@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -13,6 +14,7 @@ using List = Collections.Generic.List;
 /// Represents iteration over collection elements as expression.
 /// </summary>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
+[RequiresUnreferencedCode("Dynamic access to GetEnumerator method and IEnumerable<T> interfaces.")]
 public sealed class ForEachExpression : CustomExpression, ILoopLabels
 {
     private const string EnumeratorVarName = "enumerator";
