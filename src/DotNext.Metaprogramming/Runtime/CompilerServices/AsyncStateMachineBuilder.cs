@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using static System.Diagnostics.Debug;
 using static System.Linq.Enumerable;
 
 namespace DotNext.Runtime.CompilerServices;
@@ -457,7 +456,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     private Expression<TDelegate> Build(LambdaExpression stateMachineMethod)
     {
-        Assert(stateMachine is not null);
+        Debug.Assert(stateMachine is not null);
         var stateVariable = Expression.Variable(GetStateField(stateMachine).Type);
         var parameters = methodBuilder.Parameters;
         ICollection<Expression> newBody = new LinkedList<Expression>();
@@ -550,7 +549,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
             slots = builder.Build<MemberExpression>(sm.Build, out _);
         }
 
-        Assert(sm.StateMachine is not null);
+        Debug.Assert(sm.StateMachine is not null);
         stateMachine = sm.StateMachine;
         return slots;
     }
@@ -583,7 +582,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     protected override Expression VisitExtension(Expression node)
     {
-        Assert(stateMachine is not null);
+        Debug.Assert(stateMachine is not null);
         return node switch
         {
             StatePlaceholderExpression placeholder => placeholder.Reduce(),
