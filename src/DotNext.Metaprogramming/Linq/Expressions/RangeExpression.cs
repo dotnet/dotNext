@@ -56,7 +56,7 @@ public sealed class RangeExpression : CustomExpression
     /// <returns>Translated expression.</returns>
     public override Expression Reduce()
     {
-        ConstructorInfo? ctor = typeof(Range).GetConstructor(new[] { typeof(Index), typeof(Index) });
+        ConstructorInfo? ctor = typeof(Range).GetConstructor([typeof(Index), typeof(Index)]);
         Debug.Assert(ctor is not null);
         return New(ctor, Start.Reduce(), End.Reduce());
     }

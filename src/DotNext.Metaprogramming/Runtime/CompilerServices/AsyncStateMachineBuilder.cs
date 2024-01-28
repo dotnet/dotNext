@@ -495,7 +495,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         var startMethod = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start));
         Debug.Assert(startMethod is not null);
         newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(startMethod, stateMachineMethod, stateVariable)));
-        return Expression.Lambda<TDelegate>(Expression.Block(new[] { stateVariable }, newBody), true, parameters);
+        return Expression.Lambda<TDelegate>(Expression.Block([stateVariable], newBody), true, parameters);
     }
 
     private sealed class StateMachineBuilder

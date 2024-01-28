@@ -84,7 +84,7 @@ public sealed class NullCoalescingAssignmentExpression : CustomExpression
 
         return Block(
             Left.Type,
-            new[] { localVar },
+            [localVar],
             Assign(localVar, Left),
             Assign(Left, Build(localVar, Right)),
             localVar);
