@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>true</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+    <PublishTrimmed>true</PublishTrimmed>
+    <SelfContained>true</SelfContained>
+    <TargetFramework>net8.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <UseCurrentRuntimeIdentifier>true</UseCurrentRuntimeIdentifier>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="DotNext" />
+    <TrimmerRootAssembly Include="DotNext.IO" />
+    <TrimmerRootAssembly Include="DotNext.Metaprogramming" />
+    <TrimmerRootAssembly Include="DotNext.Threading" />
+    <TrimmerRootAssembly Include="DotNext.Unsafe" />
+    <TrimmerRootAssembly Include="DotNext.AspNetCore.Cluster" />
+    <TrimmerRootAssembly Include="DotNext.Net.Cluster" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DotNext\DotNext.csproj" />
+    <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj" />
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
+    <ProjectReference Include="..\DotNext.Threading\DotNext.Threading.csproj" />
+    <ProjectReference Include="..\DotNext.Unsafe\DotNext.Unsafe.csproj" />
+    <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj" />
+    <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" />
+  </ItemGroup>
+</Project>
