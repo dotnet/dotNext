@@ -111,7 +111,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         {
             case Timeout.InfiniteTicks:
                 goto default;
-            case < 0L:
+            case < 0L or > Timeout.MaxTimeoutTicks:
                 result = ValueTask.FromException<T>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:

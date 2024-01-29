@@ -176,7 +176,7 @@ public class QueuedSynchronizer : Disposable
         {
             case Timeout.InfiniteTicks:
                 goto default;
-            case < 0L:
+            case < 0L or > Timeout.MaxTimeoutTicks:
                 task = ValueTask.FromException(new ArgumentOutOfRangeException("timeout"));
                 break;
             case 0L: // attempt to acquire synchronously
@@ -248,7 +248,7 @@ public class QueuedSynchronizer : Disposable
         {
             case Timeout.InfiniteTicks:
                 goto default;
-            case < 0L:
+            case < 0L or > Timeout.MaxTimeoutTicks:
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException("timeout"));
                 break;
             case 0L: // attempt to acquire synchronously
@@ -834,7 +834,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         {
             case Timeout.InfiniteTicks:
                 goto default;
-            case < 0L:
+            case < 0L or > Timeout.MaxTimeoutTicks:
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
@@ -896,7 +896,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         {
             case Timeout.InfiniteTicks:
                 goto default;
-            case < 0L:
+            case < 0L or > Timeout.MaxTimeoutTicks:
                 task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:

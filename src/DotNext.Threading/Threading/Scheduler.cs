@@ -48,7 +48,7 @@ public static partial class Scheduler
 
         return delay.Ticks switch
         {
-            < 0L and not Timeout.InfiniteTicks => throw new ArgumentOutOfRangeException(nameof(delay)),
+            < 0L and not Timeout.InfiniteTicks or > Timeout.MaxTimeoutTicks => throw new ArgumentOutOfRangeException(nameof(delay)),
             0L => new ImmediateTask<TArgs, TResult>(callback, args, token),
             _ => DelayedTaskStateMachine<TArgs, TResult>.Start(callback, args, delay, token),
         };

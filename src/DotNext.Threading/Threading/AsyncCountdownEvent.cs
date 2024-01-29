@@ -252,7 +252,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             case Timeout.InfiniteTicks:
                 goto default;
-            case < 0L:
+            case < 0L or > Timeout.MaxTimeoutTicks:
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
