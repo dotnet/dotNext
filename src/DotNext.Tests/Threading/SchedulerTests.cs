@@ -55,6 +55,6 @@ public sealed class SchedulerTests : Test
     [Fact]
     public static void TooLargeTimeout()
     {
-        Throws<ArgumentOutOfRangeException>(static () => Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(args), 42, TimeSpan.FromMilliseconds(Timeout.MaxTimeoutTicks + 1L)));
+        Throws<ArgumentOutOfRangeException>(static () => Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(args), 42, TimeSpan.FromMilliseconds(Timeout.MaxTimeoutParameterTicks + 1L)));
     }
 }

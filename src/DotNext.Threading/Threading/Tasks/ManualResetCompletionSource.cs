@@ -272,7 +272,7 @@ public abstract partial class ManualResetCompletionSource
 
     private protected short? Activate(TimeSpan timeout, CancellationToken token)
     {
-        if (timeout.Ticks is < 0L and not Timeout.InfiniteTicks or > Timeout.MaxTimeoutTicks)
+        if (timeout.Ticks is < 0L and not Timeout.InfiniteTicks or > Timeout.MaxTimeoutParameterTicks)
             throw new ArgumentOutOfRangeException(nameof(timeout));
 
         // The task can be created for the completed (but not yet consumed) source.

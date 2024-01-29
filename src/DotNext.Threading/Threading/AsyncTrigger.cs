@@ -151,7 +151,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         {
             case Timeout.InfiniteTicks:
                 goto default;
-            case < 0L or > Timeout.MaxTimeoutTicks:
+            case < 0L or > Timeout.MaxTimeoutParameterTicks:
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:

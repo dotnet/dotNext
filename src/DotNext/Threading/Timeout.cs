@@ -16,9 +16,10 @@ public readonly struct Timeout
     public const long InfiniteTicks = System.Threading.Timeout.Infinite * TimeSpan.TicksPerMillisecond;
 
     /// <summary>
-    /// Represents maximum possible timeout, in ticks.
+    /// Represents maximum possible timeout value, in ticks, that can be passed to
+    /// some methods such as <see cref="Task.Delay(TimeSpan)"/> or <see cref="CancellationTokenSource.CancelAfter(TimeSpan)"/>.
     /// </summary>
-    public const long MaxTimeoutTicks = int.MaxValue * TimeSpan.TicksPerMillisecond;
+    public const long MaxTimeoutParameterTicks = int.MaxValue * TimeSpan.TicksPerMillisecond;
 
     private readonly Timestamp created; // IsEmpty means infinite timeout
     private readonly TimeSpan timeout;
