@@ -1,4 +1,5 @@
-﻿using System.Dynamic;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Debug = System.Diagnostics.Debug;
@@ -8,6 +9,7 @@ namespace DotNext.Linq.Expressions;
 
 using Intrinsics = Runtime.Intrinsics;
 
+[RequiresUnreferencedCode("Binds to arbitrary members.")]
 internal sealed class MetaExpression : DynamicMetaObject
 {
     private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, ISupplier<Expression>?>(Unsafe.As<ISupplier<Expression>>).Method;

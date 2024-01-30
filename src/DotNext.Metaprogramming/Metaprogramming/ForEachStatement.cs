@@ -1,9 +1,11 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming;
 
 using ForEachExpression = Linq.Expressions.ForEachExpression;
 
+[RequiresUnreferencedCode("Dynamic access to GetEnumerator method and IEnumerable<T> interfaces.")]
 internal sealed class ForEachStatement : LoopLexicalScope, ILexicalScope<ForEachExpression, Action<MemberExpression>>, ILexicalScope<ForEachExpression, Action<MemberExpression, LoopContext>>
 {
     private readonly Expression collection;

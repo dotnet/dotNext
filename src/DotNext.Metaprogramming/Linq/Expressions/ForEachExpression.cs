@@ -14,7 +14,7 @@ using List = Collections.Generic.List;
 /// Represents iteration over collection elements as expression.
 /// </summary>
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
-[RequiresUnreferencedCode("Dynamic access to GetEnumerator method and IEnumerable<T> interfaces.")]
+[RequiresUnreferencedCode("Dynamic access to GetEnumerator (GetAsyncEnumerator) method and IEnumerable<T> (IAsyncEnumerable<T>) interfaces.")]
 public sealed class ForEachExpression : CustomExpression, ILoopLabels
 {
     private const string EnumeratorVarName = "enumerator";

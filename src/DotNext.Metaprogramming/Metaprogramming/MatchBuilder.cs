@@ -157,6 +157,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     public MatchBuilder Case<T>(CaseStatement body)
         => Case(typeof(T), body);
 
+    [RequiresUnreferencedCode("Dynamically accesses properties/fields named in <structPattern>.")]
     private static Pattern StructuralPattern(IEnumerable<(string, Expression)> structPattern)
         => obj =>
         {
@@ -170,6 +171,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             return result ?? Expression.Constant(false);
         };
 
+    [RequiresUnreferencedCode("Dynamically accesses properties/fields named in <structPattern>.")]
     private MatchBuilder Case(IEnumerable<(string, Expression)> structPattern, CaseStatement body)
         => Case(StructuralPattern(structPattern), body);
 
@@ -180,6 +182,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="memberValue">The expected value of the field or property.</param>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
+    [RequiresUnreferencedCode("Dynamically accesses property/field <memberName>.")]
     public MatchBuilder Case(string memberName, Expression memberValue, Func<MemberExpression, Expression> body)
         => Case(StructuralPattern(List.Singleton((memberName, memberValue))), value => body(Expression.PropertyOrField(value, memberName)));
 
@@ -192,6 +195,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="memberValue2">The expected value of the second field or property.</param>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
+    [RequiresUnreferencedCode("Dynamically accesses properties/fields <memberName1>, <memberName2>.")]
     public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, Func<MemberExpression, MemberExpression, Expression> body)
         => Case(StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2)]), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2)));
 
@@ -206,6 +210,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="memberValue3">The expected value of the third field or property.</param>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
+    [RequiresUnreferencedCode("Dynamically accesses properties/fields <memberName1>, <memberName2>, <memberName3>.")]
     public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Func<MemberExpression, MemberExpression, MemberExpression, Expression> body)
         => Case(StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3)]), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
 
@@ -239,6 +244,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="structPattern">The structure pattern represented by instance of anonymous type.</param>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
+    [RequiresUnreferencedCode("Dynamically accesses properties/fields represented in <structPattern>.")]
     public MatchBuilder Case(object structPattern, CaseStatement body)
         => Case(GetProperties(structPattern), body);
 
@@ -248,6 +254,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="structPattern">The structure pattern represented by instance of anonymous type.</param>
     /// <param name="value">The value to be supplied if the specified structural pattern matches to the passed object.</param>
     /// <returns><c>this</c> builder.</returns>
+    [RequiresUnreferencedCode("Dynamically accesses properties/fields represented in <structPattern>.")]
     public MatchBuilder Case(object structPattern, Expression value)
         => Case(structPattern, new CaseStatement(value.TrivialCaseStatement));
 
@@ -313,6 +320,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="structPattern">The structure pattern represented by instance of anonymous type.</param>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
+    [RequiresUnreferencedCode("Dynamically accesses fields represented in <structPattern>.")]
     public MatchBuilder Case(object structPattern, Action<ParameterExpression> body)
     {
         using var statement = new MatchByConditionStatement(this, StructuralPattern(GetProperties(structPattern)));
@@ -483,6 +491,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
                 this.statement = statement;
             }
 
+            [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Public methods on MatchBuilder are annotated appropriately.")]
             Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
             {
                 memberHandler(Expression.PropertyOrField(value, memberName));
@@ -500,6 +509,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             this.memberValue = memberValue;
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Public methods on MatchBuilder are annotated appropriately.")]
         private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression> scope)
         {
             var pattern = StructuralPattern(List.Singleton((memberName, memberValue)));
@@ -524,6 +534,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
                 this.statement = statement;
             }
 
+            [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Public methods on MatchBuilder are annotated appropriately.")]
             Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
             {
                 memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2));
@@ -543,6 +554,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             this.memberValue2 = memberValue2;
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Public methods on MatchBuilder are annotated appropriately.")]
         private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression, MemberExpression> scope)
         {
             var pattern = StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2)]);
@@ -568,6 +580,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
                 this.statement = statement;
             }
 
+            [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Public methods on MatchBuilder are annotated appropriately.")]
             Expression ISupplier<ParameterExpression, Expression>.Invoke(ParameterExpression value)
             {
                 memberHandler(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3));
@@ -589,6 +602,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
             this.memberValue3 = memberValue3;
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Public methods on MatchBuilder are annotated appropriately.")]
         private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression, MemberExpression, MemberExpression> scope)
         {
             var pattern = StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3)]);
