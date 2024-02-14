@@ -218,17 +218,9 @@ public partial class PersistentState
         }
     }
 
-    private sealed class VersionedFileReader : FileReader
+    private sealed class VersionedFileReader(SafeFileHandle handle, long fileOffset, int bufferSize, MemoryAllocator<byte> allocator, ulong version) : FileReader(handle, fileOffset, bufferSize, allocator)
     {
-        private long version;
-
-        internal VersionedFileReader(SafeFileHandle handle, long fileOffset, int bufferSize, MemoryAllocator<byte> allocator, long version)
-            : base(handle, fileOffset, bufferSize, allocator)
-        {
-            this.version = version;
-        }
-
-        internal void VerifyVersion(long expected)
+        internal void VerifyVersion(ulong expected)
         {
             if (version != expected)
                 Reset();
@@ -251,7 +243,7 @@ public partial class PersistentState
         private VersionedFileReader?[] readers;
 
         // This field is used to control 'freshness' of the read buffers
-        private long version; // volatile
+        private ulong version; // volatile
 
         private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, WriteMode writeMode, long initialSize)
         {
@@ -273,14 +265,18 @@ public partial class PersistentState
 
             Handle = File.OpenHandle(fileName, fileMode, FileAccess.ReadWrite, FileShare.Read, options, initialSize);
 
+            if (fileMode is FileMode.CreateNew)
+            {
+                File.SetAttributes(Handle, FileAttributes.NotContentIndexed);
+            }
+
             this.fileOffset = fileOffset;
             writer = new(Handle, fileOffset, bufferSize, allocator);
             readers = new VersionedFileReader[readersCount];
             this.allocator = allocator;
             FileName = fileName;
-            version = long.MinValue;
 
-            if (readersCount is 1)
+            if (readers.Length is 1)
                 readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
 
             autoFlush = writeMode is WriteMode.AutoFlush;
