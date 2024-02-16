@@ -40,13 +40,8 @@ public sealed class RegressionIssue17 : Test
         });
     }
 
-    public class TestClass
+    public class TestClass(string testString)
     {
-        public TestClass(string testString)
-        {
-            TestString = testString;
-        }
-
-        public string TestString { get; set; }
+        public string TestString { get; set; } = testString;
     }
 }
