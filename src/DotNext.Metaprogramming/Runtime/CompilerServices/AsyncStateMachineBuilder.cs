@@ -60,6 +60,12 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         stateSwitchTable = new StateTransitionTable();
     }
 
+    internal ParameterExpression? ResultVariable
+    {
+        get;
+        private set;
+    }
+
     private static void MarkAsParameter(ParameterExpression parameter, int position)
         => parameter.GetUserData().Set(ParameterPositionSlot, position);
 
@@ -239,8 +245,18 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         var prologue = context.CurrentStatement.PrologueCodeInserter();
         expr = (AsyncResultExpression)base.VisitExtension(expr);
 
+        var containsAwait = ExpressionAttributes.Get(expr.AsyncResult) is { ContainsAwait: true };
+
+        if (containsAwait && Task.HasResult)
+        {
+            ResultVariable ??= Expression.Parameter(Task.ResultType);
+            prologue(Expression.Assign(ResultVariable, expr.AsyncResult));
+            expr = expr.Update(ResultVariable);
+        }
+
         foreach (var finalization in context.CreateJumpPrologue(AsyncMethodEnd.Goto(), this))
             prologue(finalization);
+
         return expr;
     }
 
@@ -603,6 +619,13 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
         // replace all special expressions
         body = Visit(body);
+
+        if (methodBuilder.ResultVariable is { } resultVar)
+        {
+            body = body is BlockExpression block
+                ? block.Update(block.Variables.Append(resultVar), block.Expressions)
+                : Expression.Block(body.Type, [resultVar], body);
+        }
 
         // now we have state machine method, wrap it into lambda
         return Build(BuildStateMachine(body, stateMachine, tailCall));

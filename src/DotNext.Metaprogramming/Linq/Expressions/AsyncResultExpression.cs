@@ -103,4 +103,7 @@ public sealed class AsyncResultExpression : CustomExpression
         var expression = visitor.Visit(AsyncResult);
         return ReferenceEquals(expression, AsyncResult) ? this : new(expression, taskType);
     }
+
+    internal AsyncResultExpression Update(Expression asyncResult)
+        => new(asyncResult, taskType);
 }
