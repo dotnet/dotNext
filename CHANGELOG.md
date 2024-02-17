@@ -1,6 +1,28 @@
 Release Notes
 ====
 
+# 02-17-2024
+<a href="https://www.nuget.org/packages/dotnext/5.0.2">DotNext 5.0.2</a>
+* Fixed XML docs
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.0.2">DotNext.Metaprogramming 5.0.2</a>
+* Fixed [223](https://github.com/dotnet/dotNext/issues/223)
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.0.2">DotNext.Unsafe 5.0.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.0.2">DotNext.Threading 5.0.2</a>
+* Added correct validation for maximum possible timeout for all `WaitAsync` methods
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.0.2">DotNext.IO 5.0.2</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.0.2">DotNext.Net.Cluster 5.0.2</a>
+* Prevent indexing of WAL files on Windows
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.0.2">DotNext.AspNetCore.Cluster 5.0.2</a>
+* Updated dependencies
+
 # 01-23-2024
 <a href="https://www.nuget.org/packages/dotnext/5.0.1">DotNext 5.0.1</a>
 * Smallish performance improvements of dynamic buffers
