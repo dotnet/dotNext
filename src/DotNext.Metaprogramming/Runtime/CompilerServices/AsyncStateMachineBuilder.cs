@@ -245,9 +245,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         var prologue = context.CurrentStatement.PrologueCodeInserter();
         expr = (AsyncResultExpression)base.VisitExtension(expr);
 
-        var containsAwait = ExpressionAttributes.Get(expr.AsyncResult) is { ContainsAwait: true };
-
-        if (containsAwait && Task.HasResult)
+        if (Task.HasResult && expr.IsSimpleResult is false)
         {
             ResultVariable ??= Expression.Parameter(Task.ResultType);
             prologue(Expression.Assign(ResultVariable, expr.AsyncResult));

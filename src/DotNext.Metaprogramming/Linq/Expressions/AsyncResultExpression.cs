@@ -60,6 +60,10 @@ public sealed class AsyncResultExpression : CustomExpression
     /// </remarks>
     public override Type Type => taskType;
 
+    // indicates that AsyncResult cannot throw exception so it can be inlined
+    internal bool IsSimpleResult
+        => AsyncResult is ConstantExpression or ParameterExpression or DefaultExpression;
+
     /// <summary>
     /// Translates this expression into predefined set of expressions
     /// using Lowering technique.
