@@ -37,7 +37,7 @@ public sealed class FNV1aTests : Test
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public static void Hash128(bool salted) => HashTest(new FNV1a64(salted));
+    public static void Hash128(bool salted) => HashTest(new FNV1a128(salted));
 
     [Fact]
     public static void HashList()

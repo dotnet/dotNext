@@ -42,5 +42,5 @@ public sealed class RefAnyValExpression : CustomExpression
     /// using Lowering technique.
     /// </summary>
     /// <returns>Translated expression.</returns>
-    public override Expression Reduce() => Call(typeof(Intrinsics), nameof(Intrinsics.AsRef), new[] { ReferenceType }, TypedReferenceVar);
+    public override Expression Reduce() => Call(typeof(Intrinsics), nameof(Intrinsics.AsRef), [ReferenceType], TypedReferenceVar);
 }

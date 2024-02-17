@@ -31,7 +31,7 @@ public partial class PersistentState
         internal override int Take()
         {
             int sessionId;
-            ulong current, newValue = Volatile.Read(ref control);
+            ulong current, newValue = Volatile.Read(in control);
             do
             {
                 sessionId = BitOperations.TrailingZeroCount(current = newValue);

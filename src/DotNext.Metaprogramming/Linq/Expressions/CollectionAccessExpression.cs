@@ -138,11 +138,11 @@ public sealed class CollectionAccessExpression : CustomExpression
         if (indexer is null)
             result = ArrayAccess(temp ?? Collection, Index);
         else if (count is null)
-            result = MakeIndex(temp ?? Collection, indexer, new[] { Index.Reduce() });
+            result = MakeIndex(temp ?? Collection, indexer, [Index.Reduce()]);
         else
-            result = MakeIndex(temp ?? Collection, indexer, new[] { MakeIndex(temp ?? Collection, count, Index) });
+            result = MakeIndex(temp ?? Collection, indexer, [MakeIndex(temp ?? Collection, count, Index)]);
 
-        return temp is null ? result : Block(Type, new[] { temp }, Assign(temp, Collection), result);
+        return temp is null ? result : Block(Type, [temp], Assign(temp, Collection), result);
     }
 
     /// <summary>

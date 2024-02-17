@@ -66,7 +66,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => Volatile.Read(ref manager.Value);
+    public bool IsSet => Volatile.Read(in manager.Value);
 
     /// <summary>
     /// Sets the state of this event to non signaled, causing consumers to wait asynchronously.

@@ -7,7 +7,6 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
-using Threading;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 using IntegrityException = IO.Log.IntegrityException;
 
@@ -68,9 +67,19 @@ public partial class PersistentState
             {
                 handle = File.OpenHandle(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None, FileOptions.WriteThrough, Capacity);
                 buffer.Span.Clear();
-                if (integrityCheck)
-                    WriteInt64LittleEndian(Checksum, Hash(Data));
 
+                FileAttributes attributes;
+                if (integrityCheck)
+                {
+                    attributes = FileAttributes.NotContentIndexed | FileAttributes.IntegrityStream;
+                    WriteInt64LittleEndian(Checksum, Hash(Data));
+                }
+                else
+                {
+                    attributes = FileAttributes.NotContentIndexed;
+                }
+
+                File.SetAttributes(handle, attributes);
                 RandomAccess.Write(handle, buffer.Span, 0L);
             }
 

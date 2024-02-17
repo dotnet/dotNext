@@ -99,7 +99,7 @@ public sealed class SliceExpression : CustomExpression
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(RuntimeHelpers))]
     private static MethodCallExpression SubArray(Expression array, Expression range)
     {
-        MethodInfo? subArray = typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.GetSubArray), 1, new[] { Type.MakeGenericMethodParameter(0).MakeArrayType(), typeof(Range) });
+        MethodInfo? subArray = typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.GetSubArray), 1, [Type.MakeGenericMethodParameter(0).MakeArrayType(), typeof(Range)]);
         Debug.Assert(subArray is not null);
         subArray = subArray.MakeGenericMethod(array.Type.GetElementType()!);
         return Call(subArray, array, range.Reduce());
@@ -108,7 +108,7 @@ public sealed class SliceExpression : CustomExpression
     private static BlockExpression SubCollection(Expression collection, MethodInfo slice, PropertyInfo count, Expression range)
     {
         var offsetAndLengthCall = RangeExpression.GetOffsetAndLength(range, Property(collection, count), out var offsetAndLength, out var offsetField, out var lengthField);
-        return Block(new[] { offsetAndLength }, Assign(offsetAndLength, offsetAndLengthCall), Call(collection, slice, offsetField, lengthField));
+        return Block([offsetAndLength], Assign(offsetAndLength, offsetAndLengthCall), Call(collection, slice, offsetField, lengthField));
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public sealed class SliceExpression : CustomExpression
         else
             result = SubCollection(temp ?? Collection, slice, count, Range);
 
-        return temp is null ? result : Block(Type, new[] { temp }, Assign(temp, Collection), result);
+        return temp is null ? result : Block(Type, [temp], Assign(temp, Collection), result);
     }
 
     /// <summary>
