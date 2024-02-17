@@ -27,10 +27,15 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --collect "Code coverage"
+              arguments: --configuration Debug --collect "XPlat Code Coverage"
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish code coverage'
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
       - job: Linux
         pool:
           vmImage: ubuntu-latest
@@ -48,10 +53,15 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --collect "Code coverage"
+              arguments: --configuration Debug --collect "XPlat Code Coverage"
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish code coverage'
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
       - job: MacOS
         pool:
           vmImage: macOS-latest
@@ -69,10 +79,15 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --collect "Code coverage"
+              arguments: --configuration Debug --collect "XPlat Code Coverage"
               nobuild: false
               testRunTitle: 'Debug on MacOS'
               publishTestResults: true
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish code coverage'
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))
     jobs:

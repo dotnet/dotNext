@@ -13,9 +13,11 @@ using Buffers;
 /// Represents a builder of the lambda expression
 /// that can be compiled to the renderer of the interpolated string.
 /// </summary>
+/// <param name="literalLength">The total number of characters in known at compile-time.</param>
+/// <param name="formattedCount">The number of placeholders.</param>
 [InterpolatedStringHandler]
 [StructLayout(LayoutKind.Auto)]
-public struct InterpolatedStringTemplateBuilder
+public struct InterpolatedStringTemplateBuilder(int literalLength, int formattedCount)
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Segment
@@ -95,20 +97,7 @@ public struct InterpolatedStringTemplateBuilder
         }
     }
 
-    private readonly int literalLength, formattedCount;
-    private List<Segment>? segments;
-
-    /// <summary>
-    /// Initializes a new builder.
-    /// </summary>
-    /// <param name="literalLength">The total number of characters in known at compile-time.</param>
-    /// <param name="formattedCount">The number of placeholders.</param>
-    public InterpolatedStringTemplateBuilder(int literalLength, int formattedCount)
-    {
-        segments = new(formattedCount);
-        this.literalLength = literalLength;
-        this.formattedCount = formattedCount;
-    }
+    private List<Segment>? segments = new(formattedCount);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private List<Segment> Segments => segments ??= [];
@@ -207,7 +196,7 @@ public struct InterpolatedStringTemplateBuilder
         // try-finally block to dispose the writer
         expr = Expression.Block(statements);
         expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<char>.Dispose), []));
-        expr = Expression.Block(new[] { preallocatedBufferLocal, writerLocal, handlerLocal }, expr);
+        expr = Expression.Block([preallocatedBufferLocal, writerLocal, handlerLocal], expr);
 
         return Expression.Lambda(
             expr,

@@ -60,6 +60,10 @@ public sealed class AsyncResultExpression : CustomExpression
     /// </remarks>
     public override Type Type => taskType;
 
+    // indicates that AsyncResult cannot throw exception so it can be inlined
+    internal bool IsSimpleResult
+        => AsyncResult is ConstantExpression or ParameterExpression or DefaultExpression;
+
     /// <summary>
     /// Translates this expression into predefined set of expressions
     /// using Lowering technique.
@@ -103,4 +107,7 @@ public sealed class AsyncResultExpression : CustomExpression
         var expression = visitor.Visit(AsyncResult);
         return ReferenceEquals(expression, AsyncResult) ? this : new(expression, taskType);
     }
+
+    internal AsyncResultExpression Update(Expression asyncResult)
+        => new(asyncResult, taskType);
 }

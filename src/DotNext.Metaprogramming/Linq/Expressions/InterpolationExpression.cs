@@ -105,19 +105,19 @@ public sealed partial class InterpolationExpression : CustomExpression
             case 0:
                 return Constant(Format);
             case 1:
-                var formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object) });
+                var formatMethod = typeof(string).GetMethod(nameof(string.Format), [typeof(IFormatProvider), typeof(string), typeof(object)]);
                 Debug.Assert(formatMethod is not null);
                 return Call(formatMethod, FormatProvider, Constant(Format), arguments[0]);
             case 2:
-                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object), typeof(object) });
+                formatMethod = typeof(string).GetMethod(nameof(string.Format), [typeof(IFormatProvider), typeof(string), typeof(object), typeof(object)]);
                 Debug.Assert(formatMethod is not null);
                 return Call(formatMethod, FormatProvider, Constant(Format), FormatProvider, arguments[0], arguments[1]);
             case 3:
-                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object), typeof(object), typeof(object) });
+                formatMethod = typeof(string).GetMethod(nameof(string.Format), [typeof(IFormatProvider), typeof(string), typeof(object), typeof(object), typeof(object)]);
                 Debug.Assert(formatMethod is not null);
                 return Call(formatMethod, FormatProvider, Constant(Format), FormatProvider, arguments[0], arguments[1], arguments[2]);
             default:
-                formatMethod = typeof(string).GetMethod(nameof(string.Format), new[] { typeof(IFormatProvider), typeof(string), typeof(object[]) });
+                formatMethod = typeof(string).GetMethod(nameof(string.Format), [typeof(IFormatProvider), typeof(string), typeof(object[])]);
                 Debug.Assert(formatMethod is not null);
                 return Call(formatMethod, FormatProvider, Constant(Format), FormatProvider, NewArrayInit(typeof(object), arguments));
         }

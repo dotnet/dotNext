@@ -1,6 +1,4 @@
-﻿using Debug = System.Diagnostics.Debug;
-
-namespace DotNext;
+﻿namespace DotNext;
 
 /// <summary>
 /// Provides extension methods for type <see cref="Predicate{T}"/> and

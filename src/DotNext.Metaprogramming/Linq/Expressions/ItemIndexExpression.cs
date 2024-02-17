@@ -74,7 +74,7 @@ public sealed class ItemIndexExpression : CustomExpression
     /// <returns>Translated expression.</returns>
     public override Expression Reduce()
     {
-        ConstructorInfo? ctor = typeof(Index).GetConstructor(new[] { typeof(int), typeof(bool) });
+        ConstructorInfo? ctor = typeof(Index).GetConstructor([typeof(int), typeof(bool)]);
         Debug.Assert(ctor is not null);
         return New(ctor, conversionRequired ? Convert(Value, typeof(int)) : Value, Constant(IsFromEnd));
     }

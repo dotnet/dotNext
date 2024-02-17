@@ -95,13 +95,13 @@ public sealed class MutationExpression : CustomExpression
         if (Bindings.Count > 0)
         {
             var tempVar = Parameter(Type, "copy");
-            ICollection<Expression> statements = new List<Expression>(Bindings.Count + 2) { Assign(tempVar, result) };
+            List<Expression> statements = new(Bindings.Count + 2) { Assign(tempVar, result) };
 
             foreach (var binding in Bindings)
                 statements.Add(Assign(MakeMemberAccess(tempVar, binding.Member), binding.Expression));
 
             statements.Add(tempVar);
-            result = Block(tempVar.Type, new[] { tempVar }, statements);
+            result = Block(tempVar.Type, [tempVar], statements);
         }
 
         return result;

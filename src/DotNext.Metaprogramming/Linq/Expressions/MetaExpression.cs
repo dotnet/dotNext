@@ -70,7 +70,7 @@ internal sealed class MetaExpression : DynamicMetaObject
             }
         }
 
-        return Expression.Call(typeof(ExpressionBuilder), nameof(ExpressionBuilder.Const), new[] { arg.Expression.Type }, arg.Expression);
+        return Expression.Call(typeof(ExpressionBuilder), nameof(ExpressionBuilder.Const), [arg.Expression.Type], arg.Expression);
     }
 
     private static IReadOnlyList<Expression> ToExpressions(DynamicMetaObject[] args, out BindingRestrictions restrictions)

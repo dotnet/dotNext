@@ -193,7 +193,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
     public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, Func<MemberExpression, MemberExpression, Expression> body)
-        => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2)));
+        => Case(StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2)]), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2)));
 
     /// <summary>
     /// Defines pattern matching based on structural matching.
@@ -207,7 +207,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
     /// <param name="body">The action to be executed if object matches to the pattern.</param>
     /// <returns><c>this</c> builder.</returns>
     public MatchBuilder Case(string memberName1, Expression memberValue1, string memberName2, Expression memberValue2, string memberName3, Expression memberValue3, Func<MemberExpression, MemberExpression, MemberExpression, Expression> body)
-        => Case(StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) }), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
+        => Case(StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3)]), value => body(Expression.PropertyOrField(value, memberName1), Expression.PropertyOrField(value, memberName2), Expression.PropertyOrField(value, memberName3)));
 
     private static (string, Expression) GetMemberPattern(object @this, string memberName, Type memberType, Func<object, object?> valueProvider)
     {
@@ -545,7 +545,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
 
         private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression, MemberExpression> scope)
         {
-            var pattern = StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2) });
+            var pattern = StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2)]);
             return builder.MatchByCondition(pattern, new CaseStatementBuilder(this, memberName1, memberName2, scope));
         }
     }
@@ -591,7 +591,7 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
 
         private protected override MatchBuilder Build(MatchBuilder builder, Action<MemberExpression, MemberExpression, MemberExpression> scope)
         {
-            var pattern = StructuralPattern(new[] { (memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3) });
+            var pattern = StructuralPattern([(memberName1, memberValue1), (memberName2, memberValue2), (memberName3, memberValue3)]);
             return builder.MatchByCondition(pattern, new CaseStatementBuilder(this, memberName1, memberName2, memberName3, scope));
         }
     }

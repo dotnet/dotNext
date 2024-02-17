@@ -94,9 +94,9 @@ public sealed class LockExpression : CustomExpression
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Monitor))]
     public override Expression Reduce()
     {
-        var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), new[] { typeof(object) });
+        var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), [typeof(object)]);
         Debug.Assert(monitorEnter is not null);
-        var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), new[] { typeof(object) });
+        var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), [typeof(object)]);
         Debug.Assert(monitorExit is not null);
         var body = TryFinally(Body, Call(monitorExit, SyncRoot));
         return assignment is null ?

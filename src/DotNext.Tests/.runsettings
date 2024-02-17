@@ -6,15 +6,11 @@
 	</RunConfiguration>
 	<DataCollectionRunSettings>
 		<DataCollectors>
-			<DataCollector friendlyName="Code сoverage" uri="datacollector://Microsoft/CodeCoverage/2.0">
+			<DataCollector friendlyName="XPlat Code Coverage">
 				<Configuration>
-					<CodeCoverage>
-						<ModulePaths>
-							<Exclude>
-								<ModulePath>.*xunit.*</ModulePath>
-							</Exclude>
-						</ModulePaths>
-					</CodeCoverage>
+				<Format>cobertura</Format>          
+				<ExcludeByAttribute>ObsoleteAttribute,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
+				<IncludeTestAssembly>false</IncludeTestAssembly>
 				</Configuration>
 			</DataCollector>
 		</DataCollectors>

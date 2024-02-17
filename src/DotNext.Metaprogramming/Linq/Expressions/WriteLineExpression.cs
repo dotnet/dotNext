@@ -60,7 +60,7 @@ public sealed class WriteLineExpression : CustomExpression
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(TextWriter))]
     private static MethodCallExpression WriteLineTo(MemberExpression stream, Expression value)
     {
-        MethodInfo? writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), new[] { value.Type });
+        MethodInfo? writeLineMethod = typeof(TextWriter).GetMethod(nameof(TextWriter.WriteLine), [value.Type]);
 
         // WriteLine method will always be resolved here because Type.DefaultBinder
         // chooses TextWriter.WriteLine(object) if there is no exact match
@@ -91,7 +91,7 @@ public sealed class WriteLineExpression : CustomExpression
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(System.Diagnostics.Debug))]
     private MethodCallExpression WriteLineToDebug()
     {
-        var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), new[] { typeof(object) });
+        var writeLineMethod = typeof(System.Diagnostics.Debug).GetMethod(nameof(System.Diagnostics.Debug.WriteLine), [typeof(object)]);
         System.Diagnostics.Debug.Assert(writeLineMethod is not null);
         return Call(writeLineMethod, value.Type.IsValueType ? Convert(value, typeof(object)) : value);
     }

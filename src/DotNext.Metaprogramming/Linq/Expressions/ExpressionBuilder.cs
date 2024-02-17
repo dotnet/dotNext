@@ -1206,7 +1206,7 @@ public static partial class ExpressionBuilder
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Activator))]
     public static MethodCallExpression New(this Expression type, params Expression[] args)
     {
-        var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), new[] { typeof(Type), typeof(object[]) });
+        var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), [typeof(Type), typeof(object[])]);
         Debug.Assert(activate is not null);
         return Expression.Call(activate, type, Expression.NewArrayInit(typeof(object), args));
     }
@@ -1456,9 +1456,9 @@ public static partial class ExpressionBuilder
     public static Expression AsResult(this Expression expression)
     {
         var exception = Expression.Parameter(typeof(Exception));
-        var ctor = typeof(Result<>).MakeGenericType(expression.Type).GetConstructor(new[] { expression.Type });
+        var ctor = typeof(Result<>).MakeGenericType(expression.Type).GetConstructor([expression.Type]);
         Debug.Assert(ctor?.DeclaringType is not null);
-        var fallbackCtor = ctor.DeclaringType.GetConstructor(new[] { typeof(Exception) });
+        var fallbackCtor = ctor.DeclaringType.GetConstructor([typeof(Exception)]);
         Debug.Assert(fallbackCtor is not null);
         return Expression.TryCatch(
             Expression.New(ctor, expression),

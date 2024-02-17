@@ -51,4 +51,10 @@ public sealed class SchedulerTests : Test
         True(Scheduler.ScheduleAsync(static (args, token) => ValueTask.CompletedTask, 42, DefaultTimeout, new(true)).Task.IsCanceled);
         True(Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(42), 42, DefaultTimeout, new(true)).Task.IsCanceled);
     }
+
+    [Fact]
+    public static void TooLargeTimeout()
+    {
+        Throws<ArgumentOutOfRangeException>(static () => Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(args), 42, TimeSpan.FromMilliseconds(Timeout.MaxTimeoutParameterTicks + 1L)));
+    }
 }
