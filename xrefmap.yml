@@ -48257,6 +48257,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Timeout.IsInfinite
   nameWithType: Timeout.IsInfinite
+- uid: DotNext.Threading.Timeout.MaxTimeoutParameterTicks
+  name: MaxTimeoutParameterTicks
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_MaxTimeoutParameterTicks
+  commentId: F:DotNext.Threading.Timeout.MaxTimeoutParameterTicks
+  fullName: DotNext.Threading.Timeout.MaxTimeoutParameterTicks
+  nameWithType: Timeout.MaxTimeoutParameterTicks
 - uid: DotNext.Threading.Timeout.ThrowIfExpired
   name: ThrowIfExpired()
   href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_ThrowIfExpired
