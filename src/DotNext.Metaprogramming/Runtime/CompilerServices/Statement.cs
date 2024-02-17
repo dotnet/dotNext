@@ -40,13 +40,13 @@ internal class Statement : Expression
     internal readonly Expression Content;
 
     internal Statement(Expression expression)
-        : this(expression, Enumerable.Empty<Expression>(), Enumerable.Empty<Expression>())
+        : this(expression, [], [])
     {
     }
 
     private Statement(Expression expression, IEnumerable<Expression> prologue, IEnumerable<Expression> epilogue)
     {
-        Content = expression ?? Empty();
+        Content = expression;
         if (expression is Statement stmt)
         {
             InsertIntoHead(prologue, this.prologue = stmt.prologue);
@@ -57,19 +57,19 @@ internal class Statement : Expression
             this.prologue = new LinkedList<Expression>(prologue);
             this.epilogue = new LinkedList<Expression>(epilogue);
         }
-    }
 
-    private static void InsertIntoHead(IEnumerable<Expression> source, LinkedList<Expression> destination)
-    {
-        if (destination.First is null)
+        static void InsertIntoHead(IEnumerable<Expression> source, LinkedList<Expression> destination)
         {
-            destination.AddAll(source);
-        }
-        else
-        {
-            var first = destination.First;
-            foreach (var expr in source)
-                destination.AddBefore(first, expr);
+            if (destination.First is null)
+            {
+                destination.AddAll(source);
+            }
+            else
+            {
+                var first = destination.First;
+                foreach (var expr in source)
+                    destination.AddBefore(first, expr);
+            }
         }
     }
 
@@ -78,43 +78,36 @@ internal class Statement : Expression
     {
         switch (expr)
         {
-            case null:
-                return null;
-            case TryExpression seh:
-                return seh;
+            case null or TryExpression or Statement:
+                break;
             case BlockExpression block:
-                Rewrite(ref block);
-                return block;
+                expr = Rewrite(block);
+                break;
             case LoopExpression loop:
-                Rewrite(ref loop);
-                return loop;
+                expr = Rewrite(loop);
+                break;
             case SwitchExpression sw:
-                Rewrite(ref sw);
-                return sw;
-            case Statement stmt:
-                return stmt;
+                expr = Rewrite(sw);
+                break;
             default:
-                return new Statement(expr);
+                expr = new Statement(expr);
+                break;
         }
+
+        return expr;
     }
 
-    internal static void Rewrite(ref LoopExpression loop)
-        => loop = loop.Update(loop.BreakLabel, loop.ContinueLabel, Wrap(loop.Body));
+    internal static LoopExpression Rewrite(LoopExpression loop)
+        => loop.Update(loop.BreakLabel, loop.ContinueLabel, Wrap(loop.Body));
 
-    internal static void Rewrite(ref BlockExpression block)
-        => block = block.Update(block.Variables, block.Expressions.Select(Wrap)!);
+    internal static BlockExpression Rewrite(BlockExpression block)
+        => block.Update(block.Variables, block.Expressions.Select(Wrap)!);
 
-    internal static void Rewrite(ref SwitchExpression @switch)
-        => @switch = @switch.Update(@switch.SwitchValue, @switch.Cases.Select(c => c.Update(c.TestValues, Wrap(c.Body))), Wrap(@switch.DefaultBody));
+    internal static SwitchExpression Rewrite(SwitchExpression @switch)
+        => @switch.Update(@switch.SwitchValue, @switch.Cases.Select(c => c.Update(c.TestValues, Wrap(c.Body))), Wrap(@switch.DefaultBody));
 
     private static CodeInsertionPoint CaptureRewritePoint(LinkedList<Expression> codeBlock)
-    {
-        if (codeBlock.First is null)
-            return new CodeInsertionPoint(codeBlock);
-
-        Debug.Assert(codeBlock.Last is not null);
-        return new CodeInsertionPoint(codeBlock.Last);
-    }
+        => codeBlock.Last is { } last ? new(last) : new(codeBlock);
 
     internal DotNext.CodeInsertionPoint PrologueCodeInserter() => CaptureRewritePoint(prologue).Insert;
 

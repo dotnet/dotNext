@@ -79,7 +79,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     internal IEnumerable<ParameterExpression> Closures => Variables.Keys.Where(ClosureAnalyzer.IsClosure);
 
     private ParameterExpression NewStateSlot(Type type)
-        => NewStateSlot(() => Expression.Variable(type));
+        => NewStateSlot(new Func<Type, ParameterExpression>(Expression.Variable).Bind(type));
 
     private ParameterExpression NewStateSlot(Func<ParameterExpression> factory)
     {
@@ -93,7 +93,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
         if (node.Type == typeof(void))
         {
-            Statement.Rewrite(ref node);
+            node = Statement.Rewrite(node);
             node.Variables.ForEach(variable => Variables.Add(variable, null));
             node = node.Update(Empty<ParameterExpression>(), node.Expressions);
             return context.Rewrite(node, base.VisitBlock);
@@ -154,8 +154,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
         // inner lambda may have closures, we must handle this accordingly
         var analyzer = new ClosureAnalyzer(Variables);
-        var lambda = analyzer.Visit(node) as LambdaExpression;
-        Debug.Assert(lambda is not null);
+        var lambda = (LambdaExpression)analyzer.Visit(node);
 
         return analyzer.Closures.Count > 0 ? new ClosureExpression(lambda, analyzer.Closures) : lambda;
     }
@@ -168,15 +167,11 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitSwitch(SwitchExpression node)
     {
-        if (node.Type == typeof(void))
-        {
-            Statement.Rewrite(ref node);
-            return context.Rewrite(node, base.VisitSwitch);
-        }
-        else
-        {
+        if (node.Type != typeof(void))
             throw new NotSupportedException(ExceptionMessages.VoidSwitchExpected);
-        }
+
+        node = Statement.Rewrite(node);
+        return context.Rewrite(node, base.VisitSwitch);
     }
 
     protected override Expression VisitGoto(GotoExpression node)
@@ -236,7 +231,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         return node.Reduce(awaiterSlot, stateId, transition.Successful ?? throw new InvalidOperationException(), AsyncMethodEnd, prologue);
     }
 
-    private Expression VisitAsyncResult(AsyncResultExpression expr)
+    private AsyncResultExpression VisitAsyncResult(AsyncResultExpression expr)
     {
         if (context.IsInFinally)
             throw new InvalidOperationException(ExceptionMessages.LeavingFinallyClause);
@@ -262,20 +257,25 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
         switch (node)
         {
-            case StatePlaceholderExpression placeholder:
-                return placeholder;
+            case StatePlaceholderExpression:
+                break;
             case AsyncResultExpression result:
-                return VisitAsyncResult(result);
+                node = VisitAsyncResult(result);
+                break;
             case AwaitExpression await:
-                return context.Rewrite(await, VisitAwait);
+                node = context.Rewrite(await, VisitAwait);
+                break;
             case RecoverFromExceptionExpression recovery:
                 Variables.Add(recovery.Receiver, null);
-                return recovery;
-            case StateMachineExpression sme:
-                return sme;
+                break;
+            case StateMachineExpression:
+                break;
             default:
-                return context.Rewrite(node, base.VisitExtension);
+                node = context.Rewrite(node, base.VisitExtension);
+                break;
         }
+
+        return node;
     }
 
     private static bool IsAssignment(BinaryExpression binary) => binary.NodeType is ExpressionType.Assign or
@@ -384,26 +384,26 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
         => node.Update(node.Object!, arguments);
 
     protected override Expression VisitIndex(IndexExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitIndex, UpdateArguments));
+        => context.Rewrite(node, n => RewriteCallable(n, [.. n.Arguments], base.VisitIndex, UpdateArguments));
 
     private static NewExpression UpdateArguments(NewExpression node, IReadOnlyCollection<Expression> arguments)
         => node.Update(arguments);
 
     protected override Expression VisitNew(NewExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, n.Arguments.ToArray(), base.VisitNew, UpdateArguments));
+        => context.Rewrite(node, n => RewriteCallable(n, [.. n.Arguments], base.VisitNew, UpdateArguments));
 
     private static NewArrayExpression UpdateArguments(NewArrayExpression node, IReadOnlyCollection<Expression> arguments)
         => node.Update(arguments);
 
     protected override Expression VisitNewArray(NewArrayExpression node)
-        => context.Rewrite(node, n => RewriteCallable(n, n.Expressions.ToArray(), base.VisitNewArray, UpdateArguments));
+        => context.Rewrite(node, n => RewriteCallable(n, [.. n.Expressions], base.VisitNewArray, UpdateArguments));
 
     protected override Expression VisitLoop(LoopExpression node)
     {
         if (node.Type != typeof(void))
             throw new NotSupportedException(ExceptionMessages.VoidLoopExpected);
 
-        Statement.Rewrite(ref node);
+        node = Statement.Rewrite(node);
         return context.Rewrite(node, base.VisitLoop);
     }
 
