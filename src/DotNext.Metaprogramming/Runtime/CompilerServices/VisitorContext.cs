@@ -90,7 +90,8 @@ internal sealed class VisitorContext : Disposable
         foreach (var attr in attributes)
         {
             if (ReferenceEquals(ExpressionAttributes.Get(CurrentStatement), attr))
-                return;
+                break;
+
             attr.ContainsAwait = true;
         }
     }
