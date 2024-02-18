@@ -287,7 +287,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
+    ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member, CancellationToken token)
     {
         lastVote = BoxedClusterMemberId.Box(member);
         return new(Interlocked.Increment(ref term));
@@ -348,7 +348,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask IPersistentState.UpdateTermAsync(long value, bool resetLastVote)
+    ValueTask IPersistentState.UpdateTermAsync(long value, bool resetLastVote, CancellationToken token)
     {
         Term = value;
         if (resetLastVote)
@@ -358,7 +358,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id)
+    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id, CancellationToken token)
     {
         lastVote = BoxedClusterMemberId.Box(id);
         return new();
