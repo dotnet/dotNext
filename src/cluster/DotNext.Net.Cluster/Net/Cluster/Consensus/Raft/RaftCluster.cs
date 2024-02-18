@@ -479,13 +479,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
     }
 
-    private ValueTask StepDown(long newTerm, CancellationToken token)
+    private ValueTask StepDown(long newTerm)
     {
-        return newTerm > auditTrail.Term ? UpdateTermAndStepDownAsync(newTerm, token) : StepDown();
+        return newTerm > auditTrail.Term ? UpdateTermAndStepDownAsync(newTerm) : StepDown();
 
-        async ValueTask UpdateTermAndStepDownAsync(long newTerm, CancellationToken token)
+        async ValueTask UpdateTermAndStepDownAsync(long newTerm)
         {
-            await auditTrail.UpdateTermAsync(newTerm, true, token).ConfigureAwait(false);
+            await auditTrail.UpdateTermAsync(newTerm, true, LifecycleToken).ConfigureAwait(false);
             await StepDown().ConfigureAwait(false);
         }
     }
@@ -534,7 +534,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             if (snapshot.IsSnapshot && senderTerm >= result.Term && snapshotIndex > auditTrail.LastCommittedEntryIndex)
             {
                 Timestamp.Refresh(ref lastUpdated);
-                await StepDown(senderTerm, token).ConfigureAwait(false);
+                await StepDown(senderTerm).ConfigureAwait(false);
                 Leader = TryGetMember(sender);
                 await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
                 result = result with
@@ -586,7 +586,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             if (result.Term <= senderTerm)
             {
                 Timestamp.Refresh(ref lastUpdated);
-                await StepDown(senderTerm, token).ConfigureAwait(false);
+                await StepDown(senderTerm).ConfigureAwait(false);
                 var senderMember = TryGetMember(sender);
                 Leader = senderMember;
                 if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
@@ -785,7 +785,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             else if (result.Term != senderTerm)
             {
                 Leader = null;
-                await StepDown(senderTerm, token).ConfigureAwait(false);
+                await StepDown(senderTerm).ConfigureAwait(false);
             }
             else if (state is FollowerState<TMember> follower)
             {
@@ -947,7 +947,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout(random);
 
-                await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault(), LifecycleToken) : StepDown()).ConfigureAwait(false);
+                await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException) when (lockTaken is false)
