@@ -1047,7 +1047,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         Task<bool> IsReadyForTransitionAsync(long currentTerm)
             => state is FollowerState<TMember> { IsExpired: true, IsRefreshRequested: false } followerState && callerState.IsValid(followerState)
                 ? PreVoteAsync(currentTerm)
-                : Task.FromResult<bool>(false);
+                : Task.FromResult(false);
     }
 
     /// <inheritdoc />
