@@ -22,6 +22,7 @@ internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMa
     internal readonly long Term = term;
     private Task? votingTask;
 
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task VoteAsync(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         // Perf: reuse index and related term once for all members
