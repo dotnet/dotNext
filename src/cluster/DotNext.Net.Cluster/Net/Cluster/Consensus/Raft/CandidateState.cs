@@ -172,6 +172,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         if (disposing)
         {
             votingCancellation.Dispose();
+            votingTask = null;
         }
 
         base.Dispose(disposing);

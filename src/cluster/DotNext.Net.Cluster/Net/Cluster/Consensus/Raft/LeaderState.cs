@@ -296,6 +296,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
             replicationEvent.Dispose();
 
             context.Dispose();
+            heartbeatTask = null;
         }
 
         base.Dispose(disposing);
