@@ -9,7 +9,7 @@ namespace DotNext.Runtime;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct GCLatencyModeScope : IDisposable
 {
-    private readonly GCLatencyMode currentMode;
+    private readonly GCLatencyMode? currentMode;
 
     /// <summary>
     /// Initializes a new scope that affects GC intrusion level.
@@ -24,7 +24,11 @@ public readonly struct GCLatencyModeScope : IDisposable
     /// <summary>
     /// Cancels previously defined GC latency.
     /// </summary>
-    public void Dispose() => GCSettings.LatencyMode = currentMode;
+    public void Dispose()
+    {
+        if (currentMode.HasValue)
+            GCSettings.LatencyMode = currentMode.GetValueOrDefault();
+    }
 
     /// <summary>
     /// Creates a scope with <see cref="GCLatencyMode.SustainedLowLatency"/> GC intrusion level.
