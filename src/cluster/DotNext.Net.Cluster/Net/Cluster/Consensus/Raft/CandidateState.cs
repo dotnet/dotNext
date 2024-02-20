@@ -14,7 +14,6 @@ internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMa
     {
         Rejected = 0,
         Granted,
-        Canceled,
         NotAvailable,
     }
 
@@ -58,10 +57,6 @@ internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMa
                 currentTerm = response.Term;
                 result = response.Value ? VotingResult.Granted : VotingResult.Rejected;
             }
-            catch (OperationCanceledException)
-            {
-                result = VotingResult.Canceled;
-            }
             catch (MemberUnavailableException)
             {
                 result = VotingResult.NotAvailable;
@@ -72,43 +67,57 @@ internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMa
         }
     }
 
-    private async Task EndVoting(IAsyncEnumerable<(TMember, long, VotingResult)> voters, CancellationToken token)
+    private async Task EndVoting(TaskCompletionPipe.Consumer<(TMember, long, VotingResult)> voters, CancellationToken token)
     {
         var votes = 0;
         var localMember = default(TMember);
-        await foreach (var (member, term, result) in voters.ConfigureAwait(false))
+
+        var enumerator = voters.GetAsyncEnumerator(token);
+        try
         {
-            if (IsDisposingOrDisposed)
-                return;
-
-            // current node is outdated
-            if (term > Term)
+            while (await enumerator.MoveNextAsync().ConfigureAwait(false))
             {
-                MoveToFollowerState(randomizeTimeout: false, term);
-                return;
-            }
+                var (member, term, result) = enumerator.Current;
 
-            switch (result)
-            {
-                case VotingResult.Canceled: // candidate timeout happened
-                    MoveToFollowerState(randomizeTimeout: false);
+                if (IsDisposingOrDisposed)
                     return;
-                case VotingResult.Granted:
-                    Logger.VoteGranted(member.EndPoint);
-                    votes += 1;
-                    break;
-                case VotingResult.Rejected:
-                    Logger.VoteRejected(member.EndPoint);
-                    votes -= 1;
-                    break;
-                case VotingResult.NotAvailable:
-                    Logger.MemberUnavailable(member.EndPoint);
-                    votes -= 1;
-                    break;
-            }
 
-            if (!member.IsRemote)
-                localMember = member;
+                // current node is outdated
+                if (term > Term)
+                {
+                    MoveToFollowerState(randomizeTimeout: false, term);
+                    return;
+                }
+
+                switch (result)
+                {
+                    case VotingResult.Granted:
+                        Logger.VoteGranted(member.EndPoint);
+                        votes += 1;
+                        break;
+                    case VotingResult.Rejected:
+                        Logger.VoteRejected(member.EndPoint);
+                        votes -= 1;
+                        break;
+                    case VotingResult.NotAvailable:
+                        Logger.MemberUnavailable(member.EndPoint);
+                        votes -= 1;
+                        break;
+                }
+
+                if (!member.IsRemote)
+                    localMember = member;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // candidate timeout happened
+            MoveToFollowerState(randomizeTimeout: false);
+            return;
+        }
+        finally
+        {
+            await enumerator.DisposeAsync().ConfigureAwait(false);
         }
 
         Logger.VotingCompleted(votes, Term);
