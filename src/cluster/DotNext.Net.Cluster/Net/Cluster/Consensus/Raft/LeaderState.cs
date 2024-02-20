@@ -11,7 +11,7 @@ using IO.Log;
 using Membership;
 using Runtime.CompilerServices;
 using Threading.Tasks;
-using static Threading.LinkedTokenSourceFactory;
+using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 
 internal sealed partial class LeaderState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
@@ -136,21 +136,11 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 // do not resume suspended callers that came after the barrier, resume them in the next iteration
                 replicationQueue.SwitchValve();
 
-                GCLatencyMode latencyMode;
-                if (forced)
-                {
-                    // in case of forced (initiated programmatically, not by timeout) replication
-                    // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
-                    Unsafe.SkipInit(out latencyMode);
-                }
-                else
-                {
-                    // we want to minimize GC intrusion during replication process
-                    // (however, it is still allowed in case of system-wide memory pressure, e.g. due to container limits)
-                    latencyMode = GCSettings.LatencyMode;
-                    GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
-                }
-
+                // in case of forced (initiated programmatically, not by timeout) replication
+                // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
+                var latencyScope = forced
+                    ? default
+                    : GCLatencyModeScope.SustainedLowLatency;
                 try
                 {
                     // Perf: the code in this block is inlined instead of moved to separated method because
@@ -205,10 +195,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 finally
                 {
                     var broadcastTime = startTime.ElapsedMilliseconds;
-
-                    if (forced)
-                        GCSettings.LatencyMode = latencyMode;
-
+                    latencyScope.Dispose();
                     LeaderState.BroadcastTimeMeter.Record(broadcastTime, MeasurementTags);
                 }
 
