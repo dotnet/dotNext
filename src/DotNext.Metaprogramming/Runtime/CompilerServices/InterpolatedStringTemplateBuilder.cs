@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -40,6 +41,8 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
             this.argumentType = argumentType;
         }
 
+        [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(BufferWriterSlimInterpolatedStringHandler))]
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "DynamicDependencyAttribute is applied")]
         internal void WriteStatement(IList<Expression> statements, ParameterExpression provider, ParameterExpression handler, out ParameterExpression? inputVar)
         {
             Debug.Assert(provider.Type == typeof(IFormatProvider));
@@ -145,11 +148,19 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
     /// the renderer of the interpolated string.
     /// </summary>
     /// <returns>The lambda expression that encapsulates the rendering logic.</returns>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(PreallocatedCharBuffer))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(BufferWriterSlim<char>))]
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(BufferWriterSlimInterpolatedStringHandler))]
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "DynamicDependencyAttribute is applied")]
     public readonly LambdaExpression Build()
     {
         var preallocatedBufferLocal = Expression.Variable(typeof(PreallocatedCharBuffer), "buffer");
-        var writerLocal = Expression.Variable(typeof(BufferWriterSlim<char>), "writer");
-        var handlerLocal = Expression.Variable(typeof(BufferWriterSlimInterpolatedStringHandler), "handler");
+
+        var bufferWriterSlimType = typeof(BufferWriterSlim<char>);
+        var writerLocal = Expression.Variable(bufferWriterSlimType, "writer");
+
+        var stringHandlerType = typeof(BufferWriterSlimInterpolatedStringHandler);
+        var handlerLocal = Expression.Variable(stringHandlerType, "handler");
         var providerParameter = Expression.Parameter(typeof(IFormatProvider), "provider");
         var allocatorParameter = Expression.Parameter(typeof(MemoryAllocator<char>), "allocator");
 
@@ -161,7 +172,7 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
         var statements = new List<Expression>();
 
         // instantiate buffer writer
-        var ctor = writerLocal.Type.GetConstructor([typeof(Span<char>), allocatorParameter.Type]);
+        var ctor = bufferWriterSlimType.GetConstructor([typeof(Span<char>), allocatorParameter.Type]);
         Debug.Assert(ctor is not null);
         Expression expr = Expression.New(
             ctor,
@@ -170,7 +181,7 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
         statements.Add(Expression.Assign(writerLocal, expr));
 
         // instantiate handler
-        ctor = handlerLocal.Type.GetConstructor([typeof(int), typeof(int), writerLocal.Type.MakeByRefType(), providerParameter.Type]);
+        ctor = stringHandlerType.GetConstructor([typeof(int), typeof(int), writerLocal.Type.MakeByRefType(), providerParameter.Type]);
         Debug.Assert(ctor is not null);
         expr = Expression.New(
             ctor,

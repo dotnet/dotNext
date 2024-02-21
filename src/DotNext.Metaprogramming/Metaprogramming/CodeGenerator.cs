@@ -368,6 +368,7 @@ public static class CodeGenerator
     /// <param name="methodName">The method to be called.</param>
     /// <param name="arguments">Method call arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    [RequiresUnreferencedCode("Dynamically accesses method <methodName>.")]
     public static void Call(Expression instance, string methodName, params Expression[] arguments)
         => Statement(instance.Call(methodName, arguments));
 
@@ -378,6 +379,7 @@ public static class CodeGenerator
     /// <param name="methodName">The method to be called.</param>
     /// <param name="arguments">Method call arguments.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
+    [RequiresUnreferencedCode("Dynamically accesses method <methodName>.")]
     public static void NullSafeCall(Expression instance, string methodName, params Expression[] arguments)
         => Statement(instance.IfNotNull(target => target.Call(methodName, arguments)));
 
@@ -406,7 +408,8 @@ public static class CodeGenerator
     /// <param name="methodName">The name of the static method.</param>
     /// <param name="arguments">The arguments to be passed into static method.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void CallStatic(Type type, string methodName, params Expression[] arguments)
+    public static void CallStatic(
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type type, string methodName, params Expression[] arguments)
         => Statement(type.CallStatic(methodName, arguments));
 
     /// <summary>
@@ -416,7 +419,7 @@ public static class CodeGenerator
     /// <param name="methodName">The name of the static method.</param>
     /// <param name="arguments">The arguments to be passed into static method.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
-    public static void CallStatic<T>(string methodName, params Expression[] arguments)
+    public static void CallStatic<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] T>(string methodName, params Expression[] arguments)
         => CallStatic(typeof(T), methodName, arguments);
 
     /// <summary>
@@ -609,6 +612,7 @@ public static class CodeGenerator
     /// <param name="body">Loop body.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
+    [RequiresUnreferencedCode("Dynamic access to GetEnumerator method and IEnumerable<T> interfaces.")]
     public static void ForEach(Expression collection, Action<MemberExpression, LoopContext> body)
     {
         using var statement = new ForEachStatement(collection);
@@ -622,6 +626,7 @@ public static class CodeGenerator
     /// <param name="body">Loop body.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/foreach-in">foreach Statement</seealso>
+    [RequiresUnreferencedCode("Dynamic access to GetEnumerator method and IEnumerable<T> interfaces.")]
     public static void ForEach(Expression collection, Action<MemberExpression> body)
     {
         using var statement = new ForEachStatement(collection);
@@ -637,6 +642,7 @@ public static class CodeGenerator
     /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> method.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-8#asynchronous-streams">Async Streams</seealso>
+    [RequiresUnreferencedCode("Dynamic access to GetAsyncEnumerator method and IAsyncEnumerable<T> interfaces.")]
     public static void AwaitForEach(Expression collection, Action<MemberExpression, LoopContext> body, Expression? cancellationToken = null, bool configureAwait = false)
     {
         using var statement = new AwaitForEachStatement(collection, cancellationToken, configureAwait);
@@ -652,6 +658,7 @@ public static class CodeGenerator
     /// <param name="configureAwait"><see langword="true"/> to call <see cref="ValueTask.ConfigureAwait(bool)"/> with <see langword="false"/> argument when awaiting <see cref="IAsyncEnumerator{T}.MoveNextAsync"/> method.</param>
     /// <exception cref="InvalidOperationException">Attempts to call this method out of lexical scope.</exception>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-8#asynchronous-streams">Async Streams</seealso>
+    [RequiresUnreferencedCode("Dynamic access to GetAsyncEnumerator method and IAsyncEnumerable<T> interfaces.")]
     public static void AwaitForEach(Expression collection, Action<MemberExpression> body, Expression? cancellationToken = null, bool configureAwait = false)
     {
         using var statement = new AwaitForEachStatement(collection, cancellationToken, configureAwait);
@@ -934,7 +941,7 @@ public static class CodeGenerator
     /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
-    public static Expression<TDelegate> Lambda<TDelegate>(bool tailCall, Action<LambdaContext> body)
+    public static Expression<TDelegate> Lambda<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>(bool tailCall, Action<LambdaContext> body)
         where TDelegate : Delegate
     {
         using var expression = new LambdaExpression<TDelegate>(tailCall);
@@ -948,7 +955,7 @@ public static class CodeGenerator
     /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
-    public static Expression<TDelegate> Lambda<TDelegate>(bool tailCall, Func<LambdaContext, Expression> body)
+    public static Expression<TDelegate> Lambda<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>(bool tailCall, Func<LambdaContext, Expression> body)
         where TDelegate : Delegate
     {
         using var expression = new LambdaExpression<TDelegate>(tailCall);
@@ -961,7 +968,7 @@ public static class CodeGenerator
     /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
-    public static Expression<TDelegate> Lambda<TDelegate>(Func<LambdaContext, Expression> body)
+    public static Expression<TDelegate> Lambda<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>(Func<LambdaContext, Expression> body)
         where TDelegate : Delegate
         => Lambda<TDelegate>(false, body);
 
@@ -972,7 +979,7 @@ public static class CodeGenerator
     /// <param name="tailCall"><see langword="true"/> if the lambda expression will be compiled with the tail call optimization, otherwise <see langword="false"/>.</param>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
-    public static Expression<TDelegate> Lambda<TDelegate>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
+    public static Expression<TDelegate> Lambda<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>(bool tailCall, Action<LambdaContext, ParameterExpression> body)
         where TDelegate : Delegate
     {
         using var expression = new LambdaExpression<TDelegate>(tailCall);
@@ -985,7 +992,7 @@ public static class CodeGenerator
     /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
-    public static Expression<TDelegate> Lambda<TDelegate>(Action<LambdaContext> body)
+    public static Expression<TDelegate> Lambda<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>(Action<LambdaContext> body)
         where TDelegate : Delegate
         => Lambda<TDelegate>(false, body);
 
@@ -995,7 +1002,7 @@ public static class CodeGenerator
     /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
     /// <param name="body">Lambda function builder.</param>
     /// <returns>Constructed lambda expression.</returns>
-    public static Expression<TDelegate> Lambda<TDelegate>(Action<LambdaContext, ParameterExpression> body)
+    public static Expression<TDelegate> Lambda<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate>(Action<LambdaContext, ParameterExpression> body)
         where TDelegate : Delegate
         => Lambda<TDelegate>(false, body);
 
@@ -1008,6 +1015,7 @@ public static class CodeGenerator
     /// <seealso cref="AwaitExpression"/>
     /// <seealso cref="AsyncResultExpression"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+    [RequiresUnreferencedCode("Dynamic access to Transition and IAsyncStateMachine internal types.")]
     public static Expression<TDelegate> AsyncLambda<TDelegate>(Action<LambdaContext> body)
         where TDelegate : Delegate
         => AsyncLambda<TDelegate>(false, body);
@@ -1025,6 +1033,7 @@ public static class CodeGenerator
     /// <seealso cref="AwaitExpression"/>
     /// <seealso cref="AsyncResultExpression"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+    [RequiresUnreferencedCode("Dynamic access to Transition and IAsyncStateMachine internal types.")]
     public static Expression<TDelegate> AsyncLambda<TDelegate>(bool usePooling, Action<LambdaContext> body)
         where TDelegate : Delegate
         => new AsyncLambdaExpression<TDelegate>(usePooling).Build(body);
@@ -1038,6 +1047,7 @@ public static class CodeGenerator
     /// <seealso cref="AwaitExpression"/>
     /// <seealso cref="AsyncResultExpression"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+    [RequiresUnreferencedCode("Dynamic access to Transition and IAsyncStateMachine internal types.")]
     public static Expression<TDelegate> AsyncLambda<TDelegate>(Action<LambdaContext, ParameterExpression> body)
         where TDelegate : Delegate
         => AsyncLambda<TDelegate>(false, body);
@@ -1055,6 +1065,7 @@ public static class CodeGenerator
     /// <seealso cref="AwaitExpression"/>
     /// <seealso cref="AsyncResultExpression"/>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/async/#BKMK_HowtoWriteanAsyncMethod">Async methods</seealso>
+    [RequiresUnreferencedCode("Dynamic access to Transition and IAsyncStateMachine internal types.")]
     public static Expression<TDelegate> AsyncLambda<TDelegate>(bool usePooling, Action<LambdaContext, ParameterExpression> body)
         where TDelegate : Delegate
         => new AsyncLambdaExpression<TDelegate>(usePooling).Build(body);

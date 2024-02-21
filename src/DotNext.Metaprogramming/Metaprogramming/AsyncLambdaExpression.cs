@@ -2,12 +2,14 @@
 
 namespace DotNext.Metaprogramming;
 
+using System.Diagnostics.CodeAnalysis;
 using Linq.Expressions;
 using Runtime.CompilerServices;
 using static Reflection.DelegateType;
 using List = Collections.Generic.List;
 
-internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>
+[RequiresUnreferencedCode("Dynamic access to Transition and IAsyncStateMachine internal types.")]
+internal sealed class AsyncLambdaExpression<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>
     where TDelegate : Delegate
 {
     private readonly bool usePooling;

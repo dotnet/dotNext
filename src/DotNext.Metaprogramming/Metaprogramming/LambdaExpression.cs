@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming;
@@ -43,7 +44,7 @@ internal abstract class LambdaExpression : LexicalScope
 /// Represents lambda function builder.
 /// </summary>
 /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
-internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<Expression<TDelegate>, Func<LambdaContext, Expression>>
+internal sealed class LambdaExpression<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<Expression<TDelegate>, Func<LambdaContext, Expression>>
     where TDelegate : Delegate
 {
     private readonly Type returnType;

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -21,7 +22,7 @@ public sealed class MemberBindings : Dictionary<string, Expression>
     /// </summary>
     /// <param name="target">The target type with the declared members.</param>
     /// <returns>A list of bindings.</returns>
-    public IReadOnlyList<MemberAssignment> Bind(Type target)
+    public IReadOnlyList<MemberAssignment> Bind([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.All)] Type target)
     {
         const MemberTypes memberTypes = MemberTypes.Field | MemberTypes.Property;
         const BindingFlags memberFlags = BindingFlags.Public | BindingFlags.Instance;

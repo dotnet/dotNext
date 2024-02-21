@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
+[RequiresUnreferencedCode("Dynamic access to StrongBox<T> type.")]
 internal sealed class ClosureAnalyzer : ExpressionVisitor
 {
     private static readonly UserDataSlot<bool> ClosureVariableSlot = new();

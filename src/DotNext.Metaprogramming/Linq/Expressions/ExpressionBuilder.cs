@@ -251,6 +251,7 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="operand">The operand.</param>
     /// <returns><see langword="null"/> check operation.</returns>
+    [RequiresUnreferencedCode("Dynamic access to properties of <operand>.")]
     public static Expression IsNull(this Expression operand)
     {
         // handle nullable value type
@@ -277,6 +278,7 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="operand">The operand.</param>
     /// <returns><see langword="null"/> check operation.</returns>
+    [RequiresUnreferencedCode("Dynamic access to properties of <operand>.")]
     public static Expression IsNotNull(this Expression operand)
     {
         // handle nullable value type
@@ -723,6 +725,7 @@ public static partial class ExpressionBuilder
     /// <param name="methodName">The name of the method to be called.</param>
     /// <param name="arguments">The method arguments.</param>
     /// <returns>The method call expression.</returns>
+    [RequiresUnreferencedCode("Dynamic access to the method identified by <methodName> parameter.")]
     public static MethodCallExpression Call(this Expression instance, string methodName, params Expression[] arguments)
         => instance.Call(instance.Type, methodName, arguments);
 
@@ -739,7 +742,7 @@ public static partial class ExpressionBuilder
     /// <param name="methodName">The name of the method in the interface or base class to be called.</param>
     /// <param name="arguments">The method arguments.</param>
     /// <returns>The method call expression.</returns>
-    public static MethodCallExpression Call(this Expression instance, Type interfaceType, string methodName, params Expression[] arguments)
+    public static MethodCallExpression Call(this Expression instance, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type interfaceType, string methodName, params Expression[] arguments)
     {
         if (!interfaceType.IsAssignableFrom(instance.Type))
             throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(instance.Type, interfaceType));
@@ -756,7 +759,7 @@ public static partial class ExpressionBuilder
     /// <param name="methodName">The name of the static method.</param>
     /// <param name="arguments">The arguments to be passed into static method.</param>
     /// <returns>An expression representing static method call.</returns>
-    public static MethodCallExpression CallStatic(this Type type, string methodName, params Expression[] arguments)
+    public static MethodCallExpression CallStatic([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] this Type type, string methodName, params Expression[] arguments)
     {
         return type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), null) is { } method
             ? Expression.Call(method, arguments)
@@ -799,7 +802,7 @@ public static partial class ExpressionBuilder
     /// <param name="interfaceType">The interface or base class declaring property.</param>
     /// <param name="propertyName">The name of the instance property.</param>
     /// <returns>Property access expression.</returns>
-    public static MemberExpression Property(this Expression instance, Type interfaceType, string propertyName)
+    public static MemberExpression Property(this Expression instance, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type interfaceType, string propertyName)
     {
         return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
             ? Property(instance, property)
@@ -818,7 +821,7 @@ public static partial class ExpressionBuilder
     /// <param name="index0">The first index.</param>
     /// <param name="indicies">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
-    public static IndexExpression Property(this Expression instance, Type interfaceType, string propertyName, Expression index0, params Expression[] indicies)
+    public static IndexExpression Property(this Expression instance, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type interfaceType, string propertyName, Expression index0, params Expression[] indicies)
     {
         return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
             ? Property(instance, property, index0, indicies)
@@ -834,6 +837,7 @@ public static partial class ExpressionBuilder
     /// <param name="instance"><c>this</c> argument.</param>
     /// <param name="propertyName">The name of the instance property.</param>
     /// <returns>Property access expression.</returns>
+    [RequiresUnreferencedCode("Dynamic access to the property identified by <propertyName> parameter.")]
     public static MemberExpression Property(this Expression instance, string propertyName)
         => Expression.Property(instance, propertyName);
 
@@ -848,6 +852,7 @@ public static partial class ExpressionBuilder
     /// <param name="index0">The first index.</param>
     /// <param name="indicies">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
+    [RequiresUnreferencedCode("Dynamic access to the indexer identified by <propertyName> parameter.")]
     public static IndexExpression Property(this Expression instance, string propertyName, Expression index0, params Expression[] indicies)
         => Expression.Property(instance, propertyName, [index0, .. indicies]);
 
@@ -872,6 +877,7 @@ public static partial class ExpressionBuilder
     /// <param name="instance"><c>this</c> argument.</param>
     /// <param name="fieldName">The name of the instance field.</param>
     /// <returns>Field access expression.</returns>
+    [RequiresUnreferencedCode("Dynamic access to the field identified by <fieldName> parameter.")]
     public static MemberExpression Field(this Expression instance, string fieldName)
         => Expression.Field(instance, fieldName);
 
@@ -937,10 +943,12 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="collection">The expression representing collection.</param>
     /// <returns>The expression providing access to the appropriate property indicating the number of items in the collection.</returns>
+    [RequiresUnreferencedCode("Dynamic access to implemented interfaces and public properties of <collection>.")]
     public static MemberExpression Count(this Expression collection)
     {
         if (collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
             return Expression.Property(collection, nameof(string.Length));
+
         var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException(ExceptionMessages.CollectionImplementationExpected);
         return Expression.Property(collection, interfaceType, nameof(Count));
     }
@@ -950,6 +958,7 @@ public static partial class ExpressionBuilder
     /// </summary>
     /// <param name="obj">The object to be converted into string.</param>
     /// <returns>The expression representing <c>ToString()</c> method call.</returns>
+    [RequiresUnreferencedCode("Dynamic access to public methods of <obj>.")]
     public static MethodCallExpression AsString(this Expression obj) => Call(obj, nameof(ToString));
 
     /// <summary>
@@ -1136,12 +1145,12 @@ public static partial class ExpressionBuilder
     /// <param name="type">The type to be instantiated.</param>
     /// <param name="args">The list of arguments to be passed into constructor.</param>
     /// <returns>Instantiation expression.</returns>
-    public static NewExpression New(this Type type, params Expression[] args)
+    public static NewExpression New([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] this Type type, params Expression[] args)
     {
         if (args.LongLength is 0L)
             return Expression.New(type);
 
-        return type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type)) is { } ctor
+        return type.GetConstructor(Array.ConvertAll(args, GetType)) is { } ctor
             ? Expression.New(ctor, args)
             : throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName);
     }
@@ -1155,6 +1164,7 @@ public static partial class ExpressionBuilder
     /// <param name="expression">An expression representing object construction.</param>
     /// <param name="bindings">A collection of members to initialize.</param>
     /// <returns>Initialization expression.</returns>
+    [RequiresUnreferencedCode("Dynamic access to public properties of <expression>.")]
     public static MemberInitExpression Init(this NewExpression expression, MemberBindings bindings)
         => Expression.MemberInit(expression, bindings.Bind(expression.Type));
 
@@ -1203,7 +1213,7 @@ public static partial class ExpressionBuilder
     /// <param name="type">The expression representing the type to be instantiated.</param>
     /// <param name="args">The list of arguments to be passed into constructor.</param>
     /// <returns>Instantiation expression.</returns>
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Activator))]
+    [RequiresUnreferencedCode("Dynamic access to public constructors of a type represented by <type>.")]
     public static MethodCallExpression New(this Expression type, params Expression[] args)
     {
         var activate = typeof(Activator).GetMethod(nameof(Activator.CreateInstance), [typeof(Type), typeof(object[])]);
@@ -1217,6 +1227,7 @@ public static partial class ExpressionBuilder
     /// <param name="collection">The collection to iterate through.</param>
     /// <param name="body">A delegate that is used to construct the body of the loop.</param>
     /// <returns>The constructed loop.</returns>
+    [RequiresUnreferencedCode("Dynamic access to GetEnumerator method and IEnumerable<T> interfaces.")]
     public static ForEachExpression ForEach(this Expression collection, ForEachExpression.Statement body)
         => ForEachExpression.Create(collection, body);
 
@@ -1453,6 +1464,7 @@ public static partial class ExpressionBuilder
     /// </summary>
     /// <param name="expression">The compound expression.</param>
     /// <returns>The expression of type <see cref="Result{T}"/>.</returns>
+    [RequiresUnreferencedCode("Dynamic access to DotNext.Result<> data type")]
     public static Expression AsResult(this Expression expression)
     {
         var exception = Expression.Parameter(typeof(Exception));
@@ -1465,6 +1477,7 @@ public static partial class ExpressionBuilder
             Expression.Catch(exception, Expression.New(fallbackCtor, exception)));
     }
 
+    [RequiresUnreferencedCode("Dynamic access to indexer of <target>.")]
     internal static IndexExpression MakeIndex(Expression target, Expression[] args)
     {
         // handle case for array
