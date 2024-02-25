@@ -30,25 +30,25 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the remaining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
     public void Adjust(long offset, long length)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)BaseStream.Length, nameof(offset));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)length, (ulong)(BaseStream.Length - offset), nameof(length));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)stream.Length, nameof(offset));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)length, (ulong)(stream.Length - offset), nameof(length));
 
         this.length = length;
         this.offset = offset;
-        BaseStream.Position = offset;
+        stream.Position = offset;
     }
 
     /// <summary>
     /// Gets a value indicating whether the current stream supports reading.
     /// </summary>
     /// <value><see langword="true"/> if the stream supports reading; otherwise, <see langword="false"/>.</value>
-    public override bool CanRead => BaseStream.CanRead;
+    public override bool CanRead => stream.CanRead;
 
     /// <summary>
     /// Gets a value indicating whether the current stream supports seeking.
     /// </summary>
     /// <value><see langword="true"/> if the stream supports seeking; otherwise, <see langword="false"/>.</value>
-    public override bool CanSeek => BaseStream.CanSeek;
+    public override bool CanSeek => stream.CanSeek;
 
     /// <summary>
     /// Gets a value indicating whether the current stream supports writing.
@@ -62,29 +62,29 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     /// <inheritdoc/>
     public override long Position
     {
-        get => BaseStream.Position - offset;
+        get => stream.Position - offset;
         set
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)length, nameof(value));
 
-            BaseStream.Position = offset + value;
+            stream.Position = offset + value;
         }
     }
 
     private long RemainingBytes => length - Position;
 
     /// <inheritdoc/>
-    public override void Flush() => BaseStream.Flush();
+    public override void Flush() => stream.Flush();
 
     /// <inheritdoc/>
-    public override Task FlushAsync(CancellationToken token = default) => BaseStream.FlushAsync(token);
+    public override Task FlushAsync(CancellationToken token = default) => stream.FlushAsync(token);
 
     /// <inheritdoc/>
-    public override bool CanTimeout => BaseStream.CanTimeout;
+    public override bool CanTimeout => stream.CanTimeout;
 
     /// <inheritdoc/>
     public override int ReadByte()
-        => Position < length ? BaseStream.ReadByte() : -1;
+        => Position < length ? stream.ReadByte() : -1;
 
     /// <inheritdoc/>
     public override void WriteByte(byte value) => throw new NotSupportedException();
@@ -94,30 +94,30 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     {
         ValidateBufferArguments(buffer, offset, count);
 
-        return BaseStream.Read(buffer, offset, (int)Math.Min(count, RemainingBytes));
+        return stream.Read(buffer, offset, (int)Math.Min(count, RemainingBytes));
     }
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)
-        => BaseStream.Read(buffer.TrimLength(int.CreateSaturating(RemainingBytes)));
+        => stream.Read(buffer.TrimLength(int.CreateSaturating(RemainingBytes)));
 
     /// <inheritdoc/>
     public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
     {
         count = (int)Math.Min(count, RemainingBytes);
-        return BaseStream.BeginRead(buffer, offset, count, callback, state);
+        return stream.BeginRead(buffer, offset, count, callback, state);
     }
 
     /// <inheritdoc/>
-    public override int EndRead(IAsyncResult asyncResult) => BaseStream.EndRead(asyncResult);
+    public override int EndRead(IAsyncResult asyncResult) => stream.EndRead(asyncResult);
 
     /// <inheritdoc/>
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
-        => BaseStream.ReadAsync(buffer, offset, (int)Math.Min(count, RemainingBytes), token);
+        => stream.ReadAsync(buffer, offset, (int)Math.Min(count, RemainingBytes), token);
 
     /// <inheritdoc/>
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
-        => BaseStream.ReadAsync(buffer.TrimLength(int.CreateSaturating(RemainingBytes)), token);
+        => stream.ReadAsync(buffer.TrimLength(int.CreateSaturating(RemainingBytes)), token);
 
     /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)
@@ -142,7 +142,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     /// <inheritdoc/>
     public override void SetLength(long value)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)(BaseStream.Length - BaseStream.Position), nameof(value));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)(stream.Length - stream.Position), nameof(value));
 
         length = value;
     }
@@ -170,22 +170,22 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     /// <inheritdoc/>
     public override int ReadTimeout
     {
-        get => BaseStream.ReadTimeout;
-        set => BaseStream.ReadTimeout = value;
+        get => stream.ReadTimeout;
+        set => stream.ReadTimeout = value;
     }
 
     /// <inheritdoc/>
     public override int WriteTimeout
     {
-        get => BaseStream.WriteTimeout;
-        set => BaseStream.WriteTimeout = value;
+        get => stream.WriteTimeout;
+        set => stream.WriteTimeout = value;
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing && !leaveOpen)
-            BaseStream.Dispose();
+            stream.Dispose();
         base.Dispose(disposing);
     }
 
@@ -193,7 +193,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     public override async ValueTask DisposeAsync()
     {
         if (!leaveOpen)
-            await BaseStream.DisposeAsync().ConfigureAwait(false);
+            await stream.DisposeAsync().ConfigureAwait(false);
         await base.DisposeAsync().ConfigureAwait(false);
     }
 }
