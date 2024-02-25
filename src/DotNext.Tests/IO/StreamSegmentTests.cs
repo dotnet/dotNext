@@ -1,7 +1,22 @@
-﻿namespace DotNext.IO;
+﻿using System.Text;
+
+namespace DotNext.IO;
 
 public sealed class StreamSegmentTests : Test
 {
+    [Theory]
+    [InlineData(0, 4, "This")]
+    [InlineData(5, 2, "is")]
+    [InlineData(10, 4, "test")]
+    public static void AdjustSetsSegmentOfStream(int offset, int length, string expected)
+    {
+        using var ms = new MemoryStream(Encoding.UTF8.GetBytes("This is a test"));
+        using var segment = new StreamSegment(ms);
+        segment.Adjust(offset, length);
+        StreamReader reader = new(segment);
+        Equal(expected, reader.ReadToEnd());
+    }
+
     [Fact]
     public static void ReadByteSequentially()
     {
