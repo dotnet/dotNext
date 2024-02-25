@@ -8,29 +8,16 @@ using static Buffers.Memory;
 /// <remarks>
 /// The segmentation is supported only for seekable streams.
 /// </remarks>
-public sealed class StreamSegment : Stream, IFlushable
+/// <param name="stream">The underlying stream represented by the segment.</param>
+/// <param name="leaveOpen"><see langword="true"/> to leave <paramref name="stream"/> open after the object is disposed; otherwise, <see langword="false"/>.</param>
+public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream, IFlushable
 {
-    private readonly bool leaveOpen;
-    private long length, offset;
-
-    /// <summary>
-    /// Initializes a new segment of the specified stream.
-    /// </summary>
-    /// <param name="stream">The underlying stream represented by the segment.</param>
-    /// <param name="leaveOpen"><see langword="true"/> to leave <paramref name="stream"/> open after the object is disposed; otherwise, <see langword="false"/>.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
-    public StreamSegment(Stream stream, bool leaveOpen = true)
-    {
-        BaseStream = stream ?? throw new ArgumentNullException(nameof(stream));
-        length = stream.Length;
-        offset = 0L;
-        this.leaveOpen = leaveOpen;
-    }
+    private long length = stream.Length, offset;
 
     /// <summary>
     /// Gets underlying stream.
     /// </summary>
-    public Stream BaseStream { get; }
+    public Stream BaseStream => stream;
 
     /// <summary>
     /// Establishes segment bounds.
