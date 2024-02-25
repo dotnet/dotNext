@@ -40,11 +40,11 @@ public sealed class StreamSegment : Stream, IFlushable
     /// </remarks>
     /// <param name="offset">The offset in the underlying stream.</param>
     /// <param name="length">The length of the segment.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the reamining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the remaining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
     public void Adjust(long offset, long length)
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)BaseStream.Length, nameof(offset));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)(BaseStream.Length - offset), nameof(length));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)length, (ulong)(BaseStream.Length - offset), nameof(length));
 
         this.length = length;
         this.offset = offset;
