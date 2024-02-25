@@ -22,6 +22,7 @@ public sealed class StreamSegmentTests : Test
     {
         using var ms = new MemoryStream([1, 3, 5, 8, 12]);
         using var segment = new StreamSegment(ms);
+        Same(ms, segment.BaseStream);
         Equal(0, segment.Position);
         segment.Adjust(0, 2);
         Equal(1, segment.ReadByte());
